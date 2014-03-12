@@ -13,6 +13,13 @@
 
 static MainWindow *main_window = 0;
 
+QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
+{
+    p += item->pos().toPoint();
+    QPoint p2(p.x() / main_window->cell_wid, p.y() / main_window->cell_hgt);
+    return p2;
+}
+
 bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_y, int cur_tar_x)
 {
     if (path_n < 1) return false;

@@ -1,4 +1,5 @@
 #include "emitter.h"
+#include "qt_mainwindow.h"
 #include "npp.h"
 #include <QPainter>
 #include <QtCore/qmath.h>
@@ -193,8 +194,17 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
-        QColor col("white");
         QPointF where = position + fromAngle(p->angle, p->currentLength);
+
+        QPoint p1 = to_dungeon_coord(this, where.toPoint());
+        if (!in_bounds(p1.y(), p1.x())) continue;
+        if (!(dungeon_info[p1.y()][p1.x()].cave_info & (CAVE_SEEN))) continue;
+
+        QPoint p2 = to_dungeon_coord(this, position.toPoint());
+        if (!generic_los(p2.y(), p2.x(), p1.y(), p1.x(), CAVE_PROJECT)) continue;
+
+        QColor col("white");
+
         if (p->type == 0) {
             qreal opacity = 1;
             if (p->currentLength > size / 4.0) opacity = 0.5;
@@ -322,12 +332,18 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     painter->save();
 
-    //painter->fillRect(boundingRect(), QColor("white"));
-
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
 
         QPointF pp = position + fromAngle(p->angle, p->currentLength);
+
+        QPoint p1 = to_dungeon_coord(this, pp.toPoint());
+        if (!in_bounds(p1.y(), p1.x())) continue;
+        if (!(dungeon_info[p1.y()][p1.x()].cave_info & (CAVE_SEEN))) continue;
+
+        QPoint p2 = to_dungeon_coord(this, position.toPoint());
+        if (!generic_los(p2.y(), p2.x(), p1.y(), p1.x(), CAVE_PROJECT)) continue;
+
         qreal opacity = 1;
         opacity = 1 - p->currentLength / maxLength;
         if (opacity < 0.5) opacity = 0.5;

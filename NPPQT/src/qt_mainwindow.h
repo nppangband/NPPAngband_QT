@@ -27,8 +27,6 @@ class DungeonGrid;
 class DungeonCursor;
 class QTextEdit;
 
-class MainWindowPrivate;
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -191,5 +189,7 @@ private:
 
     QActionGroup *multipliers;
 };
+
+QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p);
 
 #endif
