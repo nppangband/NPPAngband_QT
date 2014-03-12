@@ -1996,8 +1996,6 @@ void update_stuff(void)
     /* Update stuff */
     if (!p_ptr->update) return;
 
-    if (p_ptr->update & (PU_TORCH))	calc_torch();
-
     if (p_ptr->update & (PU_BONUS))
     {
         calc_bonuses(inventory, &p_ptr->state, FALSE);
@@ -2005,6 +2003,8 @@ void update_stuff(void)
         /*hack = always re-check stealth & nativity*/
         p_ptr->update |= (PU_STEALTH | PU_NATIVE);
     }
+
+    if (p_ptr->update & (PU_TORCH))	calc_torch();
 
     if (p_ptr->update & (PU_NATIVE))
     {
