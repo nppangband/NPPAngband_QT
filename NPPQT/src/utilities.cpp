@@ -264,7 +264,7 @@ static void add_message_to_vector(QString msg, QColor which_color)
     // First make sure the message list gets no greater than 200
     while (message_list.size() >= 200)
     {
-        message_list.QVector::erase(message_list.end());
+        message_list.removeLast();
     }
 
     // Default is a while message

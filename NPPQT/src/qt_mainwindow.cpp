@@ -159,11 +159,17 @@ void ui_player_moved()
 {
     if (!character_dungeon) return;
     main_window->update_cursor();
-    QRect vis = visible_dungeon();
+
     int py = p_ptr->py;
     int px = p_ptr->px;
-    if (center_player
-            || py < vis.y() + panel_change_offset_y
+
+    if (center_player && !p_ptr->running) {
+        ui_center(py, px);
+        return;
+    }
+
+    QRect vis = visible_dungeon();
+    if (py < vis.y() + panel_change_offset_y
             || py >= vis.y() + vis.height() - panel_change_offset_y
             || px < vis.x() + panel_change_offset_x
             || px >= vis.x() + vis.width() - panel_change_offset_x) {
