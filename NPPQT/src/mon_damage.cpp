@@ -433,7 +433,7 @@ bool mon_clear_timed(int m_idx, int idx, u16b flag)
 /* Helper function to wake monsters who are asleep */
 void wake_monster_attack(monster_type *m_ptr, u16b flag)
 {
-    int m_idx = dungeon_info[m_ptr->fx][m_ptr->fx].monster_idx;
+    int m_idx = dungeon_info[m_ptr->fy][m_ptr->fx].monster_idx;
 
     /* Already Awake */
     if (!m_ptr->m_timed[MON_TMD_SLEEP]) return;
