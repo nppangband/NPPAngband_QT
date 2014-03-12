@@ -1131,9 +1131,7 @@ int dir_transitions[10][10] =
 bool get_aim_dir(int *dp, bool target_trap)
 {
     /* Global direction */
-    int dir = p_ptr->command_dir;
-
-    QString p;
+    int dir = p_ptr->command_dir;    
 
     /* Initialize */
     (*dp) = 0;
@@ -1148,13 +1146,7 @@ bool get_aim_dir(int *dp, bool target_trap)
     {
         ui_toolbar_show(TOOLBAR_TARGETTING);
 
-        ui_show_cursor(p_ptr->py, p_ptr->px);
-
-        /* Choose a prompt */
-        if (!target_okay())
-            p = "Direction ('*' or <click> to target, 'c' for closest, Escape to cancel)? ";
-        else
-            p = "Direction ('5' for target, '*' or <click> to re-target, Escape to cancel)? ";
+        ui_show_cursor(p_ptr->py, p_ptr->px);        
 
         /* Get a command (or Cancel) */
         UserInput input = ui_get_input();
@@ -1168,30 +1160,43 @@ bool get_aim_dir(int *dp, bool target_trap)
         }
 
         /* Analyze */
-        if (input.mode == INPUT_MODE_MOUSE) {
-            /* Mouse aiming */
-            if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = 5;
-        }
-        else if (input.text.compare("*") == 0) {
-            /* Set new target, use target if legal */
-            int mode = TARGET_KILL;
-            if (target_trap) mode |= TARGET_TRAP;
-            if (target_set_interactive(mode, -1, -1)) dir = 5;
-        }
-        else if (input.text.compare("c") == 0) {
-            /* Set to closest target */
-            if (target_set_closest(TARGET_KILL)) dir = 5;
-        }
-        else if (input.text.compare("t") == 0
-                 || input.text.compare("5") == 0
-                 || input.text.compare("0") == 0
-                 || input.text.compare(".") == 0) {
-            /* Use current target, if set and legal */
-            if (target_okay()) dir = 5;
-        }
-        else {
-            /* Possible direction */
-            dir = target_dir(input);
+        switch (input.key)
+        {
+            case 0:
+            {
+                /* Mouse aiming */
+                if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = 5;
+                break;
+            }
+            case Qt::Key_Asterisk:
+            {
+                /* Set new target, use target if legal */
+                int mode = TARGET_KILL;
+                if (target_trap) mode |= TARGET_TRAP;
+                if (target_set_interactive(mode, -1, -1)) dir = 5;
+                break;
+            }
+            case Qt::Key_C:
+            {
+                /* Set to closest target */
+                if (target_set_closest(TARGET_KILL)) dir = 5;
+                break;
+            }
+            case Qt::Key_T:
+            case Qt::Key_5:
+            case Qt::Key_0:
+            case Qt::Key_Period:
+            {
+                /* Use current target, if set and legal */
+                if (target_okay()) dir = 5;
+                break;
+            }
+            default:
+            {
+                /* Possible direction */
+                dir = target_dir(input);
+                break;
+            }
         }
 
         /* Error */

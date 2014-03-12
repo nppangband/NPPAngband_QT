@@ -306,9 +306,6 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
     int old_x = parent->cursor->c_x;
     int old_y = parent->cursor->c_y;
     parent->grids[old_y][old_x]->update();
-    parent->cursor->setVisible(true);
-    parent->cursor->moveTo(c_y, c_x);
-
     if (parent->ui_mode == UI_MODE_INPUT) {
         parent->input.x = c_x;
         parent->input.y = c_y;
@@ -316,6 +313,9 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         parent->ev_loop.quit();
     }
     else {
+        parent->cursor->setVisible(true);
+        parent->cursor->moveTo(c_y, c_x);
+        ui_center(c_y, c_x);
         dungeon_type *d_ptr = &dungeon_info[c_y][c_x];
         if (d_ptr->monster_idx > 0) {
             int r_idx = mon_list[d_ptr->monster_idx].r_idx;
@@ -997,7 +997,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
-
     QString keystring = which_key->text();
 
     // Go to special key handling
@@ -1012,6 +1011,12 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     // Normal mode
     switch (which_key->key())
     {
+        // ESCAPE
+        case Qt::Key_Escape:
+        {
+            ui_center(p_ptr->py, p_ptr->px);
+            break;
+        }
         // Move down
         case Qt::Key_2:
         case Qt::Key_Down:
@@ -1075,8 +1080,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             return;
         }
         case Qt::Key_D:
-        {
-            do_cmd_destroy();
+        {            
+            if (keystring == "d")   do_cmd_drop();
+            else                    do_cmd_destroy();
             return;
         }
         case Qt::Key_BraceLeft:
@@ -1103,11 +1109,10 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         default:
         {
             // handle lowercase keystrokes        
-            if (keystring.operator ==("d")) do_cmd_drop();
-            else if (keystring.operator ==("g")) do_cmd_pickup();
-            else if (keystring.operator ==("t")) do_cmd_takeoff();
-            else if (keystring.operator ==("w")) do_cmd_wield();
-            else if (keystring.operator ==("x")) do_cmd_swap_weapon();
+            if (keystring == "g") do_cmd_pickup();
+            else if (keystring == "t") do_cmd_takeoff();
+            else if (keystring == "w") do_cmd_wield();
+            else if (keystring == "x") do_cmd_swap_weapon();
             else
             {
                 //  TODO something useful with unused keypresses
