@@ -3044,7 +3044,7 @@ static bool activate_object(object_type *o_ptr, int dir)
 /*
  * Use an object
  */
-static bool use_object(object_type *o_ptr, bool *ident, bool aware, int dir)
+static bool use_object(object_type *o_ptr, bool *ident, int dir)
 {
     bool used;
 
@@ -3106,9 +3106,11 @@ static bool use_object(object_type *o_ptr, bool *ident, bool aware, int dir)
  * Use an object.
  *
  */
-void do_cmd_use(int code, cmd_arg args[])
+void command_use(cmd_arg args)
 {
-    int item = args[0].item;
+    if (!args.verify) return;
+
+    int item = args.item;
     object_type *o_ptr = object_from_item_idx(item);
     bool ident = FALSE;
     bool used = FALSE;
@@ -3217,7 +3219,7 @@ void do_cmd_use(int code, cmd_arg args[])
 
     /* If the item requires a direction, get one (allow canceling) */
     if (obj_needs_aim(o_ptr))
-        dir = args[1].direction;
+        dir = args.direction;
 
     /* Check for use if necessary, and execute the effect */
     if ((use != USE_CHARGE && use != USE_TIMEOUT) ||
@@ -3234,7 +3236,7 @@ void do_cmd_use(int code, cmd_arg args[])
         o_ptr->obj_in_use = TRUE;
 
         /* Do effect */
-        used = use_object(o_ptr, &ident, was_aware, dir);
+        used = use_object(o_ptr, &ident, dir);
 
         /* make sure we still have the right item if the inventory was moved around */
         if (find_object_in_use(&item))

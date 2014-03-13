@@ -341,6 +341,20 @@ bool object_type::is_scroll()       { return tval == TV_SCROLL; }
 bool object_type::is_parchment()    { return tval == TV_PARCHMENT; }
 bool object_type::is_food()         { return tval == TV_FOOD; }
 bool object_type::is_light()        { return tval == TV_LIGHT; }
+
+//  Return an object that an be used
+bool object_type::is_usable_item()
+{
+    if (is_staff())     return (TRUE);
+    if (is_rod())       return (TRUE);
+    if (is_wand())      return (TRUE);
+    if (is_potion())    return (TRUE);
+    if (is_scroll())    return (TRUE);
+    if (is_food())      return (TRUE);
+    return (FALSE);
+}
+
+
 bool object_type::is_ring()         { return tval == TV_RING; }
 bool object_type::is_amulet()       { return tval == TV_AMULET; }
 bool object_type::is_jewlery()

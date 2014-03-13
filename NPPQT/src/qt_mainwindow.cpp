@@ -1117,6 +1117,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         {
             // handle lowercase keystrokes        
             if (keystring == "g") do_cmd_pickup();
+            else if (keystring == "a") do_cmd_activate();
+            else if (keystring == "e") do_cmd_use_item();
             else if (keystring == "t") do_cmd_takeoff();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();

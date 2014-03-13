@@ -1830,8 +1830,6 @@ void process_player_energy(byte energy_used)
 
     p_ptr->p_energy -= energy_used;
 
-    effect_type *x_ptr;
-
     /* Hack -- constant hallucination */
     if (p_ptr->timed[TMD_IMAGE])
     {

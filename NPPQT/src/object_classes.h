@@ -139,6 +139,7 @@ class object_type
     bool is_parchment();
     bool is_food();
     bool is_light();
+    bool is_usable_item();
     bool is_ring();
     bool is_amulet();
     bool is_jewlery();

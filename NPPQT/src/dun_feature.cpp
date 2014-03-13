@@ -2210,29 +2210,6 @@ static void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr)
 }
 
 
-
-
-
-/*
- * Return TRUE if the given string start with a vowel
- * Leading whitespace is ignored
- */
-static bool begins_with_vowel(QString str)
-{
-    int i;
-
-
-    /* Ignore whitespace */
-    for (i = 0; str[i] == ' '; i++) ;
-
-    QChar tester = str[i];
-
-    /* Check */
-    return (is_a_vowel(tester));
-}
-
-
-
 /*
  * Reset the dyna_g array to its initial state. To be used every time a level
  * is generated
