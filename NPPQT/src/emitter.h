@@ -6,6 +6,7 @@
 #include <QList>
 #include <QGraphicsItem>
 #include <QPropertyAnimation>
+#include <QHash>
 
 class NPPAnimation: public QObject
 {
@@ -58,6 +59,7 @@ public:
     qreal length;
     qreal previousLength;
     qreal size;
+    QHash<int, bool> valid; // Grids in los and projectable
 
     BallAnimation(QPointF where, int newRadius);
     qreal getLength();
@@ -83,6 +85,7 @@ public:
     QRectF brect;
     qreal centerAngle;
     qreal maxLength;
+    QHash<int, bool> valid; // Grids in los and projectable
 
     ArcAnimation(QPointF from, QPointF to, int newDegrees);
     qreal getLength();

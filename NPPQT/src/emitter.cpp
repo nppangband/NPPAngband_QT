@@ -133,6 +133,21 @@ BallAnimation::BallAnimation(QPointF where, int newRadius)
 
     setPos(where.x() - size2 / 2, where.y() - size2 / 2);
 
+    // Collect valid grids
+    QPoint p1 = to_dungeon_coord(this, pos().toPoint());
+    QPoint p2 = p1 + QPoint(size2, size2);
+
+    for (int y = p1.y(); y <= p2.y(); y++) {
+        for (int x = p1.x(); x <= p2.x(); x++) {
+            if (!in_bounds(y, x)) continue;
+            int gr = GRID(y, x);
+            bool value = false;
+            if ((dungeon_info[y][x].cave_info & (CAVE_SEEN)) &&
+                    generic_los(where.y(), where.x(), y, x, CAVE_PROJECT)) value = true;
+            valid.insert(gr, value);
+        }
+    }
+
     position = QPointF(size2 / 2, size2 / 2);
 
     anim = new QPropertyAnimation(this, "length");
@@ -188,20 +203,15 @@ BallAnimation::~BallAnimation()
 
 void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->save();
-
-    //painter->setClipRect(boundingRect());
+    painter->save();    
 
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
         QPointF where = position + fromAngle(p->angle, p->currentLength);
 
         QPoint p1 = to_dungeon_coord(this, where.toPoint());
-        if (!in_bounds(p1.y(), p1.x())) continue;
-        if (!(dungeon_info[p1.y()][p1.x()].cave_info & (CAVE_SEEN))) continue;
-
-        QPoint p2 = to_dungeon_coord(this, position.toPoint());
-        if (!generic_los(p2.y(), p2.x(), p1.y(), p1.x(), CAVE_PROJECT)) continue;
+        int gr = GRID(p1.y(), p1.x());
+        if (!valid.contains(gr) || !valid.value(gr)) continue;
 
         QColor col("white");
 
@@ -258,6 +268,18 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees)
 
     p1 += QPointF(-10, -10);
     p2 += QPointF(10, 10);
+
+    // Collect valid grids
+    for (int y = p1.y(); y <= p2.y(); y++) {
+        for (int x = p1.x(); x <= p2.x(); x++) {
+            if (!in_bounds(y, x)) continue;
+            int gr = GRID(y, x);
+            bool value = false;
+            if ((dungeon_info[y][x].cave_info & (CAVE_SEEN)) &&
+                    generic_los(from.y(), from.x(), y, x, CAVE_PROJECT)) value = true;
+            valid.insert(gr, value);
+        }
+    }
 
     brect = QRectF(0, 0, (p2.x() - p1.x() + 1) * cell_size.width(),
                          (p2.y() - p1.y() + 1) * cell_size.height());
@@ -338,11 +360,8 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         QPointF pp = position + fromAngle(p->angle, p->currentLength);
 
         QPoint p1 = to_dungeon_coord(this, pp.toPoint());
-        if (!in_bounds(p1.y(), p1.x())) continue;
-        if (!(dungeon_info[p1.y()][p1.x()].cave_info & (CAVE_SEEN))) continue;
-
-        QPoint p2 = to_dungeon_coord(this, position.toPoint());
-        if (!generic_los(p2.y(), p2.x(), p1.y(), p1.x(), CAVE_PROJECT)) continue;
+        int gr = GRID(p1.y(), p1.x());
+        if (!valid.contains(gr) || !valid.value(gr)) continue;
 
         qreal opacity = 1;
         opacity = 1 - p->currentLength / maxLength;

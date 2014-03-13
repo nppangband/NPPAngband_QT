@@ -424,6 +424,8 @@ QString get_player_title(void)
 
 void debug_rarities()
 {
+    if (!character_dungeon) return;
+
     // TODO PLAYTESTING
     int n = 0;
     for (int y = 0; y < p_ptr->cur_map_hgt; y++) {
