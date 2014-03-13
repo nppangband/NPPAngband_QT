@@ -720,7 +720,7 @@ void MainWindow::redraw()
     }
 
     // TODO PLAYTESTING. DONT REMOVE YET
-    //wiz_light();
+    wiz_light();
 
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
@@ -1004,6 +1004,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
+    // TODO PLAYTESTING
+    debug_rarities();
+
     QString keystring = which_key->text();
 
     // Go to special key handling
@@ -1022,6 +1025,16 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Escape:
         {
             ui_center(p_ptr->py, p_ptr->px);
+            break;
+        }
+        // TODO PLAYTESTING
+        case Qt::Key_J:
+        {
+            int l;
+            bool ok;
+            l = QInputDialog::getInt(0, "Please enter a number",
+                                     "Jump to level", p_ptr->depth, 0, 101, 1, &ok, 0);
+            if (ok) dungeon_change_level(l);
             break;
         }
         // Move down

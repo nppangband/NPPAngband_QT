@@ -421,3 +421,26 @@ QString get_player_title(void)
 
     return (cp_ptr->cl_title[(p_ptr->lev - 1) / 5]);
 }
+
+void debug_rarities()
+{
+    // TODO PLAYTESTING
+    int n = 0;
+    for (int y = 0; y < p_ptr->cur_map_hgt; y++) {
+        for (int x = 0; x < p_ptr->cur_map_wid; x++) {
+            if (dungeon_info[y][x].feat == 0) {
+                ++n;
+                color_message(QString("NONE terrain %1x%2").arg(y).arg(x), TERM_RED);
+            }
+        }
+    }
+
+    n = 0;
+    for (int i = 1; i < z_info->f_max; i++) {
+        feature_type *f_ptr = f_info + i;
+        if ((f_ptr->f_flags1 & FF1_DOOR) && (f_ptr->f_flags3 & FF3_DOOR_LOCKED)) {
+            ++n;
+        }
+    }
+    if (n == 0) color_message("There is not locked doors", TERM_RED);
+}

@@ -1730,7 +1730,7 @@ static QString find_one_flag(QString flag_line, int *return_slot, QString entry_
         if (flag_ptr->set < min_flag) continue;
         if (flag_ptr->set > max_flag) continue;
 
-        if (single_flag.contains(flag_ptr->name, Qt::CaseInsensitive))
+        if (single_flag.compare(flag_ptr->name, Qt::CaseInsensitive) == 0)
         {
             *return_slot = i;
             //Found it

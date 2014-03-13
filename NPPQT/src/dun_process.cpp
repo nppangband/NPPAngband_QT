@@ -1747,6 +1747,9 @@ static void change_player_level(void)
 
     /* Reset the object generation level */
     object_level = p_ptr->depth;
+
+    // TODO PLAYTESTING
+    debug_rarities();
 }
 
 

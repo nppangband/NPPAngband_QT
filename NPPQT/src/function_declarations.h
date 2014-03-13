@@ -862,6 +862,7 @@ extern bool set_food(int v);
 
 
 // Utilities.cpp
+extern void debug_rarities();
 extern int letter_to_number (QChar let);
 extern QChar number_to_letter (int num);
 extern bool is_a_vowel(QChar single_letter);
