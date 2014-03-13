@@ -220,32 +220,13 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
+    fire_arc(GF_DISENCHANT, dir, 300, 0, 30);
+}
 
-    QPointF p(p_ptr->px, p_ptr->py);
-    //QPointF p2(p_ptr->px + rand_int(40) - 20, p_ptr->py + rand_int(40) - 20);
-    //QPointF p2(p_ptr->px - 20, p_ptr->py);
-
-    QPointF p2(p_ptr->target_col, p_ptr->target_row);
-    if (dir != 5) {
-        p2 = QPointF(p_ptr->px + ddx[dir] * 20, p_ptr->py + ddy[dir] * 20);
-    }
-
-    /*
-    BallAnimation *ball = new BallAnimation(p2, 2);
-    dungeon_scene->addItem(ball);
-
-    if (p != p2) {
-        BoltAnimation *bolt = new BoltAnimation(p, p2);
-        dungeon_scene->addItem(bolt);
-        bolt->next = ball;
-        bolt->start();
-    }
-    else {
-        ball->start();
-    }
-    */
-    ArcAnimation *arc = new ArcAnimation(p, p2, 30, GF_FIRE);
-    dungeon_scene->addItem(arc);
+void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees)
+{
+    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius);
+    main_window->dungeon_scene->addItem(arc);
     arc->start();
 }
 

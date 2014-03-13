@@ -88,8 +88,9 @@ public:
     QHash<int, bool> valid; // Grids in los and projectable
     int gf_type;
     QColor color;
+    int rad;
 
-    ArcAnimation(QPointF from, QPointF to, int newDegrees, int type);
+    ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad);
     qreal getLength();
     void setLength(qreal newLength);
 

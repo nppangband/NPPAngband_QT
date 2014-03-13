@@ -258,24 +258,17 @@ QPointF mulp(QPointF a, QPointF b)
     return QPointF(a.x() * b.x(), a.y() * b.y());
 }
 
-ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type)
+ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad)
 {
-    QSize cell_size = ui_grid_size();
-    int x1 = MIN(from.x(), to.x());
-    int y1 = MIN(to.y(), from.y());
-    int x2 = MAX(from.x(), to.x());
-    int y2 = MAX(to.y(), from.y());
-
     gf_type = type;
     byte idx = gf_color(gf_type);
     color = defined_colors[idx % MAX_COLORS];
 
-    QPointF pp(cell_size.width(), cell_size.height());
-    QPointF p1(x1, y1);
-    QPointF p2(x2, y2);
+    rad = newRad;
 
-    p1 += QPointF(-10, -10);
-    p2 += QPointF(10, 10);
+    QPointF pp(main_window->cell_wid, main_window->cell_hgt);
+    QPointF p1(from.x() - rad, from.y() - rad);
+    QPointF p2(from.x() + rad, from.y() + rad);
 
     // Collect valid grids
     for (int y = p1.y(); y <= p2.y(); y++) {
@@ -289,17 +282,17 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type)
         }
     }
 
-    brect = QRectF(0, 0, (p2.x() - p1.x() + 1) * cell_size.width(),
-                         (p2.y() - p1.y() + 1) * cell_size.height());
+    brect = QRectF(0, 0, (p2.x() - p1.x() + 1) * main_window->cell_wid,
+                         (p2.y() - p1.y() + 1) * main_window->cell_hgt);
 
     setPos(mulp(p1, pp));
 
     position = mulp(from - p1, pp) + (pp * 0.5);
 
     QPointF h = mulp(to - from, pp);
-    maxLength = magnitude(h);
-    length = previousLength = 0;
     centerAngle = getAngle(h);
+    maxLength = rad * MAX(main_window->cell_wid, main_window->cell_hgt);
+    length = previousLength = 0;
 
     degrees = newDegrees;
 
@@ -376,7 +369,7 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
         qreal opacity = 1;
         opacity = 1 - p->currentLength / maxLength;
-        if (opacity < 0.2) opacity = 0.2;
+        if (opacity < 0.3) opacity = 0.3;
         painter->setOpacity(opacity);
 
         qreal perc = 1;

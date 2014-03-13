@@ -7333,6 +7333,11 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     /* Display the blast area if allowed. (unless a bolt) */
     if (!blind && !(flg & (PROJECT_HIDE)) && ((grids > 1) || (dist == 0)))
     {
+        if (flg & PROJECT_ARC) {
+            ui_animate_arc(y0, x0, y1, x1, typ, rad, degrees);
+        }
+
+#if 0
         /* Do the blast from inside out */
         for (i = 0; i < grids; i++)
         {
@@ -7410,6 +7415,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
         {
             // TODO (void)Term_fresh();
         }
+#endif
     }
 
     /* Update stuff if needed */
