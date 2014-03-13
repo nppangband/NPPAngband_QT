@@ -1010,6 +1010,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         return;
     }
 
+    // Don't move when doing animations
+    if (ev_loop.isRunning()) return;
+
     // Normal mode
     switch (which_key->key())
     {

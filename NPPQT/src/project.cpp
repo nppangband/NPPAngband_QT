@@ -1192,6 +1192,9 @@ void take_terrain_hit(int dam, int feat, QString kb_str)
  */
 void take_hit(int dam, QString kb_str)
 {
+    // TODO - PLAYTESTING!!!
+    return;
+
     int old_chp = p_ptr->chp;
 
     int warning = (p_ptr->mhp * op_ptr->hitpoint_warn / 10);
