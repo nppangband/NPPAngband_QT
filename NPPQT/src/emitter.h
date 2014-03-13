@@ -86,8 +86,10 @@ public:
     qreal centerAngle;
     qreal maxLength;
     QHash<int, bool> valid; // Grids in los and projectable
+    int gf_type;
+    QColor color;
 
-    ArcAnimation(QPointF from, QPointF to, int newDegrees);
+    ArcAnimation(QPointF from, QPointF to, int newDegrees, int type);
     qreal getLength();
     void setLength(qreal newLength);
 

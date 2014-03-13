@@ -629,6 +629,7 @@ extern QPixmap rotate_pix(QPixmap src, qreal angle);
 extern QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size);
 extern QPixmap darken_pix(QPixmap src);
 extern QPixmap colorize_pix(QPixmap src, QColor color);
+extern QPixmap colorize_pix2(QPixmap src, QColor color);
 extern QPixmap gray_pix(QPixmap src);
 extern UserInput ui_get_input();
 extern bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_y, int cur_tar_x);

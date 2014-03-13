@@ -59,12 +59,16 @@ NPPAnimation::NPPAnimation()
 NPPAnimation::~NPPAnimation()
 {
     if (next) next->start();
+    else if (main_window->ev_loop.isRunning()) main_window->ev_loop.quit();
     if (anim) delete anim;
 }
 
 void NPPAnimation::start()
 {
-    if (anim) anim->start();
+    if (anim) {
+        anim->start();
+        if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
+    }
 }
 
 static int BOLT_SIZE = 20;
@@ -254,13 +258,17 @@ QPointF mulp(QPointF a, QPointF b)
     return QPointF(a.x() * b.x(), a.y() * b.y());
 }
 
-ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees)
+ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type)
 {
     QSize cell_size = ui_grid_size();
     int x1 = MIN(from.x(), to.x());
     int y1 = MIN(to.y(), from.y());
     int x2 = MAX(from.x(), to.x());
     int y2 = MAX(to.y(), from.y());
+
+    gf_type = type;
+    byte idx = gf_color(gf_type);
+    color = defined_colors[idx % MAX_COLORS];
 
     QPointF pp(cell_size.width(), cell_size.height());
     QPointF p1(x1, y1);
@@ -298,7 +306,8 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees)
     anim = new QPropertyAnimation(this, "length");
     anim->setStartValue(0);
     anim->setEndValue(maxLength);
-    int duration = 1000;
+    int duration = (maxLength / 600.0) * 1000; // 1 Second every 600 pixels
+    if (duration < 500) duration = 500; // Minimum
     anim->setDuration(duration);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
 
@@ -324,7 +333,6 @@ void ArcAnimation::setLength(qreal newLength)
     previousLength = length;
 
     int n = 10;
-    if (maxLength > 300) n = 20;
 
     for (int i = 0; i < n; i++) {
         BallParticle *p = new BallParticle;
@@ -354,6 +362,9 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     painter->save();
 
+    QPixmap pix = *ball_pix;
+    pix = colorize_pix2(pix, color);
+
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
 
@@ -365,18 +376,17 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
         qreal opacity = 1;
         opacity = 1 - p->currentLength / maxLength;
-        if (opacity < 0.5) opacity = 0.5;
+        if (opacity < 0.2) opacity = 0.2;
         painter->setOpacity(opacity);
 
-        QPixmap pix = *ball_pix;
         qreal perc = 1;
-        if (p->type <= 1) {
-            //perc = 0.5;
-        }
-        pix = pix.scaled(pix.width() * perc, pix.height() * perc);
-        pp -= QPointF(pix.width() / 2, pix.height() / 2);
+        int cl = p->currentLength / 40;   // Enlarge pix
+        perc += (0.1 * cl);               // Just 10% every 40 pixels
+        QPixmap pix2 = pix.scaled(pix.width() * perc, pix.height() * perc);
 
-        painter->drawPixmap(pp, pix);
+        pp -= QPointF(pix2.width() / 2, pix2.height() / 2);
+
+        painter->drawPixmap(pp, pix2);
     }
 
     painter->restore();

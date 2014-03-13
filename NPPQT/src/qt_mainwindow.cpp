@@ -11,7 +11,7 @@
 #include "src/birthdialog.h"
 #include "emitter.h"
 
-static MainWindow *main_window = 0;
+MainWindow *main_window = 0;
 
 QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
 {
@@ -244,7 +244,7 @@ void MainWindow::slot_something()
         ball->start();
     }
     */
-    ArcAnimation *arc = new ArcAnimation(p, p2, 30);
+    ArcAnimation *arc = new ArcAnimation(p, p2, 30, GF_FIRE);
     dungeon_scene->addItem(arc);
     arc->start();
 }
@@ -551,6 +551,17 @@ QPixmap colorize_pix(QPixmap src, QColor color)
     QPainter p(&img);
     p.setCompositionMode(QPainter::CompositionMode_HardLight);
     p.fillRect(img.rect(), color);
+    QPixmap pix = QPixmap::fromImage(img);
+    return pix;
+}
+
+QPixmap colorize_pix2(QPixmap src, QColor color)
+{
+    QImage img(src.width(), src.height(), QImage::Format_ARGB32);
+    QPainter p(&img);
+    p.fillRect(img.rect(), color);
+    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    p.drawPixmap(QPoint(0, 0), src);
     QPixmap pix = QPixmap::fromImage(img);
     return pix;
 }
@@ -1547,7 +1558,7 @@ void ui_toolbar_hide(int toolbar)
 
 void MainWindow::slot_targetting_button()
 {
-    if (!ev_loop.isRunning()) return;
+    if (ui_mode != UI_MODE_INPUT || !ev_loop.isRunning()) return;
 
     QObject *snd = QObject::sender();
     input.text = snd->objectName();
