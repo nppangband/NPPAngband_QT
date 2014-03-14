@@ -1093,7 +1093,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
     if ((attack >= 128) && (rand_int(100) < failrate))
     {
         /* Message */
-        message(QString("%^1 tries to cast a spell, but fails.") .arg(m_name));
+        message(QString("%1 tries to cast a spell, but fails.") .arg(capitalize_first(m_name)));
 
         return (TRUE);
     }
@@ -1113,9 +1113,9 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             sound(MSG_SHRIEK);
             if (r_ptr->flags2 & (RF2_SMART))
-                message(QString("%^1 shouts for help.") .arg(m_name));
+                message(QString("%1 shouts for help.") .arg(capitalize_first(m_name)));
             else
-                message(QString("%^1 makes a high pitched shriek.") .arg(m_name));
+                message(QString("%1 makes a high pitched shriek.") .arg(capitalize_first(m_name)));
             aggravate_monsters(m_idx);
             break;
         }
@@ -1285,15 +1285,15 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 if (blind) message(QString("You hear a soft sound."));
                 else if (do_blind)
                 {
-                    message(QString("%^1 spits%2 straight into your eyes.") .arg(m_name) .arg(desc));
+                    message(QString("%1 spits%2 straight into your eyes.") .arg(capitalize_first(m_name)) .arg(desc));
                 }
-                else message(QString("%^1 spits%2 at you.") .arg(m_name) .arg(desc));
+                else message(QString("%1 spits%2 at you.") .arg(capitalize_first(m_name)) .arg(desc));
             }
             /* All other creatures use a whip. */
             else
             {
                 if (blind) message(QString("You hear a crack."));
-                else message(QString("%^1 lashes at you with a whip%2%3.") .arg(m_name) .arg(add_of) .arg(desc));
+                else message(QString("%1 lashes at you with a whip%2%3.") .arg(capitalize_first(m_name)) .arg(add_of) .arg(desc));
             }
 
             /* Crack the whip, or spit - range 3 */
@@ -1315,8 +1315,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             if (blind) message(QString("You hear something grunt with exertion."));
-            else if (spower < 8) message(QString("%^1 hurls a rock at you.") .arg(m_name));
-            else message(QString("%^1 hurls a boulder at you.") .arg(m_name));
+            else if (spower < 8) message(QString("%1 hurls a rock at you.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 hurls a boulder at you.") .arg(capitalize_first(m_name)));
             mon_bolt(m_idx, GF_ARROW, get_dam(r_ptr, attack), PROJECT_ROCK);
             break;
         }
@@ -1326,9 +1326,9 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             if (blind) message(QString("You hear something whirl towards you."));
-            else if (spower < 4) message(QString("%^1 slings a pebble at you.") .arg(m_name));
-            else if (spower < 10) message(QString("%^1 slings a leaden pellet at you.") .arg(m_name));
-            else message(QString("%^1 slings a seeker shot at you.") .arg(m_name));
+            else if (spower < 4) message(QString("%1 slings a pebble at you.") .arg(capitalize_first(m_name)));
+            else if (spower < 10) message(QString("%1 slings a leaden pellet at you.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 slings a seeker shot at you.") .arg(capitalize_first(m_name)));
 
             mon_bolt(m_idx, GF_ARROW, get_dam(r_ptr, attack), PROJECT_SHOT);
             break;
@@ -1341,17 +1341,17 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             if (spower < 4)
             {
                 if (blind) message(QString("You hear a soft twang."));
-                else message(QString("%^1 fires a small arrow.") .arg(m_name));
+                else message(QString("%1 fires a small arrow.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 10)
             {
                 if (blind) message(QString("You hear a twang."));
-                else message(QString("%^1 fires an arrow.") .arg(m_name));
+                else message(QString("%1 fires an arrow.") .arg(capitalize_first(m_name)));
             }
             else
             {
                 if (blind) message(QString("You hear a loud thwang."));
-                else message(QString("%^1 fires a seeker arrow.") .arg(m_name));
+                else message(QString("%1 fires a seeker arrow.") .arg(capitalize_first(m_name)));
             }
 
             mon_bolt(m_idx, GF_ARROW, get_dam(r_ptr, attack), PROJECT_AMMO);
@@ -1365,17 +1365,17 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             if (spower < 4)
             {
                 if (blind) message(QString("You hear a soft twung."));
-                else message(QString("%^1 fires a little bolt.") .arg(m_name));
+                else message(QString("%1 fires a little bolt.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 10)
             {
                 if (blind) message(QString("You hear a twung."));
-                else message(QString("%^1 fires a crossbow bolt.") .arg(m_name));
+                else message(QString("%1 fires a crossbow bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
                 if (blind) message(QString("You hear a loud thwung."));
-                else message(QString("%^1 fires a seeker bolt.") .arg(m_name));
+                else message(QString("%1 fires a seeker bolt.") .arg(capitalize_first(m_name)));
             }
 
             mon_bolt(m_idx, GF_ARROW, get_dam(r_ptr, attack), PROJECT_AMMO);
@@ -1389,17 +1389,17 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             if (spower < 4)
             {
                 if (blind) message(QString("You hear something small coming at you."));
-                else message(QString("%^1 fires a little missile.") .arg(m_name));
+                else message(QString("%1 fires a little missile.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 10)
             {
                 if (blind) message(QString("You hear something coming at you.."));
-                else message(QString("%^1 fires a missile.") .arg(m_name));
+                else message(QString("%1 fires a missile.") .arg(capitalize_first(m_name)));
             }
             else
             {
                 if (blind) message(QString("You hear something powerful coming at you.."));
-                else message(QString("%^1 fires a heavy missile.") .arg(m_name));
+                else message(QString("%1 fires a heavy missile.") .arg(capitalize_first(m_name)));
             }
 
             mon_bolt(m_idx, GF_MISSILE, get_dam(r_ptr, attack), PROJECT_AMMO);
@@ -1412,7 +1412,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
 
             if (blind) message(QString("You hear a soft 'fftt' sound."));
-            else message(QString("%^1 whips a poisoned dart at you.") .arg(m_name));
+            else message(QString("%1 whips a poisoned dart at you.") .arg(capitalize_first(m_name)));
             mon_bolt_no_effect(m_idx, GF_POIS, get_dam(r_ptr, attack));
             break;
         }
@@ -1422,8 +1422,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_ACID);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes acid.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes acid.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1446,8 +1446,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_ELEC);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes lightning.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes lightning.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1466,8 +1466,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_FIRE);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes fire.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes fire.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1486,8 +1486,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_FROST);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes frost.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes frost.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1506,8 +1506,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_GAS);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes gas.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes gas.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1526,8 +1526,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_PLASMA);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes plasma.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes plasma.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1546,8 +1546,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_LIGHT);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes light.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes light.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1566,8 +1566,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_DARK);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            message(QString("%^1 breathes darkness.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            message(QString("%1 breathes darkness.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1586,8 +1586,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_CONF);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes confusion.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes confusion.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1606,8 +1606,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_SOUND);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes sound.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes sound.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1626,8 +1626,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_SHARDS);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes shards.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes shards.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1646,8 +1646,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_INERTIA);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes inertia.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes inertia.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1666,8 +1666,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_GRAVITY);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes gravity.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes gravity.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1692,8 +1692,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_FORCE);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes force.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes force.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1712,8 +1712,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_NEXUS);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes nexus.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes nexus.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1731,8 +1731,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_NETHER);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes nether.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes nether.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1751,8 +1751,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_CHAOS);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes chaos.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes chaos.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1771,8 +1771,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_DISENCHANT);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes disenchantment.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes disenchantment.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1791,8 +1791,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_BR_TIME);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes time.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes time.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1810,8 +1810,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 96+28:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 breathes.") .arg(m_name));
-            else message(QString("%^1 breathes raw mana.") .arg(m_name));
+            if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 breathes raw mana.") .arg(capitalize_first(m_name)));
 
             /* Handle Moria breath spells the old fashioned way */
             if (game_mode == GAME_NPPMORIA)
@@ -1855,31 +1855,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of acid.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of acid.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of acid.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of acid.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a small acid ball.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a small acid ball.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts an acid ball.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts an acid ball.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a storm of acid.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a storm of acid.") .arg(capitalize_first(m_name)));
                 if (spower < 80) rad = 3;
                 else rad = 4;
             }
@@ -1899,43 +1899,43 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of electricity.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of electricity.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of electricity.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of electricity.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a small ball of electricity.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a small ball of electricity.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a ball of electricity.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a ball of electricity.") .arg(capitalize_first(m_name)));
             }
 
             /* Electricity is the most variable of all attacks at high level. */
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
 
                 if (rand_int(3) != 0)
                 {
-                message(QString("%^1 invokes a storm of electricity.") .arg(m_name));
+                message(QString("%1 invokes a storm of electricity.") .arg(capitalize_first(m_name)));
                     if (spower < 80) rad = 3;
                     else rad = 4;
                     spower = 3 * spower / 4;
                 }
                 else
                 {
-                    message(QString("%^1 calls a massive stroke of lightning down upon you!") .arg(m_name));
+                    message(QString("%1 calls a massive stroke of lightning down upon you!") .arg(capitalize_first(m_name)));
                     rad = 0;
                     spower = 3 * spower / 2;
                 }
@@ -1956,37 +1956,37 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of flames.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of flames.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of flames.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of flames.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a ball of fire.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a ball of fire.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a ball of fire.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a ball of fire.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 80)
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a firestorm.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a firestorm.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             else
             {
-                if (blind) message(QString("%^1 intones in rising wrath.") .arg(m_name));
-                else message(QString("%^1 conjures up a maelstrom of fire!") .arg(m_name));
+                if (blind) message(QString("%1 intones in rising wrath.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 conjures up a maelstrom of fire!") .arg(capitalize_first(m_name)));
                 rad = 4;
             }
             mon_ball(m_idx, GF_FIRE, get_ball_beam_dam(m_idx, r_ptr, attack, GF_FIRE, powerful), rad, py, px);
@@ -2005,31 +2005,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of frost.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of frost.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of frost.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of frost.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a small frost ball.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a small frost ball.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a frost ball.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a frost ball.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a storm of frost.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a storm of frost.") .arg(capitalize_first(m_name)));
                 if (spower < 80) rad = 3;
                 else rad = 4;
             }
@@ -2049,31 +2049,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of poison.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of poison.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of poison.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of poison.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a stinking cloud.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a stinking cloud.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a venomous cloud.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a venomous cloud.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a storm of poison.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a storm of poison.") .arg(capitalize_first(m_name)));
                 if (spower < 80) rad = 4;
                 else rad = 5;
             }
@@ -2093,31 +2093,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of light.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of light.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes a brilliant ball of light.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes a brilliant ball of light.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a sphere of light.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a sphere of light.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 invokes an explosion of light.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes an explosion of light.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a powerful explosion of light.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a powerful explosion of light.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_LIGHT, get_ball_beam_dam(m_idx, r_ptr, attack, GF_LIGHT, powerful), rad, py, px);
@@ -2136,31 +2136,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of darkness.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of darkness.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of darkness.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of darkness.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 20)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a ball of darkness.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a ball of darkness.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 70)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a storm of darkness.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a storm of darkness.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a powerful darkness storm.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a powerful darkness storm.") .arg(capitalize_first(m_name)));
                 if (spower < 110) rad = 3;
                 else rad = 4;
             }
@@ -2180,31 +2180,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of confusion.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of confusion.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an massive ball of confusion.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an massive ball of confusion.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a ball of confusion.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a ball of confusion.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a storm of confusion.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a storm of confusion.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a powerful storm of confusion.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a powerful storm of confusion.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_CONFUSION, get_ball_beam_dam(m_idx, r_ptr, attack, GF_CONFUSION, powerful), rad, py, px);
@@ -2223,31 +2223,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of noise.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of noise.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an ear-splitting ball of noise.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an ear-splitting ball of noise.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 calls up a blast of sound.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 calls up a blast of sound.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 invokes a thunderclap.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a thunderclap.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 unleashes a cacophony of sound.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 unleashes a cacophony of sound.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_SOUND, get_ball_beam_dam(m_idx, r_ptr, attack, GF_SOUND, powerful), rad, py, px);
@@ -2266,31 +2266,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of shards.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of shards.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of shards.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of shards.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 calls up up a blast of shards.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 calls up up a blast of shards.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 50)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 calls up a whirlwind of shards.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 calls up a whirlwind of shards.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a storm of shards!") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a storm of shards!") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_SHARD, get_ball_beam_dam(m_idx, r_ptr, attack, GF_SHARD, powerful), rad, py, px);
@@ -2303,20 +2303,20 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 produces a meteor shower.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 produces a meteor shower.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 produces a meteor storm.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 produces a meteor storm.") .arg(capitalize_first(m_name)));
                 rad = 2;
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs strongly.") .arg(m_name));
-                else message(QString("%^1 produces a violent meteor storm.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs strongly.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 produces a violent meteor storm.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_METEOR, get_ball_beam_dam(m_idx, r_ptr, attack, GF_METEOR, powerful), rad, py, px);
@@ -2330,22 +2330,22 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
 
             if (spower < 22)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 gestures fluidly.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 gestures fluidly.") .arg(capitalize_first(m_name)));
                 message(QString("You are surrounded by a little storm."));
                 rad = 2;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 gestures fluidly.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 gestures fluidly.") .arg(capitalize_first(m_name)));
                 message(QString("You are engulfed in a whirlpool."));
                 rad = 3;
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 gestures fluidly.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 gestures fluidly.") .arg(capitalize_first(m_name)));
                 message(QString("You are lost in a raging tempest of wind and water!"));
                 rad = 5;
             }
@@ -2365,31 +2365,31 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a nether ball.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a nether ball.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous nether ball.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous nether ball.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 22)
             {
-                if (blind) message(QString("%^1 whispers nastily.") .arg(m_name));
-                else message(QString("%^1 casts an orb of nether.") .arg(m_name));
+                if (blind) message(QString("%1 whispers nastily.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts an orb of nether.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs a deadly word.") .arg(m_name));
-                else message(QString("%^1 casts a nether ball.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs a deadly word.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a nether ball.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 intones with deadly menace.") .arg(m_name));
-                else message(QString("%^1 calls up a storm of nether magics.") .arg(m_name));
+                if (blind) message(QString("%1 intones with deadly menace.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 calls up a storm of nether magics.") .arg(capitalize_first(m_name)));
             rad = 3;
             }
             mon_ball(m_idx, GF_NETHER, get_ball_beam_dam(m_idx, r_ptr, attack, GF_NETHER, powerful), rad, py, px);
@@ -2408,32 +2408,32 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (spower < 40)
                 {
-                    if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                    else message(QString("%^1 breathes a ball of chaos.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                    else message(QString("%1 breathes a ball of chaos.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    if (blind) message(QString("%^1 breathes forcefully.") .arg(m_name));
-                    message(QString("%^1 breathes an enormous ball of chaos.") .arg(m_name));
+                    if (blind) message(QString("%1 breathes forcefully.") .arg(capitalize_first(m_name)));
+                    message(QString("%1 breathes an enormous ball of chaos.") .arg(capitalize_first(m_name)));
                     rad = 3;
                 }
             }
             else if (spower < 13)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a sphere of chaos.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a sphere of chaos.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts an exlosion of raw chaos.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts an exlosion of raw chaos.") .arg(capitalize_first(m_name)));
                 rad = 2;
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a storm of chaos.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a storm of chaos.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_CHAOS, get_ball_beam_dam(m_idx, r_ptr, attack, GF_CHAOS, powerful), rad, py, px);
@@ -2446,20 +2446,20 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 25)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a mana burst.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a mana burst.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 50)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a mana ball.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a mana ball.") .arg(capitalize_first(m_name)));
                 rad = 2;
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a storm of mana.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a storm of mana.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_MANA, get_ball_beam_dam(m_idx, r_ptr, attack, GF_MANA, powerful), rad, py, px);
@@ -2473,20 +2473,20 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 15)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a small water ball.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a small water ball.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 40)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a water ball.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a water ball.") .arg(capitalize_first(m_name)));
                 rad = 2;
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 invokes a storm of water.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 invokes a storm of water.") .arg(capitalize_first(m_name)));
                 if (spower < 120) rad = 3;
                 else rad = 4;
             }
@@ -2500,13 +2500,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts an acid bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts an acid bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a bolt of acid.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a bolt of acid.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_ACID, get_dam(r_ptr, attack), 0L);
             break;
@@ -2518,13 +2518,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a bolt of electricity.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a bolt of electricity.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a bolt of lightning.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a bolt of lightning.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_ELEC, get_dam(r_ptr, attack), 0L);
             break;
@@ -2536,13 +2536,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a fire bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a fire bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 throws a fiery sphere at you.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 throws a fiery sphere at you.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_FIRE, get_dam(r_ptr, attack), 0L);
             break;
@@ -2554,13 +2554,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a frost bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a frost bolt.") .arg(capitalize_first(m_name)));
             }
             else
         {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a frost bolt.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a frost bolt.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_COLD, get_dam(r_ptr, attack), 0L);
             break;
@@ -2572,13 +2572,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a poison bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a poison bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a bolt of venom.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a bolt of venom.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_POIS, get_dam(r_ptr, attack), 0L);
             break;
@@ -2590,13 +2590,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a plasma bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a plasma bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a bolt of plasma.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a bolt of plasma.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_PLASMA, get_dam(r_ptr, attack), 0L);
             break;
@@ -2608,13 +2608,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts an ice bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts an ice bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a bolt of ice.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a bolt of ice.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_ICE, get_dam(r_ptr, attack), 0L);
             break;
@@ -2626,13 +2626,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 50)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a water bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a water bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a water bolt.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a water bolt.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_WATER, get_dam(r_ptr, attack), 0L);
             break;
@@ -2644,13 +2644,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 40)
             {
-                if (blind) message(QString("%^1 whispers nastily.") .arg(m_name));
-                else message(QString("%^1 casts a nether bolt.") .arg(m_name));
+                if (blind) message(QString("%1 whispers nastily.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a nether bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs a deadly word.") .arg(m_name));
-                else message(QString("%^1 hurls a black bolt of nether at you.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs a deadly word.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 hurls a black bolt of nether at you.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_NETHER, get_dam(r_ptr, attack), 0L);
             break;
@@ -2662,13 +2662,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if ((spower < 5) || (spower <= rlev / 10))
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts a magic missile.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a magic missile.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a mana bolt.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a mana bolt.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_MANA, get_dam(r_ptr, attack), 0L);
             break;
@@ -2680,13 +2680,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if ((spower < 5) || (spower <= rlev / 10))
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 fires a gravity bolt.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 fires a gravity bolt.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a powerful bolt of gravity.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a powerful bolt of gravity.") .arg(capitalize_first(m_name)));
             }
             mon_bolt(m_idx, GF_GRAVITY, get_dam(r_ptr, attack), 0L);
             break;
@@ -2701,9 +2701,9 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             /* Special handling for breathers as opposed to casters */
             else if (r_ptr->flags4 & (RF4_BRTH_ELEC))
             {
-                message(QString("%^1 breathes a lightning bolt.") .arg(m_name));
+                message(QString("%1 breathes a lightning bolt.") .arg(capitalize_first(m_name)));
             }
-            else message(QString("%^1 shoots a spark of lightning at you.") .arg(m_name));
+            else message(QString("%1 shoots a spark of lightning at you.") .arg(capitalize_first(m_name)));
 
             mon_beam(m_idx, GF_ELEC, get_ball_beam_dam(-1, r_ptr, attack, GF_ELEC, powerful), 10);
             break;
@@ -2715,13 +2715,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (r_ptr->flags4 & (RF4_BRTH_COLD))
             {
-                if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                else message(QString("%^1 breathes an icy spear") .arg(m_name));
+                if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 breathes an icy spear") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts an icy lance.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts an icy lance.") .arg(capitalize_first(m_name)));
             }
             mon_beam(m_idx, GF_ICE, get_ball_beam_dam(-1, r_ptr, attack, GF_ICE, powerful), 12);
             break;
@@ -2733,23 +2733,23 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (r_ptr->flags4 & (RF4_BRTH_NETHR))
             {
-                if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                else message(QString("%^1 breathes a beam of nether") .arg(m_name));
+                if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 breathes a beam of nether") .arg(capitalize_first(m_name)));
             }
             else if (spower < 25)
             {
-                if (blind) message(QString("%^1 whispers nastily.") .arg(m_name));
-                else message(QString("%^1 casts a beam of nether.") .arg(m_name));
+                if (blind) message(QString("%1 whispers nastily.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a beam of nether.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 50)
             {
-                if (blind) message(QString("%^1 murmurs a deadly word.") .arg(m_name));
-                else message(QString("%^1 hurls a nether lance.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs a deadly word.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 hurls a nether lance.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 intones with deadly menace.") .arg(m_name));
-                else message(QString("%^1 unleashes a ray of death.") .arg(m_name));
+                if (blind) message(QString("%1 intones with deadly menace.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 unleashes a ray of death.") .arg(capitalize_first(m_name)));
             }
             mon_beam(m_idx, GF_NETHER, get_ball_beam_dam(-1, r_ptr, attack, GF_NETHER, powerful), 10);
             break;
@@ -2762,23 +2762,23 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             /* SLightly different message for breathers */
             if (r_ptr->flags4 & (RF4_BRTH_ALL))
             {
-                if (blind) message(QString("%^1 breathes.") .arg(m_name));
-                else message(QString("%^1 breathes a stream of fiery lava.") .arg(m_name));
+                if (blind) message(QString("%1 breathes.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 breathes a stream of fiery lava.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 25)
             {
-                if (blind) message(QString("%^1 begins murmuring.") .arg(m_name));
-                else message(QString("%^1 shoots a beam of molten magma.") .arg(m_name));
+                if (blind) message(QString("%1 begins murmuring.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 shoots a beam of molten magma.") .arg(capitalize_first(m_name)));
             }
             else if (spower < 50)
             {
-                if (blind) message(QString("%^1 mubles something.") .arg(m_name));
-                else message(QString("%^1 shoots a jet of lava.") .arg(m_name));
+                if (blind) message(QString("%1 mubles something.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 shoots a jet of lava.") .arg(capitalize_first(m_name)));
             }
             else
             {
-                if (blind) message(QString("%^1 mubles something.") .arg(m_name));
-                else message(QString("%^1 shoots a searing jet of lava.") .arg(m_name));
+                if (blind) message(QString("%1 mubles something.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 shoots a searing jet of lava.") .arg(capitalize_first(m_name)));
             }
             mon_beam(m_idx, GF_LAVA, get_ball_beam_dam(-1, r_ptr, attack, GF_LAVA, powerful), 10);
             break;
@@ -2790,20 +2790,20 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             disturb(1, 0);
             if (spower < 40)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 casts an orb of draining.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts an orb of draining.") .arg(capitalize_first(m_name)));
                 rad = 1;
             }
             else if (spower < 90)
             {
-                if (blind) message(QString("%^1 murmurs deeply.") .arg(m_name));
-                else message(QString("%^1 casts a powerful orb of draining.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a powerful orb of draining.") .arg(capitalize_first(m_name)));
                 rad = 2;
             }
             else
             {
-                if (blind) message(QString("%^1 chants powerfully.") .arg(m_name));
-                else message(QString("%^1 casts a large orb of holy might.") .arg(m_name));
+                if (blind) message(QString("%1 chants powerfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 casts a large orb of holy might.") .arg(capitalize_first(m_name)));
                 rad = 3;
             }
             mon_ball(m_idx, GF_HOLY_ORB, get_ball_beam_dam(-1, r_ptr, attack, GF_HOLY_ORB, powerful), rad, py, px);
@@ -2821,11 +2821,11 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
 
                 if (!seen)
                 {
-                    message(QString("%^1 mumbles.") .arg(m_name));
+                    message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    message(QString("%^1 concentrates on %2 body.") .arg(m_name) .arg(m_poss));
+                    message(QString("%1 concentrates on %2 body.") .arg(capitalize_first(m_name)) .arg(m_poss));
                 }
             }
 
@@ -2844,11 +2844,11 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
 
                 if (!seen)
                 {
-                    message(QString("%^1 mumbles.") .arg(m_name));
+                    message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    message(QString("%^1 gathers %2 power.") .arg(m_name) .arg(m_poss));
+                    message(QString("%1 gathers %2 power.") .arg(capitalize_first(m_name)) .arg(m_poss));
                 }
             }
 
@@ -2871,11 +2871,11 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 /* Message */
                 if (!seen)
                 {
-                    message(QString("%^1 mumbles.") .arg(m_name));
+                    message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    message(QString("%^1 concentrates on %2 wounds.") .arg(m_name) .arg(m_poss));
+                    message(QString("%1 concentrates on %2 wounds.") .arg(capitalize_first(m_name)) .arg(m_poss));
                 }
             }
 
@@ -2903,8 +2903,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 /* Message */
                 if (in_range)
                 {
-                    if (seen) message(QString("%^1 looks very healthy!") .arg(m_name));
-                    else      message(QString("%^1 sounds very healthy!") .arg(m_name));
+                    if (seen) message(QString("%1 looks very healthy!") .arg(capitalize_first(m_name)));
+                    else      message(QString("%1 sounds very healthy!") .arg(capitalize_first(m_name)));
                 }
             }
 
@@ -2914,8 +2914,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 /* Message */
                 if (in_range)
                 {
-                    if (seen) message(QString("%^1 looks healthier.") .arg(m_name));
-                    else      message(QString("%^1 sounds healthier.") .arg(m_name));
+                    if (seen) message(QString("%1 looks healthier.") .arg(capitalize_first(m_name)));
+                    else      message(QString("%1 sounds healthier.") .arg(capitalize_first(m_name)));
                 }
             }
 
@@ -2941,7 +2941,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         /* RF6_CURE */
         case 160+3:
         {
-            if (seen) message(QString("%^1 concentrates on %2 ailments.") .arg(m_name) .arg(m_poss));
+            if (seen) message(QString("%1 concentrates on %2 ailments.") .arg(capitalize_first(m_name)) .arg(m_poss));
 
             /* Cancel stunning */
             if (m_ptr->m_timed[MON_TMD_STUN])
@@ -2985,7 +2985,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                  */
                 if (!seen && m_ptr->ml)
                 {
-                    message(QString("%^1 blinks into view.") .arg(ddesc));
+                    message(QString("%1 blinks into view.") .arg(capitalize_first(ddesc)));
                     disturb(1, 0);
                     seen = TRUE;
                 }
@@ -2993,7 +2993,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 /* Normal message */
                 else
                 {
-                    if (seen) message(QString("%^1 blinks away.") .arg(m_name));
+                    if (seen) message(QString("%1 blinks away.") .arg(capitalize_first(m_name)));
                 }
             }
             break;
@@ -3008,7 +3008,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 if (seen)
                 {
                     disturb(1, 0);
-                    message(QString("%^1 teleports away.") .arg(m_name));
+                    message(QString("%1 teleports away.") .arg(capitalize_first(m_name)));
                 }
 
                 /*
@@ -3017,7 +3017,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                  */
                 else if (m_ptr->ml)
                 {
-                    message(QString("%^1 teleports.") .arg(ddesc));
+                    message(QString("%1 teleports.") .arg(capitalize_first(ddesc)));
                     disturb(1, 0);
                     seen = TRUE;
                 }
@@ -3050,14 +3050,14 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 disturb(1, 0);
                 /* Message */
-                message(QString("%^1 suddenly appears.") .arg(ddesc));
+                message(QString("%1 suddenly appears.") .arg(capitalize_first(ddesc)));
             }
 
             /* Monster was visible before, but isn't now. */
             else if ((seen) && (!m_ptr->ml))
             {
                 /* Message */
-                message(QString("%^1 blinks away.") .arg(m_name));
+                message(QString("%1 blinks away.") .arg(capitalize_first(m_name)));
             }
 
             /* Monster is visible both before and after. */
@@ -3065,11 +3065,11 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             {
                 if (distance(m_ptr->fy, m_ptr->fx, p_ptr->py, p_ptr->px) < (old_cdis - 1))
                 {
-                    message(QString("%^1 blinks toward you.") .arg(m_name));
+                    message(QString("%1 blinks toward you.") .arg(capitalize_first(m_name)));
                 }
                 else
                 {
-                    message(QString("%^1 blinks.") .arg(m_name));
+                    message(QString("%1 blinks.") .arg(capitalize_first(m_name)));
                 }
             }
 
@@ -3083,7 +3083,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+8:
         {
             disturb(1, 0);
-            message(QString("%^1 commands you to return.") .arg(m_name));
+            message(QString("%1 commands you to return.") .arg(capitalize_first(m_name)));
             teleport_player_to(m_ptr->fy, m_ptr->fx);
 
             /* Use up a little bit more energy than a standard move */
@@ -3095,7 +3095,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+9:
         {
             disturb(1, 0);
-            message(QString("%^1 teleports you away.") .arg(m_name));
+            message(QString("%1 teleports you away.") .arg(capitalize_first(m_name)));
             teleport_player(100, FALSE);
             break;
         }
@@ -3104,8 +3104,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+10:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 mumbles strangely.") .arg(m_name));
-            else message(QString("%^1 gestures at your feet.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles strangely.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 gestures at your feet.") .arg(capitalize_first(m_name)));
 
             if (p_ptr->state.resist_nexus)
             {
@@ -3132,8 +3132,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+12:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 gestures in shadow.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 gestures in shadow.") .arg(capitalize_first(m_name)));
             (void)unlight_area(0, 3);
             break;
         }
@@ -3143,8 +3143,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_CREATE_TRAP);
-            if (blind) message(QString("%^1 mumbles, and then cackles evilly.") .arg(m_name));
-            else message(QString("%^1 casts a spell and cackles evilly.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles, and then cackles evilly.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 casts a spell and cackles evilly.") .arg(capitalize_first(m_name)));
             (void)trap_creation(SOURCE_OTHER);
             break;
         }
@@ -3166,7 +3166,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 disturb(1, 0);
 
                 /* Basic message */
-                message(QString("%^1 draws psychic energy from you!") .arg(m_name));
+                message(QString("%1 draws psychic energy from you!") .arg(capitalize_first(m_name)));
 
                 /* Attack power */
                 r1 = (randint(spower) / 20) + 1;
@@ -3220,7 +3220,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                     /* Special message */
                     if (seen)
                     {
-                        message(QString("%^1 appears healthier.") .arg(m_name));
+                        message(QString("%1 appears healthier.") .arg(capitalize_first(m_name)));
                     }
                 }
             }
@@ -3249,7 +3249,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             }
             else
             {
-                message(QString("%^1 gazes deep into your eyes.") .arg(m_name));
+                message(QString("%1 gazes deep into your eyes.") .arg(capitalize_first(m_name)));
             }
 
             if (rand_int(100) < p_ptr->state.skills[SKILL_SAVE])
@@ -3280,7 +3280,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             }
             else
             {
-                message(QString("%^1 looks deep into your eyes.") .arg(m_name));
+                message(QString("%1 looks deep into your eyes.") .arg(capitalize_first(m_name)));
             }
             if (rand_int(100) < p_ptr->state.skills[SKILL_SAVE])
             {
@@ -3314,32 +3314,32 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
 
             if (spower < 4)
             {
-                if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 points at you and curses.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 points at you and curses.") .arg(capitalize_first(m_name)));
                 k = 1;
             }
             else if (spower < 10)
             {
-                if (blind) message(QString("%^1 mumbles deeply.") .arg(m_name));
-                else message(QString("%^1 points at you and curses horribly.") .arg(m_name));
+                if (blind) message(QString("%1 mumbles deeply.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 points at you and curses horribly.") .arg(capitalize_first(m_name)));
                 k = 2;
             }
             else if (spower < 20)
             {
-                if (blind) message(QString("%^1 murmurs loudly.") .arg(m_name));
-                else message(QString("%^1 points at you, incanting terribly.") .arg(m_name));
+                if (blind) message(QString("%1 murmurs loudly.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 points at you, incanting terribly.") .arg(capitalize_first(m_name)));
                 k = 3;
             }
             else if (spower < 35)
             {
-                if (blind) message(QString("%^1 cries out wrathfully.") .arg(m_name));
-                else message(QString("%^1 points at you, screaming words of peril!") .arg(m_name));
+                if (blind) message(QString("%1 cries out wrathfully.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 points at you, screaming words of peril!") .arg(capitalize_first(m_name)));
                 k = 4;
             }
             else
             {
-                if (blind) message(QString("%^1 screams the word 'DIE!'") .arg(m_name));
-                else message(QString("%^1 points at you, screaming the word DIE!") .arg(m_name));
+                if (blind) message(QString("%1 screams the word 'DIE!'") .arg(capitalize_first(m_name)));
+                else message(QString("%1 points at you, screaming the word DIE!") .arg(capitalize_first(m_name)));
                 k = 5;
             }
 
@@ -3393,7 +3393,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+25:
         {
             if (blind) message(QString("You are commanded to feel hungry."));
-            else message(QString("%^1 gestures at you, and commands that you feel hungry.") .arg(m_name));
+            else message(QString("%1 gestures at you, and commands that you feel hungry.") .arg(capitalize_first(m_name)));
 
             if (rand_int(rlev / 2 + 70) > p_ptr->state.skills[SKILL_SAVE])
             {
@@ -3418,8 +3418,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_CAST_FEAR);
-            if (blind) message(QString("%^1 mumbles, and you hear scary noises.") .arg(m_name));
-            else message(QString("%^1 casts a fearful illusion.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles, and you hear scary noises.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 casts a fearful illusion.") .arg(capitalize_first(m_name)));
             if (p_ptr->state.resist_fear)
             {
                 message(QString("You refuse to be frightened."));
@@ -3440,12 +3440,12 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+28:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
 
             /* Must not already be blind */
             else if (!p_ptr->timed[TMD_BLIND])
             {
-                message(QString("%^1 casts a spell, burning your eyes!") .arg(m_name));
+                message(QString("%1 casts a spell, burning your eyes!") .arg(capitalize_first(m_name)));
                 if (p_ptr->state.resist_blind)
                 {
                     message(QString("You are unaffected!"));
@@ -3468,8 +3468,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+29:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 mumbles, and you hear puzzling noises.") .arg(m_name));
-            else message(QString("%^1 creates a mesmerising illusion.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles, and you hear puzzling noises.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 creates a mesmerising illusion.") .arg(capitalize_first(m_name)));
             if (!allow_player_confusion())
             {
                 message(QString("You disbelieve the feeble spell."));
@@ -3490,7 +3490,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+30:
         {
             disturb(1, 0);
-            message(QString("%^1 drains power from your muscles!") .arg(m_name));
+            message(QString("%1 drains power from your muscles!") .arg(capitalize_first(m_name)));
             if (p_ptr->state.free_act)
             {
                 message(QString("You are unaffected!"));
@@ -3511,8 +3511,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 160+31:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-                else message(QString("%^1 stares deep into your eyes!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 stares deep into your eyes!") .arg(capitalize_first(m_name)));
             if (p_ptr->state.free_act)
             {
                 if (!p_ptr->timed[TMD_PARALYZED]) message(QString("You are unaffected!"));
@@ -3534,8 +3534,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 192 + 0:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons %2 %3.") .arg(m_name) .arg(m_poss)
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons %2 %3.") .arg(capitalize_first(m_name)) .arg(m_poss)
                          .arg((r_ptr->flags1 & (RF1_UNIQUE)) ? "minions" : "kin"));
 
             /* Hack -- Set the letter of the monsters to summon */
@@ -3566,8 +3566,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_MONSTER);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons help!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons help!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 1; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx, summon_lev, 0, 0L);
@@ -3585,8 +3585,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_MONSTER);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons monsters!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons monsters!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx, summon_lev, 0, 0L);
@@ -3607,8 +3607,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 192 + 8:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons ants.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons ants.") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3626,8 +3626,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_SPIDER);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons spiders.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons spiders.") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3645,8 +3645,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_HOUND);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons hounds.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons hounds.") .arg(capitalize_first(m_name)));
             for (k = 0; k < 2; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3664,8 +3664,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_ANIMAL);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons natural creatures.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons natural creatures.") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3683,8 +3683,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_HYDRA);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons hydras.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons hydras.") .arg(capitalize_first(m_name)));
             for (k = 0; k < 3; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx, rlev, SUMMON_HYDRA, 0L);
@@ -3706,8 +3706,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         case 192 + 14:
         {
             disturb(1, 0);
-            if (blind) message(QString("%^1 whistles.") .arg(m_name));
-            else message(QString("%^1 whistles up a den of thieves!") .arg(m_name));
+            if (blind) message(QString("%1 whistles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 whistles up a den of thieves!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3738,7 +3738,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             if (count)
             {
                 if (blind) message(QString("Heavy footsteps approach!"));
-                else       message(QString("%^1 calls up his friends!") .arg(m_name));
+                else       message(QString("%1 calls up his friends!") .arg(capitalize_first(m_name)));
             }
             break;
         }
@@ -3751,8 +3751,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_AINU);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons a maia!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons a maia!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 1; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx, summon_lev, SUMMON_AINU, 0L);
@@ -3772,8 +3772,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_DRAGON);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons a dragon!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons a dragon!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 1; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3791,8 +3791,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_HI_DRAGON);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons ancient dragons!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons ancient dragons!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3817,9 +3817,9 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_DEMON);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
             {
-                if (!(blind)) message(QString("%^1 magically summons a hellish adversary!") .arg(m_name));
+                if (!(blind)) message(QString("%1 magically summons a hellish adversary!") .arg(capitalize_first(m_name)));
                 for (k = 0; k < 1; k++)
                 {
                     count += summon_specific(m_ptr->fy, m_ptr->fx, summon_lev, SUMMON_DEMON, 0L);
@@ -3837,8 +3837,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_HI_DEMON);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons greater demons!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons greater demons!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx, summon_lev, SUMMON_HI_DEMON, 0L);
@@ -3862,7 +3862,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_UNIQUE);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
 
             for (k = 0; k < 3
             ; k++)
@@ -3873,7 +3873,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             if (count)
             {
                 if (blind) message(QString("You've got a bad feeling about this..."));
-                else       message(QString("%^1 magically summons mighty opponents!") .arg(m_name));
+                else       message(QString("%1 magically summons mighty opponents!") .arg(capitalize_first(m_name)));
             }
             else
             {
@@ -3881,7 +3881,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 dungeon_summon_mask_f7 |= (RF7_S_UNIQUE);
 
                 if (!blind)
-                    message(QString("%^1 gestures imperiously ... and looks puzzled for a moment.") .arg(m_name));
+                    message(QString("%1 gestures imperiously ... and looks puzzled for a moment.") .arg(capitalize_first(m_name)));
             }
             break;
         }
@@ -3892,7 +3892,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_UNIQUE);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
 
             for (k = 0; k < 3
             ; k++)
@@ -3903,7 +3903,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             if (count)
             {
                 if (blind) message(QString("You've got a bad feeling about this..."));
-                else       message(QString("%^1 magically summons legendary opponents!") .arg(m_name));
+                else       message(QString("%1 magically summons legendary opponents!") .arg(capitalize_first(m_name)));
             }
             else
             {
@@ -3911,7 +3911,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 dungeon_summon_mask_f7 |= (RF7_S_HI_UNIQUE);
 
                 if (!blind)
-                    message(QString("%^1 gestures imperiously ... and looks puzzled for a moment.") .arg(m_name));
+                    message(QString("%1 gestures imperiously ... and looks puzzled for a moment.") .arg(capitalize_first(m_name)));
             }
             break;
         }
@@ -3921,8 +3921,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_UNDEAD);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons an undead adversary!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons an undead adversary!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 1; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3940,8 +3940,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         {
             disturb(1, 0);
             sound(MSG_SUM_HI_UNDEAD);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons greater undead!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons greater undead!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 4; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -3966,8 +3966,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             int old_count;
             disturb(1, 0);
             sound(MSG_SUM_WRAITH);
-            if (blind) message(QString("%^1 mumbles.") .arg(m_name));
-            else message(QString("%^1 magically summons mighty undead opponents!") .arg(m_name));
+            if (blind) message(QString("%1 mumbles.") .arg(capitalize_first(m_name)));
+            else message(QString("%1 magically summons mighty undead opponents!") .arg(capitalize_first(m_name)));
             for (k = 0; k < 6; k++)
             {
                 count += summon_specific(m_ptr->fy, m_ptr->fx,
@@ -4060,7 +4060,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
     }
 
     if (seen && p_ptr->wizard)
-        message(QString("%^1 has %i mana remaining.") .arg(m_name) .arg(m_ptr->mana));
+        message(QString("%1 has %i mana remaining.") .arg(capitalize_first(m_name)) .arg(m_ptr->mana));
 
     /* Always take note of monsters that kill you */
     if (p_ptr->is_dead && (l_ptr->deaths < MAX_SHORT))

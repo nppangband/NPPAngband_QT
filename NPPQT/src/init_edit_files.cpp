@@ -2495,7 +2495,7 @@ int parse_a_info(QString line_info)
         /* There better be a current a_ptr */
         if (!a_ptr) return (PARSE_ERROR_MISSING_RECORD_HEADER);
 
-        if (process_3_ints(line_info, &tval, &sval, &pval))
+        if (process_3_ints(line_info, &tval, &sval, &pval)) return (PARSE_ERROR_GENERIC);
 
         /* Save the values */
         a_ptr->tval = tval;

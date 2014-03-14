@@ -446,5 +446,11 @@ void debug_rarities()
     }
     if (n == 0) color_message("There is not locked doors", TERM_RED);
 
-
+    for (int i = 0; i < z_info->art_max; i++) {
+        artifact_type *a_ptr = a_info + i;
+        if (a_ptr->tval == 0 and a_ptr->sval) {
+            popup1(QString("Invalid artifact: %1 %2").arg(a_ptr->a_name).arg(a_ptr->sval), 53);
+            break;
+        }
+    }
 }

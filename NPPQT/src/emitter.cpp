@@ -89,7 +89,7 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
     anim = new QPropertyAnimation(this, "pos");
     int d = magnitude(mulp(to - from, QPointF(main_window->cell_wid, main_window->cell_hgt)));
     int dur = (d * 1500 / 600); // 1 second every 600 pixels
-    if (dur < 500) dur = 500;  // minimum
+    if (dur < 300) dur = 300;  // minimum
     anim->setDuration(dur);
     anim->setStartValue(getCenter(from.y(), from.x()) - QPointF(BOLT_SIZE / 2, BOLT_SIZE / 2));
     anim->setEndValue(getCenter(to.y(), to.x()) - QPointF(BOLT_SIZE / 2, BOLT_SIZE / 2));

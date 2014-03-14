@@ -603,6 +603,15 @@ void MainWindow::set_graphic_mode(int mode)
 {
     int hgt, wid;
     QString fname;
+    int cy = -1;
+    int cx = -1;
+
+    // Remember the center of the view
+    if (character_dungeon) {
+        QRect vis = visible_dungeon();
+        cy = vis.y() + vis.height() / 2;
+        cx = vis.x() + vis.width() / 2;
+    }
 
     switch (mode) {
     case GRAPHICS_DAVID_GERVAIS:
@@ -654,6 +663,12 @@ void MainWindow::set_graphic_mode(int mode)
         tile_map = blank_pix;
         clear_graphics();           
     }    
+
+    // Recenter the view
+    if (cy != -1 && cx != -1) {
+        ui_redraw_all();
+        ui_center(cy, cx);
+    }
 }
 
 // Tile creation on demmand
@@ -1038,7 +1053,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             bool ok;
             l = QInputDialog::getInt(0, "Please enter a number",
                                      "Jump to level", p_ptr->depth, 0, 101, 1, &ok, 0);
-            if (ok) dungeon_change_level(l);
+            if (ok) {
+                dungeon_change_level(l);
+            }
             break;
         }
         // Move down
