@@ -6933,9 +6933,8 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     /* Hack -- Jump to target, but require a valid target */
     if ((flg & (PROJECT_JUMP)) && (y1) && (x1))
     {
-        x = y0 = y1;
+        y = y0 = y1;
         x = x0 = x1;
-
     }
 
     /* If a single grid is both source and destination, store it. */
@@ -6996,6 +6995,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                 }
             }
 
+#if 0
             /* Only do visuals if requested */
             if (!blind && !(flg & (PROJECT_HIDE)))
             {
@@ -7038,6 +7038,16 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                     /* Delay for consistency */
                     // TODO Term_xtra(TERM_XTRA_DELAY, msec);
                 }
+            }
+#endif
+        }
+
+        if (!blind && !(flg & (PROJECT_HIDE)) && (y0 != y || x0 != x)) {
+            // Visuals
+            if (flg & (PROJECT_BEAM)) {
+            }
+            else {
+                ui_animate_bolt(y0, x0, y, x, typ);
             }
         }
     }

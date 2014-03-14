@@ -29,8 +29,10 @@ class BoltAnimation: public NPPAnimation, public QGraphicsItem
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
     int current_angle;
+    int gf_type;
+    QColor color;
 
-    BoltAnimation(QPointF from, QPointF to);
+    BoltAnimation(QPointF from, QPointF to, int new_gf_type);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;

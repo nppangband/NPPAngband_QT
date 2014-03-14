@@ -8,6 +8,11 @@
 static QPixmap *ball_pix = 0;
 static QPixmap *bolt_pix = 0;
 
+QPointF mulp(QPointF a, QPointF b)
+{
+    return QPointF(a.x() * b.x(), a.y() * b.y());
+}
+
 static void load_ball_pix()
 {
     if (!ball_pix) {
@@ -73,13 +78,19 @@ void NPPAnimation::start()
 
 static int BOLT_SIZE = 20;
 
-BoltAnimation::BoltAnimation(QPointF from, QPointF to)
+BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
 {
+    gf_type = new_gf_type;
+    byte idx = gf_color(gf_type);
+    color = defined_colors[idx % MAX_COLORS];
     current_angle = 0;
     setVisible(false);
     setZValue(300);
     anim = new QPropertyAnimation(this, "pos");
-    anim->setDuration(1000);
+    int d = magnitude(mulp(to - from, QPointF(main_window->cell_wid, main_window->cell_hgt)));
+    int dur = (d * 1500 / 600); // 1 second every 600 pixels
+    if (dur < 500) dur = 500;  // minimum
+    anim->setDuration(dur);
     anim->setStartValue(getCenter(from.y(), from.x()) - QPointF(BOLT_SIZE / 2, BOLT_SIZE / 2));
     anim->setEndValue(getCenter(to.y(), to.x()) - QPointF(BOLT_SIZE / 2, BOLT_SIZE / 2));
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
@@ -91,10 +102,16 @@ void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     load_bolt_pix();
 
-    current_angle += 20;
+    current_angle += 5;
     current_angle %= 360;
 
+    if (false && one_in_(5)) {
+        byte idx = gf_color(gf_type);
+        color = defined_colors[idx % MAX_COLORS];
+    }
+
     QPixmap pix = rotate_pix(*bolt_pix, current_angle);
+    pix = colorize_pix2(pix, color);
     painter->drawPixmap(boundingRect(), pix, boundingRect());
 
     painter->restore();
@@ -252,11 +269,6 @@ ArcAnimation::~ArcAnimation()
 }
 
 static int ARC_TILE_SIZE = 40;
-
-QPointF mulp(QPointF a, QPointF b)
-{
-    return QPointF(a.x() * b.x(), a.y() * b.y());
-}
 
 ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad)
 {
