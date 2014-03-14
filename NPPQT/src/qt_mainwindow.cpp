@@ -220,7 +220,7 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
-    fire_arc(GF_DISENCHANT, dir, 300, 0, 30);
+    fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
 }
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees)

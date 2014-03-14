@@ -267,8 +267,8 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     rad = newRad;
 
     QPointF pp(main_window->cell_wid, main_window->cell_hgt);
-    QPointF p1(from.x() - rad, from.y() - rad);
-    QPointF p2(from.x() + rad, from.y() + rad);
+    QPointF p1(from.x() - rad - 5, from.y() - rad - 5); // +-5 extra
+    QPointF p2(from.x() + rad + 5, from.y() + rad + 5);
 
     // Collect valid grids
     for (int y = p1.y(); y <= p2.y(); y++) {
@@ -276,7 +276,8 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
-            if ((dungeon_info[y][x].cave_info & (CAVE_SEEN)) &&
+            if (cave_flag_bold(y, x, CAVE_SEEN) &&
+                    cave_flag_bold(y, x, CAVE_PROJECT) &&
                     generic_los(from.y(), from.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
@@ -325,7 +326,8 @@ void ArcAnimation::setLength(qreal newLength)
 
     previousLength = length;
 
-    int n = 10;
+    int n = degrees * 10 / 30; // 10 particles every 30 degrees
+    if (n < 10) n = 10;        // minimum
 
     for (int i = 0; i < n; i++) {
         BallParticle *p = new BallParticle;
