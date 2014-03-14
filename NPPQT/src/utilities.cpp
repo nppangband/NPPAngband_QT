@@ -445,4 +445,6 @@ void debug_rarities()
         }
     }
     if (n == 0) color_message("There is not locked doors", TERM_RED);
+
+
 }
