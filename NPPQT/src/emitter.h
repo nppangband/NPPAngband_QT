@@ -22,6 +22,29 @@ public:
     virtual void start();
 };
 
+class BeamAnimation: public NPPAnimation, public QGraphicsItem
+{
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+    Q_PROPERTY(qreal length READ getLength WRITE setLength)
+public:
+    qreal length;
+    int gf_type;
+    QColor color;
+    QColor cloud_color;
+    QRectF brect;
+    QPointF p1, p2;
+
+    BeamAnimation(QPointF from, QPointF to, int new_gf_type);
+    qreal getLength();
+    void setLength(qreal newLength);
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
+
+    virtual ~BeamAnimation();
+};
+
 class BoltAnimation: public NPPAnimation, public QGraphicsItem
 {
     Q_OBJECT

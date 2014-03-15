@@ -220,9 +220,10 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
-    int k = rand_int(2);
-    if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
-    else if (k == 1) fire_bolt(GF_MANA, dir, 300);
+//    int k = rand_int(2);
+//    if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
+//    else if (k == 1) fire_bolt(GF_MANA, dir, 300);
+    fire_beam(GF_DISENCHANT, dir, 300, 0);
 }
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees)
@@ -230,6 +231,13 @@ void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int de
     ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius);
     main_window->dungeon_scene->addItem(arc);
     arc->start();
+}
+
+void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
+{
+    BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
+    main_window->dungeon_scene->addItem(beam);
+    beam->start();
 }
 
 void ui_animate_bolt(int y0, int x0, int y1, int x1, int type)

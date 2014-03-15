@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QtCore/qmath.h>
 #include <QGraphicsScene>
+#include <QLinearGradient>
 
 static QPixmap *ball_pix = 0;
 static QPixmap *bolt_pix = 0;
@@ -53,6 +54,183 @@ static QPointF getCenter(int y, int x)
     QSize dim = ui_grid_size();
     return QPointF(x * dim.width() + dim.width() / 2,
                    y * dim.height() + dim.height() / 2);
+}
+
+
+void draw_beam(QPointF from, QPointF to)
+{
+
+}
+
+QRectF calculate_bbox(QPointF from, QPointF to, int margin)
+{
+    qreal x1 = MIN(from.x(), to.x()) - margin;
+    qreal y1 = MIN(from.y(), to.y()) - margin;
+    qreal x2 = MAX(from.x(), to.x()) + margin;
+    qreal y2 = MAX(from.y(), to.y()) + margin;
+    return QRectF(x1, y1, x2 - x1, y2 - y1);
+}
+
+BeamAnimation::BeamAnimation(QPointF from, QPointF to, int new_gf_type)
+{
+    gf_type = new_gf_type;
+    //cloud_color =
+
+    from = getCenter(from.y(), from.x());
+    to = getCenter(to.y(), to.x());
+
+    QRectF bbox = calculate_bbox(from, to, 100);
+    brect = QRectF(0, 0, bbox.width(), bbox.height());
+    setPos(bbox.x(), bbox.y());
+
+    p1 = from - pos();
+    p2 = to - pos();
+
+    anim = new QPropertyAnimation(this, "length");
+    anim->setDuration(1000);
+    anim->setStartValue(0);
+    anim->setEndValue(50);
+    connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
+    this->setVisible(false);
+}
+
+class BeamPoint
+{
+public:
+    QPointF point;
+    qreal length;
+    BeamPoint(QPointF newPoint, QPointF origin);
+    bool operator <(const BeamPoint &b) const;
+};
+
+BeamPoint::BeamPoint(QPointF newPoint, QPointF origin)
+{
+    point = newPoint;
+    if (point == origin) {
+        length = 0;
+    }
+    else {
+        length = QLineF(origin, point).length();
+    }
+}
+
+bool BeamPoint::operator <(const BeamPoint &b) const
+{
+    return length < b.length;
+}
+
+void make_beam_aux(QPointF from, QPointF to, QList<QPointF> *points, qreal displace, qreal detail)
+{
+    if (displace < detail) {
+        points->append(to);
+    }
+    else {
+        qreal mid_x = (from.x() + to.x()) / 2;
+        qreal mid_y = (from.y() + to.y()) / 2;
+        mid_x += (rand_int(100) / 100.0 - 0.5) * displace;
+        mid_y += (rand_int(100) / 100.0 - 0.5) * displace;
+        QPointF mid(mid_x, mid_y);
+        make_beam_aux(from, mid, points, displace / 2, detail);
+        make_beam_aux(to, mid, points, displace / 2, detail);
+    }
+}
+
+QPolygonF make_beam(QPointF from, QPointF to)
+{
+    QList<QPointF> points;
+    points.append(from);
+    points.append(to);
+    make_beam_aux(from, to, &points, 50, 5);
+    QList<BeamPoint> bp;
+    for (int i = 0; i < points.size(); i++) {
+        bp.append(BeamPoint(points.at(i), from));
+    }
+    qSort(bp); // Sort it by distance to the source
+    QPolygonF poly;
+    for (int i = 0; i < bp.size(); i++) {
+        poly.append(bp.at(i).point);
+    }
+    return poly;
+}
+
+static int BALL_TILE_SIZE = 40;
+
+void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    load_ball_pix();
+
+    painter->save();
+
+    bool do_beam = false;
+
+    QPixmap pix = *ball_pix;
+    int bs = pix.width();
+
+    QLineF line(p1, p2);
+
+    if (line.length() > 50) do_beam = true;
+
+    QPolygonF beam;
+
+    painter->setOpacity(0.1);
+
+    qreal l = line.length();
+
+    while (l > 0) {
+        line.setLength(l);
+        QPointF p = line.p2();
+        p -= QPointF(bs/2, bs/2);
+        painter->drawPixmap(p, pix);
+        l -= 10;
+    }
+
+    if (do_beam) {
+        beam = make_beam(p1, p2);
+        for (int i = 0; i < beam.size(); i++) {
+            QPointF p = beam.at(i);
+            p -= QPointF(bs/2, bs/2);
+            painter->drawPixmap(p, pix);
+        }
+    }
+
+    painter->setOpacity(1);
+    color = defined_colors[gf_color(gf_type) & MAX_COLORS];
+    QPen pen(QBrush(color), 2, Qt::SolidLine,
+             Qt::RoundCap, Qt::RoundJoin);
+    painter->setPen(pen);
+
+    if (do_beam) {
+        painter->drawPolyline(beam);
+    }
+    else {
+        painter->drawLine(p1, p2);
+    }
+
+    painter->restore();
+}
+
+QRectF BeamAnimation::boundingRect() const
+{
+    return brect;
+}
+
+BeamAnimation::~BeamAnimation()
+{
+    if (scene()) scene()->removeItem(this);
+}
+
+qreal BeamAnimation::getLength()
+{
+    return length;
+}
+
+void BeamAnimation::setLength(qreal newLength)
+{
+    length = newLength;
+
+    this->setVisible(true);
+
+    this->update();
 }
 
 NPPAnimation::NPPAnimation()
@@ -132,8 +310,6 @@ BoltAnimation::~BoltAnimation()
 {
     if (scene()) scene()->removeItem(this);
 }
-
-static int BALL_TILE_SIZE = 40;
 
 BallAnimation::BallAnimation(QPointF where, int newRadius)
 {
