@@ -6,7 +6,7 @@
 #include <QGraphicsScene>
 #include <QLinearGradient>
 
-qreal delay = 1.666666;
+qreal delay = 1.666666; // delay per pixel. 1 second every 600 pixels
 
 static QPixmap *ball_pix = 0;
 static QPixmap *bolt_pix = 0;
@@ -58,12 +58,6 @@ static QPointF getCenter(int y, int x)
                    y * dim.height() + dim.height() / 2);
 }
 
-
-void draw_beam(QPointF from, QPointF to)
-{
-
-}
-
 QRectF calculate_bbox(QPointF from, QPointF to, int margin)
 {
     qreal x1 = MIN(from.x(), to.x()) - margin;
@@ -90,6 +84,9 @@ BeamAnimation::BeamAnimation(QPointF from, QPointF to, int new_gf_type)
 
     anim = new QPropertyAnimation(this, "length");
     anim->setDuration(1000);
+    if (QLineF(p1, p2).length() < 50) {
+        anim->setDuration(250);
+    }
     anim->setStartValue(0);
     anim->setEndValue(50);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
@@ -270,6 +267,7 @@ void NPPAnimation::start()
     if (anim) {
         anim->start();
         if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
+        else pop_up_message_box("Event loop already running");
     }
 }
 
@@ -277,6 +275,8 @@ static int BOLT_SIZE = 20;
 
 BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
 {
+    load_bolt_pix();
+
     gf_type = new_gf_type;
     byte idx = gf_color(gf_type);
     color = defined_colors[idx % MAX_COLORS];
@@ -284,20 +284,22 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
     setVisible(false);
     setZValue(300);
     anim = new QPropertyAnimation(this, "pos");
-    int d = magnitude(mulp(to - from, QPointF(main_window->cell_wid, main_window->cell_hgt)));
-    int dur = (d * 1500 / 600); // 1 second every 600 pixels
-    if (dur < 300) dur = 300;  // minimum
+    from = getCenter(from.y(), from.x());
+    to = getCenter(to.y(), to.x());
+    int d = QLineF(from, to).length();
+    int dur = d * delay * 1.2; // +20%
+    if (dur < 250) dur = 250;  // minimum
     anim->setDuration(dur);
-    anim->setStartValue(getCenter(from.y(), from.x()) - QPointF(BOLT_SIZE / 2, BOLT_SIZE / 2));
-    anim->setEndValue(getCenter(to.y(), to.x()) - QPointF(BOLT_SIZE / 2, BOLT_SIZE / 2));
+    QPixmap pix = *bolt_pix;
+    QPointF adj = QPointF(pix.width() / 2, pix.height() / 2);
+    anim->setStartValue(from - adj);
+    anim->setEndValue(to - adj);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->save();
-
-    load_bolt_pix();
 
     current_angle += 5;
     current_angle %= 360;
@@ -513,14 +515,15 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     setZValue(300);
     setVisible(false);
 
-    timer.setInterval(40);
+    timer.setInterval(delay * 25);
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
 }
 
 void ArcAnimation::start()
 {
     timer.start();
-    main_window->ev_loop.exec();
+    if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
+    else pop_up_message_box("Event loop already running");
 }
 
 void ArcAnimation::finish()
