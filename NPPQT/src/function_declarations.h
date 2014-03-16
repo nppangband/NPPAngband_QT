@@ -103,6 +103,7 @@ extern void do_cmd_pickup(void);
 extern void move_player(int dir, int jumping);
 
 // cmd_spell.cpp
+extern bool spell_okay(int spell, bool known);
 extern void do_cmd_browse(void);
 extern void do_cmd_study(void);
 extern void do_cmd_cast(void);

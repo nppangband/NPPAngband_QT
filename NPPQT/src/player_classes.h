@@ -507,6 +507,7 @@ public:
 
     bool can_cast();
     bool can_study();
+    bool chooses_spells();
 
 };
 

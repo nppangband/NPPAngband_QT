@@ -187,3 +187,16 @@ bool player_type::can_study(void)
 
     return (TRUE);
 }
+
+/*
+ * Is the player capable of studying?
+ */
+bool player_type::chooses_spells(void)
+{
+    if (!cp_ptr->spell_book) return (FALSE);
+
+    if (cp_ptr->flags & (CF_CHOOSE_SPELLS)) return TRUE;
+
+    return (FALSE);
+}
+
