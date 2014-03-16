@@ -1667,7 +1667,7 @@ void object_info_screen(object_type *o_ptr)
     if (o_ptr->tval == cp_ptr->spell_book)
     {
         /* Call the aux function */
-        get_spell_menu(o_ptr, BOOK_BROWSE);
+        do_cmd_browse();
     }
 
     return;

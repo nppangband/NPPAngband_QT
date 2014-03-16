@@ -427,48 +427,6 @@ bool object_type::can_browse()
     return TRUE;
 }
 
-/*
- * Determine if an object is a spelbook with spells that can be studied
- */
-bool object_type::can_study()
-{
-    int i;
-    if (tval != cp_ptr->spell_book) return FALSE;
-
-    for (i = 0;  i < SPELLS_PER_BOOK; i++)
-    {
-        int spell = get_spell_index(sval, i);
-
-        /* Not a spell */
-        if (spell == -1) continue;
-
-        /* Is there a spell we can learn? */
-        if (spell_okay(spell, FALSE)) return (TRUE);
-    }
-    return (FALSE);
-
-}
-
-/*
- * Determine if an object is a spellbook with spells that can be cast
- */
-bool object_type::can_cast()
-{
-    int i;
-    if (tval != cp_ptr->spell_book) return FALSE;
-
-    for (i = 0;  i < SPELLS_PER_BOOK; i++)
-    {
-        int spell = get_spell_index(sval, i);
-
-        /* Not a spell */
-        if (spell == -1) continue;
-
-        /* Is there a spell we can learn? */
-        if (spell_okay(spell, TRUE)) return (TRUE);
-    }
-    return (FALSE);
-}
 
 
 /*

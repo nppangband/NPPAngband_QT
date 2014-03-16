@@ -24,8 +24,6 @@
 // Miscellaneous hooks to support the universal object handler below
 static bool obj_has_inscrip(object_type *o_ptr) {return (o_ptr->has_inscription());}
 static bool obj_can_takeoff(object_type *o_ptr) {return (o_ptr->can_takeoff());}
-static bool obj_can_study(object_type *o_ptr)   {return (o_ptr->can_study());}
-static bool obj_can_cast(object_type *o_ptr)    {return (o_ptr->can_cast());}
 static bool obj_is_scroll(object_type *o_ptr)   {return (o_ptr->is_scroll());}
 static bool obj_is_wand(object_type *o_ptr)     {return (o_ptr->is_wand());}
 static bool obj_is_rod(object_type *o_ptr)      {return (o_ptr->is_rod());}
@@ -69,41 +67,6 @@ static bool is_trap_spell(byte spell_book, int spell)
     return (FALSE);
 }
 
-cmd_arg obj_cast(object_type *o_ptr, cmd_arg args)
-{
-    QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
-    bool trap_spell;
-
-    /* Track the object kind */
-    track_object(args.item);
-
-    /* Ask for a spell */
-    args.choice = get_spell_menu(o_ptr, BOOK_CAST);
-
-    if (args.choice < 0)
-    {
-        if (args.choice == -2) message(QString("You don't know any %1s in that book.") .arg(noun));
-        args.verify = FALSE;
-        return (args);
-    }
-
-    trap_spell = is_trap_spell(cp_ptr->spell_book, args.choice);
-
-    if (spell_needs_aim(cp_ptr->spell_book, args.choice))
-    {
-        if (!get_aim_dir(&args.direction, trap_spell))
-        {
-            // handle failure
-            args.verify = FALSE;
-            return (args);
-        }
-    }
-
-    // Success
-    args.verify = TRUE;
-    return(args);
-}
-
 cmd_arg obj_drop(object_type *o_ptr, cmd_arg args)
 {
     int amt = get_quantity("Please enter an amount to drop.", o_ptr->number);
@@ -133,32 +96,6 @@ cmd_arg obj_destroy(object_type *o_ptr, cmd_arg args)
 
     return (args);
 }
-
-/*
- * Study a book to gain a new spell
- */
-static cmd_arg obj_study(object_type *o_ptr, cmd_arg args)
-{
-    /* Track the object kind */
-    track_object(args.item);
-
-    /* Mage -- Choose a spell to study */
-    if (cp_ptr->flags & CF_CHOOSE_SPELLS)
-    {
-        args.choice = get_spell_menu(o_ptr, BOOK_STUDY);
-
-        if (args.choice == -2)
-        {
-            message(QString("You cannot learn any spells from that book."));
-            args.verify = FALSE;
-            return(args);
-        }
-    }
-
-    args.verify = TRUE;
-    return(args);
-}
-
 
 
 cmd_arg obj_wield(object_type *o_ptr, cmd_arg args)
@@ -259,21 +196,6 @@ static item_act_t item_actions[] =
     { obj_drop, FALSE, "drop",
     "Drop which item? ", "You have nothing to drop.",
     NULL, (USE_EQUIP | USE_INVEN | USE_QUIVER), NULL },
-      /* ACTION_BROWSE */
-    /*** Spellbooks ***/
-    { NULL, FALSE, "browse",
-      "Browse which book? ", "You have no books that you can read.",
-      obj_can_browse, (USE_INVEN | USE_FLOOR | IS_HARMLESS), NULL },
-
-      /* ACTION_STUDY */
-    { obj_study, FALSE, "study",
-      "Study which book? ", "You have no books that you can study.",
-      obj_can_study, (USE_INVEN | USE_FLOOR), player_can_study },
-
-      /* ACTION_CAST */
-    { obj_cast, FALSE, "cast",
-      "Use which book? ", "You have no books that you can cast from.",
-      obj_can_cast, (USE_INVEN | USE_FLOOR), player_can_cast },
 
     /* ACTION_USE_STAFF */
     { NULL,  TRUE, "use",
@@ -338,10 +260,6 @@ typedef enum
     ACTION_TAKEOFF,
     ACTION_WIELD,
     ACTION_DROP,
-
-    ACTION_BROWSE,
-    ACTION_STUDY,
-    ACTION_CAST,
 
     ACTION_USE_STAFF,
     ACTION_AIM_WAND,

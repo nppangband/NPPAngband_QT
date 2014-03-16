@@ -77,6 +77,8 @@ void player_state::player_state_wipe()
     cumber_armor = cumber_glove = heavy_wield = heavy_shoot = icky_wield = FALSE;
 }
 
+
+
 /*
  * Wipe the player other class.
  * This function shoudld be used instead of WIPE command.
@@ -140,4 +142,48 @@ void player_type::player_type_wipe()
     dungeon_type = 0;
 
     tile_id.clear();
+}
+
+/*
+ * Is the player capable of casting a spell?
+ */
+bool player_type::can_cast(void)
+{
+    if (!cp_ptr->spell_book)
+    {
+        message(QString("You cannot cast spells!"));
+        return (FALSE);
+    }
+
+    if (p_ptr->timed[TMD_BLIND] || no_light())
+    {
+        message(QString("You cannot see!"));
+        return (FALSE);
+    }
+
+    if (p_ptr->timed[TMD_CONFUSED])
+    {
+        message(QString("You are too confused!"));
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
+
+/*
+ * Is the player capable of studying?
+ */
+bool player_type::can_study(void)
+{
+    if (!can_cast()) return (FALSE);
+
+    if (!new_spells)
+    {
+        QString p = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
+        message(QString("You cannot learn any new %1s!") .arg(p));
+        return (FALSE);
+    }
+
+    return (TRUE);
 }
