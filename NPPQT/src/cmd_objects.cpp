@@ -34,6 +34,7 @@ static bool obj_is_potion(object_type *o_ptr)   {return (o_ptr->is_potion());}
 static bool obj_is_staff(object_type *o_ptr)    {return (o_ptr->is_staff());}
 static bool obj_is_ring(object_type *o_ptr)     {return (o_ptr->is_ring());}
 static bool obj_is_ammo(object_type *o_ptr)     {return (o_ptr->is_ammo());}
+static bool obj_is_usable(object_type *o_ptr)   {return (o_ptr->is_usable_item());}
 
 /*** Examination ***/
 cmd_arg obj_examine(object_type *o_ptr, cmd_arg args)
@@ -160,7 +161,6 @@ static cmd_arg obj_study(object_type *o_ptr, cmd_arg args)
 
 
 
-
 cmd_arg obj_wield(object_type *o_ptr, cmd_arg args)
 {
     args.slot = wield_slot(o_ptr);
@@ -229,9 +229,6 @@ typedef struct
 /* All possible item actions */
 static item_act_t item_actions[] =
 {
-    /* Not setting IS_HARMLESS for this one because it could cause a true
-     * dangerous command to not be prompted, later.
-     */
 
     /* ACTION_UNINSCRIBE */
     { NULL, FALSE, "uninscribe",
@@ -281,22 +278,22 @@ static item_act_t item_actions[] =
     /* ACTION_USE_STAFF */
     { NULL,  TRUE, "use",
       "Use which staff? ", "You have no staff to use.",
-      obj_is_staff, (USE_INVEN | USE_FLOOR | SHOW_FAIL), NULL },
+      obj_is_staff, (USE_INVEN | USE_FLOOR), NULL },
 
       /* ACTION_AIM_WAND */
     { NULL, TRUE, "aim",
       "Aim which wand? ", "You have no wand to aim.",
-      obj_is_wand, (USE_INVEN | USE_FLOOR | SHOW_FAIL), NULL },
+      obj_is_wand, (USE_INVEN | USE_FLOOR), NULL },
 
       /* ACTION_ZAP_ROD */
     { NULL, TRUE, "zap",
       "Zap which rod? ", "You have no charged rods to zap.",
-      obj_is_rod, (USE_INVEN | USE_FLOOR | SHOW_FAIL), NULL },
+      obj_is_rod, (USE_INVEN | USE_FLOOR), NULL },
 
       /* ACTION_ACTIVATE */
     { NULL, TRUE, "activate",
       "Activate which item? ", "You have nothing to activate.",
-      obj_is_activatable, (USE_EQUIP | SHOW_FAIL), NULL },
+      obj_is_activatable, (USE_EQUIP), NULL },
 
       /* ACTION_EAT_FOOD */
     { NULL, FALSE, "eat",
@@ -322,6 +319,12 @@ static item_act_t item_actions[] =
    { obj_destroy, FALSE, "destroy",
     "Destroy which item? ", "You have nothing to destroy.",
     NULL, (USE_INVEN | USE_FLOOR | USE_EQUIP | USE_QUIVER), NULL },
+
+
+    /* ACTION_USE_ITEM */
+   { NULL, TRUE, "use",
+    "Use which item? ", "You have no items to use.",
+    obj_is_usable, (USE_INVEN | USE_FLOOR), NULL },
 
 };
 
@@ -349,6 +352,7 @@ typedef enum
     ACTION_READ_SCROLL,
     ACTION_REFILL,
     ACTION_DESTROY,
+    ACTION_USE_ITEM
 } item_act;
 
 static bool trap_related_object(object_type *o_ptr)
@@ -433,47 +437,7 @@ static cmd_arg select_item(item_act act)
 
 /*** Utility bits and bobs ***/
 
-/*
- * Check to see if the player can use a rod/wand/staff/activatable object.
- */
-static int check_devices(object_type *o_ptr)
-{
-    int fail;
-    QString msg;
-    QString what = NULL;
 
-    /* Get the right string */
-    switch (o_ptr->tval)
-    {
-        case TV_ROD:   {msg = "zap the rod";   break;}
-        case TV_WAND:  {msg = "use the wand";  what = "wand";  break;}
-        case TV_STAFF: {msg = "use the staff"; what = "staff"; break;}
-        default:       {msg = "activate it";  break;}
-    }
-
-    /* Figure out how hard the item is to use */
-    fail = get_use_device_chance(o_ptr);
-
-    /* Roll for usage */
-    if (randint1(1000) < fail)
-    {
-        message(QString("You failed to %1 properly.") .arg(msg));
-        return FALSE;
-    }
-
-    /* Notice empty staffs */
-    if (!what.isEmpty() && o_ptr->pval <= 0)
-    {
-        message(QString("The %1 has no charges left.") .arg(msg));
-        o_ptr->ident |= (IDENT_EMPTY);
-        p_ptr->notice |= (PN_COMBINE | PN_REORDER);
-        p_ptr->window |= (PW_INVEN);
-
-        return FALSE;
-    }
-
-    return TRUE;
-}
 
 
 /*** Inscriptions ***/
@@ -1394,4 +1358,31 @@ void do_cmd_destroy(void)
     command_destroy(args);
 }
 
+
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_use_item(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_USE_ITEM);
+
+    command_use(args);
+}
+
+
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_activate(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_ACTIVATE);
+
+    command_use(args);
+}
 

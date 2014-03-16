@@ -806,7 +806,7 @@
 #define NOUN_VERB		0x10	/* We are choosing the item first, then the command */
 #define IS_HARMLESS   	0x20	/* Ignore generic warning inscriptions */
 #define QUIVER_FIRST 	0x40	/* Show item prices in item lists */
-#define SHOW_FAIL     	0x80 	/* Show device failure in item lists */
+//#define UNUSED       	0x80 	/*  */
 
 
 

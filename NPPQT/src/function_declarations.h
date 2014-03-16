@@ -92,6 +92,8 @@ extern void do_cmd_refuel(void);
 extern void do_cmd_swap_weapon(void);
 extern void command_destroy(cmd_arg args);
 extern void do_cmd_destroy(void);
+extern void do_cmd_activate(void);
+extern void do_cmd_use_item(void);
 
 // cmd_pickup.cpp
 extern bool put_object_in_inventory(object_type *o_ptr);
@@ -355,7 +357,7 @@ extern bool get_item_beside(int *cp, QString pmt, QString str, int sq_y, int sq_
 // object_use.cpp
 extern bool player_can_read(void);
 extern bool find_object_in_use(int *item);
-extern void do_cmd_use(int code, cmd_arg args[]);
+extern void command_use(cmd_arg args);
 
 //obj_util.cpp
 extern void object_flags(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native);
