@@ -157,6 +157,7 @@ int SpellSelectDialog::get_selected_spell(int chosen_button)
             // Found it
             if (chosen_button == spell_counter)
             {
+                // Either return the book or the chosen spell
                 return (get_spell_from_list(i, j));
             }
 
@@ -164,7 +165,8 @@ int SpellSelectDialog::get_selected_spell(int chosen_button)
         }
     }
 
-    return (0);
+    // Oops! Should never happen
+    return (-1);
 }
 
 // Receives the number of the button pressed.
@@ -184,51 +186,9 @@ void SpellSelectDialog::help_press(QString num_string)
 }
 
 
-/*
- * Determine if a spell is "okay" for the player to cast or study
- * The spell must be legible, not forgotten, and also, to cast,
- * it must be known, and to study, it must not be known.
- */
-bool SpellSelectDialog::spell_okay(int spell, bool known)
-{
-    const magic_type *s_ptr;
-
-    /* Get the spell */
-    s_ptr = &mp_ptr->info[spell];
-
-    /* Spell is illegal */
-    if (s_ptr->slevel > p_ptr->lev) return (FALSE);
-
-    /* Spell is forgotten */
-    if (p_ptr->spell_flags[spell] & PY_SPELL_FORGOTTEN)
-    {
-        /* Never okay */
-        return (FALSE);
-    }
-
-    /* Spell is ironman */
-    if (p_ptr->spell_flags[spell] & PY_SPELL_IRONMAN)
-    {
-        /* Never okay */
-        return (FALSE);
-    }
-
-    /* Spell is learned */
-    if (p_ptr->spell_flags[spell] & PY_SPELL_LEARNED)
-    {
-
-        /* Okay to cast, not to study */
-        return (known);
-    }
-
-    /* Okay to study, not to cast */
-    return (!known);
-}
 
 void SpellSelectDialog::count_spells(int mode)
 {
-    item_tester_tval = cp_ptr->spell_book;
-
     for (int i = 0; i < max_spellbooks; i++)
     {
         int idx = lookup_kind(cp_ptr->spell_book, i);
@@ -247,7 +207,6 @@ void SpellSelectDialog::count_spells(int mode)
 
                 if (!spell_okay(spell, (mode == BOOK_CAST))) continue;
             }
-
 
             // Note that the book and spell is available for use.
             available_spells[i][j] = TRUE;
@@ -311,7 +270,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
     for (int i = 0; i < max_spellbooks; i++)
     {
         // Track to which line we are adding widgets
-        int row_num = 1;
+        int row_num = 0;
 
         // Nothing to select in this book.
         if (!available_books[i]) continue;
@@ -337,6 +296,20 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 
         spell_layout->setColumnStretch(0, 100);
 
+        // Add a button to select the spellbook
+        if (choosing_book)
+        {
+            QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
+            QString text_num = QString::number(num_buttons);
+            QPushButton *button = new QPushButton(text_num);
+            button->setText(QString("Study a %1 from %2") .arg(noun) .arg(book_name));
+            button->setStyleSheet("Text-align:left");
+            spell_layout->addWidget(button, row_num, COL_SPELL_TITLE);
+            connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
+            button_values->setMapping(button, text_num);
+            row_num++;
+        }
+
             // Give each one titles
         QLabel *spell_title_header = new QLabel("Spell Name");
         QLabel *level_header = new QLabel("  Level  ");
@@ -354,12 +327,14 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
         help_header->setAlignment(Qt::AlignCenter);
 
         // Add the headers
-        spell_layout->addWidget(spell_title_header, 0, COL_SPELL_TITLE);
-        spell_layout->addWidget(level_header, 0, COL_LEVEL);
-        spell_layout->addWidget(mana_header, 0, COL_MANA);
-        spell_layout->addWidget(fail_header, 0, COL_FAIL_PCT);
-        spell_layout->addWidget(info_header, 0, COL_INFO);
-        spell_layout->addWidget(help_header, 0, COL_HELP);
+        spell_layout->addWidget(spell_title_header, row_num, COL_SPELL_TITLE);
+        spell_layout->addWidget(level_header, row_num, COL_LEVEL);
+        spell_layout->addWidget(mana_header, row_num, COL_MANA);
+        spell_layout->addWidget(fail_header, row_num, COL_FAIL_PCT);
+        spell_layout->addWidget(info_header, row_num, COL_INFO);
+        spell_layout->addWidget(help_header, row_num, COL_HELP);
+
+        row_num++;
 
         for (int j = 0; j < SPELLS_PER_BOOK; j++)
         {
@@ -374,6 +349,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 
             bool do_text = FALSE;
             if (mode == BOOK_BROWSE) do_text = TRUE;
+            else if (choosing_book) do_text = TRUE;
             else if (!spell_okay(spell, (mode == BOOK_CAST))) do_text = TRUE;
 
             QString spell_name = (QString("%1) ") .arg(number_to_letter(j)));
@@ -457,6 +433,8 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     num_spells = 0;
     max_spellbooks = (game_mode == GAME_NPPANGBAND ? BOOKS_PER_REALM_ANGBAND : BOOKS_PER_REALM_MORIA);
     num_available_spellbooks = 0;
+    choosing_book = FALSE;
+    *cancelled = FALSE;
     clear_spells();
 
     // First, find the eligible spells
@@ -484,13 +462,15 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     }
     else if (!num_spells)
     {
-
         /* Report failure */
         *success = FALSE;
 
         /* Done here */
         return;
     }
+
+    // We are selecting a book instead of a specific spell.
+    if ((mode == BOOK_STUDY) && !p_ptr->chooses_spells()) choosing_book = TRUE;
 
     build_spellbook_dialog(mode);
 
@@ -515,8 +495,51 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     else
     {
         *spell = get_selected_spell(selected_button);
-        *success = spell_found;
+        if (*spell > -1) *success = TRUE;
+        else *success = FALSE;
     }
+}
+
+
+/*
+ * Determine if a spell is "okay" for the player to cast or study
+ * The spell must be legible, not forgotten, and also, to cast,
+ * it must be known, and to study, it must not be known.
+ */
+bool spell_okay(int spell, bool known)
+{
+    const magic_type *s_ptr;
+
+    /* Get the spell */
+    s_ptr = &mp_ptr->info[spell];
+
+    /* Spell is illegal */
+    if (s_ptr->slevel > p_ptr->lev) return (FALSE);
+
+    /* Spell is forgotten */
+    if (p_ptr->spell_flags[spell] & PY_SPELL_FORGOTTEN)
+    {
+        /* Never okay */
+        return (FALSE);
+    }
+
+    /* Spell is ironman */
+    if (p_ptr->spell_flags[spell] & PY_SPELL_IRONMAN)
+    {
+        /* Never okay */
+        return (FALSE);
+    }
+
+    /* Spell is learned */
+    if (p_ptr->spell_flags[spell] & PY_SPELL_LEARNED)
+    {
+
+        /* Okay to cast, not to study */
+        return (known);
+    }
+
+    /* Okay to study, not to cast */
+    return (!known);
 }
 
 
@@ -526,7 +549,7 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
 static void spell_learn(int spell)
 {
     int i;
-   QString p = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
+   QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
 
     /* Learn the spell */
     p_ptr->spell_flags[spell] |= PY_SPELL_LEARNED;
@@ -542,7 +565,7 @@ static void spell_learn(int spell)
     p_ptr->spell_order[i] = spell;
 
     /* Mention the result */
-    message(QString("You have learned the %1 of %2.") .arg(p) .arg(get_spell_name(cp_ptr->spell_book, spell)));
+    message(QString("You have learned the %1 of %2.") .arg(noun) .arg(get_spell_name(cp_ptr->spell_book, spell)));
 
     /* One less spell available */
     p_ptr->new_spells--;
@@ -550,14 +573,46 @@ static void spell_learn(int spell)
     /* Message if needed */
     if (p_ptr->new_spells)
     {
-        if (p_ptr->new_spells > 1) p.append("s");
+        if (p_ptr->new_spells > 1) noun.append("s");
 
         /* Message */
-        message(QString("You can learn %1 more %2.") .arg(p_ptr->new_spells) .arg(p));
+        message(QString("You can learn %1 more %2.") .arg(p_ptr->new_spells) .arg(noun));
     }
 
     /* Redraw Study Status */
     p_ptr->redraw |= (PR_STUDY | PR_OBJECT);
+}
+
+/*
+ * Gain a random spell from the given book (for priests)
+ */
+static void study_book(int book)
+{
+
+    int spell = -1;
+    int i, k = 0;
+
+    /* Extract spells */
+    for (i = 0; i < SPELLS_PER_BOOK; i++)
+    {
+        int s = get_spell_from_list(book, i);
+
+        /* Skip non-OK spells */
+        if (s == -1) continue;
+        if (!spell_okay(s, FALSE)) continue;
+
+        /* Apply the randomizer */
+        if ((++k > 1) && (randint0(k) != 0)) continue;
+
+        /* Track it */
+        spell = s;
+    }
+
+    /* Remember we have used this book */
+    object_kind *k_ptr = &k_info[lookup_kind(cp_ptr->spell_book, book)];
+    k_ptr->tried = TRUE;
+
+    spell_learn(spell);
 }
 
 s16b get_spell_from_list(s16b book, s16b spell)
@@ -589,6 +644,8 @@ s16b get_spell_from_list(s16b book, s16b spell)
     return (-1);
 }
 
+
+
 // Cast a spell
 void do_cmd_cast(void)
 {
@@ -598,7 +655,29 @@ void do_cmd_cast(void)
 // Learn a spell
 void do_cmd_study(void)
 {
+    int spell;
+    QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
 
+    if (!p_ptr->chooses_spells()) noun = QString("prayer book");
+
+    QString prompt = (QString("Please select a %1 to study.") .arg(noun));
+
+    int mode = BOOK_STUDY;
+    bool success = FALSE;
+    bool cancelled;
+    SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
+
+    // Handle not having a spell to learn
+    if ((!success) || (cancelled))
+    {
+        if (!success && !cancelled) message(QString("You have no %1s that you can study right now.") .arg(noun));
+        return;
+    }
+
+    //Actually learn the spell.
+    if (p_ptr->chooses_spells()) spell_learn(spell);
+    else study_book(spell);
+    process_player_energy(BASE_ENERGY_MOVE);
 }
 
 // Browse the available spellbooks
@@ -610,4 +689,6 @@ void do_cmd_browse(void)
     bool success = FALSE;
     bool cancelled;
     SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
+
+    if (!success) message(QString("You have no books that you can read."));
 }

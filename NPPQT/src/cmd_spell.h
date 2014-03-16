@@ -29,7 +29,6 @@ class SpellSelectDialog : public QDialog
 public:
     explicit SpellSelectDialog(int *spell, QString prompt, int mode, bool *success, bool *cancelled);
 
-
 protected:
     void keyPressEvent(QKeyEvent* which_key);
 
@@ -38,6 +37,8 @@ private slots:
     void button_press(QString num_string);
     void help_press(QString num_string);
     void on_dialog_buttons_pressed(QAbstractButton *);
+
+
 
 private:
 
@@ -61,7 +62,7 @@ private:
     //Functions to track the list of possible items
     void count_spells(int mode);
     void clear_spells(void);
-    bool spell_okay(int spell, bool known);
+
     QString get_spell_comment(int spell);
 
     // Calculate the chance of a spell being sucessfully cast
@@ -74,7 +75,6 @@ private:
     // Variables for keeping track of which item is selected
     int selected_button;
     int num_buttons;
-    bool spell_found;
 
     bool available_spells[BOOKS_PER_REALM_ANGBAND][SPELLS_PER_BOOK];
     bool available_books[BOOKS_PER_REALM_ANGBAND];
@@ -82,6 +82,9 @@ private:
     int num_spells;
     int num_available_spellbooks;
     int max_spellbooks;
+
+    // Are we a priest studying a book, or do we get to choose ?
+    bool choosing_book;
 
 };
 
