@@ -600,7 +600,7 @@ void artifact_type::artifact_wipe()
 {
     a_name.clear();
     a_text.clear();
-    sval = tval = 0;
+    sval = tval = pval = 0;
     to_h = to_d = to_a = ac = 0;
     dd = ds = 0;
     weight = 0;

@@ -2662,7 +2662,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
             if (!in_bounds(yy, xx)) continue;
 
             /* Get the feature */
-            feat2 = dungeon_info[yy][xx].cave_info;
+            feat2 = dungeon_info[yy][xx].feat;
 
             /* Feature can burn */
             if (feat_ff2_match(feat2, FF2_HURT_FIRE))

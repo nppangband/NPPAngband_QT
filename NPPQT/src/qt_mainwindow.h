@@ -192,4 +192,6 @@ private:
 
 QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p);
 
+extern MainWindow *main_window;
+
 #endif

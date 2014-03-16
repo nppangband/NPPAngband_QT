@@ -621,11 +621,16 @@ extern QPixmap rotate_pix(QPixmap src, qreal angle);
 extern QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size);
 extern QPixmap darken_pix(QPixmap src);
 extern QPixmap colorize_pix(QPixmap src, QColor color);
+extern QPixmap colorize_pix2(QPixmap src, QColor color);
 extern QPixmap gray_pix(QPixmap src);
 extern UserInput ui_get_input();
 extern bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_y, int cur_tar_x);
 extern void ui_destroy_path();
 extern void ui_show_cursor(int y, int x);
+extern void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees);
+extern void ui_animate_bolt(int y0, int x0, int y1, int x1, int type);
+extern void ui_animate_beam(int y0, int x0, int y1, int x1, int type);
+extern void ui_animate_ball(int y, int x, int radius, int type);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);
@@ -854,6 +859,7 @@ extern bool set_food(int v);
 
 
 // Utilities.cpp
+extern void debug_rarities();
 extern int letter_to_number (QChar let);
 extern QChar number_to_letter (int num);
 extern bool is_a_vowel(QChar single_letter);

@@ -185,4 +185,7 @@ void launch_game()
     p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
     p_ptr->update |= (PU_TORCH | PU_UPDATE_VIEW | PU_FORGET_VIEW  | PU_DISTANCE);
     update_stuff();
+
+    // TODO PLAYTESTING
+    debug_rarities();
 }

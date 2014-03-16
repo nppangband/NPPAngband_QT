@@ -11,7 +11,7 @@
 #include "src/birthdialog.h"
 #include "emitter.h"
 
-static MainWindow *main_window = 0;
+MainWindow *main_window = 0;
 
 QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
 {
@@ -24,43 +24,24 @@ bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_y, int 
 {
     if (path_n < 1) return false;
 
+    QPen pen(QColor("yellow"));
+
     for (int i = 0; i < path_n; i++) {
         int y = GRID_Y(path_g[i]);
         int x = GRID_X(path_g[i]);        
 
-        QColor col("yellow");
-
         // Don't touch the cursor
         if (y == cur_tar_y && x == cur_tar_x) continue;
 
-        /*
-        if (!dungeon_info[y][x].has_visible_monster() &&
-                !dungeon_info[y][x].has_visible_object()) continue;
-        */
-
         QGraphicsRectItem *item = main_window->dungeon_scene->addRect(
                     x * main_window->cell_wid, y * main_window->cell_hgt,
-                    main_window->cell_wid, main_window->cell_hgt, Qt::NoPen, col);
+                    main_window->cell_wid - 1, main_window->cell_hgt - 1, pen, Qt::NoBrush);
 
-        item->setOpacity(0.5);
+        item->setOpacity(1);
         item->setZValue(90);
 
         main_window->path_items.append(item);
     }
-
-    /*
-    QGraphicsItem *item2 = main_window->dungeon_scene->addLine(
-                x1 * main_window->cell_wid + main_window->cell_wid / 2,
-                y1 * main_window->cell_hgt + main_window->cell_hgt / 2,
-                cur_tar_x * main_window->cell_wid + main_window->cell_wid / 2,
-                cur_tar_y * main_window->cell_hgt + main_window->cell_hgt / 2,
-                QColor("yellow"));
-
-    item2->setOpacity(1);
-    item2->setZValue(120);
-
-    main_window->path_items.append(item2);
-    */
 
     return true;
 }
@@ -220,33 +201,42 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
+    int k = rand_int(4);
 
-    QPointF p(p_ptr->px, p_ptr->py);
-    //QPointF p2(p_ptr->px + rand_int(40) - 20, p_ptr->py + rand_int(40) - 20);
-    //QPointF p2(p_ptr->px - 20, p_ptr->py);
+    //k = 0;
 
-    QPointF p2(p_ptr->target_col, p_ptr->target_row);
-    if (dir != 5) {
-        p2 = QPointF(p_ptr->px + ddx[dir] * 20, p_ptr->py + ddy[dir] * 20);
-    }
+    if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
+    else if (k == 1) fire_bolt(GF_MANA, dir, 300);
+    else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
+    else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
+}
 
-    /*
-    BallAnimation *ball = new BallAnimation(p2, 2);
-    dungeon_scene->addItem(ball);
+void ui_animate_ball(int y, int x, int radius, int type)
+{
+    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type);
+    main_window->dungeon_scene->addItem(ball);
+    ball->start();
+}
 
-    if (p != p2) {
-        BoltAnimation *bolt = new BoltAnimation(p, p2);
-        dungeon_scene->addItem(bolt);
-        bolt->next = ball;
-        bolt->start();
-    }
-    else {
-        ball->start();
-    }
-    */
-    ArcAnimation *arc = new ArcAnimation(p, p2, 30);
-    dungeon_scene->addItem(arc);
+void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees)
+{
+    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius);
+    main_window->dungeon_scene->addItem(arc);
     arc->start();
+}
+
+void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
+{
+    BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
+    main_window->dungeon_scene->addItem(beam);
+    beam->start();
+}
+
+void ui_animate_bolt(int y0, int x0, int y1, int x1, int type)
+{
+    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
+    main_window->dungeon_scene->addItem(bolt);
+    bolt->start();
 }
 
 void MainWindow::slot_zoom_out()
@@ -555,6 +545,17 @@ QPixmap colorize_pix(QPixmap src, QColor color)
     return pix;
 }
 
+QPixmap colorize_pix2(QPixmap src, QColor color)
+{
+    QImage img(src.width(), src.height(), QImage::Format_ARGB32);
+    QPainter p(&img);
+    p.fillRect(img.rect(), color);
+    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    p.drawPixmap(QPoint(0, 0), src);
+    QPixmap pix = QPixmap::fromImage(img);
+    return pix;
+}
+
 QPixmap darken_pix(QPixmap src)
 {
     QImage img = src.toImage();
@@ -602,6 +603,15 @@ void MainWindow::set_graphic_mode(int mode)
 {
     int hgt, wid;
     QString fname;
+    int cy = -1;
+    int cx = -1;
+
+    // Remember the center of the view
+    if (character_dungeon) {
+        QRect vis = visible_dungeon();
+        cy = vis.y() + vis.height() / 2;
+        cx = vis.x() + vis.width() / 2;
+    }
 
     switch (mode) {
     case GRAPHICS_DAVID_GERVAIS:
@@ -653,6 +663,12 @@ void MainWindow::set_graphic_mode(int mode)
         tile_map = blank_pix;
         clear_graphics();           
     }    
+
+    // Recenter the view
+    if (cy != -1 && cx != -1) {
+        ui_redraw_all();
+        ui_center(cy, cx);
+    }
 }
 
 // Tile creation on demmand
@@ -720,7 +736,7 @@ void MainWindow::redraw()
     }
 
     // TODO PLAYTESTING. DONT REMOVE YET
-    //wiz_light();
+    wiz_light();
 
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
@@ -1004,6 +1020,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
+    // TODO PLAYTESTING
+    debug_rarities();
+
     QString keystring = which_key->text();
 
     // Go to special key handling
@@ -1015,6 +1034,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         return;
     }
 
+    // Don't move when doing animations
+    if (ev_loop.isRunning()) {
+        return;
+    }
+
     // Normal mode
     switch (which_key->key())
     {
@@ -1022,6 +1046,24 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Escape:
         {
             ui_center(p_ptr->py, p_ptr->px);
+            break;
+        }
+        // TODO PLAYTESTING
+        case Qt::Key_Asterisk:
+        {
+            slot_something();
+            break;
+        }
+        // TODO PLAYTESTING
+        case Qt::Key_J:
+        {
+            int l;
+            bool ok;
+            l = QInputDialog::getInt(0, "Please enter a number",
+                                     "Jump to level", p_ptr->depth, 0, 101, 1, &ok, 0);
+            if (ok) {
+                dungeon_change_level(l);
+            }
             break;
         }
         // Move down
@@ -1541,7 +1583,7 @@ void ui_toolbar_hide(int toolbar)
 
 void MainWindow::slot_targetting_button()
 {
-    if (!ev_loop.isRunning()) return;
+    if (ui_mode != UI_MODE_INPUT || !ev_loop.isRunning()) return;
 
     QObject *snd = QObject::sender();
     input.text = snd->objectName();
