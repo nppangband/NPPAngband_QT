@@ -7350,6 +7350,12 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
         if (flg & PROJECT_ARC) {
             ui_animate_arc(y0, x0, y1, x1, typ, rad, degrees);
         }
+        else if (flg & PROJECT_STAR) {
+
+        }
+        else if (flg & PROJECT_BOOM) {
+            ui_animate_ball(y1, x1, rad, typ);
+        }
 
 #if 0
         /* Do the blast from inside out */

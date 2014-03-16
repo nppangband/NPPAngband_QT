@@ -24,43 +24,24 @@ bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_y, int 
 {
     if (path_n < 1) return false;
 
+    QPen pen(QColor("yellow"));
+
     for (int i = 0; i < path_n; i++) {
         int y = GRID_Y(path_g[i]);
         int x = GRID_X(path_g[i]);        
 
-        QColor col("yellow");
-
         // Don't touch the cursor
         if (y == cur_tar_y && x == cur_tar_x) continue;
 
-        /*
-        if (!dungeon_info[y][x].has_visible_monster() &&
-                !dungeon_info[y][x].has_visible_object()) continue;
-        */
-
         QGraphicsRectItem *item = main_window->dungeon_scene->addRect(
                     x * main_window->cell_wid, y * main_window->cell_hgt,
-                    main_window->cell_wid, main_window->cell_hgt, Qt::NoPen, col);
+                    main_window->cell_wid - 1, main_window->cell_hgt - 1, pen, Qt::NoBrush);
 
-        item->setOpacity(0.5);
+        item->setOpacity(1);
         item->setZValue(90);
 
         main_window->path_items.append(item);
     }
-
-    /*
-    QGraphicsItem *item2 = main_window->dungeon_scene->addLine(
-                x1 * main_window->cell_wid + main_window->cell_wid / 2,
-                y1 * main_window->cell_hgt + main_window->cell_hgt / 2,
-                cur_tar_x * main_window->cell_wid + main_window->cell_wid / 2,
-                cur_tar_y * main_window->cell_hgt + main_window->cell_hgt / 2,
-                QColor("yellow"));
-
-    item2->setOpacity(1);
-    item2->setZValue(120);
-
-    main_window->path_items.append(item2);
-    */
 
     return true;
 }
@@ -220,10 +201,21 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
-//    int k = rand_int(2);
-//    if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
-//    else if (k == 1) fire_bolt(GF_MANA, dir, 300);
-    fire_beam(GF_DISENCHANT, dir, 300, 0);
+    int k = rand_int(4);
+
+    //k = 0;
+
+    if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
+    else if (k == 1) fire_bolt(GF_MANA, dir, 300);
+    else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
+    else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
+}
+
+void ui_animate_ball(int y, int x, int radius, int type)
+{
+    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type);
+    main_window->dungeon_scene->addItem(ball);
+    ball->start();
 }
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees)
@@ -1043,7 +1035,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     }
 
     // Don't move when doing animations
-    if (ev_loop.isRunning()) return;
+    if (ev_loop.isRunning()) {
+        return;
+    }
 
     // Normal mode
     switch (which_key->key())
@@ -1052,6 +1046,12 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Escape:
         {
             ui_center(p_ptr->py, p_ptr->px);
+            break;
+        }
+        // TODO PLAYTESTING
+        case Qt::Key_Asterisk:
+        {
+            slot_something();
             break;
         }
         // TODO PLAYTESTING

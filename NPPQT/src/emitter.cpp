@@ -6,6 +6,8 @@
 #include <QGraphicsScene>
 #include <QLinearGradient>
 
+qreal delay = 1.666666;
+
 static QPixmap *ball_pix = 0;
 static QPixmap *bolt_pix = 0;
 
@@ -74,7 +76,7 @@ QRectF calculate_bbox(QPointF from, QPointF to, int margin)
 BeamAnimation::BeamAnimation(QPointF from, QPointF to, int new_gf_type)
 {
     gf_type = new_gf_type;
-    //cloud_color =
+    cloud_color = defined_colors[gf_color(gf_type) % MAX_COLORS];
 
     from = getCenter(from.y(), from.x());
     to = getCenter(to.y(), to.x());
@@ -92,6 +94,7 @@ BeamAnimation::BeamAnimation(QPointF from, QPointF to, int new_gf_type)
     anim->setEndValue(50);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
     this->setVisible(false);
+    setZValue(300);
 }
 
 class BeamPoint
@@ -140,7 +143,7 @@ QPolygonF make_beam(QPointF from, QPointF to)
     QList<QPointF> points;
     points.append(from);
     points.append(to);
-    make_beam_aux(from, to, &points, 50, 5);
+    make_beam_aux(from, to, &points, 70, 5);
     QList<BeamPoint> bp;
     for (int i = 0; i < points.size(); i++) {
         bp.append(BeamPoint(points.at(i), from));
@@ -155,6 +158,20 @@ QPolygonF make_beam(QPointF from, QPointF to)
 
 static int BALL_TILE_SIZE = 40;
 
+QPolygonF get_cloud_points(QPointF from, QPointF to, qreal step)
+{
+    QPolygonF poly;
+
+    QLineF line(from, to);
+    qreal l = line.length();
+    while (l > 0) {
+        line.setLength(l);
+        poly.append(line.p2());
+        l -= step;
+    }
+    return poly;
+}
+
 void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     load_ball_pix();
@@ -164,6 +181,7 @@ void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     bool do_beam = false;
 
     QPixmap pix = *ball_pix;
+    pix = colorize_pix2(pix, cloud_color);
     int bs = pix.width();
 
     QLineF line(p1, p2);
@@ -172,29 +190,30 @@ void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     QPolygonF beam;
 
-    painter->setOpacity(0.1);
-
-    qreal l = line.length();
-
-    while (l > 0) {
-        line.setLength(l);
-        QPointF p = line.p2();
-        p -= QPointF(bs/2, bs/2);
-        painter->drawPixmap(p, pix);
-        l -= 10;
-    }
+    painter->setOpacity(0.5);
 
     if (do_beam) {
         beam = make_beam(p1, p2);
-        for (int i = 0; i < beam.size(); i++) {
-            QPointF p = beam.at(i);
+        for (int i = 1; i < beam.size(); i++) {
+            QPolygonF poly = get_cloud_points(beam.at(i - 1), beam.at(i), 10);
+            for (int j = 1; j < poly.size(); j++) {
+                QPointF p = poly.at(j);
+                p -= QPointF(bs/2, bs/2);
+                painter->drawPixmap(p, pix);
+            }
+        }
+    }
+    else {
+        QPolygonF poly = get_cloud_points(p1, p2, 10);
+        for (int j = 1; j < poly.size(); j++) {
+            QPointF p = poly.at(j);
             p -= QPointF(bs/2, bs/2);
             painter->drawPixmap(p, pix);
         }
     }
 
     painter->setOpacity(1);
-    color = defined_colors[gf_color(gf_type) & MAX_COLORS];
+    color = defined_colors[gf_color(gf_type) % MAX_COLORS];
     QPen pen(QBrush(color), 2, Qt::SolidLine,
              Qt::RoundCap, Qt::RoundJoin);
     painter->setPen(pen);
@@ -311,28 +330,32 @@ BoltAnimation::~BoltAnimation()
     if (scene()) scene()->removeItem(this);
 }
 
-BallAnimation::BallAnimation(QPointF where, int newRadius)
+BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType)
 {
-    setZValue(300);
+    gf_type = newGFType;
+    color = defined_colors[gf_color(gf_type) % MAX_COLORS];
+
+    setZValue(1000);
     setVisible(false);
 
     load_ball_pix();
 
-    QSize size_temp = ui_grid_size();
-    size = size_temp.height();
-    size *= (newRadius * 2 + 1);
+    int size = (newRadius * 2 + 1 + 5); // 5 extra
+
+    maxLength = (size * main_window->cell_hgt) * 0.5;
 
     length = previousLength = 0;
 
-    int size2 = size + BALL_TILE_SIZE;
+    QPointF center = getCenter(where.y(), where.x());
 
-    where = getCenter(where.y(), where.x());
+    QPointF p3 = center - QPointF(maxLength, maxLength);
+    setPos(p3);
 
-    setPos(where.x() - size2 / 2, where.y() - size2 / 2);
+    brect = QRectF(0, 0, maxLength * 2, maxLength * 2);
 
     // Collect valid grids
-    QPoint p1 = to_dungeon_coord(this, pos().toPoint());
-    QPoint p2 = p1 + QPoint(size2, size2);
+    QPoint p1 = to_dungeon_coord(this, QPoint(0, 0));
+    QPoint p2 = to_dungeon_coord(this, QPoint(maxLength * 2, maxLength * 2));
 
     for (int y = p1.y(); y <= p2.y(); y++) {
         for (int x = p1.x(); x <= p2.x(); x++) {
@@ -340,17 +363,19 @@ BallAnimation::BallAnimation(QPointF where, int newRadius)
             int gr = GRID(y, x);
             bool value = false;
             if ((dungeon_info[y][x].cave_info & (CAVE_SEEN)) &&
+                    cave_project_bold(y, x) &&
                     generic_los(where.y(), where.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
     }
 
-    position = QPointF(size2 / 2, size2 / 2);
+    position = center - pos();
 
     anim = new QPropertyAnimation(this, "length");
-    anim->setDuration(1000);
+    anim->setDuration(500);
     anim->setStartValue(0);
-    anim->setEndValue(size / 2.0);
+    maxLength = ((newRadius * 2 + 1) * main_window->cell_hgt) * 0.5;
+    anim->setEndValue(maxLength);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
@@ -402,6 +427,8 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     painter->save();    
 
+    QPixmap pix = colorize_pix2(*ball_pix, color);
+
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
         QPointF where = position + fromAngle(p->angle, p->currentLength);
@@ -410,19 +437,17 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         int gr = GRID(p1.y(), p1.x());
         if (!valid.contains(gr) || !valid.value(gr)) continue;
 
-        QColor col("white");
-
         if (p->type == 0) {
             qreal opacity = 1;
-            if (p->currentLength > size / 4.0) opacity = 0.5;
+            if (p->currentLength > maxLength / 2.0) opacity = 0.5;
             painter->setOpacity(opacity);
-            painter->drawPixmap(where.x() - BALL_TILE_SIZE / 2,
-                                where.y() - BALL_TILE_SIZE / 2,
-                                BALL_TILE_SIZE, BALL_TILE_SIZE, *ball_pix);
+            painter->drawPixmap(where.x() - pix.width() / 2,
+                                where.y() - pix.height() / 2,
+                                pix);
         }
         else {
             painter->setOpacity(1);
-            painter->fillRect(QRectF(where.x(), where.y(), 1, 1), col);
+            painter->fillRect(QRectF(where.x(), where.y(), 1, 1), color);
         }
     }
 
@@ -431,7 +456,7 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 QRectF BallAnimation::boundingRect() const
 {
-    return QRectF(0, 0, size + BALL_TILE_SIZE, size + BALL_TILE_SIZE);
+    return brect;
 }
 
 ArcAnimation::~ArcAnimation()
@@ -481,32 +506,39 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     QPointF h = mulp(to - from, pp);
     centerAngle = getAngle(h);
     maxLength = rad * MAX(main_window->cell_wid, main_window->cell_hgt);
-    length = previousLength = 0;
+    drawnLength = length = previousLength = 0;
 
     degrees = newDegrees;
 
-    anim = new QPropertyAnimation(this, "length");
-    anim->setStartValue(0);
-    anim->setEndValue(maxLength);
-    int duration = (maxLength / 600.0) * 1000; // 1 Second every 600 pixels
-    if (duration < 500) duration = 500; // Minimum
-    anim->setDuration(duration);
-    connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
-
     setZValue(300);
     setVisible(false);
+
+    timer.setInterval(40);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
 }
 
-qreal ArcAnimation::getLength()
+void ArcAnimation::start()
 {
-    return length;
+    timer.start();
+    main_window->ev_loop.exec();
 }
 
-void ArcAnimation::setLength(qreal newLength)
+void ArcAnimation::finish()
 {
-    length = newLength;
+    this->setVisible(false);
+    timer.stop();
+    main_window->ev_loop.quit();
+    this->deleteLater();
+}
 
-    if (length < previousLength + 4) return;
+void ArcAnimation::do_timeout()
+{
+    length += 40;
+
+    if (length > maxLength) {
+        finish();
+        return;
+    }
 
     setVisible(true);
 
@@ -522,7 +554,7 @@ void ArcAnimation::setLength(qreal newLength)
         qreal angle = rand_int(degrees) - degrees / 2.0;
         angle = angle * PI / 180;
         p->angle = centerAngle + angle;
-        p->currentLength = 4;
+        p->currentLength = 0;
         p->type = rand_int(7);
         particles.append(p);
     }
@@ -530,13 +562,28 @@ void ArcAnimation::setLength(qreal newLength)
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
 
-        p->currentLength += delta;
-
-        // Randomness
-        p->currentLength += (delta * 0.25 * (1 - rand_int(3)));
+        if (p->currentLength > 0) {
+            p->currentLength += delta;
+        }
+        else {
+            p->currentLength = 20 + rand_int(30);
+        }
     }
 
     update();
+}
+
+int get_pix_index(int size, qreal percent)
+{
+    qreal upper = 1.0 / size;
+    qreal current = upper;
+
+    for (int i = 0; i < size; i++) {
+        if (percent < current) return i;
+        current += upper;
+    }
+
+    return size - 1;
 }
 
 void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -547,6 +594,14 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     QPixmap pix = *ball_pix;
     pix = colorize_pix2(pix, color);
+
+    QList<QPixmap> tiles;
+    tiles.append(pix);
+    for (qreal adj = 1.5; adj < 3; adj += 0.5) {
+        tiles.append(pix.scaled(pix.width() * adj, pix.height() * adj));
+    }
+
+    qreal max = 0;
 
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
@@ -562,17 +617,25 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         if (opacity < 0.3) opacity = 0.3;
         painter->setOpacity(opacity);
 
-        qreal perc = 1;
-        int cl = p->currentLength / 40;   // Enlarge pix
-        perc += (0.1 * cl);               // Just 10% every 40 pixels
-        QPixmap pix2 = pix.scaled(pix.width() * perc, pix.height() * perc);
+        int idx = get_pix_index(tiles.size(), p->currentLength / maxLength);
+        QPixmap pix2 = tiles.at(idx);
 
         pp -= QPointF(pix2.width() / 2, pix2.height() / 2);
 
         painter->drawPixmap(pp, pix2);
+
+        if (p->currentLength > max) max = p->currentLength;
     }
 
     painter->restore();
+
+    // Stop animation if we can't draw particles anymore
+    if (max <= drawnLength) {
+        finish();
+    }
+    else {
+        drawnLength = max;
+    }
 }
 
 QRectF ArcAnimation::boundingRect() const
