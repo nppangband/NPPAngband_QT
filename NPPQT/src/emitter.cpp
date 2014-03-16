@@ -271,8 +271,6 @@ void NPPAnimation::start()
     }
 }
 
-static int BOLT_SIZE = 20;
-
 BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
 {
     load_bolt_pix();
@@ -286,6 +284,7 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
     anim = new QPropertyAnimation(this, "pos");
     from = getCenter(from.y(), from.x());
     to = getCenter(to.y(), to.x());
+    current_angle = QLineF(from, to).angle();
     int d = QLineF(from, to).length();
     int dur = d * delay * 1.2; // +20%
     if (dur < 250) dur = 250;  // minimum
@@ -301,24 +300,16 @@ void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     painter->save();
 
-    current_angle += 5;
-    current_angle %= 360;
-
-    if (false && one_in_(5)) {
-        byte idx = gf_color(gf_type);
-        color = defined_colors[idx % MAX_COLORS];
-    }
-
     QPixmap pix = rotate_pix(*bolt_pix, current_angle);
-    pix = colorize_pix2(pix, color);
-    painter->drawPixmap(boundingRect(), pix, boundingRect());
+    pix = colorize_pix3(pix, color);
+    painter->drawPixmap(0, 0, pix);
 
     painter->restore();
 }
 
 QRectF BoltAnimation::boundingRect() const
 {
-    return QRectF(0, 0, BOLT_SIZE, BOLT_SIZE);
+    return QRectF(0, 0, bolt_pix->width(), bolt_pix->height());
 }
 
 void BoltAnimation::start()
@@ -364,8 +355,7 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType)
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
-            if ((dungeon_info[y][x].cave_info & (CAVE_SEEN)) &&
-                    cave_project_bold(y, x) &&
+            if (cave_project_bold(y, x) &&
                     generic_los(where.y(), where.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
@@ -491,8 +481,7 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
-            if (cave_flag_bold(y, x, CAVE_SEEN) &&
-                    cave_flag_bold(y, x, CAVE_PROJECT) &&
+            if (cave_flag_bold(y, x, CAVE_PROJECT) &&
                     generic_los(from.y(), from.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
