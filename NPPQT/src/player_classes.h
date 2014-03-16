@@ -274,6 +274,8 @@ public:
 
     // All variables above need to be re-set in player_set_wipe.
     void player_state_wipe();
+
+
 };
 
 
@@ -502,6 +504,9 @@ public:
     u16b dungeon_type;	/* One of the DUNGEON_TYPE_* constants */
 
     void player_type_wipe();
+
+    bool can_cast();
+    bool can_study();
 
 };
 

@@ -1086,6 +1086,12 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             do_cmd_observe();
             return;
         }
+        case Qt::Key_G:
+        {
+            if (keystring == "g")   do_cmd_pickup();
+            else                    do_cmd_study();
+            return;
+        }
         case Qt::Key_D:
         {            
             if (keystring == "d")   do_cmd_drop();
@@ -1116,8 +1122,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         default:
         {
             // handle lowercase keystrokes        
-            if (keystring == "g") do_cmd_pickup();
-            else if (keystring == "a") do_cmd_activate();
+            if (keystring == "a") do_cmd_activate();
+            else if (keystring == "p") do_cmd_cast();
+            else if (keystring == "b") do_cmd_browse();
             else if (keystring == "e") do_cmd_use_item();
             else if (keystring == "t") do_cmd_takeoff();
             else if (keystring == "w") do_cmd_wield();

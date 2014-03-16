@@ -108,7 +108,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/player_classes.h \
             src/birthdialog.h \
             src/emitter.h \
-            src/object_select.h
+            src/object_select.h \
+    src/cmd_spell.h
 
 
 RESOURCES += \

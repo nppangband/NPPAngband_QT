@@ -4864,6 +4864,67 @@ bool item_is_available(int item, bool (*tester)(object_type *), int mode)
 }
 
 
+/*
+ * Confirm that the player has "access" to an item to use it.
+ * TODO add "USE_STORE for book browsing
+ */
+bool object_kind_is_available(int k_idx, int mode)
+{
+    object_type *o_ptr;
+    int i;
+    bool use_inven = ((mode & USE_INVEN) ? TRUE : FALSE);
+    bool use_equip = ((mode & USE_EQUIP) ? TRUE : FALSE);
+    bool use_floor = ((mode & USE_FLOOR) ? TRUE : FALSE);
+    bool use_quiver = ((mode & USE_QUIVER) ? TRUE : FALSE);
+
+    if (use_inven)
+    {
+        for (i = 0; i < INVEN_PACK; i++)
+        {
+            o_ptr = &inventory[i];
+            if (o_ptr->k_idx == k_idx) return TRUE;
+        }
+    }
+
+    if (use_equip)
+    {
+        for (i = INVEN_WIELD; i < INVEN_TOTAL; i++)
+        {
+            o_ptr = &inventory[i];
+            if (o_ptr->k_idx == k_idx) return TRUE;
+        }
+    }
+
+    if (use_quiver)
+    {
+        for (i = QUIVER_START; i < QUIVER_END; i++)
+        {
+            o_ptr = &inventory[i];
+            if (o_ptr->k_idx == k_idx) return TRUE;
+        }
+    }
+
+    /* Scan all non-gold objects in the grid */
+    if (use_floor)
+    {
+        s16b this_o_idx, next_o_idx;
+
+        for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
+        {
+            /* Get the object */
+            o_ptr = &o_list[this_o_idx];
+
+            /* Get the next object */
+            next_o_idx = o_ptr->next_o_idx;
+
+            if (o_ptr->k_idx == k_idx) return TRUE;
+        }
+    }
+
+    return (FALSE);
+}
+
+
 bool is_throwing_weapon(object_type *o_ptr)
 {
     u32b f1, f2, f3, fn;

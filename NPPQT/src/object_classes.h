@@ -149,8 +149,6 @@ class object_type
     bool is_weapon();
     bool can_zap();
     bool can_browse();
-    bool can_study();
-    bool can_cast();
     bool can_takeoff();
     bool has_inscription();
     bool has_charges();

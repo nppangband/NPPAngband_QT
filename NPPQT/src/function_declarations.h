@@ -74,7 +74,6 @@ extern void delete_notes_file(void);
 
 //cmd_objects
 extern cmd_arg obj_uninscribe(object_type *o_ptr, cmd_arg args);
-extern cmd_arg obj_cast(object_type *o_ptr, cmd_arg args);
 extern void command_uninscribe(cmd_arg args);
 extern void do_cmd_uninscribe(void);
 extern void command_inscribe(cmd_arg args);
@@ -104,18 +103,10 @@ extern void do_cmd_pickup(void);
 extern void move_player(int dir, int jumping);
 
 // cmd_spell.cpp
-extern s16b spell_chance(int spell);
-extern bool spell_okay(int spell, bool known);
-extern int get_spell_menu(const object_type *o_ptr, int mode_dummy);
-extern bool player_can_cast(void);
-extern bool player_can_study(void);
-extern bool player_can_use_book(const object_type *o_ptr, bool cast);
-extern void do_cmd_study_spell(int code, cmd_arg args[]);
-extern void do_cmd_study_book(int code, cmd_arg args[]);
-extern void do_cmd_cast(int code, cmd_arg args[]);
-extern void spell_learn(int spell);
+extern void do_cmd_browse(void);
+extern void do_cmd_study(void);
+extern void do_cmd_cast(void);
 extern s16b get_spell_from_list(s16b book, s16b spell);
-extern int get_spell_index(int sval, int index);
 
 // dungeon.cpp
 extern void dungeon_change_level(int dlev);
@@ -435,6 +426,7 @@ extern bool obj_can_activate(object_type *o_ptr);
 extern bool get_item_okay(int item);
 extern int scan_items(int *item_list, size_t item_list_max, int mode);
 extern bool item_is_available(int item, bool (*tester)(object_type *), int mode);
+extern bool object_kind_is_available(int k_idx, int mode);
 extern bool is_throwing_weapon(object_type *o_ptr);
 extern bool pack_is_full(void);
 extern bool pack_is_overfull(void);
