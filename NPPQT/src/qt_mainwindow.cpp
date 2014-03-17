@@ -177,6 +177,18 @@ QSize ui_grid_size()
     return QSize(main_window->cell_wid, main_window->cell_hgt);
 }
 
+
+QPixmap colorize_pix3(QPixmap src, QColor color)
+{
+    QImage img = src.toImage();
+    QPainter p(&img);
+    p.setCompositionMode(QPainter::CompositionMode_Overlay);
+    p.fillRect(img.rect(), color);
+    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    p.drawPixmap(0, 0, src);
+    return QPixmap::fromImage(img);
+}
+
 QPixmap rotate_pix(QPixmap src, qreal angle)
 {
     QImage img(src.width(), src.height(), QImage::Format_ARGB32);
@@ -188,7 +200,7 @@ QPixmap rotate_pix(QPixmap src, qreal angle)
     QPainter p(&img);
     QTransform tra;
     tra.translate(src.width() / 2, src.height() / 2);
-    tra.rotate(angle);
+    tra.rotate(-angle);
     tra.translate(-src.width() / 2, -src.height() / 2);
     p.setTransform(tra);
     p.drawPixmap(QPointF(0, 0), src);
@@ -203,10 +215,10 @@ void MainWindow::slot_something()
     if (!get_aim_dir(&dir, false) || dir == 0) return;
     int k = rand_int(4);
 
-    //k = 0;
+    //k = 1;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
-    else if (k == 1) fire_bolt(GF_MANA, dir, 300);
+    else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
     else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
     else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
 }
@@ -736,7 +748,7 @@ void MainWindow::redraw()
     }
 
     // TODO PLAYTESTING. DONT REMOVE YET
-    wiz_light();
+    //wiz_light();
 
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
