@@ -62,85 +62,7 @@ void SpellSelectDialog::keyPressEvent(QKeyEvent* which_key)
     }
 }
 
-/* Adjustment to minimum failure rates for wisdom/intelligence in moria */
-int SpellSelectDialog::spell_failure_min_moria(int stat)
-{
-    int value = p_ptr->state.stat_use[stat];
 
-    if (value > 117) 		return(0);
-    else if (value > 107)	return(1);
-    else if (value > 87)	return(2);
-    else if (value > 67)	return(3);
-    else if (value > 17)	return(4);
-    else if (value > 14)	return(7);
-    else if (value > 7)		return(10);
-    else	return(25);
-}
-
-/*
- * Returns chance of failure for a spell
- */
-int SpellSelectDialog::spell_chance(int spell)
-{
-    int chance, minfail;
-
-    const magic_type *s_ptr;
-
-    /* Paranoia -- must be literate */
-    if (!cp_ptr->spell_book) return (100);
-
-    /* Get the spell */
-    s_ptr = &mp_ptr->info[spell];
-
-    /* Extract the base spell failure rate */
-    chance = s_ptr->sfail;
-
-    /* Reduce failure rate by "effective" level adjustment */
-    chance -= 3 * (p_ptr->lev - s_ptr->slevel);
-
-    /* Reduce failure rate by INT/WIS adjustment */
-    /* Extract the minimum failure rate */
-    if (game_mode == GAME_NPPMORIA)
-    {
-        chance -= 3 * (stat_adj_moria(MORIA_SPELL_STAT)-1);
-    }
-    else chance -= adj_mag_stat[SPELL_STAT_SLOT];
-
-    /* Not enough mana to cast */
-    if (s_ptr->smana > p_ptr->csp)
-    {
-        chance += 5 * (s_ptr->smana - p_ptr->csp);
-    }
-
-    /* Extract the minimum failure rate */
-    if (game_mode == GAME_NPPMORIA) minfail = spell_failure_min_moria(MORIA_SPELL_STAT);
-    else minfail = adj_mag_fail[SPELL_STAT_SLOT];
-
-    /* Non mage/priest characters never get better than 5 percent */
-    if (!(cp_ptr->flags & CF_ZERO_FAIL))
-    {
-        if (minfail < 5) minfail = 5;
-    }
-
-    /* Priest prayer penalty for "edged" weapons (before minfail) */
-    if (p_ptr->state.icky_wield)
-    {
-        chance += 25;
-    }
-
-    /* Minimum failure rate */
-    if (chance < minfail) chance = minfail;
-
-    /* Stunning makes spells harder (after minfail) */
-    if (p_ptr->timed[TMD_STUN] > 50) chance += 25;
-    else if (p_ptr->timed[TMD_STUN]) chance += 15;
-
-    /* Always a 5 percent chance of working */
-    if (chance > 95) chance = 95;
-
-    /* Return the chance */
-    return (chance);
-}
 
 // Return the index off the actual object selected.
 int SpellSelectDialog::get_selected_spell(int chosen_button)
@@ -435,6 +357,7 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     num_available_spellbooks = 0;
     choosing_book = FALSE;
     *cancelled = FALSE;
+    *success = FALSE;
     clear_spells();
 
     // First, find the eligible spells
@@ -443,12 +366,10 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     // Make sure we can actually do the command asked for
     if ((mode == BOOK_STUDY) && !p_ptr->can_study())
     {
-        *success = FALSE;
         return;
     }
     else if (!p_ptr->can_cast())
     {
-        *success = FALSE;
         return;
     }
 
@@ -456,16 +377,11 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     if ((mode == BOOK_BROWSE) && (!num_available_spellbooks))
     {
         /* Report failure */
-        *success = FALSE;
-
          return;
     }
     else if (!num_spells)
     {
         /* Report failure */
-        *success = FALSE;
-
-        /* Done here */
         return;
     }
 
@@ -644,12 +560,216 @@ s16b get_spell_from_list(s16b book, s16b spell)
     return (-1);
 }
 
+/*
+ * Helper function to help spells that target traps (disarming, etc...)
+ */
+static bool is_trap_spell(byte spell_book, int spell)
+{
+    if (spell_book == TV_MAGIC_BOOK)
+    {
+        if (spell == SPELL_TRAP_DOOR_DESTRUCTION) return (TRUE);
+    }
+    else if (spell_book == TV_PRAYER_BOOK)
+    {
+        if (spell == PRAYER_UNBARRING_WAYS) return (TRUE);
+    }
+    else if (spell_book == TV_DRUID_BOOK)
+    {
+        if (spell == DRUID_TRAP_DOOR_DESTRUCTION) return (TRUE);
 
+    }
+    return (FALSE);
+}
+
+/* Adjustment to minimum failure rates for wisdom/intelligence in moria */
+static int spell_failure_min_moria(int stat)
+{
+    int value = p_ptr->state.stat_use[stat];
+
+    if (value > 117) 		return(0);
+    else if (value > 107)	return(1);
+    else if (value > 87)	return(2);
+    else if (value > 67)	return(3);
+    else if (value > 17)	return(4);
+    else if (value > 14)	return(7);
+    else if (value > 7)		return(10);
+    else	return(25);
+}
+
+/*
+ * Returns chance of failure for a spell
+ */
+int spell_chance(int spell)
+{
+    int chance, minfail;
+
+    const magic_type *s_ptr;
+
+    /* Paranoia -- must be literate */
+    if (!cp_ptr->spell_book) return (100);
+
+    /* Get the spell */
+    s_ptr = &mp_ptr->info[spell];
+
+    /* Extract the base spell failure rate */
+    chance = s_ptr->sfail;
+
+    /* Reduce failure rate by "effective" level adjustment */
+    chance -= 3 * (p_ptr->lev - s_ptr->slevel);
+
+    /* Reduce failure rate by INT/WIS adjustment */
+    /* Extract the minimum failure rate */
+    if (game_mode == GAME_NPPMORIA)
+    {
+        chance -= 3 * (stat_adj_moria(MORIA_SPELL_STAT)-1);
+    }
+    else chance -= adj_mag_stat[SPELL_STAT_SLOT];
+
+    /* Not enough mana to cast */
+    if (s_ptr->smana > p_ptr->csp)
+    {
+        chance += 5 * (s_ptr->smana - p_ptr->csp);
+    }
+
+    /* Extract the minimum failure rate */
+    if (game_mode == GAME_NPPMORIA) minfail = spell_failure_min_moria(MORIA_SPELL_STAT);
+    else minfail = adj_mag_fail[SPELL_STAT_SLOT];
+
+    /* Non mage/priest characters never get better than 5 percent */
+    if (!(cp_ptr->flags & CF_ZERO_FAIL))
+    {
+        if (minfail < 5) minfail = 5;
+    }
+
+    /* Priest prayer penalty for "edged" weapons (before minfail) */
+    if (p_ptr->state.icky_wield)
+    {
+        chance += 25;
+    }
+
+    /* Minimum failure rate */
+    if (chance < minfail) chance = minfail;
+
+    /* Stunning makes spells harder (after minfail) */
+    if (p_ptr->timed[TMD_STUN] > 50) chance += 25;
+    else if (p_ptr->timed[TMD_STUN]) chance += 15;
+
+    /* Always a 5 percent chance of working */
+    if (chance > 95) chance = 95;
+
+    /* Return the chance */
+    return (chance);
+}
 
 // Cast a spell
 void do_cmd_cast(void)
 {
+    int spell;
+    int dir = DIR_UNKNOWN;
+    QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
+    QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
 
+    QString prompt = (QString("Please select a %1 to %2.") .arg(noun) .arg(verb));
+
+    int mode = BOOK_CAST;
+    bool success;
+    bool cancelled;
+    SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
+
+    // Handle not having a spell to learn
+    if ((!success) || (cancelled))
+    {
+        if (!success && !cancelled) message(QString("You have no %1s that you can %3 right now.") .arg(noun) .arg(verb));
+        return;
+    }
+
+    bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
+
+    if (spell_needs_aim(cp_ptr->spell_book, spell) && !get_aim_dir(&dir, trap_spell)) return;
+
+    /* Get the spell */
+    const magic_type *s_ptr;s_ptr = &mp_ptr->info[spell];
+
+    /* Verify insufficient mana */
+    if (s_ptr->smana > p_ptr->csp)
+    {
+        /* Warning */
+        message(QString("You do not have enough mana to %1 this %2.") .arg(verb) .arg(noun));
+
+        /* Verify */
+        if (!get_check("Attempt it anyway? ")) return;
+    }
+
+    /* Spell failure chance */
+    int chance = spell_chance(spell);
+
+    /* Failed spell */
+    if (rand_int(100) < chance)
+    {
+        message(QString("You failed to get the spell off!"));
+        process_player_energy(BASE_ENERGY_MOVE);
+        return;
+    }
+
+    //Actually cast the spell.
+    sound(MSG_SPELL);
+
+    if (cast_spell(MODE_SPELL_CAST, cp_ptr->spell_book, spell, dir) == NULL) return;
+
+    /* The spell was cast */
+    if (!(p_ptr->spell_flags[spell] & PY_SPELL_WORKED))
+    {
+        int e = s_ptr->sexp;
+
+        /* The spell worked */
+        p_ptr->spell_flags[spell] |= PY_SPELL_WORKED;
+
+        /* Gain experience */
+        gain_exp(e * s_ptr->slevel);
+
+        /* Redraw object recall */
+        p_ptr->redraw |= (PR_OBJECT);
+    }
+
+    /* Sufficient mana */
+    if (s_ptr->smana <= p_ptr->csp)
+    {
+        /* Use some mana */
+        p_ptr->csp -= s_ptr->smana;
+    }
+
+    /* Over-exert the player */
+    else
+    {
+        int oops = s_ptr->smana - p_ptr->csp;
+
+        /* No mana left */
+        p_ptr->csp = 0;
+        p_ptr->csp_frac = 0;
+
+        /* Message */
+        message(QString("You faint from the effort!"));
+
+        /* Hack -- Bypass free action */
+        (void)inc_timed(TMD_PARALYZED, randint1(5 * oops + 1), TRUE);
+
+        /* Damage CON (possibly permanently) */
+        if (rand_int(100) < 50)
+        {
+            bool perm = (rand_int(100) < 25);
+
+            /* Message */
+            message(QString("You have damaged your health!"));
+
+            /* Reduce constitution */
+            (void)dec_stat(A_CON, 15 + randint(10), perm);
+        }
+    }
+
+    /* Redraw mana */
+    p_ptr->redraw |= (PR_MANA);
+
+    process_player_energy(BASE_ENERGY_MOVE);
 }
 
 // Learn a spell
@@ -663,7 +783,7 @@ void do_cmd_study(void)
     QString prompt = (QString("Please select a %1 to study.") .arg(noun));
 
     int mode = BOOK_STUDY;
-    bool success = FALSE;
+    bool success;
     bool cancelled;
     SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
 
@@ -686,7 +806,7 @@ void do_cmd_browse(void)
     int spell;
     QString prompt = QString("Press OK when done browsing.");
     int mode = BOOK_BROWSE;
-    bool success = FALSE;
+    bool success;
     bool cancelled;
     SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
 
