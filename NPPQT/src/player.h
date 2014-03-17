@@ -877,4 +877,7 @@ enum
 #define STANDARD_ENERGY_GAIN	10
 
 
+#define DIR_UNKNOWN 0
+#define DIR_TARGET 5
+
 #endif // PLAYER_H

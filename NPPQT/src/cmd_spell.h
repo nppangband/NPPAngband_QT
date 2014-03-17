@@ -65,9 +65,6 @@ private:
 
     QString get_spell_comment(int spell);
 
-    // Calculate the chance of a spell being sucessfully cast
-    int spell_chance(int spell);
-    int spell_failure_min_moria(int stat);
 
     //Record an item selection
     int  get_selected_spell(int chosen_button);
