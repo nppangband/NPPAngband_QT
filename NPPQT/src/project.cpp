@@ -7352,13 +7352,13 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     if (!blind && !(flg & (PROJECT_HIDE)) && ((grids > 1) || (dist == 0)))
     {
         if (flg & PROJECT_ARC) {
-            ui_animate_arc(y0, x0, y1, x1, typ, rad, degrees);
+            ui_animate_arc(y0, x0, y1, x1, typ, rad, degrees, flg);
         }
         else if (flg & PROJECT_STAR) {
             ui_animate_star(y0, x0, rad, typ, gy, gx, grids);
         }
         else if (flg & PROJECT_BOOM) {
-            ui_animate_ball(y2, x2, rad, typ);
+            ui_animate_ball(y2, x2, rad, typ, flg);
         }
 
 #if 0

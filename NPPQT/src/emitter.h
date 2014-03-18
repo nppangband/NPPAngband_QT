@@ -1,6 +1,7 @@
 #ifndef EMITTER_H
 #define EMITTER_H
 
+#include "defines.h"
 #include <QObject>
 #include <QPointF>
 #include <QList>
@@ -90,7 +91,7 @@ public:
     int gf_type;
     QColor color;
 
-    BallAnimation(QPointF where, int newRadius, int newGFType);
+    BallAnimation(QPointF where, int newRadius, int newGFType, u32b flg);
     qreal getLength();
     void setLength(qreal newLength);
 
@@ -121,7 +122,7 @@ public:
     QTimer timer;
     QList<QPixmap> tiles;
 
-    ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad);
+    ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad, u32b flg);
     void start();
     void finish();
 

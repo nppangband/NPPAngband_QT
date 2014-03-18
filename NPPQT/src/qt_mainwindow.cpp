@@ -221,19 +221,19 @@ void MainWindow::slot_something()
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
     else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
     else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
-    else if (k == 4) fire_star(GF_DISENCHANT, 300, 6, 0);
+    else if (k == 4) fire_star(GF_DISENCHANT, 300, 4, 0);
 }
 
-void ui_animate_ball(int y, int x, int radius, int type)
+void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
 {
-    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type);
+    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
     main_window->dungeon_scene->addItem(ball);
     ball->start();
 }
 
-void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees)
+void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
 {
-    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius);
+    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
     main_window->dungeon_scene->addItem(arc);
     arc->start();
 }

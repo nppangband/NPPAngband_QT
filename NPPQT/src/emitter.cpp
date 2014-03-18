@@ -1,6 +1,6 @@
+#include "npp.h"
 #include "emitter.h"
 #include "qt_mainwindow.h"
-#include "npp.h"
 #include <QPainter>
 #include <QtCore/qmath.h>
 #include <QGraphicsScene>
@@ -324,7 +324,7 @@ BoltAnimation::~BoltAnimation()
     if (scene()) scene()->removeItem(this);
 }
 
-BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType)
+BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b flg)
 {
     gf_type = newGFType;
     color = defined_colors[gf_color(gf_type) % MAX_COLORS];
@@ -356,7 +356,8 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType)
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
-            if (cave_project_bold(y, x) &&
+            if (flg & PROJECT_PASS) value = true;
+            else if (cave_project_bold(y, x) &&
                     generic_los(where.y(), where.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
@@ -464,7 +465,7 @@ ArcAnimation::~ArcAnimation()
 
 static int ARC_TILE_SIZE = 40;
 
-ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad)
+ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad, u32b flg)
 {
     load_ball_pix();
 
@@ -492,7 +493,8 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
-            if (cave_flag_bold(y, x, CAVE_PROJECT) &&
+            if (flg & PROJECT_PASS) value = true;
+            else if (cave_flag_bold(y, x, CAVE_PROJECT) &&
                     generic_los(from.y(), from.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
@@ -746,7 +748,7 @@ void StarAnimation::do_timeout()
             p->currentLength += 10;
         }
         else {
-            p->currentLength = 4 + rand_int(4);
+            p->currentLength = 4 + rand_int(8);
         }
     }
 
