@@ -213,14 +213,15 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
-    int k = rand_int(4);
+    int k = rand_int(5);
 
-    //k = 1;
+    //k = 4;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
     else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
     else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
+    else if (k == 4) fire_star(GF_DISENCHANT, 300, 6, 0);
 }
 
 void ui_animate_ball(int y, int x, int radius, int type)
@@ -249,6 +250,13 @@ void ui_animate_bolt(int y0, int x0, int y1, int x1, int type)
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
+}
+
+void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
+{
+    StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
+    main_window->dungeon_scene->addItem(star);
+    star->start();
 }
 
 void MainWindow::slot_zoom_out()
@@ -748,7 +756,7 @@ void MainWindow::redraw()
     }
 
     // TODO PLAYTESTING. DONT REMOVE YET
-    //wiz_light();
+    wiz_light();
 
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);

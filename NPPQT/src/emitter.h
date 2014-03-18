@@ -119,6 +119,7 @@ public:
     QColor color;
     int rad;
     QTimer timer;
+    QList<QPixmap> tiles;
 
     ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad);
     void start();
@@ -128,6 +129,34 @@ public:
     QRectF boundingRect() const;
 
     virtual ~ArcAnimation();
+public slots:
+    void do_timeout();
+};
+
+class StarAnimation: public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+public:
+    QTimer timer;
+    qreal length;
+    qreal previousLength;
+    qreal maxLength;
+    QPixmap pix;
+    QPointF center;
+    QRectF brect;
+    QList<BallParticle*> particles;
+    int gf_type;
+    QHash<int, bool> valid;
+
+    StarAnimation(QPointF newCenter, int radius, int newGFType, int gy[], int gx[], int grids);
+
+    void start();
+    void stop();
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
+
 public slots:
     void do_timeout();
 };

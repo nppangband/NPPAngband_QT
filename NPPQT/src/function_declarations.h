@@ -634,6 +634,7 @@ extern void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius,
 extern void ui_animate_bolt(int y0, int x0, int y1, int x1, int type);
 extern void ui_animate_beam(int y0, int x0, int y1, int x1, int type);
 extern void ui_animate_ball(int y, int x, int radius, int type);
+extern void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

@@ -10,6 +10,7 @@ qreal delay = 1.666666; // delay per pixel. 1 second every 600 pixels
 
 static QPixmap *ball_pix = 0;
 static QPixmap *bolt_pix = 0;
+static QPixmap *star_pix = 0;
 
 QPointF mulp(QPointF a, QPointF b)
 {
@@ -465,9 +466,19 @@ static int ARC_TILE_SIZE = 40;
 
 ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad)
 {
+    load_ball_pix();
+
     gf_type = type;
     byte idx = gf_color(gf_type);
     color = defined_colors[idx % MAX_COLORS];
+
+    QPixmap pix = *ball_pix;
+    pix = colorize_pix2(pix, color);
+
+    tiles.append(pix);
+    for (qreal adj = 1.5; adj < 3; adj += 0.5) {
+        tiles.append(pix.scaled(pix.width() * adj, pix.height() * adj));
+    }
 
     rad = newRad;
 
@@ -580,18 +591,7 @@ int get_pix_index(int size, qreal percent)
 
 void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    load_ball_pix();
-
     painter->save();
-
-    QPixmap pix = *ball_pix;
-    pix = colorize_pix2(pix, color);
-
-    QList<QPixmap> tiles;
-    tiles.append(pix);
-    for (qreal adj = 1.5; adj < 3; adj += 0.5) {
-        tiles.append(pix.scaled(pix.width() * adj, pix.height() * adj));
-    }
 
     qreal max = 0;
 
@@ -633,4 +633,122 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 QRectF ArcAnimation::boundingRect() const
 {
     return brect;
+}
+
+StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int gy[], int gx[], int grids)
+{
+    gf_type = newGFType;
+
+    if (star_pix == 0) {
+        QString path(NPP_DIR_GRAF);
+        path.append("star1.png");
+        star_pix = new QPixmap(path);
+    }
+
+    while (--grids >= 0) {
+        int gr = GRID(gy[grids], gx[grids]);
+        valid.insert(gr, true);
+    }
+
+    QColor color = defined_colors[gf_color(gf_type) % MAX_COLORS];
+    pix = colorize_pix3(*star_pix, color);
+
+    this->setVisible(false);
+    this->setZValue(1000);
+
+    QPointF adj(radius + 5, radius + 5); // 5 extra
+    QPointF p1 = newCenter - adj;
+    QPointF p2 = newCenter + adj;
+
+    p1 = getCenter(p1.y(), p1.x());
+    p2 = getCenter(p2.y(), p2.x());
+    brect = QRectF(0, 0, p2.x() - p1.x(), p2.y() - p1.y());
+    this->setPos(p1);
+
+    center = getCenter(newCenter.y(), newCenter.x()) - p1;
+
+    length = previousLength = 0;
+
+    maxLength = main_window->cell_hgt * (radius + 0.5);
+
+    timer.setInterval(40);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+}
+
+void StarAnimation::start()
+{
+    timer.start();
+    if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
+}
+
+void StarAnimation::stop()
+{
+    timer.stop();
+    main_window->ev_loop.quit();
+    this->setVisible(false);
+    this->scene()->removeItem(this);
+    for (int i = 0; i < particles.size(); i++) {
+        delete particles.at(i);
+    }
+    particles.clear();
+    this->deleteLater();
+}
+
+void StarAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    painter->save();
+
+    for (int i = 0; i < particles.size(); i++) {
+        BallParticle *p = particles.at(i);
+        QLineF line = QLineF::fromPolar(p->currentLength, p->angle);
+        QPointF point = center + line.p2();
+
+        QPoint coord = to_dungeon_coord(this, point.toPoint());
+        int gr = GRID(coord.y(), coord.x());
+        if (!valid.contains(gr)) continue;
+
+        QPointF adj(pix.width() / 2, pix.height() / 2);
+        point -= adj;
+
+        painter->drawPixmap(point, pix);
+    }
+
+    painter->restore();
+}
+
+QRectF StarAnimation::boundingRect() const
+{
+    return brect;
+}
+
+void StarAnimation::do_timeout()
+{
+    length += 10;
+
+    if (length > maxLength) {
+        this->stop();
+        return;
+    }
+
+    this->setVisible(true);
+
+    for (int i = 0; i < 15; i++) {
+        BallParticle *p = new BallParticle;
+        p->currentLength = 0;
+        p->type = 0;
+        p->angle = rand_int(360);
+        particles.append(p);
+    }
+
+    for (int i = 0; i < particles.size(); i++) {
+        BallParticle *p = particles.at(i);
+        if (p->currentLength > 0) {
+            p->currentLength += 10;
+        }
+        else {
+            p->currentLength = 4 + rand_int(4);
+        }
+    }
+
+    this->update();
 }
