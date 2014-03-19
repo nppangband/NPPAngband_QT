@@ -74,7 +74,9 @@ SOURCES +=  src/qt_main.cpp\
             src/tables.cpp \
             src/target.cpp \
             src/timed.cpp \
-            src/utilities.cpp
+            src/utilities.cpp \
+    src/mon_info.cpp
+
 
 
 

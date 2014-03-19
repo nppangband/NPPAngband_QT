@@ -243,6 +243,7 @@ extern bool get_move(monster_type *m_ptr, int *ty, int *tx, bool *fear, bool mus
 extern int cave_passable_mon(monster_type *m_ptr, int y, int x, bool *bash);
 
 // mon_process.cpp
+extern void cloud_surround(int r_idx, int *typ, int *dam, int *rad);
 extern void process_entities(void);
 
 //mon_ranged_attack.cpp
