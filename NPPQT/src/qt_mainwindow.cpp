@@ -165,13 +165,6 @@ void ui_player_moved()
     }
 }
 
-void MainWindow::slot_finish_bolt()
-{
-    QGraphicsItem *item = dynamic_cast<QGraphicsItem *>(QObject::sender());
-    dungeon_scene->removeItem(item);
-    delete item;
-}
-
 QSize ui_grid_size()
 {
     return QSize(main_window->cell_wid, main_window->cell_hgt);
@@ -257,16 +250,6 @@ void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int
     StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
     main_window->dungeon_scene->addItem(star);
     star->start();
-}
-
-void MainWindow::slot_zoom_out()
-{
-    graphics_view->scale(0.5, 0.5);
-}
-
-void MainWindow::slot_zoom_in()
-{
-    graphics_view->setTransform(QTransform::fromScale(1, 1));
 }
 
 void MainWindow::slot_find_player()
