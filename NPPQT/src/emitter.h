@@ -1,6 +1,7 @@
 #ifndef EMITTER_H
 #define EMITTER_H
 
+#include "defines.h"
 #include <QObject>
 #include <QPointF>
 #include <QList>
@@ -55,8 +56,10 @@ public:
     int current_angle;
     int gf_type;
     QColor color;
+    u32b flg;
+    QPixmap pix;
 
-    BoltAnimation(QPointF from, QPointF to, int new_gf_type);
+    BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
@@ -90,7 +93,7 @@ public:
     int gf_type;
     QColor color;
 
-    BallAnimation(QPointF where, int newRadius, int newGFType);
+    BallAnimation(QPointF where, int newRadius, int newGFType, u32b flg);
     qreal getLength();
     void setLength(qreal newLength);
 
@@ -119,8 +122,9 @@ public:
     QColor color;
     int rad;
     QTimer timer;
+    QList<QPixmap> tiles;
 
-    ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad);
+    ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad, u32b flg);
     void start();
     void finish();
 
@@ -128,6 +132,34 @@ public:
     QRectF boundingRect() const;
 
     virtual ~ArcAnimation();
+public slots:
+    void do_timeout();
+};
+
+class StarAnimation: public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+public:
+    QTimer timer;
+    qreal length;
+    qreal previousLength;
+    qreal maxLength;
+    QPixmap pix;
+    QPointF center;
+    QRectF brect;
+    QList<BallParticle*> particles;
+    int gf_type;
+    QHash<int, bool> valid;
+
+    StarAnimation(QPointF newCenter, int radius, int newGFType, int gy[], int gx[], int grids);
+
+    void start();
+    void stop();
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
+
 public slots:
     void do_timeout();
 };

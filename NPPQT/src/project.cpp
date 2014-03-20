@@ -7048,7 +7048,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                 ui_animate_beam(y0, x0, y, x, typ);
             }
             else {
-                ui_animate_bolt(y0, x0, y, x, typ);
+                ui_animate_bolt(y0, x0, y, x, typ, flg);
             }
         }
     }
@@ -7222,10 +7222,13 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                                 /* Must be within effect range. */
                                 if (max_dist >= dist)
                                 {
-                                    gy[grids] = y;
-                                    gx[grids] = x;
-                                    gd[grids] = 0;
-                                    grids++;
+                                    if ((flg & PROJECT_PASS)
+                                            || generic_los(y0, x0, y, x, CAVE_PROJECT)) {
+                                        gy[grids] = y;
+                                        gx[grids] = x;
+                                        gd[grids] = 0;
+                                        grids++;
+                                    }
                                 }
 
                                 /* Arc found.  End search */
@@ -7261,7 +7264,8 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                      */
                     if (diff < (degrees + 6) / 4)
                     {
-                        if (generic_los(y2, x2, y, x, CAVE_PROJECT))
+                        if ((flg & PROJECT_PASS)
+                                || generic_los(y2, x2, y, x, CAVE_PROJECT))
                         {
                             gy[grids] = y;
                             gx[grids] = x;
@@ -7348,13 +7352,13 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     if (!blind && !(flg & (PROJECT_HIDE)) && ((grids > 1) || (dist == 0)))
     {
         if (flg & PROJECT_ARC) {
-            ui_animate_arc(y0, x0, y1, x1, typ, rad, degrees);
+            ui_animate_arc(y0, x0, y1, x1, typ, rad, degrees, flg);
         }
         else if (flg & PROJECT_STAR) {
-
+            ui_animate_star(y0, x0, rad, typ, gy, gx, grids);
         }
         else if (flg & PROJECT_BOOM) {
-            ui_animate_ball(y1, x1, rad, typ);
+            ui_animate_ball(y2, x2, rad, typ, flg);
         }
 
 #if 0

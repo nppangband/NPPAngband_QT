@@ -165,13 +165,6 @@ void ui_player_moved()
     }
 }
 
-void MainWindow::slot_finish_bolt()
-{
-    QGraphicsItem *item = dynamic_cast<QGraphicsItem *>(QObject::sender());
-    dungeon_scene->removeItem(item);
-    delete item;
-}
-
 QSize ui_grid_size()
 {
     return QSize(main_window->cell_wid, main_window->cell_hgt);
@@ -213,26 +206,30 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
-    int k = rand_int(4);
+    int k = rand_int(8);
 
-    //k = 1;
+    //k = 7;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
     else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
     else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
+    else if (k == 4) fire_star(GF_DISENCHANT, 300, 4, 0);
+    else if (k == 5) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, 0);
+    else if (k == 6) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_SHOT);
+    else if (k == 7) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_ROCK);
 }
 
-void ui_animate_ball(int y, int x, int radius, int type)
+void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
 {
-    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type);
+    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
     main_window->dungeon_scene->addItem(ball);
     ball->start();
 }
 
-void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees)
+void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
 {
-    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius);
+    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
     main_window->dungeon_scene->addItem(arc);
     arc->start();
 }
@@ -244,21 +241,18 @@ void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
     beam->start();
 }
 
-void ui_animate_bolt(int y0, int x0, int y1, int x1, int type)
+void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
 {
-    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
+    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
 }
 
-void MainWindow::slot_zoom_out()
+void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
 {
-    graphics_view->scale(0.5, 0.5);
-}
-
-void MainWindow::slot_zoom_in()
-{
-    graphics_view->setTransform(QTransform::fromScale(1, 1));
+    StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
+    main_window->dungeon_scene->addItem(star);
+    star->start();
 }
 
 void MainWindow::slot_find_player()
@@ -748,7 +742,7 @@ void MainWindow::redraw()
     }
 
     // TODO PLAYTESTING. DONT REMOVE YET
-    //wiz_light();
+    wiz_light();
 
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);

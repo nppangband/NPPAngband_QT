@@ -1,6 +1,6 @@
+#include "npp.h"
 #include "emitter.h"
 #include "qt_mainwindow.h"
-#include "npp.h"
 #include <QPainter>
 #include <QtCore/qmath.h>
 #include <QGraphicsScene>
@@ -10,6 +10,26 @@ qreal delay = 1.666666; // delay per pixel. 1 second every 600 pixels
 
 static QPixmap *ball_pix = 0;
 static QPixmap *bolt_pix = 0;
+static QPixmap *star_pix = 0;
+
+enum {
+    ARROW_IDX = 0,
+    SHOT_IDX,
+    BOULDER_IDX,
+    MAX_MISSILES
+};
+static QPixmap *missiles[MAX_MISSILES];
+static const char *the_names[MAX_MISSILES] = {"arrow1.png", "shot1.png", "boulder1.png"};
+
+static void load_missiles()
+{
+    for (int i = 0; i < MAX_MISSILES; i++) {
+        if (missiles[i] != 0) continue;
+        QString path(NPP_DIR_GRAF);
+        path.append(the_names[i]);
+        missiles[i] = new QPixmap(path);
+    }
+}
 
 QPointF mulp(QPointF a, QPointF b)
 {
@@ -271,28 +291,49 @@ void NPPAnimation::start()
     }
 }
 
-BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
+BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg)
 {
-    load_bolt_pix();
+    flg = new_flg;
+    gf_type = new_gf_type;    
+    color = defined_colors[gf_color(gf_type) % MAX_COLORS];
 
-    gf_type = new_gf_type;
-    byte idx = gf_color(gf_type);
-    color = defined_colors[idx % MAX_COLORS];
-    current_angle = 0;
-    setVisible(false);
-    setZValue(300);
-    anim = new QPropertyAnimation(this, "pos");
     from = getCenter(from.y(), from.x());
     to = getCenter(to.y(), to.x());
     current_angle = QLineF(from, to).angle();
+
+    if (gf_type == GF_ARROW) {
+        load_missiles();
+        if (flg & PROJECT_ROCK) {
+            pix = *missiles[BOULDER_IDX];
+        }
+        else if (flg & PROJECT_SHOT) {
+            pix = *missiles[SHOT_IDX];
+        }
+        else {
+            pix = *missiles[ARROW_IDX];
+            pix = rotate_pix(pix, current_angle);
+        }
+    }
+    else {
+        load_bolt_pix();
+        pix = rotate_pix(*bolt_pix, current_angle);
+        pix = colorize_pix3(pix, color);
+    }
+
+    setVisible(false);
+    setZValue(300);
+
+    anim = new QPropertyAnimation(this, "pos");   
+
     int d = QLineF(from, to).length();
     int dur = d * delay * 1.2; // +20%
-    if (dur < 250) dur = 250;  // minimum
-    anim->setDuration(dur);
-    QPixmap pix = *bolt_pix;
+    if (dur < 250) dur = 250;  // minimum    
+    anim->setDuration(dur);    
+
     QPointF adj = QPointF(pix.width() / 2, pix.height() / 2);
     anim->setStartValue(from - adj);
     anim->setEndValue(to - adj);
+
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
@@ -300,8 +341,6 @@ void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     painter->save();
 
-    QPixmap pix = rotate_pix(*bolt_pix, current_angle);
-    pix = colorize_pix3(pix, color);
     painter->drawPixmap(0, 0, pix);
 
     painter->restore();
@@ -309,7 +348,7 @@ void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 QRectF BoltAnimation::boundingRect() const
 {
-    return QRectF(0, 0, bolt_pix->width(), bolt_pix->height());
+    return QRectF(0, 0, pix.width(), pix.height());
 }
 
 void BoltAnimation::start()
@@ -323,7 +362,7 @@ BoltAnimation::~BoltAnimation()
     if (scene()) scene()->removeItem(this);
 }
 
-BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType)
+BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b flg)
 {
     gf_type = newGFType;
     color = defined_colors[gf_color(gf_type) % MAX_COLORS];
@@ -355,7 +394,8 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType)
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
-            if (cave_project_bold(y, x) &&
+            if (flg & PROJECT_PASS) value = true;
+            else if (cave_project_bold(y, x) &&
                     generic_los(where.y(), where.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
@@ -463,11 +503,21 @@ ArcAnimation::~ArcAnimation()
 
 static int ARC_TILE_SIZE = 40;
 
-ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad)
+ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad, u32b flg)
 {
+    load_ball_pix();
+
     gf_type = type;
     byte idx = gf_color(gf_type);
     color = defined_colors[idx % MAX_COLORS];
+
+    QPixmap pix = *ball_pix;
+    pix = colorize_pix2(pix, color);
+
+    tiles.append(pix);
+    for (qreal adj = 1.5; adj < 3; adj += 0.5) {
+        tiles.append(pix.scaled(pix.width() * adj, pix.height() * adj));
+    }
 
     rad = newRad;
 
@@ -481,7 +531,8 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
-            if (cave_flag_bold(y, x, CAVE_PROJECT) &&
+            if (flg & PROJECT_PASS) value = true;
+            else if (cave_flag_bold(y, x, CAVE_PROJECT) &&
                     generic_los(from.y(), from.x(), y, x, CAVE_PROJECT)) value = true;
             valid.insert(gr, value);
         }
@@ -580,18 +631,7 @@ int get_pix_index(int size, qreal percent)
 
 void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    load_ball_pix();
-
     painter->save();
-
-    QPixmap pix = *ball_pix;
-    pix = colorize_pix2(pix, color);
-
-    QList<QPixmap> tiles;
-    tiles.append(pix);
-    for (qreal adj = 1.5; adj < 3; adj += 0.5) {
-        tiles.append(pix.scaled(pix.width() * adj, pix.height() * adj));
-    }
 
     qreal max = 0;
 
@@ -633,4 +673,122 @@ void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 QRectF ArcAnimation::boundingRect() const
 {
     return brect;
+}
+
+StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int gy[], int gx[], int grids)
+{
+    gf_type = newGFType;
+
+    if (star_pix == 0) {
+        QString path(NPP_DIR_GRAF);
+        path.append("star1.png");
+        star_pix = new QPixmap(path);
+    }
+
+    while (--grids >= 0) {
+        int gr = GRID(gy[grids], gx[grids]);
+        valid.insert(gr, true);
+    }
+
+    QColor color = defined_colors[gf_color(gf_type) % MAX_COLORS];
+    pix = colorize_pix3(*star_pix, color);
+
+    this->setVisible(false);
+    this->setZValue(1000);
+
+    QPointF adj(radius + 5, radius + 5); // 5 extra
+    QPointF p1 = newCenter - adj;
+    QPointF p2 = newCenter + adj;
+
+    p1 = getCenter(p1.y(), p1.x());
+    p2 = getCenter(p2.y(), p2.x());
+    brect = QRectF(0, 0, p2.x() - p1.x(), p2.y() - p1.y());
+    this->setPos(p1);
+
+    center = getCenter(newCenter.y(), newCenter.x()) - p1;
+
+    length = previousLength = 0;
+
+    maxLength = main_window->cell_hgt * (radius + 0.5);
+
+    timer.setInterval(40);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+}
+
+void StarAnimation::start()
+{
+    timer.start();
+    if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
+}
+
+void StarAnimation::stop()
+{
+    timer.stop();
+    main_window->ev_loop.quit();
+    this->setVisible(false);
+    this->scene()->removeItem(this);
+    for (int i = 0; i < particles.size(); i++) {
+        delete particles.at(i);
+    }
+    particles.clear();
+    this->deleteLater();
+}
+
+void StarAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    painter->save();
+
+    for (int i = 0; i < particles.size(); i++) {
+        BallParticle *p = particles.at(i);
+        QLineF line = QLineF::fromPolar(p->currentLength, p->angle);
+        QPointF point = center + line.p2();
+
+        QPoint coord = to_dungeon_coord(this, point.toPoint());
+        int gr = GRID(coord.y(), coord.x());
+        if (!valid.contains(gr)) continue;
+
+        QPointF adj(pix.width() / 2, pix.height() / 2);
+        point -= adj;
+
+        painter->drawPixmap(point, pix);
+    }
+
+    painter->restore();
+}
+
+QRectF StarAnimation::boundingRect() const
+{
+    return brect;
+}
+
+void StarAnimation::do_timeout()
+{
+    length += 10;
+
+    if (length > maxLength) {
+        this->stop();
+        return;
+    }
+
+    this->setVisible(true);
+
+    for (int i = 0; i < 15; i++) {
+        BallParticle *p = new BallParticle;
+        p->currentLength = 0;
+        p->type = 0;
+        p->angle = rand_int(360);
+        particles.append(p);
+    }
+
+    for (int i = 0; i < particles.size(); i++) {
+        BallParticle *p = particles.at(i);
+        if (p->currentLength > 0) {
+            p->currentLength += 10;
+        }
+        else {
+            p->currentLength = 4 + rand_int(8);
+        }
+    }
+
+    this->update();
 }
