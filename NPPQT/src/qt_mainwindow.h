@@ -50,7 +50,7 @@ public:
     bool do_pseudo_ascii;
 
     QPixmap blank_pix;
-    // The key must me strings of the form "[row]x[col]"
+    // The key must be strings of the form "[row]x[col]"
     QHash<QString, QPixmap> tiles;
     QPixmap tile_map;
 
@@ -101,10 +101,7 @@ private slots:
 
     void slot_find_player();
     void slot_redraw();
-    void slot_zoom_out();
-    void slot_zoom_in();
     void slot_something();
-    void slot_finish_bolt();
 
     void slot_targetting_button();
 
