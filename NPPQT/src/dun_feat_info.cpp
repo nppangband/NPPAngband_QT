@@ -49,7 +49,7 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
     QString output;
     output.clear();
 
-    text_out("This is a");
+    output.append("This is a");
 
     /* Collect some flags */
     if (f_l_ptr->f_l_flags2 & FF2_SHALLOW)		if (n < N_ELEMENTS(flags)) flags[n++] = " shallow";
@@ -72,19 +72,19 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
     for (i = 0; i < n; i++)
     {
         /* Append a 'n' to 'a' if the first flag begins with a vowel */
-        if ((i == 0) && begins_with_vowel(flags[i])) text_out("n");
+        if ((i == 0) && begins_with_vowel(flags[i])) output.append("n");
 
-        text_out_c(TERM_L_BLUE, flags[i]);
+        output.append(QString("<font color=cyan>%1</font>") .arg(flags[i]));
     }
 
     /* Get the feature type name */
     type = get_feature_type(f_l_ptr);
 
     /* Append a 'n' to 'a' if the type name begins with a vowel */
-    if ((n == 0) && begins_with_vowel(type)) text_out("n");
+    if ((n == 0) && begins_with_vowel(type)) output.append("n");
 
     /* Describe the feature type */
-    text_out(type);
+    output.append(type);
 
     /* Describe location */
     if (f_ptr->f_flags2 & FF2_EFFECT)
@@ -94,38 +94,37 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
 
     else if (f_l_ptr->f_l_flags1 & FF1_SHOP)
     {
-        text_out_c(TERM_L_GREEN, " that is found in the town");
+        output.append(QString("<font color=darkGreen> that is found in the town</font>"));
     }
     else if ((f_l_ptr->f_l_flags2 & FF2_TRAP_MON) ||
     (f_l_ptr->f_l_flags1 & FF1_GLYPH))
     {
-        text_out_c(TERM_L_GREEN, " that is set by the player");
+        output.append(QString("<font color=darkGreen> that is set by the player</font>"));
     }
     else if (f_l_ptr->f_l_sights > 10)
     {
-        text_out(" that");
+        output.append(" that");
 
         if (f_l_ptr->f_l_sights > 20)
         {
-            if (f_ptr->f_rarity >= 4) text_out(" rarely");
-            else if (f_ptr->f_rarity >= 2) text_out(" occasionally");
-            else text_out(" commonly");
+            if (f_ptr->f_rarity >= 4) output.append(" rarely");
+            else if (f_ptr->f_rarity >= 2) output.append(" occasionally");
+            else output.append(" commonly");
         }
 
         if (f_ptr->f_level == 0)
         {
-            text_out_c(TERM_L_GREEN, " appears in both the town and dungeon");
+            output.append(QString("<font color=darkGreen> appears in both the town and dungeon</font>"));
         }
         else if (f_ptr->f_level == 1)
         {
-            text_out_c(TERM_L_GREEN, " appears throughout the dungeon");
+            output.append(QString("<font color=darkGreen> appears throughout the dungeon</font>"));
         }
         else
         {
-            text_out_c(TERM_L_GREEN, " appears");
+            output.append(QString("<font color=darkGreen> appears</font>"));
 
-            text_out_c(TERM_L_GREEN, format(" at depths of %d feet and below",
-                                        f_ptr->f_level * 50));
+            output.append(QString("<font color=darkGreen>  at depths of %1 feet and below</font>") .arg(f_ptr->f_level * 50));
         }
 
     }
@@ -133,40 +132,47 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
     /* Little Information Yet */
     else
     {
-        text_out_c(TERM_L_GREEN, " that is found in the dungeon");
+        output.append(QString("<font color=darkGreen> that is found in the dungeon</font>"));
     }
 
     /* End this sentence */
-    text_out(".");
+    output.append(".");
 
     /* More misc info */
     if (f_l_ptr->f_l_flags1 & FF1_DROP)
     {
-        text_out("  This");
+        output.append("  This");
         /*Describe the feature type*/
-        describe_feature_type(f_l_ptr);
-        text_out(" can hold objects.");
+        get_feature_type(f_l_ptr);
+        output.append(" can hold objects.");
     }
     if (f_l_ptr->f_l_flags1 & FF1_HAS_GOLD)
     {
-        text_out("  This");
-        describe_feature_type(f_l_ptr);
-        text_out(" may be hiding treasure.");
+        output.append("  This");
+        get_feature_type(f_l_ptr);
+        output.append(" may be hiding treasure.");
     }
     if (f_l_ptr->f_l_flags1 & FF1_HAS_ITEM)
     {
-        text_out("  This");
-        describe_feature_type(f_l_ptr);
-        text_out(" may be hiding an object.");
+        output.append("  This");
+        get_feature_type(f_l_ptr);
+        output.append(" may be hiding an object.");
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
-static void describe_feature_move_see_cast(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_move_see_cast(int f_idx, const feature_lore *f_l_ptr)
 {
 
+    QString output;
+    output.clear();
+
     int vn, n;
-    cptr vp[6];
+    QString vp[6];
 
     /* Collect special abilities. */
     vn = 0;
@@ -188,77 +194,99 @@ static void describe_feature_move_see_cast(int f_idx, const feature_lore *f_l_pt
     if (vn)
     {
         /* Intro */
-        text_out("  You ");
+        output.append("  You ");
 
         /* Scan */
         for (n = 0; n < vn; n++)
         {
             /* Intro */
-            if (n == 0) text_out("can ");
-            else if (n < vn-1) text_out(", ");
-            else text_out(" and ");
+            if (n == 0) output.append("can ");
+            else if (n < vn-1) output.append(", ");
+            else output.append(" and ");
 
             /* Dump */
-            text_out_c(TERM_GREEN, vp[n]);
+            output.append(QString("<font color=green>%1</font>") .arg(vp[n]));
         }
 
         /* End */
-        text_out(" this");
-        describe_feature_type(f_l_ptr);
-        text_out(".");
+        output.append(" this");
+        get_feature_type(f_l_ptr);
+        output.append(".");
     }
 
     if (f_l_ptr->f_l_flags2 & FF2_CAN_FLY)
     {
-        text_out("  Creatures who have the ability to do so can fly over this");
-        describe_feature_type(f_l_ptr);
-        text_out(".");
+        output.append("  Creatures who have the ability to do so can fly over this");
+        get_feature_type(f_l_ptr);
+        output.append(".");
     }
     if (f_l_ptr->f_l_flags2 & FF2_COVERED)
     {
-        text_out("  Native creatures can hide in this");
-        describe_feature_type(f_l_ptr);
-        text_out(".");
+        output.append("  Native creatures can hide in this");
+        get_feature_type(f_l_ptr);
+        output.append(".");
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
-static void describe_feature_stairs(const feature_lore *f_l_ptr)
+static QString describe_feature_stairs(const feature_lore *f_l_ptr)
 {
-    text_out("  This");
+    QString output;
+    output.clear();
 
-    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	text_out_c(TERM_L_BLUE, " shaft");
-    else text_out_c(TERM_L_BLUE, " staircase");
+    output.append("  This");
 
-    text_out(" will take you");
+    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(QString("<font color=cyan> shaft</font>"));
+    else output.append(QString("<font color=cyan> staircase</font>"));
 
-    if (f_l_ptr->f_l_flags1 & FF1_LESS)		text_out_c(TERM_L_BLUE, " up");
-    if (f_l_ptr->f_l_flags1 & FF1_MORE)		text_out_c(TERM_L_BLUE, " down");
+    output.append(" will take you");
 
-    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	text_out_c(TERM_L_BLUE, " two levels.");
-    else text_out_c(TERM_L_BLUE, " one level.");
+    if (f_l_ptr->f_l_flags1 & FF1_LESS)		output.append(QString("<font color=cyan> up</font>"));
+    if (f_l_ptr->f_l_flags1 & FF1_MORE)		output.append(QString("<font color=cyan> down</font>"));
+
+    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(QString("<font color=cyan> two levels.</font>"));
+    else output.append(QString("<font color=cyan> one level.</font>"));
+
+    return(output);
 }
 
 
-static void describe_feature_trap(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_trap(int f_idx, const feature_lore *f_l_ptr)
 {
-    /*Describe passive traps the player can set off*/
-    if (f_l_ptr->f_l_flags2 & FF2_TRAP_PASSIVE) hit_trap(f_idx, 0, 0, MODE_DESCRIBE);
+    QString output;
+    output.clear();
 
     /*Describe passive traps the player can set off*/
-    if (f_l_ptr->f_l_flags2 & FF2_TRAP_MON) apply_monster_trap(f_idx, 0, 0, MODE_DESCRIBE);
+    if (f_l_ptr->f_l_flags2 & FF2_TRAP_PASSIVE) return (hit_trap(f_idx, 0, 0, MODE_DESCRIBE));
+
+    /*Describe passive traps the player can set off*/
+    if (f_l_ptr->f_l_flags2 & FF2_TRAP_MON) return (apply_monster_trap(f_idx, 0, 0, MODE_DESCRIBE));
 
     /*Describe smart traps */
-    if (f_l_ptr->f_l_flags2 & FF2_TRAP_SMART)fire_trap_smart(f_idx, 0, 0, MODE_DESCRIBE);
+
+    if (f_l_ptr->f_l_flags2 & FF2_TRAP_SMART)
+    {
+        (void)fire_trap_smart(f_idx, 0, 0, MODE_DESCRIBE, &output);
+        return (output);
+    }
+
+    return (output);
 }
 
 
-static void describe_feature_interaction(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_interaction(int f_idx, const feature_lore *f_l_ptr)
 {
+    QString output;
+    output.clear();
+
     const feature_type *f_ptr = &f_info[f_idx];
 
     int vn, n, i;
-    cptr vp[15];
+    QString vp[15];
 
     u32b filtered_flag1 = f_l_ptr->f_l_flags1;
 
@@ -303,33 +331,39 @@ static void describe_feature_interaction(int f_idx, const feature_lore *f_l_ptr)
     if (vn)
     {
         /* Intro */
-        text_out("  You ");
+        output.append("  You ");
 
         /* Scan */
         for (n = 0; n < vn; n++)
         {
             /* Intro */
-            if (n == 0) text_out("can ");
-            else if (n < vn-1) text_out(", ");
-            else text_out(" and ");
+            if (n == 0) output.append("can ");
+            else if (n < vn-1) output.append(", ");
+            else output.append(" and ");
 
             /* Dump */
-            text_out_c(TERM_YELLOW, vp[n]);
+            output.append(QString("<font color=yellow>%1</font>") .arg(vp[n]));
         }
 
         /* End */
-        text_out(" this");
-        describe_feature_type(f_l_ptr);
-        text_out(".");
+        output.append(" this");
+        get_feature_type(f_l_ptr);
+        output.append(".");
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
-static void describe_feature_vulnerabilities(const feature_lore *f_l_ptr)
+static QString describe_feature_vulnerabilities(const feature_lore *f_l_ptr)
 {
+    QString output;
+    output.clear();
 
     int vn, n;
-    cptr vp[15];
+    QString vp[15];
 
     /* Collect special abilities. */
     vn = 0;
@@ -351,27 +385,31 @@ static void describe_feature_vulnerabilities(const feature_lore *f_l_ptr)
     if (vn)
     {
         /* Intro */
-        text_out("  This");
+        output.append("  This");
 
-        describe_feature_type(f_l_ptr);
+        get_feature_type(f_l_ptr);
 
-        text_out(" is affected ");
+        output.append(" is affected ");
 
         /* Scan */
         for (n = 0; n < vn; n++)
         {
             /* Intro */
-            if (n == 0) text_out("by ");
-            else if (n < vn-1) text_out(", ");
-            else text_out(" and ");
+            if (n == 0) output.append("by ");
+            else if (n < vn-1) output.append(", ");
+            else output.append(" and ");
 
             /* Dump */
-            text_out_c(TERM_L_RED, vp[n]);
+            output.append(QString("<font color=red>%1</font>") .arg(vp[n]));
         }
 
         /* End */
-        text_out(".");
+        output.append(".");
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
@@ -382,47 +420,47 @@ static void describe_feature_vulnerabilities(const feature_lore *f_l_ptr)
  * Returning false follows this function by "causes this feature to change to"
  */
 
-static bool describe_transition_action(int action)
+static QString describe_transition_action(int action, bool *skip_output)
 {
+    *skip_output = FALSE;
 
     switch (action)
     {
 
-        case 	FS_SECRET:		{text_out_c(TERM_YELLOW, "  Once discovered, this feature is revealed as ");return (TRUE);}
-        case 	FS_OPEN:		{text_out_c(TERM_YELLOW, "  Opening"); 		break;}
-        case	FS_CLOSE:		{text_out_c(TERM_YELLOW, "  Closing"); 		break;}
-        case	FS_BASH:		{text_out_c(TERM_YELLOW, "  Bashing"); 		break;}
-        case	FS_SPIKE:		{text_out_c(TERM_YELLOW, "  Spiking"); 		break;}
-        case	FS_TUNNEL:		{text_out_c(TERM_YELLOW, "  Tunneling"); 		break;}
-        case	FS_TRAP:		{text_out_c(TERM_YELLOW, "  Creating a trap"); break;}
-        case	FS_GLYPH:		{text_out_c(TERM_YELLOW, "  This feature can change into a "); return (TRUE);}
-        case	FS_FLOOR:		{text_out_c(TERM_YELLOW, "  A plain floor"); 	break;}
-        case	FS_BRIDGE:		{text_out_c(TERM_YELLOW, "  Bridging"); 		break;}
-        case	FS_HIT_TRAP:	{text_out_c(TERM_YELLOW, "  De-activating this trap"); break;}
-        case	FS_HURT_ROCK:	{text_out_c(TERM_YELLOW, "  Stone-to-mud"); 	break;}
-        case	FS_HURT_FIRE:	{text_out_c(TERM_YELLOW, "  Fire, smoke, lava or plasma"); break;}
-        case	FS_HURT_COLD:	{text_out_c(TERM_YELLOW, "  Cold or ice"); 	break;}
-        case	FS_HURT_ACID:	{text_out_c(TERM_YELLOW, "  Acid"); 			break;}
-        case	FS_HURT_ELEC:	{text_out_c(TERM_YELLOW, "  Electricity"); 	break;}
-        case	FS_HURT_WATER:	{text_out_c(TERM_YELLOW, "  Water"); 			break;}
-        case	FS_HURT_BWATER:	{text_out_c(TERM_YELLOW, "  Boiling water"); 	break;}
-        case	FS_HURT_POIS:	{text_out_c(TERM_YELLOW, "  Poison"); 			break;}
-        case	FS_TREE:		{text_out_c(TERM_YELLOW, "  Forest creation"); break;}
-        case   	FS_NEED_TREE: 	{text_out_c(TERM_YELLOW, "  Forest destruction"); break;}
+        case 	FS_SECRET:		{*skip_output = TRUE; return(QString("<font color=yellow>  Once discovered, this feature is revealed as </font>"));}
+        case 	FS_OPEN:		{return(QString("<font color=yellow>  Opening</font>"));}
+        case	FS_CLOSE:		{return(QString("<font color=yellow>  Closing</font>"));}
+        case	FS_BASH:		{return(QString("<font color=yellow>  Bashing</font>"));}
+        case	FS_SPIKE:		{return(QString("<font color=yellow>  Spiking</font>"));}
+        case	FS_TUNNEL:		{return(QString("<font color=yellow>  Tunneling</font>"));}
+        case	FS_TRAP:		{return(QString("<font color=yellow>  Creating a trap</font>"));}
+        case	FS_GLYPH:		{*skip_output = TRUE; return(QString("<font color=yellow>  This feature can change into a </font>"));}
+        case	FS_FLOOR:		{return(QString("<font color=yellow>  A plain floor</font>"));}
+        case	FS_BRIDGE:		{return(QString("<font color=yellow>  Bridging</font>"));}
+        case	FS_HIT_TRAP:	{return(QString("<font color=yellow>  De-activating this trap</font>"));}
+        case	FS_HURT_ROCK:	{return(QString("<font color=yellow>  Stone-to-mud</font>"));}
+        case	FS_HURT_FIRE:	{return(QString("<font color=yellow>  Fire, smoke, lava or plasma</font>")); }
+        case	FS_HURT_COLD:	{return(QString("<font color=yellow>  Cold or ice</font>"));}
+        case	FS_HURT_ACID:	{return(QString("<font color=yellow>  Acid</font>"));}
+        case	FS_HURT_ELEC:	{return(QString("<font color=yellow>  Electricity</font>"));}
+        case	FS_HURT_WATER:	{return(QString("<font color=yellow>  Water</font>"));}
+        case	FS_HURT_BWATER:	{return(QString("<font color=yellow>  Boiling water</font>"));}
+        case	FS_HURT_POIS:	{return(QString("<font color=yellow>  Poison</font>"));}
+        case	FS_TREE:		{return(QString("<font color=yellow>  Forest creation</font>"));}
+        case   	FS_NEED_TREE: 	{return(QString("<font color=yellow>  Forest destruction</font>"));}
 
         /*Paranoia*/
-        default:				{text_out_c(TERM_RED, "  ERROR - Unspecified Action"); break;}
+        default:				{return(QString("<font color=red>  ERROR - Unspecified Action</font>"));}
     }
-
-    return (FALSE);
 }
 
 
-static void describe_feature_transitions(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_ptr)
 {
-    feature_type *f_ptr = &f_info[f_idx];
+    QString output;
+    output.clear();
 
-    char feature_name[80];
+    feature_type *f_ptr = &f_info[f_idx];
 
     int i;
 
@@ -431,7 +469,7 @@ static void describe_feature_transitions(int f_idx, const feature_lore *f_l_ptr)
     /*Handle permanent features*/
     if (f_l_ptr->f_l_flags1 & FF1_PERMANENT)
     {
-        text_out("  This is a permanent feature.");
+        output.append("  This is a permanent feature.");
     }
 
     /*Mention the mimic, if known*/
@@ -441,9 +479,8 @@ static void describe_feature_transitions(int f_idx, const feature_lore *f_l_ptr)
         other_trans = TRUE;
 
         /*Describe it*/
-        text_out("  Until discovered, this feature appears as ");
-        feature_desc(feature_name, sizeof(feature_name), f_ptr->f_mimic, TRUE, FALSE);
-        text_out(format("%s.", feature_name));
+        output.append("  Until discovered, this feature appears as ");
+        output.append(feature_desc(f_ptr->f_mimic, TRUE, FALSE));
     }
 
     /* Search the action */
@@ -457,9 +494,9 @@ static void describe_feature_transitions(int f_idx, const feature_lore *f_l_ptr)
         {
             if (f_l_ptr->f_l_flags3 & (FF3_PICK_DOOR))
             {
-                text_out(" Discovering this ");
-                describe_feature_type(f_l_ptr);
-                text_out(" reveals a closed door.");
+                output.append(" Discovering this ");
+                get_feature_type(f_l_ptr);
+                output.append(" reveals a closed door.");
             }
 
             continue;
@@ -471,16 +508,19 @@ static void describe_feature_transitions(int f_idx, const feature_lore *f_l_ptr)
         /* Remember we have a transition we are reporting */
         other_trans = TRUE;
 
+        bool skip_output;
+
+        output.append(describe_transition_action(f_ptr->state[i].fs_action, &skip_output));
+
         /* Describe it, followed by standard output */
-        if(!describe_transition_action(f_ptr->state[i].fs_action))
+        if(!skip_output)
         {
-            text_out(" changes this");
-            describe_feature_type(f_l_ptr);
-            text_out(" to ");
+            output.append(" changes this");
+            get_feature_type(f_l_ptr);
+            output.append(" to ");
         }
 
-        feature_desc(feature_name, sizeof(feature_name), f_ptr->state[i].fs_result, TRUE, FALSE);
-        text_out(format("%s.", feature_name));
+        output.append(feature_desc(f_ptr->state[i].fs_result, TRUE, FALSE));
     }
 
     /*Mention the default if it is different*/
@@ -489,26 +529,32 @@ static void describe_feature_transitions(int f_idx, const feature_lore *f_l_ptr)
         /*Describe this transition, handle differently if we have described a transition above*/
         if (other_trans)
         {
-            text_out("  For all other effects, this");
+            output.append("  For all other effects, this");
         }
-        else text_out("  This");
-        describe_feature_type(f_l_ptr);
-        text_out(" changes to ");
-        feature_desc(feature_name, sizeof(feature_name), f_ptr->defaults, TRUE, FALSE);
-        text_out(format("%s.", feature_name));
+        else output.append("  This");
+        get_feature_type(f_l_ptr);
+        output.append(" changes to ");
+        output.append(feature_desc(f_ptr->defaults, TRUE, FALSE));
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
-static void describe_feature_damage(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_damage(int f_idx, const feature_lore *f_l_ptr)
 {
+    QString output;
+    output.clear();
+
     feature_type *f_ptr = &f_info[f_idx];
 
-    cptr action = "hurts";
+    QString action = "hurts";
 
     /* No damage, or no damage seen yet */
-    if (f_ptr->dam_non_native == 0) return;
-    if (!f_l_ptr->f_l_dam_non_native) return;
+    if (f_ptr->dam_non_native == 0) return (output);
+    if (!f_l_ptr->f_l_dam_non_native) return(output);
 
     /* Specify the damage type from certain features */
     if (_feat_ff3_match(f_ptr, FF3_ICE))
@@ -521,52 +567,57 @@ static void describe_feature_damage(int f_idx, const feature_lore *f_l_ptr)
     }
 
     /* Intro */
-    text_out("  This");
-    describe_feature_type(f_l_ptr);
-    text_out(format(" %s any non-native creature", action));
+    output.append("  This");
+    get_feature_type(f_l_ptr);
+    output.append(QString(" %1 any non-native creature") .arg(action));
 
     /* Slightly more information when the player has seen it several times */
     if (f_l_ptr->f_l_dam_non_native > 10)
     {
-        text_out(format(" for %d damage", f_ptr->dam_non_native));
+        output.append(QString(" for %1 damage") .arg(f_ptr->dam_non_native));
     }
 
-    text_out(" who stays on this feature for one turn at normal speed.");
+    output.append(" who stays on this feature for one turn at normal speed.<br><br>");
+
+    return(output);
 }
 
 
-static void describe_feature_movement_effects(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_movement_effects(int f_idx, const feature_lore *f_l_ptr)
 {
+    QString output;
+    output.clear();
+
     feature_type *f_ptr = &f_info[f_idx];
 
-    if (feat_ff2_match(f_idx, FF2_EFFECT)) return;
+    if (feat_ff2_match(f_idx, FF2_EFFECT)) return (output);
 
     /*Describe movement by native creatures*/
     if ((f_ptr->native_energy_move != BASE_ENERGY_MOVE) && (f_l_ptr->f_l_native_moves > 0))
     {
         int percent_movement = (ABS(BASE_ENERGY_MOVE - f_ptr->native_energy_move) * 100) / BASE_ENERGY_MOVE;
 
-        text_out("  A creature native to this terrain uses");
+        output.append("  A creature native to this terrain uses");
 
         /*More information for who have observed movement more*/
         if (f_l_ptr->f_l_native_moves > 20)
         {
             if (f_ptr->native_energy_move > BASE_ENERGY_MOVE)
             {
-                text_out_c(TERM_BLUE, format(" %d percent more", percent_movement));
+                output.append(QString("<font color=blue>   %1 percent more</font>") .arg(percent_movement));
             }
-            else text_out_c(TERM_BLUE, format(" %d percent less", percent_movement));
+            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(percent_movement));
         }
         else
         {
-            if (percent_movement  > 15) text_out_c(TERM_BLUE, " significantly");
+            if (percent_movement  > 15) output.append(QString("<font color=blue> significantly"));
 
-            if (f_ptr->native_energy_move > BASE_ENERGY_MOVE)  text_out_c(TERM_BLUE, " more");
-            else text_out_c(TERM_BLUE, " less");
+            if (f_ptr->native_energy_move > BASE_ENERGY_MOVE)  output.append(QString("<font color=blue> more"));
+            else output.append(QString("<font color=blue> less"));
 
         }
 
-        text_out(" energy moving into this terrain.");
+        output.append(" energy moving into this terrain.");
     }
 
     /*Describe movement by non-native creatures*/
@@ -574,120 +625,136 @@ static void describe_feature_movement_effects(int f_idx, const feature_lore *f_l
     {
         int percent_movement = (ABS(BASE_ENERGY_MOVE - f_ptr->non_native_energy_move) * 100) / BASE_ENERGY_MOVE;
 
-        text_out("  A creature who is not native to this terrain uses");
+        output.append("  A creature who is not native to this terrain uses");
 
         /*More information for who have observed movement more*/
         if (f_l_ptr->f_l_non_native_moves > 20)
         {
             if (f_ptr->non_native_energy_move > BASE_ENERGY_MOVE)
             {
-                text_out_c(TERM_BLUE, format(" %d percent more", percent_movement));
+                output.append(QString("<font color=blue>   %1 percent more</font>") .arg(percent_movement));
             }
-            else text_out_c(TERM_BLUE, format(" %d percent less", percent_movement));
+            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(percent_movement));
         }
         else
         {
-            if (percent_movement  > 15) text_out_c(TERM_BLUE, " significantly");
+            if (percent_movement  > 15) output.append(QString("<font color=blue> significantly</font>"));
 
-            if (f_ptr->non_native_energy_move > BASE_ENERGY_MOVE)  text_out_c(TERM_BLUE, " more");
-            else text_out_c(TERM_BLUE, " less");
+            if (f_ptr->non_native_energy_move > BASE_ENERGY_MOVE)  output.append(QString("<font color=blue> more</font>"));
+            else output.append(QString("<font color=blue> less</font>"));
 
         }
 
-        text_out(" energy moving into this terrain.");
+        output.append(" energy moving into this terrain.");
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
-static void describe_feature_combat_effects(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_combat_effects(int f_idx, const feature_lore *f_l_ptr)
 {
+    QString output;
+    output.clear();
+
     feature_type *f_ptr = &f_info[f_idx];
 
-    if (feat_ff2_match(f_idx, FF2_EFFECT)) return;
+    if (feat_ff2_match(f_idx, FF2_EFFECT)) return(output);
 
     /* Describe movement by native creatures */
     if ((f_ptr->native_to_hit_adj != 100) && (f_l_ptr->f_l_native_to_hit_adj > 0))
     {
-        text_out("  A native creature is");
+        output.append("  A native creature is");
 
         /* More information for who have observed movement more */
         if (f_l_ptr->f_l_native_to_hit_adj > 100)
         {
             if (f_ptr->native_to_hit_adj  > 100)
             {
-                text_out_c(TERM_BLUE, " %d percent more", (f_ptr->native_to_hit_adj  - 100));
+                output.append(QString("<font color=blue> %1 percent more</font>") .arg(f_ptr->native_to_hit_adj  - 100));
             }
-            else text_out_c(TERM_BLUE, " %d percent less",
-                (100 - f_ptr->native_to_hit_adj));
+            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(100 - f_ptr->native_to_hit_adj));
 
         }
         else
         {
-            if (ABS(f_ptr->native_to_hit_adj  - 100) > 15) text_out_c(TERM_BLUE, " significantly");
+            if (ABS(f_ptr->native_to_hit_adj  - 100) > 15) output.append(QString("<font color=blue> significantly</font>"));
 
-            if (f_ptr->native_to_hit_adj  > 100)  text_out_c(TERM_BLUE, " more");
-            else text_out_c(TERM_BLUE, " less");
+            if (f_ptr->native_to_hit_adj  > 100)  output.append(QString("<font color=blue> more</font>"));
+            else output.append(QString("<font color=blue> less</font>"));
 
         }
 
-        text_out(" successful in attacking and defending while fighting in this terrain.");
+        output.append(" successful in attacking and defending while fighting in this terrain.");
     }
 
     /*Describe movement by non_native creatures*/
     if ((f_ptr->non_native_to_hit_adj != 100) && (f_l_ptr->f_l_non_native_to_hit_adj > 0))
     {
-        text_out("  A non-native creature is");
+        output.append("  A non-native creature is");
 
         /*More information for who have observed movement more*/
         if (f_l_ptr->f_l_non_native_to_hit_adj > 100)
         {
             if (f_ptr->non_native_to_hit_adj > 100)
             {
-                text_out_c(TERM_BLUE, format(" %d percent more", (f_ptr->non_native_to_hit_adj - 100)));
+                 output.append(QString("<font color=blue> %1 percent more</font>") .arg(f_ptr->non_native_to_hit_adj - 100));
             }
-            else text_out_c(TERM_BLUE, format(" %d percent less",
-                (100 - f_ptr->non_native_to_hit_adj)));
+            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(100 - f_ptr->non_native_to_hit_adj));
 
         }
         else
         {
-            if (ABS(f_ptr->non_native_to_hit_adj - 100) > 15) text_out_c(TERM_BLUE, " significantly");
+            if (ABS(f_ptr->non_native_to_hit_adj - 100) > 15) output.append(QString("<font color=blue> significantly</font>"));
 
-            if (f_ptr->non_native_to_hit_adj > BASE_ENERGY_MOVE)  text_out_c(TERM_BLUE, " more");
-            else text_out_c(TERM_BLUE, " less");
+            if (f_ptr->non_native_to_hit_adj > BASE_ENERGY_MOVE)  output.append(QString("<font color=blue> more</font>"));
+            else output.append(QString("<font color=blue> less</font>"));
 
         }
 
-        text_out(" successful in attacking and defending while fighting in this terrain.");
+        output.append(" successful in attacking and defending while fighting in this terrain.");
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
-static void describe_feature_stealth_effects(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_stealth_effects(int f_idx, const feature_lore *f_l_ptr)
 {
+    QString output;
+    output.clear();
+
     feature_type *f_ptr = &f_info[f_idx];
 
-    if (feat_ff2_match(f_idx, FF2_EFFECT)) return;
+    if (feat_ff2_match(f_idx, FF2_EFFECT)) return(output);
 
     /*Describe stealth effects*/
     if ((f_ptr->f_stealth_adj != 0) && (f_l_ptr->f_l_stealth_adj > 0))
     {
 
-        text_out("  Walking through this terrain");
+        output.append("  Walking through this terrain");
 
         if (f_l_ptr->f_l_stealth_adj > 100)
         {
 
-            if (ABS(f_ptr->f_stealth_adj) >= 3) text_out(" significantly");
-            else if (ABS(f_ptr->f_stealth_adj) == 2) text_out(" considerably");
-            else if (ABS(f_ptr->f_stealth_adj) == 1) text_out(" somewhat");
+            if (ABS(f_ptr->f_stealth_adj) >= 3) output.append(" significantly");
+            else if (ABS(f_ptr->f_stealth_adj) == 2) output.append(" considerably");
+            else if (ABS(f_ptr->f_stealth_adj) == 1) output.append(" somewhat");
         }
 
-        if (f_ptr->f_stealth_adj  > 0)  text_out(" improves");
-        else text_out(" reduces");
+        if (f_ptr->f_stealth_adj  > 0)  output.append(" improves");
+        else output.append(" reduces");
 
-        text_out(" the player's stealth.");
+        output.append(" the player's stealth.");
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 
@@ -696,8 +763,11 @@ static void describe_feature_stealth_effects(int f_idx, const feature_lore *f_l_
  * The description for each feature needs to be described on a case-by-case basis.
  * This function should be consistent with process_dynamic_terrain_aux for its output.
  */
-static void describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
+static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
 {
+    QString output;
+    output.clear();
+
     feature_type *f_ptr = &f_info[f_idx];
 
     /*
@@ -706,70 +776,74 @@ static void describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
      */
     if (f_idx == FEAT_ETHEREAL_WALL)
     {
-        text_out("  This wall can teleport you across the dungeon, or explode in a burst of light.");
+        output.append("  This wall can teleport you across the dungeon, or explode in a burst of light.");
     }
 
     /* TODO - figure out how to remember this in feature_lore.*/
     if (f_idx == FEAT_WALL_INSCRIPTION)
     {
-        text_out("  This wall can cast a spell at the player,");
-        text_out(" or reveal some useful information about the current dungeon level.");
+        output.append("  This wall can cast a spell at the player,");
+        output.append(" or reveal some useful information about the current dungeon level.<br><br>");
 
-        return;
+        return (output);
     }
 
     /* Has not been observed */
-    if (!(f_l_ptr->f_l_flags3 & (FF3_DYNAMIC))) return;
+    if (!(f_l_ptr->f_l_flags3 & (FF3_DYNAMIC))) return (output);
 
     /* Dynamic fire can spread smoke and fire */
     if (_feat_ff3_match(f_ptr, FF3_FIRE))
     {
-        text_out("  This terrain can spread fire and smoke to adjacent terrains.");
+        output.append("  This terrain can spread fire and smoke to adjacent terrains.<br><br>");
 
-        return;
+        return (output);
     }
 
     if (f_idx == FEAT_GEYSER)
     {
-        text_out("  The geyser can explode in a burst of boiling water!");
+        output.append("  The geyser can explode in a burst of boiling water!<br><br>");
 
         /* Done */
-        return;
+        return (output);
     }
 
     if (f_idx == FEAT_FSOIL_DYNAMIC)
     {
-        text_out("  This feature can slowly spread across the dungeon.");
+        output.append("  This feature can slowly spread across the dungeon.<br><br>");
 
         /* Done */
-        return;
+        return (output);
     }
 
     /* Sniper flowers */
     if (f_idx == FEAT_PUTRID_FLOWER)
     {
-        text_out("  This flower can fire spikes or spit poison at you.");
+        output.append("  This flower can fire spikes or spit poison at you.<br><br>");
 
         /* Done */
-        return;
+        return (output);
     }
 
     /* Silent watchers */
     if (f_idx == FEAT_SILENT_WATCHER)
     {
-        text_out("  The silent watcher can aggravate nearly monsters.");
+        output.append("  The silent watcher can aggravate nearly monsters.<br><br>");
 
         /* Done */
-        return;
+        return (output);
     }
 
     /* Dynamic lava can spread fire */
     if (_feat_ff3_match(f_ptr, TERRAIN_MASK) == (ELEMENT_LAVA))
     {
-        text_out("  This terrain can spread fire to adjacent terrains.");
+        output.append("  This terrain can spread fire to adjacent terrains.");
 
-        return;
+        return (output);
     }
+
+    if (!output.isEmpty()) output.append("<br><br>");
+
+    return(output);
 }
 
 /*
@@ -780,8 +854,11 @@ static void describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
  * left edge of the screen or line, on a cleared line, in which the output is
  * to take place.  One extra blank line is left after the recall.
  */
-void describe_feature(int f_idx, bool spoilers)
+QString describe_feature(int f_idx, bool spoilers)
 {
+    QString output;
+    output.clear();
+
     feature_lore lore;
 
     feature_lore save_mem;
@@ -814,34 +891,33 @@ void describe_feature(int f_idx, bool spoilers)
     }
 
     /* Describe the movement and level of the monster */
-    describe_feature_basic(f_idx, &lore);
+    output.append(describe_feature_basic(f_idx, &lore));
 
     /* Describe the movement, LOS, and projection */
-    describe_feature_move_see_cast(f_idx, &lore);
+    output.append(describe_feature_move_see_cast(f_idx, &lore));
 
     /* Describe stairs */
-    if (lore.f_l_flags1 & FF1_STAIRS) describe_feature_stairs(&lore);
+    if (lore.f_l_flags1 & FF1_STAIRS) output.append(describe_feature_stairs(&lore));
 
     /* Describe trap */
-    if (lore.f_l_flags1 & FF1_TRAP) describe_feature_trap(f_idx, &lore);
+    if (lore.f_l_flags1 & FF1_TRAP) output.append(describe_feature_trap(f_idx, &lore));
 
-    describe_feature_interaction(f_idx, &lore);
+    output.append(describe_feature_interaction(f_idx, &lore));
 
-    describe_feature_vulnerabilities(&lore);
+    output.append(describe_feature_vulnerabilities(&lore));
 
-    describe_feature_transitions(f_idx, &lore);
+    output.append(describe_feature_transitions(f_idx, &lore));
 
-    describe_feature_damage(f_idx, &lore);
+    output.append(describe_feature_damage(f_idx, &lore));
 
-    describe_feature_movement_effects(f_idx, &lore);
+    output.append(describe_feature_movement_effects(f_idx, &lore));
 
-    describe_feature_combat_effects(f_idx, &lore);
+    output.append(describe_feature_combat_effects(f_idx, &lore));
 
-    describe_feature_stealth_effects(f_idx, &lore);
+    output.append(describe_feature_stealth_effects(f_idx, &lore));
 
-    describe_feature_dynamic(f_idx, &lore);
+    output.append(describe_feature_dynamic(f_idx, &lore));
 
-    /* All done */
-    text_out("\n");
+    return (output);
 }
 

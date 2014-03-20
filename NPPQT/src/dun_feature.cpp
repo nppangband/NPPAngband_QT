@@ -52,10 +52,8 @@ QString feature_desc(u16b feat, bool add_prefix, bool get_mimic)
     /* Want prefix */
     else if (add_prefix)
     {
-        QChar tester = name[0];
-
         /* Check the first letter of the name for the right article */
-        if (is_a_vowel(tester)) prefix = "an ";
+        if (begins_with_vowel(name)) prefix = "an ";
 
         else prefix = "a ";
 
@@ -356,9 +354,9 @@ static bool other_orb_or_ball(int y, int x, int typ, int rad, int dam, bool orb)
  * Handle a smart trap firing at the player.
  * Note that the variables y and x are only be used for a real trap.
  */
-u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
+u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc)
 {
-    QString desc;
+    desc->clear();
 
     /*Careful, in MODE-DESCRIBE, this will be undefined*/
     effect_type *x_ptr = &x_list[dungeon_info[y][x].effect_idx];
@@ -416,7 +414,7 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
     /* Don't describe if not set off*/
     if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power))
     {
-        desc = ("  The effects of this trap are unknown.");
+        desc->append("  The effects of this trap are unknown.");
         return(FALSE);
     }
 
@@ -430,13 +428,13 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
 
             if (mode == MODE_DESCRIBE)
             {
-                desc = ("  If there is a clear line of sight to the player, this rune fires");
-                if (f_ptr->f_power == 1) desc.append(" a magic missle");
-                else if (f_ptr->f_power == 3) desc.append("  an arrow");
-                desc.append(" at the player");
+                desc->append(("  If there is a clear line of sight to the player, this rune fires"));
+                if (f_ptr->f_power == 1) desc->append(" a magic missle");
+                else if (f_ptr->f_power == 3) desc->append("  an arrow");
+                desc->append(" at the player");
                 if (f_l_ptr->f_l_power > 20)
                 {
-                    desc.append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
+                    desc->append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
                 }
                 return(TRUE);
             }
@@ -454,12 +452,12 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
 
             if (mode == MODE_DESCRIBE)
             {
-                desc = ("  When the player is in line of sight, this rune fires");
-                if (f_ptr->f_power == 6) desc.append(" a bolt of lightning");
-                desc.append(" at the player");
+                desc->append("  When the player is in line of sight, this rune fires");
+                if (f_ptr->f_power == 6) desc->append(" a bolt of lightning");
+                desc->append(" at the player");
                 if (f_l_ptr->f_l_power > 20)
                 {
-                    desc.append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
+                    desc->append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
                 }
                 return(TRUE);
 
@@ -479,12 +477,12 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
 
             if (mode == MODE_DESCRIBE)
             {
-                desc = ("  When the player is in line of sight, this rune fires");
-                if (f_ptr->f_power == 2) desc.append(" a holy orb");
-                desc.append(" at the player");
+                desc->append("  When the player is in line of sight, this rune fires");
+                if (f_ptr->f_power == 2) desc->append(" a holy orb");
+                desc->append(" at the player");
                 if (f_l_ptr->f_l_power > 20)
                 {
-                    desc.append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
+                    desc->append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
                 }
                 return(TRUE);
 
@@ -514,25 +512,25 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
 
             if (mode == MODE_DESCRIBE)
             {
-                desc = ("  When the player is in line of sight, this rune fires");
+                desc->append("  When the player is in line of sight, this rune fires");
 
-                if (f_ptr->f_power == 4) desc.append(" a poison ball");
-                else if (f_ptr->f_power == 5) desc.append(" a fire ball");
-                else if (f_ptr->f_power == 7) desc.append(" a frost ball");
-                else if (f_ptr->f_power == 8) desc.append(" an acid ball");
-                else if (f_ptr->f_power == 9) desc.append(" a nether ball");
-                else if (f_ptr->f_power == 10) desc.append(" a nexus ball");
-                else if (f_ptr->f_power == 13) desc.append(" a ball of shards");
-                else if (f_ptr->f_power == 17) desc.append(" a time ball");
-                else if (f_ptr->f_power == 20) desc.append(" a meteor");
-                else if (f_ptr->f_power == 21) desc.append(" a ball of plasma");
-                else if (f_ptr->f_power == 22) desc.append(" a ball of disenchantment");
-                else if (f_ptr->f_power == 23) desc.append(" a ball of static");
-                desc.append(" at the player");
+                if (f_ptr->f_power == 4) desc->append(" a poison ball");
+                else if (f_ptr->f_power == 5) desc->append(" a fire ball");
+                else if (f_ptr->f_power == 7) desc->append(" a frost ball");
+                else if (f_ptr->f_power == 8) desc->append(" an acid ball");
+                else if (f_ptr->f_power == 9) desc->append(" a nether ball");
+                else if (f_ptr->f_power == 10) desc->append(" a nexus ball");
+                else if (f_ptr->f_power == 13) desc->append(" a ball of shards");
+                else if (f_ptr->f_power == 17) desc->append(" a time ball");
+                else if (f_ptr->f_power == 20) desc->append(" a meteor");
+                else if (f_ptr->f_power == 21) desc->append(" a ball of plasma");
+                else if (f_ptr->f_power == 22) desc->append(" a ball of disenchantment");
+                else if (f_ptr->f_power == 23) desc->append(" a ball of static");
+                desc->append(" at the player");
 
                 if (f_l_ptr->f_l_power > 20)
                 {
-                    desc.append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
+                    desc->append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
                 }
                 return(TRUE);
             }
@@ -557,19 +555,19 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
 
             if (mode == MODE_DESCRIBE)
             {
-                desc = ("  When the player is in line of sight, this rune");
+                desc->append("  When the player is in line of sight, this rune");
 
-                if (f_ptr->f_power == 11) desc.append(" attempts to confuse every being in sight");
-                else if (f_ptr->f_power == 12) desc.append(" surrounds the area with a deafening blast");
-                else if (f_ptr->f_power == 14) desc.append(" hits the area with a blast of gravity");
-                else if (f_ptr->f_power == 15) desc.append(" aggravates all creatures within line of sight");
-                else if (f_ptr->f_power == 16) desc.append(" hits the area with a blast of inertia");
-                else if (f_ptr->f_power == 18) desc.append(" releases a blinding light in the surrounding area");
-                else if (f_ptr->f_power == 19) desc.append(" covers the surrounding area with darkness");
+                if (f_ptr->f_power == 11) desc->append(" attempts to confuse every being in sight");
+                else if (f_ptr->f_power == 12) desc->append(" surrounds the area with a deafening blast");
+                else if (f_ptr->f_power == 14) desc->append(" hits the area with a blast of gravity");
+                else if (f_ptr->f_power == 15) desc->append(" aggravates all creatures within line of sight");
+                else if (f_ptr->f_power == 16) desc->append(" hits the area with a blast of inertia");
+                else if (f_ptr->f_power == 18) desc->append(" releases a blinding light in the surrounding area");
+                else if (f_ptr->f_power == 19) desc->append(" covers the surrounding area with darkness");
 
                 if (f_l_ptr->f_l_power > 20)
                 {
-                    desc.append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
+                    desc->append(QString(" as often as every %1d%2 turns.") .arg(f_ptr->x_timeout_set) .arg(f_ptr->x_timeout_rand));
                 }
                 return(TRUE);
             }
@@ -636,19 +634,20 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode)
  * Handle player hitting a real trap.
  * Note that the variables y and x can only be used for a real trap.
  */
-void hit_trap(int f_idx, int y, int x, byte mode)
+QString hit_trap(int f_idx, int y, int x, byte mode)
 {
     int dice,sides, reps, dam, i, num;
 
     QString name = "a trap";
     QString desc;
+    desc.clear();
 
     /* Get feature */
     const feature_type *f_ptr = &f_info[f_idx];
     feature_lore *f_l_ptr = &f_l_list[f_idx];
 
     /*paranoia*/
-    if (!_feat_ff2_match(f_ptr, FF2_TRAP_PASSIVE)) return;
+    if (!_feat_ff2_match(f_ptr, FF2_TRAP_PASSIVE)) return(desc);
 
     if (mode == MODE_ACTION)
     {
@@ -667,7 +666,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
              disturb(0, 0);
 
             /*We are done here*/
-            return;
+            return (desc);
         }
 
 
@@ -699,7 +698,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
     if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power))
     {
         message(QString("  The effects of this trap are unknown."));
-        return;
+        return (desc);
     }
 
     /* Analyze XXX XXX XXX */
@@ -718,7 +717,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
                 desc = (QString("  This pit will cause you %1d%2 damage.") .arg(dice) .arg(sides));
                 desc.append(QString("  Daggers will cut you up to %1 times for %2d%3 turns")  .arg(reps) .arg(dice2) .arg(sides2));
                 desc.append(" each as you fall.");
-                return;
+                return (desc);
             }
 
             if (mode == MODE_ACTION)
@@ -764,7 +763,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             {
                 desc = (QString("  This trap door will cause you %1d%2 damage when you fall through to the" ).arg(dice) .arg(sides));
                 desc.append(" next level of the dungeon.");
-                return;
+                return (desc);
             }
 
             if (mode == MODE_ACTION)
@@ -797,7 +796,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This pit will cause you %1d%2 damage.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -827,7 +826,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             {
                 desc = (QString("  This spiked pit will cause you %1d%2 damage when you fall into it.") .arg(dice) .arg(sides));
                 desc.append(QString("  50% the time, The spikes will cut you up to (%1d%2) * 2 turns.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
 
             if (mode == MODE_ACTION)
@@ -875,7 +874,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
                 desc = (QString("  This poison spiked pit will cause you %1d%1 damage when you fall into it.") .arg(dice) .arg(sides));
                 desc.append (QString("  %1 percent of the time, the spikes will cut you up to (%2d%3) * 2 turns") .arg(percentage) .arg(dice) .arg(sides));
                 desc.append (QString("  as well as poison you up to (%1d%1) * 4 turns.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
 
             if (mode == MODE_ACTION)
@@ -930,7 +929,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This trap will attempt to summon between %1 and %2 creatures.") .arg(sum_base + 1) .arg(sum_base + sum_plus));
-                return;
+                return (desc);
             }
 
             if (mode == MODE_ACTION)
@@ -961,7 +960,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This trap will teleport you up to %1 squares away.") .arg(dist));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -980,7 +979,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This fire trap will envelope you in flames for %1d%2 damage.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -999,7 +998,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This acid trap will splash you with acid for %1d%2 damage.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1020,7 +1019,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             {
                 desc = (QString("  This trap fires a small dart that can cause you to be slowed for %1 + %2d turns,") .arg(duration) .arg(duration));
                 desc.append (QString(" and cause %1d%2 damage.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1050,7 +1049,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             {
                 desc = ("  This trap fires a small dart that can drain your strength,");
                 desc.append (QString(" and cause %1d%2 damage.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1081,7 +1080,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             {
                 desc = ("  This trap fires a small dart that can drain your dexterity,");
                 desc.append (QString(" and cause %1d%2 damage.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1112,7 +1111,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             {
                 desc = ("  This trap fires a small dart that can drain your constitution,");
                 desc.append (QString(" and cause %1d%2 damage.") .arg(dice) .arg(sides));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1144,7 +1143,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This trap releases black gas that can blind you for %1 + %2d turns.") .arg(base) .arg(rand_base));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1173,7 +1172,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This trap releases gas that can confuse you for %1 + %2d turns.") .arg(base) .arg(rand_base));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1201,7 +1200,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This trap releases green gas that can poison you for %1 + %2d turns.") .arg(base) .arg(rand_base));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1230,7 +1229,7 @@ void hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This trap releases a white mist that can paralyze you for %1 + %2d turns.") .arg(base) .arg(rand_base));
-                return;
+                return (desc);
             }
             if (mode == MODE_ACTION)
             {
@@ -1251,6 +1250,8 @@ void hit_trap(int f_idx, int y, int x, byte mode)
     }
 
     if (mode == MODE_ACTION) disturb(0,0);
+
+    return (desc);
 }
 
 
@@ -1795,7 +1796,7 @@ s16b get_feat_num(int level)
  *
  * Any call to this function should check to limit traps, such as the check for "trap doors" on quest levels.
  */
-u16b pick_trap(int y, int x, byte mode)
+u16b pick_trap(byte mode)
 {
     u16b feat = 0;
 
@@ -2169,7 +2170,7 @@ void lore_do_probe_feature(int f_idx)
 /*
  * Learn everything about a feature (by cheating)
  */
-static void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr)
+void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr)
 {
     const feature_type *f_ptr = &f_info[f_idx];
 

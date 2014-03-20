@@ -312,8 +312,11 @@ static void find_best_flow(monster_type *m_ptr)
  * Note that the variables y and x can only be used for a real trap.
  * In MODE_DESCRIBE - monster type will be undefined
  */
-void apply_monster_trap(int f_idx, int y, int x, byte mode)
+QString apply_monster_trap(int f_idx, int y, int x, byte mode)
 {
+    QString output;
+    output.clear();
+
     monster_type *m_ptr = NULL;
     monster_race *r_ptr = NULL;
     monster_lore *l_ptr = NULL;
@@ -338,7 +341,7 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
     int m_idx = 0;
 
     /* Sanity check */
-    if (!cave_monster_trap_bold(y,x) && (mode == MODE_ACTION)) return;
+    if (!cave_monster_trap_bold(y,x) && (mode == MODE_ACTION)) return (output);
 
     if (mode == MODE_ACTION)
     {
@@ -357,8 +360,8 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
     /* Don't describe if not set off*/
     if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power))
     {
-        message(QString("  The effects of this trap are unknown."));
-        return;
+        return(QString("  The effects of this trap are unknown."));
+
     }
 
     /*Skip all this unless we are setting off a trap*/
@@ -380,7 +383,7 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
                 l_ptr->r_l_flags2 |= (RF2_EVASIVE);
             }
 
-            return;
+            return (output);
         }
 
         /* Lightning traps affect all but ghosts */
@@ -558,8 +561,8 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
             {
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will cause a moderate amount of damage any creature who walks into it."));
-                    message(QString("  This trap is %1 times more sturdy than all other monster traps.") .arg(sturdy_break / reg_break));
+                    output.append(QString("  This monster trap will cause a moderate amount of damage any creature who walks into it."));
+                    output.append(QString("  This trap is %1 times more sturdy than all other monster traps.") .arg(sturdy_break / reg_break));
                     break;
                 }
 
@@ -577,7 +580,7 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
             {
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will attempt to confuse any creature who walks into it."));
+                    output.append(QString("  This monster trap will attempt to confuse any creature who walks into it."));
                     break;
                 }
 
@@ -601,7 +604,7 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will attempt to slow any creature who walks into it."));
+                    output.append(QString("  This monster trap will attempt to slow any creature who walks into it."));
                     break;
                 }
 
@@ -628,8 +631,8 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will set off an explosion that will damage"));
-                    message(QString(" any living creature within %1 squares that is in line of sight of the blast.") .arg(rad));
+                    output.append(QString("  This monster trap will set off an explosion that will damage"));
+                    output.append(QString(" any living creature within %1 squares that is in line of sight of the blast.") .arg(rad));
                     break;
                 }
 
@@ -650,8 +653,8 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will set off an explosion of poison gas that will affect"));
-                    message(QString(" any creature within %1 squares that is in line of sight of the blast.") .arg(rad));
+                    output.append(QString("  This monster trap will set off an explosion of poison gas that will affect"));
+                    output.append(QString(" any creature within %1 squares that is in line of sight of the blast.") .arg(rad));
                     break;
                 }
 
@@ -673,8 +676,8 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will set off an explosion of electricity that will affect"));
-                    message(QString(" any creature within %1 squares that is in line of sight of the blast.") .arg(rad));
+                    output.append(QString("  This monster trap will set off an explosion of electricity that will affect"));
+                    output.append(QString(" any creature within %1 squares that is in line of sight of the blast.") .arg(rad));
                     break;
                 }
 
@@ -695,9 +698,9 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will set off an explosion of plamsa, followed by an"));
-                    message(QString(" explosion of shards, that will affect "));
-                    message(QString(" any creature within %1 squares that is in line of sight of the blast.") .arg(rad));
+                    output.append(QString("  This monster trap will set off an explosion of plamsa, followed by an"));
+                    output.append(QString(" explosion of shards, that will affect "));
+                    output.append(QString(" any creature within %1 squares that is in line of sight of the blast.") .arg(rad));
                     break;
                 }
 
@@ -719,7 +722,7 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
             {
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will teleport any creature who walks into it."));
+                    output.append(QString("  This monster trap will teleport any creature who walks into it."));
                     break;
                 }
 
@@ -742,8 +745,8 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will damage any creature within"));
-                    message(QString(" line of sight when the trap is set off."));
+                    output.append(QString("  This monster trap will damage any creature within"));
+                    output.append(QString(" line of sight when the trap is set off."));
                     break;
                 }
 
@@ -765,7 +768,7 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
             {
                 if (mode == MODE_DESCRIBE)
                 {
-                    message(QString("  This monster trap will damage any creature who walks into it."));
+                    output.append(QString("  This monster trap will damage any creature who walks into it."));
                     break;
                 }
 
@@ -786,13 +789,13 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
             if ((!(f_idx == FEAT_MTRAP_CONFUSION)) && (!(f_idx == FEAT_MTRAP_SLOWING)) &&
                     (!(f_idx == FEAT_MTRAP_PORTAL)))
             {
-                message(QString("  The amount of damage caused by this trap increases as the player gains levels."));
+                output.append(QString("  The amount of damage caused by this trap increases as the player gains levels."));
             }
-            return;
+            return (output);
         }
 
         /*make the monsters who saw wary*/
-        (void)project_los(y, x, 0, GF_MAKE_WARY);
+        else (void)project_los(y, x, 0, GF_MAKE_WARY);
 
     }
 
@@ -814,7 +817,7 @@ void apply_monster_trap(int f_idx, int y, int x, byte mode)
     }
 
     /* Return */
-    return;
+    return(output);
 }
 
 /*
@@ -3575,7 +3578,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
         if cave_monster_trap_bold(ny,nx)
         {
             /* Apply trap */
-            apply_monster_trap(x_list[dungeon_info[ny][nx].effect_idx].x_f_idx, ny, nx, MODE_ACTION);
+            (void)apply_monster_trap(x_list[dungeon_info[ny][nx].effect_idx].x_f_idx, ny, nx, MODE_ACTION);
 
             /* Return if dead */
             if (!(m_ptr->r_idx)) return(BASE_ENERGY_MOVE);
@@ -3588,7 +3591,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
             if cave_monster_trap_bold(oy,ox)
             {
                 /* Apply trap */
-                apply_monster_trap(x_list[dungeon_info[ny][nx].effect_idx].x_f_idx, oy, ox, MODE_ACTION);
+                (void)apply_monster_trap(x_list[dungeon_info[ny][nx].effect_idx].x_f_idx, oy, ox, MODE_ACTION);
             }
         }
 

@@ -331,8 +331,7 @@ QString describe_quest(s16b level, int mode)
         {
             mon_theme = (QString(feeling_themed_level[q_ptr->q_theme]));
 
-            QChar tester = mon_theme[0];
-            if (is_a_vowel(tester)) intro.append("an ");
+            if (begins_with_vowel(mon_theme)) intro.append("an ");
             else intro.append("a ");
 
             if (q_ptr->q_type ==  QUEST_THEMED_LEVEL)
@@ -389,8 +388,7 @@ QString describe_quest(s16b level, int mode)
         }
         else
         {
-            QChar tester = name[0];
-            if (is_a_vowel(tester)) targets = (QString("an %1") .arg(name));
+            if (begins_with_vowel(name)) targets = (QString("an %1") .arg(name));
             else targets = (QString("a %1") .arg(name));
         }
     }
@@ -2743,7 +2741,7 @@ void write_quest_note(bool success)
             else note = "Quest: Failed to clear out ";
 
             /*make the grammar proper*/
-            if (is_a_vowel(mon_theme[0])) note.append("an ");
+            if (begins_with_vowel(mon_theme)) note.append("an ");
             else note.append("a ");
 
             /*dump the monster theme*/

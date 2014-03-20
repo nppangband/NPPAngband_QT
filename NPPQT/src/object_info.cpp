@@ -1775,9 +1775,7 @@ QString format_object_history(object_type *o_ptr)
             /* Get an article for non-uniques */
             if (!(r_ptr->flags1 & (RF1_UNIQUE)))
             {
-                QChar tester = name[0];
-
-                article = (is_a_vowel(tester) ? "an " : "a ");
+                article = (begins_with_vowel(name) ? "an " : "a ");
             }
 
             /* Stored name */
