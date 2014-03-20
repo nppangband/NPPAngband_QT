@@ -12,6 +12,25 @@ static QPixmap *ball_pix = 0;
 static QPixmap *bolt_pix = 0;
 static QPixmap *star_pix = 0;
 
+enum {
+    ARROW_IDX = 0,
+    SHOT_IDX,
+    BOULDER_IDX,
+    MAX_MISSILES
+};
+static QPixmap *missiles[MAX_MISSILES];
+static const char *the_names[MAX_MISSILES] = {"arrow1.png", "shot1.png", "boulder1.png"};
+
+static void load_missiles()
+{
+    for (int i = 0; i < MAX_MISSILES; i++) {
+        if (missiles[i] != 0) continue;
+        QString path(NPP_DIR_GRAF);
+        path.append(the_names[i]);
+        missiles[i] = new QPixmap(path);
+    }
+}
+
 QPointF mulp(QPointF a, QPointF b)
 {
     return QPointF(a.x() * b.x(), a.y() * b.y());
@@ -272,28 +291,49 @@ void NPPAnimation::start()
     }
 }
 
-BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type)
+BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg)
 {
-    load_bolt_pix();
+    flg = new_flg;
+    gf_type = new_gf_type;    
+    color = defined_colors[gf_color(gf_type) % MAX_COLORS];
 
-    gf_type = new_gf_type;
-    byte idx = gf_color(gf_type);
-    color = defined_colors[idx % MAX_COLORS];
-    current_angle = 0;
-    setVisible(false);
-    setZValue(300);
-    anim = new QPropertyAnimation(this, "pos");
     from = getCenter(from.y(), from.x());
     to = getCenter(to.y(), to.x());
     current_angle = QLineF(from, to).angle();
+
+    if (gf_type == GF_ARROW) {
+        load_missiles();
+        if (flg & PROJECT_ROCK) {
+            pix = *missiles[BOULDER_IDX];
+        }
+        else if (flg & PROJECT_SHOT) {
+            pix = *missiles[SHOT_IDX];
+        }
+        else {
+            pix = *missiles[ARROW_IDX];
+            pix = rotate_pix(pix, current_angle);
+        }
+    }
+    else {
+        load_bolt_pix();
+        pix = rotate_pix(*bolt_pix, current_angle);
+        pix = colorize_pix3(pix, color);
+    }
+
+    setVisible(false);
+    setZValue(300);
+
+    anim = new QPropertyAnimation(this, "pos");   
+
     int d = QLineF(from, to).length();
     int dur = d * delay * 1.2; // +20%
-    if (dur < 250) dur = 250;  // minimum
-    anim->setDuration(dur);
-    QPixmap pix = *bolt_pix;
+    if (dur < 250) dur = 250;  // minimum    
+    anim->setDuration(dur);    
+
     QPointF adj = QPointF(pix.width() / 2, pix.height() / 2);
     anim->setStartValue(from - adj);
     anim->setEndValue(to - adj);
+
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
@@ -301,8 +341,6 @@ void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     painter->save();
 
-    QPixmap pix = rotate_pix(*bolt_pix, current_angle);
-    pix = colorize_pix3(pix, color);
     painter->drawPixmap(0, 0, pix);
 
     painter->restore();
@@ -310,7 +348,7 @@ void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 QRectF BoltAnimation::boundingRect() const
 {
-    return QRectF(0, 0, bolt_pix->width(), bolt_pix->height());
+    return QRectF(0, 0, pix.width(), pix.height());
 }
 
 void BoltAnimation::start()

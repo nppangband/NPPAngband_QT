@@ -631,7 +631,7 @@ extern bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_
 extern void ui_destroy_path();
 extern void ui_show_cursor(int y, int x);
 extern void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg);
-extern void ui_animate_bolt(int y0, int x0, int y1, int x1, int type);
+extern void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg);
 extern void ui_animate_beam(int y0, int x0, int y1, int x1, int type);
 extern void ui_animate_ball(int y, int x, int radius, int type, u32b flg);
 extern void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids);

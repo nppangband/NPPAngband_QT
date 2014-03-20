@@ -56,8 +56,10 @@ public:
     int current_angle;
     int gf_type;
     QColor color;
+    u32b flg;
+    QPixmap pix;
 
-    BoltAnimation(QPointF from, QPointF to, int new_gf_type);
+    BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;

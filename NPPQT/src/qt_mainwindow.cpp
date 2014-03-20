@@ -206,15 +206,18 @@ void MainWindow::slot_something()
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
     if (!get_aim_dir(&dir, false) || dir == 0) return;
-    int k = rand_int(5);
+    int k = rand_int(8);
 
-    //k = 4;
+    //k = 7;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
     else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
     else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
     else if (k == 4) fire_star(GF_DISENCHANT, 300, 4, 0);
+    else if (k == 5) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, 0);
+    else if (k == 6) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_SHOT);
+    else if (k == 7) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_ROCK);
 }
 
 void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
@@ -238,9 +241,9 @@ void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
     beam->start();
 }
 
-void ui_animate_bolt(int y0, int x0, int y1, int x1, int type)
+void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
 {
-    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
+    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
 }
