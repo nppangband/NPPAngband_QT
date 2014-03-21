@@ -496,14 +496,14 @@ bool make_attack_normal(monster_type *m_ptr)
                 if (method == RBM_SLIME) msg = (QString("%1") .arg(act));
                 else if (method == RBM_INSULT)
                 {
-                    msg = (QString("%^1 %2") .arg(m_name) .arg(act));
+                    msg = (QString("%1 %2").arg(capitalize_first(m_name)).arg(act));
                 }
                 else
                 {
                     if (dam > p_ptr->chp / 3)
-                        msg = (QString("%^1 %2!") .arg(m_name) .arg(act));
+                        msg = (QString("%1 %2!") .arg(capitalize_first(m_name)) .arg(act));
                     else
-                        msg = (QString("%^1 %2.") .arg(m_name) .arg(act));
+                        msg = (QString("%1 %2.") .arg(capitalize_first(m_name)) .arg(act));
                 }
 
                 /* Message */
@@ -687,8 +687,8 @@ bool make_attack_normal(monster_type *m_ptr)
                                 /* Message */
                                 if ((m_ptr->hp < m_ptr->maxhp) && (heal))
                                 {
-                                    if (m_ptr->ml) message(QString("%^1 looks healthier.") .arg(m_name));
-                                    else message(QString("%^1 sounds healthier.") .arg(m_name));
+                                    if (m_ptr->ml) message(QString("%1 looks healthier.") .arg(capitalize_first(m_name)));
+                                    else message(QString("%1 sounds healthier.") .arg(capitalize_first(m_name)));
                                 }
 
                                 /*heal is greater than monster wounds, restore mana too*/
@@ -710,8 +710,8 @@ bool make_attack_normal(monster_type *m_ptr)
                                     /*give message if anything left over*/
                                     if (m_ptr->mana < r_ptr->mana)
                                     {
-                                        if (m_ptr->ml) message(QString("%^1 looks refreshed.") .arg(m_name));
-                                        else message(QString("%^1 sounds refreshed.") .arg(m_name));
+                                        if (m_ptr->ml) message(QString("%1 looks refreshed.") .arg(capitalize_first(m_name)));
+                                        else message(QString("%1 sounds refreshed.") .arg(capitalize_first(m_name)));
                                     }
 
                                     /*add mana*/
@@ -1623,7 +1623,7 @@ bool make_attack_normal(monster_type *m_ptr)
                     disturb(1, 0);
 
                     /* Message */
-                    message(QString("%^1 misses you.")  .arg(m_name));
+                    message(QString("%1 misses you.")  .arg(capitalize_first(m_name)));
                 }
 
                 break;

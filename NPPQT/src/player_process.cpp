@@ -254,7 +254,10 @@ void process_player(void)
     if ((p_ptr->timed[TMD_PARALYZED]) || (p_ptr->timed[TMD_STUN] >= 100))
     {
         /* Take a turn */
-        process_player_energy(BASE_ENERGY_MOVE);
+        //process_player_energy(BASE_ENERGY_MOVE);
+
+        // TODO TODO fix this circular call
+         p_ptr->p_energy -= BASE_ENERGY_MOVE;
     }
 
     /* Resting */

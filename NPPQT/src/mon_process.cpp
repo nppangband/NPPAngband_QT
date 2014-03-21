@@ -1247,11 +1247,17 @@ void process_entities(void)
                 continue;
             }
 
+            int old = m_ptr->m_energy;
+
             /* Require that monster still have at least 100 energy */
             if (m_ptr->m_energy >= ENERGY_TO_MOVE)
             {
                 /* Monster takes a turn */
                 m_ptr->m_energy -= process_monster(m_ptr);
+
+                if (old < m_ptr->m_energy) {
+                    popup1("que hacemo", 66);
+                }
             }
 
         }

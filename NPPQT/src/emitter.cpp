@@ -310,15 +310,24 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
         do_default = false;
 
         object_kind *k_ptr = k_info + o_ptr->k_idx;
+        QChar chr = k_ptr->d_char;
+        QColor col = k_ptr->d_color;
+        QString key = k_ptr->tile_id;
+        if (k_ptr->flavor > 0) {
+            flavor_type *fl_ptr = flavor_info + k_ptr->flavor;
+            chr = fl_ptr->d_char;
+            col = fl_ptr->d_color;
+            key = fl_ptr->tile_id;
+        }
 
         if (use_graphics) {
-            QString key = k_ptr->tile_id;
             main_window->rebuild_tile(key);
             pix = main_window->tiles.value(key);
         }
         else {
-            pix = pseudo_ascii(k_ptr->d_char, k_ptr->d_color, main_window->cur_font,
-                               QSizeF(main_window->cell_wid, main_window->cell_hgt));
+            pix = pseudo_ascii(chr, col, main_window->cur_font,
+                               QSizeF(main_window->cell_wid + 10,
+                                      main_window->cell_hgt + 10));
         }
     }
     else if (gf_type == GF_ARROW) {
