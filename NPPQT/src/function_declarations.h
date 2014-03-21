@@ -138,6 +138,9 @@ extern void excise_effect_idx(int x_idx);
 extern s16b x_pop(void);
 extern void process_effects(void);
 
+// dun_feat_info.cpp
+extern void describe_feature(int f_idx, bool spoilers);
+
 /* dun_feature.c */
 extern QString feature_desc(u16b feat, bool add_prefix,	bool get_mimic);
 extern int feat_adjust_combat_for_player(int chance, bool being_attacked);
@@ -147,14 +150,14 @@ extern void find_secret(int y, int x);
 extern u16b feat_state(u16b feat, int action);
 extern u16b feat_state_power(u16b feat, int action);
 extern u16b feat_state_explicit_power(u16b feat, int action);
-extern u16b fire_trap_smart(int f_idx, int y, int x, byte mode);
-extern void hit_trap(int f_idx, int y, int x, byte mode);
+extern u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc);
+extern QString hit_trap(int f_idx, int y, int x, byte mode);
 extern void feat_near(int feat, int y, int x);
 extern void count_feat_everseen(void);
 extern bool vault_locked_door(int f_idx);
 extern int get_feat_num_prep(void);
 extern s16b get_feat_num(int level);
-extern u16b pick_trap(int y, int x, byte mode);
+extern u16b pick_trap(byte mode);
 extern u16b get_secret_door_num(void);
 extern void place_secret_door(int y, int x);
 extern void place_closed_door(int y, int x);
@@ -164,7 +167,9 @@ extern void place_broken_door(int y, int x);
 extern void place_locked_door(int y, int x);
 extern void place_jammed_door(int y, int x);
 extern void place_random_door(int y, int x);
+extern void lore_do_probe_feature(int f_idx);
 extern dynamic_grid_type *get_dynamic_terrain(byte y, byte x);
+extern void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr);
 extern void wipe_dynamic_terrain(void);
 extern bool add_dynamic_terrain(byte y, byte x);
 extern void remove_dynamic_terrain(byte y, byte x);
@@ -220,6 +225,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px);
 
 //mon_classes.cpp
 
+// mon_info.cpp
+void describe_monster(int r_idx, bool spoilers, QString extra_message);
 
 
 // mon_damage.cpp
@@ -237,12 +244,14 @@ extern bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who);
 
 // mon_move.cpp
 extern void find_range(monster_type *m_ptr);
+extern QString apply_monster_trap(int f_idx, int y, int x, byte mode);
 extern bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash);
 extern s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash);
 extern bool get_move(monster_type *m_ptr, int *ty, int *tx, bool *fear, bool must_use_target);
 extern int cave_passable_mon(monster_type *m_ptr, int y, int x, bool *bash);
 
 // mon_process.cpp
+extern void cloud_surround(int r_idx, int *typ, int *dam, int *rad);
 extern void process_entities(void);
 
 //mon_ranged_attack.cpp
@@ -843,6 +852,7 @@ extern const colors_preset preset_colors[MAX_COLORS];
 /* target.cpp */
 extern bool target_able(int m_idx);
 extern bool target_okay(void);
+extern bool target_set_interactive(int mode, int x, int y);
 extern void target_set_monster(int m_idx);
 extern void target_set_location(int y, int x);
 extern int target_dir(UserInput input);
@@ -867,6 +877,7 @@ extern void debug_rarities();
 extern int letter_to_number (QChar let);
 extern QChar number_to_letter (int num);
 extern bool is_a_vowel(QChar single_letter);
+extern bool begins_with_vowel(QString line);
 extern QString capitalize_first(QString line);
 extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMessageBox::Information);
 extern bool get_check(QString question);

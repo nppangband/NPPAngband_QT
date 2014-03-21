@@ -253,7 +253,7 @@ static QString obj_desc_name(object_type *o_ptr, bool prefix, byte mode, bool sp
 
             if (basename.contains('#'))
             {
-                if (!modstr.isEmpty() && is_a_vowel(modstr[0]))
+                if (!modstr.isEmpty() && begins_with_vowel(modstr))
                     an = TRUE;
             }
             else if (is_a_vowel(basename[lookahead]))

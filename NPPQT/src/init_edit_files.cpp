@@ -3078,9 +3078,13 @@ int parse_r_info(QString line_info)
             }
         }
 
+        if (blow.isEmpty()) n1 = 0;
+
         /* Analyze the blow */
-        for (n1 = 0; n1 < BLOW_METHOD_MAX; n1++)
+        else for (n1 = 1; n1 < BLOW_METHOD_MAX; n1++)
         {
+            QString blow_method = r_info_blow_method[n1];
+
             if (blow.contains(r_info_blow_method[n1])) break;
         }
 
@@ -3089,8 +3093,10 @@ int parse_r_info(QString line_info)
 
         if (has_method)
         {
+            if (blow.isEmpty()) n2 = 0;
+
             /* Analyze effect */
-            for (n2 = 0; BLOW_EFFECT_MAX; n2++)
+            else for (n2 = 1; BLOW_EFFECT_MAX; n2++)
             {
                 if (method.contains(r_info_blow_effect[n2])) break;
             }

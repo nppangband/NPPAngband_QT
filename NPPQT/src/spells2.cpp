@@ -252,7 +252,7 @@ bool create_glacier(void)
     int status = FALSE;
 
     /* Select a grid */
-    // TODO if (!target_set_interactive(TARGET_GRID, -1, -1)) return (FALSE);
+    if (!target_set_interactive(TARGET_GRID, -1, -1)) return (FALSE);
 
     /* Paranoia */
     if (!p_ptr->target_set) return (FALSE);
@@ -1100,7 +1100,7 @@ bool banishment(void)
 {
     int i;
 
-    char typ;
+    QChar typ;
 
     /* Mega-Hack -- Get a monster symbol */
     // TODO if (!get_com("Choose a monster race (by symbol) to banish: ", &typ))
@@ -1194,9 +1194,9 @@ bool probing(void)
 {
 
     /*let the player select one monster or feature*/
-    // TODO if (!(target_set_interactive(TARGET_PROBE, -1, -1)))
+    if (!(target_set_interactive(TARGET_PROBE, -1, -1)))
     {
-        // TODO return(FALSE);
+        return(FALSE);
     }
 
     /*Nothing set - paranoia*/
@@ -1208,7 +1208,8 @@ bool probing(void)
         int f_idx = dungeon_info[p_ptr->target_row][p_ptr->target_col].feat;
 
         /*Learn about the feature*/
-       //TODO probe and display
+        lore_do_probe_feature(f_idx);
+        describe_feature(f_idx, FALSE);
     }
 
     /*We selected a monster*/
@@ -1216,18 +1217,19 @@ bool probing(void)
     {
         int m_idx = p_ptr->target_who;
         monster_type *m_ptr = &mon_list[m_idx];
-        QString m_name;;
+        QString m_name, extra_message;
 
         /* Learn about the monsters */
         lore_do_probe_monster(m_idx);
 
-        // TODO probe and display monster
-
         /* Get "the monster" or "something" */
-        m_name = monster_desc(m_ptr, 0x04);
+        m_name = capitalize_first(monster_desc(m_ptr, 0x04));
 
         /* Describe the monster */
-        message(QString("%^1 has %2 hit points.") .arg(m_name) .arg(m_ptr->hp));
+        extra_message = (QString("%1 has %2 hit point%3.") .arg(m_name) .arg(m_ptr->hp) .arg((m_ptr->hp != 1) ? "s" : ""));
+
+        // Get the monster info and display it
+        describe_monster(m_ptr->r_idx, FALSE, extra_message);
     }
 
     /* Result */

@@ -853,7 +853,7 @@ void move_player(int dir, int jumping)
 			if (cave_passive_trap_bold(y, x))
 			{
 				/* Hit the trap */
-                hit_trap(x_list[dungeon_info[y][x].effect_idx].x_f_idx, y, x, MODE_ACTION);
+                (void)hit_trap(x_list[dungeon_info[y][x].effect_idx].x_f_idx, y, x, MODE_ACTION);
 			}
 
 			/* Get the feature name */
@@ -1051,7 +1051,7 @@ void move_player(int dir, int jumping)
 		else if (cave_passive_trap_bold(y, x))
 		{
 			/* Hit the trap */
-            hit_trap(x_list[dungeon_info[p_ptr->py][p_ptr->px].effect_idx].x_f_idx, y, x, MODE_ACTION);
+            (void)hit_trap(x_list[dungeon_info[p_ptr->py][p_ptr->px].effect_idx].x_f_idx, y, x, MODE_ACTION);
 		}
 
 		/* Discover secrets */

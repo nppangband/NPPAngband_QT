@@ -628,12 +628,13 @@ void pick_and_set_trap(int y, int x, int mode)
     }
 
     /* Hack - find a trap to determine trap type. */
-    feat = pick_trap(y, x, mode);
+    feat = pick_trap(mode);
 
     /* Set either set a smart or dumb trap*/
     if (feat_ff2_match(feat, FF2_TRAP_SMART))
     {
-       u16b flags = fire_trap_smart(feat, y, x, MODE_FLAGS);
+       QString dummy_string;
+       u16b flags = fire_trap_smart(feat, y, x, MODE_FLAGS, &dummy_string);
 
        set_effect_trap_smart(feat, y, x, flags);
     }
@@ -1267,7 +1268,8 @@ static void process_effect(int x_idx)
                 /* Fire! */
                 if (fire)
                 {
-                    fire_trap_smart(x_ptr->x_f_idx, x_ptr->x_cur_y, x_ptr->x_cur_x, MODE_ACTION);
+                    QString dummy_string;
+                    u16b flags = fire_trap_smart(x_ptr->x_f_idx, x_ptr->x_cur_y, x_ptr->x_cur_x, MODE_ACTION, &dummy_string);
 
                     /*Disturb the player*/
                     disturb (1,0);

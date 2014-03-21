@@ -315,8 +315,6 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
 
 
-#define OPT_MAX						256
-
 /*
  * Store constants
  */
@@ -552,12 +550,6 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define MODE_ACTION		2
 #define MODE_FLAGS		3
 
-/*Who caused the projection? */
-#define SOURCE_PLAYER			-1	/*player is the source of projection*/
-#define SOURCE_TRAP				-2	/*Trap*/
-#define SOURCE_EFFECT			-3	/*Effect*/
-#define SOURCE_OTHER			-4	/*Terrain, something other than player or monster*/
-#define SOURCE_MONSTER_START	 0	/*Greater than 0 monster is the source*/
 
 /*
  * An arc with a width (in degrees) less than this value will lose less

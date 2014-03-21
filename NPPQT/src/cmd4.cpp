@@ -97,8 +97,7 @@ void do_cmd_feeling(void)
 
         note = (QString("You have entered "));
         mon_theme = (QString(feeling_themed_level[feeling - LEV_THEME_HEAD]));
-        QChar first = mon_theme[0];
-        if (is_a_vowel(first)) note.append(QString("an "));
+        if (begins_with_vowel(mon_theme)) note.append(QString("an "));
         else note.append(QString("a "));
 
         note.append(QString("%1 stronghold.") .arg(mon_theme));

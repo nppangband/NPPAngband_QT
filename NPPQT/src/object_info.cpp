@@ -272,8 +272,6 @@ static QString describe_brand(object_type *o_ptr, u32b f1)
 
 /*
  * Describe immunities granted by an object.
- *
- * ToDo - Merge intro describe_resist() below.
  */
 static QString describe_immune(object_type *o_ptr, u32b f2)
 {
@@ -1775,9 +1773,7 @@ QString format_object_history(object_type *o_ptr)
             /* Get an article for non-uniques */
             if (!(r_ptr->flags1 & (RF1_UNIQUE)))
             {
-                QChar tester = name[0];
-
-                article = (is_a_vowel(tester) ? "an " : "a ");
+                article = (begins_with_vowel(name) ? "an " : "a ");
             }
 
             /* Stored name */

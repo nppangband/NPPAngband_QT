@@ -132,13 +132,22 @@ bool is_a_vowel(QChar single_letter)
 
     return (FALSE);
 }
+
+bool begins_with_vowel(QString line)
+{
+    // Paranoia
+    if (line.isEmpty()) return (FALSE);
+    QChar first = line[0];
+    return (is_a_vowel(first));
+}
+
 // Capitilize the first character in a string.
 QString capitalize_first(QString line)
 {
     // Paranoia
     if (line.isEmpty()) return (line);
     QChar first = line[0];
-    first.toUpper();
+    first = first.toUpper();
     line[0] = first;
     return (line);
 

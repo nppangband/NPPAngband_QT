@@ -1067,11 +1067,8 @@ QString monster_desc(monster_type *m_ptr, int mode)
         /* It could be an indefinite monster */
         else if (mode & 0x08)
         {
-            /* XXX Check plurality for "some" */
-            QChar tester = name[0];
-
             /* Indefinite monsters need an indefinite article */
-            if (is_a_vowel(tester)) desc = "an ";
+            if (begins_with_vowel(name)) desc = "an ";
             else desc = "a ";
             desc.append(name);
         }
