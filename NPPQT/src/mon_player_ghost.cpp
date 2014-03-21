@@ -541,7 +541,8 @@ void prepare_ghost_name(void)
 
     t_ptr = &t_info[player_ghost_num];
 
-    player_ghost_name = (QString("%^1, the %^2") .arg(t_ptr->t_name) .arg(r_ptr->r_name_full));
+    player_ghost_name = (QString("%1, the %2") .arg(capitalize_first(t_ptr->t_name))
+                         .arg(capitalize_first(r_ptr->r_name_full)));
 }
 
 /*

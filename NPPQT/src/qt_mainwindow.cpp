@@ -1031,6 +1031,18 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
+static void proccess_mov_key(QKeyEvent *event, int dir)
+{
+    int mask = event->modifiers() & (Qt::ShiftModifier | Qt::AltModifier | Qt::ControlModifier);
+
+    if (mask == Qt::ControlModifier) {
+        ui_change_panel(dir);
+    }
+    else {
+        move_player(dir, false);
+    }
+}
+
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
     // TODO PLAYTESTING
@@ -1064,7 +1076,18 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         // TODO PLAYTESTING
         case Qt::Key_Asterisk:
         {
-            slot_something();
+            // Stone to mud
+            if (which_key->modifiers() & Qt::ControlModifier) {
+                int dir;
+                p_ptr->command_dir = 0;
+                if (get_aim_dir(&dir, false)) {
+                    wall_to_mud(dir, 100);
+                }
+            }
+            // Shot everything
+            else {
+                slot_something();
+            }
             break;
         }
         // TODO PLAYTESTING
@@ -1083,52 +1106,52 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_2:
         case Qt::Key_Down:
         {
-            move_player(2, FALSE);
+            proccess_mov_key(which_key, 2);
             return;
         }
         // Move up
         case Qt::Key_8:
         case Qt::Key_Up:
         {
-            move_player(8, FALSE);
+            proccess_mov_key(which_key, 8);
             return;
         }
         // Move left
         case Qt::Key_4:
         case Qt::Key_Left:
         {
-            move_player(4, FALSE);
+            proccess_mov_key(which_key, 4);;
             return;
         }
         // Move right
         case Qt::Key_6:
         case Qt::Key_Right:
         {
-            move_player(6, FALSE);
+            proccess_mov_key(which_key, 6);
             return;
         }
         // Move diagonally left and up
         case Qt::Key_7:
         {
-            move_player(7, FALSE);
+            proccess_mov_key(which_key, 7);
             return;
         }
         // Move diagonally right and up
         case Qt::Key_9:
         {
-            move_player(9, FALSE);
+            proccess_mov_key(which_key, 9);
             return;
         }
         // Move diagonally left and down
         case Qt::Key_1:
         {
-            move_player(1, FALSE);
+            proccess_mov_key(which_key, 1);
             return;
         }
         // Move diagonally right and down
         case Qt::Key_3:
         {
-            move_player(3, FALSE);
+            proccess_mov_key(which_key, 3);
             return;
         }
         case Qt::Key_V:

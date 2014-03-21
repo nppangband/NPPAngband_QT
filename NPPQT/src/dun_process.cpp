@@ -257,7 +257,7 @@ static void monster_terrain_damage(void)
         monster_type *m_ptr = &mon_list[i];
         monster_race *r_ptr = &r_info[m_ptr->r_idx];
         /* Get the feature */
-        u16b feat = dungeon_info[m_ptr->fy][m_ptr->fx].monster_idx;
+        u16b feat = dungeon_info[m_ptr->fy][m_ptr->fx].feat;
         feature_type *f_ptr = &f_info[feat];
 
         /* Skip dead monsters */
