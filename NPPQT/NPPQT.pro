@@ -22,12 +22,13 @@ SOURCES +=  src/qt_main.cpp\
             src/cmd_objects.cpp \
             src/cmd_pickup.cpp \
             src/cmd_spell.cpp \
-            src/dun_effect.cpp \
-            src/dun_generate.cpp \
             src/dungeon.cpp \
             src/dun_cave.cpp \
             src/dun_classes.cpp \
+            src/dun_effect.cpp \
+            src/dun_feat_info.cpp \
             src/dun_feature.cpp \
+            src/dun_generate.cpp \
             src/dun_process.cpp \
             src/dun_util.cpp \
             src/emitter.cpp \
@@ -39,6 +40,7 @@ SOURCES +=  src/qt_main.cpp\
             src/mon_cast.cpp \
             src/mon_classes.cpp \
             src/mon_damage.cpp \
+            src/mon_info.cpp \
             src/mon_move.cpp \
             src/mon_player_ghost.cpp \
             src/mon_process.cpp \
@@ -74,12 +76,7 @@ SOURCES +=  src/qt_main.cpp\
             src/tables.cpp \
             src/target.cpp \
             src/timed.cpp \
-            src/utilities.cpp \
-    src/mon_info.cpp \
-    src/dun_feat_info.cpp
-
-
-
+            src/utilities.cpp
 
 
 

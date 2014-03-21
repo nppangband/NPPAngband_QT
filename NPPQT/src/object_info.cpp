@@ -272,8 +272,6 @@ static QString describe_brand(object_type *o_ptr, u32b f1)
 
 /*
  * Describe immunities granted by an object.
- *
- * ToDo - Merge intro describe_resist() below.
  */
 static QString describe_immune(object_type *o_ptr, u32b f2)
 {

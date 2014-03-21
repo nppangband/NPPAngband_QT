@@ -1017,6 +1017,8 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
     output.clear();
 
+    int str_length = output.length();
+
     /* Extract a gender (if applicable) */
     if (r_ptr->flags1 & RF1_FEMALE) msex = 2;
     else if (r_ptr->flags1 & RF1_MALE) msex = 1;
@@ -1060,6 +1062,8 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
         /* End */
         output.append(".<br><br>");
+
+        str_length = output.length();
     }
 
     /*note if this is an unused ghost template*/
@@ -1098,7 +1102,11 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
         output.append(QString("%1 regenerates quickly.  ") .arg(capitalize_first(wd_he[msex])));
     }
 
-    if (!output.isEmpty()) output.append("<br><br>");
+    if (output.length() > str_length)
+    {
+        output.append("<br><br>");
+        str_length = output.length();
+    }
 
     if (l_ptr->r_l_flags2 & (RF2_CLOUD_SURROUND))
     {
@@ -1163,6 +1171,9 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
         /* End */
         output.append(".<br><br>");
+        str_length = output.length();
+
+
     }
 
 
@@ -1194,6 +1205,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
         /* End */
         output.append(".<br><br>");
+        str_length = output.length();
     }
 
 
@@ -1226,6 +1238,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
         /* End */
         output.append(".<br><br>");
+        str_length = output.length();
     }
 
 
@@ -1257,6 +1270,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
         /* End */
         output.append(".<br><br>");
+        str_length = output.length();
     }
 
 
@@ -1316,6 +1330,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
                     .arg(capitalize_first(wd_he[msex])) .arg(act) .arg(wd_he[msex]) .arg(10 * r_ptr->aaf));
 
         output.append("<br><br>");
+        str_length = output.length();
     }
 
     /* Describe escorts */
@@ -1740,18 +1755,8 @@ static void cheat_monster_lore(int r_idx, monster_lore *l_ptr)
 
 
 /*
- * Hack -- display monster information using "roff()"
- *
- * Note that there is now a compiler option to only read the monster
- * descriptions from the raw file when they are actually needed, which
- * saves about 60K of memory at the cost of disk access during monster
- * recall, which is optional to the user.
- *
- * This function should only be called with the cursor placed at the
- * left edge of the screen, on a cleared line, in which the recall is
- * to take place.  One extra blank line is left after the recall.
  */
-void describe_monster(int r_idx, bool spoilers)
+void describe_monster(int r_idx, bool spoilers, QString extra_message)
 {
     monster_lore lore;
     QString output;
@@ -1795,37 +1800,40 @@ void describe_monster(int r_idx, bool spoilers)
         cheat_monster_lore(r_idx, &lore);
     }
 
+    /* Print, in colour */
+    output.append(QString("<b><big>%1</big></b><br><br>") .arg(mon_name));
+
     /* Show kills of monster vs. player(s) */
-    if (!spoilers)	describe_monster_kills(r_idx, &lore);
+    if (!spoilers)	output.append(describe_monster_kills(r_idx, &lore));
 
     /* Monster description */
-    describe_monster_desc(r_idx);
+    output.append(describe_monster_desc(r_idx));
 
     /* Describe the movement and level of the monster */
-    describe_monster_movement(r_idx, &lore);
+    output.append(describe_monster_movement(r_idx, &lore));
 
     /* Describe experience */
-    if (!spoilers) describe_monster_exp(r_idx, &lore);
+    if (!spoilers) output.append(describe_monster_exp(r_idx, &lore));
 
     /* Describe spells and innate attacks */
-    describe_monster_spells(r_idx, &lore);
+    output.append(describe_monster_spells(r_idx, &lore));
 
     /* Describe monster "toughness" */
-    if (!spoilers) describe_monster_toughness(r_idx, &lore);
+    if (!spoilers) output.append(describe_monster_toughness(r_idx, &lore));
 
     /* Describe the abilities of the monster */
-    describe_monster_abilities(r_idx, &lore);
+    output.append(describe_monster_abilities(r_idx, &lore));
 
     /* Describe the monster drop */
-    describe_monster_drop(r_idx, &lore);
+    output.append(describe_monster_drop(r_idx, &lore));
 
     /* Describe the known attacks */
-    describe_monster_attack(r_idx, &lore);
+    output.append(describe_monster_attack(r_idx, &lore));
 
     /* Notice "Quest" monsters */
     if (lore.r_l_flags1 & RF1_QUESTOR)
     {
-        output.append("<br>You feel an intense desire to kill this monster...  <br><br>");
+        output.append("<big>You feel an intense desire to kill this monster...  </big><br><br>");
     }
 
     /* Cheat -- know everything */
@@ -1834,6 +1842,13 @@ void describe_monster(int r_idx, bool spoilers)
         /* Hack -- restore memory */
         COPY(l_ptr, &save_mem, monster_lore);
     }
+
+    if (!extra_message.isEmpty())
+    {
+        output.append(QString("%1  <br><br>") .arg(extra_message));
+    }
+
+    output.append(QString("<b><br>[Press OK to continue]<br></b>"));
 
     /* Finally, display it */
     QMessageBox::information(0, mon_name, output, QMessageBox::Ok);

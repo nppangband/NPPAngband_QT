@@ -139,7 +139,7 @@ extern s16b x_pop(void);
 extern void process_effects(void);
 
 // dun_feat_info.cpp
-extern QString describe_feature(int f_idx, bool spoilers);
+extern void describe_feature(int f_idx, bool spoilers);
 
 /* dun_feature.c */
 extern QString feature_desc(u16b feat, bool add_prefix,	bool get_mimic);
@@ -167,6 +167,7 @@ extern void place_broken_door(int y, int x);
 extern void place_locked_door(int y, int x);
 extern void place_jammed_door(int y, int x);
 extern void place_random_door(int y, int x);
+extern void lore_do_probe_feature(int f_idx);
 extern dynamic_grid_type *get_dynamic_terrain(byte y, byte x);
 extern void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr);
 extern void wipe_dynamic_terrain(void);
@@ -224,6 +225,8 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px);
 
 //mon_classes.cpp
 
+// mon_info.cpp
+void describe_monster(int r_idx, bool spoilers, QString extra_message);
 
 
 // mon_damage.cpp
@@ -849,6 +852,7 @@ extern const colors_preset preset_colors[MAX_COLORS];
 /* target.cpp */
 extern bool target_able(int m_idx);
 extern bool target_okay(void);
+extern bool target_set_interactive(int mode, int x, int y);
 extern void target_set_monster(int m_idx);
 extern void target_set_location(int y, int x);
 extern int target_dir(UserInput input);

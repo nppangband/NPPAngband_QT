@@ -143,19 +143,19 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
     {
         output.append("  This");
         /*Describe the feature type*/
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(" can hold objects.");
     }
     if (f_l_ptr->f_l_flags1 & FF1_HAS_GOLD)
     {
         output.append("  This");
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(" may be hiding treasure.");
     }
     if (f_l_ptr->f_l_flags1 & FF1_HAS_ITEM)
     {
         output.append("  This");
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(" may be hiding an object.");
     }
 
@@ -210,20 +210,20 @@ static QString describe_feature_move_see_cast(int f_idx, const feature_lore *f_l
 
         /* End */
         output.append(" this");
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(".");
     }
 
     if (f_l_ptr->f_l_flags2 & FF2_CAN_FLY)
     {
         output.append("  Creatures who have the ability to do so can fly over this");
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(".");
     }
     if (f_l_ptr->f_l_flags2 & FF2_COVERED)
     {
         output.append("  Native creatures can hide in this");
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(".");
     }
 
@@ -347,7 +347,7 @@ static QString describe_feature_interaction(int f_idx, const feature_lore *f_l_p
 
         /* End */
         output.append(" this");
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(".");
     }
 
@@ -387,7 +387,7 @@ static QString describe_feature_vulnerabilities(const feature_lore *f_l_ptr)
         /* Intro */
         output.append("  This");
 
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
 
         output.append(" is affected ");
 
@@ -495,7 +495,7 @@ static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_p
             if (f_l_ptr->f_l_flags3 & (FF3_PICK_DOOR))
             {
                 output.append(" Discovering this ");
-                get_feature_type(f_l_ptr);
+                output.append(get_feature_type(f_l_ptr));
                 output.append(" reveals a closed door.");
             }
 
@@ -516,7 +516,7 @@ static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_p
         if(!skip_output)
         {
             output.append(" changes this");
-            get_feature_type(f_l_ptr);
+            output.append(get_feature_type(f_l_ptr));
             output.append(" to ");
         }
 
@@ -532,7 +532,7 @@ static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_p
             output.append("  For all other effects, this");
         }
         else output.append("  This");
-        get_feature_type(f_l_ptr);
+        output.append(get_feature_type(f_l_ptr));
         output.append(" changes to ");
         output.append(feature_desc(f_ptr->defaults, TRUE, FALSE));
     }
@@ -568,7 +568,7 @@ static QString describe_feature_damage(int f_idx, const feature_lore *f_l_ptr)
 
     /* Intro */
     output.append("  This");
-    get_feature_type(f_l_ptr);
+    output.append(get_feature_type(f_l_ptr));
     output.append(QString(" %1 any non-native creature") .arg(action));
 
     /* Slightly more information when the player has seen it several times */
@@ -847,14 +847,9 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
 }
 
 /*
- * Hack -- display feature information using "roff()"
- *
- *
- * This function should only be called with the cursor placed at the
- * left edge of the screen or line, on a cleared line, in which the output is
- * to take place.  One extra blank line is left after the recall.
+ * Display feature information
  */
-QString describe_feature(int f_idx, bool spoilers)
+void describe_feature(int f_idx, bool spoilers)
 {
     QString output;
     output.clear();
@@ -866,6 +861,7 @@ QString describe_feature(int f_idx, bool spoilers)
     /* Get the race and lore */
     const feature_type *f_ptr = &f_info[f_idx];
     feature_lore *f_l_ptr = &f_l_list[f_idx];
+    QString feat_name = feature_desc(f_idx, TRUE, FALSE);
 
     /* Cheat -- know everything */
     if (cheat_know)
@@ -889,6 +885,9 @@ QString describe_feature(int f_idx, bool spoilers)
     {
         cheat_feature_lore(f_idx, &lore);
     }
+
+        /* Print, in colour */
+    output.append(QString("<b><big>%1</big></b><br><br>") .arg(feat_name));
 
     /* Describe the movement and level of the monster */
     output.append(describe_feature_basic(f_idx, &lore));
@@ -918,6 +917,9 @@ QString describe_feature(int f_idx, bool spoilers)
 
     output.append(describe_feature_dynamic(f_idx, &lore));
 
-    return (output);
+    output.append(QString("<b>[Press OK to continue]<br></b>"));
+
+    /* Finally, display it */
+    QMessageBox::information(0, feat_name, output, QMessageBox::Ok);
 }
 

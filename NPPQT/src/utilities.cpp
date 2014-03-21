@@ -147,7 +147,7 @@ QString capitalize_first(QString line)
     // Paranoia
     if (line.isEmpty()) return (line);
     QChar first = line[0];
-    first.toUpper();
+    first = first.toUpper();
     line[0] = first;
     return (line);
 
