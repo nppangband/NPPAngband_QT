@@ -691,7 +691,8 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
             SLOT(on_dialog_buttons_pressed(QAbstractButton*)));
 
     // Figure out which tab should appear first.
-    object_tabs->setTabEnabled(find_starting_tab(mode), TRUE);
+    byte tab_idx = find_starting_tab(mode);
+    object_tabs->setCurrentIndex(tab_idx);
 
     QVBoxLayout *main_layout = new QVBoxLayout;
 

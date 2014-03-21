@@ -215,7 +215,7 @@ void MainWindow::slot_something()
     else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
     else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
     else if (k == 4) fire_star(GF_DISENCHANT, 300, 4, 0);
-    else if (k == 5) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, 0);
+    else if (k == 5) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_AMMO);
     else if (k == 6) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_SHOT);
     else if (k == 7) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_ROCK);
 }
@@ -1126,7 +1126,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_F:
         {
-            do_cmd_refuel();
+            if (keystring == "f")   do_cmd_fire();
+            else                    do_cmd_refuel();
             return;
         }
         case Qt::Key_I:

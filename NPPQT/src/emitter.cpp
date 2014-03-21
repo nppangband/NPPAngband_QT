@@ -205,6 +205,9 @@ void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     if (line.length() > 50) do_beam = true;
 
+    // Monster uses a whip
+    if (gf_type == GF_ARROW) do_beam = false;
+
     QPolygonF beam;
 
     painter->setOpacity(0.5);
@@ -301,20 +304,26 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
     to = getCenter(to.y(), to.x());
     current_angle = QLineF(from, to).angle();
 
+    bool do_default = true;
+
     if (gf_type == GF_ARROW) {
         load_missiles();
         if (flg & PROJECT_ROCK) {
             pix = *missiles[BOULDER_IDX];
+            do_default = false;
         }
         else if (flg & PROJECT_SHOT) {
             pix = *missiles[SHOT_IDX];
+            do_default = false;
         }
-        else {
+        else if (flg & PROJECT_AMMO) {
             pix = *missiles[ARROW_IDX];
             pix = rotate_pix(pix, current_angle);
+            do_default = false;
         }
     }
-    else {
+
+    if (do_default) {
         load_bolt_pix();
         pix = rotate_pix(*bolt_pix, current_angle);
         pix = colorize_pix3(pix, color);

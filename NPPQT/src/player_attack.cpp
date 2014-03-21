@@ -840,7 +840,7 @@ void py_attack(int y, int x)
  *
  * Note that Bows of "Extra Shots" give an extra shot.
  */
-void do_cmd_fire(int code, cmd_arg args[])
+void command_fire(cmd_arg args)
 {
     int dir, item;
     int i, j, y, x, ty, tx;
@@ -856,12 +856,7 @@ void do_cmd_fire(int code, cmd_arg args[])
 
     bool hit_body = FALSE;
 
-    QColor missile_color;
-    QChar missile_char;
-
     QString o_name;
-
-    int msec = op_ptr->delay_factor * op_ptr->delay_factor;
 
     int path_n;
     u16b path_g[PATH_SIZE];
@@ -890,8 +885,8 @@ void do_cmd_fire(int code, cmd_arg args[])
     }
 
     /* Get item to fire and direction to fire in. */
-    item = args[0].item;
-    dir = args[1].direction;
+    item = args.item;
+    dir = args.direction;
 
     /* Check the item being fired is usable by the player. */
     if (!item_is_available(item, NULL, (USE_EQUIP | USE_INVEN | USE_FLOOR | USE_QUIVER | QUIVER_FIRST)))
@@ -951,7 +946,6 @@ void do_cmd_fire(int code, cmd_arg args[])
         floor_item_optimize(0 - item);
     }
 
-
     /* Sound */
     sound(MSG_SHOOT);
 
@@ -972,10 +966,6 @@ void do_cmd_fire(int code, cmd_arg args[])
 
         return;
     }
-
-    /* Find the color and symbol for the object for throwing */
-    missile_color = object_attr(i_ptr);
-    missile_char = object_char(i_ptr);
 
     /* Use the proper number of shots */
     thits = p_ptr->state.num_fire;
@@ -1024,190 +1014,154 @@ void do_cmd_fire(int code, cmd_arg args[])
         x = nx;
         y = ny;
 
-        /* Only do visuals if the player can "see" the missile */
-        //if (player_can_see_bold(y, x))
-        //TODO {
-            /* Hack, get the appropriate arrow graphics for david gervais and adam bolt's graphics
-            if (((i_ptr->tval == TV_ARROW) || (i_ptr->tval == TV_BOLT)) &&
-                 ((arg_graphics == GRAPHICS_DAVID_GERVAIS) || (arg_graphics == GRAPHICS_ADAM_BOLT)))
-            {
-                int yy, xx;
-                u16b pict;
-
-                if (!i)
-                {
-                    yy = p_ptr->py;
-                    xx = p_ptr->px;
-                }
-                else
-                {
-                    yy = GRID_Y(path_g[i-1]);
-                    xx = GRID_X(path_g[i-1]);
-                }
-
-                pict = bolt_pict(yy, xx, ny, nx, GF_ARROW, PROJECT_AMMO);
-
-                missile_attr = PICT_A(pict);
-                missile_char = PICT_C(pict);
-
-                /* Use the other DVG set for bolts
-                if (i_ptr->tval == TV_BOLT) missile_char += 8; */
-            //}
-
-            /* Visual effects
-            print_rel(missile_char, missile_attr, y, x);
-            move_cursor_relative(y, x);
-            Term_fresh();
-            handle_stuff();
-
-            Term_xtra(TERM_XTRA_DELAY, msec);
-            light_spot(y, x);
-
-            Term_fresh();
-            handle_stuff();*/
-        //}
-
-        /* Delay anyway for consistency */
-        //else
+        // Monster
+        if ((dungeon_info[y][x].monster_idx > 0) &&
+                !(mon_list[dungeon_info[y][x].monster_idx].mflag & (MFLAG_HIDE)))
         {
-            /* Pause anyway, for consistancy */
-            //Term_xtra(TERM_XTRA_DELAY, msec);
+            hit_body = true;
+            break;
+        }
+     }
+
+     // Visuals
+     if (((y != p_ptr->py) || (x != p_ptr->px)) && player_can_see_bold(y, x)) {
+         u32b flg = 0;
+         if (i_ptr->tval == TV_SHOT) {
+             flg |= PROJECT_SHOT;
+         }
+         else {
+             flg |= PROJECT_AMMO;
+         }
+         ui_animate_bolt(p_ptr->py, p_ptr->px, y, x, GF_ARROW, flg);
+     }
+
+     /* Handle monster */
+     if (hit_body) {
+        monster_type *m_ptr = &mon_list[dungeon_info[y][x].monster_idx];
+        monster_race *r_ptr = &r_info[m_ptr->r_idx];
+        monster_lore *l_ptr = &l_list[m_ptr->r_idx];
+
+        int chance2;
+
+        int visible = m_ptr->ml;
+
+        /*Adjust for player terrain*/
+        chance = feat_adjust_combat_for_player(chance, FALSE);
+
+        /*Adjust for monster terrain*/
+        chance = feat_adjust_combat_for_monster(m_ptr, chance, TRUE);
+
+        chance2 = chance - distance(p_ptr->py, p_ptr->px, y, x);
+
+        /* Note the collision */
+        hit_body = TRUE;
+
+        /* Some monsters are great at dodging  -EZ- */
+        if ((r_ptr->flags2 & (RF2_EVASIVE)) && (!m_ptr->m_timed[MON_TMD_SLEEP]) &&
+            (!m_ptr->m_timed[MON_TMD_STUN]) && (!m_ptr->m_timed[MON_TMD_CONF]) &&
+            (!m_ptr->m_timed[MON_TMD_FEAR]) && (rand_int(5 + m_ptr->cdis) >= 3))
+        {
+            if (visible)
+            {
+                /* Get "the monster" or "it" */
+                QString m_name = monster_desc(m_ptr, 0);
+
+                message(QString("%^1 dodges!") .arg(m_name));
+
+                /* Learn that monster can dodge */
+                l_ptr->r_l_flags2 |= (RF2_EVASIVE);
+            }
         }
 
-        /* Handle monster */
-        if ((dungeon_info[y][x].monster_idx > 0) && !(mon_list[dungeon_info[y][x].monster_idx].mflag & (MFLAG_HIDE)))
+        /* Did we hit it (penalize distance travelled) */
+        else if (test_hit(chance2, r_ptr->ac, m_ptr->ml))
         {
-            monster_type *m_ptr = &mon_list[dungeon_info[y][x].monster_idx];
-            monster_race *r_ptr = &r_info[m_ptr->r_idx];
-            monster_lore *l_ptr = &l_list[m_ptr->r_idx];
+            bool fear = FALSE;
+            int tdam, dd, ds, tries;
+            int plus = i_ptr->to_d + j_ptr->to_d;
 
-            int chance2;
+            /* Assume a default death */
+            QString note_dies = " dies.";
 
-            int visible = m_ptr->ml;
+            /*Mark the monster as attacked by the player*/
+            m_ptr->mflag |= (MFLAG_HIT_BY_RANGED);
 
-            /*Adjust for player terrain*/
-            chance = feat_adjust_combat_for_player(chance, FALSE);
-
-            /*Adjust for monster terrain*/
-            chance = feat_adjust_combat_for_monster(m_ptr, chance, TRUE);
-
-            chance2 = chance - distance(p_ptr->py, p_ptr->px, y, x);
-
-            /* Note the collision */
-            hit_body = TRUE;
-
-            /* Some monsters are great at dodging  -EZ- */
-            if ((r_ptr->flags2 & (RF2_EVASIVE)) && (!m_ptr->m_timed[MON_TMD_SLEEP]) &&
-                (!m_ptr->m_timed[MON_TMD_STUN]) && (!m_ptr->m_timed[MON_TMD_CONF]) &&
-                (!m_ptr->m_timed[MON_TMD_FEAR]) && (rand_int(5 + m_ptr->cdis) >= 3))
+            if (monster_nonliving(r_ptr))
             {
-                if (visible)
-                {
-                    /* Get "the monster" or "it" */
-                    QString m_name = monster_desc(m_ptr, 0);
-
-                    message(QString("%^1 dodges!") .arg(m_name));
-
-                    /* Learn that monster can dodge */
-                    l_ptr->r_l_flags2 |= (RF2_EVASIVE);
-                }
-
-                continue;
+                /* Special note at death */
+                note_dies = " is destroyed.";
             }
 
-            /* Did we hit it (penalize distance travelled) */
-            else if (test_hit(chance2, r_ptr->ac, m_ptr->ml))
+            /* Make some noise */
+            add_wakeup_chance += p_ptr->base_wakeup_chance / 2;
+
+            /* Handle unseen monster */
+            if (!visible)
             {
-                bool fear = FALSE;
-                int tdam, dd, ds, tries;
-                int plus = i_ptr->to_d + j_ptr->to_d;
-
-                /* Assume a default death */
-                QString note_dies = " dies.";
-
-                /*Mark the monster as attacked by the player*/
-                m_ptr->mflag |= (MFLAG_HIT_BY_RANGED);
-
-                if (monster_nonliving(r_ptr))
-                {
-                    /* Special note at death */
-                    note_dies = " is destroyed.";
-                }
-
-                /* Make some noise */
-                add_wakeup_chance += p_ptr->base_wakeup_chance / 2;
-
-                /* Handle unseen monster */
-                if (!visible)
-                {
-                    /* Invisible monster */
-                    message(QString("The %1 finds a mark.") .arg(o_name));
-                }
-
-                /* Handle visible monster */
-                else
-                {
-
-                    /* Get "the monster" or "it" */
-                    QString m_name = monster_desc(m_ptr, 0);
-
-                    /* Message */
-                    message(QString("The %1 hits %2.") .arg(o_name) .arg(m_name));
-
-                    /* Hack -- Track this monster race */
-                    if (m_ptr->ml) monster_race_track(m_ptr->r_idx);
-
-                    /* Hack -- Track this monster */
-                    if (m_ptr->ml) health_track(dungeon_info[y][x].monster_idx);
-                }
-
-                dd = i_ptr->dd * tmul;
-                ds = i_ptr->ds;
-
-                /* Apply special damage XXX XXX XXX */
-                tries = critical_shot_check(i_ptr, &dd, &plus, FALSE, f3);
-
-                /* Possibly increase the damage dice due to brands, slays, etc */
-                dam_dice_aux(i_ptr, &dd, m_ptr, FALSE);
-
-                /* Check for extra damage with a sling for a rogue */
-                tmul += rogue_shot(o_ptr, &plus, p_ptr->state);
-
-                /* Check for extra damage from a brigand */
-                tmul += brigand_shot(o_ptr, r_ptr->flags1, (m_ptr->m_timed[MON_TMD_SLEEP] ? TRUE: FALSE), p_ptr->state);
-                /* Now factor the extra damage */
-                plus *= tmul;
-
-                /* Base damage from thrown object plus bonuses */
-                tdam = max_damroll(dd, ds, tries) + plus;
-
-                /* No negative damage */
-                if (tdam < 0) tdam = 0;
-
-                /* Complex message */
-                if (p_ptr->wizard)
-                {
-                    message(QString("You do %1d%2 + %3 damage.") .arg(dd) .arg(ds) .arg(plus));
-                    message(QString("You do %1 (out of %1) damage.") .arg(tdam) .arg(m_ptr->hp));
-                }
-
-                /* Hit the monster, check for death */
-                if (mon_take_hit(dungeon_info[y][x].monster_idx, tdam, &fear, note_dies, SOURCE_PLAYER))
-                {
-                    /* Dead monster */
-                }
-
-                /* No death */
-                else
-                {
-                    /* Message */
-                    message_pain(dungeon_info[y][x].monster_idx, tdam);
-
-                }
+                /* Invisible monster */
+                message(QString("The %1 finds a mark.") .arg(o_name));
             }
 
-            /* Stop looking */
-            break;
+            /* Handle visible monster */
+            else
+            {
+
+                /* Get "the monster" or "it" */
+                QString m_name = monster_desc(m_ptr, 0);
+
+                /* Message */
+                message(QString("The %1 hits %2.") .arg(o_name) .arg(m_name));
+
+                /* Hack -- Track this monster race */
+                if (m_ptr->ml) monster_race_track(m_ptr->r_idx);
+
+                /* Hack -- Track this monster */
+                if (m_ptr->ml) health_track(dungeon_info[y][x].monster_idx);
+            }
+
+            dd = i_ptr->dd * tmul;
+            ds = i_ptr->ds;
+
+            /* Apply special damage XXX XXX XXX */
+            tries = critical_shot_check(i_ptr, &dd, &plus, FALSE, f3);
+
+            /* Possibly increase the damage dice due to brands, slays, etc */
+            dam_dice_aux(i_ptr, &dd, m_ptr, FALSE);
+
+            /* Check for extra damage with a sling for a rogue */
+            tmul += rogue_shot(o_ptr, &plus, p_ptr->state);
+
+            /* Check for extra damage from a brigand */
+            tmul += brigand_shot(o_ptr, r_ptr->flags1, (m_ptr->m_timed[MON_TMD_SLEEP] ? TRUE: FALSE), p_ptr->state);
+            /* Now factor the extra damage */
+            plus *= tmul;
+
+            /* Base damage from thrown object plus bonuses */
+            tdam = max_damroll(dd, ds, tries) + plus;
+
+            /* No negative damage */
+            if (tdam < 0) tdam = 0;
+
+            /* Complex message */
+            if (p_ptr->wizard)
+            {
+                message(QString("You do %1d%2 + %3 damage.") .arg(dd) .arg(ds) .arg(plus));
+                message(QString("You do %1 (out of %1) damage.") .arg(tdam) .arg(m_ptr->hp));
+            }
+
+            /* Hit the monster, check for death */
+            if (mon_take_hit(dungeon_info[y][x].monster_idx, tdam, &fear, note_dies, SOURCE_PLAYER))
+            {
+                /* Dead monster */
+            }
+
+            /* No death */
+            else
+            {
+                /* Message */
+                message_pain(dungeon_info[y][x].monster_idx, tdam);
+
+            }
         }
     }
 
@@ -1220,7 +1174,7 @@ void do_cmd_fire(int code, cmd_arg args[])
     process_player_energy(BASE_ENERGY_MOVE / thits);
 }
 
-void textui_cmd_fire(void)
+void do_cmd_fire(void)
 {
     object_type *j_ptr;
     int item;
@@ -1257,10 +1211,18 @@ void textui_cmd_fire(void)
     /* Get an item */
     if (!get_item(&item, q, s, (USE_INVEN | USE_QUIVER | QUIVER_FIRST | USE_FLOOR))) return;
 
+    // Clear current command
+    p_ptr->command_arg = 0;
+    p_ptr->command_dir = 0;
+
     /* Get a direction (or cancel) */
     if (!get_aim_dir(&dir, FALSE)) return;
 
-    // TODO cmd_insert(CMD_FIRE, item, dir);
+    cmd_arg args;
+    args.item = item;
+    args.direction = dir;
+
+    command_fire(args);
 }
 
 void textui_cmd_fire_at_nearest(void)
