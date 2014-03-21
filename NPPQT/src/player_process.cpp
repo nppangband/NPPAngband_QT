@@ -258,6 +258,8 @@ void process_player(void)
 
         // TODO TODO fix this circular call
          p_ptr->p_energy -= BASE_ENERGY_MOVE;
+
+         p_ptr->player_turn = false;
     }
 
     /* Resting */
