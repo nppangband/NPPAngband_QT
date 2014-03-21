@@ -2,6 +2,7 @@
 #define EMITTER_H
 
 #include "defines.h"
+#include "object_classes.h"
 #include <QObject>
 #include <QPointF>
 #include <QList>
@@ -59,7 +60,7 @@ public:
     u32b flg;
     QPixmap pix;
 
-    BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg);
+    BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg, object_type *o_ptr = 0);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;

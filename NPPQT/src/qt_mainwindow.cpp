@@ -248,6 +248,13 @@ void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
     bolt->start();
 }
 
+void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
+{
+    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
+    main_window->dungeon_scene->addItem(bolt);
+    bolt->start();
+}
+
 void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
 {
     StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
@@ -1122,6 +1129,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_3:
         {
             move_player(3, FALSE);
+            return;
+        }
+        case Qt::Key_V:
+        {
+            if (keystring == "v")   do_cmd_throw();
             return;
         }
         case Qt::Key_F:

@@ -463,8 +463,8 @@ extern void do_cmd_fire();
 extern void command_fire(cmd_arg args);
 extern void textui_cmd_fire_at_nearest(void);
 extern int weapon_throw_adjust(const object_type *o_ptr, u32b f3, int *plus, bool id_only);
-extern void do_cmd_throw(int code, cmd_arg args[]);
-extern void textui_cmd_throw(void);
+extern void command_throw(cmd_arg args);
+extern void do_cmd_throw(void);
 
 //player_ghost.cpp
 extern void prepare_ghost_name(void);
@@ -641,6 +641,7 @@ extern void ui_destroy_path();
 extern void ui_show_cursor(int y, int x);
 extern void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg);
 extern void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg);
+extern void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr);
 extern void ui_animate_beam(int y0, int x0, int y1, int x1, int type);
 extern void ui_animate_ball(int y, int x, int radius, int type, u32b flg);
 extern void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids);

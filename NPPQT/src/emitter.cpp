@@ -294,11 +294,11 @@ void NPPAnimation::start()
     }
 }
 
-BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg)
+BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg, object_type *o_ptr)
 {
     flg = new_flg;
-    gf_type = new_gf_type;    
-    color = defined_colors[gf_color(gf_type) % MAX_COLORS];
+    gf_type = new_gf_type;
+    if (gf_type > 0) color = defined_colors[gf_color(gf_type) % MAX_COLORS];
 
     from = getCenter(from.y(), from.x());
     to = getCenter(to.y(), to.x());
@@ -306,7 +306,22 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
 
     bool do_default = true;
 
-    if (gf_type == GF_ARROW) {
+    if (o_ptr != 0) {
+        do_default = false;
+
+        object_kind *k_ptr = k_info + o_ptr->k_idx;
+
+        if (use_graphics) {
+            QString key = k_ptr->tile_id;
+            main_window->rebuild_tile(key);
+            pix = main_window->tiles.value(key);
+        }
+        else {
+            pix = pseudo_ascii(k_ptr->d_char, k_ptr->d_color, main_window->cur_font,
+                               QSizeF(main_window->cell_wid, main_window->cell_hgt));
+        }
+    }
+    else if (gf_type == GF_ARROW) {
         load_missiles();
         if (flg & PROJECT_ROCK) {
             pix = *missiles[BOULDER_IDX];
