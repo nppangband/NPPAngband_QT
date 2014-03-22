@@ -103,10 +103,10 @@ BeamAnimation::BeamAnimation(QPointF from, QPointF to, int new_gf_type)
     p2 = to - pos();
 
     anim = new QPropertyAnimation(this, "length");
-    anim->setDuration(1000);
-    if (QLineF(p1, p2).length() < 50) {
-        anim->setDuration(250);
-    }
+    qreal l = QLineF(p1, p2).length();
+    int dur = l * delay;
+    if (dur < 250) dur = 250;
+    anim->setDuration(dur);
     anim->setStartValue(0);
     anim->setEndValue(50);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));

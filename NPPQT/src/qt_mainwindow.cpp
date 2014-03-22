@@ -208,7 +208,7 @@ void MainWindow::slot_something()
     if (!get_aim_dir(&dir, false) || dir == 0) return;
     int k = rand_int(8);
 
-    //k = 7;
+    //k = 2;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
@@ -331,7 +331,9 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
             monster_type *m_ptr = mon_list + d_ptr->monster_idx;
             monster_race *r_ptr = r_info + m_ptr->r_idx;
             int gain = calc_energy_gain(m_ptr->m_speed);
-            pop_up_message_box(QString("%1. Speed gain: %2").arg(r_ptr->r_name_full).arg(gain));
+            int gain2 = calc_energy_gain(p_ptr->state.p_speed);
+            pop_up_message_box(QString("%1. Speed gain: %2. Player speed gain: %3")
+                               .arg(r_ptr->r_name_full).arg(gain).arg(gain2));
         }
     }
 
