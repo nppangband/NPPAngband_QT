@@ -2588,14 +2588,14 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
             (!(f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_SECRET))))
         {
             if (seen && confused)
-                message(QString("%^1 bangs into a door.") .arg(m_name));
+                message(QString("%1 bangs into a door.") .arg(capitalize_first(m_name)));
         }
 
         /* Otherwise, we assume that the feature is a "wall".  XXX  */
         else
         {
             if (seen && confused)
-                message(QString("%^1 bashes into a wall.") .arg(m_name));
+                message(QString("%1 bashes into a wall.") .arg(capitalize_first(m_name)));
         }
 
         /* Sometimes stun the monster, but only lightly */
@@ -2920,7 +2920,8 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
                             m_name = monster_desc(m_ptr, 0);
 
                             /* Dump a message if they weren't just scared */
-                            if (!(m_ptr->mflag & (MFLAG_JUST_SCARED))) message(QString("%^1 turns to fight!")  .arg(m_name));
+                            if (!(m_ptr->mflag & (MFLAG_JUST_SCARED)))
+                                message(QString("%1 turns to fight!")  .arg(capitalize_first(m_name)));
 
                             /* Hack -- lose some time  XXX XXX */
                             return (FALSE);

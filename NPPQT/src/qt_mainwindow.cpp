@@ -1035,7 +1035,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-static void proccess_mov_key(QKeyEvent *event, int dir)
+static void process_mov_key(QKeyEvent *event, int dir)
 {
     int mask = event->modifiers() & (Qt::ShiftModifier | Qt::AltModifier | Qt::ControlModifier);
 
@@ -1092,6 +1092,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else {
                 slot_something();
             }
+            // Take a turn
+            process_player_energy(BASE_ENERGY_MOVE);
             break;
         }
         // TODO PLAYTESTING
@@ -1103,6 +1105,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
                                      "Jump to level", p_ptr->depth, 0, 101, 1, &ok, 0);
             if (ok) {
                 dungeon_change_level(l);
+                process_player_energy(BASE_ENERGY_MOVE);
             }
             break;
         }
@@ -1110,52 +1113,52 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_2:
         case Qt::Key_Down:
         {
-            proccess_mov_key(which_key, 2);
+            process_mov_key(which_key, 2);
             return;
         }
         // Move up
         case Qt::Key_8:
         case Qt::Key_Up:
         {
-            proccess_mov_key(which_key, 8);
+            process_mov_key(which_key, 8);
             return;
         }
         // Move left
         case Qt::Key_4:
         case Qt::Key_Left:
         {
-            proccess_mov_key(which_key, 4);;
+            process_mov_key(which_key, 4);;
             return;
         }
         // Move right
         case Qt::Key_6:
         case Qt::Key_Right:
         {
-            proccess_mov_key(which_key, 6);
+            process_mov_key(which_key, 6);
             return;
         }
         // Move diagonally left and up
         case Qt::Key_7:
         {
-            proccess_mov_key(which_key, 7);
+            process_mov_key(which_key, 7);
             return;
         }
         // Move diagonally right and up
         case Qt::Key_9:
         {
-            proccess_mov_key(which_key, 9);
+            process_mov_key(which_key, 9);
             return;
         }
         // Move diagonally left and down
         case Qt::Key_1:
         {
-            proccess_mov_key(which_key, 1);
+            process_mov_key(which_key, 1);
             return;
         }
         // Move diagonally right and down
         case Qt::Key_3:
         {
-            proccess_mov_key(which_key, 3);
+            process_mov_key(which_key, 3);
             return;
         }
         case Qt::Key_V:

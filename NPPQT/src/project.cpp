@@ -1197,6 +1197,7 @@ void take_hit(int dam, QString kb_str)
     set_timed(TMD_STUN, 0, false);
     set_timed(TMD_CONFUSED, 0, false);
     set_timed(TMD_SINVIS, 100, false);
+    set_timed(TMD_BLIND, 0, false);
     set_food(PY_FOOD_MAX - 10);
     return;
     // TODO - END PLAYTESTING!!!
