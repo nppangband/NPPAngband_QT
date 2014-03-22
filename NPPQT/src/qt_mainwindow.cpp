@@ -328,8 +328,10 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         ui_center(c_y, c_x);
         dungeon_type *d_ptr = &dungeon_info[c_y][c_x];
         if (d_ptr->monster_idx > 0) {
-            int r_idx = mon_list[d_ptr->monster_idx].r_idx;
-            pop_up_message_box(r_info[r_idx].r_name_full);
+            monster_type *m_ptr = mon_list + d_ptr->monster_idx;
+            monster_race *r_ptr = r_info + m_ptr->r_idx;
+            int gain = calc_energy_gain(m_ptr->m_speed);
+            pop_up_message_box(QString("%1. Speed gain: %2").arg(r_ptr->r_name_full).arg(gain));
         }
     }
 

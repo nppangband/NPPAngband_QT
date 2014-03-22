@@ -288,6 +288,12 @@ static void monster_terrain_damage(void)
 
             get_spell_type_from_feature(feat, &gf_type);
 
+            // TODO - Playtesting
+            QString str = QString("%1 takes damage from %2 (%3,%4)")
+                    .arg(r_ptr->r_name_full).arg(f_ptr->f_name)
+                    .arg(m_ptr->fy).arg(m_ptr->fx);
+            message(str);
+
             /* Hack - quest monsters shouldn't take damage from terrain */
             if (m_ptr->mflag & (MFLAG_QUEST))
             {
@@ -1559,6 +1565,12 @@ static void change_player_level(void)
     /* Handle "death" */
     if (p_ptr->is_dead) return;
 
+    /* Reset the monster generation level */
+    monster_level = p_ptr->depth;
+
+    /* Reset the object generation level */
+    object_level = p_ptr->depth;
+
     /* Make a new level */
     generate_cave();
 
@@ -1741,12 +1753,6 @@ static void change_player_level(void)
     ghost_challenge();
 
     /*** Process this dungeon level ***/
-
-    /* Reset the monster generation level */
-    monster_level = p_ptr->depth;
-
-    /* Reset the object generation level */
-    object_level = p_ptr->depth;
 
     // TODO PLAYTESTING
     debug_rarities();

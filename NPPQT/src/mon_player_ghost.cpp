@@ -742,7 +742,7 @@ void ghost_challenge(void)
 
     i = randint0(NUM_GHOST_CHALLENGES);
 
-    message(QString("%^1 %2") .arg(player_ghost_name) .arg(do_cmd_challenge_text[i]));
+    message(QString("%1 %2") .arg(capitalize_first(player_ghost_name)) .arg(do_cmd_challenge_text[i]));
 }
 
 

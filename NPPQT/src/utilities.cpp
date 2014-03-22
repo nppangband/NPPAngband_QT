@@ -446,6 +446,7 @@ void debug_rarities()
         }
     }
 
+    /*
     n = 0;
     for (int i = 1; i < z_info->f_max; i++) {
         feature_type *f_ptr = f_info + i;
@@ -462,4 +463,16 @@ void debug_rarities()
             break;
         }
     }
+
+    n = 0;
+    for (int i = 0; i < mon_max; i++) {
+        monster_type *m_ptr = mon_list + i;
+        if (m_ptr->r_idx == 0) continue;
+        monster_race *r_ptr = r_info + m_ptr->r_idx;
+        if (r_ptr->level == 0) ++n;
+    }
+    if (n > 0) message(QString("monsters: %1").arg(n));
+
+    if (monster_level == 0 && p_ptr->depth > 0) message("?????");
+    */
 }

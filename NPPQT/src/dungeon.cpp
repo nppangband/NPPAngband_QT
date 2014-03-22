@@ -157,6 +157,11 @@ void launch_game()
         remove_ironman_ego_items();
     }
 
+    // Restore entity generation level
+    monster_level = p_ptr->depth;
+
+    object_level = p_ptr->depth;
+
     /* Generate a dungeon level if needed */
     if (!character_dungeon) generate_cave();
 
