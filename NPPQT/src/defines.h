@@ -1082,6 +1082,51 @@ enum
     COLOR_CUSTOM  //
 };
 
+
+// Same colors in tables.c, usable in HTML format
+#define    COLOR24BIT_DARK          #000000
+#define    COLOR24BIT_L_DARK        #606060
+#define    COLOR24BIT_SLATE         '#808080'
+#define    COLOR24BIT_SLATE_GRAY    #708090
+#define    COLOR24BIT_TAUPE         #8B8589
+#define    COLOR24BIT_WHITE         #FFFFFF
+#define    COLOR24BIT_LIGHT_GRAY    #C0C0C0
+#define    COLOR24BIT_SNOW_WHITE    #FFFAFA
+#define    COLOR24BIT_RED           #C00000
+#define    COLOR24BIT_L_RED         #FF4040
+#define    COLOR24BIT_RED_LAVA      #CF1020
+#define    COLOR24BIT_RASPBERRY     #E30B5C
+#define    COLOR24BIT_RED_RUST      #B7410E
+#define    COLOR24BIT_PINK          #FF1493
+#define    COLOR24BIT_ORANGE        #FF8000
+#define    COLOR24BIT_ORANGE_PEEL   #FF9F00
+#define    COLOR24BIT_MAHAGONY      #C04000
+#define    COLOR24BIT_GREEN         #008040
+#define    COLOR24BIT_L_GREEN       #00FF00
+#define    COLOR24BIT_JUNGLE_GREEN  #29AB87
+#define    COLOR24BIT_LIME_GREEN    #BFFF00
+#define    COLOR24BIT_BLUE          #0040FF
+#define    COLOR24BIT_L_BLUE        #00FFFF
+#define    COLOR24BIT_NAVY_BLUE     #4C4CA6
+#define    COLOR24BIT_SKY_BLUE      #00BFFF
+#define    COLOR24BIT_UMBER         #804000
+#define    COLOR24BIT_L_UMBER       #C08040
+#define    COLOR24BIT_AUBURN        #6D351A
+#define    COLOR24BIT_L_BROWN       #C19A6B
+#define    COLOR24BIT_YELLOW        #FFFF00
+#define    COLOR24BIT_EARTH_YELLOW  #E1A95F
+#define    COLOR24BIT_MAIZE         #FBEC5D
+#define    COLOR24BIT_VIOLET        #FF00FF
+#define    COLOR24BIT_PURPLE        #A500FF
+#define    COLOR24BIT_GOLD          #FFD700
+#define    COLOR24BIT_SILVER        #C0C0C0
+#define    COLOR24BIT_COPPER        #B87333
+
+
+
+
+
+
 #define CHECK_DISTURB(stop_search) \
 (p_ptr->command_rep || p_ptr->running || p_ptr->resting || ((stop_search) && p_ptr->searching))
 

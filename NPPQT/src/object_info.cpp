@@ -397,13 +397,13 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
 
     if (object_state.heavy_wield)
     {
-        output.append(QString("<font color = red>   You have trouble wielding such a heavy weapon.<br></font>"));
+        output.append(color_string("   You have trouble wielding such a heavy weapon.<br>", TERM_RED));
     }
 
     /* Message */
     if (object_state.icky_wield)
     {
-        output.append(QString("<font color = red>   You do not feel comfortable with this weapon.<br></font>"));
+        output.append(color_string("   You do not feel comfortable with this weapon.<br>", TERM_RED));
     }
 
     if (!extra_info) return (output);
@@ -631,7 +631,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
 
     if (object_state.heavy_shoot)
     {
-        output.append(QString("<font color = red>   <br>   You have trouble aiming such a heavy %1.<br></font>") .arg(launcher));
+        output.append(color_string(QString("   <br>   You have trouble aiming such a heavy %1.<br>") .arg(launcher), TERM_RED));
     }
 
     if (!extra_info) return (output);
@@ -1626,7 +1626,7 @@ void object_info_screen(object_type *o_ptr)
 
             buf = capitalize_first(buf);
 
-            output.append(QString("<font color=blue>%1</font>") .arg(buf));
+            output.append(color_string(buf, TERM_BLUE));
         }
 
         if (o_ptr->number > 1)

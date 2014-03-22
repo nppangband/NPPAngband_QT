@@ -1317,7 +1317,7 @@ static QChar process_graphics_line(QString line_info, int *error_return, QColor 
         for (int i = 0; i < MAX_COLORS; i++)
         {
             // Not a match.
-            if (!line_info.contains(preset_colors[i].color_name)) continue;
+            if (!operator==(line_info, preset_colors[i].color_name)) continue;
 
             //load the color and finish.
             color_found = TRUE;
@@ -1771,7 +1771,7 @@ static int grab_one_feature_action(feature_type *f_ptr, QString what, int count)
         if ((flag_ptr->set == FF1) || (flag_ptr->set == FF2) ||
             (flag_ptr->set == FF3))
         {
-            if (what.contains(flag_ptr->name, Qt::CaseInsensitive))
+            if (operator==(what, flag_ptr->name))
             {
                 f_ptr->state[count].fs_action = ffx_index;
                 return 0;
@@ -2422,7 +2422,7 @@ static int grab_one_activation(artifact_type *a_ptr, QString what)
     /* Scan activations */
     for (i = 0; i < ACT_MAX; i++)
     {
-        if (what.contains(a_info_act[i]))
+        if (operator==(what, a_info_act[i]))
         {
             a_ptr->activation = i;
             return (0);
@@ -3085,7 +3085,7 @@ int parse_r_info(QString line_info)
         {
             QString blow_method = r_info_blow_method[n1];
 
-            if (blow.contains(r_info_blow_method[n1])) break;
+            if (operator==(blow, r_info_blow_method[n1])) break;
         }
 
         /* Invalid method */
@@ -3098,7 +3098,7 @@ int parse_r_info(QString line_info)
             /* Analyze effect */
             else for (n2 = 1; BLOW_EFFECT_MAX; n2++)
             {
-                if (method.contains(r_info_blow_effect[n2])) break;
+                if (operator==(method, r_info_blow_effect[n2])) break;
             }
 
             /* Invalid effect */

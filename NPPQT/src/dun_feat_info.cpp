@@ -74,7 +74,7 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
         /* Append a 'n' to 'a' if the first flag begins with a vowel */
         if ((i == 0) && begins_with_vowel(flags[i])) output.append("n");
 
-        output.append(QString("<font color=cyan>%1</font>") .arg(flags[i]));
+        output.append(color_string(flags[i], TERM_NAVY_BLUE));
     }
 
     /* Get the feature type name */
@@ -94,12 +94,12 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
 
     else if (f_l_ptr->f_l_flags1 & FF1_SHOP)
     {
-        output.append(QString("<font color=darkGreen> that is found in the town</font>"));
+        output.append(color_string("that is found in the town", TERM_L_GREEN));
     }
     else if ((f_l_ptr->f_l_flags2 & FF2_TRAP_MON) ||
     (f_l_ptr->f_l_flags1 & FF1_GLYPH))
     {
-        output.append(QString("<font color=darkGreen> that is set by the player</font>"));
+        output.append(color_string("that is set by the player", TERM_L_GREEN));
     }
     else if (f_l_ptr->f_l_sights > 10)
     {
@@ -114,26 +114,22 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
 
         if (f_ptr->f_level == 0)
         {
-            output.append(QString("<font color=darkGreen> appears in both the town and dungeon</font>"));
+            output.append(color_string("appears in both the town and dungeon", TERM_L_GREEN));
         }
         else if (f_ptr->f_level == 1)
         {
-            output.append(QString("<font color=darkGreen> appears throughout the dungeon</font>"));
+            output.append(color_string("appears throughout the dungeon", TERM_L_GREEN));
         }
         else
         {
-            output.append(QString("<font color=darkGreen> appears</font>"));
-
-            output.append(QString("<font color=darkGreen>  at depths of %1 feet and below</font>") .arg(f_ptr->f_level * 50));
+            output.append(color_string("appears", TERM_L_GREEN));
+            output.append(color_string(QString("at depths of %1 feet and below") .arg(f_ptr->f_level * 50), TERM_L_GREEN));
         }
 
     }
 
     /* Little Information Yet */
-    else
-    {
-        output.append(QString("<font color=darkGreen> that is found in the dungeon</font>"));
-    }
+    else output.append(color_string("that is found in the dungeon", TERM_L_GREEN));
 
     /* End this sentence */
     output.append(".");
@@ -205,7 +201,7 @@ static QString describe_feature_move_see_cast(int f_idx, const feature_lore *f_l
             else output.append(" and ");
 
             /* Dump */
-            output.append(QString("<font color=green>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_GREEN));
         }
 
         /* End */
@@ -240,16 +236,16 @@ static QString describe_feature_stairs(const feature_lore *f_l_ptr)
 
     output.append("  This");
 
-    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(QString("<font color=cyan> shaft</font>"));
-    else output.append(QString("<font color=cyan> staircase</font>"));
+    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string("shaft", TERM_NAVY_BLUE));
+    else output.append(color_string("staircase", TERM_NAVY_BLUE));
 
     output.append(" will take you");
 
-    if (f_l_ptr->f_l_flags1 & FF1_LESS)		output.append(QString("<font color=cyan> up</font>"));
-    if (f_l_ptr->f_l_flags1 & FF1_MORE)		output.append(QString("<font color=cyan> down</font>"));
+    if (f_l_ptr->f_l_flags1 & FF1_LESS)		output.append(color_string("up", TERM_NAVY_BLUE));
+    if (f_l_ptr->f_l_flags1 & FF1_MORE)		output.append(color_string("down", TERM_NAVY_BLUE));
 
-    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(QString("<font color=cyan> two levels.</font>"));
-    else output.append(QString("<font color=cyan> one level.</font>"));
+    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string("two levels.", TERM_NAVY_BLUE));
+    else output.append(color_string("one level.", TERM_NAVY_BLUE));
 
     return(output);
 }
@@ -342,7 +338,7 @@ static QString describe_feature_interaction(int f_idx, const feature_lore *f_l_p
             else output.append(" and ");
 
             /* Dump */
-            output.append(QString("<font color=yellow>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_GOLD));
         }
 
         /* End */
@@ -400,7 +396,7 @@ static QString describe_feature_vulnerabilities(const feature_lore *f_l_ptr)
             else output.append(" and ");
 
             /* Dump */
-            output.append(QString("<font color=red>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_RED));
         }
 
         /* End */
@@ -427,30 +423,30 @@ static QString describe_transition_action(int action, bool *skip_output)
     switch (action)
     {
 
-        case 	FS_SECRET:		{*skip_output = TRUE; return(QString("<font color=yellow>  Once discovered, this feature is revealed as </font>"));}
-        case 	FS_OPEN:		{return(QString("<font color=yellow>  Opening</font>"));}
-        case	FS_CLOSE:		{return(QString("<font color=yellow>  Closing</font>"));}
-        case	FS_BASH:		{return(QString("<font color=yellow>  Bashing</font>"));}
-        case	FS_SPIKE:		{return(QString("<font color=yellow>  Spiking</font>"));}
-        case	FS_TUNNEL:		{return(QString("<font color=yellow>  Tunneling</font>"));}
-        case	FS_TRAP:		{return(QString("<font color=yellow>  Creating a trap</font>"));}
-        case	FS_GLYPH:		{*skip_output = TRUE; return(QString("<font color=yellow>  This feature can change into a </font>"));}
-        case	FS_FLOOR:		{return(QString("<font color=yellow>  A plain floor</font>"));}
-        case	FS_BRIDGE:		{return(QString("<font color=yellow>  Bridging</font>"));}
-        case	FS_HIT_TRAP:	{return(QString("<font color=yellow>  De-activating this trap</font>"));}
-        case	FS_HURT_ROCK:	{return(QString("<font color=yellow>  Stone-to-mud</font>"));}
-        case	FS_HURT_FIRE:	{return(QString("<font color=yellow>  Fire, smoke, lava or plasma</font>")); }
-        case	FS_HURT_COLD:	{return(QString("<font color=yellow>  Cold or ice</font>"));}
-        case	FS_HURT_ACID:	{return(QString("<font color=yellow>  Acid</font>"));}
-        case	FS_HURT_ELEC:	{return(QString("<font color=yellow>  Electricity</font>"));}
-        case	FS_HURT_WATER:	{return(QString("<font color=yellow>  Water</font>"));}
-        case	FS_HURT_BWATER:	{return(QString("<font color=yellow>  Boiling water</font>"));}
-        case	FS_HURT_POIS:	{return(QString("<font color=yellow>  Poison</font>"));}
-        case	FS_TREE:		{return(QString("<font color=yellow>  Forest creation</font>"));}
-        case   	FS_NEED_TREE: 	{return(QString("<font color=yellow>  Forest destruction</font>"));}
+        case 	FS_SECRET:		{*skip_output = TRUE; return(color_string("  Once discovered, this feature is revealed as", TERM_GOLD));}
+        case 	FS_OPEN:		{return(color_string("  Opening", TERM_GOLD));}
+        case	FS_CLOSE:		{return(color_string("  Closing", TERM_GOLD));}
+        case	FS_BASH:		{return(color_string("  Bashing", TERM_GOLD));}
+        case	FS_SPIKE:		{return(color_string("  Spiking", TERM_GOLD));}
+        case	FS_TUNNEL:		{return(color_string("  Tunneling", TERM_GOLD));}
+        case	FS_TRAP:		{return(color_string("  Creating a trap", TERM_GOLD));}
+        case	FS_GLYPH:		{*skip_output = TRUE; return(color_string("  This feature can change into a ", TERM_GOLD));}
+        case	FS_FLOOR:		{return(color_string("  A plain floor", TERM_GOLD));}
+        case	FS_BRIDGE:		{return(color_string("  Bridging", TERM_GOLD));}
+        case	FS_HIT_TRAP:	{return(color_string("  De-activating this trap", TERM_GOLD));}
+        case	FS_HURT_ROCK:	{return(color_string("  Stone-to-mud", TERM_GOLD));}
+        case	FS_HURT_FIRE:	{return(color_string("  Fire, smoke, lava or plasma", TERM_GOLD));}
+        case	FS_HURT_COLD:	{return(color_string("  Cold or ice", TERM_GOLD));}
+        case	FS_HURT_ACID:	{return(color_string("  Acid", TERM_GOLD));}
+        case	FS_HURT_ELEC:	{return(color_string("  Electricity", TERM_GOLD));}
+        case	FS_HURT_WATER:	{return(color_string("  Water", TERM_GOLD));}
+        case	FS_HURT_BWATER:	{return(color_string("  Boiling water", TERM_GOLD));}
+        case	FS_HURT_POIS:	{return(color_string("  Poison", TERM_GOLD));}
+        case	FS_TREE:		{return(color_string("  Forest creation", TERM_GOLD));}
+        case   	FS_NEED_TREE: 	{return(color_string("  Forest destruction", TERM_GOLD));}
 
         /*Paranoia*/
-        default:				{return(QString("<font color=red>  ERROR - Unspecified Action</font>"));}
+        default:				{return(color_string("ERROR - Unspecified Action", TERM_RED));}
     }
 }
 
@@ -604,16 +600,16 @@ static QString describe_feature_movement_effects(int f_idx, const feature_lore *
         {
             if (f_ptr->native_energy_move > BASE_ENERGY_MOVE)
             {
-                output.append(QString("<font color=blue>   %1 percent more</font>") .arg(percent_movement));
+                output.append(color_string(QString("   %1 percent more") .arg(percent_movement), TERM_BLUE));
             }
-            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(percent_movement));
+            else output.append(color_string(QString(" %1 percent less") .arg(percent_movement), TERM_BLUE));
         }
         else
         {
-            if (percent_movement  > 15) output.append(QString("<font color=blue> significantly"));
+            if (percent_movement  > 15) output.append(color_string(" significantly", TERM_BLUE));
 
-            if (f_ptr->native_energy_move > BASE_ENERGY_MOVE)  output.append(QString("<font color=blue> more"));
-            else output.append(QString("<font color=blue> less"));
+            if (f_ptr->native_energy_move > BASE_ENERGY_MOVE)  output.append(color_string(" more", TERM_BLUE));
+            else output.append(color_string(" less", TERM_BLUE));
 
         }
 
@@ -632,16 +628,16 @@ static QString describe_feature_movement_effects(int f_idx, const feature_lore *
         {
             if (f_ptr->non_native_energy_move > BASE_ENERGY_MOVE)
             {
-                output.append(QString("<font color=blue>   %1 percent more</font>") .arg(percent_movement));
+                output.append(color_string(QString("   %1 percent more") .arg(percent_movement), TERM_BLUE));
             }
-            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(percent_movement));
+            else output.append(color_string(QString(" %1 percent less") .arg(percent_movement), TERM_BLUE));
         }
         else
         {
-            if (percent_movement  > 15) output.append(QString("<font color=blue> significantly</font>"));
+            if (percent_movement  > 15) output.append(color_string(" significantly", TERM_BLUE));
 
-            if (f_ptr->non_native_energy_move > BASE_ENERGY_MOVE)  output.append(QString("<font color=blue> more</font>"));
-            else output.append(QString("<font color=blue> less</font>"));
+            if (f_ptr->non_native_energy_move > BASE_ENERGY_MOVE)  output.append(color_string(" more", TERM_BLUE));
+            else output.append(color_string(" less", TERM_BLUE));
 
         }
 
@@ -673,17 +669,17 @@ static QString describe_feature_combat_effects(int f_idx, const feature_lore *f_
         {
             if (f_ptr->native_to_hit_adj  > 100)
             {
-                output.append(QString("<font color=blue> %1 percent more</font>") .arg(f_ptr->native_to_hit_adj  - 100));
+                output.append(color_string(QString(" %1 percent more") .arg(f_ptr->native_to_hit_adj  - 100), TERM_BLUE));
             }
-            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(100 - f_ptr->native_to_hit_adj));
+            else output.append(color_string(QString(" %1 percent less") .arg(100 - f_ptr->native_to_hit_adj), TERM_BLUE));
 
         }
         else
         {
-            if (ABS(f_ptr->native_to_hit_adj  - 100) > 15) output.append(QString("<font color=blue> significantly</font>"));
+            if (ABS(f_ptr->native_to_hit_adj  - 100) > 15) output.append(color_string(" significantly", TERM_BLUE));
 
-            if (f_ptr->native_to_hit_adj  > 100)  output.append(QString("<font color=blue> more</font>"));
-            else output.append(QString("<font color=blue> less</font>"));
+            if (f_ptr->native_to_hit_adj  > 100)  output.append(color_string(" more", TERM_BLUE));
+            else output.append(color_string(" less", TERM_BLUE));
 
         }
 
@@ -700,17 +696,17 @@ static QString describe_feature_combat_effects(int f_idx, const feature_lore *f_
         {
             if (f_ptr->non_native_to_hit_adj > 100)
             {
-                 output.append(QString("<font color=blue> %1 percent more</font>") .arg(f_ptr->non_native_to_hit_adj - 100));
+                 output.append(color_string(QString(" %1 percent more") .arg(f_ptr->non_native_to_hit_adj - 100), TERM_BLUE));
             }
-            else output.append(QString("<font color=blue> %1 percent less</font>") .arg(100 - f_ptr->non_native_to_hit_adj));
+            else output.append(color_string(QString(" %1 percent less") .arg(100 - f_ptr->non_native_to_hit_adj), TERM_BLUE));
 
         }
         else
         {
-            if (ABS(f_ptr->non_native_to_hit_adj - 100) > 15) output.append(QString("<font color=blue> significantly</font>"));
+            if (ABS(f_ptr->non_native_to_hit_adj - 100) > 15) output.append(color_string(" significantly", TERM_BLUE));
 
-            if (f_ptr->non_native_to_hit_adj > BASE_ENERGY_MOVE)  output.append(QString("<font color=blue> more</font>"));
-            else output.append(QString("<font color=blue> less</font>"));
+            if (f_ptr->non_native_to_hit_adj > BASE_ENERGY_MOVE)  output.append(color_string(" more", TERM_BLUE));
+            else output.append(color_string(" less", TERM_BLUE));
 
         }
 

@@ -223,7 +223,7 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
 
 
             /* Dump */
-            output.append(QString("<font color=red>%1</font>") .arg(capitalize_first(vp[n])));
+            output.append(color_string(capitalize_first(vp[n]), TERM_RED));
         }
 
         /* End */
@@ -279,7 +279,7 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
             else output.append(", or ");
 
             /* Dump */
-            output.append(QString("<font color=red>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_RED));
         }
 
         /*note powerful*/
@@ -625,7 +625,7 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
         output.append(" magical, casting spells");
 
         /* Adverb */
-        if (l_ptr->r_l_flags2 & RF2_SMART) output.append(QString("<font color=orange> intelligently</font>"));
+        if (l_ptr->r_l_flags2 & RF2_SMART) output.append(color_string(" intelligently", TERM_ORANGE));
 
         /* Normal spells */
         for (n = 0; n < m; n++)
@@ -636,7 +636,7 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
             else              output.append(" or ");
 
             /* Dump */
-            output.append(QString("<font color=red>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_RED));
         }
 
         /* Summons */
@@ -649,7 +649,7 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
             else output.append(", or ");
 
             /* Dump */
-            output.append(QString("<font color=darkRed>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_L_RED));
         }
     }
 
@@ -964,7 +964,7 @@ static QString describe_monster_attack(int r_idx, const monster_lore *l_ptr)
         {
             /* Describe the attack type */
             output.append(" to ");
-            output.append(QString("<font color=Red>%1</font>") .arg(q));
+            output.append(color_string(q, TERM_RED));
 
             /* Describe damage (if known) */
             if (d1 && d2 && ((know_damage(r_idx, l_ptr, m)) || (l_ptr->sights == MAX_SHORT) ||
@@ -1017,8 +1017,6 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
     output.clear();
 
-    int str_length = output.length();
-
     /* Extract a gender (if applicable) */
     if (r_ptr->flags1 & RF1_FEMALE) msex = 2;
     else if (r_ptr->flags1 & RF1_MALE) msex = 1;
@@ -1059,11 +1057,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
             /* Dump */
             output.append(vp[n]);
         }
-
-        /* End */
-        output.append(".<br><br>");
-
-        str_length = output.length();
+        output.append(".  ");
     }
 
     /*note if this is an unused ghost template*/
@@ -1100,12 +1094,6 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
     if (l_ptr->r_l_flags2 & RF2_REGENERATE)
     {
         output.append(QString("%1 regenerates quickly.  ") .arg(capitalize_first(wd_he[msex])));
-    }
-
-    if (output.length() > str_length)
-    {
-        output.append("<br><br>");
-        str_length = output.length();
     }
 
     if (l_ptr->r_l_flags2 & (RF2_CLOUD_SURROUND))
@@ -1166,14 +1154,11 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
             else output.append(" and ");
 
             /* Dump */
-            output.append(QString("<font color=yellow>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_GOLD));
         }
 
         /* End */
         output.append(".<br><br>");
-        str_length = output.length();
-
-
     }
 
 
@@ -1184,6 +1169,12 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
     if (l_ptr->r_l_flags3 & RF3_IM_FIRE) vp[vn++] = "fire";
     if (l_ptr->r_l_flags3 & RF3_IM_COLD) vp[vn++] = "cold";
     if (l_ptr->r_l_flags3 & RF3_IM_POIS) vp[vn++] = "poison";
+    if (l_ptr->r_l_flags3 & RF3_RES_CHAOS) vp[vn++] = "chaos";
+    if (l_ptr->r_l_flags3 & RF3_RES_NETHR) vp[vn++] = "nether";
+    if (l_ptr->r_l_flags3 & RF3_RES_WATER) vp[vn++] = "water";
+    if (l_ptr->r_l_flags3 & RF3_RES_PLAS) vp[vn++] = "plasma";
+    if (l_ptr->r_l_flags3 & RF3_RES_NEXUS) vp[vn++] = "nexus";
+    if (l_ptr->r_l_flags3 & RF3_RES_DISEN) vp[vn++] = "disenchantment";
 
     /* Describe immunities */
     if (vn)
@@ -1200,47 +1191,12 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
             else output.append(" and ");
 
             /* Dump */
-            output.append(QString("<font color=green>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_GREEN));
         }
 
         /* End */
-        output.append(".<br><br>");
-        str_length = output.length();
+        output.append(".  ");
     }
-
-
-    /* Collect resistances */
-    vn = 0;
-    if (l_ptr->r_l_flags3 & RF3_RES_CHAOS) vp[vn++] = "chaos";
-    if (l_ptr->r_l_flags3 & RF3_RES_NETHR) vp[vn++] = "nether";
-    if (l_ptr->r_l_flags3 & RF3_RES_WATER) vp[vn++] = "water";
-    if (l_ptr->r_l_flags3 & RF3_RES_PLAS) vp[vn++] = "plasma";
-    if (l_ptr->r_l_flags3 & RF3_RES_NEXUS) vp[vn++] = "nexus";
-    if (l_ptr->r_l_flags3 & RF3_RES_DISEN) vp[vn++] = "disenchantment";
-
-    /* Describe resistances */
-    if (vn)
-    {
-        /* Intro */
-        output.append(QString("%1") .arg(capitalize_first(wd_he[msex])));
-
-        /* Scan */
-        for (n = 0; n < vn; n++)
-        {
-            /* Intro */
-            if (n == 0) output.append(" resists ");
-            else if (n < vn-1) output.append(", ");
-            else output.append(" and ");
-
-            /* Dump */
-            output.append(QString("<font color=green>%1</font>") .arg(vp[n]));
-        }
-
-        /* End */
-        output.append(".<br><br>");
-        str_length = output.length();
-    }
-
 
     /* Collect non-effects */
     vn = 0;
@@ -1265,86 +1221,11 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
             else output.append(" or ");
 
             /* Dump */
-            output.append(QString("<font color=yellow>%1</font>") .arg(vp[n]));
+            output.append(color_string(vp[n], TERM_GOLD));
         }
 
         /* End */
         output.append(".<br><br>");
-        str_length = output.length();
-    }
-
-
-    /* Do we know how aware it is? */
-    if ((((int)l_ptr->wake * (int)l_ptr->wake) > r_ptr->sleep) ||
-        (l_ptr->ignore == MAX_UCHAR) ||
-        ((r_ptr->sleep == 0) && (l_ptr->tkills >= 10)))
-    {
-        QString act;
-
-        if (r_ptr->sleep > 200)
-        {
-            act = "prefers to ignore";
-        }
-        else if (r_ptr->sleep > 95)
-        {
-            act = "pays very little attention to";
-        }
-        else if (r_ptr->sleep > 75)
-        {
-            act = "pays little attention to";
-        }
-        else if (r_ptr->sleep > 45)
-        {
-            act = "tends to overlook";
-        }
-        else if (r_ptr->sleep > 25)
-        {
-            act = "takes quite a while to see";
-        }
-        else if (r_ptr->sleep > 10)
-        {
-            act = "takes a while to see";
-        }
-        else if (r_ptr->sleep > 5)
-        {
-            act = "is fairly observant of";
-        }
-        else if (r_ptr->sleep > 3)
-        {
-            act = "is observant of";
-        }
-        else if (r_ptr->sleep > 1)
-        {
-            act = "is very observant of";
-        }
-        else if (r_ptr->sleep > 0)
-        {
-            act = "is vigilant for";
-        }
-        else
-        {
-            act = "is ever vigilant for";
-        }
-
-        output.append(QString("%1 %2 intruders, which %3 may notice from %4 feet.  ")
-                    .arg(capitalize_first(wd_he[msex])) .arg(act) .arg(wd_he[msex]) .arg(10 * r_ptr->aaf));
-
-        output.append("<br><br>");
-        str_length = output.length();
-    }
-
-    /* Describe escorts */
-    if ((l_ptr->r_l_flags1 & RF1_ESCORT) || (l_ptr->r_l_flags1 & RF1_ESCORTS))
-    {
-        output.append(QString("%1 usually appears with escorts.  <br><br>")
-                     .arg(capitalize_first(wd_he[msex])));
-    }
-
-    /* Describe friends */
-    else if ((l_ptr->r_l_flags1 & RF1_FRIEND) || (l_ptr->r_l_flags1 & RF1_FRIENDS))
-    {
-        output.append(QString("%1 usually appears in groups.  <br><br>")
-                     .arg(capitalize_first(wd_he[msex])));
     }
 
     return (output);
@@ -1432,7 +1313,7 @@ static QString describe_monster_kills(int r_idx, const monster_lore *l_ptr)
         /* No kills */
         else
         {
-            output.append(QString("<font color=red>and %1 is not ever known to have been defeated.  ") .arg(capitalize_first(wd_he[msex])));
+            output.append(color_string(QString("and %1 is not ever known to have been defeated.  ") .arg(capitalize_first(wd_he[msex])), TERM_RED));
         }
 
         output.append("<br><br>");
@@ -1566,74 +1447,41 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
     bool old = FALSE;
     output.clear();
 
+    int msex = 0;
+
+    /* Extract a gender (if applicable) */
+    if (r_ptr->flags1 & RF1_FEMALE) msex = 2;
+    else if (r_ptr->flags1 & RF1_MALE) msex = 1;
+
     output.append("This");
 
-    if (l_ptr->r_l_flags3 & RF3_FLYING) output.append(QString("<font color=cyan> flying</font>"));
-    if (l_ptr->r_l_flags3 & RF3_ANIMAL) output.append(QString("<font color=cyan> natural</font>"));
-    if (l_ptr->r_l_flags3 & RF3_EVIL) output.append(QString("<font color=cyan> evil</font>"));
-    if (l_ptr->r_l_flags3 & RF3_UNDEAD) output.append(QString("<font color=cyan> undead</font>"));
+    if (l_ptr->r_l_flags3 & RF3_FLYING) output.append(color_string(" flying", TERM_NAVY_BLUE));
+    if (l_ptr->r_l_flags3 & RF3_ANIMAL) output.append(color_string(" natural", TERM_NAVY_BLUE));
+    if (l_ptr->r_l_flags3 & RF3_EVIL) output.append(color_string(" evil", TERM_NAVY_BLUE));
+    if (l_ptr->r_l_flags3 & RF3_UNDEAD) output.append(color_string(" undead", TERM_NAVY_BLUE));
 
-    if (l_ptr->r_l_flags3 & RF3_DRAGON) output.append(QString("<font color=cyan> dragon</font>"));
-    else if (l_ptr->r_l_flags3 & RF3_DEMON) output.append(QString("<font color=cyan> demon</font>"));
-    else if (l_ptr->r_l_flags3 & RF3_GIANT) output.append(QString("<font color=cyan> giant</font>"));
-    else if (l_ptr->r_l_flags3 & RF3_TROLL) output.append(QString("<font color=cyan> troll</font>"));
-    else if (l_ptr->r_l_flags3 & RF3_ORC) output.append(QString("<font color=cyan> orc</font>"));
+    if (l_ptr->r_l_flags3 & RF3_DRAGON) output.append(color_string(" dragon", TERM_NAVY_BLUE));
+    else if (l_ptr->r_l_flags3 & RF3_DEMON) output.append(color_string(" demon", TERM_NAVY_BLUE));
+    else if (l_ptr->r_l_flags3 & RF3_GIANT) output.append(color_string(" giant", TERM_NAVY_BLUE));
+    else if (l_ptr->r_l_flags3 & RF3_TROLL) output.append(color_string(" troll", TERM_NAVY_BLUE));
+    else if (l_ptr->r_l_flags3 & RF3_ORC) output.append(color_string(" orc", TERM_NAVY_BLUE));
     else output.append(" creature");
 
     /* Describe location */
     if (r_ptr->level == 0)
     {
-        output.append(QString("<font color=darkGray> lives in the town</font>"));
+        output.append(color_string(" lives in the town", TERM_SLATE));
         old = TRUE;
     }
     else if ((l_ptr->tkills)  || (l_ptr->sights == MAX_SHORT) ||
              (l_ptr->ranged == MAX_UCHAR))
     {
-        if (l_ptr->r_l_flags1 & RF1_FORCE_DEPTH)
-            output.append(QString("<font color=darkGray> is found </font>"));
-        else
-            output.append(QString("<font color=darkGray> is normally found </font>"));
+        if (l_ptr->r_l_flags1 & RF1_FORCE_DEPTH) output.append(color_string(" is found", TERM_SLATE));
+        else output.append(color_string(" is normally found", TERM_SLATE));
 
-        output.append(QString("<font color=darkGray>at depths of %1 feet</font>") .arg(r_ptr->level * 50));
+        output.append(color_string(QString(" at depths of %1 feet") .arg(r_ptr->level * 50), TERM_SLATE));
 
         old = TRUE;
-    }
-
-    /*Print out the known native terrains*/
-    if (l_ptr->r_l_native)
-    {
-        int vn = 0;
-        int n;
-        QString vp[16];
-
-        if (old) output.append(", and");
-
-        output.append(", is native to ");
-
-        if (l_ptr->r_l_native & (RN1_N_LAVA)) vp[vn++] = "lava";
-        if (l_ptr->r_l_native & (RN1_N_ICE)) vp[vn++] = "ice";
-        if (l_ptr->r_l_native & (RN1_N_OIL)) vp[vn++] = "oil";
-        if (l_ptr->r_l_native & (RN1_N_FIRE)) vp[vn++] = "fire";
-        if (l_ptr->r_l_native & (RN1_N_SAND)) vp[vn++] = "sand";
-        if (l_ptr->r_l_native & (RN1_N_FOREST)) vp[vn++] = "forests";
-        if (l_ptr->r_l_native & (RN1_N_WATER)) vp[vn++] = "water";
-        if (l_ptr->r_l_native & (RN1_N_ACID)) vp[vn++] = "acid";
-        if (l_ptr->r_l_native & (RN1_N_MUD)) vp[vn++] = "mud";
-
-        /* Scan */
-        for (n = 0; n < vn; n++)
-        {
-
-            /* Dump */
-            output.append(QString("<font color=blue>%1</font>") .arg(vp[n]));
-
-            if (vn == n + 1) break;
-            else if (vn == n + 2) output.append(" and ");
-            else output.append(", ");
-        }
-
-        old = TRUE;
-
     }
 
     if (old) output.append(", and");
@@ -1668,23 +1516,23 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
     if (energy_gain > STANDARD_ENERGY_GAIN)
     {
 
-        if (energy_gain > extract_energy_nppangband[139]) output.append(QString("<font color=green> incredibly</font>"));
-        else if (energy_gain > extract_energy_nppangband[134]) output.append(QString("<font color=green> extremely</font>"));
-        else if (energy_gain > extract_energy_nppangband[129]) output.append(QString("<font color=green> very</font>"));
-        else if (energy_gain > extract_energy_nppangband[124]) output.append(QString("<font color=green> exceedingly</font>"));
-        else if (energy_gain < extract_energy_nppangband[120]) output.append(QString("<font color=green> somewhat</font>"));
-        output.append(QString("<font color=green> quickly</font>"));
+        if (energy_gain > extract_energy_nppangband[139]) output.append(color_string(" incredibly", TERM_GREEN));
+        else if (energy_gain > extract_energy_nppangband[134]) output.append(color_string(" extremely", TERM_GREEN));
+        else if (energy_gain > extract_energy_nppangband[129]) output.append(color_string(" very", TERM_GREEN));
+        else if (energy_gain > extract_energy_nppangband[124]) output.append(color_string(" exceedingly", TERM_GREEN));
+        else if (energy_gain < extract_energy_nppangband[120]) output.append(color_string(" somewhat", TERM_GREEN));
+        output.append(color_string(" quickly", TERM_GREEN));
 
     }
     else if (energy_gain < STANDARD_ENERGY_GAIN)
     {
-        if (energy_gain < extract_energy_nppangband[90]) output.append(QString("<font color=green> incredibly</font>"));
-        else if (energy_gain < extract_energy_nppangband[100]) output.append(QString("<font color=green> very</font>"));
-        output.append(QString("<font color=green> slowly</font>"));
+        if (energy_gain < extract_energy_nppangband[90]) output.append(color_string(" incredibly", TERM_GREEN));
+        else if (energy_gain < extract_energy_nppangband[100]) output.append(color_string(" very", TERM_GREEN));
+        output.append(color_string(" slowly", TERM_GREEN));
     }
     else
     {
-        output.append(QString("<font color=green> at normal speed</font>"));
+        output.append(color_string(" at normal speed", TERM_GREEN));
     }
 
     /* The code above includes "attack speed" */
@@ -1693,8 +1541,114 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
         output.append(", but does not deign to chase intruders");
     }
 
-    /* End this sentence */
-    output.append(".<br><br>");
+    output.append(".  ");
+
+    /* Do we know how aware it is? */
+    if ((((int)l_ptr->wake * (int)l_ptr->wake) > r_ptr->sleep) ||
+        (l_ptr->ignore == MAX_UCHAR) ||
+        ((r_ptr->sleep == 0) && (l_ptr->tkills >= 10)))
+    {
+        QString act;
+
+        if (r_ptr->sleep > 200)
+        {
+            act = "prefers to ignore";
+        }
+        else if (r_ptr->sleep > 95)
+        {
+            act = "pays very little attention to";
+        }
+        else if (r_ptr->sleep > 75)
+        {
+            act = "pays little attention to";
+        }
+        else if (r_ptr->sleep > 45)
+        {
+            act = "tends to overlook";
+        }
+        else if (r_ptr->sleep > 25)
+        {
+            act = "takes quite a while to see";
+        }
+        else if (r_ptr->sleep > 10)
+        {
+            act = "takes a while to see";
+        }
+        else if (r_ptr->sleep > 5)
+        {
+            act = "is fairly observant of";
+        }
+        else if (r_ptr->sleep > 3)
+        {
+            act = "is observant of";
+        }
+        else if (r_ptr->sleep > 1)
+        {
+            act = "is very observant of";
+        }
+        else if (r_ptr->sleep > 0)
+        {
+            act = "is vigilant for";
+        }
+        else
+        {
+            act = "is ever vigilant for";
+        }
+
+        output.append(QString("%1 %2 intruders, which %3 may notice from %4 feet.  ")
+                    .arg(capitalize_first(wd_he[msex])) .arg(act) .arg(wd_he[msex]) .arg(10 * r_ptr->aaf));
+    }
+
+    /* Describe escorts */
+    if ((l_ptr->r_l_flags1 & RF1_ESCORT) || (l_ptr->r_l_flags1 & RF1_ESCORTS))
+    {
+        output.append(QString("%1 usually appears with escorts.  ")
+                     .arg(capitalize_first(wd_he[msex])));
+    }
+
+    /* Describe friends */
+    else if ((l_ptr->r_l_flags1 & RF1_FRIEND) || (l_ptr->r_l_flags1 & RF1_FRIENDS))
+    {
+        output.append(QString("%1 usually appears in groups.  ")
+                     .arg(capitalize_first(wd_he[msex])));
+    }
+
+    /*Print out the known native terrains*/
+    if (l_ptr->r_l_native)
+    {
+        int vn = 0;
+        int n;
+        QString vp[16];
+
+        /* Intro */
+        output.append(QString("%1 is native to") .arg(capitalize_first(wd_he[msex])));
+
+        if (l_ptr->r_l_native & (RN1_N_LAVA)) vp[vn++] = "lava";
+        if (l_ptr->r_l_native & (RN1_N_ICE)) vp[vn++] = "ice";
+        if (l_ptr->r_l_native & (RN1_N_OIL)) vp[vn++] = "oil";
+        if (l_ptr->r_l_native & (RN1_N_FIRE)) vp[vn++] = "fire";
+        if (l_ptr->r_l_native & (RN1_N_SAND)) vp[vn++] = "sand";
+        if (l_ptr->r_l_native & (RN1_N_FOREST)) vp[vn++] = "forests";
+        if (l_ptr->r_l_native & (RN1_N_WATER)) vp[vn++] = "water";
+        if (l_ptr->r_l_native & (RN1_N_ACID)) vp[vn++] = "acid";
+        if (l_ptr->r_l_native & (RN1_N_MUD)) vp[vn++] = "mud";
+
+        /* Scan */
+        for (n = 0; n < vn; n++)
+        {
+
+            /* Dump */
+            output.append(color_string(vp[n], TERM_BLUE));
+
+            if (vn == n + 1) break;
+            else if (vn == n + 2) output.append(" and ");
+            else output.append(", ");
+        }
+
+        output.append(".");
+    }
+
+    if (!output.isEmpty()) output.append("<br><br>");
 
     return (output);
 }
@@ -1751,6 +1705,7 @@ static void cheat_monster_lore(int r_idx, monster_lore *l_ptr)
     l_ptr->r_l_flags5 = r_ptr->flags5;
     l_ptr->r_l_flags6 = r_ptr->flags6;
     l_ptr->r_l_flags7 = r_ptr->flags7;
+    l_ptr->r_l_native = r_ptr->r_native;
 }
 
 
