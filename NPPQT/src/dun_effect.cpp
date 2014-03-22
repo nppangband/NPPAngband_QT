@@ -1053,7 +1053,7 @@ static void effect_damage(const effect_type *x_ptr)
     }
 
     /*We have something here to damage*/
-    if ((x_ptr->x_power > 0) && (dungeon_info[y][x].has_effect()))
+    if ((x_ptr->x_power > 0) && (dungeon_info[y][x].has_monster()))
     {
         /*It is a creature*/
         if (dungeon_info[y][x].monster_idx > 0)
