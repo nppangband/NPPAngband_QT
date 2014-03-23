@@ -17,6 +17,7 @@
  */
 
 #include "npp.h"
+#include "storedialog.h"
 
 
 
@@ -1044,7 +1045,10 @@ void move_player(int dir, int jumping)
 			disturb(0, 0);
 
 			/* Hack -- Enter store */
-			p_ptr->command_new = '_';
+            //p_ptr->command_new = '_';
+            int feat_idx = dungeon_info[y][x].feat;
+            int store_idx = f_info[feat_idx].f_power;
+            launch_store(store_idx);
 		}
 
 		/* Hit a trap */

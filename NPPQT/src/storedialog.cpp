@@ -5,8 +5,16 @@
 #include <QPushButton>
 #include <QSpacerItem>
 #include <QGroupBox>
+#include <QLineEdit>
 #include "npp.h"
 #include "store.h"
+
+void launch_store(int store_idx)
+{
+    StoreDialog *dlg = new StoreDialog(store_idx);
+    dlg->exec();
+    delete dlg;
+}
 
 StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 {
@@ -123,9 +131,9 @@ void StoreDialog::buy_click()
 
 void StoreDialog::reset_store()
 {
-    QLayout *lay = store_area->layout();
+    QGridLayout *lay = dynamic_cast<QGridLayout *>(store_area->layout());
     if (lay == 0) {
-        lay = new QVBoxLayout;
+        lay = new QGridLayout;
         store_area->setLayout(lay);
     }
     // Remove previous items
@@ -133,8 +141,10 @@ void StoreDialog::reset_store()
     while ((item = lay->takeAt(0)) != 0) {
         delete item;
     }
+    lay->addWidget(new QLabel("Price"), 0, 1);
     store_type *st = &store[store_idx];
-    for (int i = 0; i < st->stock_num; i++) {
+    int i;
+    for (i = 0; i < st->stock_num; i++) {
         object_type *o_ptr = &st->stock[i];
         if (o_ptr->k_idx == 0) continue;
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
@@ -145,10 +155,14 @@ void StoreDialog::reset_store()
         btn->setProperty("item_id", QVariant(id));
         btn->setStyleSheet("text-align: left;");
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
-        lay->addWidget(btn);
+        lay->addWidget(btn, i + 1, 0);
+
+        s32b price = price_item(o_ptr, false);
+        QLabel *l = new QLabel(_num(price));
+        lay->addWidget(l, i + 1, 1);
     }
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(spacer);
+    lay->addItem(spacer, i + 1, 0);
 }
 
 void StoreDialog::set_mode(int _mode)
@@ -164,9 +178,9 @@ void StoreDialog::set_mode(int _mode)
 void StoreDialog::reset_inventory()
 {
     QWidget *tab = inven_tab;
-    QLayout *lay = tab->layout();
+    QGridLayout *lay = dynamic_cast<QGridLayout *>(tab->layout());
     if (lay == 0) {
-        lay = new QVBoxLayout;
+        lay = new QGridLayout;
         tab->setLayout(lay);
     }
     // Remove previous items
@@ -174,7 +188,9 @@ void StoreDialog::reset_inventory()
     while ((item = lay->takeAt(0)) != 0) {
         delete item;
     }
-    for (int i = 0; i < INVEN_WIELD - 1; i++) {
+    lay->addWidget(new QLabel("Price"), 0, 1);
+    int i;
+    for (i = 0; i < INVEN_WIELD - 1; i++) {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
@@ -185,18 +201,22 @@ void StoreDialog::reset_inventory()
         btn->setProperty("item_id", QVariant(id));
         btn->setStyleSheet("text-align: left;");
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
-        lay->addWidget(btn);
+        lay->addWidget(btn, i + 1, 0);
+
+        s32b price = price_item(o_ptr, true);
+        QLabel *l = new QLabel(_num(price));
+        lay->addWidget(l, i + 1, 1);
     }
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(spacer);
+    lay->addItem(spacer, i + 1, 0);
 }
 
 void StoreDialog::reset_equip()
 {
     QWidget *tab = equip_tab;
-    QLayout *lay = tab->layout();
+    QGridLayout *lay = dynamic_cast<QGridLayout *>(tab->layout());
     if (lay == 0) {
-        lay = new QVBoxLayout;
+        lay = new QGridLayout;
         tab->setLayout(lay);
     }
     // Remove previous items
@@ -205,7 +225,9 @@ void StoreDialog::reset_equip()
         delete item;
     }
     int n = 0;
-    for (int i = INVEN_WIELD; i < QUIVER_END; i++) {
+    int i;
+    lay->addWidget(new QLabel("Price"), 0, 1);
+    for (i = INVEN_WIELD; i < QUIVER_END; i++) {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;
         QString use;
@@ -221,10 +243,14 @@ void StoreDialog::reset_equip()
         btn->setProperty("item_id", QVariant(id));
         btn->setStyleSheet("text-align: left;");
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
-        lay->addWidget(btn);
+        lay->addWidget(btn, i + 1, 0);
+
+        s32b price = price_item(o_ptr, true);
+        QLabel *l = new QLabel(_num(price));
+        lay->addWidget(l, i + 1, 1);
     }
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(spacer);
+    lay->addItem(spacer, i + 1, 0);
 }
 
 void StoreDialog::toggle_inven()
@@ -320,36 +346,80 @@ void StoreDialog::sell_click()
 
 bool StoreDialog::do_buy(object_type *o_ptr)
 {
-    int amt = o_ptr->number;
+    int amt = request_amt(o_ptr, true);
 
-    QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
-
-    if (amt > 1) {
-        amt = get_quantity(tr("How many items you want to buy of %1?").arg(desc), amt);
-        if (amt == 0) return false;
-    }
-    else {
-        if (!get_check(tr("Do you want to buy %1?").arg(desc))) return false;
-        amt = 1;
-    }
+    if (amt == 0) return false;
 
     return true;
 }
 
 bool StoreDialog::do_sell(object_type *o_ptr)
 {
-    int amt = o_ptr->number;
+    int amt = request_amt(o_ptr, false);
 
-    QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
-
-    if (amt > 1) {
-        amt = get_quantity(tr("How many items you want to sell of %1?").arg(desc), amt, amt);
-        if (amt == 0) return false;
-    }
-    else {
-        if (!get_check(tr("Do you want to sell %1?").arg(desc))) return false;
-        amt = 1;
-    }
+    if (amt == 0) return false;
 
     return true;
+}
+
+class QuantityDialog: public QDialog
+{
+public:
+    QLabel *question;
+    QLineEdit *amt_edit;
+    QLabel *total_label;
+    object_type *o_ptr;
+    bool buying;
+    int amt;
+    int max;
+    int price;
+
+    QuantityDialog(object_type *op, bool buy);
+
+public slots:
+};
+
+QuantityDialog::QuantityDialog(object_type *op, bool buy)
+{
+    o_ptr = op;
+    buying = buy;
+    amt = 0;
+    price = price_item(o_ptr, !buy);
+
+
+    QVBoxLayout *lay1 = new QVBoxLayout;
+    this->setLayout(lay1);
+
+    QString verb = tr("sell");
+    if (buying) verb = tr("buy");
+
+    QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
+    QString msg = tr("How many items do you want to %1 of %2?").arg(verb).arg(desc);
+    question = new QLabel(msg);
+    lay1->addWidget(question);
+
+
+}
+
+int StoreDialog::request_amt(object_type *o_ptr, bool buying)
+{
+    int amt = o_ptr->number;
+    int price = price_item(o_ptr, !buying);
+    QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
+    QString verb = tr("sell");
+    if (buying) verb = tr("buy");
+
+    if (amt == 1) {
+        QString msg = tr("Do you want to %1 %2? Price: %3")
+                .arg(verb).arg(desc).arg(price);
+        if (!get_check(msg)) return 0;
+        return 1;
+    }
+
+    QuantityDialog *dlg = new QuantityDialog(o_ptr, buying);
+    dlg->exec();
+    amt = dlg->amt;
+    delete dlg;
+
+    return amt;
 }

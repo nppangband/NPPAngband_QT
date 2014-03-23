@@ -43,6 +43,8 @@ public:
     bool do_buy(object_type *o_ptr);
     bool do_sell(object_type *o_ptr);
 
+    int request_amt(object_type *o_ptr, bool buying);
+
 public slots:
     void toggle_inven();
     void item_click();
@@ -51,5 +53,7 @@ public slots:
     void info_click();
     void exam_click();
 };
+
+extern void launch_store(int store_idx);
 
 #endif // STOREDIALOG_H

@@ -417,7 +417,7 @@ static int current_store(void)
 {
     if (cave_shop_bold(p_ptr->py,p_ptr->px))
 
-        return (f_info[dungeon_info[p_ptr->py][p_ptr->px].cave_info].f_power);
+        return (f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].f_power);
 
     return STORE_NONE;
 }

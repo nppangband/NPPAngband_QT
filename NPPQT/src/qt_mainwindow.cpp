@@ -10,8 +10,6 @@
 #include "src/optionsdialog.h"
 #include "src/birthdialog.h"
 #include "emitter.h"
-#include "nppdialog.h"
-#include "storedialog.h"
 
 MainWindow *main_window = 0;
 
@@ -217,27 +215,6 @@ QPixmap ui_get_tile(QString tile_id)
 
 void MainWindow::slot_something()
 {
-    /*
-    NPPDialog *dlg = new NPPDialog;
-    QWidget *central = new QWidget;
-    QVBoxLayout *lay = new QVBoxLayout;
-    central->setLayout(lay);
-    dlg->setClient(central);
-    central->show();
-    for (int i = 0; i < 40; i++) {
-        QPushButton *bt = new QPushButton(QString("button %1").arg(i), central);
-        lay->addWidget(bt);
-    }
-    dlg->clientSizeUpdated();
-    dlg->exec();
-    delete dlg;
-    */
-
-    StoreDialog *dlg2 = new StoreDialog(STORE_GENERAL);
-    dlg2->exec();
-    delete dlg2;
-    return;
-
     int dir;
     p_ptr->command_dir = 0;
     graphics_view->setFocus();
