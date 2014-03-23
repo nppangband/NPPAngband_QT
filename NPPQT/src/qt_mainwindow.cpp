@@ -202,6 +202,19 @@ QPixmap rotate_pix(QPixmap src, qreal angle)
     return QPixmap::fromImage(img);
 }
 
+QPixmap ui_get_tile(QString tile_id)
+{
+    // Build a transparent 1x1 pixmap
+    if (tile_id.isEmpty() || !use_graphics) {
+        QImage img(1, 1, QImage::Format_ARGB32);
+        img.setPixel(0, 0, qRgba(0, 0, 0, 0));
+        return QPixmap::fromImage(img);
+    }
+
+    main_window->rebuild_tile(tile_id);
+    return main_window->tiles.value(tile_id);
+}
+
 void MainWindow::slot_something()
 {
     /*
