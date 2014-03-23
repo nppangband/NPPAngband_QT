@@ -10,6 +10,7 @@
 #include "src/optionsdialog.h"
 #include "src/birthdialog.h"
 #include "emitter.h"
+#include "nppdialog.h"
 
 MainWindow *main_window = 0;
 
@@ -202,6 +203,19 @@ QPixmap rotate_pix(QPixmap src, qreal angle)
 
 void MainWindow::slot_something()
 {
+    QWidget *central = new QWidget;
+    QVBoxLayout *lay = new QVBoxLayout;
+    central->setLayout(lay);
+    for (int i = 0; i < 40; i++) {
+        QPushButton *bt = new QPushButton(QString("button %1").arg(i));
+        lay->addWidget(bt);
+    }
+    NPPDialog *dlg = new NPPDialog;
+    dlg->setWidget(central);
+    dlg->exec();
+    delete dlg;
+    return;
+
     int dir;
     p_ptr->command_dir = 0;
     graphics_view->setFocus();

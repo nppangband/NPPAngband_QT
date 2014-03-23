@@ -76,7 +76,8 @@ SOURCES +=  src/qt_main.cpp\
             src/tables.cpp \
             src/target.cpp \
             src/timed.cpp \
-            src/utilities.cpp
+            src/utilities.cpp \
+    src/nppdialog.cpp
 
 
 
@@ -109,7 +110,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \
-    src/cmd_spell.h
+    src/cmd_spell.h \
+    src/nppdialog.h
 
 
 RESOURCES += \

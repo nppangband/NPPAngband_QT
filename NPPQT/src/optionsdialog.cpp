@@ -8,12 +8,26 @@
 #include <QCheckBox>
 #include <QTableWidget>
 #include <QLabel>
+#include <QDesktopWidget>
+
+static int calc_table_width(QTableWidget *table)
+{
+    int w = 0;
+    for (int i = 0; i < table->columnCount(); i++) {
+        if (table->isColumnHidden(i)) continue;
+        w += table->columnWidth(i);
+    }
+    return w;
+}
 
 OptionsDialog::OptionsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::OptionsDialog)
 {
     ui->setupUi(this);
+
+    int max = 0;
+    int w;
 
     for (int t = 0; t < 5; t++) {
          QWidget *tab = ui->tabWidget->widget(t);
@@ -61,10 +75,20 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
          }
 
          table->resizeColumnsToContents();
+
+         w = calc_table_width(table);
+         if (w > max) max = w;
      }
+
+     QDesktopWidget dsk;
+
+     // Default size
+     this->resize(max + 100, dsk.geometry().height() * 0.8);
 
      ui->spin_base_delay->setValue(op_ptr->delay_factor);
      ui->spin_hitpoint_warning->setValue(op_ptr->hitpoint_warn);
+
+     ui->tabWidget->setCurrentIndex(0);
 }
 
 OptionsDialog::~OptionsDialog()
