@@ -20,7 +20,13 @@
 #include "src/npp.h"
 
 
-
+QString sign(int value) {
+    QString s;
+    if (value >= 0) {
+        s = "+";
+    }
+    return s.append(_num(value));
+}
 
 
 
@@ -521,10 +527,10 @@ static QString obj_desc_combat(object_type *o_ptr,  QString buf, bool spoil)
                  o_ptr->tval == TV_HARD_ARMOR ||
                  o_ptr->tval == TV_DRAG_ARMOR ||
                  o_ptr->tval == TV_DRAG_SHIELD))
-                buf.append(QString(" (+%1)") .arg(o_ptr->to_h));
+                buf.append(QString(" (%1)").arg(sign(o_ptr->to_h)));
 
             /* Otherwise, always use the full tuple */
-            else buf.append(QString(" (+%1,+%2)") .arg(o_ptr->to_h) .arg(o_ptr->to_d));
+            else buf.append(QString(" (%1,%2)").arg(sign(o_ptr->to_h)).arg(sign(o_ptr->to_d)));
         }
     }
 
@@ -533,13 +539,13 @@ static QString obj_desc_combat(object_type *o_ptr,  QString buf, bool spoil)
     if (spoil || object_known_p(o_ptr))
     {
         if (obj_desc_show_armor(o_ptr))
-            buf.append(QString(" [+%1,+%2]") .arg(o_ptr->ac) .arg(o_ptr->to_a));
+            buf.append(QString(" [%1,%2]").arg(sign(o_ptr->ac)).arg(sign(o_ptr->to_a)));
         else if (o_ptr->to_a)
-                    buf.append(QString(" [%+1]") .arg(o_ptr->to_a));
+                    buf.append(QString(" [%1]").arg(sign(o_ptr->to_a)));
     }
     else if (obj_desc_show_armor(o_ptr))
     {
-        buf.append(QString(" [%1]") .arg(o_ptr->ac));
+        buf.append(QString(" [%1]").arg(sign(o_ptr->ac)));
     }
 
     return (buf);
@@ -561,7 +567,7 @@ static QString obj_desc_pval(object_type *o_ptr, QString buf)
 
     if (!(f1 & TR1_PVAL_MASK)) return (buf);
 
-    buf.append(QString(" (%+1") .arg(o_ptr->pval));
+    buf.append(QString(" (%1").arg(sign(o_ptr->pval)));
 
     if (!(f3 & TR3_HIDE_TYPE))
     {

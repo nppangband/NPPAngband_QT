@@ -174,7 +174,7 @@ void popup1(QString message, int id)
 // return TRUE/FALSE;
 bool get_check(QString question)
 {
-    int answer = QMessageBox::question(0, "Please respond yes or no", question, QMessageBox::Yes, QMessageBox::Ok);
+    int answer = QMessageBox::question(0, "Please respond yes or no", question, QMessageBox::Yes, QMessageBox::No);
     if (answer == QMessageBox::Yes) return (TRUE);
     return (FALSE);
 }

@@ -14,11 +14,12 @@ public:
     int padding;
     qreal max_ratio;
     QScrollArea *scrollArea;
-    QWidget *viewport;
+    QWidget *client;
 
     virtual QSize sizeHint() const;
 
-    void setWidget(QWidget *_viewport);
+    void setClient(QWidget *_client);
+    void clientSizeUpdated();
 
 signals:
 

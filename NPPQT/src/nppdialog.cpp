@@ -20,14 +20,14 @@ NPPDialog::NPPDialog(QWidget *parent, int _padding, qreal _max_ratio) :
 
     layout->setContentsMargins(0, 0, 0, 0);
 
-    viewport = 0;
+    client = 0;
 }
 
 QSize NPPDialog::sizeHint() const
 {
-    if (viewport == 0) return QSize(-1, -1);
+    if (client == 0) return QSize(-1, -1);
 
-    QSize size = viewport->sizeHint();
+    QSize size = client->sizeHint();
 
     QDesktopWidget dsk;
 
@@ -50,13 +50,20 @@ QSize NPPDialog::sizeHint() const
     return size;
 }
 
-void NPPDialog::setWidget(QWidget *_viewport)
+void NPPDialog::clientSizeUpdated()
 {
-    viewport = _viewport;
-
-    scrollArea->setWidget(viewport);
-
-    this->updateGeometry();
+    if (client) {
+        client->updateGeometry();
+        client->setMinimumSize(client->sizeHint());
+    }
 
     this->resize(this->sizeHint());
+}
+
+// Call this function AFTER setting the client layout
+void NPPDialog::setClient(QWidget *_client)
+{
+    client = _client;
+
+    scrollArea->setWidget(client);
 }
