@@ -83,7 +83,7 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
      QDesktopWidget dsk;
 
      // Default size
-     this->resize(max + 100, dsk.geometry().height() * 0.8);
+     this->resize(max + 100, dsk.screenGeometry().height() * 0.8);
 
      ui->spin_base_delay->setValue(op_ptr->delay_factor);
      ui->spin_hitpoint_warning->setValue(op_ptr->hitpoint_warn);
