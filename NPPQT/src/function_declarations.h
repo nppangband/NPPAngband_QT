@@ -884,7 +884,7 @@ extern QString capitalize_first(QString line);
 extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMessageBox::Information);
 extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
-extern s16b get_quantity(QString prompt, int max);
+extern s16b get_quantity(QString prompt, int max, int amt = 1);
 extern QColor add_preset_color(int which_color);
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);

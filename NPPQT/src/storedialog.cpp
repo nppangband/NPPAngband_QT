@@ -45,6 +45,23 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
     lay3->addItem(spacer);
 
+    QWidget *area4 = new QWidget;
+    QHBoxLayout *lay6 = new QHBoxLayout;
+    area4->setLayout(lay6);
+    lay6->setContentsMargins(0, 0, 0, 0);
+    lay1->addWidget(area4);
+
+    QPushButton *btn_info = new QPushButton("Information (F5)");
+    lay6->addWidget(btn_info);
+    connect(btn_info, SIGNAL(clicked()), this, SLOT(info_click()));
+
+    QPushButton *btn_exam = new QPushButton("Examine (F6)");
+    lay6->addWidget(btn_exam);
+    connect(btn_exam, SIGNAL(clicked()), this, SLOT(exam_click()));
+
+    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay6->addItem(spacer);
+
     QWidget *area2 = new QWidget;
     QHBoxLayout *lay2 = new QHBoxLayout;
     area2->setLayout(lay2);
@@ -87,6 +104,16 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
 
     this->clientSizeUpdated();
+}
+
+void StoreDialog::info_click()
+{
+    set_mode(SMODE_INFO);
+}
+
+void StoreDialog::exam_click()
+{
+    set_mode(SMODE_EXAMINE);
 }
 
 void StoreDialog::buy_click()
@@ -217,6 +244,12 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
     case Qt::Key_F3:
         this->sell_click();
         break;
+    case Qt::Key_F5:
+        this->info_click();
+        break;
+    case Qt::Key_F6:
+        this->exam_click();
+        break;
     default:
         if (event->text().length() > 0
                 && event->text().at(0).isLetter()) {
@@ -255,7 +288,6 @@ void StoreDialog::item_click()
     if (aux_mode == SMODE_SELL && id.startsWith("s")) return;
     if (aux_mode == SMODE_BUY && !id.startsWith("s")) return;
 
-    QString desc;
     object_type *o_ptr;
     int item = id.mid(1).toInt();  // Get item index
     if (id.startsWith("s")) {
@@ -264,14 +296,17 @@ void StoreDialog::item_click()
     else {
         o_ptr = inventory + item;
     }
-    desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
 
     switch (aux_mode) {
     case SMODE_BUY:
-        get_check(QString("Do you want to buy this item (%1)?").arg(desc));
+        do_buy(o_ptr);
         break;
     case SMODE_SELL:
-        get_check(QString("Do you want to sell this item (%1)?").arg(desc));
+        do_sell(o_ptr);
+        break;
+    case SMODE_INFO:
+    case SMODE_EXAMINE:
+        object_info_screen(o_ptr);
         break;
     }
 
@@ -281,4 +316,40 @@ void StoreDialog::item_click()
 void StoreDialog::sell_click()
 {
     set_mode(SMODE_SELL);
+}
+
+bool StoreDialog::do_buy(object_type *o_ptr)
+{
+    int amt = o_ptr->number;
+
+    QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
+
+    if (amt > 1) {
+        amt = get_quantity(tr("How many items you want to buy of %1?").arg(desc), amt);
+        if (amt == 0) return false;
+    }
+    else {
+        if (!get_check(tr("Do you want to buy %1?").arg(desc))) return false;
+        amt = 1;
+    }
+
+    return true;
+}
+
+bool StoreDialog::do_sell(object_type *o_ptr)
+{
+    int amt = o_ptr->number;
+
+    QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
+
+    if (amt > 1) {
+        amt = get_quantity(tr("How many items you want to sell of %1?").arg(desc), amt, amt);
+        if (amt == 0) return false;
+    }
+    else {
+        if (!get_check(tr("Do you want to sell %1?").arg(desc))) return false;
+        amt = 1;
+    }
+
+    return true;
 }

@@ -197,13 +197,8 @@ QString get_string(QString question, QString description, QString answer)
  *
  * Allow "p_ptr->command_arg" to specify a quantity
  */
-s16b get_quantity(QString prompt, int max)
+s16b get_quantity(QString prompt, int max, int amt)
 {
-
-
-
-    int amt = 1;
-
     /* Use "command_arg" */
     if (p_ptr->command_arg)
     {

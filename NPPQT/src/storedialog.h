@@ -14,6 +14,8 @@ enum {
     SMODE_EXAMINE
 };
 
+class object_type;
+
 class StoreDialog : public NPPDialog
 {
     Q_OBJECT
@@ -38,11 +40,16 @@ public:
 
     virtual void keyPressEvent(QKeyEvent *event);
 
+    bool do_buy(object_type *o_ptr);
+    bool do_sell(object_type *o_ptr);
+
 public slots:
     void toggle_inven();
     void item_click();
     void sell_click();
     void buy_click();
+    void info_click();
+    void exam_click();
 };
 
 #endif // STOREDIALOG_H
