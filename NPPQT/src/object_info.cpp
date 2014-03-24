@@ -393,16 +393,16 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
     if (object_state.num_blow == 1) output.append("   It gives you one attack per turn.  ");
     else output.append(QString("   It gives you %1 attacks per turn.  ") .arg(object_state.num_blow));
 
-    output.append("<br>");
-
     if (object_state.heavy_wield)
     {
+        output.append("<br>");
         output.append(color_string("   You have trouble wielding such a heavy weapon.<br>", TERM_RED));
     }
 
     /* Message */
     if (object_state.icky_wield)
     {
+        output.append("<br>");
         output.append(color_string("   You do not feel comfortable with this weapon.<br>", TERM_RED));
     }
 
@@ -884,7 +884,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
     /* Get the player state */
     calc_bonuses(object_inven, &object_state, TRUE);
 
-    output.append("<br>");
+    //output.append("<br>");
 
     if (!extra_info) return (output);
 
@@ -908,7 +908,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
 
     crit_hit_percent = critical_shot_chance(o_ptr, object_state, TRUE, TRUE, f3) / (CRIT_HIT_CHANCE / 100);
 
-    output.append("<br>");
+    //output.append("<br>");
 
     if (plus < 0)
     {
@@ -922,7 +922,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
     output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg), with a critical hit chance of %6 percent.<br>")
                     .arg(dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(crit_hit_percent));
 
-    output.append("<br>");
+    //output.append("<br>");
 
     if (game_mode == GAME_NPPMORIA) counter = N_ELEMENTS(slays_info_nppmoria);
     else counter = N_ELEMENTS(slays_info_nppangband);
@@ -1584,6 +1584,8 @@ QString screen_out_head(object_type *o_ptr)
         }
     }
 
+    output.append("<br><br>");
+
     return (output);
 }
 
@@ -1713,7 +1715,10 @@ QString format_object_history(object_type *o_ptr)
         case ORIGIN_STORE:
         {
             /* Hack -- Don't display store objects inside stores */
-            if (o_ptr->ident & (IDENT_STORE)) return (output);
+            if (o_ptr->ident & (IDENT_STORE)) {
+                output.clear();
+                return (output);
+            }
 
             output.append(" bought in a store.");
             break;

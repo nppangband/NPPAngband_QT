@@ -13,6 +13,31 @@
 
 MainWindow *main_window = 0;
 
+
+void ui_request_size_update(QWidget *widget)
+{
+    QObjectList lst = widget->children();
+    for (int i = 0; i < lst.size(); i++) {
+        QObject *obj = lst.at(i);
+        if (obj->isWidgetType()) {
+            ui_request_size_update((QWidget *)obj);
+        }
+    }
+
+    widget->updateGeometry();
+
+    if (widget->layout()) {
+        widget->layout()->invalidate();
+    }
+}
+
+void ui_resize_to_contents(QWidget *widget)
+{
+    ui_request_size_update(widget);
+    QCoreApplication::processEvents();
+    widget->resize(widget->sizeHint());
+}
+
 QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
 {
     p += item->pos().toPoint();

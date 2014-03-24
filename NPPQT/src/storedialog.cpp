@@ -6,6 +6,8 @@
 #include <QSpacerItem>
 #include <QGroupBox>
 #include <QSpinBox>
+#include <QCoreApplication>
+#include <QScrollArea>
 #include "npp.h"
 #include "store.h"
 
@@ -14,6 +16,16 @@ void launch_store(int store_idx)
     StoreDialog *dlg = new StoreDialog(store_idx);
     dlg->exec();
     delete dlg;
+}
+
+static void clear_grid(QGridLayout *lay)
+{
+    QLayoutItem *item;
+    while ((item = lay->takeAt(0)) != 0) {
+        QWidget *wid = item->widget();
+        if (wid) delete wid;
+        delete item;
+    }
 }
 
 StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
@@ -32,6 +44,17 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     area1->setLayout(lay3);
     lay3->setContentsMargins(0, 0, 0, 0);
 
+    owner_type *ot_ptr = &b_info[(store_idx * z_info->b_max) + store[store_idx].owner];
+    int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+    QString shop_name = f_info[feat].f_name;
+    QString msg = QString("%1 - %2 (%3)").arg(shop_name).arg(ot_ptr->owner_name)
+            .arg(ot_ptr->max_cost);
+    QLabel *store_info = new QLabel(msg);
+    lay3->addWidget(store_info);
+
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay3->addItem(spacer);
+
     QPushButton *btn_buy = new QPushButton("Buy (F2)");
     lay3->addWidget(btn_buy);
     connect(btn_buy, SIGNAL(clicked()), this, SLOT(buy_click()));
@@ -44,20 +67,26 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     lay3->addWidget(btn_toggle);
     connect(btn_toggle, SIGNAL(clicked()), this, SLOT(toggle_inven()));
 
-    mode_label = new QLabel("");
-    lay3->addWidget(mode_label);
-    mode_label->setStyleSheet("font-weight: bold;");
-
-    set_mode(SMODE_DEFAULT);
-
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay3->addItem(spacer);
-
     QWidget *area4 = new QWidget;
     QHBoxLayout *lay6 = new QHBoxLayout;
     area4->setLayout(lay6);
     lay6->setContentsMargins(0, 0, 0, 0);
     lay1->addWidget(area4);
+
+    QLabel *gold_label = new QLabel();
+    gold_label->setObjectName("gold_label");
+    gold_label->setStyleSheet("font-weight: bold;");
+    lay6->addWidget(gold_label);
+    reset_gold();
+
+    mode_label = new QLabel("");
+    lay6->addWidget(mode_label);
+    mode_label->setStyleSheet("font-weight: bold;");
+
+    set_mode(SMODE_DEFAULT);
+
+    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay6->addItem(spacer);
 
     QPushButton *btn_info = new QPushButton("Information (F5)");
     lay6->addWidget(btn_info);
@@ -66,9 +95,6 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     QPushButton *btn_exam = new QPushButton("Examine (F6)");
     lay6->addWidget(btn_exam);
     connect(btn_exam, SIGNAL(clicked()), this, SLOT(exam_click()));
-
-    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay6->addItem(spacer);
 
     QWidget *area2 = new QWidget;
     QHBoxLayout *lay2 = new QHBoxLayout;
@@ -114,6 +140,12 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     this->clientSizeUpdated();
 }
 
+void StoreDialog::reset_gold()
+{
+    QLabel *label = this->findChild<QLabel *>("gold_label");
+    label->setText(QString("Gold: %1").arg(p_ptr->au));
+}
+
 void StoreDialog::info_click()
 {
     set_mode(SMODE_INFO);
@@ -137,10 +169,7 @@ void StoreDialog::reset_store()
         store_area->setLayout(lay);
     }
     // Remove previous items
-    QLayoutItem *item;
-    while ((item = lay->takeAt(0)) != 0) {
-        delete item;
-    }
+    clear_grid(lay);
     lay->addWidget(new QLabel("Price"), 0, 1);
     store_type *st = &store[store_idx];
     int i;
@@ -159,6 +188,7 @@ void StoreDialog::reset_store()
             style.append("font-weight: bold;");
         }
         btn->setStyleSheet(style);
+        btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
         lay->addWidget(btn, i + 1, 0);
 
@@ -176,7 +206,9 @@ void StoreDialog::set_mode(int _mode)
         QString(""), QString("Buying"), QString("Selling"),
         QString("Querying info"), QString("Examining")
     };
-    mode_label->setText(names[mode]);
+    QString text = names[mode];
+    if (!text.isEmpty()) text.append(". Click over an item.");
+    mode_label->setText(text);
 }
 
 void StoreDialog::reset_inventory()
@@ -188,10 +220,7 @@ void StoreDialog::reset_inventory()
         tab->setLayout(lay);
     }
     // Remove previous items
-    QLayoutItem *item;
-    while ((item = lay->takeAt(0)) != 0) {
-        delete item;
-    }
+    clear_grid(lay);
     lay->addWidget(new QLabel("Price"), 0, 1);
     int i;
     for (i = 0; i < INVEN_WIELD - 1; i++) {
@@ -228,10 +257,7 @@ void StoreDialog::reset_equip()
         tab->setLayout(lay);
     }
     // Remove previous items
-    QLayoutItem *item;
-    while ((item = lay->takeAt(0)) != 0) {
-        delete item;
-    }
+    clear_grid(lay);
     int n = 0;
     int i;
     lay->addWidget(new QLabel("Price"), 0, 1);
@@ -346,14 +372,14 @@ void StoreDialog::item_click()
             pop_up_message_box("It's too expensive", QMessageBox::Critical);
             return;
         }
-        do_buy(o_ptr);
+        do_buy(o_ptr, item);
         break;
     case SMODE_SELL:
         if (!store_will_buy(store_idx, o_ptr)) {
             pop_up_message_box("I don't buy that kind of items", QMessageBox::Critical);
             return;
         }
-        do_sell(o_ptr);
+        do_sell(o_ptr, item);
         break;
     case SMODE_INFO:
     case SMODE_EXAMINE:
@@ -369,20 +395,50 @@ void StoreDialog::sell_click()
     set_mode(SMODE_SELL);
 }
 
-bool StoreDialog::do_buy(object_type *o_ptr)
+bool StoreDialog::do_buy(object_type *o_ptr, int item)
 {
     int amt = request_amt(o_ptr, true);
 
     if (amt == 0) return false;
 
+    cmd_arg args;
+    args.item = item;
+    args.number = amt;
+
+    do_cmd_buy(args);
+
+    reset_all();
+
     return true;
 }
 
-bool StoreDialog::do_sell(object_type *o_ptr)
+void StoreDialog::reset_all()
+{
+    reset_store();
+    reset_inventory();
+    reset_equip();
+
+    reset_gold();
+
+    ui_request_size_update(central);
+    QCoreApplication::processEvents();   // IMPORTANT: THE SIZE_HINT UPDATE IS ASYNC, SO WAIT FOR IT
+
+    this->clientSizeUpdated();
+}
+
+bool StoreDialog::do_sell(object_type *o_ptr, int item)
 {
     int amt = request_amt(o_ptr, false);
 
     if (amt == 0) return false;
+
+    cmd_arg args;
+    args.item = item;
+    args.number = amt;
+
+    do_cmd_sell(args);
+
+    reset_all();
 
     return true;
 }
@@ -429,6 +485,7 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
     amt_spin->setMaximum(max);
     if (buying) amt_spin->setValue(1);
     else amt_spin->setValue(max);
+    amt_spin->selectAll();
 
     total_label = new QLabel("");
     lay1->addWidget(total_label);

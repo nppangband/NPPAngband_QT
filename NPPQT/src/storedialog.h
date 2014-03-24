@@ -36,12 +36,16 @@ public:
     void reset_inventory();
     void reset_equip();
 
+    void reset_all();
+
+    void reset_gold();
+
     void set_mode(int _mode);
 
     virtual void keyPressEvent(QKeyEvent *event);
 
-    bool do_buy(object_type *o_ptr);
-    bool do_sell(object_type *o_ptr);
+    bool do_buy(object_type *o_ptr, int item);
+    bool do_sell(object_type *o_ptr, int item);
 
     int request_amt(object_type *o_ptr, bool buying);
 

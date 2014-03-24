@@ -646,6 +646,8 @@ extern void ui_animate_beam(int y0, int x0, int y1, int x1, int type);
 extern void ui_animate_ball(int y, int x, int radius, int type, u32b flg);
 extern void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids);
 extern QPixmap ui_get_tile(QString tile_id);
+extern void ui_request_size_update(QWidget *widget);
+extern void ui_resize_to_contents(QWidget *widget);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);
@@ -770,10 +772,10 @@ extern void store_item_optimize(int st, int item);
 extern bool keep_in_stock(const object_type *o_ptr, int which);
 extern void store_delete_index(int st, int what);
 extern void store_shuffle(int which);
-extern void do_cmd_buy(int command, cmd_arg args[]);
+extern void do_cmd_buy(cmd_arg args);
 extern void do_cmd_reward(int command, cmd_arg args[]);
 extern void do_cmd_retrieve(int command, cmd_arg args[]);
-extern void do_cmd_sell(int command, cmd_arg args[]);
+extern void do_cmd_sell(cmd_arg args);
 extern void do_cmd_stash(int command, cmd_arg args[]);
 extern void do_cmd_store(int command, cmd_arg args[]);
 extern void store_maint(int which);

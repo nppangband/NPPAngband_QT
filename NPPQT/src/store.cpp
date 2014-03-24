@@ -3492,10 +3492,10 @@ static int find_inven(object_type *o_ptr)
 /*
  * Buy the item with the given index from the current store's inventory.
  */
-void do_cmd_buy(int command, cmd_arg args[])
+void do_cmd_buy(cmd_arg args)
 {
-    int item = args[0].item;
-    int amt = args[1].number;
+    int item = args.item;
+    int amt = args.number;
 
     object_type *o_ptr;
     object_type object_type_body;
@@ -3557,7 +3557,7 @@ void do_cmd_buy(int command, cmd_arg args[])
 
     /* Message */
     if (one_in_(3)) color_message(ONE_OF(comment_accept), TERM_WHITE);
-    message(QString("You bought %1 for %ld gold.") .arg(o_name) .arg((long)price));
+    message(QString("You bought %1 for %2 gold.") .arg(o_name) .arg((long)price));
 
     /* Erase the inscription */
     i_ptr->inscription.clear();
@@ -4029,10 +4029,10 @@ static bool store_will_buy_tester(object_type *o_ptr)
 /*
  * Sell an item to the current store.
  */
-void do_cmd_sell(int code, cmd_arg args[])
+void do_cmd_sell(cmd_arg args)
 {
-    int item = args[0].item;
-    int amt = args[1].number;
+    int item = args.item;
+    int amt = args.number;
     object_type sold_item;
     int price, dummy, value;
     QString o_name;
