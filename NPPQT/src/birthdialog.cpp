@@ -199,10 +199,15 @@ BirthDialog::BirthDialog(QWidget *parent) :
     ui->abilities_table->setShowGrid(false);
     ui->abilities_table->verticalHeader()->setVisible(true);
 
-    ui->abilities_table->setFixedWidth(150);
-    ui->history_edit->setFixedHeight(50);
+    //ui->abilities_table->setFixedWidth(150);
+    //ui->history_edit->setFixedHeight(50);
 
-    ui->stackedWidget->setCurrentIndex(0);        
+    ui->stackedWidget->setCurrentIndex(0);
+
+    QSize minS = ui_estimate_table_size(ui->stats_table);
+    ui->stats_table->setMinimumSize(minS);
+
+    this->adjustSize();
 }
 
 void BirthDialog::on_random_race_clicked()
@@ -344,6 +349,11 @@ void BirthDialog::update_others()
             ui->abilities_table->item(i, 0)->setText(data[i]);
         }
     }
+
+    ui->abilities_table->verticalHeader()->adjustSize();
+    ui->abilities_table->resizeColumnsToContents();
+    QSize min = ui_estimate_table_size(ui->abilities_table);
+    ui->abilities_table->setMinimumSize(min);
 }
 
 void BirthDialog::on_sell_clicked()
@@ -462,7 +472,14 @@ void BirthDialog::on_next_button_clicked()
         update_points();
 
         ui->edit_table->resizeColumnsToContents();
+        QSize minS = ui_estimate_table_size(ui->edit_table);
+        ui->edit_table->setMinimumSize(minS);
+
+        ui->history_edit->setMinimumSize(0, 5);
+
         ui->stackedWidget->setCurrentIndex(1);
+
+        this->adjustSize();
     }
     // We finally ended with character birth
     else if (ui->stackedWidget->currentIndex() == 1) {

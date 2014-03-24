@@ -31,6 +31,31 @@ void ui_request_size_update(QWidget *widget)
     }
 }
 
+QSize ui_estimate_table_size(QTableWidget *table, bool horiz, bool vert, int padding)
+{
+    QSize final(padding, padding);
+    int w = 0, h = 0;
+
+    if (horiz) {
+        w += table->verticalHeader()->width();
+        for (int i = 0; i < table->columnCount(); i++) {
+            if (table->isColumnHidden(i)) continue;
+            w += table->columnWidth(i);
+        }
+    }
+
+    if (vert) {
+        h += table->horizontalHeader()->height();
+        for (int i = 0; i < table->rowCount(); i++) {
+            if (table->isRowHidden(i)) continue;
+            h += table->rowHeight(i);
+        }
+    }
+
+    final += QSize(w, h);
+    return final;
+}
+
 void ui_resize_to_contents(QWidget *widget)
 {
     ui_request_size_update(widget);

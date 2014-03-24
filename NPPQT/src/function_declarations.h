@@ -648,6 +648,9 @@ extern void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx
 extern QPixmap ui_get_tile(QString tile_id);
 extern void ui_request_size_update(QWidget *widget);
 extern void ui_resize_to_contents(QWidget *widget);
+class QTableWidget;
+extern QSize ui_estimate_table_size(QTableWidget *table, bool horiz = true, bool vert = true,
+                                    int padding = 30);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);
