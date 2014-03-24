@@ -778,6 +778,7 @@ extern void do_cmd_stash(int command, cmd_arg args[]);
 extern void do_cmd_store(int command, cmd_arg args[]);
 extern void store_maint(int which);
 extern void store_init(int which);
+extern bool store_will_buy(int store_num, object_type *o_ptr);
 
 // sound.cpp
 extern void sound(int val);

@@ -5,7 +5,7 @@
 #include <QPushButton>
 #include <QSpacerItem>
 #include <QGroupBox>
-#include <QLineEdit>
+#include <QSpinBox>
 #include "npp.h"
 #include "store.h"
 
@@ -153,11 +153,15 @@ void StoreDialog::reset_store()
                                            .arg(desc));
         QString id = QString("s%1").arg(i);
         btn->setProperty("item_id", QVariant(id));
-        btn->setStyleSheet("text-align: left;");
+        s32b price = price_item(o_ptr, false);
+        QString style = "text-align: left;";
+        if (price <= p_ptr->au) {
+            style.append("font-weight: bold;");
+        }
+        btn->setStyleSheet(style);
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
         lay->addWidget(btn, i + 1, 0);
 
-        s32b price = price_item(o_ptr, false);
         QLabel *l = new QLabel(_num(price));
         lay->addWidget(l, i + 1, 1);
     }
@@ -199,7 +203,11 @@ void StoreDialog::reset_inventory()
                                            .arg(desc));
         QString id = QString("i%1").arg(i);
         btn->setProperty("item_id", QVariant(id));
-        btn->setStyleSheet("text-align: left;");
+        QString style = "text-align: left;";
+        if (store_will_buy(store_idx, o_ptr)) {
+            style.append("font-weight: bold;");
+        }
+        btn->setStyleSheet(style);
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
         lay->addWidget(btn, i + 1, 0);
 
@@ -241,9 +249,15 @@ void StoreDialog::reset_equip()
                                            .arg(desc));
         QString id = QString("e%1").arg(i);
         btn->setProperty("item_id", QVariant(id));
-        btn->setStyleSheet("text-align: left;");
+        QString style = "text-align: left;";
+        if (store_will_buy(store_idx, o_ptr)) {
+            style.append("font-weight: bold;");
+        }
+        btn->setStyleSheet(style);
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
         lay->addWidget(btn, i + 1, 0);
+
+
 
         s32b price = price_item(o_ptr, true);
         QLabel *l = new QLabel(_num(price));
@@ -302,6 +316,7 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
 void StoreDialog::item_click()
 {
     QObject *obj = QObject::sender();
+
     QString id = obj->property("item_id").toString();
     int aux_mode = mode;
     if (aux_mode == SMODE_DEFAULT) {
@@ -323,11 +338,21 @@ void StoreDialog::item_click()
         o_ptr = inventory + item;
     }
 
+    int price = price_item(o_ptr, false);
+
     switch (aux_mode) {
-    case SMODE_BUY:
+    case SMODE_BUY:    
+        if (price > p_ptr->au) {
+            pop_up_message_box("It's too expensive", QMessageBox::Critical);
+            return;
+        }
         do_buy(o_ptr);
         break;
     case SMODE_SELL:
+        if (!store_will_buy(store_idx, o_ptr)) {
+            pop_up_message_box("I don't buy that kind of items", QMessageBox::Critical);
+            return;
+        }
         do_sell(o_ptr);
         break;
     case SMODE_INFO:
@@ -362,30 +387,30 @@ bool StoreDialog::do_sell(object_type *o_ptr)
     return true;
 }
 
-class QuantityDialog: public QDialog
+void QuantityDialog::do_accept()
 {
-public:
-    QLabel *question;
-    QLineEdit *amt_edit;
-    QLabel *total_label;
-    object_type *o_ptr;
-    bool buying;
-    int amt;
-    int max;
-    int price;
-
-    QuantityDialog(object_type *op, bool buy);
-
-public slots:
-};
+    amt = amt_spin->value();
+    accept();
+}
 
 QuantityDialog::QuantityDialog(object_type *op, bool buy)
 {
     o_ptr = op;
+
     buying = buy;
+
     amt = 0;
+
     price = price_item(o_ptr, !buy);
 
+    if (buying) {
+        int money = p_ptr->au;
+        max = money / MAX(price, 1);
+        max = MIN(max, o_ptr->number);
+    }
+    else {
+        max = o_ptr->number;
+    }
 
     QVBoxLayout *lay1 = new QVBoxLayout;
     this->setLayout(lay1);
@@ -398,7 +423,44 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
     question = new QLabel(msg);
     lay1->addWidget(question);
 
+    amt_spin = new QSpinBox();
+    lay1->addWidget(amt_spin);
+    amt_spin->setMinimum(0);
+    amt_spin->setMaximum(max);
+    if (buying) amt_spin->setValue(1);
+    else amt_spin->setValue(max);
 
+    total_label = new QLabel("");
+    lay1->addWidget(total_label);
+    update_totals(amt_spin->value());
+
+    connect(amt_spin, SIGNAL(valueChanged(int)), this, SLOT(update_totals(int)));
+
+    QHBoxLayout *lay2 = new QHBoxLayout;
+    lay2->setContentsMargins(0, 0, 0, 0);
+    lay1->addLayout(lay2);
+
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay2->addItem(spacer);
+
+    QPushButton *btn1 = new QPushButton("Ok");
+    lay2->addWidget(btn1);
+    connect(btn1, SIGNAL(clicked()), this, SLOT(do_accept()));
+
+    QPushButton *btn2 = new QPushButton("Cancel");
+    lay2->addWidget(btn2);
+    connect(btn2, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
+void QuantityDialog::update_totals(int value)
+{
+    int n = value;
+    int money = p_ptr->au;
+    int sign = 1;
+    if (buying) sign = -1;
+    QString msg = tr("Max. items: %4 - Total price: %1 - Gold: %2 - After: %3")
+            .arg(n * price).arg(money).arg(money + n * price * sign).arg(max);
+    total_label->setText(msg);
 }
 
 int StoreDialog::request_amt(object_type *o_ptr, bool buying)

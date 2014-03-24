@@ -1886,7 +1886,7 @@ static bool store_check_num(int st, object_type *o_ptr)
  *
  * Note that a shop-keeper must refuse to buy "worthless" objects
  */
-static bool store_will_buy(int store_num, object_type *o_ptr)
+bool store_will_buy(int store_num, object_type *o_ptr)
 {
     /* Hack -- The Home and guild are simple */
     if (store_num == STORE_HOME) return (TRUE);

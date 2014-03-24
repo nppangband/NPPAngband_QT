@@ -54,6 +54,28 @@ public slots:
     void exam_click();
 };
 
+class QSpinBox;
+
+class QuantityDialog: public QDialog
+{
+    Q_OBJECT
+public:
+    QLabel *question;
+    QSpinBox *amt_spin;
+    QLabel *total_label;
+    object_type *o_ptr;
+    bool buying;
+    int amt;
+    int max;
+    int price;
+
+    QuantityDialog(object_type *op, bool buy);
+
+public slots:
+    void update_totals(int value);
+    void do_accept();
+};
+
 extern void launch_store(int store_idx);
 
 #endif // STOREDIALOG_H
