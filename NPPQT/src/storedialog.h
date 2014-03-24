@@ -27,6 +27,7 @@ public:
     QWidget *inven_tab;
     QWidget *equip_tab;
     QWidget *store_area;
+    bool home;
 
     QLabel *mode_label;
 

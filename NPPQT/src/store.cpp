@@ -3771,10 +3771,10 @@ void do_cmd_reward(int code, cmd_arg args[])
 /*
  * Retrieve the item with the given index from the home's inventory.
  */
-void do_cmd_retrieve(int code, cmd_arg args[])
+void do_cmd_retrieve(cmd_arg args)
 {
-    int item = args[0].item;
-    int amt = args[1].number;
+    int item = args.item;
+    int amt = args.number;
 
     object_type *o_ptr;
     object_type picked_item;
@@ -4135,10 +4135,10 @@ void do_cmd_sell(cmd_arg args)
 /*
  * Stash an item in the home.
  */
-void do_cmd_stash(int code, cmd_arg args[])
+void do_cmd_stash(cmd_arg args)
 {
-    int item = args[0].item;
-    int amt = args[1].number;
+    int item = args.item;
+    int amt = args.number;
     object_type dropped_item;
     object_type *o_ptr = object_from_item_idx(item);
     QString o_name;

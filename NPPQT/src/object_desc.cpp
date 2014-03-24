@@ -605,6 +605,7 @@ static QString obj_desc_charges(object_type *o_ptr, QString buf)
     {
         buf.append(QString(" (%1 charge") .arg(o_ptr->pval));
         if (o_ptr->pval > 1) buf.append("s");
+        buf += ")";
     }
 
     /* Charging things */
