@@ -2991,7 +2991,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
 
         for (dx = 0; dx < xmax; dx++, t++)
         {
-
             QChar symbol = data[t];
             if (flip_h) ax = xmax - 1 - dx;
             else ax = dx;
@@ -3018,22 +3017,18 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
 
                 /* Otherwise a wall */
                 else cave_set_feat(y, x, FEAT_WALL_OUTER);
-
-                break;
             }
 
             /* Granite wall (inner) */
             else if (symbol == '#')
             {
                 cave_set_feat(y, x, FEAT_WALL_INNER);
-                break;
             }
 
             /* Permanent wall (inner) */
             else if (symbol == 'X')
             {
                 cave_set_feat(y, x, FEAT_PERM_INNER);
-                break;
             }
 
             /* Treasure/trap */
@@ -3047,21 +3042,18 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                 {
                     place_trap(y, x, 0);
                 }
-                break;
             }
 
             /* Secret doors */
             else if (symbol == '+')
             {
                 place_locked_door(y, x);
-                break;
             }
 
             /* Trap */
             else if (symbol == '^')
             {
                 place_trap(y, x, 0);
-                break;
             }
         }
     }
@@ -3107,7 +3099,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                 monster_level = p_ptr->depth + 4;
                 place_monster(y, x, (MPLACE_SLEEP | MPLACE_GROUP | MPLACE_NO_MIMIC | MPLACE_NO_GHOST));
                 monster_level = p_ptr->depth;
-                break;
             }
 
             /* Meaner monster */
@@ -3116,7 +3107,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                 monster_level = p_ptr->depth + 8;
                 place_monster(y, x, (MPLACE_SLEEP | MPLACE_GROUP | MPLACE_NO_MIMIC | MPLACE_NO_GHOST));
                 monster_level = p_ptr->depth;
-                break;
             }
 
             /* Meaner monster, plus treasure */
@@ -3128,7 +3118,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                 object_level = p_ptr->depth + 7;
                 place_object(y, x, TRUE, FALSE, DROP_TYPE_UNTHEMED);
                 object_level = p_ptr->depth;
-                break;
             }
 
             /* Nasty monster and treasure */
@@ -3140,7 +3129,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                 object_level = p_ptr->depth + 15;
                 place_object(y, x, TRUE, TRUE, DROP_TYPE_UNTHEMED);
                 object_level = p_ptr->depth;
-                break;
             }
 
             /* Nasty monster and a chest */
@@ -3152,7 +3140,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                 object_level = p_ptr->depth + 15;
                 place_object(y, x, FALSE, FALSE, DROP_TYPE_CHEST);
                 object_level = p_ptr->depth;
-                break;
             }
 
             /* Quest chest */
@@ -3181,8 +3168,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                     /*This quest artifact spot is no longer an option*/
                     quest_artifact_spots --;
                 }
-
-                break;
             }
 
             /* Monster and/or object */
@@ -3200,7 +3185,6 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                     place_object(y, x, FALSE, FALSE, DROP_TYPE_UNTHEMED);
                     object_level = p_ptr->depth;
                 }
-                break;
             }
         }
 
@@ -10626,8 +10610,8 @@ static bool player_place_greater_vault_level(void)
 {
     u16b empty_squares_y[250];
     u16b empty_squares_x[250];
-    byte empty_squares = 0;
-    byte slot, y, x;
+    int empty_squares = 0;
+    int slot, y, x;
 
     /*
      * Start with add floor spaces where appropriate.
@@ -10635,14 +10619,14 @@ static bool player_place_greater_vault_level(void)
      */
     for (y = 0; y < p_ptr->cur_map_hgt; y++)
     {
-        if (empty_squares == 250) break;
-
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
+            if (empty_squares == 250) continue;
+
             if (!in_bounds_fully(y, x)) continue;
 
             /* Not part of the vault */
-            if (dungeon_info[y][x].cave_info & (CAVE_ICKY)) continue;
+            if (!(dungeon_info[y][x].cave_info & (CAVE_ICKY))) continue;
 
             /* We want to be next to a wall */
             if (!next_to_walls(y, x)) continue;
@@ -10680,9 +10664,9 @@ static bool player_place_greater_vault_level(void)
     cave_set_feat(empty_squares_y[slot], empty_squares_x[slot], FEAT_LESS);
 
     /* Select a new location for down stairs */
+    empty_squares--;
     empty_squares_y[slot] = empty_squares_y[empty_squares];
     empty_squares_x[slot] = empty_squares_x[empty_squares];
-    empty_squares--;
 
     /* Pick a square at random */
     slot = randint0(empty_squares);

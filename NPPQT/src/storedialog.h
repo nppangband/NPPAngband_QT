@@ -57,6 +57,8 @@ public slots:
     void buy_click();
     void info_click();
     void exam_click();
+    void wield_click();
+    void takeoff_click();
 };
 
 class QSpinBox;

@@ -102,6 +102,14 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     lay6->addWidget(btn_exam);
     connect(btn_exam, SIGNAL(clicked()), this, SLOT(exam_click()));
 
+    QPushButton *btn_wield = new QPushButton("Wield (F7)");
+    lay6->addWidget(btn_wield);
+    connect(btn_wield, SIGNAL(clicked()), this, SLOT(wield_click()));
+
+    QPushButton *btn_takeoff = new QPushButton("Take off (F8)");
+    lay6->addWidget(btn_takeoff);
+    connect(btn_takeoff, SIGNAL(clicked()), this, SLOT(takeoff_click()));
+
     QWidget *area2 = new QWidget;
     QHBoxLayout *lay2 = new QHBoxLayout;
     area2->setLayout(lay2);
@@ -146,6 +154,18 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
 
     this->clientSizeUpdated();
+}
+
+void StoreDialog::wield_click()
+{
+    do_cmd_wield();
+    reset_all();
+}
+
+void StoreDialog::takeoff_click()
+{
+    do_cmd_takeoff();
+    reset_all();
 }
 
 void StoreDialog::reset_gold()
@@ -331,6 +351,12 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
         break;
     case Qt::Key_F6:
         this->exam_click();
+        break;
+    case Qt::Key_F7:
+        this->wield_click();
+        break;
+    case Qt::Key_F8:
+        this->takeoff_click();
         break;
     default:
         if (event->text().length() > 0
