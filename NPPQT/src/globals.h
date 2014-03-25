@@ -176,6 +176,7 @@ extern dungeon_capabilities_type *dun_cap;
 
 //pre-defined colors - loaded at startup
 extern QColor defined_colors[MAX_COLORS];
+extern byte tval_to_attr[128];
 
 extern byte num_trap_on_level;
 extern s16b player_ghost_num;

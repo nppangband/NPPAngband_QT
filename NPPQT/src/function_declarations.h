@@ -901,6 +901,8 @@ extern void cmd_disable_repeat(void);
 extern QString format_object_weight(object_type *o_ptr);
 extern void write_note(QString note, s16b depth);
 extern QString get_player_title(void);
+QColor get_object_color(object_type *o_ptr);
+QColor make_color_readable(QColor clr);
 
 // birth.cpp
 void init_birth();

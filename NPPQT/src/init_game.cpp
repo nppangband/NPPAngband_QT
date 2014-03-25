@@ -234,6 +234,47 @@ static int init_color_info(void)
         defined_colors[i].setRgb(preset_colors[i].red, preset_colors[i].green, preset_colors[i].blue, 255);
     }
 
+    for (int i = 0; i < N_ELEMENTS(tval_to_attr); i++) {
+        tval_to_attr[i] = TERM_WHITE;
+    }
+
+    // Taken from pref file
+    tval_to_attr[1] = TERM_WHITE;
+    tval_to_attr[2] = TERM_WHITE;
+    tval_to_attr[3] = TERM_WHITE;
+    tval_to_attr[5] = TERM_SLATE;
+    tval_to_attr[7] = TERM_SLATE;
+    tval_to_attr[16] = TERM_L_UMBER;
+    tval_to_attr[17] = TERM_L_UMBER;
+    tval_to_attr[18] = TERM_L_UMBER;
+    tval_to_attr[19] = TERM_UMBER;
+    tval_to_attr[20] = TERM_SLATE;
+    tval_to_attr[21] = TERM_WHITE;
+    tval_to_attr[22] = TERM_WHITE;
+    tval_to_attr[23] = TERM_WHITE;
+    tval_to_attr[30] = TERM_L_UMBER;
+    tval_to_attr[31] = TERM_L_UMBER;
+    tval_to_attr[32] = TERM_L_UMBER;
+    tval_to_attr[33] = TERM_L_UMBER;
+    tval_to_attr[34] = TERM_L_UMBER;
+    tval_to_attr[35] = TERM_L_UMBER;
+    tval_to_attr[36] = TERM_SLATE;
+    tval_to_attr[37] = TERM_SLATE;
+    tval_to_attr[38] = TERM_SLATE;
+    tval_to_attr[39] = TERM_YELLOW;
+    tval_to_attr[40] = TERM_ORANGE;
+    tval_to_attr[45] = TERM_RED;
+    tval_to_attr[55] = TERM_L_UMBER;
+    tval_to_attr[65] = TERM_GREEN;
+    tval_to_attr[66] = TERM_VIOLET;
+    tval_to_attr[70] = TERM_WHITE;
+    tval_to_attr[75] = TERM_L_BLUE;
+    tval_to_attr[77] = TERM_YELLOW;
+    tval_to_attr[80] = TERM_L_UMBER;
+    tval_to_attr[90] = TERM_L_RED;
+    tval_to_attr[91] = TERM_BLUE;
+    tval_to_attr[92] = TERM_L_GREEN;
+
     return (0);
 }
 

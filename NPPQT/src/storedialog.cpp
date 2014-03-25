@@ -207,6 +207,8 @@ void StoreDialog::reset_store()
         if (home || price <= p_ptr->au) {
             style.append("font-weight: bold;");
         }
+        QString s = QString("color: %1;").arg(get_object_color(o_ptr).name());
+        style += s;
         btn->setStyleSheet(style);
         btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
@@ -259,6 +261,8 @@ void StoreDialog::reset_inventory()
         if (store_will_buy(store_idx, o_ptr)) {
             style.append("font-weight: bold;");
         }
+        QString s = QString("color: %1;").arg(get_object_color(o_ptr).name());
+        style += s;
         btn->setStyleSheet(style);
         btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
@@ -306,6 +310,8 @@ void StoreDialog::reset_equip()
         if (store_will_buy(store_idx, o_ptr)) {
             style.append("font-weight: bold;");
         }
+        QString s = QString("color: %1;").arg(get_object_color(o_ptr).name());
+        style += s;
         btn->setStyleSheet(style);
         btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));

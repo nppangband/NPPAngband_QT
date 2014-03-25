@@ -51,7 +51,7 @@ static letters_and_numbers lowercase_and_numbers[26] =
     { 'z', 25}
 };
 
-#define IS_GRAY(color) ((color).red() + (color).green() == (color).blue() * 2)
+#define IS_GRAY(color) ((color).red() == (color).green() && (color).green() == (color).blue())
 
 extern QString likert(int x, int y, byte *attr);
 extern QString _num(int n);

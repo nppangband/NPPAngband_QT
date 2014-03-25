@@ -304,6 +304,8 @@ int cost_at_center[MAX_FLOWS];
 //pre-defined colors - loaded at startup
 QColor defined_colors[MAX_COLORS];
 
+byte tval_to_attr[128];
+
 /*
  * Some static info used to manage quiver groups
  */

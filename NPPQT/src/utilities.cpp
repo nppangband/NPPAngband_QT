@@ -529,3 +529,25 @@ void debug_rarities()
     if (monster_level == 0 && p_ptr->depth > 0) message("?????");
     */
 }
+
+// Make a color darker if it's too bright
+QColor make_color_readable(QColor clr)
+{
+    // Gray
+    if (clr.red() == clr.green() && clr.green() == clr.blue()) {
+        return QColor("black");
+    }
+    clr = clr.toHsv();
+    int value = MIN(clr.value(), 150);
+    int saturation = 255;
+    clr.setHsv(clr.hue(), saturation, value, 255);
+    return clr.toRgb();
+}
+
+// For object listings
+QColor get_object_color(object_type *o_ptr)
+{
+    int idx = tval_to_attr[o_ptr->tval];
+    QColor clr = defined_colors[idx];
+    return make_color_readable(clr);
+}
