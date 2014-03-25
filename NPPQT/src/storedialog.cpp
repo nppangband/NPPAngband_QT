@@ -16,6 +16,7 @@ void launch_store(int store_idx)
     StoreDialog *dlg = new StoreDialog(store_idx);
     dlg->exec();
     delete dlg;
+    process_player_energy(BASE_ENERGY_MOVE);
 }
 
 static void clear_grid(QGridLayout *lay)
@@ -94,19 +95,15 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
     lay6->addItem(spacer);
 
-    QPushButton *btn_info = new QPushButton("Information (F5)");
-    lay6->addWidget(btn_info);
-    connect(btn_info, SIGNAL(clicked()), this, SLOT(info_click()));
-
-    QPushButton *btn_exam = new QPushButton("Examine (F6)");
+    QPushButton *btn_exam = new QPushButton("Examine (F5)");
     lay6->addWidget(btn_exam);
     connect(btn_exam, SIGNAL(clicked()), this, SLOT(exam_click()));
 
-    QPushButton *btn_wield = new QPushButton("Wield (F7)");
+    QPushButton *btn_wield = new QPushButton("Wield (F6)");
     lay6->addWidget(btn_wield);
     connect(btn_wield, SIGNAL(clicked()), this, SLOT(wield_click()));
 
-    QPushButton *btn_takeoff = new QPushButton("Take off (F8)");
+    QPushButton *btn_takeoff = new QPushButton("Take off (F7)");
     lay6->addWidget(btn_takeoff);
     connect(btn_takeoff, SIGNAL(clicked()), this, SLOT(takeoff_click()));
 
@@ -174,11 +171,6 @@ void StoreDialog::reset_gold()
     label->setText(QString("Gold: %1").arg(p_ptr->au));
 }
 
-void StoreDialog::info_click()
-{
-    set_mode(SMODE_INFO);
-}
-
 void StoreDialog::exam_click()
 {
     set_mode(SMODE_EXAMINE);
@@ -234,7 +226,7 @@ void StoreDialog::set_mode(int _mode)
     mode = _mode;
     QString names[] = {
         QString(""), QString(home ? "Retrieving": "Buying"), QString(home ? "Stashing": "Selling"),
-        QString("Querying info"), QString("Examining")
+        QString("Examining")
     };
     QString text = names[mode];
     if (!text.isEmpty()) text.append(". Click over an item.");
@@ -259,7 +251,7 @@ void StoreDialog::reset_inventory()
         if (o_ptr->k_idx == 0) continue;
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         QPushButton *btn = new QPushButton(QString("%1) %2")
-                                           .arg(number_to_letter(i))
+                                           .arg(number_to_letter(i).toUpper())
                                            .arg(desc));
         QString id = QString("i%1").arg(i);
         btn->setProperty("item_id", QVariant(id));
@@ -305,7 +297,7 @@ void StoreDialog::reset_equip()
         }
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         QPushButton *btn = new QPushButton(QString("%1) %2%3")
-                                           .arg(number_to_letter(n++))
+                                           .arg(number_to_letter(n++).toUpper())
                                            .arg(use)
                                            .arg(desc));
         QString id = QString("e%1").arg(i);
@@ -337,25 +329,22 @@ void StoreDialog::toggle_inven()
 void StoreDialog::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
-    case Qt::Key_F4:
-        this->toggle_inven();
-        break;
     case Qt::Key_F2:
         this->buy_click();
         break;
     case Qt::Key_F3:
         this->sell_click();
         break;
-    case Qt::Key_F5:
-        this->info_click();
+    case Qt::Key_F4:
+        this->toggle_inven();
         break;
-    case Qt::Key_F6:
+    case Qt::Key_F5:
         this->exam_click();
         break;
-    case Qt::Key_F7:
+    case Qt::Key_F6:
         this->wield_click();
         break;
-    case Qt::Key_F8:
+    case Qt::Key_F7:
         this->takeoff_click();
         break;
     default:
@@ -365,7 +354,10 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
             QString letter = event->text().at(0);
             letter.append(") ");
             QWidget *container = char_tabs->currentWidget();
-            if (mode == SMODE_BUY || mode == SMODE_EXAMINE) {
+            if (mode == SMODE_BUY) {
+                container = store_area;
+            }
+            if (mode == SMODE_EXAMINE && letter.at(0).isLower()) {
                 container = store_area;
             }
             QList<QPushButton *> lst = container->findChildren<QPushButton *>();
@@ -423,7 +415,6 @@ void StoreDialog::item_click()
         }
         do_sell(o_ptr, item);
         break;
-    case SMODE_INFO:
     case SMODE_EXAMINE:
         object_info_screen(o_ptr);
         break;

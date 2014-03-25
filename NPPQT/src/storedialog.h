@@ -10,7 +10,6 @@ enum {
     SMODE_DEFAULT = 0,
     SMODE_BUY,
     SMODE_SELL,
-    SMODE_INFO,
     SMODE_EXAMINE
 };
 
@@ -55,7 +54,6 @@ public slots:
     void item_click();
     void sell_click();
     void buy_click();
-    void info_click();
     void exam_click();
     void wield_click();
     void takeoff_click();
