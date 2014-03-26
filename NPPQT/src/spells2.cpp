@@ -1626,7 +1626,7 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
                     m_name = monster_desc(m_ptr, 0);
 
                     /* Scream in pain */
-                    message(QString("%^1 wails out in pain!") .arg(m_name));
+                    message(QString("%1 wails out in pain!") .arg(capitalize_first(m_name)));
 
                     /* Take damage from the quake */
                     damage = (sn ? damroll(4, 8) : (m_ptr->hp + 1));
@@ -1641,7 +1641,7 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
                     if (m_ptr->hp < 0)
                     {
                         /* Message */
-                        message(QString("%^1 is embedded in the rock!") .arg(m_name));
+                        message(QString("%1 is embedded in the rock!") .arg(capitalize_first(m_name)));
 
                         /* Delete the monster */
                         delete_monster(yy, xx);

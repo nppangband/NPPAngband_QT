@@ -52,6 +52,8 @@ public:
     QPixmap blank_pix;
     // The key must be strings of the form "[row]x[col]"
     QHash<QString, QPixmap> tiles;
+    // For light effects
+    QHash<QString, QPixmap> pix_cache;
     QPixmap tile_map;
 
     QList<QGraphicsItem *> path_items;

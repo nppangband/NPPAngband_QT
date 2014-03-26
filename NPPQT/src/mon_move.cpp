@@ -1982,7 +1982,7 @@ static bool get_move_retreat(monster_type *m_ptr, int *ty, int *tx)
                 /* Get the monster name */
                 m_name = monster_desc(m_ptr, 0);
 
-                message(QString("%^1 fights on desperately!") .arg(m_name));
+                message(QString("%1 fights on desperately!") .arg(capitalize_first(m_name)));
             }
 
             /* Charge! */
@@ -2693,7 +2693,7 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
             m_name = monster_desc(m_ptr, 0);
 
             /* Dump a message */
-            message(QString("%^1 fights on desperately!")  .arg(m_name));
+            message(QString("%1 fights on desperately!")  .arg(capitalize_first(m_name)));
         }
 
         /* Turn and fight */
@@ -3721,7 +3721,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                         m_name = monster_desc(m_ptr, 0x04);
 
                         /* Dump a message */
-                        message(QString("%^1 picks up %2.") .arg(m_name) .arg(o_name));
+                        message(QString("%1 picks up %2.") .arg(capitalize_first(m_name)) .arg(o_name));
                     }
 
                     /* Get local object */
@@ -3753,7 +3753,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                         m_name = monster_desc(m_ptr, 0x04);
 
                         /* Dump a message */
-                        color_message(QString("%^1 crushes %2.") .arg(m_name) .arg(o_name), TERM_RED);
+                        color_message(QString("%1 crushes %2.") .arg(capitalize_first(m_name)) .arg(o_name), TERM_RED);
                     }
 
                     /* Delete the object */

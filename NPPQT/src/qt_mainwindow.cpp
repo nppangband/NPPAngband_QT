@@ -548,10 +548,24 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 pix = colorize_pix(pix, color);
             }
             else if (flags & UI_LIGHT_BRIGHT) {
-                pix = darken_pix(pix);
+                QString _k = QString("%1:bright").arg(key1);
+                if (parent->pix_cache.contains(_k)) {
+                    pix = parent->pix_cache.value(_k);
+                }
+                else {
+                    pix = darken_pix(pix);
+                    parent->pix_cache.insert(_k, pix);
+                }
             }
             else if (flags & UI_LIGHT_DIM) {
-                pix = gray_pix(pix);
+                QString _k = QString("%1:dim").arg(key1);
+                if (parent->pix_cache.contains(_k)) {
+                    pix = parent->pix_cache.value(_k);
+                }
+                else {
+                    pix = gray_pix(pix);
+                    parent->pix_cache.insert(_k, pix);
+                }
             }
 
             painter->drawPixmap(pix.rect(), pix, pix.rect());
@@ -659,6 +673,7 @@ QPixmap lighten_pix(QPixmap src)
 void MainWindow::destroy_tiles()
 {
     tiles.clear();
+    pix_cache.clear();
 }
 
 void MainWindow::calculate_cell_size()
