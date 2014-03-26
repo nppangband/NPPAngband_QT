@@ -1015,7 +1015,7 @@ static void map_effects (s16b y, s16b x)
     dun_ptr->effect_tile.clear();
 
     if (!dun_ptr->has_effect()) return;
-    if ((dun_ptr->cave_info & (CAVE_SEEN | CAVE_MARK)) != (CAVE_SEEN | CAVE_MARK)) return;
+    if (!(dun_ptr->cave_info & (CAVE_SEEN | CAVE_MARK))) return;
 
     bool has_object = dun_ptr->has_visible_object();
 

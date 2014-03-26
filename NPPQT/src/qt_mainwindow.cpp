@@ -373,6 +373,11 @@ void DungeonCursor::cellSizeChanged()
     prepareGeometryChange();
 }
 
+QFont ui_current_font()
+{
+    return main_window->cur_font;
+}
+
 void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (!character_dungeon) return;
@@ -389,7 +394,7 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
     else {
         parent->cursor->setVisible(true);
         parent->cursor->moveTo(c_y, c_x);
-        ui_center(c_y, c_x);
+        //ui_center(c_y, c_x);
 
         GridDialog dlg(c_y, c_x);
     }

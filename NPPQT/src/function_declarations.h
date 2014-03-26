@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QPixmap>
+#include <QFont>
 
 //was externs.h
 
@@ -651,6 +652,7 @@ extern void ui_resize_to_contents(QWidget *widget);
 class QTableWidget;
 extern QSize ui_estimate_table_size(QTableWidget *table, bool horiz = true, bool vert = true,
                                     int padding = 30);
+extern QFont ui_current_font();
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

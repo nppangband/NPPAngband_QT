@@ -17,14 +17,17 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     central = new QWidget;
     QVBoxLayout *lay1 = new QVBoxLayout;
     central->setLayout(lay1);
-    this->setClient(central);
+    this->setClient(central);   // Do this after setting layout
 
     QWidget *area2 = new QWidget;
     lay1->addWidget(area2);
     QGridLayout *lay2 = new QGridLayout;
+    lay2->setContentsMargins(0, 0, 0, 0);
     area2->setLayout(lay2);
 
     lay2->setColumnStretch(use_graphics ? 2: 1, 1);
+
+    QFont font = ui_current_font();
 
     int col = 0;
     int row = 0;
@@ -32,12 +35,13 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     if (m_idx > 0 && mon_list[m_idx].ml) {
         ++n;
 
-        QLabel *lb = new QLabel(QString(" %1 ").arg(d_ptr->monster_char));
-        lb->setStyleSheet(QString("background-color: black; color: %1;").arg(d_ptr->monster_color.name()));
-        lay2->addWidget(lb, row, col++);
-
         monster_type *m_ptr = mon_list + d_ptr->monster_idx;
         monster_race *r_ptr = r_info + m_ptr->r_idx;
+
+        QLabel *lb = new QLabel(QString(" %1 ").arg(r_ptr->d_char));
+        lb->setStyleSheet(QString("background-color: black; color: %1;").arg(r_ptr->d_color.name()));
+        lb->setFont(font);
+        lay2->addWidget(lb, row, col++);
 
         if (use_graphics) {
             QPixmap pix = ui_get_tile(r_ptr->tile_id);
@@ -81,6 +85,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
         QLabel *lb = new QLabel(QString(" %1 ").arg(chr));
         lb->setStyleSheet(QString("background-color: black; color: %1;").arg(color.name()));
+        lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
         if (use_graphics) {
@@ -97,7 +102,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         ++row;
     }
 
-    if (d_ptr->cave_info & CAVE_MARK) {
+    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN)) {
         ++n;
 
         col = 0;
@@ -108,6 +113,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
         QLabel *lb = new QLabel(QString(" %1 ").arg(f_ptr->d_char));
         lb->setStyleSheet(QString("background-color: black; color: %1;").arg(f_ptr->d_color.name()));
+        lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
         if (use_graphics) {
@@ -129,10 +135,12 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         effect_type *x_ptr = x_list + x_idx;
         x_idx = x_ptr->next_x_idx;
 
-        if ((d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN)) != (CAVE_MARK | CAVE_SEEN)) continue;
+        if (!(d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN))) continue;
         if (x_ptr->x_flags & EF1_HIDDEN) continue;
 
         int feat = x_ptr->x_f_idx;
+        if (!feat) continue;
+        feat = f_info[feat].f_mimic;
         if (!feat) continue;
         feature_type *f_ptr = f_info + feat;
 
@@ -140,6 +148,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
         QLabel *lb = new QLabel(QString(" %1 ").arg(f_ptr->d_char));
         lb->setStyleSheet(QString("background-color: black; color: %1;").arg(f_ptr->d_color.name()));
+        lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
         if (use_graphics) {
