@@ -356,14 +356,11 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
     default:
         if (event->text().length() > 0
                 && event->text().at(0).isLetter()) {
-            if (mode == SMODE_DEFAULT) return;
+            //if (mode == SMODE_DEFAULT) return;
             QString letter = event->text().at(0);
             letter.append(") ");
             QWidget *container = char_tabs->currentWidget();
-            if (mode == SMODE_BUY) {
-                container = store_area;
-            }
-            if (mode == SMODE_EXAMINE && letter.at(0).isLower()) {
+            if (letter.at(0).isLower()) {
                 container = store_area;
             }
             QList<QPushButton *> lst = container->findChildren<QPushButton *>();
@@ -385,7 +382,7 @@ void StoreDialog::item_click()
 
     QString id = obj->property("item_id").toString();
     int aux_mode = mode;
-    if (aux_mode == SMODE_DEFAULT) {
+    if (aux_mode != SMODE_EXAMINE) {
         if (id.startsWith("e") || id.startsWith("i")) aux_mode = SMODE_SELL;
         else aux_mode = SMODE_BUY;
     }
