@@ -79,6 +79,7 @@ public:
     bool panel_contains(int y, int x);
     void rebuild_tile(QString key);
     bool running_command();
+    void add_to_cache(QString key, QPixmap pix);
 
 protected:
     void closeEvent(QCloseEvent *event);

@@ -10,6 +10,7 @@
 #include "src/optionsdialog.h"
 #include "src/birthdialog.h"
 #include "emitter.h"
+#include "griddialog.h"
 
 MainWindow *main_window = 0;
 
@@ -389,15 +390,8 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         parent->cursor->setVisible(true);
         parent->cursor->moveTo(c_y, c_x);
         ui_center(c_y, c_x);
-        dungeon_type *d_ptr = &dungeon_info[c_y][c_x];
-        if (d_ptr->monster_idx > 0) {
-            monster_type *m_ptr = mon_list + d_ptr->monster_idx;
-            monster_race *r_ptr = r_info + m_ptr->r_idx;
-            int gain = calc_energy_gain(m_ptr->m_speed);
-            int gain2 = calc_energy_gain(p_ptr->state.p_speed);
-            pop_up_message_box(QString("%1. Speed gain: %2. Player speed gain: %3")
-                               .arg(r_ptr->r_name_full).arg(gain).arg(gain2));
-        }
+
+        GridDialog dlg(c_y, c_x);
     }
 
     QGraphicsItem::mousePressEvent(event);
@@ -554,7 +548,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 }
                 else {
                     pix = darken_pix(pix);
-                    parent->pix_cache.insert(_k, pix);
+                    parent->add_to_cache(_k, pix);
                 }
             }
             else if (flags & UI_LIGHT_DIM) {
@@ -564,7 +558,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 }
                 else {
                     pix = gray_pix(pix);
-                    parent->pix_cache.insert(_k, pix);
+                    parent->add_to_cache(_k, pix);
                 }
             }
 
@@ -614,6 +608,16 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     }
 
     painter->restore();
+}
+
+void MainWindow::add_to_cache(QString key, QPixmap pix)
+{
+    if (pix_cache.size() > 100) {
+        while (pix_cache.size() > 90) {      // Erase 10 items
+            pix_cache.erase(pix_cache.begin());
+        }
+    }
+    pix_cache.insert(key, pix);
 }
 
 QPixmap gray_pix(QPixmap src)
