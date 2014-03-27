@@ -49,6 +49,8 @@ public:
 
     int request_amt(object_type *o_ptr, bool buying);
 
+    void process_item(QString item_id);
+
 public slots:
     void toggle_inven();
     void item_click();

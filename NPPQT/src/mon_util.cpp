@@ -2391,7 +2391,7 @@ void monster_hide(monster_type *m_ptr)
             QString m_name;
             QString feat_name;
             /* Get the feature */
-            u16b feat = dungeon_info[y][x].cave_info;
+            u16b feat = dungeon_info[y][x].feat;
 
             /* Get the terrain lore */
             feature_lore *f_l_ptr = &f_l_list[feat];
@@ -2418,7 +2418,7 @@ void monster_hide(monster_type *m_ptr)
             }
             else
             {
-                color_message(QString("%^1 hides in the %2.") .arg(m_name) .arg(feat_name), TERM_WHITE);
+                color_message(QString("%1 hides in the %2.") .arg(capitalize_first(m_name)) .arg(feat_name), TERM_WHITE);
             }
 
         }
@@ -2485,7 +2485,7 @@ void monster_unhide(monster_type *m_ptr)
         QString feat_name;
 
         /* Get the feature */
-        u16b feat = dungeon_info[y][x].cave_info;
+        u16b feat = dungeon_info[y][x].feat;
 
         /* Get the terrain lore */
         feature_lore *f_l_ptr = &f_l_list[feat];
@@ -2506,7 +2506,7 @@ void monster_unhide(monster_type *m_ptr)
         feat_name = feature_desc(feat, FALSE, TRUE);
 
         /* Notify */
-        color_message(QString("%^1 emerges from the %2.") .arg(m_name) .arg(feat_name), TERM_WHITE);
+        color_message(QString("%1 emerges from the %2.") .arg(capitalize_first(m_name)) .arg(feat_name), TERM_WHITE);
     }
 
     /* Update 'monster list' window */
