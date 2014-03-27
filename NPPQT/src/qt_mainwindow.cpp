@@ -471,6 +471,32 @@ QRectF DungeonGrid::boundingRect() const
     return QRectF(0, 0, parent->cell_wid, parent->cell_hgt);
 }
 
+QString find_cloud_tile(int y, int x)
+{
+    QString tile;
+
+    if (!use_graphics) return tile;
+
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK | CAVE_SEEN))) return tile;
+
+    int x_idx = dungeon_info[y][x].effect_idx;
+    while (x_idx) {
+        effect_type *x_ptr = x_list + x_idx;
+        x_idx = x_ptr->next_x_idx;
+
+        if (x_ptr->x_flags & EF1_HIDDEN) continue;
+
+        if (x_ptr->x_type == EFFECT_PERMANENT_CLOUD || x_ptr->x_type == EFFECT_LINGERING_CLOUD
+                || x_ptr->x_type == EFFECT_SHIMMERING_CLOUD) {
+            int feat = x_ptr->x_f_idx;
+            feat = f_info[feat].f_mimic;
+            return f_info[feat].tile_id;
+        }
+    }
+
+    return tile;
+}
+
 void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     if (!character_dungeon) return;
@@ -489,6 +515,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     bool do_shadow = false;
 
     flags = (d_ptr->ui_flags & (UI_LIGHT_BRIGHT | UI_LIGHT_DIM | UI_LIGHT_TORCH | UI_COSMIC_TORCH));
+
+    bool is_cloud = false;
 
     // Draw visible monsters    
     if (d_ptr->has_visible_monster())
@@ -516,6 +544,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
         flags |= (d_ptr->ui_flags & UI_TRANSPARENT_EFFECT);
         opacity = 0.7;
+
+        is_cloud = (flags & UI_TRANSPARENT_EFFECT);
     }
     // Draw objects
     else if (d_ptr->has_visible_object())
@@ -569,6 +599,19 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
             painter->drawPixmap(pix.rect(), pix, pix.rect());
             done_bg = true;
+
+            // Draw cloud effects (in graphics mode), if not already drawing that
+            if (!is_cloud) {
+                QString tile = find_cloud_tile(c_y, c_x);
+                if (!tile.isEmpty()) {
+                    painter->setOpacity(0.7);
+                    parent->rebuild_tile(tile);
+                    QPixmap pix = parent->tiles.value(tile);
+                    painter->drawPixmap(0, 0, pix);
+                    painter->setOpacity(1);
+                    done_bg = true;
+                }
+            }
 
             // Draw foreground tile
             if (key2.length() > 0) {
