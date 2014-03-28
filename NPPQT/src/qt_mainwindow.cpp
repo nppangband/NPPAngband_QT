@@ -343,12 +343,146 @@ QPixmap ui_make_blank()
 void MainWindow::slot_redraw()
 {
     redraw();
+}
 
-    create_package("tiles.pak", "temp1");
+void MainWindow::do_create_package()
+{
+    PackageDialog dlg("create");
+}
 
-    Package pak = Package("tiles.pak");
+void MainWindow::do_extract_from_package()
+{
+    PackageDialog dlg("extract");
+}
 
-    pak.extract_to("temp2");
+PackageDialog::PackageDialog(QString _mode)
+{
+    mode = _mode;
+
+    central = new QWidget;
+    QVBoxLayout *lay1 = new QVBoxLayout;
+    central->setLayout(lay1);
+    this->setClient(central);
+
+    QWidget *area2 = new QWidget;
+    lay1->addWidget(area2);
+    QGridLayout *lay2 = new QGridLayout;
+    lay2->setContentsMargins(0, 0, 0, 0);
+    lay2->setColumnStretch(1, 1);
+    area2->setLayout(lay2);
+
+    int row = 0;
+
+    QLabel *lb = new QLabel;
+    if (mode == "create") {
+        lb->setText("Create a tile package");
+    }
+    else {
+        lb->setText("Extract tiles from a package");
+    }
+    lb->setStyleSheet("font-size: 1.5em; font-weight: bold;");
+    lay2->addWidget(lb, row, 0, 1, 3);
+
+    ++row;
+
+    lay2->addWidget(new QLabel(tr("Package")), row, 0);
+
+    pak_path = new QLineEdit;
+    pak_path->setReadOnly(true);
+    lay2->addWidget(pak_path, row, 1);
+
+    QToolButton *btn2 = new QToolButton();
+    btn2->setText("...");
+    //btn2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    lay2->addWidget(btn2, row, 2);
+    connect(btn2, SIGNAL(clicked()), this, SLOT(find_pak()));
+
+    ++row;
+
+    lay2->addWidget(new QLabel(tr("Tiles folder")), row, 0);
+
+    folder_path = new QLineEdit;
+    folder_path->setReadOnly(true);
+    lay2->addWidget(folder_path, row, 1);
+
+    QToolButton *btn3 = new QToolButton();
+    btn3->setText("...");
+    //btn3->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    lay2->addWidget(btn3, row, 2);
+    connect(btn3, SIGNAL(clicked()), this, SLOT(find_folder()));
+
+    ++row;
+
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    lay2->addItem(spacer, row, 0);
+
+    QWidget *area3 = new QWidget;
+    lay1->addWidget(area3);
+    QHBoxLayout *lay3 = new QHBoxLayout;
+    area3->setLayout(lay3);
+    lay3->setContentsMargins(0, 0, 0, 0);
+
+    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay3->addItem(spacer);
+
+    QPushButton *btn1 = new QPushButton(tr("Go!"));
+    lay3->addWidget(btn1);
+    connect(btn1, SIGNAL(clicked()), this, SLOT(do_accept()));
+
+    QPushButton *btn4 = new QPushButton(tr("Cancel"));
+    lay3->addWidget(btn4);
+    connect(btn4, SIGNAL(clicked()), this, SLOT(reject()));
+
+    this->clientSizeUpdated();
+    this->exec();
+}
+
+void PackageDialog::do_accept()
+{
+    if (pak_path->text().isEmpty() || folder_path->text().isEmpty()) {
+        pop_up_message_box(tr("Complete both fields"), QMessageBox::Critical);
+        return;
+    }
+
+    if (mode == "create") {
+        int n = create_package(pak_path->text(), folder_path->text());
+        pop_up_message_box(tr("Imported tiles: %1").arg(n));
+    }
+    else {
+        Package pak(pak_path->text());
+        if (!pak.is_open()) {
+            pop_up_message_box(tr("Couldn't load the package"), QMessageBox::Critical);
+        }
+        else {
+            int n = pak.extract_to(folder_path->text());
+            pop_up_message_box(tr("Extracted tiles: %1").arg(n));
+        }
+    }
+}
+
+void PackageDialog::find_pak()
+{
+    QString path;
+
+    if (mode == "extract") {
+        path = QFileDialog::getOpenFileName(this, tr("Select a package"), "",
+                                            tr("Packages (*.pak)"));
+    }
+    else {
+        path = QFileDialog::getSaveFileName(this, tr("Select a package"), "",
+                                            tr("Packages (*.pak)"));
+    }
+
+    if (path != "") pak_path->setText(path);
+}
+
+void PackageDialog::find_folder()
+{
+    QString path;
+
+    path = QFileDialog::getExistingDirectory(this, tr("Select a folder"));
+
+    if (path != "") folder_path->setText(path);
 }
 
 QPainterPath DungeonGrid::shape() const
@@ -1681,6 +1815,12 @@ void MainWindow::create_menus()
         if (i == 0) act->setChecked(true);
     }
     connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
+
+    QAction *act = settings->addAction(tr("Create tile package"));
+    connect(act, SIGNAL(triggered()), this, SLOT(do_create_package()));
+
+    act = settings->addAction(tr("Extract tiles from package"));
+    connect(act, SIGNAL(triggered()), this, SLOT(do_extract_from_package()));
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));

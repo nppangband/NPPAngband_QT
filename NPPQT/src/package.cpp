@@ -122,11 +122,13 @@ bool Package::is_open()
     return fp->isOpen();
 }
 
-bool create_package(QString name, QString folder, QString ext)
+int create_package(QString name, QString folder, QString ext)
 {
     QDir dir(folder);
     dir.setFilter(QDir::Files | QDir::Readable);
     QFileInfoList items;
+
+    int n = 0;
 
     QFileInfoList lst = dir.entryInfoList();
     for (int i = 0; i < lst.size(); i++) {
@@ -138,7 +140,7 @@ bool create_package(QString name, QString folder, QString ext)
 
     QFile out(name);
     if (!out.open(QFile::WriteOnly)) {
-        return false;
+        return 0;
     }
 
     for (int i = 0; i < items.size(); i++) {
@@ -159,16 +161,18 @@ bool create_package(QString name, QString folder, QString ext)
         QFile in(items.at(i).absoluteFilePath());
         if (!in.open(QFile::ReadOnly)) {
             out.close();
-            return false;
+            return 0;
         }
 
         QByteArray data = in.readAll();
         out.write(data);
 
         in.close();
+
+        ++n;
     }
 
     out.close();
 
-    return true;
+    return n;
 }

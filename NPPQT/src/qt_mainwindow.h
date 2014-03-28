@@ -13,6 +13,7 @@
 #include <QPixmapCache>
 #include "defines.h"
 #include "structures.h"
+#include "nppdialog.h"
 
 #define UI_MODE_DEFAULT 0
 #define UI_MODE_INPUT 1
@@ -27,6 +28,7 @@ class QGraphicsItem;
 class DungeonGrid;
 class DungeonCursor;
 class QTextEdit;
+class QLineEdit;
 
 class MainWindow : public QMainWindow
 {
@@ -106,6 +108,9 @@ private slots:
     void slot_find_player();
     void slot_redraw();
     void slot_something();
+
+    void do_create_package();
+    void do_extract_from_package();
 
     void slot_targetting_button();
 
@@ -194,5 +199,22 @@ private:
 QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p);
 
 extern MainWindow *main_window;
+
+class PackageDialog: public NPPDialog
+{
+    Q_OBJECT
+public:
+    QWidget *central;
+    QLineEdit *pak_path;
+    QLineEdit *folder_path;
+    QString mode;
+
+    PackageDialog(QString _mode);
+
+public slots:
+    void find_pak();
+    void find_folder();
+    void do_accept();
+};
 
 #endif
