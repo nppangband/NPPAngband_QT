@@ -12,6 +12,7 @@
 #include "emitter.h"
 #include "griddialog.h"
 #include "package.h"
+#include "tilebag.h"
 
 MainWindow *main_window = 0;
 
@@ -1035,6 +1036,7 @@ MainWindow::MainWindow()
     create_toolbars();
     select_font();
     create_directories();
+    init_tile_bags();
     create_signals();
     (void)statusBar();
 

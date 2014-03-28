@@ -80,7 +80,8 @@ SOURCES +=  src/qt_main.cpp\
     src/nppdialog.cpp \
     src/storedialog.cpp \
     src/griddialog.cpp \
-    src/package.cpp
+    src/package.cpp \
+    src/tilebag.cpp
 
 
 
@@ -117,7 +118,8 @@ HEADERS  += src/qt_mainwindow.h\
     src/nppdialog.h \
     src/storedialog.h \
     src/griddialog.h \
-    src/package.h
+    src/package.h \
+    src/tilebag.h
 
 
 RESOURCES += \

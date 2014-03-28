@@ -6,48 +6,9 @@
 #include <QGraphicsScene>
 #include <QLinearGradient>
 #include <QHash>
-#include "package.h"
+#include "tilebag.h"
 
 qreal delay = 1.666666; // delay per pixel. 1 second every 600 pixels
-
-static QPixmap get_pixmap(QString name)
-{
-    // Packaged png files
-    static Package *pak = 0;
-    if (!pak) {
-        QDir dir(NPP_DIR_GRAF);
-        QString path = dir.absoluteFilePath("projections.pak");
-        pak = new Package(path);
-        if (!pak->is_open()) {
-            pop_up_message_box("Couldn't load projections.pak", QMessageBox::Critical);
-        }
-    }
-
-    // Check sanity
-    if (!pak->is_open()) return ui_make_blank();
-
-    // Tile cache
-    static QHash<QString, QPixmap> *tiles = 0;
-    if (!tiles) {
-        tiles = new QHash<QString, QPixmap>;
-    }
-
-    // Cache hit?
-    if (tiles->contains(name)) {
-        return tiles->value(name);
-    }
-
-    // Grab the png data from the package
-    QByteArray data = pak->get_item(name);
-    if (data.size() < 1) return ui_make_blank();
-
-    QImage img;
-    img.loadFromData(data);        // Convert the png to an RGB image
-    QPixmap pix = QPixmap::fromImage(img);
-    tiles->insert(name, pix);      // Insert into the cache for later uses
-
-    return pix;
-}
 
 QPointF mulp(QPointF a, QPointF b)
 {
@@ -195,7 +156,7 @@ void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     bool do_beam = false;
 
-    QPixmap pix = get_pixmap("ball1.png");
+    QPixmap pix = tiles_projections->get_tile("ball1.png");
     pix = colorize_pix2(pix, cloud_color);
     int bs = pix.width();
 
@@ -330,22 +291,22 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
     }
     else if (gf_type == GF_ARROW) {
         if (flg & PROJECT_ROCK) {
-            pix = get_pixmap("boulder1.png");
+            pix = tiles_projections->get_tile("boulder1.png");
             do_default = false;
         }
         else if (flg & PROJECT_SHOT) {
-            pix = get_pixmap("shot1.png");
+            pix = tiles_projections->get_tile("shot1.png");
             do_default = false;
         }
         else if (flg & PROJECT_AMMO) {
-            pix = get_pixmap("arrow1.png");
+            pix = tiles_projections->get_tile("arrow1.png");
             pix = rotate_pix(pix, current_angle);
             do_default = false;
         }
     }
 
     if (do_default) {
-        pix = rotate_pix(get_pixmap("bolt1.png"), current_angle);
+        pix = rotate_pix(tiles_projections->get_tile("bolt1.png"), current_angle);
         pix = colorize_pix3(pix, color);
     }
 
@@ -486,7 +447,7 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     painter->save();    
 
-    QPixmap pix = colorize_pix2(get_pixmap("ball1.png"), color);
+    QPixmap pix = colorize_pix2(tiles_projections->get_tile("ball1.png"), color);
 
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
@@ -536,7 +497,7 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     byte idx = gf_color(gf_type);
     color = defined_colors[idx % MAX_COLORS];
 
-    QPixmap pix = get_pixmap("ball1.png");
+    QPixmap pix = tiles_projections->get_tile("ball1.png");
     pix = colorize_pix2(pix, color);
 
     tiles.append(pix);
@@ -710,7 +671,7 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
     }
 
     QColor color = defined_colors[gf_color(gf_type) % MAX_COLORS];
-    pix = colorize_pix3(get_pixmap("star1.png"), color);
+    pix = colorize_pix3(tiles_projections->get_tile("star1.png"), color);
 
     this->setVisible(false);
     this->setZValue(1000);
