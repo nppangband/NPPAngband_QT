@@ -11,9 +11,9 @@
 #include "src/birthdialog.h"
 #include "emitter.h"
 #include "griddialog.h"
+#include "package.h"
 
 MainWindow *main_window = 0;
-
 
 void ui_request_size_update(QWidget *widget)
 {
@@ -337,6 +337,12 @@ void MainWindow::slot_find_player()
 void MainWindow::slot_redraw()
 {
     redraw();
+
+    create_package("tiles.pak", "temp1");
+
+    Package pak = Package("tiles.pak");
+
+    pak.extract_to("temp2");
 }
 
 QPainterPath DungeonGrid::shape() const

@@ -79,7 +79,8 @@ SOURCES +=  src/qt_main.cpp\
             src/utilities.cpp \
     src/nppdialog.cpp \
     src/storedialog.cpp \
-    src/griddialog.cpp
+    src/griddialog.cpp \
+    src/package.cpp
 
 
 
@@ -115,7 +116,8 @@ HEADERS  += src/qt_mainwindow.h\
     src/cmd_spell.h \
     src/nppdialog.h \
     src/storedialog.h \
-    src/griddialog.h
+    src/griddialog.h \
+    src/package.h
 
 
 RESOURCES += \
