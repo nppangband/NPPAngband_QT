@@ -653,6 +653,7 @@ class QTableWidget;
 extern QSize ui_estimate_table_size(QTableWidget *table, bool horiz = true, bool vert = true,
                                     int padding = 30);
 extern QFont ui_current_font();
+extern QPixmap ui_make_blank();
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

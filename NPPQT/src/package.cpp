@@ -4,6 +4,7 @@
 Package::Package(QString _path)
 {
     path = _path;
+    data_pos = 0;
     fp = new QFile(path);
     if (!fp->open(QFile::ReadOnly)) return;
 
@@ -16,6 +17,11 @@ Package::Package(QString _path)
         item.name = line;
 
         line = read_line();
+        if (line == "") {   // Paranoia
+            fp->close();
+            items.clear();
+            return;
+        }
         item.size = line.toInt();
 
         items.append(item);

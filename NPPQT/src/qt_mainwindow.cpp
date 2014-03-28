@@ -334,6 +334,13 @@ void MainWindow::slot_find_player()
     update_cursor();
 }
 
+QPixmap ui_make_blank()
+{
+    QImage img(1, 1, QImage::Format_ARGB32);
+    img.setPixel(0, 0, qRgba(0, 0, 0, 0));
+    return QPixmap::fromImage(img);
+}
+
 void MainWindow::slot_redraw()
 {
     redraw();
