@@ -10,6 +10,7 @@
 #include <QKeyEvent>
 #include <QActionGroup>
 #include <QEventLoop>
+#include <QPixmapCache>
 #include "defines.h"
 #include "structures.h"
 
@@ -53,7 +54,7 @@ public:
     // The key must be strings of the form "[row]x[col]"
     QHash<QString, QPixmap> tiles;
     // For light effects
-    QHash<QString, QPixmap> pix_cache;
+    QPixmapCache shade_cache;
     QPixmap tile_map;
 
     QList<QGraphicsItem *> path_items;
@@ -79,7 +80,7 @@ public:
     bool panel_contains(int y, int x);
     void rebuild_tile(QString key);
     bool running_command();
-    void add_to_cache(QString key, QPixmap pix);
+    QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
 
 protected:
     void closeEvent(QCloseEvent *event);

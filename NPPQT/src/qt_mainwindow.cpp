@@ -256,9 +256,7 @@ QPixmap ui_get_tile(QString tile_id)
 {
     // Build a transparent 1x1 pixmap
     if (tile_id.isEmpty() || !use_graphics) {
-        QImage img(1, 1, QImage::Format_ARGB32);
-        img.setPixel(0, 0, qRgba(0, 0, 0, 0));
-        return QPixmap::fromImage(img);
+        return ui_make_blank();
     }
 
     main_window->rebuild_tile(tile_id);
@@ -591,24 +589,10 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 pix = colorize_pix(pix, color);
             }
             else if (flags & UI_LIGHT_BRIGHT) {
-                QString _k = QString("%1:bright").arg(key1);
-                if (parent->pix_cache.contains(_k)) {
-                    pix = parent->pix_cache.value(_k);
-                }
-                else {
-                    pix = darken_pix(pix);
-                    parent->add_to_cache(_k, pix);
-                }
+                pix = parent->apply_shade(key1, pix, "bright");
             }
             else if (flags & UI_LIGHT_DIM) {
-                QString _k = QString("%1:dim").arg(key1);
-                if (parent->pix_cache.contains(_k)) {
-                    pix = parent->pix_cache.value(_k);
-                }
-                else {
-                    pix = gray_pix(pix);
-                    parent->add_to_cache(_k, pix);
-                }
+                pix = parent->apply_shade(key1, pix, "dim");
             }
 
             painter->drawPixmap(pix.rect(), pix, pix.rect());
@@ -672,14 +656,28 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->restore();
 }
 
-void MainWindow::add_to_cache(QString key, QPixmap pix)
+QPixmap MainWindow::apply_shade(QString tile_id, QPixmap tile, QString shade_id)
 {
-    if (pix_cache.size() > 100) {
-        while (pix_cache.size() > 90) {      // Erase 10 items
-            pix_cache.erase(pix_cache.begin());
-        }
+    tile_id += ":";
+    tile_id += shade_id;
+
+    QPixmap pix;
+
+    if (shade_cache.find(tile_id, &pix)) return pix;
+
+    if (shade_id == "dim") {
+        pix = gray_pix(tile);
     }
-    pix_cache.insert(key, pix);
+    else if (shade_id == "bright") {
+        pix = darken_pix(tile);
+    }
+    else {  // It should never happen
+        pix = tile;
+    }
+
+    shade_cache.insert(tile_id, pix);
+
+    return pix;
 }
 
 QPixmap gray_pix(QPixmap src)
@@ -739,7 +737,7 @@ QPixmap lighten_pix(QPixmap src)
 void MainWindow::destroy_tiles()
 {
     tiles.clear();
-    pix_cache.clear();
+    shade_cache.clear();
 }
 
 void MainWindow::calculate_cell_size()
@@ -875,8 +873,7 @@ void MainWindow::init_scene()
     QBrush brush(QColor("black"));
     dungeon_scene->setBackgroundBrush(brush);
 
-    blank_pix = QPixmap(1, 1);
-    blank_pix.fill(QColor("black"));
+    blank_pix = ui_make_blank();
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
         for (int x = 0; x < MAX_DUNGEON_WID; x++) {
