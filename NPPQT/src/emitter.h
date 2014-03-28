@@ -165,4 +165,28 @@ public slots:
     void do_timeout();
 };
 
+class HaloAnimation: public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+public:
+    int maxLength;
+    int curLength;
+    QTimer timer;
+    QPixmap haloPix;
+    QPixmap curPix;
+    int c_y, c_x;
+
+    HaloAnimation(int y, int x);
+
+    void start();
+    void stop();
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
+
+public slots:
+    void do_timeout();
+};
+
 #endif // EMITTER_H

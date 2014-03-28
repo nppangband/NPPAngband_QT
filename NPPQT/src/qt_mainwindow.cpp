@@ -349,22 +349,29 @@ QPixmap ui_make_blank()
     return QPixmap::fromImage(img);
 }
 
+void ui_animate_victory(int y, int x)
+{
+    u32b flg = PROJECT_PASS;
+
+    BallAnimation *b1 = new BallAnimation(QPointF(x, y), 3, GF_TIME, flg);
+    main_window->dungeon_scene->addItem(b1);
+    b1->setZValue(1000);
+
+    HaloAnimation *h1 = new HaloAnimation(y, x);
+    main_window->dungeon_scene->addItem(h1);
+    h1->setZValue(900);
+
+    b1->start();
+    h1->start();
+
+    main_window->ev_loop.exec();
+}
+
 void MainWindow::slot_redraw()
 {
     //redraw();
 
-    u32b flg = PROJECT_PASS;
-
-    BallAnimation *b1 = new BallAnimation(QPointF(p_ptr->px, p_ptr->py), 3, GF_TIME, flg);
-    dungeon_scene->addItem(b1);
-
-    BallAnimation *b2 = new BallAnimation(QPointF(p_ptr->px + 5, p_ptr->py + 5), 3, GF_NETHER, flg);
-    dungeon_scene->addItem(b2);
-
-    b1->start();
-    b2->start();
-
-    ev_loop.exec();
+    ui_animate_victory(p_ptr->py, p_ptr->px);
 }
 
 void MainWindow::start_loop()

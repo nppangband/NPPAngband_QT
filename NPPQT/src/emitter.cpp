@@ -770,3 +770,70 @@ void StarAnimation::do_timeout()
 
     this->update();
 }
+
+HaloAnimation::HaloAnimation(int y, int x)
+{
+    QPointF center = getCenter(y, x);
+
+    curLength = 20;
+
+    haloPix = tiles_projections->get_tile("big_halo.png");
+
+    maxLength = haloPix.width();
+
+    QPointF adj(maxLength / 2, maxLength / 2);
+
+    setPos(center - adj);
+
+    c_y = adj.y();
+    c_x = adj.x();
+
+    timer.setInterval(70);
+
+    connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+
+    this->setVisible(false);
+}
+
+void HaloAnimation::start()
+{
+    timer.start();
+    main_window->start_loop();
+}
+
+void HaloAnimation::stop()
+{
+    timer.stop();
+    main_window->stop_loop();
+    if (scene()) scene()->removeItem(this);
+    this->deleteLater();
+}
+
+void HaloAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QPointF adj(curPix.width() / 2, curPix.height() / 2);
+    QPointF center(c_x, c_y);
+    center -= adj;
+    painter->drawPixmap(center, curPix);
+}
+
+QRectF HaloAnimation::boundingRect() const
+{
+    return QRectF(0, 0, maxLength, maxLength);
+}
+
+void HaloAnimation::do_timeout()
+{
+    curLength += 30;
+
+    if (curLength > maxLength) {
+        stop();
+        return;
+    }
+
+    this->setVisible(true);
+
+    curPix = haloPix.scaled(curLength, curLength);
+
+    update();
+}
