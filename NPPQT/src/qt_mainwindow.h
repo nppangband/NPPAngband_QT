@@ -42,6 +42,9 @@ public:
     int ui_mode;
     UserInput input;
     QEventLoop ev_loop;
+    int loop_depth;
+    void start_loop();
+    void stop_loop();
 
     DungeonGrid *grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 

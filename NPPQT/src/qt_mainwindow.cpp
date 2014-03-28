@@ -169,6 +169,7 @@ UserInput ui_get_input()
         temp.key = 0;
         temp.x = temp.y = -1;
         temp.text.clear();
+        main_window->stop_loop();
         return temp;
     }
 
@@ -177,6 +178,8 @@ UserInput ui_get_input()
     main_window->input.mode = INPUT_MODE_NONE;
 
     main_window->cursor->update();
+
+    main_window->start_loop();
 
     main_window->ev_loop.exec();
 
@@ -288,6 +291,7 @@ void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
     BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
     main_window->dungeon_scene->addItem(ball);
     ball->start();
+    main_window->ev_loop.exec();
 }
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
@@ -295,6 +299,7 @@ void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int de
     ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
     main_window->dungeon_scene->addItem(arc);
     arc->start();
+    main_window->ev_loop.exec();
 }
 
 void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
@@ -302,6 +307,7 @@ void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
     BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
     main_window->dungeon_scene->addItem(beam);
     beam->start();
+    main_window->ev_loop.exec();
 }
 
 void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
@@ -309,6 +315,7 @@ void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
+    main_window->ev_loop.exec();
 }
 
 void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
@@ -316,6 +323,7 @@ void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
+    main_window->ev_loop.exec();
 }
 
 void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
@@ -323,6 +331,7 @@ void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int
     StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
     main_window->dungeon_scene->addItem(star);
     star->start();
+    main_window->ev_loop.exec();
 }
 
 void MainWindow::slot_find_player()
@@ -342,7 +351,46 @@ QPixmap ui_make_blank()
 
 void MainWindow::slot_redraw()
 {
-    redraw();
+    //redraw();
+
+    u32b flg = PROJECT_PASS;
+
+    BallAnimation *b1 = new BallAnimation(QPointF(p_ptr->px, p_ptr->py), 3, GF_TIME, flg);
+    dungeon_scene->addItem(b1);
+
+    BallAnimation *b2 = new BallAnimation(QPointF(p_ptr->px + 5, p_ptr->py + 5), 3, GF_NETHER, flg);
+    dungeon_scene->addItem(b2);
+
+    b1->start();
+    b2->start();
+
+    ev_loop.exec();
+}
+
+void MainWindow::start_loop()
+{
+    if (loop_depth == 0) {
+        if (ev_loop.isRunning()) {
+            pop_up_message_box("Event loop already running");
+            return;
+        }
+    }
+
+    ++loop_depth;
+}
+
+void MainWindow::stop_loop()
+{
+    if (!ev_loop.isRunning()) {
+        pop_up_message_box("Event loop is not running");
+        return;
+    }
+
+    loop_depth = MAX(loop_depth - 1, 0);
+
+    if (loop_depth == 0) {
+        ev_loop.quit();
+    }
 }
 
 void MainWindow::do_create_package()
@@ -535,9 +583,9 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         parent->input.x = c_x;
         parent->input.y = c_y;
         parent->input.mode = INPUT_MODE_MOUSE;
-        parent->ev_loop.quit();
+        parent->stop_loop();
     }
-    else {
+    else if (!parent->ev_loop.isRunning()) {
         parent->cursor->setVisible(true);
         parent->cursor->moveTo(c_y, c_x);
         //ui_center(c_y, c_x);
@@ -1108,6 +1156,8 @@ MainWindow::MainWindow()
     // Store a reference for public functions (panel_contains and others)
     if (!main_window) main_window = this;
 
+    loop_depth = 0;
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     ui_mode = UI_MODE_DEFAULT;
@@ -1335,7 +1385,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         input.key = which_key->key();
         input.text = keystring;
         input.mode = INPUT_MODE_KEY;
-        ev_loop.quit();
+        stop_loop();
         return;
     }
 
@@ -1921,7 +1971,7 @@ void MainWindow::slot_targetting_button()
     input.text = snd->objectName();
     input.key = snd->property("key").toInt();
     input.mode = INPUT_MODE_KEY;
-    ev_loop.quit();
+    stop_loop();
 }
 
 // Just find an initial font to start the game

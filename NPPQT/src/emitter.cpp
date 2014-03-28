@@ -240,7 +240,7 @@ NPPAnimation::NPPAnimation()
 NPPAnimation::~NPPAnimation()
 {
     if (next) next->start();
-    else if (main_window->ev_loop.isRunning()) main_window->ev_loop.quit();
+    main_window->stop_loop();
     if (anim) delete anim;
 }
 
@@ -248,8 +248,7 @@ void NPPAnimation::start()
 {
     if (anim) {
         anim->start();
-        if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
-        else pop_up_message_box("Event loop already running");
+        main_window->start_loop();
     }
 }
 
@@ -548,15 +547,14 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
 void ArcAnimation::start()
 {
     timer.start();
-    if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
-    else pop_up_message_box("Event loop already running");
+    main_window->start_loop();
 }
 
 void ArcAnimation::finish()
 {
     this->setVisible(false);
     timer.stop();
-    main_window->ev_loop.quit();
+    main_window->stop_loop();
     this->deleteLater();
 }
 
@@ -698,13 +696,13 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
 void StarAnimation::start()
 {
     timer.start();
-    if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
+    main_window->start_loop();
 }
 
 void StarAnimation::stop()
 {
     timer.stop();
-    main_window->ev_loop.quit();
+    main_window->stop_loop();
     this->setVisible(false);
     this->scene()->removeItem(this);
     for (int i = 0; i < particles.size(); i++) {
