@@ -8,7 +8,7 @@
 #include <QHash>
 #include "tilebag.h"
 
-qreal delay = 1.666666; // delay per pixel. 1 second every 600 pixels
+qreal delay = 1.4; // delay per pixel
 
 QPointF mulp(QPointF a, QPointF b)
 {
@@ -540,7 +540,7 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     setZValue(300);
     setVisible(false);
 
-    timer.setInterval(delay * 25);
+    timer.setInterval(delay * 20);
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
 }
 
@@ -560,7 +560,10 @@ void ArcAnimation::finish()
 
 void ArcAnimation::do_timeout()
 {
-    length += 40;
+    qreal delta = 40;
+    if (length == 0) delta = 5;
+
+    length += delta;
 
     if (length > maxLength) {
         finish();
@@ -568,8 +571,6 @@ void ArcAnimation::do_timeout()
     }
 
     setVisible(true);
-
-    qreal delta = length - previousLength;
 
     previousLength = length;
 
@@ -589,7 +590,7 @@ void ArcAnimation::do_timeout()
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
 
-        if (p->currentLength > 0) {
+        if ((p->currentLength > 0) || (delta < 40)) {
             p->currentLength += delta;
         }
         else {

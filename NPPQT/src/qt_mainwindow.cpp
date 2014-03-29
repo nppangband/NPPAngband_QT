@@ -274,7 +274,7 @@ void MainWindow::slot_something()
     if (!get_aim_dir(&dir, false) || dir == 0) return;
     int k = rand_int(8);
 
-    //k = 2;
+    //k = 0;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
