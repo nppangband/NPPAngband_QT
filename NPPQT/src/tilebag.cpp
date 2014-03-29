@@ -26,6 +26,8 @@ QPixmap TileBag::get_tile(QString name)
 {
     if (!pak->is_open()) return ui_make_blank();
 
+    if (!name.endsWith(".png")) name += ".png";
+
     QPixmap pix;
     if (cache.find(name, &pix)) {            // Cache hit?
         return pix;

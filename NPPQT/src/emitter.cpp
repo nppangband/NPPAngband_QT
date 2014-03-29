@@ -495,7 +495,7 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     byte idx = gf_color(gf_type);
     color = defined_colors[idx % MAX_COLORS];
 
-    QPixmap pix = tiles_projections->get_tile("ball1.png");
+    QPixmap pix = tiles_projections->get_tile("ball1");
     pix = colorize_pix2(pix, color);
 
     tiles.append(pix);

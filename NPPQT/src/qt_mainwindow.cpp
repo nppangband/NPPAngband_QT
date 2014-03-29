@@ -385,6 +385,7 @@ void MainWindow::wait_animation()
 void MainWindow::animation_done()
 {
     if (--anim_depth < 1) {
+        if (!anim_loop.isRunning()) qDebug("Anim loop isn't running");
         //qDebug("Quitting %d", anim_depth);
         anim_loop.quit();
         anim_depth = 0;

@@ -55,8 +55,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         QString name = monster_desc(m_ptr, 0x08);
         int gain_m = calc_energy_gain(m_ptr->m_speed);
         int gain_p = calc_energy_gain(p_ptr->state.p_speed);
-        QString msg = QString("%1 - Energy: %2 - Player energy: %3").arg(name)
-                .arg(gain_m).arg(gain_p);
+        QString msg = QString("%1 - HP: %4 - Energy: %2 - Player energy: %3").arg(name)
+                .arg(gain_m).arg(gain_p).arg(m_ptr->hp);
         QLabel *lb3 = new QLabel(capitalize_first(msg));
         lay2->addWidget(lb3, row, col++);
 
