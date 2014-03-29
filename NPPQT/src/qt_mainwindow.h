@@ -42,9 +42,9 @@ public:
     int ui_mode;
     UserInput input;
     QEventLoop ev_loop;
-    int loop_depth;
-    void start_loop();
-    void stop_loop();
+
+    int anim_depth;
+    QEventLoop anim_loop;
 
     DungeonGrid *grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
@@ -86,6 +86,8 @@ public:
     void rebuild_tile(QString key);
     bool running_command();
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
+    void wait_animation();
+    void animation_done();
 
 protected:
     void closeEvent(QCloseEvent *event);

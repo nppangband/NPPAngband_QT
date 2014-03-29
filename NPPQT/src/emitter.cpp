@@ -240,7 +240,7 @@ NPPAnimation::NPPAnimation()
 NPPAnimation::~NPPAnimation()
 {
     if (next) next->start();
-    main_window->stop_loop();
+    main_window->animation_done();
     if (anim) delete anim;
 }
 
@@ -248,7 +248,6 @@ void NPPAnimation::start()
 {
     if (anim) {
         anim->start();
-        main_window->start_loop();
     }
 }
 
@@ -547,14 +546,13 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
 void ArcAnimation::start()
 {
     timer.start();
-    main_window->start_loop();
 }
 
 void ArcAnimation::finish()
 {
     this->setVisible(false);
     timer.stop();
-    main_window->stop_loop();
+    main_window->animation_done();
     this->deleteLater();
 }
 
@@ -697,13 +695,12 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
 void StarAnimation::start()
 {
     timer.start();
-    main_window->start_loop();
 }
 
 void StarAnimation::stop()
 {
     timer.stop();
-    main_window->stop_loop();
+    main_window->animation_done();
     this->setVisible(false);
     this->scene()->removeItem(this);
     for (int i = 0; i < particles.size(); i++) {
@@ -799,13 +796,12 @@ HaloAnimation::HaloAnimation(int y, int x)
 void HaloAnimation::start()
 {
     timer.start();
-    main_window->start_loop();
 }
 
 void HaloAnimation::stop()
 {
     timer.stop();
-    main_window->stop_loop();
+    main_window->animation_done();
     if (scene()) scene()->removeItem(this);
     this->deleteLater();
 }

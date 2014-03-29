@@ -169,7 +169,6 @@ UserInput ui_get_input()
         temp.key = 0;
         temp.x = temp.y = -1;
         temp.text.clear();
-        main_window->stop_loop();
         return temp;
     }
 
@@ -178,8 +177,6 @@ UserInput ui_get_input()
     main_window->input.mode = INPUT_MODE_NONE;
 
     main_window->cursor->update();
-
-    main_window->start_loop();
 
     main_window->ev_loop.exec();
 
@@ -291,7 +288,7 @@ void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
     BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
     main_window->dungeon_scene->addItem(ball);
     ball->start();
-    main_window->ev_loop.exec();
+    main_window->wait_animation();
 }
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
@@ -299,7 +296,7 @@ void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int de
     ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
     main_window->dungeon_scene->addItem(arc);
     arc->start();
-    main_window->ev_loop.exec();
+    main_window->wait_animation();
 }
 
 void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
@@ -307,7 +304,7 @@ void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
     BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
     main_window->dungeon_scene->addItem(beam);
     beam->start();
-    main_window->ev_loop.exec();
+    main_window->wait_animation();
 }
 
 void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
@@ -315,7 +312,7 @@ void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
-    main_window->ev_loop.exec();
+    main_window->wait_animation();
 }
 
 void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
@@ -323,7 +320,7 @@ void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
-    main_window->ev_loop.exec();
+    main_window->wait_animation();
 }
 
 void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
@@ -331,7 +328,7 @@ void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int
     StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
     main_window->dungeon_scene->addItem(star);
     star->start();
-    main_window->ev_loop.exec();
+    main_window->wait_animation();
 }
 
 void MainWindow::slot_find_player()
@@ -364,7 +361,7 @@ void ui_animate_victory(int y, int x)
     b1->start();
     h1->start();
 
-    main_window->ev_loop.exec();
+    main_window->wait_animation();
 }
 
 void MainWindow::slot_redraw()
@@ -374,29 +371,25 @@ void MainWindow::slot_redraw()
     ui_animate_victory(p_ptr->py, p_ptr->px);
 }
 
-void MainWindow::start_loop()
+void MainWindow::wait_animation()
 {
-    if (loop_depth == 0) {
-        if (ev_loop.isRunning()) {
-            pop_up_message_box("Event loop already running");
-            return;
+    if (++anim_depth == 1) {
+        if (anim_loop.isRunning()) qDebug("Already running animation");
+        //qDebug("Animation loop %x", (int)&anim_loop);
+        if (anim_loop.exec() == -1) {
+            qDebug("Exec failed");
         }
     }
-
-    ++loop_depth;
 }
 
-void MainWindow::stop_loop()
+void MainWindow::animation_done()
 {
-    if (!ev_loop.isRunning()) {
-        pop_up_message_box("Event loop is not running");
-        return;
-    }
-
-    loop_depth = MAX(loop_depth - 1, 0);
-
-    if (loop_depth == 0) {
-        ev_loop.quit();
+    if (--anim_depth < 1) {
+        //qDebug("Quitting %d", anim_depth);
+        anim_loop.quit();
+        anim_depth = 0;
+        // MEGA HACK - Process some pending events (not user input) to (hopefully) avoid strange behavior
+        anim_loop.processEvents(QEventLoop::ExcludeUserInputEvents, 200);
     }
 }
 
@@ -583,6 +576,8 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (!character_dungeon) return;
 
+    if (parent->anim_depth > 0) return;
+
     int old_x = parent->cursor->c_x;
     int old_y = parent->cursor->c_y;
     parent->grids[old_y][old_x]->update();
@@ -590,7 +585,8 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         parent->input.x = c_x;
         parent->input.y = c_y;
         parent->input.mode = INPUT_MODE_MOUSE;
-        parent->stop_loop();
+        parent->ui_mode = UI_MODE_DEFAULT;
+        parent->ev_loop.quit();
     }
     else if (!parent->ev_loop.isRunning()) {
         parent->cursor->setVisible(true);
@@ -1163,7 +1159,7 @@ MainWindow::MainWindow()
     // Store a reference for public functions (panel_contains and others)
     if (!main_window) main_window = this;
 
-    loop_depth = 0;
+    anim_depth = 0;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -1177,7 +1173,6 @@ MainWindow::MainWindow()
     dungeon_scene = new QGraphicsScene;
     graphics_view = new QGraphicsView(dungeon_scene);
     graphics_view->installEventFilter(this);
-    //graphics_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
     QWidget *central = new QWidget;
     setCentralWidget(central);
@@ -1362,6 +1357,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::KeyPress)
     {
         this->keyPressEvent(dynamic_cast<QKeyEvent *>(event));
+
         return true;
     }
 
@@ -1382,6 +1378,8 @@ static void process_mov_key(QKeyEvent *event, int dir)
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
+    if (anim_depth > 0) return;
+
     // TODO PLAYTESTING
     debug_rarities();
 
@@ -1392,12 +1390,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         input.key = which_key->key();
         input.text = keystring;
         input.mode = INPUT_MODE_KEY;
-        stop_loop();
-        return;
-    }
-
-    // Don't move when doing animations
-    if (ev_loop.isRunning()) {
+        ui_mode = UI_MODE_DEFAULT;
+        ev_loop.quit();
         return;
     }
 
@@ -1978,7 +1972,8 @@ void MainWindow::slot_targetting_button()
     input.text = snd->objectName();
     input.key = snd->property("key").toInt();
     input.mode = INPUT_MODE_KEY;
-    stop_loop();
+    ui_mode = UI_MODE_DEFAULT;
+    ev_loop.quit();
 }
 
 // Just find an initial font to start the game
