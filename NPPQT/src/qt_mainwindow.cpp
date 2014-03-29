@@ -389,7 +389,7 @@ void MainWindow::animation_done()
         anim_loop.quit();
         anim_depth = 0;
         // MEGA HACK - Process some pending events (not user input) to (hopefully) avoid strange behavior
-        anim_loop.processEvents(QEventLoop::ExcludeUserInputEvents, 200);
+        anim_loop.processEvents(QEventLoop::ExcludeUserInputEvents, 100);
     }
 }
 
