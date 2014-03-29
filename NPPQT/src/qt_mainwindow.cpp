@@ -826,6 +826,17 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                           Qt::AlignCenter, QString(square_char));
     }
 
+    // Show a red line over a monster with its remaining hp
+    if (d_ptr->has_visible_monster() && d_ptr->monster_idx > 0) {
+        monster_type *m_ptr = mon_list + d_ptr->monster_idx;
+        if (m_ptr->maxhp > 0 && m_ptr->hp < m_ptr->maxhp) {
+            int w = parent->cell_wid * m_ptr->hp / m_ptr->maxhp;
+            w = MAX(w, 1);
+            painter->setPen(QColor("red"));
+            painter->drawLine(0, 0, w - 1, 0);
+        }
+    }
+
     // Draw a mark for visible artifacts
     if (d_ptr->has_visible_artifact()) {
         int s = 6;
