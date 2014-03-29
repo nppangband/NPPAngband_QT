@@ -361,7 +361,7 @@ void ui_animate_victory(int y, int x)
     b1->start();
     h1->start();
 
-    main_window->wait_animation();
+    main_window->wait_animation(2);
 }
 
 void MainWindow::slot_redraw()
@@ -371,9 +371,11 @@ void MainWindow::slot_redraw()
     ui_animate_victory(p_ptr->py, p_ptr->px);
 }
 
-void MainWindow::wait_animation()
+void MainWindow::wait_animation(int n_animations)
 {
-    if (++anim_depth == 1) {
+    anim_depth += n_animations;
+
+    if (anim_depth == n_animations) {
         if (anim_loop.isRunning()) qDebug("Already running animation");
         //qDebug("Animation loop %x", (int)&anim_loop);
         if (anim_loop.exec() == -1) {

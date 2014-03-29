@@ -86,7 +86,7 @@ public:
     void rebuild_tile(QString key);
     bool running_command();
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
-    void wait_animation();
+    void wait_animation(int n_animations = 1);
     void animation_done();
 
 protected:
