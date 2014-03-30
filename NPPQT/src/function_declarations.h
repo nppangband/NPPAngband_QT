@@ -69,6 +69,7 @@ extern void command_tunnel(cmd_arg args);
 extern void do_cmd_tunnel(void);
 extern void command_close(cmd_arg args);
 extern void do_cmd_close(void);
+extern void do_cmd_alter_aux(int dir);
 
 
 // cmd3.cpp

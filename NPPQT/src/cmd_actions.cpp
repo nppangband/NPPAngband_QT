@@ -1709,3 +1709,107 @@ void do_cmd_close(void)
 
     command_close(args);
 }
+
+void do_cmd_alter_aux(int dir)
+{
+    int y, x;
+
+    u16b feat;
+
+    bool more = FALSE;
+
+    /* Get a direction */
+    if (!dir && !get_rep_dir(&dir)) return;
+
+    /* Get location */
+    y = p_ptr->py + ddy[dir];
+    x = p_ptr->px + ddx[dir];
+
+    /* Original feature */
+    feat = dungeon_info[y][x].feat;
+
+    /* Must have knowledge to know feature XXX XXX */
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) feat = FEAT_NONE;
+
+    /* Apply confusion */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        y = p_ptr->py + ddy[dir];
+        x = p_ptr->px + ddx[dir];
+    }
+
+    // TODO solve this
+#if 0
+    /* Allow repeated command */
+    if (p_ptr->command_arg)
+    {
+        /* Set repeat count */
+        p_ptr->command_rep = p_ptr->command_arg - 1;
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+
+        /* Cancel the arg */
+        p_ptr->command_arg = 0;
+    }
+#endif
+
+    /*Is there a monster on the space?*/
+    if (dungeon_info[y][x].monster_idx > 0)
+    {
+        py_attack(y, x);
+    }
+
+    /* Tunnel through walls */
+    else if (feat_ff1_match(feat, FF1_DOOR | FF1_CAN_TUNNEL) ==	(FF1_CAN_TUNNEL))
+    {
+        /* Tunnel */
+        more = do_cmd_tunnel_aux(y, x);
+    }
+#if 0
+    /* Bash jammed doors */
+    else if (feat_ff1_match(feat, FF1_CAN_BASH))
+    {
+        /* Bash */
+        more = do_cmd_bash_aux(y, x);
+    }
+#endif
+    /* Open closed doors */
+    else if (feat_ff1_match(feat, FF1_CAN_OPEN))
+    {
+        /* Open */
+        more = do_cmd_open_aux(y, x);
+    }
+
+    /* Disarm traps */
+    else if (cave_any_trap_bold(y, x))
+    {
+        /* Disarm */
+        more = do_cmd_disarm_aux(y, x, TRUE);
+    }
+
+#if 0
+
+    /* Close open doors */
+    else if (feat_ff1_match(feat, FF1_CAN_CLOSE))
+    {
+        /* Close */
+        more = do_cmd_close_aux(y, x);
+    }
+
+#endif
+
+    /* Oops */
+    else
+    {
+        /* Oops */
+        message("You spin around.");
+    }
+
+    /* Cancel repetition unless we can continue */
+    if (!more) disturb(0, 0);
+
+    // Take a turn
+    process_player_energy(BASE_ENERGY_MOVE);
+}

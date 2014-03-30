@@ -838,7 +838,9 @@ void move_player(int dir, int jumping)
 		}
 
 		/* Alter */
-        // TODO do_cmd_alter_aux(dir);
+        do_cmd_alter_aux(dir);
+
+        used_energy = 0; // Hack - already processed energy in alter_aux
 	}
 
 	/* Player can not walk through certain terrain */
@@ -1069,7 +1071,7 @@ void move_player(int dir, int jumping)
 		}
 
 		/* Record the energy for flying creatures.*/
-		if (p_ptr->timed[TMD_FLYING])	used_energy = BASE_ENERGY_MOVE;
+        if (p_ptr->timed[TMD_FLYING]) used_energy = BASE_ENERGY_FLYING;
 
 		/* Reveal when you are on shallow or deep  terrain */
         else if (!(dungeon_info[y][x].cave_info & (CAVE_MARK)) &&
