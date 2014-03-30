@@ -62,6 +62,9 @@ extern void do_cmd_go_up(void);
 extern void do_cmd_go_down(void);
 extern void command_open(cmd_arg args);
 extern void do_cmd_open(void);
+extern void command_disarm(cmd_arg args);
+extern void do_cmd_disarm(void);
+
 
 // cmd3.cpp
 extern void wield_in_quiver(object_type *o_ptr, int slot);

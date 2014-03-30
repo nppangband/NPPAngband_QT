@@ -1528,7 +1528,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_D:
         {            
             if (keystring == "d")   do_cmd_drop();
-            else                    do_cmd_destroy();
+            else                    do_cmd_disarm();
             return;
         }
         case Qt::Key_BraceLeft:
@@ -1559,6 +1559,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "p") do_cmd_cast();
             else if (keystring == "b") do_cmd_browse();
             else if (keystring == "e") do_cmd_use_item();
+            else if (keystring == "k") do_cmd_destroy();
             else if (keystring == "t") do_cmd_takeoff();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();
@@ -1568,6 +1569,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
                 object_type obj, *o_ptr = &obj;
                 o_ptr->object_wipe();
                 make_object(o_ptr, false, false, DROP_TYPE_CHEST, false);
+                object_known(o_ptr);
                 drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
             }
             else

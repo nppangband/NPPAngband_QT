@@ -872,3 +872,413 @@ void do_cmd_open(void)
 
     command_open(args);
 }
+
+/*
+ * Attempt to disarm the chest at the given location
+ *
+ * Assume there is no monster blocking the destination
+ *
+ * Returns TRUE if repeated commands may continue
+ */
+static bool do_cmd_disarm_chest(int y, int x, s16b o_idx)
+{
+    int i, j;
+
+    bool more = FALSE;
+
+    object_type *o_ptr = &o_list[o_idx];
+
+    /* Get the "disarm" factor */
+    i = p_ptr->state.skills[SKILL_DISARM];
+
+    /* Penalize some conditions */
+    if (p_ptr->timed[TMD_BLIND] || no_light()) i = i / 10;
+    if (p_ptr->timed[TMD_CONFUSED] || p_ptr->timed[TMD_IMAGE]) i = i / 10;
+
+    /* Extract the difficulty */
+    j = i - o_ptr->pval;
+
+    /* Always have a small chance of success */
+    if (j < 2) j = 2;
+
+    /* Must find the trap first. */
+    if (!object_known_p(o_ptr))
+    {
+        message("I don't see any traps.");
+    }
+
+    /* Already disarmed/unlocked */
+    else if (o_ptr->pval <= 0)
+    {
+        message("The chest is not trapped.");
+    }
+
+    /* No traps to find. */
+    else if (!chest_traps[o_ptr->pval])
+    {
+        message("The chest is not trapped.");
+    }
+
+    /* Success (get a lot of experience) */
+    else if (rand_int(100) < j)
+    {
+        message("You have disarmed the chest.");
+        gain_exp(o_ptr->pval);
+        o_ptr->pval = (0 - o_ptr->pval);
+    }
+
+    /* Failure -- Keep trying */
+    else if ((i > 5) && (randint(i) > 5))
+    {
+        /* We may keep trying */
+        more = TRUE;
+        //if (flush_failure) flush();
+        message("You failed to disarm the chest.");
+    }
+
+    /* Failure -- Set off the trap */
+    else
+    {
+        message("You set off a trap!");
+        chest_trap(y, x, o_idx);
+    }
+
+    /* Result */
+    return (more);
+}
+
+/*
+ * Perform the basic "disarm" command
+ *
+ * Assume there is no monster blocking the destination
+ *
+ * Returns TRUE if repeated commands may continue
+ */
+static bool do_cmd_disarm_aux(int y, int x, bool disarm)
+{
+    int i, j, power;
+
+    QString act;
+
+    QString name;
+
+    bool more = FALSE;
+
+    int feat;
+
+    feature_lore *f_l_ptr;
+
+    /* Arm or disarm */
+    if (disarm) act = "disarm";
+    else act = "arm";
+
+    /* Verify legality */
+    if (!cave_any_trap_bold(y, x)) return (FALSE);
+
+    feat = x_list[dungeon_info[y][x].effect_idx].x_f_idx;
+
+    f_l_ptr = &f_l_list[feat];
+
+    /* Get the trap name */
+    name = feature_desc(feat, FALSE, TRUE);
+
+    /* Get the "disarm" factor */
+    i = p_ptr->state.skills[SKILL_DISARM];
+
+    /* Penalize some conditions */
+    if (p_ptr->timed[TMD_BLIND] || no_light()) i = i / 10;
+    if (p_ptr->timed[TMD_CONFUSED] || p_ptr->timed[TMD_IMAGE]) i = i / 10;
+
+    /* XXX XXX XXX Variable power? */
+
+    /* Extract trap "power" */
+    power = 5 + p_ptr->depth / 4;
+
+    /* Prevent the player's own traps granting exp. */
+    if (feat_ff2_match(feat, FF2_TRAP_MON)) power = 0;
+
+    /* Prevent glyphs of warding granting exp. */
+    if  (feat_ff1_match(feat, FF1_GLYPH)) power = 0;
+
+    /* Extract the difficulty */
+    j = i - power;
+
+    /* Always have a small chance of success */
+    if (j < 2) j = 2;
+
+    /*Mark the feature lore*/
+    f_l_ptr->f_l_flags1 |= (FF1_CAN_DISARM);
+
+    /* Success, always succeed with player trap or glyphs */
+    if (feat_ff2_match(feat, FF2_TRAP_MON) ||
+        feat_ff1_match(feat, FF1_GLYPH) || (rand_int(100) < j))
+    {
+
+        /* Special message for glyphs. */
+        if  (feat_ff1_match(feat, FF1_GLYPH))
+            message(QString("You have desanctified the %1.").arg(name));
+
+        /* Normal message otherwise */
+        else message(QString("You have %1ed the %2.").arg(act).arg(name));
+
+        /* If a Rogue's monster trap, decrement the trap count. */
+        if (feat_ff2_match(feat, FF2_TRAP_MON)) num_trap_on_level--;
+
+        /* Reward */
+        gain_exp(power);
+
+        /* Disarm */
+        delete_effect_idx(dungeon_info[y][x].effect_idx);
+
+        /* Forget the trap */
+        dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
+
+        /* Check if the grid is still viewable */
+        note_spot(y, x);
+
+        light_spot(y, x);
+    }
+
+    /* Failure -- Keep trying */
+    else if ((i > 5) && (randint(i) > 5))
+    {
+        /* Failure */
+        //if (flush_failure) flush();
+
+        /* Message */
+        message(QString("You failed to %1 the %2.").arg(act).arg(name));
+
+        /* We may keep trying */
+        more = TRUE;
+    }
+
+    /* Failure -- Set off the trap */
+    else if (cave_passive_trap_bold(y, x))
+    {
+        /* Message */
+        message(QString("You set off the %1!").arg(name));
+
+        /* Hit the trap */
+        hit_trap(feat, y, x, MODE_ACTION);
+    }
+
+    /* Result */
+    return (more);
+}
+
+/*
+ * Return the number of traps or glyphs around (or under) the character.
+ * If requested, count only known traps.
+ */
+static int count_traps(int *y, int *x, bool known)
+{
+    int d, count;
+
+    effect_type *x_ptr;
+
+    /* Count how many matches */
+    count = 0;
+
+    /* Check around (and under) the character */
+    for (d = 0; d < 9; d++)
+    {
+        /* Extract adjacent (legal) location */
+        int yy = p_ptr->py + ddy_ddd[d];
+        int xx = p_ptr->px + ddx_ddd[d];
+
+        /* No trap effect is there */
+        if (!cave_any_trap_bold(yy, xx)) continue;
+
+        /* Grab the object */
+        x_ptr = &x_list[dungeon_info[yy][xx].effect_idx];
+
+        /* Hidden */
+        if ((known) && (x_ptr->x_flags & (EF1_HIDDEN))) continue;
+
+        /* Count it */
+        ++count;
+
+        /* Remember the location of the last trap found */
+        *y = yy;
+        *x = xx;
+    }
+
+    /* All done */
+    return (count);
+}
+
+/*
+ * Disarms a trap, or a chest
+ */
+void command_disarm(cmd_arg args)
+{
+    int dir = args.direction;
+    int dir_y, dir_x, chest_y, chest_x, trap_y, trap_x;
+
+    int num_traps, o_idx, num_chests;
+
+    bool more = FALSE;
+
+    /* Get location */
+    chest_y = trap_y = dir_y = p_ptr->py + ddy[dir];
+    chest_x = trap_x = dir_x = p_ptr->px + ddx[dir];
+
+    /* Count visible traps */
+    num_traps = count_traps(&trap_y, &trap_x, TRUE);
+
+    /* Count chests (trapped) */
+    num_chests = count_chests(&chest_y, &chest_x, TRUE);
+
+    /* Check for trapped chests */
+    o_idx = chest_check(chest_y, chest_x, TRUE);
+
+    /* Verify legality */
+    if (!num_traps && !num_chests) return;
+
+    /* Easy Disarm */
+    if (easy_open)
+    {
+        /* See if only one target */
+        if ((num_traps + num_chests) == 1)
+        {
+            if (num_traps)
+            {
+                dir_y = trap_y;
+                dir_x = trap_x;
+            }
+            else  /* (num_chests) */
+            {
+                dir_y = chest_y;
+                dir_x = chest_x;
+            }
+
+            // TODO solve this
+            //p_ptr->command_dir = coords_to_dir(dir_y, dir_x);
+        }
+    }
+
+    /* Apply confusion */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        chest_y = trap_y = dir_y = p_ptr->py + ddy[dir];
+        chest_x = trap_x = dir_x = p_ptr->px + ddx[dir];
+
+        /* re-count the chests and traps */
+        num_traps = count_traps(&trap_y, &trap_x, TRUE);
+
+        num_chests= count_chests(&chest_y, &chest_x, TRUE);
+        o_idx = chest_check(chest_y, chest_x, TRUE);
+
+        /* Verify legality */
+        if (!num_traps && !num_chests)
+        {
+            message("You are too confused!");
+            process_player_energy(BASE_ENERGY_MOVE);
+            return;
+        }
+
+        if (num_chests)
+        {
+            dir_y = chest_y;
+            dir_x = chest_x;
+        }
+        else  /* (num_traps) */
+        {
+            dir_y = trap_y;
+            dir_x = trap_x;
+        }
+    }
+    /* One final check to see if we are opening a chest or a trap, if both are present */
+    else if ((num_chests) && (num_traps))
+    {
+        /* Did the player initially specify a trap or a chest? */
+        if (cave_any_trap_bold(dir_y, dir_x))
+        {
+            num_chests = 0;
+            trap_y = dir_y;
+            trap_x = dir_x;
+        }
+    }
+
+    // TODO solve this
+#if 0
+    /* Allow repeated command */
+    if (p_ptr->command_arg)
+    {
+        /* Set repeat count */
+        p_ptr->command_rep = p_ptr->command_arg - 1;
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+
+        /* Cancel the arg */
+        p_ptr->command_arg = 0;
+    }
+#endif
+
+    /* Monster */
+    if (dungeon_info[dir_y][dir_x].monster_idx > 0)
+    {
+        /* Message */
+        message("There is a monster in the way!");
+
+        /* Attack */
+        py_attack(dir_y, dir_x);
+    }
+
+    /* Chest */
+    else if (num_chests)
+    {
+
+        /* Disarm the chest if confused, or only one */
+        if ((p_ptr->timed[TMD_CONFUSED]) || (num_chests == 1))
+        {
+            more = do_cmd_disarm_chest(chest_y, chest_x, o_idx);
+        }
+
+        /* More than one */
+        else
+        {
+            QString q, s;
+            o_idx = 0;
+
+            /* Get an item */
+            q = "Disarm which chest? ";
+            s = "There are no trapped chests in that direction!";
+
+            /*clear the restriction*/
+            item_tester_hook = chest_requires_disarming;
+
+            /*player chose escape*/
+            if (!get_item_beside(&o_idx, q, s, chest_y, chest_x)) more = 0;
+
+            /* Disarm the chest */
+            else more = do_cmd_disarm_chest(chest_y, chest_x, -o_idx);
+        }
+    }
+
+    /* Disarm trap */
+    else
+    {
+        /* Disarm the trap */
+        more = do_cmd_disarm_aux(trap_y, trap_x, TRUE);
+    }
+
+    /* Cancel repeat unless told not to */
+    if (!more) disturb(0, 0);
+
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_disarm(void)
+{
+    int dir;
+
+    if (!get_rep_dir(&dir)) return;
+
+    cmd_arg args;
+    args.direction = dir;
+
+    command_disarm(args);
+}
