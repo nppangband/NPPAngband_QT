@@ -240,7 +240,7 @@ NPPAnimation::NPPAnimation()
 NPPAnimation::~NPPAnimation()
 {
     if (next) next->start();
-    main_window->animation_done();
+    else main_window->animation_done();
     if (anim) delete anim;
 }
 
@@ -255,7 +255,10 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
 {
     flg = new_flg;
     gf_type = new_gf_type;
-    if (gf_type > 0) color = defined_colors[gf_color(gf_type) % MAX_COLORS];
+    if (gf_type > 0) {
+        int color_idx = gf_color(gf_type) % MAX_COLORS;
+        color = defined_colors[color_idx];
+    }
 
     from = getCenter(from.y(), from.x());
     to = getCenter(to.y(), to.x());

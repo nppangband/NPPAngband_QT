@@ -346,6 +346,414 @@ static bool do_cmd_open_aux(int y, int x)
 }
 
 /*
+ * Determine if a grid contains a chest
+ */
+static s16b chest_check(int y, int x, bool check_locked)
+{
+    s16b this_o_idx, next_o_idx = 0;
+
+
+    /* Scan all objects in the grid */
+    for (this_o_idx = dungeon_info[y][x].object_idx; this_o_idx; this_o_idx = next_o_idx)
+    {
+        object_type *o_ptr;
+
+        /* Get the object */
+        o_ptr = &o_list[this_o_idx];
+
+        /* Get the next object */
+        next_o_idx = o_ptr->next_o_idx;
+
+        /* Skip unknown chests XXX XXX */
+        /* if (!o_ptr->marked) continue; */
+
+        /* Check for chest */
+        if (o_ptr->tval != TV_CHEST) continue;
+
+        /* Don't count special quest items */
+        if (o_ptr->ident & (IDENT_QUEST)) continue;
+
+        /* Handle the option to check if it is locked*/
+        if (check_locked)
+        {
+            /* Ignore disarmed chests or chests with no traps. */
+            if ((o_ptr->pval <= 0) || (!chest_traps[o_ptr->pval])) continue;
+        }
+
+        /*Success*/
+        return (this_o_idx);
+    }
+
+    /* No chest */
+    return (0);
+}
+
+/*
+ * Return the number of chests around (or under) the character.
+ * If requested, count only trapped chests.
+ */
+int count_chests(int *y, int *x, bool trapped)
+{
+    int d, count, o_idx;
+
+    object_type *o_ptr;
+
+    /* Count how many matches */
+    count = 0;
+
+    /* Check around (and under) the character */
+    for (d = 0; d < 9; d++)
+    {
+        /* Extract adjacent (legal) location */
+        int yy = p_ptr->py + ddy_ddd[d];
+        int xx = p_ptr->px + ddx_ddd[d];
+
+        /* No (visible) chest is there */
+        if ((o_idx = chest_check(yy, xx, trapped)) == 0) continue;
+
+        /* Grab the object */
+        o_ptr = &o_list[o_idx];
+
+        /* Hack - Don't open mimic chests */
+        if (o_ptr->mimic_r_idx) continue;
+
+        /* Don't count special quest items */
+        if (o_ptr->ident & (IDENT_QUEST)) continue;
+
+        /* No (known) traps here */
+        if (trapped &&
+            (!object_known_p(o_ptr) ||
+             (o_ptr->pval < 0) ||
+             !chest_traps[o_ptr->pval]))
+        {
+            continue;
+        }
+
+        /* Count it */
+        ++count;
+
+        /* Remember the location of the last chest found */
+        *y = yy;
+        *x = xx;
+    }
+
+    /* All done */
+    return count;
+}
+
+/*
+ * Chests have traps too.
+ *
+ * Exploding chest destroys contents (and traps).
+ * Note that the chest itself is never destroyed.
+ */
+static void chest_trap(int y, int x, s16b o_idx)
+{
+    int i, trap;
+
+    object_type *o_ptr = &o_list[o_idx];
+
+    /* Ignore disarmed chests */
+    if (o_ptr->pval <= 0) return;
+
+    /* Obtain the traps */
+    trap = chest_traps[o_ptr->pval];
+
+    /* Lose strength */
+    if (trap & (CHEST_LOSE_STR))
+    {
+        message("A small needle has pricked you!");
+        take_hit(damroll(1, 4), "a poison needle");
+        (void)do_dec_stat(A_STR);
+    }
+
+    /* Lose constitution */
+    if (trap & (CHEST_LOSE_CON))
+    {
+        message("A small needle has pricked you!");
+        take_hit(damroll(1, 4), "a poison needle");
+        (void)do_dec_stat(A_CON);
+    }
+
+    /* Poison */
+    if (trap & (CHEST_POISON))
+    {
+        message("A puff of green gas surrounds you!");
+        if (!(p_ptr->state.resist_pois || p_ptr->timed[TMD_OPP_POIS] || p_ptr->state.immune_pois))
+        {
+            (void)inc_timed(TMD_POISONED, 10 + randint(20), TRUE);
+        }
+    }
+
+    /* Paralyze */
+    if (trap & (CHEST_PARALYZE))
+    {
+        message("A puff of yellow gas surrounds you!");
+        if (!p_ptr->state.free_act)
+        {
+            (void)inc_timed(TMD_PARALYZED, 10 + randint(20), TRUE);
+        }
+    }
+
+    /* Summon monsters */
+    if (trap & (CHEST_SUMMON))
+    {
+        int num = 2 + randint(3);
+        message("You are enveloped in a cloud of smoke!");
+        sound(MSG_SUM_MONSTER);
+        for (i = 0; i < num; i++)
+        {
+            (void)summon_specific(y, x, p_ptr->depth, 0, MPLACE_OVERRIDE);
+        }
+    }
+
+    /* Explode */
+    if (trap & (CHEST_EXPLODE))
+    {
+        message("There is a sudden explosion!");
+        message("Everything inside the chest is destroyed!");
+        o_ptr->pval = 0;
+        o_ptr->xtra1 = 0;
+        take_hit(damroll(5, 8), "an exploding chest");
+
+        /* squelch chest */
+        delete_object_idx(o_idx);
+        message("The chest is destroyed.");
+    }
+}
+
+/*
+ * Allocate objects upon opening a chest
+ *
+ * Disperse treasures from the given chest, centered at (x,y).
+ *
+ */
+static void chest_death(int y, int x, s16b o_idx)
+{
+    int number, quality, num;
+
+    int chesttheme = 0;
+
+    int minlevel = 0;
+
+    object_type *o_ptr;
+
+    object_type *i_ptr;
+
+    object_type object_type_body;
+
+    /* Get the chest */
+    o_ptr = &o_list[o_idx];
+
+    /* Determine how much to drop (see above)
+     *
+     * Small chests get 3-5 objects */
+
+    number = 2 + randint (3);
+
+    /* large chests get 5-7*/
+    if (o_ptr->sval >= SV_CHEST_MIN_LARGE) number += 2;
+
+    /*Jeweled chests get 7-10*/
+    if (o_ptr->sval == SV_CHEST_JEWELED_LARGE) number += randint (3);
+
+    /* Zero pval means empty chest */
+    if (!o_ptr->pval) return;
+
+    /* Opening a chest */
+    object_generation_mode = OB_GEN_MODE_CHEST;
+
+    /* Determine the "value" of the items */
+    object_level = ABS(o_ptr->pval);
+
+    /*paranoia*/
+    if (object_level < 1) object_level = 1;
+
+    /*the theme of the chest is created during object generation*/
+    chesttheme = (o_ptr->xtra1);
+
+    /*large chests have a better chance of great times*/
+    if (o_ptr->sval >= SV_CHEST_MIN_LARGE) minlevel = object_level / 4;
+
+    /*Hack - don't wan't results over 100*/
+    if ((object_level + minlevel) > 100) num = 100 - minlevel;
+
+    else num = object_level;
+
+    /* Drop some objects (non-chests) */
+    for (; number > 0; --number)
+    {
+        /* Get local object */
+        i_ptr = &object_type_body;
+
+        /*used to determine quality of item, gets more likely
+         *to be great as you get deeper.
+         */
+        quality = randint (num) + minlevel;
+
+        /* Moria has less levels */
+        if (game_mode == GAME_NPPMORIA) quality += quality / 5;
+
+        /* Wipe the object */
+        i_ptr->object_wipe();
+
+        /*theme 1 is gold, themes 2-15 are objects*/
+
+        if (chesttheme == DROP_TYPE_GOLD) make_gold(i_ptr);
+
+        else if (chesttheme >= 2)
+        {
+            bool good, great;
+
+            /* Regular objects in chests will become quite
+             * rare as depth approaches 5000'.
+             * All items with i > 50 are guaranteed great,
+             * all items with i > 80  get 4 chances
+             * to become an artifact.
+             * Chests should be extremely lucrative
+             * as a player approaches 5000'.
+             * For potions, scrolls, and wands, having the
+             * good and great flags checked increase the
+             * max object generation level, but have no
+             * other effect.  JG
+             */
+            if (quality < 26)
+            {
+                good = FALSE;
+                great = FALSE;
+            }
+            else if (quality < 51)
+            {
+                good = TRUE;
+                great = FALSE;
+            }
+            else if (quality < 81)
+            {
+                good = FALSE;
+                great = TRUE;
+            }
+            else
+            {
+                good = TRUE;
+                great = TRUE;
+            }
+
+            while (!make_object(i_ptr, good, great, chesttheme, FALSE)) continue;
+
+            /* Remember history */
+            object_history(i_ptr, ORIGIN_CHEST, 0);
+
+            /* Hack -- Remember depth of the chest */
+            i_ptr->origin_dlvl = o_ptr->origin_dlvl;
+        }
+
+        /* Drop it in the dungeon */
+        drop_near(i_ptr, -1, y, x);
+    }
+
+    /* Reset the object level */
+    object_level = p_ptr->depth;
+
+    /* No longer opening a chest */
+    object_generation_mode = OB_GEN_MODE_NORMAL;
+
+    /* Empty */
+    o_ptr->pval = 0;
+
+    /*Paranoia, delete chest theme*/
+    o_ptr->xtra1 = 0;
+
+    /* Known */
+    object_known(o_ptr);
+}
+
+/*
+ * Attempt to open the given chest at the given location
+ *
+ * Assume there is no monster blocking the destination
+ *
+ * Returns TRUE if repeated commands may continue
+ */
+static bool do_cmd_open_chest(int y, int x, s16b o_idx)
+{
+    int i, j;
+
+    bool flag = TRUE;
+
+    bool more = FALSE;
+
+    object_type *o_ptr = &o_list[o_idx];
+
+    /* paranoia - make sure it is a chest */
+    if (o_ptr->tval != TV_CHEST)
+    {
+        message("This object is not a chest!");
+        return (FALSE);
+    }
+
+    if (o_ptr->ident & (IDENT_QUEST))
+    {
+        message("This chest cannot be opened!");
+        return (FALSE);
+    }
+
+    /* Attempt to unlock it */
+    if (o_ptr->pval > 0)
+    {
+        /* Assume locked, and thus not open */
+        flag = FALSE;
+
+        /* Get the "disarm" factor */
+        i = p_ptr->state.skills[SKILL_DISARM];
+
+        /* Penalize some conditions */
+        if (p_ptr->timed[TMD_BLIND] || no_light()) i = i / 10;
+        if (p_ptr->timed[TMD_CONFUSED] || p_ptr->timed[TMD_IMAGE]) i = i / 10;
+
+        /* Extract the difficulty */
+        j = i - o_ptr->pval;
+
+        /* Always have a small chance of success */
+        if (j < 2) j = 2;
+
+        /* Success -- May still have traps */
+        if (rand_int(100) < j)
+        {
+            message("You have picked the lock.");
+            gain_exp(1);
+            flag = TRUE;
+        }
+
+        /* Failure -- Keep trying */
+        else
+        {
+            /* We may continue repeating */
+            more = TRUE;
+            //if (flush_failure) flush();
+            message("You failed to pick the lock.");
+        }
+    }
+
+    /* Allowed to open */
+    if (flag)
+    {
+        /* Apply chest traps, if any */
+        chest_trap(y, x, o_idx);
+
+        /* Let the Chest drop items */
+        chest_death(y, x, o_idx);
+
+        /* squelch chest */
+        delete_object_idx(o_idx);
+        message("Chest squelched after it was opened.");
+
+    }
+
+    /* Result */
+    return (more);
+}
+
+/*
  * Open a closed/locked/jammed door or a closed/locked chest.
  *
  * Unlocking a locked door/chest is worth one experience point.
@@ -365,8 +773,8 @@ void command_open(cmd_arg args)
     cx = x = p_ptr->px + ddx[dir];
 
     /* Check for chests */
-    //num_chests = count_chests(&y, &x, FALSE);
-    //o_idx = chest_check(y, x, FALSE);
+    num_chests = count_chests(&y, &x, FALSE);
+    o_idx = chest_check(y, x, FALSE);
 
     /* Verify legality */
     if (!o_idx && !do_cmd_test(y, x, FS_OPEN, TRUE)) return;
@@ -379,10 +787,11 @@ void command_open(cmd_arg args)
         cy = x = p_ptr->px + ddx[dir];
 
         /* Check for chest */
-        //num_chests = count_chests(&y, &x, FALSE);
-        //o_idx = chest_check(y, x, FALSE);
+        num_chests = count_chests(&y, &x, FALSE);
+        o_idx = chest_check(y, x, FALSE);
     }
 
+    // TODO solve this
 #if 0
     /* Allow repeated command */
     if (p_ptr->command_arg)
@@ -408,7 +817,6 @@ void command_open(cmd_arg args)
         py_attack(y, x);
     }
 
-#if 0
     /* Chest */
     else if (num_chests)
     {
@@ -421,7 +829,7 @@ void command_open(cmd_arg args)
         /* More than one */
         else
         {
-            cptr q, s;
+            QString q, s;
 
             o_idx = 0;
 
@@ -439,7 +847,6 @@ void command_open(cmd_arg args)
             else more = do_cmd_open_chest(cy, cx, -o_idx);
         }
     }
-#endif
 
     /* Door */
     else

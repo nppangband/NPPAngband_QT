@@ -1564,6 +1564,12 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "x") do_cmd_swap_weapon();
             else if (keystring == "o") do_cmd_open();
             else if (keystring == "z") describe_monster(644,TRUE,NULL);
+            else if (keystring == ";") {
+                object_type obj, *o_ptr = &obj;
+                o_ptr->object_wipe();
+                make_object(o_ptr, false, false, DROP_TYPE_CHEST, false);
+                drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
+            }
             else
             {
                 //  TODO something useful with unused keypresses
