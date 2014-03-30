@@ -60,6 +60,8 @@ extern void disturb(int stop_search, int unused_flag);
 extern bool do_cmd_test(int y, int x, int action, bool do_message);
 extern void do_cmd_go_up(void);
 extern void do_cmd_go_down(void);
+extern void command_open(cmd_arg args);
+extern void do_cmd_open(void);
 
 // cmd3.cpp
 extern void wield_in_quiver(object_type *o_ptr, int slot);
@@ -655,6 +657,8 @@ extern QSize ui_estimate_table_size(QTableWidget *table, bool horiz = true, bool
 extern QFont ui_current_font();
 extern QPixmap ui_make_blank();
 extern void ui_animate_victory(int y, int x);
+extern qreal ui_get_angle(int y1, int x1, int y2, int x2);
+extern QPoint ui_get_center(int y, int x);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);
@@ -870,6 +874,8 @@ extern void target_set_location(int y, int x);
 extern int target_dir(UserInput input);
 extern bool get_aim_dir(int *dp, bool target_trap);
 extern bool target_set_closest(int mode);
+extern bool get_rep_dir(int *dp);
+extern bool confuse_dir(int *dp);
 
 /* timed.c */
 

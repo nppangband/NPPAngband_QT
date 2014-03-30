@@ -1284,3 +1284,126 @@ bool target_set_closest(int mode)
 
     return TRUE;
 }
+
+/*
+ * Request a "movement" direction (1,2,3,4,6,7,8,9) from the user.
+ *
+ * Return TRUE if a direction was chosen, otherwise return FALSE.
+ *
+ * This function should be used for all "repeatable" commands, such as
+ * run, walk, open, close, bash, disarm, spike, tunnel, etc, as well
+ * as all commands which must reference a grid adjacent to the player,
+ * and which may not reference the grid under the player.
+ *
+ * Directions "5" and "0" are illegal and will not be accepted.
+ *
+ * This function tracks and uses the "global direction", and uses
+ * that as the "desired direction", if it is set.
+ */
+bool get_rep_dir(int *dp)
+{
+    int dir = 0;
+
+    /* Initialize */
+    (*dp) = 0;
+
+    /* Global direction */
+    //dir = p_ptr->command_dir;
+
+    if (!dir) {
+        color_message(QObject::tr("Enter a direction"), TERM_YELLOW);
+    }
+
+    /* Get a direction */
+    while (!dir)
+    {
+        UserInput input = ui_get_input();
+
+        if (input.mode == INPUT_MODE_KEY)
+        {
+            if (input.key == Qt::Key_Escape) {
+                return false;
+            }
+
+            dir = target_dir(input);
+        }\
+        /* Check mouse coordinates */
+        else if (input.mode == INPUT_MODE_MOUSE)
+        {
+            {
+                int y = input.y;
+                int x = input.x;
+
+                /* Calculate approximate angle */
+                qreal angle = ui_get_angle(p_ptr->py, p_ptr->px, y, x);
+
+                if (angle < 22.5) dir = 6;
+                else if (angle < 67.5) dir = 9;
+                else if (angle < 112.5) dir = 8;
+                else if (angle < 157.5) dir = 7;
+                else if (angle < 202.5) dir = 4;
+                else if (angle < 247.5) dir = 1;
+                else if (angle < 292.5) dir = 2;
+                else if (angle < 337.5) dir = 3;
+                else dir = 6;
+            }
+        }
+
+        if (!dir) {
+            color_message("Illegal direction", TERM_ORANGE);
+        }
+    }
+
+    if (dir == 5) {
+        return false;
+    }
+
+    /* Save desired direction */
+    p_ptr->command_dir = dir;
+
+    /* Save direction */
+    (*dp) = dir;
+
+    /* Success */
+    return (TRUE);
+}
+
+/*
+ * Apply confusion, if needed, to a direction
+ *
+ * Display a message and return TRUE if direction changes.
+ */
+bool confuse_dir(int *dp)
+{
+    int dir;
+
+    /* Default */
+    dir = (*dp);
+
+    /* Apply "confusion" */
+    if (p_ptr->timed[TMD_CONFUSED])
+    {
+        /* Apply confusion XXX XXX XXX */
+        if ((dir == 5) || (rand_int(100) < 75))
+        {
+            /* Random direction */
+            dir = ddd[rand_int(8)];
+        }
+    }
+
+    /* Notice confusion */
+    if ((*dp) != dir)
+    {
+        /* Warn the user */
+        message("You are confused.");
+
+        /* Save direction */
+        (*dp) = dir;
+
+        /* Confused */
+        return (TRUE);
+    }
+
+    /* Not confused */
+    return (FALSE);
+}

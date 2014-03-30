@@ -233,3 +233,235 @@ void do_cmd_go_down(void)
 
     process_player_energy(BASE_ENERGY_MOVE);
 }
+
+/*
+ * Perform the basic "open" command on doors
+ *
+ * Assume there is no monster blocking the destination
+ *
+ * Returns TRUE if repeated commands may continue
+ */
+static bool do_cmd_open_aux(int y, int x)
+{
+    int i, j;
+
+    bool more = FALSE;
+
+    int feat = dungeon_info[y][x].feat;
+
+    int door_power;
+
+    /* Verify legality */
+    if (!do_cmd_test(y, x, FS_OPEN, TRUE)) return (FALSE);
+
+    /* Secrets on doors */
+    if (feat_ff1_match(feat, FF1_DOOR | FF1_SECRET) == (FF1_DOOR | FF1_SECRET))
+    {
+        /* Reveal */
+        find_secret(y, x);
+
+        /* Get the new door */
+        feat = dungeon_info[y][x].feat;
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
+    }
+
+    /* Jammed door */
+    if (feat_ff3_match(feat, FF3_DOOR_JAMMED))
+    {
+        /* Stuck */
+        message("The door appears to be stuck.");
+    }
+
+    /* Locked door */
+    else if (feat_ff3_match(feat, FF3_DOOR_LOCKED) &&
+        ((door_power = feat_state_power(feat, FS_OPEN)) > 0))
+    {
+        /*Mark the feature lore*/
+        feature_lore *f_l_ptr = &f_l_list[feat];
+        f_l_ptr->f_l_flags1 |= (FF1_CAN_OPEN);
+
+        /* Disarm factor */
+        i = p_ptr->state.skills[SKILL_DISARM];
+
+        /* Penalize some conditions */
+        if (p_ptr->timed[TMD_BLIND] || no_light()) i = i / 10;
+        if (p_ptr->timed[TMD_CONFUSED] || p_ptr->timed[TMD_IMAGE]) i = i / 10;
+
+        /* Extract the lock power */
+        /* door_power must be between 1 and 7 */
+        j = i - (door_power * 4);
+
+        /* Always have a small chance of success */
+        if (j < 2) j = 2;
+
+        /* Success */
+        if (rand_int(100) < j)
+        {
+            /* Message */
+            message("You have picked the lock.");
+
+            /* Open the door */
+            cave_alter_feat(y, x, FS_OPEN);
+
+            /* Update the visuals */
+            p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
+
+            /* Experience */
+            gain_exp(1);
+        }
+
+        /* Failure */
+        else
+        {
+            /* Failure */
+            //if (flush_failure) flush();
+
+            /* Message */
+            message("You failed to pick the lock.");
+
+            /* We may keep trying */
+            more = TRUE;
+        }
+    }
+
+    /* Closed door */
+    else
+    {
+        /* Open the door */
+        cave_alter_feat(y, x, FS_OPEN);
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_NO_DOORS | PU_FLOW_DOORS);
+
+        /* Sound */
+        //sound(MSG_OPENDOOR);
+    }
+
+    update_stuff();
+
+    /* Result */
+    return (more);
+}
+
+/*
+ * Open a closed/locked/jammed door or a closed/locked chest.
+ *
+ * Unlocking a locked door/chest is worth one experience point.
+ */
+void command_open(cmd_arg args)
+{
+    int cy, cx, y, x;
+    int dir = args.direction;
+
+    /* Count chests (locked) */
+    int num_chests = 0, o_idx = 0;
+
+    bool more = FALSE;
+
+    /* Get location */
+    cy = y = p_ptr->py + ddy[dir];
+    cx = x = p_ptr->px + ddx[dir];
+
+    /* Check for chests */
+    //num_chests = count_chests(&y, &x, FALSE);
+    //o_idx = chest_check(y, x, FALSE);
+
+    /* Verify legality */
+    if (!o_idx && !do_cmd_test(y, x, FS_OPEN, TRUE)) return;
+
+    /* Apply confusion */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        cy = y = p_ptr->py + ddy[dir];
+        cy = x = p_ptr->px + ddx[dir];
+
+        /* Check for chest */
+        //num_chests = count_chests(&y, &x, FALSE);
+        //o_idx = chest_check(y, x, FALSE);
+    }
+
+#if 0
+    /* Allow repeated command */
+    if (p_ptr->command_arg)
+    {
+        /* Set repeat count */
+        p_ptr->command_rep = p_ptr->command_arg - 1;
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+
+        /* Cancel the arg */
+        p_ptr->command_arg = 0;
+    }
+#endif
+
+    /* Monster */
+    if (dungeon_info[y][x].monster_idx > 0)
+    {
+        /* Message */
+        message("There is a monster in the way!");
+
+        /* Attack */
+        py_attack(y, x);
+    }
+
+#if 0
+    /* Chest */
+    else if (num_chests)
+    {
+        /* Get top chest */
+        o_idx = chest_check(y, x, FALSE);
+
+        /* Open the chest if confused, or only one */
+        if ((p_ptr->timed[TMD_CONFUSED]) || (num_chests == 1))  more = do_cmd_open_chest(y, x, o_idx);
+
+        /* More than one */
+        else
+        {
+            cptr q, s;
+
+            o_idx = 0;
+
+            /* Get an item */
+            q = "Open which chest? ";
+            s = "There are no chests in that direction!";
+
+            /*clear the restriction*/
+            item_tester_hook = obj_is_openable_chest;
+
+            /*player chose escape*/
+            if (!get_item_beside(&o_idx, q, s, cy, cx)) more = 0;
+
+            /* Open the chest */
+            else more = do_cmd_open_chest(cy, cx, -o_idx);
+        }
+    }
+#endif
+
+    /* Door */
+    else
+    {
+        /* Open the door */
+        more = do_cmd_open_aux(cy, cx);
+    }
+
+    /* Cancel repeat unless we may continue */
+    if (!more) disturb(0, 0);
+
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_open(void)
+{
+    int dir;
+
+    if (!get_rep_dir(&dir)) return;
+
+    cmd_arg args;
+    args.direction = dir;
+
+    command_open(args);
+}

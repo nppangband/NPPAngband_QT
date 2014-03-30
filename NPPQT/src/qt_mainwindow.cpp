@@ -271,7 +271,7 @@ void MainWindow::slot_something()
     if (!get_aim_dir(&dir, false) || dir == 0) return;
     int k = rand_int(8);
 
-    //k = 0;
+    k = 3;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
@@ -1562,6 +1562,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "t") do_cmd_takeoff();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();
+            else if (keystring == "o") do_cmd_open();
             else if (keystring == "z") describe_monster(644,TRUE,NULL);
             else
             {
@@ -1822,6 +1823,22 @@ void MainWindow::slot_multiplier_clicked(QAction *action)
         int y = parts.at(0).toInt();
         graphics_view->setTransform(QTransform::fromScale(x, y));
     }
+}
+
+qreal ui_get_angle(int y1, int x1, int y2, int x2)
+{
+    QLineF line(ui_get_center(y1, x1), ui_get_center(y2, x2));
+    if (line.length() == 0.0) return 0.0;
+    return line.angle();
+}
+
+QPoint ui_get_center(int y, int x)
+{
+    x *= main_window->cell_wid;
+    y *= main_window->cell_hgt;
+    x += main_window->cell_wid / 2;
+    y += main_window->cell_hgt / 2;
+    return QPoint(x, y);
 }
 
 //Actually add the QActions intialized in create_actions to the menu
