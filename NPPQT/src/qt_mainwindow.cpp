@@ -1564,6 +1564,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "T") do_cmd_tunnel();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();
+            else if (keystring == "c") do_cmd_close();
             else if (keystring == "o") do_cmd_open();
             else if (keystring == "s") do_cmd_search();
             else if (keystring == "z") describe_monster(644,TRUE,NULL);

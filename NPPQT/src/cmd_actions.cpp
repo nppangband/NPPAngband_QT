@@ -1583,3 +1583,129 @@ void do_cmd_tunnel(void)
 
     command_tunnel(args);
 }
+
+/*
+ * Perform the basic "close" command
+ *
+ * Assume there is no monster blocking the destination
+ *
+ * Returns TRUE if repeated commands may continue
+ */
+static bool do_cmd_close_aux(int y, int x)
+{
+    bool more = FALSE;
+
+    int feat = dungeon_info[y][x].feat;
+
+    /* Verify legality */
+    if (!do_cmd_test(y, x, FS_CLOSE, TRUE)) return (FALSE);
+
+    /* Broken door */
+    if (feat_ff3_match(feat, FF3_DOOR_BROKEN))
+    {
+        /* Message */
+        message("The door appears to be broken.");
+    }
+
+    /* Secrets on door/permanent doors */
+    else if (feat_ff1_match(feat, FF1_SECRET | FF1_PERMANENT))
+    {
+        /* Stuck */
+        find_secret(y,x);
+
+        feat = dungeon_info[y][x].feat;
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_NO_DOORS | PU_FLOW_DOORS);
+    }
+
+    /* Open door */
+    else
+    {
+        /*Mark the feature lore*/
+        feature_lore *f_l_ptr = &f_l_list[feat];
+        f_l_ptr->f_l_flags1 |= (FF1_CAN_CLOSE);
+
+        /* Close the door */
+        cave_alter_feat(y, x, FS_CLOSE);
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_NO_DOORS | PU_FLOW_DOORS);
+
+        /* Sound */
+        sound(MSG_SHUTDOOR);
+    }
+
+    /* Result */
+    return (more);
+}
+
+/*
+ * Close an open door.
+ */
+void command_close(cmd_arg args)
+{
+    int y, x, dir;
+
+    bool more = FALSE;
+
+    dir = args.direction;
+
+    /* Get location */
+    y = p_ptr->py + ddy[dir];
+    x = p_ptr->px + ddx[dir];
+
+    /* Verify legality */
+    if (!do_cmd_test(y, x, FS_CLOSE, TRUE))
+    {
+        /* Cancel repeat */
+        disturb(0, 0);
+        return;
+    }
+
+    /* Apply confusion */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        y = p_ptr->py + ddy[dir];
+        x = p_ptr->px + ddx[dir];
+    }
+
+    /* Monster */
+    if (dungeon_info[y][x].monster_idx > 0)
+    {
+        /* Message */
+        message("There is a monster in the way!");
+
+        /* Attack */
+        py_attack(y, x);
+    }
+
+    /* Door */
+    else
+    {
+        /* Close door */
+        more = do_cmd_close_aux(y, x);
+    }
+
+    /* Cancel repeat unless told not to */
+    if (!more) disturb(0, 0);
+
+
+    /* Take a turn */
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_close(void)
+{
+    if (!character_dungeon) return;
+
+    int dir;
+
+    if (!get_rep_dir(&dir)) return;
+
+    cmd_arg args;
+    args.direction = dir;
+
+    command_close(args);
+}
