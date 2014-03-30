@@ -1561,15 +1561,17 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "e") do_cmd_use_item();
             else if (keystring == "k") do_cmd_destroy();
             else if (keystring == "t") do_cmd_takeoff();
+            else if (keystring == "T") do_cmd_tunnel();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();
             else if (keystring == "o") do_cmd_open();
+            else if (keystring == "s") do_cmd_search();
             else if (keystring == "z") describe_monster(644,TRUE,NULL);
             else if (keystring == ";") {
                 object_type obj, *o_ptr = &obj;
                 o_ptr->object_wipe();
                 make_object(o_ptr, false, false, DROP_TYPE_CHEST, false);
-                object_known(o_ptr);
+                //object_known(o_ptr);
                 drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
             }
             else

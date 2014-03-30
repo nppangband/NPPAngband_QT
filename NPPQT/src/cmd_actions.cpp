@@ -863,6 +863,8 @@ void command_open(cmd_arg args)
 
 void do_cmd_open(void)
 {
+    if (!character_dungeon) return;
+
     int dir;
 
     if (!get_rep_dir(&dir)) return;
@@ -1273,6 +1275,8 @@ void command_disarm(cmd_arg args)
 
 void do_cmd_disarm(void)
 {
+    if (!character_dungeon) return;
+
     int dir;
 
     if (!get_rep_dir(&dir)) return;
@@ -1281,4 +1285,301 @@ void do_cmd_disarm(void)
     args.direction = dir;
 
     command_disarm(args);
+}
+
+/*
+ * Simple command to "search" for one turn
+ */
+void do_cmd_search(void)
+{
+    if (!character_dungeon) return;
+
+    // TODO solve this
+#if 0
+    /* Allow repeated command */
+    if (p_ptr->command_arg)
+    {
+        /* Set repeat count */
+        p_ptr->command_rep = p_ptr->command_arg - 1;
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+
+        /* Cancel the arg */
+        p_ptr->command_arg = 0;
+    }
+#endif
+
+    /* Search */
+    search();
+
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+/*
+ * Perform the basic "tunnel" command
+ *
+ * Assumes that no monster is blocking the destination
+ *
+ * Uses "twall" (above) to do all "terrain feature changing".
+ *
+ * Returns TRUE if repeated commands may continue
+ */
+static bool do_cmd_tunnel_aux(int y, int x)
+{
+    bool more = FALSE;
+
+    int feat;
+
+    QString name;
+
+    int j;
+
+    feat = dungeon_info[y][x].feat;
+
+    /* Verify legality */
+    if (!do_cmd_test(y, x, FS_TUNNEL, TRUE)) return (FALSE);
+
+    j = feat_state_power(feat, FS_TUNNEL);
+
+    /* Sound XXX XXX XXX */
+    /* sound(MSG_DIG); */
+
+    /* Make some noise. */
+    add_wakeup_chance = 1000;
+
+    /* Permanent doors/rock */
+    if (cave_ff1_match(y, x, FF1_PERMANENT))
+    {
+        /* Stuck */
+        find_secret(y, x);
+
+        // Get the feature again
+        feat = dungeon_info[y][x].feat;
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
+    }
+
+    /* Silent watchers */
+    else if (feat == FEAT_SILENT_WATCHER)
+    {
+        /* Hurt the player */
+        hit_silent_watcher(y, x);
+    }
+
+    /* Dig or tunnel */
+    else if (cave_ff1_match(y, x, FF1_CAN_TUNNEL))
+    {
+
+        /*Mark the feature lore*/
+        feature_lore *f_l_ptr = &f_l_list[feat];
+        f_l_ptr->f_l_flags1 |= (FF1_CAN_TUNNEL);
+
+        /* Dig */
+        if (p_ptr->state.skills[SKILL_DIGGING] > rand_int(40* j))
+        {
+            sound(MSG_DIG);
+
+            /* Get the name */
+            name = feature_desc(feat, FALSE, TRUE);
+
+            /* Give the message */
+            message("You have removed the " + name + ".");
+
+            cave_alter_feat(y, x, FS_TUNNEL);
+
+            /* Update the visuals */
+            p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
+        }
+
+        /* Take damage from the feature sometimes */
+        else if ((f_info[feat].dam_non_native > 0) &&
+            !is_player_native(y, x) && one_in_(50))
+        {
+            QString kb("digging ");
+
+            /* Get the name */
+            name = feature_desc(feat, TRUE, TRUE);
+
+            /* Format the killer string */
+            kb += name;
+
+            /* Take the hit */
+            take_terrain_hit(f_info[feat].dam_non_native, feat, kb);
+        }
+
+        /* Keep trying */
+        else
+        {
+            /* Get the name */
+            name = feature_desc(feat, FALSE, TRUE);
+
+            /* We may continue tunneling */
+            message("You dig into the " + name + ".");
+
+            more = TRUE;
+        }
+
+    }
+
+    /* Result */
+    return (more);
+}
+
+/*
+ * Return the number of features around (or under) the character.
+ * Usually look for doors and floor traps.
+ * ANDY - Counts features that allow action.
+ */
+static int count_feats(int *y, int *x, int action)
+{
+    int d, count;
+
+    feature_type *f_ptr;
+
+    u32b flag, bitzero = 0x01;
+
+    /* Count how many matches */
+    count = 0;
+
+    /* Check around the character */
+    for (d = 0; d < 8; d++)
+    {
+        /* Extract adjacent (legal) location */
+        int yy = p_ptr->py + ddy_ddd[d];
+        int xx = p_ptr->px + ddx_ddd[d];
+
+        /* Must have knowledge */
+        if (!(dungeon_info[yy][xx].cave_info & (CAVE_MARK))) continue;
+
+        /* Get the mimiced feature */
+        f_ptr = &f_info[dungeon_info[yy][xx].feat];
+
+        if (action < FS_FLAGS2)
+        {
+            flag = bitzero << (action - FS_FLAGS1);
+            if (!(f_ptr->f_flags1 & flag)) continue;
+        }
+
+        else if (action < FS_FLAGS3)
+        {
+            flag = bitzero << (action - FS_FLAGS2);
+            if (!(f_ptr->f_flags2 & flag)) continue;
+        }
+
+        else if (action < FS_FLAGS_END)
+        {
+            flag = bitzero << (action - FS_FLAGS3);
+            if (!(f_ptr->f_flags3 & flag)) continue;
+        }
+
+        /* Count it */
+        ++count;
+
+        /* Remember the location of the last door found */
+        *y = yy;
+        *x = xx;
+    }
+
+    /* All done */
+    return count;
+}
+
+/*
+ * Tunnel through "walls" (including rubble and secret doors)
+ *
+ * Digging is very difficult without a "digger" weapon, but can be
+ * accomplished by strong players using heavy weapons.
+ */
+void command_tunnel(cmd_arg args)
+{
+    int y, x, dir;
+
+    bool more = FALSE;
+
+    dir = args.direction;
+
+    /* Easy Tunnel */
+    if (easy_open)
+    {
+        /* Handle a single open door */
+        if (count_feats(&y, &x, FS_TUNNEL) == 1)
+        {
+            /* Don't close door player is on */
+            if ((y != p_ptr->py) || (x != p_ptr->px))
+            {
+                // TODO solve this
+                //p_ptr->command_dir = coords_to_dir(y, x);
+            }
+        }
+    }
+
+    /* Get location */
+    y = p_ptr->py + ddy[dir];
+    x = p_ptr->px + ddx[dir];
+
+    /* Oops */
+    if (!do_cmd_test(y, x, FS_TUNNEL, TRUE)) return;
+
+    /* Apply confusion */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        y = p_ptr->py + ddy[dir];
+        x = p_ptr->px + ddx[dir];
+    }
+
+    // TODO solve this
+#if 0
+    /* Allow repeated command */
+    if (p_ptr->command_arg)
+    {
+        /* Set repeat count */
+        p_ptr->command_rep = p_ptr->command_arg - 1;
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+
+        /* Cancel the arg */
+        p_ptr->command_arg = 0;
+    }
+#endif
+
+    /* Monster */
+    if (dungeon_info[y][x].monster_idx > 0)
+    {
+        /* Message */
+        message("There is a monster in the way!");
+
+        /* Attack */
+        py_attack(y, x);
+    }
+
+    /* Walls */
+    else
+    {
+        /* Tunnel through walls */
+        more = do_cmd_tunnel_aux(y, x);
+    }
+
+    /* Cancel repetition unless we can continue */
+    if (!more) disturb(0, 0);
+
+    /* Take a turn */
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_tunnel(void)
+{
+    if (!character_dungeon) return;
+
+    int dir;
+
+    if (!get_rep_dir(&dir)) return;
+
+    cmd_arg args;
+    args.direction = dir;
+
+    command_tunnel(args);
 }

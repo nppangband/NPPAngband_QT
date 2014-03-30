@@ -64,6 +64,9 @@ extern void command_open(cmd_arg args);
 extern void do_cmd_open(void);
 extern void command_disarm(cmd_arg args);
 extern void do_cmd_disarm(void);
+extern void do_cmd_search(void);
+extern void command_tunnel(cmd_arg args);
+extern void do_cmd_tunnel(void);
 
 
 // cmd3.cpp
@@ -107,6 +110,7 @@ extern void py_pickup_gold(void);
 extern void py_pickup(bool pickup);
 extern void do_cmd_pickup(void);
 extern void move_player(int dir, int jumping);
+extern void search(void);
 
 // cmd_spell.cpp
 extern int spell_chance(int spell);
