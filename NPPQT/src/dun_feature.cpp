@@ -2614,7 +2614,7 @@ static void collect_dynamic_terrain(void)
             g_ptr->flags = (DF1_OCCUPIED | DF1_NEW_BORN);
 
             /* Reset the counter */
-            g_ptr->counter = calculate_turn_count(dungeon_info[g_ptr->y][g_ptr->x].cave_info);
+            g_ptr->counter = calculate_turn_count(dungeon_info[g_ptr->y][g_ptr->x].feat);
         }
     }
 
@@ -2985,7 +2985,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
             if (!in_bounds(yy, xx)) continue;
 
             /* Get the feature */
-            feat2 = dungeon_info[yy][xx].cave_info;
+            feat2 = dungeon_info[yy][xx].feat;
 
             /* Feature can burn */
             if (feat_ff2_match(feat2, FF2_HURT_FIRE))

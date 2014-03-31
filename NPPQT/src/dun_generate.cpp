@@ -11539,6 +11539,10 @@ void generate_cave(void)
         x_max = 1;
         feeling = 0;
 
+        o_cnt = 0;
+        x_cnt = 0;
+        mon_cnt = 0;
+
         /* Remove all dynamic features */
         wipe_dynamic_terrain();
 

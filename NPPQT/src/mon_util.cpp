@@ -2351,7 +2351,7 @@ bool player_place(int y, int x)
     dungeon_info[y][x].monster_idx = -1;
 
     /* Hack -- track this feature */
-    feature_kind_track(dungeon_info[y][x].cave_info);
+    feature_kind_track(dungeon_info[y][x].feat);
 
     /* Window stuff */
     p_ptr->redraw |= (PR_FEATURE);

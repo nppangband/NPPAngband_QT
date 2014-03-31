@@ -1478,6 +1478,9 @@ static void change_player_level(void)
 
     /* Erase the old cave */
     reset_dungeon_info();
+    wipe_o_list();
+    wipe_mon_list();
+    wipe_x_list();
     count_feat_everseen();
 
     /* Reset player ghost info */
