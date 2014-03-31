@@ -581,6 +581,8 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if (parent->anim_depth > 0) return;
 
+    if (parent->check_disturb()) return;
+
     int old_x = parent->cursor->c_x;
     int old_y = parent->cursor->c_y;
     parent->grids[old_y][old_x]->update();
@@ -1391,9 +1393,21 @@ static void process_mov_key(QKeyEvent *event, int dir)
     }
 }
 
+bool MainWindow::check_disturb()
+{
+    if (p_ptr->resting || p_ptr->running || p_ptr->command_rep) {
+        disturb(0, 0);
+        message("Cancelled.");
+        return true;
+    }
+    return false;
+}
+
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
     if (anim_depth > 0) return;
+
+    if (check_disturb()) return;
 
     // TODO PLAYTESTING
     debug_rarities();
@@ -1557,6 +1571,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             // handle lowercase keystrokes        
             if (keystring == "a") do_cmd_activate();
             else if (keystring == "p") do_cmd_cast();
+            else if (keystring == "R") do_cmd_rest();
             else if (keystring == "b") do_cmd_browse();
             else if (keystring == "e") do_cmd_use_item();
             else if (keystring == "k") do_cmd_destroy();

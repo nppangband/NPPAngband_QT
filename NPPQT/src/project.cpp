@@ -1195,6 +1195,7 @@ void take_hit(int dam, QString kb_str)
     // TODO - PLAYTESTING!!!
     set_timed(TMD_PARALYZED, 0, false);
     set_timed(TMD_STUN, 0, false);
+    set_timed(TMD_CUT, 0, false);
     set_timed(TMD_CONFUSED, 0, false);
     set_timed(TMD_SINVIS, 100, false);
     set_timed(TMD_BLIND, 0, false);

@@ -303,9 +303,6 @@ void compact_monsters(int size)
     /* Paranoia -- refuse to wipe too many monsters at one time */
     if (size > z_info->m_max / 2) size = z_info->m_max / 2;
 
-    /* Paranoia -- refuse to wipe too many monsters at one time */
-    if (size > z_info->m_max / 2) size = z_info->m_max / 2;
-
     /* Compact */
     if (size)
     {

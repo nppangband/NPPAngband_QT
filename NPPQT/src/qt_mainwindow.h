@@ -88,6 +88,7 @@ public:
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
     void wait_animation(int n_animations = 1);
     void animation_done();
+    bool check_disturb();
 
 protected:
     void closeEvent(QCloseEvent *event);

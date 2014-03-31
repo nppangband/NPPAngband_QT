@@ -18,6 +18,7 @@
  */
 
 #include "src/npp.h"
+#include <QCoreApplication>
 
 /*
  * Process the player terrain damage
@@ -225,11 +226,10 @@ void process_player(void)
 
     /* Check for "player abort" */
     if (p_ptr->running ||
-        p_ptr->command_rep ||
-        (p_ptr->resting && !(turn & 0x7F)))
+        p_ptr->command_rep || p_ptr->resting)
     {
-        /* Do not wait */
-        // TODO add the command
+        // Allow the check_disturb method of MainWindow to be executed
+        QCoreApplication::processEvents();
     }
 
     /*** Handle actual user input ***/
@@ -253,12 +253,10 @@ void process_player(void)
     /* Paralyzed or Knocked Out */
     if ((p_ptr->timed[TMD_PARALYZED]) || (p_ptr->timed[TMD_STUN] >= 100))
     {
-        /* Take a turn */
-        //process_player_energy(BASE_ENERGY_MOVE);
-
-        // TODO TODO fix this circular call
+         /* Take a turn */
          p_ptr->p_energy -= BASE_ENERGY_MOVE;
 
+         // Cancel user interaction
          p_ptr->player_turn = false;
     }
 
@@ -271,9 +269,18 @@ void process_player(void)
             /* Reduce rest count */
             p_ptr->resting--;
 
+            // Message
+            if (p_ptr->resting == 0) message("Done resting.");
+
             /* Redraw the state */
             p_ptr->redraw |= (PR_STATE);
         }
+
+        /* Take a turn */
+        p_ptr->p_energy -= BASE_ENERGY_MOVE;
+
+        // Cancel user interaction
+        p_ptr->player_turn = false;
     }
 
     /* Running */

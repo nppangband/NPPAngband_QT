@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "nppdialog.h"
 
 
 /*
@@ -1813,3 +1814,39 @@ void do_cmd_alter_aux(int dir)
     // Take a turn
     process_player_energy(BASE_ENERGY_MOVE);
 }
+
+void command_rest(int choice)
+{
+    p_ptr->resting = choice;
+
+    /* Cancel the arg */
+    p_ptr->command_arg = 0;
+
+    /* Cancel searching */
+    p_ptr->searching = FALSE;
+
+    /* Recalculate bonuses */
+    p_ptr->update |= (PU_BONUS);
+
+    /* Redraw the state */
+    p_ptr->redraw |= (PR_STATE);
+
+    /* Handle stuff */
+    handle_stuff();
+
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_rest(void)
+{
+    if (!character_dungeon) return;
+
+    int choice;
+
+    RestDialog dlg(&choice);
+
+    if (choice == 0) return;
+
+    command_rest(choice);
+}
+
