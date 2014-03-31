@@ -838,7 +838,9 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             w = MAX(w, 1);
             int h = 1;
             if (parent->cell_hgt > 16) h = 2;
-            painter->fillRect(0, 0, w, h, QColor("red"));
+            QColor color("red");
+            if (m_ptr->hp * 100 / m_ptr->maxhp > 50) color = QColor("yellow");
+            painter->fillRect(0, 0, w, h, color);
         }
     }
 
