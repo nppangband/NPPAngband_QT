@@ -1838,6 +1838,15 @@ static void process_game_turns(void)
  */
 void process_player_energy(byte energy_used)
 {
+    static int depth_counter = 0;
+
+    if (depth_counter > 0) {
+        pop_up_message_box("process_player_energy is calling itself indirectly");
+        return;
+    }
+
+    depth_counter = 1;
+
     int i;
 
     p_ptr->p_energy -= energy_used;
@@ -1981,4 +1990,5 @@ void process_player_energy(byte energy_used)
     // process game turns until it is the player's turn again, or the player is dead;
     process_game_turns();
 
+    depth_counter = 0;
 }

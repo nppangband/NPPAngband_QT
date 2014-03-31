@@ -72,6 +72,7 @@ extern void do_cmd_close(void);
 extern void do_cmd_alter_aux(int dir);
 extern void command_rest(int choice);
 extern void do_cmd_rest(void);
+extern void do_cmd_run(int dir = 0);
 
 
 // cmd3.cpp
@@ -114,7 +115,7 @@ extern void do_cmd_pickup_from_pile(bool pickup, bool message);
 extern void py_pickup_gold(void);
 extern void py_pickup(bool pickup);
 extern void do_cmd_pickup(void);
-extern void move_player(int dir, int jumping);
+extern int move_player(int dir, int jumping);
 extern void search(void);
 
 // cmd_spell.cpp
@@ -465,6 +466,8 @@ extern void stack_histories(object_type *o_ptr, const object_type *j_ptr);
 extern int quiver_space_per_unit(object_type *o_ptr);
 extern bool obj_can_wear(object_type *o_ptr);
 
+/* pathfind.cpp */
+extern int run_step(int dir);
 
 /* player_attack.cpp */
 extern bool test_hit(int chance, int ac, int vis);

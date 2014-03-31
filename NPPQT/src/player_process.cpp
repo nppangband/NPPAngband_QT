@@ -287,7 +287,15 @@ void process_player(void)
     else if (p_ptr->running)
     {
         /* Take a step */
-        // TODO handle running run_step(0);
+        int energy = run_step(0);
+
+        if (energy > 0) {
+            /* Take a turn */
+            p_ptr->p_energy -= energy;
+
+            // Cancel user interaction
+            p_ptr->player_turn = false;
+        }
     }
 
     /* Repeated command */

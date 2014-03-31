@@ -81,7 +81,8 @@ SOURCES +=  src/qt_main.cpp\
     src/storedialog.cpp \
     src/griddialog.cpp \
     src/package.cpp \
-    src/tilebag.cpp
+    src/tilebag.cpp \
+    src/pathfind.cpp
 
 
 

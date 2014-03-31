@@ -1850,3 +1850,77 @@ void do_cmd_rest(void)
     command_rest(choice);
 }
 
+/*
+ * Determine if a given grid may be "walked"
+ */
+static bool do_cmd_walk_test(int y, int x)
+{
+    int feat;
+
+    QString name;
+
+    /* Get feature */
+    feat = dungeon_info[y][x].feat;
+
+    /* Get mimiced feature Playtesting */
+    /*feat = f_info[feat].f_mimic;*/
+
+    /* Hack -- walking obtains knowledge XXX XXX */
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) return (TRUE);
+
+    /* Allow attack on visible monsters */
+    if ((dungeon_info[y][x].monster_idx > 0) && (mon_list[dungeon_info[y][x].monster_idx].ml))
+    {
+        return TRUE;
+    }
+
+    /* Known unpassable grids */
+    else if (!feat_ff1_match(feat, FF1_MOVE))
+    {
+        /* Check presence of interesting walls */
+        if (hit_wall(y, x, FALSE)) return (TRUE);
+
+        /* Some doors are allowed */
+        if (easy_alter)
+        {
+            if (feat_ff1_match(feat, FF1_CAN_OPEN)) return (TRUE);
+        }
+
+        /* Get the name */
+        name = feature_desc(feat, TRUE, TRUE);
+
+        /* Message */
+        message("There is " + name + "in the way.");
+
+        /* Nope */
+        return (FALSE);
+    }
+
+    /* Okay */
+    return (TRUE);
+}
+
+void do_cmd_run(int dir)
+{
+    if (!character_dungeon) return;
+
+    if (p_ptr->timed[TMD_CONFUSED])
+    {
+        message("You are too confused!");
+        return;
+    }
+
+    if (!dir && !get_rep_dir(&dir)) return;
+
+    /* Get location */
+    int y = p_ptr->py + ddy[dir];
+    int x = p_ptr->px + ddx[dir];
+
+    /* Verify legality */
+    if (!do_cmd_walk_test(y, x)) return;
+
+    /* Start run */
+    int energy = run_step(dir);
+
+    if (energy > 0) process_player_energy(energy);
+}

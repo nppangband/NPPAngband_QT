@@ -792,7 +792,7 @@ void do_cmd_pickup(void)
  * Note that this routine handles monsters in the destination grid,
  * and also handles attempting to move into walls/doors/rubble/etc.
  */
-void move_player(int dir, int jumping)
+int move_player(int dir, int jumping)
 {
 	int py = p_ptr->py;
 	int px = p_ptr->px;
@@ -987,7 +987,7 @@ void move_player(int dir, int jumping)
 				p_ptr->running && old_dtrap && !new_dtrap)
 		{
 			disturb(0, 0);
-            return;
+            return 0;
 		}
 
 		/* Move player */
@@ -1096,7 +1096,6 @@ void move_player(int dir, int jumping)
 
 	}
 
-    // Process any used energy.
-    if (used_energy) process_player_energy(used_energy);
+    return used_energy;
 }
 

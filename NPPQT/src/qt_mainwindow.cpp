@@ -1383,13 +1383,17 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 static void process_mov_key(QKeyEvent *event, int dir)
 {
-    int mask = event->modifiers() & (Qt::ShiftModifier | Qt::AltModifier | Qt::ControlModifier);
+    int mask = QApplication::keyboardModifiers();
 
-    if (mask == Qt::ControlModifier) {
+    if (mask & Qt::AltModifier) {
+        do_cmd_alter_aux(dir);
+    }
+    else if (mask & Qt::ControlModifier) {
         ui_change_panel(dir);
     }
     else {
-        move_player(dir, false);
+        int energy = move_player(dir, false);
+        if (energy > 0) process_player_energy(energy);
     }
 }
 
@@ -1582,6 +1586,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "c") do_cmd_close();
             else if (keystring == "o") do_cmd_open();
             else if (keystring == "s") do_cmd_search();
+            else if (keystring == ".") do_cmd_run();
             else if (keystring == "z") describe_monster(644,TRUE,NULL);
             else if (keystring == ";") {
                 object_type obj, *o_ptr = &obj;
