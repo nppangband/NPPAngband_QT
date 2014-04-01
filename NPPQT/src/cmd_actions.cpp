@@ -18,6 +18,7 @@
 
 #include "src/npp.h"
 #include "nppdialog.h"
+#include "storedialog.h"
 
 
 /*
@@ -2356,7 +2357,11 @@ void do_cmd_hold()
         disturb(0, 0);
 
         /* Hack -- enter store */
-        p_ptr->command_new = '_';
+        //p_ptr->command_new = '_';
+
+        int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+        int store_idx = f_info[feat].f_power;
+        launch_store(store_idx);
 
         /* Free turn XXX XXX XXX */
         energy = 0;
