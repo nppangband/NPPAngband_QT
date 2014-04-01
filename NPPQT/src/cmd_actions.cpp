@@ -2021,3 +2021,346 @@ void do_cmd_walk(cmd_arg args)
 
     if (energy > 0) process_player_energy(energy);
 }
+
+static bool player_bash(int y, int x)
+{
+    int m_idx = dungeon_info[y][x].monster_idx;
+    monster_type *m_ptr = &mon_list[m_idx];
+    monster_race *r_ptr;
+    QString m_name;
+    object_type *o_ptr = &inventory[INVEN_ARM];
+
+    /* Chance to hit based on strength and weight */
+    int base_to_hit = p_ptr->state.stat_ind[A_STR] + o_ptr->weight / 2 + p_ptr->total_weight/10;
+
+    /* Paranoia */
+    if (!(m_idx > 0)) return (FALSE);
+
+    m_ptr = &mon_list[m_idx];
+    r_ptr = &r_info[m_ptr->r_idx];
+    m_name = monster_desc(m_ptr, 0);
+
+    /* Boundry control */
+    if (base_to_hit < 4)  base_to_hit = 4;
+
+    if (test_hit(base_to_hit, r_ptr->ac, m_ptr->ml))
+    {
+        int dd = 4;
+        int ds = (base_to_hit / 4);
+        int plus = p_ptr->state.to_d;
+        int damage;
+        bool fear = FALSE;
+
+        message("You bash " + m_name + ".");
+
+        /* Allow for a critical hit */
+        (void)critical_hit_check(o_ptr, &dd, &plus);
+
+        damage = damroll(dd, ds) + plus;
+
+        /* Monster is still alive */
+        if (!mon_take_hit(m_idx, damage, &fear, NULL, SOURCE_PLAYER))
+        {
+            /* Reduce its energy (half-paralysis) */
+            m_ptr->m_energy = BASE_ENERGY_MOVE / 2;
+            if (!m_ptr->m_timed[MON_TMD_STUN])
+            {
+                (void)mon_inc_timed(m_idx, MON_TMD_STUN, (randint(3) + 1), MON_TMD_FLG_NOTIFY);
+            }
+        }
+
+        return (TRUE);
+    }
+
+    else message("You miss " + m_name + ".");
+
+    /* High dexterity yields coolness */
+    if (randint1(150) < p_ptr->state.stat_ind[A_DEX])
+    {
+        /* Message */
+        message("You retain your balance.");
+    }
+    else
+    {
+        /* Message */
+        message("You are off-balance.");
+
+        /* Hack -- Lose balance aka paralysis */
+        (void)set_timed(TMD_PARALYZED, 2 + randint(2), FALSE);
+    }
+
+    return (FALSE);
+}
+
+/*
+ * Perform the basic "bash" command
+ *
+ * Assume there is no monster blocking the destination
+ *
+ * Returns TRUE if repeated commands may continue
+ */
+static bool do_cmd_bash_aux(int y, int x)
+{
+    int bash, temp;
+
+    bool more = FALSE;
+
+    int feat = dungeon_info[y][x].feat;
+
+    QString name;
+
+    feature_lore *f_l_ptr = &f_l_list[feat];
+
+    /* Verify legality */
+    if (!do_cmd_test(y, x, FS_BASH, TRUE)) return (FALSE);
+
+    /* Get the name */
+    name = feature_desc(feat, FALSE, TRUE);
+
+    /* Message */
+    message("You smash into the " + name + "!");
+
+    /* Make a lot of noise. */
+    add_wakeup_chance = 9000;
+
+    /* Secrets on doors */
+    if (feat_ff1_match(feat, FF1_DOOR | FF1_SECRET) == (FF1_DOOR | FF1_SECRET))
+    {
+        /* Reveal */
+        find_secret(y, x);
+
+        /* Get the new door */
+        feat = dungeon_info[y][x].feat;
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
+    }
+
+    /* Hack -- Bash power based on strength */
+    /* (Ranges from 3-20 with step=1 and 20-240 with step=10) */
+    /* (A character with 18/00 STR gets 20)*/
+    bash = adj_str_blow[p_ptr->state.stat_ind[A_STR]];
+
+    /* Extract door power (must be between 0 and 6) */
+    temp = feat_state_power(feat, FS_BASH);
+
+    /* Compare bash power to door power XXX XXX XXX */
+    temp = (bash - (temp * 10));
+
+    /* Hack -- always have a chance */
+    if (temp < 1) temp = 1;
+
+    /*Mark the feature lore*/
+    f_l_ptr->f_l_flags1 |= (FF1_CAN_BASH);
+
+    /* Hack -- attempt to bash down the door */
+    if (rand_int(100) < temp)
+    {
+
+        /* Break down the door */
+        if (!feat_ff1_match(feat, FF1_CAN_OPEN) || one_in_(2))
+        {
+            cave_alter_feat(y, x, FS_BASH);
+        }
+
+        /* Open the door */
+        else
+        {
+            cave_alter_feat(y, x, FS_OPEN);
+        }
+
+        /* Message */
+        if (feat_ff1_match(f_info[feat].f_mimic, FF1_DOOR))
+        {
+            message("The door crashes open!");
+        }
+        else
+        {
+            message("The " + name + " crashes!");
+        }
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
+    }
+
+    /* Take a hit from the feature, sometimes */
+    else if ((f_info[feat].dam_non_native > 0) &&
+        !is_player_native(y, x) && one_in_(3))
+    {
+        QString kb_str;
+
+        /* Get the feature name */
+        name = feature_desc(feat, TRUE, TRUE);
+
+        /* Format the killer string */
+        kb_str = "bashing %s" + name;
+
+        /* Take the hit */
+        take_terrain_hit(f_info[feat].dam_non_native, feat, kb_str);
+    }
+
+    /* Some features can't stun the player */
+    else if (cave_passable_bold(y, x))
+    {
+        /* Message */
+        message("The " + name + " remains intact.");
+
+        /* Allow repeated bashing */
+        more = TRUE;
+    }
+
+    /* Saving throw against stun */
+    else if (rand_int(100) < adj_dex_safe[p_ptr->state.stat_ind[A_DEX]] +
+             p_ptr->lev)
+    {
+        /* Message */
+        message("The " + name + " holds firm.");
+
+        /* Allow repeated bashing */
+        more = TRUE;
+    }
+
+    /* High dexterity yields coolness */
+    else
+    {
+        /* Message */
+        message("You are off-balance.");
+
+        /* Hack -- Lose balance ala paralysis */
+        (void)inc_timed(TMD_PARALYZED, 2 + rand_int(2), TRUE);
+    }
+
+    /* Result */
+    return (more);
+}
+
+/*
+ * Bash open a door, success based on character strength
+ *
+ * For a closed door, pval is positive if locked; negative if stuck.
+ *
+ * For an open door, pval is positive for a broken door.
+ *
+ * A closed door can be opened - harder if locked. Any door might be
+ * bashed open (and thereby broken). Bashing a door is (potentially)
+ * faster! You move into the door way. To open a stuck door, it must
+ * be bashed. A closed door can be jammed (see do_cmd_spike()).
+ *
+ * Creatures can also open or bash doors, see elsewhere.
+ */
+void command_bash(cmd_arg args)
+{
+    int y, x, dir;
+
+    dir = args.direction;
+
+    /* Get location */
+    y = p_ptr->py + ddy[dir];
+    x = p_ptr->px + ddx[dir];
+
+    int m_idx = dungeon_info[y][x].monster_idx;
+
+    /* In Moria, possibly bash a monster */
+    if ((m_idx > 0) && (game_mode == GAME_NPPMORIA))
+    {
+        /* Do nothing except avoid the next check */
+    }
+
+    /* Verify legality */
+    else if (!do_cmd_test(y, x, FS_BASH, TRUE)) return;
+
+    /* Apply confusion */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        y = p_ptr->py + ddy[dir];
+        x = p_ptr->px + ddx[dir];
+    }
+
+    /* Allow repeated command */
+    if (p_ptr->command_arg)
+    {
+        /* Set repeat count */
+        p_ptr->command_rep = p_ptr->command_arg - 1;
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+
+        /* Cancel the arg */
+        p_ptr->command_arg = 0;
+    }
+
+    /* Monster */
+    if (m_idx > 0)
+    {
+        player_bash(y, x);
+    }
+
+    /* Door */
+    else
+    {
+        /* Bash the door */
+        if (!do_cmd_bash_aux(y, x))
+        {
+            /* Cancel repeat */
+            disturb(0, 0);
+        }
+    }
+
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_bash(void)
+{
+    if (!character_dungeon) return;
+
+    int dir;
+
+    if (!get_rep_dir(&dir)) return;
+
+    cmd_arg args;
+    args.direction = dir;
+
+    command_bash(args);
+}
+
+/*
+ * Stay still.  Search.  Enter stores.
+ * Pick up treasure if "pickup" is true.
+ */
+void do_cmd_hold()
+{
+    /* Take a turn */
+    int energy = BASE_ENERGY_MOVE;
+
+    /* Spontaneous Searching */
+    if ((p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] >= 50) ||
+        (0 == rand_int(50 - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY])))
+    {
+        search();
+    }
+
+    /* Continuous Searching */
+    if (p_ptr->searching)
+    {
+        search();
+    }
+
+    /* Handle "objects" */
+    py_pickup(always_pickup);
+
+    /* Hack -- enter a store if we are on one */
+    if (cave_shop_bold(p_ptr->py,p_ptr->px))
+    {
+        /* Disturb */
+        disturb(0, 0);
+
+        /* Hack -- enter store */
+        p_ptr->command_new = '_';
+
+        /* Free turn XXX XXX XXX */
+        energy = 0;
+    }
+
+    if (energy > 0) process_player_energy(energy);
+}

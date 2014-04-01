@@ -1578,6 +1578,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             // handle lowercase keystrokes        
             if (keystring == "a") do_cmd_activate();
             else if (keystring == "p") do_cmd_cast();
+            else if (keystring == "B") do_cmd_bash();
             else if (keystring == "R") do_cmd_rest();
             else if (keystring == "b") do_cmd_browse();
             else if (keystring == "e") do_cmd_use_item();

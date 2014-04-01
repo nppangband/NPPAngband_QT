@@ -74,6 +74,9 @@ extern void command_rest(int choice);
 extern void do_cmd_rest(void);
 extern void do_cmd_run(int dir = 0);
 extern void do_cmd_walk(cmd_arg args);
+extern void command_bash(cmd_arg args);
+extern void do_cmd_bash(void);
+extern void do_cmd_hold();
 
 
 // cmd3.cpp
