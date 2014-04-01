@@ -18,6 +18,20 @@
 
 #include "src/npp.h"
 
+/*
+ * Look command
+ */
+void do_cmd_look(void)
+{
+    /* Look around */
+    if (target_set_interactive(TARGET_LOOK, -1, -1))
+    {
+        message("Target Selected.");
+        p_ptr->redraw |= (PR_MONLIST);
+        redraw_stuff();
+    }
+}
+
 static int quiver_wield(int item, object_type *o_ptr)
 {
     int slot = 0;

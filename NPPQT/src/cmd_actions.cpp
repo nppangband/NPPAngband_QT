@@ -1890,7 +1890,7 @@ static bool do_cmd_walk_test(int y, int x)
         name = feature_desc(feat, TRUE, TRUE);
 
         /* Message */
-        message("There is " + name + "in the way.");
+        message("There is " + name + " in the way.");
 
         /* Nope */
         return (FALSE);
@@ -1921,6 +1921,103 @@ void do_cmd_run(int dir)
 
     /* Start run */
     int energy = run_step(dir);
+
+    if (energy > 0) process_player_energy(energy);
+}
+
+/*
+ * Return TRUE if the feature located in the given location is dangerous for the
+ * player and he/she doesn't want to walk over/touch it.
+ * Return FALSE if a monster occupies that grid.
+ */
+static bool found_dangerous_grid(int y, int x)
+{
+    u16b feat = dungeon_info[y][x].feat;
+    int gf_type;
+
+    /* Grid is occupied by a monster. Perform a melee attack */
+    if (dungeon_info[y][x].monster_idx > 0) return (FALSE);
+
+    /* Flying entities aren't affected by terrain */
+    if (p_ptr->timed[TMD_FLYING] && feat_ff2_match(feat, FF2_CAN_FLY)) return (FALSE);
+
+    /* Player is native to that feature or feature is harmless */
+    if ((f_info[feat].dam_non_native < 1) || is_player_native(y, x)) return (FALSE);
+
+    /* Get the spell type */
+    get_spell_type_from_feature(feat, &gf_type);
+
+    /* Player is harmless to that spell type */
+    if (is_player_immune(gf_type)) return (FALSE);
+
+    /* Stop running */
+    disturb(0, 0);
+
+    /* Ask the player for confirmation */
+    QString action(feat_ff1_match(feat, FF1_MOVE) ? "walk over": "touch");
+
+    if (get_check("It seems dangerous. Do you want to " + action + " that grid?")) return (FALSE);
+
+    /* Dangerous */
+    return (TRUE);
+}
+
+/*
+ * Helper function for the "walk" and "jump" commands.
+ */
+static int do_cmd_walk_or_jump(int jumping, int dir = 0)
+{
+    int y, x;
+
+    /* Get a direction (or abort) */
+    if (!dir && !get_rep_dir(&dir)) return 0;
+
+    /* Get location */
+    y = p_ptr->py + ddy[dir];
+    x = p_ptr->px + ddx[dir];
+
+    /* Verify legality */
+    if (!p_ptr->timed[TMD_CONFUSED])
+    {
+        /* Can the player walk over there? */
+        if (!do_cmd_walk_test(y, x)) return 0;
+
+        /* Dangerous grid? */
+        if (found_dangerous_grid(y, x)) return 0;
+    }
+
+    /* Confuse direction */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        y = p_ptr->py + ddy[dir];
+        x = p_ptr->px + ddx[dir];
+
+        /* Verify legality */
+        if (!do_cmd_walk_test(y, x)) return BASE_ENERGY_MOVE;
+    }
+
+    /* Allow repeated command */
+    if (p_ptr->command_arg)
+    {
+        /* Set repeat count */
+        p_ptr->command_rep = p_ptr->command_arg - 1;
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+
+        /* Cancel the arg */
+        p_ptr->command_arg = 0;
+    }
+
+    /* Move the player, record energy used */
+    return move_player(dir, jumping);
+}
+
+void do_cmd_walk(cmd_arg args)
+{
+    /* Move (normal) */
+    int energy = do_cmd_walk_or_jump(FALSE, args.direction);
 
     if (energy > 0) process_player_energy(energy);
 }

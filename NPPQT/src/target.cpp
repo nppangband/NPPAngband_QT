@@ -943,6 +943,8 @@ bool target_set_interactive(int mode, int x, int y)
     }
 #endif
 
+    ui_toolbar_hide(TOOLBAR_TARGETTING_INTERACTIVE);
+
     /* Recenter around player */
     ui_ensure(py, px);
 

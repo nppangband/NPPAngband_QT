@@ -73,6 +73,7 @@ extern void do_cmd_alter_aux(int dir);
 extern void command_rest(int choice);
 extern void do_cmd_rest(void);
 extern void do_cmd_run(int dir = 0);
+extern void do_cmd_walk(cmd_arg args);
 
 
 // cmd3.cpp
@@ -81,6 +82,7 @@ extern void wield_item(object_type *o_ptr, int item, int slot);
 extern bool make_monster_trap(void);
 extern void py_set_trap(int y, int x);
 extern bool py_modify_trap(int y, int x);
+extern void do_cmd_look(void);
 
 // cmd4.cpp
 extern void do_cmd_feeling(void);
