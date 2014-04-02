@@ -628,6 +628,9 @@ void py_attack(int y, int x)
     /* Track a new monster */
     if (m_ptr->ml) health_track(dungeon_info[y][x].monster_idx);
 
+    // Show red line
+    if (m_ptr->ml) light_spot(y, x);
+
     /* Handle player fear */
     if (p_ptr->timed[TMD_AFRAID])
     {

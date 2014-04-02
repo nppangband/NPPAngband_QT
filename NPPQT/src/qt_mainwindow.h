@@ -10,8 +10,10 @@
 #include <QKeyEvent>
 #include <QActionGroup>
 #include <QEventLoop>
+#include <QPixmapCache>
 #include "defines.h"
 #include "structures.h"
+#include "nppdialog.h"
 
 #define UI_MODE_DEFAULT 0
 #define UI_MODE_INPUT 1
@@ -26,6 +28,7 @@ class QGraphicsItem;
 class DungeonGrid;
 class DungeonCursor;
 class QTextEdit;
+class QLineEdit;
 
 class MainWindow : public QMainWindow
 {
@@ -40,6 +43,9 @@ public:
     UserInput input;
     QEventLoop ev_loop;
 
+    int anim_depth;
+    QEventLoop anim_loop;
+
     DungeonGrid *grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
     QFont cur_font;
@@ -53,7 +59,7 @@ public:
     // The key must be strings of the form "[row]x[col]"
     QHash<QString, QPixmap> tiles;
     // For light effects
-    QHash<QString, QPixmap> pix_cache;
+    QPixmapCache shade_cache;
     QPixmap tile_map;
 
     QList<QGraphicsItem *> path_items;
@@ -79,7 +85,10 @@ public:
     bool panel_contains(int y, int x);
     void rebuild_tile(QString key);
     bool running_command();
-    void add_to_cache(QString key, QPixmap pix);
+    QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
+    void wait_animation(int n_animations = 1);
+    void animation_done();
+    bool check_disturb();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -105,6 +114,9 @@ private slots:
     void slot_find_player();
     void slot_redraw();
     void slot_something();
+
+    void do_create_package();
+    void do_extract_from_package();
 
     void slot_targetting_button();
 
@@ -193,5 +205,22 @@ private:
 QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p);
 
 extern MainWindow *main_window;
+
+class PackageDialog: public NPPDialog
+{
+    Q_OBJECT
+public:
+    QWidget *central;
+    QLineEdit *pak_path;
+    QLineEdit *folder_path;
+    QString mode;
+
+    PackageDialog(QString _mode);
+
+public slots:
+    void find_pak();
+    void find_folder();
+    void do_accept();
+};
 
 #endif

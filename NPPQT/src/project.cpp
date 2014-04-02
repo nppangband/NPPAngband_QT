@@ -1195,6 +1195,7 @@ void take_hit(int dam, QString kb_str)
     // TODO - PLAYTESTING!!!
     set_timed(TMD_PARALYZED, 0, false);
     set_timed(TMD_STUN, 0, false);
+    set_timed(TMD_CUT, 0, false);
     set_timed(TMD_CONFUSED, 0, false);
     set_timed(TMD_SINVIS, 100, false);
     set_timed(TMD_BLIND, 0, false);
@@ -7001,52 +7002,6 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                     gd[grids++] = 0;
                 }
             }
-
-#if 0
-            /* Only do visuals if requested */
-            if (!blind && !(flg & (PROJECT_HIDE)))
-            {
-                /* Only do visuals if the player can "see" the projection */
-                if (panel_contains(y, x) && player_has_los_bold(y, x) &&
-                    (path_gx[i] < PATH_G_NONE))
-                {
-                    u16b p;
-
-                    byte a;
-                    char c;
-
-                    //TODO print the character
-
-                    /* Extra delay if monster in way, if PROJECT_STOP */
-                    if ((flg & (PROJECT_STOP)) && (dungeon_info[y][x].monster_idx != 0))
-                    {
-                        m = 10 + msec;
-
-                    }
-                    else m = msec;
-
-
-                    // TODO handle delay so plalyer can see it
-
-                    /* If a beam, erase later
-                    else
-                    {
-                        drawn = TRUE;
-                    }*/
-
-                    /* Hack -- Activate delay */
-                    visual = TRUE;
-
-                }
-
-                /* Hack -- Always delay for consistency */
-                else if (visual)
-                {
-                    /* Delay for consistency */
-                    // TODO Term_xtra(TERM_XTRA_DELAY, msec);
-                }
-            }
-#endif
         }
 
         if (!blind && !(flg & (PROJECT_HIDE)) && (y0 != y || x0 != x)) {
@@ -7356,7 +7311,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
 
 
     /* Display the blast area if allowed. (unless a bolt) */
-    if (!blind && !(flg & (PROJECT_HIDE)) && ((grids > 1) || (dist == 0)))
+    if (!blind && !(flg & (PROJECT_HIDE)) && ((grids > 0) || (dist == 0)))
     {
         if (flg & PROJECT_ARC) {
             ui_animate_arc(y0, x0, y1, x1, typ, rad, degrees, flg);
@@ -7367,86 +7322,6 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
         else if (flg & PROJECT_BOOM) {
             ui_animate_ball(y2, x2, rad, typ, flg);
         }
-
-#if 0
-        /* Do the blast from inside out */
-        for (i = 0; i < grids; i++)
-        {
-            /* Extract the location */
-            y = gy[i];
-            x = gx[i];
-
-            /* Only do visuals if the player can "see" the blast */
-            if (player_has_los_bold(y, x))
-            {
-                u16b p;
-
-                byte a;
-                char c;
-
-                drawn = TRUE;
-
-                // TODO print the piture.
-            }
-
-
-            /* New radius is about to be drawn */
-            if ((i == grids - 1) || ((i < grids - 1) && (gd[i + 1] > gd[i])))
-            {
-                /* Flush each radius separately */
-                if (op_ptr->delay_factor)
-                {
-                    // TODO (void)Term_fresh();
-                }
-
-                /* Flush */
-                handle_stuff();
-
-                /* Delay (efficiently) */
-                //TODO  handle the delay
-                /* if (visual || drawn)
-                {
-                    m = (rad <= 4 ? msec : (rad <= 8 ? 2*msec/3 : msec/2));
-                    Term_xtra(TERM_XTRA_DELAY, m);
-                }*/
-            }
-        }
-
-        /* Delay for a while if there are pretty graphics to show */
-        /* Delay for a while if there are pretty graphics to show */
-        if ((grids > 1) && (visual || drawn))
-        {
-            // TODO if (!op_ptr->delay_factor) (void)Term_fresh();
-            // TODO Term_xtra(TERM_XTRA_DELAY, who <= 0 ? msec*2 : msec);
-        }
-    }
-
-    /* Flush the erasing -- except if we specify lingering graphics */
-    if ((drawn) && (!(flg & (PROJECT_NO_REDRAW))))
-    {
-        /* Erase the explosion drawn above */
-        for (i = 0; i < grids; i++)
-        {
-            /* Extract the location */
-            y = gy[i];
-            x = gx[i];
-
-            /* Hack -- Erase if needed */
-            if (player_has_los_bold(y, x))
-            {
-                light_spot(y, x);
-            }
-        }
-
-        /* Hack -- center the cursor */
-        // TODO move_cursor_relative(y2, x2);
-
-        /* Flush the explosion */
-        if (op_ptr->delay_factor)
-        {
-            // TODO (void)Term_fresh();
-        }
-#endif
     }
 
     /* Update stuff if needed */

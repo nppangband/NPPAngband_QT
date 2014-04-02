@@ -11,9 +11,10 @@
 #include "src/birthdialog.h"
 #include "emitter.h"
 #include "griddialog.h"
+#include "package.h"
+#include "tilebag.h"
 
 MainWindow *main_window = 0;
-
 
 void ui_request_size_update(QWidget *widget)
 {
@@ -255,9 +256,7 @@ QPixmap ui_get_tile(QString tile_id)
 {
     // Build a transparent 1x1 pixmap
     if (tile_id.isEmpty() || !use_graphics) {
-        QImage img(1, 1, QImage::Format_ARGB32);
-        img.setPixel(0, 0, qRgba(0, 0, 0, 0));
-        return QPixmap::fromImage(img);
+        return ui_make_blank();
     }
 
     main_window->rebuild_tile(tile_id);
@@ -272,7 +271,7 @@ void MainWindow::slot_something()
     if (!get_aim_dir(&dir, false) || dir == 0) return;
     int k = rand_int(8);
 
-    //k = 2;
+    k = 3;
 
     if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
     else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
@@ -289,6 +288,7 @@ void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
     BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
     main_window->dungeon_scene->addItem(ball);
     ball->start();
+    main_window->wait_animation();
 }
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
@@ -296,6 +296,7 @@ void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int de
     ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
     main_window->dungeon_scene->addItem(arc);
     arc->start();
+    main_window->wait_animation();
 }
 
 void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
@@ -303,6 +304,7 @@ void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
     BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
     main_window->dungeon_scene->addItem(beam);
     beam->start();
+    main_window->wait_animation();
 }
 
 void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
@@ -310,6 +312,7 @@ void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
+    main_window->wait_animation();
 }
 
 void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
@@ -317,6 +320,7 @@ void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
     main_window->dungeon_scene->addItem(bolt);
     bolt->start();
+    main_window->wait_animation();
 }
 
 void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
@@ -324,6 +328,7 @@ void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int
     StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
     main_window->dungeon_scene->addItem(star);
     star->start();
+    main_window->wait_animation();
 }
 
 void MainWindow::slot_find_player()
@@ -334,9 +339,201 @@ void MainWindow::slot_find_player()
     update_cursor();
 }
 
+QPixmap ui_make_blank()
+{
+    QImage img(1, 1, QImage::Format_ARGB32);
+    img.setPixel(0, 0, qRgba(0, 0, 0, 0));
+    return QPixmap::fromImage(img);
+}
+
+void ui_animate_victory(int y, int x)
+{
+    u32b flg = PROJECT_PASS;
+
+    BallAnimation *b1 = new BallAnimation(QPointF(x, y), 3, GF_TIME, flg);
+    main_window->dungeon_scene->addItem(b1);
+    b1->setZValue(1000);
+
+    HaloAnimation *h1 = new HaloAnimation(y, x);
+    main_window->dungeon_scene->addItem(h1);
+    h1->setZValue(900);
+
+    b1->start();
+    h1->start();
+
+    main_window->wait_animation(2);
+}
+
 void MainWindow::slot_redraw()
 {
-    redraw();
+    //redraw();
+
+    ui_animate_victory(p_ptr->py, p_ptr->px);
+}
+
+void MainWindow::wait_animation(int n_animations)
+{
+    anim_depth += n_animations;
+
+    if (anim_depth == n_animations) {
+        if (anim_loop.isRunning()) qDebug("Already running animation");
+        //qDebug("Animation loop %x", (int)&anim_loop);
+        if (anim_loop.exec() == -1) {
+            qDebug("Exec failed");
+        }
+    }
+}
+
+void MainWindow::animation_done()
+{
+    if (--anim_depth < 1) {
+        if (!anim_loop.isRunning()) qDebug("Anim loop isn't running");
+        //qDebug("Quitting %d", anim_depth);
+        anim_loop.quit();
+        anim_depth = 0;
+        // MEGA HACK - Process some pending events (not user input) to (hopefully) avoid strange behavior
+        anim_loop.processEvents(QEventLoop::ExcludeUserInputEvents, 100);
+    }
+}
+
+void MainWindow::do_create_package()
+{
+    PackageDialog dlg("create");
+}
+
+void MainWindow::do_extract_from_package()
+{
+    PackageDialog dlg("extract");
+}
+
+PackageDialog::PackageDialog(QString _mode)
+{
+    mode = _mode;
+
+    central = new QWidget;
+    QVBoxLayout *lay1 = new QVBoxLayout;
+    central->setLayout(lay1);
+    this->setClient(central);
+
+    QWidget *area2 = new QWidget;
+    lay1->addWidget(area2);
+    QGridLayout *lay2 = new QGridLayout;
+    lay2->setContentsMargins(0, 0, 0, 0);
+    lay2->setColumnStretch(1, 1);
+    area2->setLayout(lay2);
+
+    int row = 0;
+
+    QLabel *lb = new QLabel;
+    if (mode == "create") {
+        lb->setText("Create a tile package");
+    }
+    else {
+        lb->setText("Extract tiles from a package");
+    }
+    lb->setStyleSheet("font-size: 1.5em; font-weight: bold;");
+    lay2->addWidget(lb, row, 0, 1, 3);
+
+    ++row;
+
+    lay2->addWidget(new QLabel(tr("Package")), row, 0);
+
+    pak_path = new QLineEdit;
+    pak_path->setReadOnly(true);
+    lay2->addWidget(pak_path, row, 1);
+
+    QToolButton *btn2 = new QToolButton();
+    btn2->setText("...");
+    //btn2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    lay2->addWidget(btn2, row, 2);
+    connect(btn2, SIGNAL(clicked()), this, SLOT(find_pak()));
+
+    ++row;
+
+    lay2->addWidget(new QLabel(tr("Tiles folder")), row, 0);
+
+    folder_path = new QLineEdit;
+    folder_path->setReadOnly(true);
+    lay2->addWidget(folder_path, row, 1);
+
+    QToolButton *btn3 = new QToolButton();
+    btn3->setText("...");
+    //btn3->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
+    lay2->addWidget(btn3, row, 2);
+    connect(btn3, SIGNAL(clicked()), this, SLOT(find_folder()));
+
+    ++row;
+
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    lay2->addItem(spacer, row, 0);
+
+    QWidget *area3 = new QWidget;
+    lay1->addWidget(area3);
+    QHBoxLayout *lay3 = new QHBoxLayout;
+    area3->setLayout(lay3);
+    lay3->setContentsMargins(0, 0, 0, 0);
+
+    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay3->addItem(spacer);
+
+    QPushButton *btn1 = new QPushButton(tr("Go!"));
+    lay3->addWidget(btn1);
+    connect(btn1, SIGNAL(clicked()), this, SLOT(do_accept()));
+
+    QPushButton *btn4 = new QPushButton(tr("Cancel"));
+    lay3->addWidget(btn4);
+    connect(btn4, SIGNAL(clicked()), this, SLOT(reject()));
+
+    this->clientSizeUpdated();
+    this->exec();
+}
+
+void PackageDialog::do_accept()
+{
+    if (pak_path->text().isEmpty() || folder_path->text().isEmpty()) {
+        pop_up_message_box(tr("Complete both fields"), QMessageBox::Critical);
+        return;
+    }
+
+    if (mode == "create") {
+        int n = create_package(pak_path->text(), folder_path->text());
+        pop_up_message_box(tr("Imported tiles: %1").arg(n));
+    }
+    else {
+        Package pak(pak_path->text());
+        if (!pak.is_open()) {
+            pop_up_message_box(tr("Couldn't load the package"), QMessageBox::Critical);
+        }
+        else {
+            int n = pak.extract_to(folder_path->text());
+            pop_up_message_box(tr("Extracted tiles: %1").arg(n));
+        }
+    }
+}
+
+void PackageDialog::find_pak()
+{
+    QString path;
+
+    if (mode == "extract") {
+        path = QFileDialog::getOpenFileName(this, tr("Select a package"), "",
+                                            tr("Packages (*.pak)"));
+    }
+    else {
+        path = QFileDialog::getSaveFileName(this, tr("Select a package"), "",
+                                            tr("Packages (*.pak)"));
+    }
+
+    if (path != "") pak_path->setText(path);
+}
+
+void PackageDialog::find_folder()
+{
+    QString path;
+
+    path = QFileDialog::getExistingDirectory(this, tr("Select a folder"));
+
+    if (path != "") folder_path->setText(path);
 }
 
 QPainterPath DungeonGrid::shape() const
@@ -382,6 +579,10 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (!character_dungeon) return;
 
+    if (parent->anim_depth > 0) return;
+
+    if (parent->check_disturb()) return;
+
     int old_x = parent->cursor->c_x;
     int old_y = parent->cursor->c_y;
     parent->grids[old_y][old_x]->update();
@@ -389,9 +590,10 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         parent->input.x = c_x;
         parent->input.y = c_y;
         parent->input.mode = INPUT_MODE_MOUSE;
+        parent->ui_mode = UI_MODE_DEFAULT;
         parent->ev_loop.quit();
     }
-    else {
+    else if (!parent->ev_loop.isRunning()) {
         parent->cursor->setVisible(true);
         parent->cursor->moveTo(c_y, c_x);
         //ui_center(c_y, c_x);
@@ -471,6 +673,32 @@ QRectF DungeonGrid::boundingRect() const
     return QRectF(0, 0, parent->cell_wid, parent->cell_hgt);
 }
 
+QString find_cloud_tile(int y, int x)
+{
+    QString tile;
+
+    if (!use_graphics) return tile;
+
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK | CAVE_SEEN))) return tile;
+
+    int x_idx = dungeon_info[y][x].effect_idx;
+    while (x_idx) {
+        effect_type *x_ptr = x_list + x_idx;
+        x_idx = x_ptr->next_x_idx;
+
+        if (x_ptr->x_flags & EF1_HIDDEN) continue;
+
+        if (x_ptr->x_type == EFFECT_PERMANENT_CLOUD || x_ptr->x_type == EFFECT_LINGERING_CLOUD
+                || x_ptr->x_type == EFFECT_SHIMMERING_CLOUD) {
+            int feat = x_ptr->x_f_idx;
+            feat = f_info[feat].f_mimic;
+            return f_info[feat].tile_id;
+        }
+    }
+
+    return tile;
+}
+
 void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     if (!character_dungeon) return;
@@ -489,6 +717,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     bool do_shadow = false;
 
     flags = (d_ptr->ui_flags & (UI_LIGHT_BRIGHT | UI_LIGHT_DIM | UI_LIGHT_TORCH | UI_COSMIC_TORCH));
+
+    bool is_cloud = false;
 
     // Draw visible monsters    
     if (d_ptr->has_visible_monster())
@@ -516,6 +746,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
         flags |= (d_ptr->ui_flags & UI_TRANSPARENT_EFFECT);
         opacity = 0.7;
+
+        is_cloud = (flags & UI_TRANSPARENT_EFFECT);
     }
     // Draw objects
     else if (d_ptr->has_visible_object())
@@ -547,28 +779,27 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 pix = colorize_pix(pix, color);
             }
             else if (flags & UI_LIGHT_BRIGHT) {
-                QString _k = QString("%1:bright").arg(key1);
-                if (parent->pix_cache.contains(_k)) {
-                    pix = parent->pix_cache.value(_k);
-                }
-                else {
-                    pix = darken_pix(pix);
-                    parent->add_to_cache(_k, pix);
-                }
+                pix = parent->apply_shade(key1, pix, "bright");
             }
             else if (flags & UI_LIGHT_DIM) {
-                QString _k = QString("%1:dim").arg(key1);
-                if (parent->pix_cache.contains(_k)) {
-                    pix = parent->pix_cache.value(_k);
-                }
-                else {
-                    pix = gray_pix(pix);
-                    parent->add_to_cache(_k, pix);
-                }
+                pix = parent->apply_shade(key1, pix, "dim");
             }
 
             painter->drawPixmap(pix.rect(), pix, pix.rect());
             done_bg = true;
+
+            // Draw cloud effects (in graphics mode), if not already drawing that
+            if (!is_cloud) {
+                QString tile = find_cloud_tile(c_y, c_x);
+                if (!tile.isEmpty()) {
+                    painter->setOpacity(0.7);
+                    parent->rebuild_tile(tile);
+                    QPixmap pix = parent->tiles.value(tile);
+                    painter->drawPixmap(0, 0, pix);
+                    painter->setOpacity(1);
+                    done_bg = true;
+                }
+            }
 
             // Draw foreground tile
             if (key2.length() > 0) {
@@ -599,6 +830,20 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                           Qt::AlignCenter, QString(square_char));
     }
 
+    // Show a red line over a monster with its remaining hp
+    if (d_ptr->has_visible_monster() && d_ptr->monster_idx > 0) {
+        monster_type *m_ptr = mon_list + d_ptr->monster_idx;
+        if (m_ptr->maxhp > 0 && m_ptr->hp < m_ptr->maxhp) {
+            int w = parent->cell_wid * m_ptr->hp / m_ptr->maxhp;
+            w = MAX(w, 1);
+            int h = 1;
+            if (parent->cell_hgt > 16) h = 2;
+            QColor color("red");
+            if (m_ptr->hp * 100 / m_ptr->maxhp > 50) color = QColor("yellow");
+            painter->fillRect(0, 0, w, h, color);
+        }
+    }
+
     // Draw a mark for visible artifacts
     if (d_ptr->has_visible_artifact()) {
         int s = 6;
@@ -615,14 +860,28 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->restore();
 }
 
-void MainWindow::add_to_cache(QString key, QPixmap pix)
+QPixmap MainWindow::apply_shade(QString tile_id, QPixmap tile, QString shade_id)
 {
-    if (pix_cache.size() > 100) {
-        while (pix_cache.size() > 90) {      // Erase 10 items
-            pix_cache.erase(pix_cache.begin());
-        }
+    tile_id += ":";
+    tile_id += shade_id;
+
+    QPixmap pix;
+
+    if (shade_cache.find(tile_id, &pix)) return pix;
+
+    if (shade_id == "dim") {
+        pix = gray_pix(tile);
     }
-    pix_cache.insert(key, pix);
+    else if (shade_id == "bright") {
+        pix = darken_pix(tile);
+    }
+    else {  // It should never happen
+        pix = tile;
+    }
+
+    shade_cache.insert(tile_id, pix);
+
+    return pix;
 }
 
 QPixmap gray_pix(QPixmap src)
@@ -682,7 +941,7 @@ QPixmap lighten_pix(QPixmap src)
 void MainWindow::destroy_tiles()
 {
     tiles.clear();
-    pix_cache.clear();
+    shade_cache.clear();
 }
 
 void MainWindow::calculate_cell_size()
@@ -818,8 +1077,7 @@ void MainWindow::init_scene()
     QBrush brush(QColor("black"));
     dungeon_scene->setBackgroundBrush(brush);
 
-    blank_pix = QPixmap(1, 1);
-    blank_pix.fill(QColor("black"));
+    blank_pix = ui_make_blank();
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
         for (int x = 0; x < MAX_DUNGEON_WID; x++) {
@@ -920,6 +1178,8 @@ MainWindow::MainWindow()
     // Store a reference for public functions (panel_contains and others)
     if (!main_window) main_window = this;
 
+    anim_depth = 0;
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     ui_mode = UI_MODE_DEFAULT;
@@ -932,7 +1192,6 @@ MainWindow::MainWindow()
     dungeon_scene = new QGraphicsScene;
     graphics_view = new QGraphicsView(dungeon_scene);
     graphics_view->installEventFilter(this);
-    //graphics_view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
     QWidget *central = new QWidget;
     setCentralWidget(central);
@@ -979,6 +1238,7 @@ MainWindow::MainWindow()
     create_toolbars();
     select_font();
     create_directories();
+    init_tile_bags();
     create_signals();
     (void)statusBar();
 
@@ -1116,6 +1376,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::KeyPress)
     {
         this->keyPressEvent(dynamic_cast<QKeyEvent *>(event));
+
         return true;
     }
 
@@ -1124,18 +1385,37 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 static void process_mov_key(QKeyEvent *event, int dir)
 {
-    int mask = event->modifiers() & (Qt::ShiftModifier | Qt::AltModifier | Qt::ControlModifier);
+    int mask = QApplication::keyboardModifiers();
 
-    if (mask == Qt::ControlModifier) {
+    if (mask & Qt::AltModifier) {
+        do_cmd_alter_aux(dir);
+    }
+    else if (mask & Qt::ControlModifier) {
         ui_change_panel(dir);
     }
     else {
-        move_player(dir, false);
+        cmd_arg args;
+        args.direction = dir;
+        do_cmd_walk(args);
     }
+}
+
+bool MainWindow::check_disturb()
+{
+    if (p_ptr->resting || p_ptr->running || p_ptr->command_rep) {
+        disturb(0, 0);
+        message("Cancelled.");
+        return true;
+    }
+    return false;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
+    if (anim_depth > 0) return;
+
+    if (check_disturb()) return;
+
     // TODO PLAYTESTING
     debug_rarities();
 
@@ -1146,12 +1426,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         input.key = which_key->key();
         input.text = keystring;
         input.mode = INPUT_MODE_KEY;
+        ui_mode = UI_MODE_DEFAULT;
         ev_loop.quit();
-        return;
-    }
-
-    // Don't move when doing animations
-    if (ev_loop.isRunning()) {
         return;
     }
 
@@ -1273,7 +1549,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_D:
         {            
             if (keystring == "d")   do_cmd_drop();
-            else                    do_cmd_destroy();
+            else                    do_cmd_disarm();
             return;
         }
         case Qt::Key_BraceLeft:
@@ -1302,13 +1578,21 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             // handle lowercase keystrokes        
             if (keystring == "a") do_cmd_activate();
             else if (keystring == "p") do_cmd_cast();
+            else if (keystring == "B") do_cmd_bash();
+            else if (keystring == "R") do_cmd_rest();
             else if (keystring == "b") do_cmd_browse();
             else if (keystring == "e") do_cmd_use_item();
+            else if (keystring == "k") do_cmd_destroy();
             else if (keystring == "t") do_cmd_takeoff();
+            else if (keystring == "T") do_cmd_tunnel();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();
-
-            //playtesting
+            else if (keystring == "c") do_cmd_close();
+            else if (keystring == "o") do_cmd_open();
+            else if (keystring == "s") do_cmd_search();
+            else if (keystring == ".") do_cmd_run();
+            else if (keystring == "l") do_cmd_look();
+            else if (keystring == "5") do_cmd_hold();
             else if (keystring == "z") describe_monster(644,TRUE,NULL);
             else
             {
@@ -1571,6 +1855,22 @@ void MainWindow::slot_multiplier_clicked(QAction *action)
     }
 }
 
+qreal ui_get_angle(int y1, int x1, int y2, int x2)
+{
+    QLineF line(ui_get_center(y1, x1), ui_get_center(y2, x2));
+    if (line.length() == 0.0) return 0.0;
+    return line.angle();
+}
+
+QPoint ui_get_center(int y, int x)
+{
+    x *= main_window->cell_wid;
+    y *= main_window->cell_hgt;
+    x += main_window->cell_wid / 2;
+    y += main_window->cell_hgt / 2;
+    return QPoint(x, y);
+}
+
 //Actually add the QActions intialized in create_actions to the menu
 void MainWindow::create_menus()
 {
@@ -1628,6 +1928,12 @@ void MainWindow::create_menus()
         if (i == 0) act->setChecked(true);
     }
     connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
+
+    QAction *act = settings->addAction(tr("Create tile package"));
+    connect(act, SIGNAL(triggered()), this, SLOT(do_create_package()));
+
+    act = settings->addAction(tr("Extract tiles from package"));
+    connect(act, SIGNAL(triggered()), this, SLOT(do_extract_from_package()));
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1728,6 +2034,7 @@ void MainWindow::slot_targetting_button()
     input.text = snd->objectName();
     input.key = snd->property("key").toInt();
     input.mode = INPUT_MODE_KEY;
+    ui_mode = UI_MODE_DEFAULT;
     ev_loop.quit();
 }
 

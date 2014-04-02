@@ -1,0 +1,35 @@
+#ifndef TILEBAG_H
+#define TILEBAG_H
+
+#include <QtCore>
+#include <QPixmapCache>
+
+class Package;
+
+class TileBag
+{
+public:
+    // It takes the path to the package file
+    TileBag(QString path);
+
+    Package *pak;
+    QPixmapCache cache;
+
+    QPixmap get_tile(QString name);         // Use this!
+
+    void clear_cache();
+
+    virtual ~TileBag();
+};
+
+extern TileBag *tiles_32x32;
+extern TileBag *tiles_8x8;
+extern TileBag *tiles_projections;
+
+// This will hold tiles_32x32 or tiles_8x8 depending on graphics mode
+// or null in ascii_mode
+extern TileBag *current_tiles;
+
+extern void init_tile_bags();
+
+#endif // TILEBAG_H

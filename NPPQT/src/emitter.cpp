@@ -5,53 +5,14 @@
 #include <QtCore/qmath.h>
 #include <QGraphicsScene>
 #include <QLinearGradient>
+#include <QHash>
+#include "tilebag.h"
 
-qreal delay = 1.666666; // delay per pixel. 1 second every 600 pixels
-
-static QPixmap *ball_pix = 0;
-static QPixmap *bolt_pix = 0;
-static QPixmap *star_pix = 0;
-
-enum {
-    ARROW_IDX = 0,
-    SHOT_IDX,
-    BOULDER_IDX,
-    MAX_MISSILES
-};
-static QPixmap *missiles[MAX_MISSILES];
-static const char *the_names[MAX_MISSILES] = {"arrow1.png", "shot1.png", "boulder1.png"};
-
-static void load_missiles()
-{
-    for (int i = 0; i < MAX_MISSILES; i++) {
-        if (missiles[i] != 0) continue;
-        QString path(NPP_DIR_GRAF);
-        path.append(the_names[i]);
-        missiles[i] = new QPixmap(path);
-    }
-}
+qreal delay = 1.4; // delay per pixel
 
 QPointF mulp(QPointF a, QPointF b)
 {
     return QPointF(a.x() * b.x(), a.y() * b.y());
-}
-
-static void load_ball_pix()
-{
-    if (!ball_pix) {
-        QString path(NPP_DIR_GRAF);
-        path.append("ball1.png");
-        ball_pix = new QPixmap(path);
-    }
-}
-
-static void load_bolt_pix()
-{
-    if (!bolt_pix) {
-        QString path(NPP_DIR_GRAF);
-        path.append("bolt1.png");
-        bolt_pix = new QPixmap(path);
-    }
 }
 
 static double PI = 3.141592653589793238463;
@@ -191,13 +152,11 @@ QPolygonF get_cloud_points(QPointF from, QPointF to, qreal step)
 
 void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    load_ball_pix();
-
     painter->save();
 
     bool do_beam = false;
 
-    QPixmap pix = *ball_pix;
+    QPixmap pix = tiles_projections->get_tile("ball1.png");
     pix = colorize_pix2(pix, cloud_color);
     int bs = pix.width();
 
@@ -281,7 +240,7 @@ NPPAnimation::NPPAnimation()
 NPPAnimation::~NPPAnimation()
 {
     if (next) next->start();
-    else if (main_window->ev_loop.isRunning()) main_window->ev_loop.quit();
+    else main_window->animation_done();
     if (anim) delete anim;
 }
 
@@ -289,8 +248,6 @@ void NPPAnimation::start()
 {
     if (anim) {
         anim->start();
-        if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
-        else pop_up_message_box("Event loop already running");
     }
 }
 
@@ -298,7 +255,10 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
 {
     flg = new_flg;
     gf_type = new_gf_type;
-    if (gf_type > 0) color = defined_colors[gf_color(gf_type) % MAX_COLORS];
+    if (gf_type > 0) {
+        int color_idx = gf_color(gf_type) % MAX_COLORS;
+        color = defined_colors[color_idx];
+    }
 
     from = getCenter(from.y(), from.x());
     to = getCenter(to.y(), to.x());
@@ -331,25 +291,23 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
         }
     }
     else if (gf_type == GF_ARROW) {
-        load_missiles();
         if (flg & PROJECT_ROCK) {
-            pix = *missiles[BOULDER_IDX];
+            pix = tiles_projections->get_tile("boulder1.png");
             do_default = false;
         }
         else if (flg & PROJECT_SHOT) {
-            pix = *missiles[SHOT_IDX];
+            pix = tiles_projections->get_tile("shot1.png");
             do_default = false;
         }
         else if (flg & PROJECT_AMMO) {
-            pix = *missiles[ARROW_IDX];
+            pix = tiles_projections->get_tile("arrow1.png");
             pix = rotate_pix(pix, current_angle);
             do_default = false;
         }
     }
 
     if (do_default) {
-        load_bolt_pix();
-        pix = rotate_pix(*bolt_pix, current_angle);
+        pix = rotate_pix(tiles_projections->get_tile("bolt1.png"), current_angle);
         pix = colorize_pix3(pix, color);
     }
 
@@ -402,8 +360,6 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b f
 
     setZValue(1000);
     setVisible(false);
-
-    load_ball_pix();
 
     int size = (newRadius * 2 + 1 + 5); // 5 extra
 
@@ -492,7 +448,7 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 {
     painter->save();    
 
-    QPixmap pix = colorize_pix2(*ball_pix, color);
+    QPixmap pix = colorize_pix2(tiles_projections->get_tile("ball1.png"), color);
 
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
@@ -538,13 +494,11 @@ static int ARC_TILE_SIZE = 40;
 
 ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad, u32b flg)
 {
-    load_ball_pix();
-
     gf_type = type;
     byte idx = gf_color(gf_type);
     color = defined_colors[idx % MAX_COLORS];
 
-    QPixmap pix = *ball_pix;
+    QPixmap pix = tiles_projections->get_tile("ball1");
     pix = colorize_pix2(pix, color);
 
     tiles.append(pix);
@@ -588,28 +542,29 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     setZValue(300);
     setVisible(false);
 
-    timer.setInterval(delay * 25);
+    timer.setInterval(delay * 20);
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
 }
 
 void ArcAnimation::start()
 {
     timer.start();
-    if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
-    else pop_up_message_box("Event loop already running");
 }
 
 void ArcAnimation::finish()
 {
     this->setVisible(false);
     timer.stop();
-    main_window->ev_loop.quit();
+    main_window->animation_done();
     this->deleteLater();
 }
 
 void ArcAnimation::do_timeout()
 {
-    length += 40;
+    qreal delta = 40;
+    if (length == 0) delta = 5;
+
+    length += delta;
 
     if (length > maxLength) {
         finish();
@@ -617,8 +572,6 @@ void ArcAnimation::do_timeout()
     }
 
     setVisible(true);
-
-    qreal delta = length - previousLength;
 
     previousLength = length;
 
@@ -638,7 +591,7 @@ void ArcAnimation::do_timeout()
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
 
-        if (p->currentLength > 0) {
+        if ((p->currentLength > 0) || (delta < 40)) {
             p->currentLength += delta;
         }
         else {
@@ -712,19 +665,13 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
 {
     gf_type = newGFType;
 
-    if (star_pix == 0) {
-        QString path(NPP_DIR_GRAF);
-        path.append("star1.png");
-        star_pix = new QPixmap(path);
-    }
-
     while (--grids >= 0) {
         int gr = GRID(gy[grids], gx[grids]);
         valid.insert(gr, true);
     }
 
     QColor color = defined_colors[gf_color(gf_type) % MAX_COLORS];
-    pix = colorize_pix3(*star_pix, color);
+    pix = colorize_pix3(tiles_projections->get_tile("star1.png"), color);
 
     this->setVisible(false);
     this->setZValue(1000);
@@ -751,13 +698,12 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
 void StarAnimation::start()
 {
     timer.start();
-    if (!main_window->ev_loop.isRunning()) main_window->ev_loop.exec();
 }
 
 void StarAnimation::stop()
 {
     timer.stop();
-    main_window->ev_loop.quit();
+    main_window->animation_done();
     this->setVisible(false);
     this->scene()->removeItem(this);
     for (int i = 0; i < particles.size(); i++) {
@@ -824,4 +770,70 @@ void StarAnimation::do_timeout()
     }
 
     this->update();
+}
+
+HaloAnimation::HaloAnimation(int y, int x)
+{
+    QPointF center = getCenter(y, x);
+
+    curLength = 20;
+
+    haloPix = tiles_projections->get_tile("big_halo.png");
+
+    maxLength = haloPix.width();
+
+    QPointF adj(maxLength / 2, maxLength / 2);
+
+    setPos(center - adj);
+
+    c_y = adj.y();
+    c_x = adj.x();
+
+    timer.setInterval(70);
+
+    connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+
+    this->setVisible(false);
+}
+
+void HaloAnimation::start()
+{
+    timer.start();
+}
+
+void HaloAnimation::stop()
+{
+    timer.stop();
+    main_window->animation_done();
+    if (scene()) scene()->removeItem(this);
+    this->deleteLater();
+}
+
+void HaloAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QPointF adj(curPix.width() / 2, curPix.height() / 2);
+    QPointF center(c_x, c_y);
+    center -= adj;
+    painter->drawPixmap(center, curPix);
+}
+
+QRectF HaloAnimation::boundingRect() const
+{
+    return QRectF(0, 0, maxLength, maxLength);
+}
+
+void HaloAnimation::do_timeout()
+{
+    curLength += 30;
+
+    if (curLength > maxLength) {
+        stop();
+        return;
+    }
+
+    this->setVisible(true);
+
+    curPix = haloPix.scaled(curLength, curLength);
+
+    update();
 }

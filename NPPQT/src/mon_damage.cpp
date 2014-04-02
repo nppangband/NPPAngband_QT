@@ -1039,7 +1039,7 @@ void monster_death(int m_idx, int who)
                 prepare_ghost_name();
             }
 
-            note2 = (QString("Destroyed %^1") .arg(player_ghost_name));
+            note2 = (QString("Destroyed %1") .arg(capitalize_first(player_ghost_name)));
         }
 
         /*All other uniques*/

@@ -60,6 +60,24 @@ extern void disturb(int stop_search, int unused_flag);
 extern bool do_cmd_test(int y, int x, int action, bool do_message);
 extern void do_cmd_go_up(void);
 extern void do_cmd_go_down(void);
+extern void command_open(cmd_arg args);
+extern void do_cmd_open(void);
+extern void command_disarm(cmd_arg args);
+extern void do_cmd_disarm(void);
+extern void do_cmd_search(void);
+extern void command_tunnel(cmd_arg args);
+extern void do_cmd_tunnel(void);
+extern void command_close(cmd_arg args);
+extern void do_cmd_close(void);
+extern void do_cmd_alter_aux(int dir);
+extern void command_rest(int choice);
+extern void do_cmd_rest(void);
+extern void do_cmd_run(int dir = 0);
+extern void do_cmd_walk(cmd_arg args);
+extern void command_bash(cmd_arg args);
+extern void do_cmd_bash(void);
+extern void do_cmd_hold();
+
 
 // cmd3.cpp
 extern void wield_in_quiver(object_type *o_ptr, int slot);
@@ -67,6 +85,7 @@ extern void wield_item(object_type *o_ptr, int item, int slot);
 extern bool make_monster_trap(void);
 extern void py_set_trap(int y, int x);
 extern bool py_modify_trap(int y, int x);
+extern void do_cmd_look(void);
 
 // cmd4.cpp
 extern void do_cmd_feeling(void);
@@ -101,7 +120,8 @@ extern void do_cmd_pickup_from_pile(bool pickup, bool message);
 extern void py_pickup_gold(void);
 extern void py_pickup(bool pickup);
 extern void do_cmd_pickup(void);
-extern void move_player(int dir, int jumping);
+extern int move_player(int dir, int jumping);
+extern void search(void);
 
 // cmd_spell.cpp
 extern int spell_chance(int spell);
@@ -451,6 +471,8 @@ extern void stack_histories(object_type *o_ptr, const object_type *j_ptr);
 extern int quiver_space_per_unit(object_type *o_ptr);
 extern bool obj_can_wear(object_type *o_ptr);
 
+/* pathfind.cpp */
+extern int run_step(int dir);
 
 /* player_attack.cpp */
 extern bool test_hit(int chance, int ac, int vis);
@@ -653,6 +675,10 @@ class QTableWidget;
 extern QSize ui_estimate_table_size(QTableWidget *table, bool horiz = true, bool vert = true,
                                     int padding = 30);
 extern QFont ui_current_font();
+extern QPixmap ui_make_blank();
+extern void ui_animate_victory(int y, int x);
+extern qreal ui_get_angle(int y1, int x1, int y2, int x2);
+extern QPoint ui_get_center(int y, int x);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);
@@ -868,6 +894,8 @@ extern void target_set_location(int y, int x);
 extern int target_dir(UserInput input);
 extern bool get_aim_dir(int *dp, bool target_trap);
 extern bool target_set_closest(int mode);
+extern bool get_rep_dir(int *dp);
+extern bool confuse_dir(int *dp);
 
 /* timed.c */
 

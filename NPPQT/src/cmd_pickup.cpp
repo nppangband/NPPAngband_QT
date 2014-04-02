@@ -792,7 +792,7 @@ void do_cmd_pickup(void)
  * Note that this routine handles monsters in the destination grid,
  * and also handles attempting to move into walls/doors/rubble/etc.
  */
-void move_player(int dir, int jumping)
+int move_player(int dir, int jumping)
 {
 	int py = p_ptr->py;
 	int px = p_ptr->px;
@@ -838,7 +838,9 @@ void move_player(int dir, int jumping)
 		}
 
 		/* Alter */
-        // TODO do_cmd_alter_aux(dir);
+        do_cmd_alter_aux(dir);
+
+        used_energy = 0; // Hack - already processed energy in alter_aux
 	}
 
 	/* Player can not walk through certain terrain */
@@ -985,7 +987,7 @@ void move_player(int dir, int jumping)
 				p_ptr->running && old_dtrap && !new_dtrap)
 		{
 			disturb(0, 0);
-            return;
+            return 0;
 		}
 
 		/* Move player */
@@ -1069,7 +1071,7 @@ void move_player(int dir, int jumping)
 		}
 
 		/* Record the energy for flying creatures.*/
-		if (p_ptr->timed[TMD_FLYING])	used_energy = BASE_ENERGY_MOVE;
+        if (p_ptr->timed[TMD_FLYING]) used_energy = BASE_ENERGY_FLYING;
 
 		/* Reveal when you are on shallow or deep  terrain */
         else if (!(dungeon_info[y][x].cave_info & (CAVE_MARK)) &&
@@ -1094,7 +1096,6 @@ void move_player(int dir, int jumping)
 
 	}
 
-    // Process any used energy.
-    if (used_energy) process_player_energy(used_energy);
+    return used_energy;
 }
 

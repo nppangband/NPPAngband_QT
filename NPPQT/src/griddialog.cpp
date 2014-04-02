@@ -14,6 +14,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
     int n = 0;
 
+    bool drugged = (p_ptr->timed[TMD_IMAGE] > 0);
+
     central = new QWidget;
     QVBoxLayout *lay1 = new QVBoxLayout;
     central->setLayout(lay1);
@@ -32,7 +34,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     int col = 0;
     int row = 0;
     int m_idx = d_ptr->monster_idx;
-    if (m_idx > 0 && mon_list[m_idx].ml) {
+    if (m_idx > 0 && mon_list[m_idx].ml && !drugged) {
         ++n;
 
         monster_type *m_ptr = mon_list + d_ptr->monster_idx;
@@ -53,8 +55,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         QString name = monster_desc(m_ptr, 0x08);
         int gain_m = calc_energy_gain(m_ptr->m_speed);
         int gain_p = calc_energy_gain(p_ptr->state.p_speed);
-        QString msg = QString("%1 - Energy: %2 - Player energy: %3").arg(name)
-                .arg(gain_m).arg(gain_p);
+        QString msg = QString("%1 - HP: %4 - Energy: %2 - Player energy: %3").arg(name)
+                .arg(gain_m).arg(gain_p).arg(m_ptr->hp);
         QLabel *lb3 = new QLabel(capitalize_first(msg));
         lay2->addWidget(lb3, row, col++);
 
@@ -62,7 +64,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     }
 
     int o_idx = d_ptr->object_idx;
-    while (o_idx) {
+    while (o_idx && !drugged) {
         object_type *o_ptr = o_list + o_idx;
         o_idx = o_ptr->next_o_idx;
 
@@ -131,11 +133,10 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     }
 
     int x_idx = d_ptr->effect_idx;
-    while (x_idx) {
+    while (x_idx && (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN))) {
         effect_type *x_ptr = x_list + x_idx;
         x_idx = x_ptr->next_x_idx;
 
-        if (!(d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN))) continue;
         if (x_ptr->x_flags & EF1_HIDDEN) continue;
 
         int feat = x_ptr->x_f_idx;
