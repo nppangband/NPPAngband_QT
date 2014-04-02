@@ -1297,5 +1297,16 @@ enum
     SOUND_MAX         = MSG_MAX
 };
 
+/*
+ *  Keeping track of what type of
+ *  information we are displaying.
+ */
+enum
+{
+    DISPLAY_INFO_FEATURE,
+    DISPLAY_INFO_MONSTER,
+    DISPLAY_INFO_OBJECT
+};
+
 
 #endif // DEFINES_H

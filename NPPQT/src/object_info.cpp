@@ -1552,12 +1552,16 @@ QString screen_out_head(object_type *o_ptr)
     output.clear();
     QString o_name;
 
+    object_kind *k_ptr = &k_info[o_ptr->k_idx];
+
     /* Description */
     o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
     o_name = capitalize_first(o_name);
 
+    QString obj_symbol = color_string(k_ptr->d_char, k_ptr->color_num);
+
     /* Print, in colour */
-    output.append(QString("<b><big>%1</big></b>") .arg(o_name));
+    output.append(QString("<b><h1>'%1' - %2</h1></b><br><br>") .arg(obj_symbol) .arg(o_name));
 
     /* Display the known artifact description */
     if (!adult_rand_artifacts &&
@@ -1657,10 +1661,8 @@ void object_info_screen(object_type *o_ptr)
             else 					output.append(QString("It has no value.<br>"));
         }
 
-        output.append(QString("<b><br>[Press OK to continue]<br></b>"));
-
         /* Finally, display it */
-        QMessageBox::information(0, o_name, output, QMessageBox::Ok);
+        display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output);
     }
 
     /* Hack -- Browse book, then prompt for a command */

@@ -313,42 +313,42 @@ QString color_string(QString msg, int which_color)
 
     switch (which_color)
     {
-        case TERM_DARK :            return (QString("<font color='#000000'> %1</font>") .arg(msg));
-        case TERM_L_DARK :          return (QString("<font color='#606060'> %1</font>") .arg(msg));
-        case TERM_SLATE :           return (QString("<font color='#808080'> %1</font>") .arg(msg));
-        case TERM_SLATE_GRAY :      return (QString("<font color='#708090'> %1</font>") .arg(msg));
-        case TERM_TAUPE :           return (QString("<font color='#8B8589'> %1</font>") .arg(msg));
-        case TERM_WHITE :           return (QString("<font color='#FFFFFF'> %1</font>") .arg(msg));
-        case TERM_LIGHT_GRAY :      return (QString("<font color='#C0C0C0'> %1</font>") .arg(msg));
-        case TERM_SNOW_WHITE :      return (QString("<font color='#FFFAFA'> %1</font>") .arg(msg));
-        case TERM_RED :             return (QString("<font color='#C00000'> %1</font>") .arg(msg));
-        case TERM_L_RED :           return (QString("<font color='#FF4040'> %1</font>") .arg(msg));
-        case TERM_RED_LAVA :        return (QString("<font color='#CF1020'> %1</font>") .arg(msg));
-        case TERM_RASPBERRY :       return (QString("<font color='#E30B5C'> %1</font>") .arg(msg));
-        case TERM_RED_RUST :        return (QString("<font color='#B7410E'> %1</font>") .arg(msg));
-        case TERM_PINK :            return (QString("<font color='#FF1493'> %1</font>") .arg(msg));
-        case TERM_ORANGE :          return (QString("<font color='#FF8000'> %1</font>") .arg(msg));
-        case TERM_MAHAGONY :        return (QString("<font color='#C04000'> %1</font>") .arg(msg));
-        case TERM_GREEN :           return (QString("<font color='#008040'> %1</font>") .arg(msg));
-        case TERM_L_GREEN :         return (QString("<font color='#00FF00'> %1</font>") .arg(msg));
-        case TERM_JUNGLE_GREEN :    return (QString("<font color='#29AB87'> %1</font>") .arg(msg));
-        case TERM_LIME_GREEN :      return (QString("<font color='#BFFF00'> %1</font>") .arg(msg));
-        case TERM_BLUE :            return (QString("<font color='#0040FF'> %1</font>") .arg(msg));
-        case TERM_L_BLUE :          return (QString("<font color='#00FFFF'> %1</font>") .arg(msg));
-        case TERM_NAVY_BLUE :       return (QString("<font color='#4C4CA6'> %1</font>") .arg(msg));
-        case TERM_SKY_BLUE :        return (QString("<font color='#00BFFF'> %1</font>") .arg(msg));
-        case TERM_UMBER :           return (QString("<font color='#804000'> %1</font>") .arg(msg));
-        case TERM_L_UMBER :         return (QString("<font color='#C08040'> %1</font>") .arg(msg));
-        case TERM_AUBURN :          return (QString("<font color='#6D351A'> %1</font>") .arg(msg));
-        case TERM_L_BROWN :         return (QString("<font color='#C19A6B'> %1</font>") .arg(msg));
-        case TERM_YELLOW :          return (QString("<font color='#FFFF00'> %1</font>") .arg(msg));
-        case TERM_EARTH_YELLOW :    return (QString("<font color='#FFFF00'> %1</font>") .arg(msg));
-        case TERM_MAIZE :           return (QString("<font color='#FBEC5D'> %1</font>") .arg(msg));
-        case TERM_VIOLET :          return (QString("<font color='#FF00FF'> %1</font>") .arg(msg));
-        case TERM_PURPLE :          return (QString("<font color='#A500FF'> %1</font>") .arg(msg));
-        case TERM_GOLD :            return (QString("<font color='#FFD700'> %1</font>") .arg(msg));
-        case TERM_SILVER :          return (QString("<font color='#C0C0C0'> %1</font>") .arg(msg));
-        case TERM_COPPER :          return (QString("<font color='#B87333'> %1</font>") .arg(msg));
+        case TERM_DARK :            return (QString("<font color='#000000'>%1</font>") .arg(msg));
+        case TERM_L_DARK :          return (QString("<font color='#606060'>%1</font>") .arg(msg));
+        case TERM_SLATE :           return (QString("<font color='#808080'>%1</font>") .arg(msg));
+        case TERM_SLATE_GRAY :      return (QString("<font color='#708090'>%1</font>") .arg(msg));
+        case TERM_TAUPE :           return (QString("<font color='#8B8589'>%1</font>") .arg(msg));
+        case TERM_WHITE :           return (QString("<font color='#FFFFFF'>%1</font>") .arg(msg));
+        case TERM_LIGHT_GRAY :      return (QString("<font color='#C0C0C0'>%1</font>") .arg(msg));
+        case TERM_SNOW_WHITE :      return (QString("<font color='#FFFAFA'>%1</font>") .arg(msg));
+        case TERM_RED :             return (QString("<font color='#C00000'>%1</font>") .arg(msg));
+        case TERM_L_RED :           return (QString("<font color='#FF4040'>%1</font>") .arg(msg));
+        case TERM_RED_LAVA :        return (QString("<font color='#CF1020'>%1</font>") .arg(msg));
+        case TERM_RASPBERRY :       return (QString("<font color='#E30B5C'>%1</font>") .arg(msg));
+        case TERM_RED_RUST :        return (QString("<font color='#B7410E'>%1</font>") .arg(msg));
+        case TERM_PINK :            return (QString("<font color='#FF1493'>%1</font>") .arg(msg));
+        case TERM_ORANGE :          return (QString("<font color='#FF8000'>%1</font>") .arg(msg));
+        case TERM_MAHAGONY :        return (QString("<font color='#C04000'>%1</font>") .arg(msg));
+        case TERM_GREEN :           return (QString("<font color='#008040'>%1</font>") .arg(msg));
+        case TERM_L_GREEN :         return (QString("<font color='#00FF00'>%1</font>") .arg(msg));
+        case TERM_JUNGLE_GREEN :    return (QString("<font color='#29AB87'>%1</font>") .arg(msg));
+        case TERM_LIME_GREEN :      return (QString("<font color='#BFFF00'>%1</font>") .arg(msg));
+        case TERM_BLUE :            return (QString("<font color='#0040FF'>%1</font>") .arg(msg));
+        case TERM_L_BLUE :          return (QString("<font color='#00FFFF'>%1</font>") .arg(msg));
+        case TERM_NAVY_BLUE :       return (QString("<font color='#4C4CA6'>%1</font>") .arg(msg));
+        case TERM_SKY_BLUE :        return (QString("<font color='#00BFFF'>%1</font>") .arg(msg));
+        case TERM_UMBER :           return (QString("<font color='#804000'>%1</font>") .arg(msg));
+        case TERM_L_UMBER :         return (QString("<font color='#C08040'>%1</font>") .arg(msg));
+        case TERM_AUBURN :          return (QString("<font color='#6D351A'>%1</font>") .arg(msg));
+        case TERM_L_BROWN :         return (QString("<font color='#C19A6B'>%1</font>") .arg(msg));
+        case TERM_YELLOW :          return (QString("<font color='#FFFF00'>%1</font>") .arg(msg));
+        case TERM_EARTH_YELLOW :    return (QString("<font color='#FFFF00'>%1</font>") .arg(msg));
+        case TERM_MAIZE :           return (QString("<font color='#FBEC5D'>%1</font>") .arg(msg));
+        case TERM_VIOLET :          return (QString("<font color='#FF00FF'>%1</font>") .arg(msg));
+        case TERM_PURPLE :          return (QString("<font color='#A500FF'>%1</font>") .arg(msg));
+        case TERM_GOLD :            return (QString("<font color='#FFD700'>%1</font>") .arg(msg));
+        case TERM_SILVER :          return (QString("<font color='#C0C0C0'>%1</font>") .arg(msg));
+        case TERM_COPPER :          return (QString("<font color='#B87333'>%1</font>") .arg(msg));
         default: break;
     }
 
@@ -550,4 +550,39 @@ QColor get_object_color(object_type *o_ptr)
     int idx = tval_to_attr[o_ptr->tval];
     QColor clr = defined_colors[idx];
     return make_color_readable(clr);
+}
+
+// Display an actual window with the information, sybmol, and tile
+void display_info_window(byte mode, int index, QString info)
+{
+    QString tile_id;
+    QMessageBox message_box;
+    message_box.setText(info);
+    message_box.setStandardButtons(QMessageBox::Ok);
+    message_box.setDefaultButton(QMessageBox::Ok);
+    message_box.setInformativeText("Press 'OK' to continue.");
+
+    //Get the pixmap, depending on if we are displaying an object, terrain, or monster.
+    if (mode == DISPLAY_INFO_FEATURE)
+    {
+        feature_type *f_ptr = &f_info[index];
+        tile_id = f_ptr->tile_id;
+    }
+    else if (mode == DISPLAY_INFO_MONSTER)
+    {
+        monster_race *r_ptr = &r_info[index];
+        tile_id = r_ptr->tile_id;
+    }
+    else if (mode == DISPLAY_INFO_OBJECT)
+    {
+        object_kind *k_ptr = &k_info[index];
+        tile_id = k_ptr->tile_id;
+    }
+    // Whoops!
+    else return;
+    message_box.setIconPixmap(ui_get_tile(tile_id));
+
+    message_box.show();
+    message_box.exec();
+
 }

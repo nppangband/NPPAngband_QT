@@ -1307,6 +1307,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "t") do_cmd_takeoff();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();
+
+            //playtesting
             else if (keystring == "z") describe_monster(644,TRUE,NULL);
             else
             {

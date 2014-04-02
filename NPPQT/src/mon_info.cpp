@@ -1755,8 +1755,10 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
         cheat_monster_lore(r_idx, &lore);
     }
 
+    QString mon_symbol = color_string(r_ptr->d_char, r_ptr->color_num);
+
     /* Print, in colour */
-    output.append(QString("<b><big>%1</big></b><br><br>") .arg(mon_name));
+    output.append(QString("<b><h1>'%1' - %2</h1></b><br><br>") .arg(mon_symbol) .arg(mon_name));
 
     /* Show kills of monster vs. player(s) */
     if (!spoilers)	output.append(describe_monster_kills(r_idx, &lore));
@@ -1803,10 +1805,8 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
         output.append(QString("%1  <br><br>") .arg(extra_message));
     }
 
-    output.append(QString("<b><br>[Press OK to continue]<br></b>"));
-
     /* Finally, display it */
-    QMessageBox::information(0, mon_name, output, QMessageBox::Ok);
+    display_info_window(DISPLAY_INFO_MONSTER, r_idx, output);
 }
 
 

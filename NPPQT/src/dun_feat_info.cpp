@@ -94,12 +94,12 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
 
     else if (f_l_ptr->f_l_flags1 & FF1_SHOP)
     {
-        output.append(color_string("that is found in the town", TERM_L_GREEN));
+        output.append(color_string(" that is found in the town", TERM_L_GREEN));
     }
     else if ((f_l_ptr->f_l_flags2 & FF2_TRAP_MON) ||
     (f_l_ptr->f_l_flags1 & FF1_GLYPH))
     {
-        output.append(color_string("that is set by the player", TERM_L_GREEN));
+        output.append(color_string(" that is set by the player", TERM_L_GREEN));
     }
     else if (f_l_ptr->f_l_sights > 10)
     {
@@ -114,22 +114,22 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
 
         if (f_ptr->f_level == 0)
         {
-            output.append(color_string("appears in both the town and dungeon", TERM_L_GREEN));
+            output.append(color_string(" appears in both the town and dungeon", TERM_L_GREEN));
         }
         else if (f_ptr->f_level == 1)
         {
-            output.append(color_string("appears throughout the dungeon", TERM_L_GREEN));
+            output.append(color_string(" appears throughout the dungeon", TERM_L_GREEN));
         }
         else
         {
             output.append(color_string("appears", TERM_L_GREEN));
-            output.append(color_string(QString("at depths of %1 feet and below") .arg(f_ptr->f_level * 50), TERM_L_GREEN));
+            output.append(color_string(QString(" at depths of %1 feet and below") .arg(f_ptr->f_level * 50), TERM_L_GREEN));
         }
 
     }
 
     /* Little Information Yet */
-    else output.append(color_string("that is found in the dungeon", TERM_L_GREEN));
+    else output.append(color_string(" that is found in the dungeon", TERM_L_GREEN));
 
     /* End this sentence */
     output.append(".");
@@ -882,8 +882,10 @@ void describe_feature(int f_idx, bool spoilers)
         cheat_feature_lore(f_idx, &lore);
     }
 
-        /* Print, in colour */
-    output.append(QString("<b><big>%1</big></b><br><br>") .arg(feat_name));
+    QString feat_symbol = color_string(f_ptr->d_char, f_ptr->color_num);
+
+    /* Print, in colour */
+    output.append(QString("<b><h1>'%1' - %2</h1></b><br><br>") .arg(feat_symbol) .arg(feat_name));
 
     /* Describe the movement and level of the monster */
     output.append(describe_feature_basic(f_idx, &lore));
@@ -913,9 +915,7 @@ void describe_feature(int f_idx, bool spoilers)
 
     output.append(describe_feature_dynamic(f_idx, &lore));
 
-    output.append(QString("<b>[Press OK to continue]<br></b>"));
-
     /* Finally, display it */
-    QMessageBox::information(0, feat_name, output, QMessageBox::Ok);
+    display_info_window(DISPLAY_INFO_FEATURE, f_idx, output);
 }
 
