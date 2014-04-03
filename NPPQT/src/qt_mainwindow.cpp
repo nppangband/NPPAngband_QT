@@ -1977,7 +1977,7 @@ void MainWindow::create_toolbars()
         {"*", Qt::Key_Asterisk, tr("Interactive targeting mode")},
         {"o", Qt::Key_O, tr("Manual targeting")},
         {"p", Qt::Key_P, tr("Target player location")},
-        {"f", Qt::Key_F, tr("Toggle terrain description")},
+        {"l", Qt::Key_L, tr("View grid contents")},
         {"", 0, ""}
     };
 
@@ -2001,7 +2001,7 @@ void ui_toolbar_show(int toolbar)
         tb->findChild<QAction *>("*")->setVisible(true);
         tb->findChild<QAction *>("o")->setVisible(false);
         tb->findChild<QAction *>("p")->setVisible(false);
-        tb->findChild<QAction *>("f")->setVisible(false);
+        tb->findChild<QAction *>("l")->setVisible(false);
         tb->show();
         break;
     case TOOLBAR_TARGETTING_INTERACTIVE:
@@ -2009,7 +2009,7 @@ void ui_toolbar_show(int toolbar)
         tb->findChild<QAction *>("*")->setVisible(false);
         tb->findChild<QAction *>("o")->setVisible(true);
         tb->findChild<QAction *>("p")->setVisible(true);
-        tb->findChild<QAction *>("f")->setVisible(true);
+        tb->findChild<QAction *>("l")->setVisible(true);
         tb->show();
         break;
     }

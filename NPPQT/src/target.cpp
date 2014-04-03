@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "griddialog.h"
 
 #include <QObject>
 
@@ -379,8 +380,16 @@ static void describe_grid_brief(int y, int x)
             x_idx = x_ptr->next_x_idx;
             if (x_ptr->x_flags & EF1_HIDDEN) continue;
             int feat = x_ptr->x_f_idx;
-            x_name = feature_desc()
+            x_name = feature_desc(feat, true, false);
+            x_name += " over ";
         }
+
+        QString f_name;
+        f_name = feature_desc(d_ptr->feat, true, false);
+        QString msg = "You see ";
+        msg += x_name;
+        msg += f_name;
+        message(msg);
     }
 }
 
@@ -600,6 +609,13 @@ bool target_set_interactive(int mode, int x, int y)
                     break;
                 }
 
+                case Qt::Key_L:
+                {
+                    GridDialog(y, x);
+                    break;
+                }
+
+
                 case Qt::Key_M:
                 {
                     break;
@@ -776,6 +792,7 @@ bool target_set_interactive(int mode, int x, int y)
 
             /* Describe and Prompt (enable "TARGET_LOOK") */
             //query = target_set_interactive_aux(y, x, (mode | TARGET_LOOK), info, list_floor_objects);
+            describe_grid_brief(y, x);
 
             ui_show_cursor(y, x);
 
@@ -800,6 +817,12 @@ bool target_set_interactive(int mode, int x, int y)
                 {
                     color_message(QObject::tr("Exiting interactive mode"), TERM_SKY_BLUE);
                     done = TRUE;
+                    break;
+                }
+
+                case Qt::Key_L:
+                {
+                    GridDialog(y, x);
                     break;
                 }
 
