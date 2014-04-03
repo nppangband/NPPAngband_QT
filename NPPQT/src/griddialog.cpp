@@ -79,7 +79,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         QChar chr = k_ptr->d_char;
         QColor color = k_ptr->d_color;
         QString tile = k_ptr->tile_id;
-        if (k_ptr->flavor > 0) {
+        if (use_flavor_glyph(o_ptr)) {
             chr = flavor_info[k_ptr->flavor].d_char;
             color = flavor_info[k_ptr->flavor].d_color;
             tile = flavor_info[k_ptr->flavor].tile_id;

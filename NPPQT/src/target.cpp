@@ -382,13 +382,17 @@ static void describe_grid_brief(int y, int x)
             int feat = x_ptr->x_f_idx;
             x_name = feature_desc(feat, true, false);
             x_name += " over ";
+            break;
         }
 
         QString f_name;
-        f_name = feature_desc(d_ptr->feat, true, false);
+        int feat = d_ptr->feat;
+        feat = f_info[feat].f_mimic;
+        f_name = feature_desc(feat, true, false);
         QString msg = "You see ";
         msg += x_name;
         msg += f_name;
+        msg += ".";
         message(msg);
     }
 }
