@@ -1662,7 +1662,7 @@ void object_info_screen(object_type *o_ptr)
         }
 
         /* Finally, display it */
-        display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output);
+        display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
     }
 
     /* Hack -- Browse book, then prompt for a command */
