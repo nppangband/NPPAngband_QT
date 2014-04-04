@@ -944,7 +944,7 @@ static void map_objects (s16b y, s16b x)
         if ((!sq_flag) || (o_ptr->ident & IDENT_QUEST))
         {
             /* Normal attr */
-            if (k_info[o_ptr->k_idx].flavor > 0) {
+            if (use_flavor_glyph(o_ptr)) {
                 flavor_type *fl_ptr = flavor_info + k_info[o_ptr->k_idx].flavor;
                 dun_ptr->object_color = fl_ptr->d_color;
                 dun_ptr->object_char =  fl_ptr->d_char;

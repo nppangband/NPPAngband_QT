@@ -592,7 +592,7 @@ void extract_tiles(void)
 }
 
 // Display an actual window with the information, sybmol, and tile
-void display_info_window(byte mode, int index, QString info)
+void display_info_window(byte mode, int index, QString info, object_type *o_ptr)
 {
     QString tile_id;
     QMessageBox message_box;
@@ -604,6 +604,7 @@ void display_info_window(byte mode, int index, QString info)
     //Get the pixmap, depending on if we are displaying an object, terrain, or monster.
     if (mode == DISPLAY_INFO_FEATURE)
     {
+        index = f_info[index].f_mimic;
         feature_type *f_ptr = &f_info[index];
         tile_id = f_ptr->tile_id;
     }
@@ -615,7 +616,12 @@ void display_info_window(byte mode, int index, QString info)
     else if (mode == DISPLAY_INFO_OBJECT)
     {
         object_kind *k_ptr = &k_info[index];
-        tile_id = k_ptr->tile_id;
+        if (use_flavor_glyph(o_ptr)) {
+            tile_id = flavor_info[k_ptr->flavor].tile_id;
+        }
+        else {
+            tile_id = k_ptr->tile_id;
+        }
     }
     // Whoops!
     else return;
@@ -624,4 +630,41 @@ void display_info_window(byte mode, int index, QString info)
     message_box.show();
     message_box.exec();
 
+}
+
+class Repl {
+public:
+    QString what;
+    QString with;
+    Repl(QString a, QString b);
+};
+
+Repl::Repl(QString a, QString b)
+{
+    what = a;
+    with = b;
+}
+
+QString to_ascii(QString src)
+{
+    Repl items[] = {
+        Repl("áäâà", "a"),
+        Repl("éëêè", "e"),
+        Repl("íîïì", "i"),
+        Repl("óöôò", "o"),
+        Repl("úûüù", "u"),
+        Repl("ñ", "n"),
+        Repl("", "")
+    };
+
+    for (int i = 0; !items[i].what.isEmpty(); i++) {
+        QString what = items[i].what;
+        QString with = items[i].with;
+        for (int j = 0; j < what.size(); j++) {
+            src = src.replace(what[j], with[0]);
+            src = src.replace(what[j].toUpper(), with[0].toUpper()); // Handle uppercase letters
+        }
+    }
+
+    return src;
 }

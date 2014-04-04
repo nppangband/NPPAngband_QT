@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "griddialog.h"
 
 #include <QObject>
 
@@ -337,6 +338,65 @@ static s16b target_pick(int y1, int x1, int dy, int dx)
     return (b_i);
 }
 
+static void describe_grid_brief(int y, int x)
+{
+    dungeon_type *d_ptr = &dungeon_info[y][x];
+    int m_idx = d_ptr->monster_idx;
+    if (m_idx > 0 && mon_list[m_idx].ml) {
+        monster_type *m_ptr = mon_list + m_idx;
+        QString name = monster_desc(m_ptr, 0x08);
+        message("You see " + name + ".");
+        return;
+    }
+
+    int saved_o_idx = -1;
+    int n = 0;
+    int o_idx = d_ptr->object_idx;
+    while (o_idx) {
+        object_type *o_ptr = o_list + o_idx;
+        if (o_ptr->marked) {
+            saved_o_idx = o_idx;
+            ++n;
+        }
+        o_idx = o_ptr->next_o_idx;
+    }
+
+    if (n > 1) {
+        message("You see a pile of objects.");
+        return;
+    }
+
+    if (n == 1) {
+        QString name = object_desc(o_list + saved_o_idx, ODESC_PREFIX | ODESC_FULL);
+        message("You see " + name + ".");
+        return;
+    }
+
+    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN)) {
+        QString x_name;
+        int x_idx = d_ptr->effect_idx;
+        while (x_idx) {
+            effect_type *x_ptr = x_list + x_idx;
+            x_idx = x_ptr->next_x_idx;
+            if (x_ptr->x_flags & EF1_HIDDEN) continue;
+            int feat = x_ptr->x_f_idx;
+            x_name = feature_desc(feat, true, false);
+            x_name += " over ";
+            break;
+        }
+
+        QString f_name;
+        int feat = d_ptr->feat;
+        feat = f_info[feat].f_mimic;
+        f_name = feature_desc(feat, true, false);
+        QString msg = "You see ";
+        msg += x_name;
+        msg += f_name;
+        msg += ".";
+        message(msg);
+    }
+}
+
 /*
  * Handle "target" and "look".
  *
@@ -497,6 +557,7 @@ bool target_set_interactive(int mode, int x, int y)
 
             /* Describe and Prompt */
             //query = target_set_interactive_aux(y, x, mode, info, list_floor_objects);
+            describe_grid_brief(y, x);
 
             UserInput input = ui_get_input();
 
@@ -551,6 +612,13 @@ bool target_set_interactive(int mode, int x, int y)
                     flag = FALSE;
                     break;
                 }
+
+                case Qt::Key_L:
+                {
+                    GridDialog(y, x);
+                    break;
+                }
+
 
                 case Qt::Key_M:
                 {
@@ -728,6 +796,7 @@ bool target_set_interactive(int mode, int x, int y)
 
             /* Describe and Prompt (enable "TARGET_LOOK") */
             //query = target_set_interactive_aux(y, x, (mode | TARGET_LOOK), info, list_floor_objects);
+            describe_grid_brief(y, x);
 
             ui_show_cursor(y, x);
 
@@ -752,6 +821,12 @@ bool target_set_interactive(int mode, int x, int y)
                 {
                     color_message(QObject::tr("Exiting interactive mode"), TERM_SKY_BLUE);
                     done = TRUE;
+                    break;
+                }
+
+                case Qt::Key_L:
+                {
+                    GridDialog(y, x);
                     break;
                 }
 
