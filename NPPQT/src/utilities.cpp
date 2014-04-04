@@ -552,6 +552,45 @@ QColor get_object_color(object_type *o_ptr)
     return make_color_readable(clr);
 }
 
+static QString file_name_convert(QString orig_name)
+{
+    std::string dummy_string = orig_name.toStdString();
+
+    orig_name = QString::fromStdString(dummy_string);
+
+    // first, make it standard ASCII, then lowercase
+    orig_name = orig_name.toLower();
+
+    //now delete all commas, and then replace spaces with '_'.
+    orig_name.remove(QChar(','));
+    orig_name.remove(QString("'"));
+    orig_name.replace(QChar(' '), QChar('_'));
+
+    return (orig_name);
+}
+
+
+void extract_tiles(void)
+{
+    int i;
+    QString tile_id;
+    QString file_name;
+
+    for (i = 0; i < z_info->r_max; i++)\
+    {
+        monster_race *r_ptr = &r_info[i];
+        if (r_ptr->r_name_full.isEmpty()) continue;
+        tile_id = r_ptr->tile_id;
+        QString mon_name = file_name_convert(monster_desc_race(i));
+        QPixmap pix = ui_get_tile(tile_id);
+        QFile tile_file;
+        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(mon_name));
+        tile_file.open(QIODevice::WriteOnly);
+        pix.save(&tile_file, "PNG");
+
+    }
+}
+
 // Display an actual window with the information, sybmol, and tile
 void display_info_window(byte mode, int index, QString info)
 {

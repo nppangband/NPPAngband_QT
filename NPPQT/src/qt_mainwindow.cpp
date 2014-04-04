@@ -1593,7 +1593,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == ".") do_cmd_run();
             else if (keystring == "l") do_cmd_look();
             else if (keystring == "5") do_cmd_hold();
-            else if (keystring == "z") describe_monster(644,TRUE,NULL);
+            else if (keystring == "z") extract_tiles();
             else
             {
                 //  TODO something useful with unused keypresses
