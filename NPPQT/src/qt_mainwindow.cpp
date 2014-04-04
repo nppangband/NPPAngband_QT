@@ -368,7 +368,11 @@ void MainWindow::slot_redraw()
 {
     //redraw();
 
-    ui_animate_victory(p_ptr->py, p_ptr->px);
+    //ui_animate_victory(p_ptr->py, p_ptr->px);
+
+    QString txt = get_string("Enter text to convert", "With accents please...", "");
+    txt = to_ascii(txt);
+    message(txt);
 }
 
 void MainWindow::wait_animation(int n_animations)

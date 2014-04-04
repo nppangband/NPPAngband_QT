@@ -934,6 +934,7 @@ extern QString get_player_title(void);
 extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);
 extern void display_info_window(byte mode, int index, QString info);
+extern QString to_ascii(QString src);
 
 
 // birth.cpp

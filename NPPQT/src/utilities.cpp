@@ -586,3 +586,40 @@ void display_info_window(byte mode, int index, QString info)
     message_box.exec();
 
 }
+
+class Repl {
+public:
+    QString what;
+    QString with;
+    Repl(QString a, QString b);
+};
+
+Repl::Repl(QString a, QString b)
+{
+    what = a;
+    with = b;
+}
+
+QString to_ascii(QString src)
+{
+    Repl items[] = {
+        Repl("áäâà", "a"),
+        Repl("éëêè", "e"),
+        Repl("íîïì", "i"),
+        Repl("óöôò", "o"),
+        Repl("úûüù", "u"),
+        Repl("ñ", "n"),
+        Repl("", "")
+    };
+
+    for (int i = 0; !items[i].what.isEmpty(); i++) {
+        QString what = items[i].what;
+        QString with = items[i].with;
+        for (int j = 0; j < what.size(); j++) {
+            src = src.replace(what[j], with[0]);
+            src = src.replace(what[j].toUpper(), with[0].toUpper()); // Handle uppercase letters
+        }
+    }
+
+    return src;
+}
