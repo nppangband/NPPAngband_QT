@@ -843,7 +843,7 @@ void extract_tiles(void)
     QString tile_id;
     QString file_name;
 
-    if (FALSE)for (i = 0; i < z_info->r_max; i++)\
+    for (i = 0; i < z_info->r_max; i++)\
     {
         monster_race *r_ptr = &r_info[i];
         if (r_ptr->r_name_full.isEmpty()) continue;
@@ -857,7 +857,7 @@ void extract_tiles(void)
         tile_file.open(QIODevice::WriteOnly);
         pix.save(&tile_file, "PNG");
     }
-    if (FALSE) for (i = 0; i < z_info->k_max; i++)\
+    for (i = 0; i < z_info->k_max; i++)\
     {
         object_kind *k_ptr = &k_info[i];
         if (k_ptr->k_name.isEmpty()) continue;
@@ -897,7 +897,7 @@ void extract_tiles(void)
         tile_file.open(QIODevice::WriteOnly);
         pix.save(&tile_file, "PNG");
     }
-    if (false) for (i = 0; i < z_info->f_max; i++)
+    for (i = 0; i < z_info->f_max; i++)
     {
         feature_type *f_ptr = &f_info[i];
         if (f_ptr->f_name.isEmpty()) continue;
@@ -923,7 +923,34 @@ void extract_tiles(void)
         tile_file.open(QIODevice::WriteOnly);
         pix.save(&tile_file, "PNG");
     }
-
+    for (i = 0; i < z_info->p_max; i++)
+    {
+        p_ptr->prace = i;
+        QString race_name = to_ascii(p_info[p_ptr->prace].pr_name);
+        race_name = race_name.toLower();
+        for (int j = 0; j < z_info->c_max; j++)
+        {
+            p_ptr->pclass = j;
+            QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name);
+            class_name = class_name.toLower();
+            init_graphics();
+            tile_id = p_ptr->tile_id;
+            QPixmap pix = ui_get_tile(tile_id);
+            QFile tile_file;
+            tile_file.setFileName(QString("%1player_%2_%3.png" ) .arg(NPP_DIR_GRAF) .arg(race_name) .arg(class_name));
+            tile_file.open(QIODevice::WriteOnly);
+            pix.save(&tile_file, "PNG");
+        }
+    }
+    if (use_graphics == GRAPHICS_DAVID_GERVAIS)
+    {
+        tile_id = QString("%1x%2").arg(0x87 & 0x7F).arg(0xB7 & 0x7F);
+        QPixmap pix = ui_get_tile(tile_id);
+        QFile tile_file;
+        tile_file.setFileName(QString("%1obj_pile.png") .arg(NPP_DIR_GRAF));
+        tile_file.open(QIODevice::WriteOnly);
+        pix.save(&tile_file, "PNG");
+    }
 }
 
 // Display an actual window with the information, sybmol, and tile
