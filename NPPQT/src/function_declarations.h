@@ -937,6 +937,8 @@ extern void extract_tiles(void);
 extern void display_info_window(byte mode, int index, QString info, object_type *o_ptr = 0);
 extern QString to_ascii(QString src);
 
+// widard_mode.cpp
+extern bool make_fake_artifact(object_type *o_ptr, byte art_num);
 
 // birth.cpp
 void init_birth();

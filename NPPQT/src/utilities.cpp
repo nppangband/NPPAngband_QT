@@ -552,22 +552,289 @@ QColor get_object_color(object_type *o_ptr)
     return make_color_readable(clr);
 }
 
-static QString file_name_convert(QString orig_name)
+
+/*
+ * Add a pval so the object descriptions don't look strange*
+ */
+void apply_magic_fake(object_type *o_ptr)
 {
-    std::string dummy_string = orig_name.toStdString();
+    /* Analyze type */
+    switch (o_ptr->tval)
+    {
+        case TV_DIGGING:
+        {
+            o_ptr->pval = 1;
+            break;
+        }
 
-    orig_name = QString::fromStdString(dummy_string);
+        /*many rings need a pval*/
+        case TV_RING:
+        {
+            switch (o_ptr->sval)
+            {
+                case SV_RING_STR:
+                case SV_RING_CON:
+                case SV_RING_DEX:
+                case SV_RING_INT:
+                case SV_RING_SPEED:
+                case SV_RING_SEARCHING:
+                {
+                    o_ptr->pval = 1;
+                    break;
+                }
 
+                case SV_RING_AGGRAVATION:
+                {
+                    o_ptr->ident |= (IDENT_CURSED);
+                    break;
+                }
+                case SV_RING_WEAKNESS:
+                case SV_RING_STUPIDITY:
+                {
+                    /* Broken */
+                    o_ptr->ident |= (IDENT_BROKEN);
+
+                    /* Cursed */
+                    o_ptr->ident |= (IDENT_CURSED);
+
+                    /* Penalize */
+                    o_ptr->pval = -1;
+
+                    break;
+                }
+                /* WOE */
+                case SV_RING_WOE:
+                {
+                    /* Broken */
+                    o_ptr->ident |= (IDENT_BROKEN);
+
+                    /* Cursed */
+                    o_ptr->ident |= (IDENT_CURSED);
+
+                    /* Penalize */
+                    o_ptr->to_a = -1;
+                    o_ptr->pval = -1;
+
+                    break;
+                }
+                /* Ring that increase damage */
+                case SV_RING_DAMAGE:
+                {
+                    /* Bonus to damage */
+                    o_ptr->to_d = 1;
+
+                    break;
+                }
+                /* Ring that increase accuracy */
+                case SV_RING_ACCURACY:
+                {
+                    /* Bonus to hit */
+                    o_ptr->to_h = 1;
+
+                    break;
+                }
+                /* Rings that provide of Protection */
+                case SV_RING_PROTECTION:
+                case SV_RING_FLAMES:
+                case SV_RING_ACID:
+                case SV_RING_ICE:
+                case SV_RING_LIGHTNING:
+                {
+                    /* Bonus to armor class */
+                    o_ptr->to_a = 1;
+
+                    break;
+                }
+                /* Rings that provide of Protection */
+                case SV_RING_LORD_PROT_ACID:
+                case SV_RING_LORD_PROT_FIRE:
+                case SV_RING_LORD_PROT_COLD:
+                {
+                    /* Bonus to armor class */
+                    o_ptr->to_a = 5;
+
+                    break;
+                }
+                /*both to-hit and to-damage*/
+                case SV_RING_SLAYING:
+                {
+                    /* Bonus to damage and to hit */
+                    o_ptr->to_d = 1;
+                    o_ptr->to_h = 1;
+
+                    break;
+                }
+                default: break;
+
+            }
+            /*break for TVAL-Rings*/
+            break;
+        }
+
+        case TV_AMULET:
+        {
+            /* Analyze */
+            switch (o_ptr->sval)
+            {
+                /* Amulet of wisdom/charisma/infravision */
+                case SV_AMULET_WISDOM:
+                case SV_AMULET_CHARISMA:
+                case SV_AMULET_INFRAVISION:
+                case SV_AMULET_SEARCHING:
+                case SV_AMULET_ESP:
+                case SV_AMULET_DEVOTION:
+                case SV_AMULET_TRICKERY:
+                {
+                    /* Stat bonus */
+                    o_ptr->pval = 1;
+
+                    break;
+                }
+
+                /* Amulet of the Magi -- never cursed */
+                case SV_AMULET_THE_MAGI:
+                {
+                    o_ptr->pval = 1;
+                    o_ptr->to_a = 1;
+
+                    break;
+                }
+
+                /* Amulet of Weaponmastery -- never cursed */
+                case SV_AMULET_WEAPONMASTERY:
+                {
+                    o_ptr->to_h = 1;
+                    o_ptr->to_d = 1;
+                    o_ptr->pval = 1;
+
+                    break;
+                }
+
+                /* Amulet of Doom -- always cursed */
+                case SV_AMULET_DOOM:
+                case SV_AMULET_WOE:
+                {
+                    /* Broken */
+                    o_ptr->ident |= (IDENT_BROKEN);
+
+                    /* Cursed */
+                    o_ptr->ident |= (IDENT_CURSED);
+
+                    /* Penalize */
+                    o_ptr->pval = -1;
+                    o_ptr->to_a = -1;
+
+                    break;
+                }
+
+                default: break;
+
+            }
+            /*break for TVAL-Amulets*/
+            break;
+        }
+
+        case TV_LIGHT:
+        {
+            /* Analyze */
+            switch (o_ptr->sval)
+            {
+                case SV_LIGHT_TORCH:
+                case SV_LIGHT_LANTERN:
+                {
+                    o_ptr->timeout = 1;
+
+                    break;
+                }
+
+            }
+            /*break for TVAL-Lites*/
+            break;
+        }
+
+        /*give then one charge*/
+        case TV_STAFF:
+        case TV_WAND:
+        {
+            o_ptr->pval = 1;
+
+            break;
+        }
+    }
+}
+
+
+static QString tile_obj_name_convert(QString orig_name)
+{
     // first, make it standard ASCII, then lowercase
+    orig_name = to_ascii(orig_name);
     orig_name = orig_name.toLower();
 
-    //now delete all commas, and then replace spaces with '_'.
+    //now delete all commas, and then replace spaces with '_', then start with "mon_".
+    orig_name.remove(QChar(','));
+    orig_name.remove(QString("'"));
+    orig_name.remove(QChar('['));
+    orig_name.remove(QChar(']'));
+    orig_name.replace(QChar(' '), QChar('_'));
+    orig_name.prepend("obj_");
+    return (orig_name);
+}
+
+
+static QString tile_mon_name_convert(QString orig_name)
+{
+    // first, make it standard ASCII, then lowercase
+    orig_name = to_ascii(orig_name);
+    orig_name = orig_name.toLower();
+
+    //now delete all commas, and then replace spaces with '_', then start with "mon_".
     orig_name.remove(QChar(','));
     orig_name.remove(QString("'"));
     orig_name.replace(QChar(' '), QChar('_'));
-
+    orig_name.prepend("mon_");
     return (orig_name);
 }
+
+static QString tile_feat_name_convert(QString orig_name)
+{
+    // first, make it standard ASCII, then lowercase
+    orig_name = to_ascii(orig_name);
+    orig_name = orig_name.toLower();
+
+    //now delete all commas, and then replace spaces with '_', then start with "mon_".
+    orig_name.remove(QChar(','));
+    orig_name.remove(QChar('('));
+    orig_name.remove(QChar(')'));
+    orig_name.remove(QString("'"));
+    orig_name.replace(QChar(' '), QChar('_'));
+    orig_name.prepend("feat_");
+    return (orig_name);
+}
+
+static QString tile_flav_name_convert(QString orig_name, int tval)
+{
+    // first, make it standard ASCII, then lowercase
+    orig_name = to_ascii(orig_name);
+    orig_name = orig_name.toLower();
+
+    //now delete all commas, and then replace spaces with '_', then start with "mon_".
+    orig_name.remove(QChar(','));
+    orig_name.remove(QChar('('));
+    orig_name.remove(QChar(')'));
+    orig_name.remove(QString("'"));
+    orig_name.replace(QChar(' '), QChar('_'));
+    if (tval == TV_RING) orig_name.prepend("ring_");
+    else if (tval == TV_AMULET) orig_name.prepend("amulet_");
+    else if (tval == TV_STAFF) orig_name.prepend("staff_");
+    else if (tval == TV_WAND) orig_name.prepend("wand_");
+    else if (tval == TV_ROD) orig_name.prepend("rod_");
+    else if (tval == TV_FOOD) orig_name.prepend("mushroom_");
+    else if (tval == TV_POTION) orig_name.prepend("potion_");
+    else if (tval == TV_SCROLL) orig_name.prepend("scroll_");
+    orig_name.prepend("flav_");
+    return (orig_name);
+}
+
 
 
 void extract_tiles(void)
@@ -576,19 +843,87 @@ void extract_tiles(void)
     QString tile_id;
     QString file_name;
 
-    for (i = 0; i < z_info->r_max; i++)\
+    if (FALSE)for (i = 0; i < z_info->r_max; i++)\
     {
         monster_race *r_ptr = &r_info[i];
         if (r_ptr->r_name_full.isEmpty()) continue;
         tile_id = r_ptr->tile_id;
-        QString mon_name = file_name_convert(monster_desc_race(i));
+        QString race_name = monster_desc_race(i);
+        if (r_ptr->flags1 & (RF1_FRIEND | RF1_FRIENDS)) race_name = plural_aux(race_name);
+        race_name = tile_mon_name_convert(race_name);
         QPixmap pix = ui_get_tile(tile_id);
         QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(mon_name));
+        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(race_name));
         tile_file.open(QIODevice::WriteOnly);
         pix.save(&tile_file, "PNG");
-
     }
+    if (FALSE) for (i = 0; i < z_info->k_max; i++)\
+    {
+        object_kind *k_ptr = &k_info[i];
+        if (k_ptr->k_name.isEmpty()) continue;
+        tile_id = k_ptr->tile_id;
+        object_type object_type_body;
+        object_type *o_ptr = &object_type_body;
+        /* Check for known artifacts, display them as artifacts */
+        if (k_ptr->k_flags3 & (TR3_INSTA_ART))
+        {
+            make_fake_artifact(o_ptr, i);
+            object_aware(o_ptr);
+            object_known(o_ptr);
+            o_ptr->ident |= (IDENT_MENTAL);
+        }
+        else
+        {
+            o_ptr->object_wipe();
+            object_prep(o_ptr, i);
+            apply_magic_fake(o_ptr);
+            o_ptr->ident |= (IDENT_STORE);
+            if (!k_info[i].flavor)
+            {
+                /* Mark the item as fully known */
+                o_ptr->ident |= (IDENT_MENTAL | IDENT_STORE);
+                object_aware(o_ptr);
+                object_known(o_ptr);
+            }
+        }
+
+        QString object_name;
+        if (o_ptr->tval == TV_GOLD) object_name = strip_name(i);
+        else object_name = object_desc(o_ptr, ODESC_BASE);
+        object_name = tile_obj_name_convert(object_name);
+        QPixmap pix = ui_get_tile(tile_id);
+        QFile tile_file;
+        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(object_name));
+        tile_file.open(QIODevice::WriteOnly);
+        pix.save(&tile_file, "PNG");
+    }
+    if (false) for (i = 0; i < z_info->f_max; i++)
+    {
+        feature_type *f_ptr = &f_info[i];
+        if (f_ptr->f_name.isEmpty()) continue;
+        tile_id = f_ptr->tile_id;
+        QString feat_name = feature_desc(i, FALSE, FALSE);
+        feat_name = tile_feat_name_convert(feat_name);
+        QPixmap pix = ui_get_tile(tile_id);
+        QFile tile_file;
+        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(feat_name));
+        tile_file.open(QIODevice::WriteOnly);
+        pix.save(&tile_file, "PNG");
+    }
+    for (i = 0; i < z_info->flavor_max; i++)
+    {
+        flavor_type *flavor_ptr = &flavor_info[i];
+        if (flavor_ptr->text.isEmpty() && flavor_ptr->tval != TV_SCROLL) continue;
+        tile_id = flavor_ptr->tile_id;
+        QString flavor_name = flavor_ptr->text;
+        flavor_name = tile_flav_name_convert(flavor_name, flavor_ptr->tval);
+        QPixmap pix = ui_get_tile(tile_id);
+        QFile tile_file;
+        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(flavor_name));
+        tile_file.open(QIODevice::WriteOnly);
+        pix.save(&tile_file, "PNG");
+    }
+
 }
 
 // Display an actual window with the information, sybmol, and tile

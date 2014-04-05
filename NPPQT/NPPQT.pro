@@ -82,7 +82,8 @@ SOURCES +=  src/qt_main.cpp\
     src/griddialog.cpp \
     src/package.cpp \
     src/tilebag.cpp \
-    src/pathfind.cpp
+    src/pathfind.cpp \
+    src/wizard_mode.cpp
 
 
 

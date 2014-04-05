@@ -724,12 +724,6 @@ static QString obj_desc_inscrip(object_type *o_ptr, QString buf)
 /*
  * Creates a description of the item "o_ptr", and stores it in "buf".
  *
- * The given "buf" should be at least 80 chars long to hold the longest
- * possible description, which can get pretty long, including inscriptions,
- * such as:
- * "no more Maces of Disruption (Defender) (+10,+10) [+5] (+3 to stealth)".
- *
- * Describes item `o_ptr` into buffer `buf` of size `max`.
  *
  * ODESC_PREFIX prepends a 'the', 'a' or number
  * ODESC_BASE results in a base description.
