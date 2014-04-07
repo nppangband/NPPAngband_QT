@@ -10,7 +10,6 @@
 #include <QKeyEvent>
 #include <QActionGroup>
 #include <QEventLoop>
-#include <QPixmapCache>
 #include "defines.h"
 #include "structures.h"
 #include "nppdialog.h"
@@ -56,7 +55,7 @@ public:
     bool do_pseudo_ascii;
 
     // For light effects
-    QPixmapCache shade_cache;
+    QHash<QString,QPixmap> shade_cache;
 
     QList<QGraphicsItem *> path_items;
 

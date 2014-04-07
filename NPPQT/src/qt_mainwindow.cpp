@@ -863,11 +863,11 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 QPixmap MainWindow::apply_shade(QString tile_id, QPixmap tile, QString shade_id)
 {
     tile_id += ":";
-    tile_id += shade_id;
+    tile_id += shade_id;    
+
+    if (shade_cache.contains(tile_id)) return shade_cache.value(tile_id);
 
     QPixmap pix;
-
-    if (shade_cache.find(tile_id, &pix)) return pix;
 
     if (shade_id == "dim") {
         pix = gray_pix(tile);
@@ -978,8 +978,8 @@ void MainWindow::set_graphic_mode(int mode)
         current_tiles = tiles_32x32;
         break;    
     case GRAPHICS_ORIGINAL:
-        tile_hgt = 8;
-        tile_wid = 8;
+        tile_hgt = 24;
+        tile_wid = 18;
         current_tiles = tiles_8x8;
         break;
     default:

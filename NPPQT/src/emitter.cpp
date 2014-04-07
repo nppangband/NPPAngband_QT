@@ -122,7 +122,7 @@ QPolygonF make_beam(QPointF from, QPointF to)
     points.append(from);
     points.append(to);
     qreal displace = 70;
-    if (main_window->cell_hgt < 32) displace = 35;
+    if (main_window->cell_hgt < 16) displace = 35;
     make_beam_aux(from, to, &points, displace, 5);
     QList<BeamPoint> bp;
     for (int i = 0; i < points.size(); i++) {

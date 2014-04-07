@@ -31,9 +31,8 @@ QPixmap TileBag::get_tile(QString name)
 
     if (!name.endsWith(".png")) name += ".png";
 
-    QPixmap pix;
-    if (cache.find(name, &pix)) {            // Cache hit?
-        return pix;
+    if (cache.contains(name)) {            // Cache hit?
+        return cache.value(name);
     }
 
     QByteArray data = pak->get_item(name);  // Get png data from package
@@ -42,7 +41,7 @@ QPixmap TileBag::get_tile(QString name)
     QImage img;
     img.loadFromData(data);                 // Convert png data to RGB
 
-    pix = QPixmap::fromImage(img);
+    QPixmap pix = QPixmap::fromImage(img);
 
     cache.insert(name, pix);                // Save for later use
 

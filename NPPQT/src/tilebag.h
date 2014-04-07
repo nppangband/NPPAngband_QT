@@ -2,7 +2,8 @@
 #define TILEBAG_H
 
 #include <QtCore>
-#include <QPixmapCache>
+#include <QHash>
+#include <QPixmap>
 
 class Package;
 
@@ -13,7 +14,7 @@ public:
     TileBag(QString path);
 
     Package *pak;
-    QPixmapCache cache;
+    QHash<QString,QPixmap> cache;
 
     QPixmap get_tile(QString name);         // Use this!
 
