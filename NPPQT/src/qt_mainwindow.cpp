@@ -259,8 +259,7 @@ QPixmap ui_get_tile(QString tile_id)
         return ui_make_blank();
     }
 
-    main_window->rebuild_tile(tile_id);
-    return main_window->tiles.value(tile_id);
+    return current_tiles->get_tile(tile_id);
 }
 
 void MainWindow::slot_something()
@@ -773,9 +772,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         // Draw background tile
         QString key1 = d_ptr->dun_tile;
 
-        if (key1.length() > 0) {
-            parent->rebuild_tile(key1); // Grab tile from the cache
-            QPixmap pix = parent->tiles[key1];
+        if (key1.length() > 0) {            
+            QPixmap pix = current_tiles->get_tile(key1);
 
             if (flags & UI_LIGHT_TORCH) {
                 QColor color = QColor("yellow").darker(150);
@@ -796,9 +794,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             if (!is_cloud) {
                 QString tile = find_cloud_tile(c_y, c_x);
                 if (!tile.isEmpty()) {
-                    painter->setOpacity(0.7);
-                    parent->rebuild_tile(tile);
-                    QPixmap pix = parent->tiles.value(tile);
+                    painter->setOpacity(0.7);                    
+                    QPixmap pix = current_tiles->get_tile(tile);
                     painter->drawPixmap(0, 0, pix);
                     painter->setOpacity(1);
                     done_bg = true;
@@ -806,9 +803,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             }
 
             // Draw foreground tile
-            if (key2.length() > 0) {
-               parent->rebuild_tile(key2); // Grab tile from the cache
-               QPixmap pix = parent->tiles.value(key2);
+            if (key2.length() > 0) {               
+               QPixmap pix = current_tiles->get_tile(key2);
                if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER)) {
                    painter->setOpacity(opacity);
                }               
@@ -943,18 +939,15 @@ QPixmap lighten_pix(QPixmap src)
 }
 
 void MainWindow::destroy_tiles()
-{
-    tiles.clear();
+{    
     shade_cache.clear();
 }
 
 void MainWindow::calculate_cell_size()
 {
-    cell_hgt = font_hgt;
-    if (tile_hgt > cell_hgt) cell_hgt = tile_hgt;
+    cell_wid = tile_wid ? tile_wid: font_wid;
 
-    cell_wid = font_wid;
-    if (tile_wid > cell_wid) cell_wid = tile_wid;
+    cell_hgt = tile_hgt ? tile_hgt: font_hgt;
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
         for (int x = 0; x < MAX_DUNGEON_WID; x++) {
@@ -967,9 +960,7 @@ void MainWindow::calculate_cell_size()
 }
 
 void MainWindow::set_graphic_mode(int mode)
-{
-    int hgt, wid;
-    QString fname;
+{    
     int cy = -1;
     int cx = -1;
 
@@ -982,79 +973,32 @@ void MainWindow::set_graphic_mode(int mode)
 
     switch (mode) {
     case GRAPHICS_DAVID_GERVAIS:
-        hgt = 32;
-        wid = 32;
-        fname.append("32x32.png");
+        tile_hgt = 32;
+        tile_wid = 32;
+        current_tiles = tiles_32x32;
         break;    
     case GRAPHICS_ORIGINAL:
-        hgt = 8;
-        wid = 8;
-        fname.append("8x8.png");
+        tile_hgt = 8;
+        tile_wid = 8;
+        current_tiles = tiles_8x8;
         break;
     default:
-        hgt = 0;
-        wid = 0;
+        tile_hgt = 0;
+        tile_wid = 0;
+        current_tiles = 0;
         break;
     }
 
-    if (fname.length() > 0) {
-        fname.prepend(NPP_DIR_GRAF);
-        QPixmap pix = QPixmap(fname);
-        if (pix.isNull()) {
-            pop_up_message_box(QString("Can't load tiles"));
-            return;
-        }
-        use_graphics = mode;
-        tile_hgt = hgt;
-        tile_wid = wid;
-        if (mode == GRAPHICS_ORIGINAL) {
-            /*
-            font.setPointSize(8);
-            QFontMetrics metrics(font);
-            font_hgt = metrics.height();
-            font_wid = metrics.width('M');
-            */
-        }
-        calculate_cell_size();
-        destroy_tiles();
-        tile_map = pix;
-        init_graphics();
-    }
-    // Go to text mode
-    else {
-        use_graphics = mode;
-        tile_hgt = hgt;
-        tile_wid = wid;
-        calculate_cell_size();
-        destroy_tiles();
-        tile_map = blank_pix;
-        clear_graphics();           
-    }    
+    use_graphics = mode;
+    calculate_cell_size();
+    destroy_tiles();
+    if (character_dungeon) extract_tiles(false);
 
     // Recenter the view
     if (cy != -1 && cx != -1) {
         ui_redraw_all();
         ui_center(cy, cx);
     }
-}
-
-// Tile creation on demmand
-void MainWindow::rebuild_tile(QString key)
-{
-    // Already created
-    if (tiles.contains(key)) return;
-
-    QList<QString> coords = key.split("x");
-    if (coords.size() != 2) return;
-    int x = coords.at(1).toInt();
-    int y = coords.at(0).toInt();
-    // Grab a chunk from the tile map
-    QPixmap pix = tile_map.copy(x * tile_wid, y * tile_hgt, tile_wid, tile_hgt);
-    // Scale if necessary
-    if ((cell_wid != tile_wid) || (cell_hgt != tile_hgt)) {
-        pix = pix.scaled(QSize(cell_wid, cell_hgt));
-    }
-    tiles.insert(key, pix);
 }
 
 void MainWindow::set_font(QFont newFont)
@@ -1079,9 +1023,7 @@ void MainWindow::init_scene()
     cell_hgt = cell_wid = 0;
 
     QBrush brush(QColor("black"));
-    dungeon_scene->setBackgroundBrush(brush);
-
-    blank_pix = ui_make_blank();
+    dungeon_scene->setBackgroundBrush(brush);    
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
         for (int x = 0; x < MAX_DUNGEON_WID; x++) {

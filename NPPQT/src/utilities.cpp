@@ -837,7 +837,7 @@ static QString tile_flav_name_convert(QString orig_name, int tval)
 
 
 
-void extract_tiles(void)
+void extract_tiles(bool save)
 {
     int i;
     QString tile_id;
@@ -846,22 +846,26 @@ void extract_tiles(void)
     for (i = 0; i < z_info->r_max; i++)\
     {
         monster_race *r_ptr = &r_info[i];
-        if (r_ptr->r_name_full.isEmpty()) continue;
-        tile_id = r_ptr->tile_id;
+        if (r_ptr->r_name_full.isEmpty()) continue;        
         QString race_name = monster_desc_race(i);
         if (r_ptr->flags1 & (RF1_FRIEND | RF1_FRIENDS)) race_name = plural_aux(race_name);
         race_name = tile_mon_name_convert(race_name);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(race_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
+        if (save) {
+            tile_id = r_ptr->tile_id;
+            QPixmap pix = ui_get_tile(tile_id);
+            QFile tile_file;
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(race_name));
+            tile_file.open(QIODevice::WriteOnly);
+            pix.save(&tile_file, "PNG");
+        }
+        else {
+            r_ptr->tile_id = race_name;
+        }
     }
     for (i = 0; i < z_info->k_max; i++)\
     {
         object_kind *k_ptr = &k_info[i];
-        if (k_ptr->k_name.isEmpty()) continue;
-        tile_id = k_ptr->tile_id;
+        if (k_ptr->k_name.isEmpty()) continue;        
         object_type object_type_body;
         object_type *o_ptr = &object_type_body;
         /* Check for known artifacts, display them as artifacts */
@@ -891,58 +895,81 @@ void extract_tiles(void)
         if (o_ptr->tval == TV_GOLD) object_name = strip_name(i);
         else object_name = object_desc(o_ptr, ODESC_BASE);
         object_name = tile_obj_name_convert(object_name);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(object_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
+        if (save) {
+            tile_id = k_ptr->tile_id;
+            QPixmap pix = ui_get_tile(tile_id);
+            QFile tile_file;
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(object_name));
+            tile_file.open(QIODevice::WriteOnly);
+            pix.save(&tile_file, "PNG");
+        }
+        else {
+            k_ptr->tile_id = object_name;
+        }
     }
     for (i = 0; i < z_info->f_max; i++)
     {
         feature_type *f_ptr = &f_info[i];
-        if (f_ptr->f_name.isEmpty()) continue;
-        tile_id = f_ptr->tile_id;
+        if (f_ptr->f_name.isEmpty()) continue;        
         QString feat_name = feature_desc(i, FALSE, FALSE);
         feat_name = tile_feat_name_convert(feat_name);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(feat_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
+        if (save) {
+            tile_id = f_ptr->tile_id;
+            QPixmap pix = ui_get_tile(tile_id);
+            QFile tile_file;
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(feat_name));
+            tile_file.open(QIODevice::WriteOnly);
+            pix.save(&tile_file, "PNG");
+        }
+        else {
+            f_ptr->tile_id = feat_name;
+        }
     }
     for (i = 0; i < z_info->flavor_max; i++)
     {
         flavor_type *flavor_ptr = &flavor_info[i];
-        if (flavor_ptr->text.isEmpty() && flavor_ptr->tval != TV_SCROLL) continue;
-        tile_id = flavor_ptr->tile_id;
+        if (flavor_ptr->text.isEmpty() && flavor_ptr->tval != TV_SCROLL) continue;        
         QString flavor_name = flavor_ptr->text;
         flavor_name = tile_flav_name_convert(flavor_name, flavor_ptr->tval);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(flavor_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
-    }
-    for (i = 0; i < z_info->p_max; i++)
-    {
-        p_ptr->prace = i;
-        QString race_name = to_ascii(p_info[p_ptr->prace].pr_name);
-        race_name = race_name.toLower();
-        for (int j = 0; j < z_info->c_max; j++)
-        {
-            p_ptr->pclass = j;
-            QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name);
-            class_name = class_name.toLower();
-            init_graphics();
-            tile_id = p_ptr->tile_id;
+        if (save) {
+            tile_id = flavor_ptr->tile_id;
             QPixmap pix = ui_get_tile(tile_id);
             QFile tile_file;
-            tile_file.setFileName(QString("%1player_%2_%3.png" ) .arg(NPP_DIR_GRAF) .arg(race_name) .arg(class_name));
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(flavor_name));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
+        else {
+            flavor_ptr->tile_id = flavor_name;
+        }
+    }    
+    if (save) {
+        for (i = 0; i < z_info->p_max; i++)
+        {
+            p_ptr->prace = i;
+            QString race_name = to_ascii(p_info[p_ptr->prace].pr_name);
+            race_name = race_name.toLower();
+            for (int j = 0; j < z_info->c_max; j++)
+            {
+                p_ptr->pclass = j;
+                QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name);
+                class_name = class_name.toLower();
+                init_graphics();
+                tile_id = p_ptr->tile_id;
+                QPixmap pix = ui_get_tile(tile_id);
+                QFile tile_file;
+                tile_file.setFileName(QString("%1player_%2_%3.png" ) .arg(NPP_DIR_GRAF) .arg(race_name) .arg(class_name));
+                tile_file.open(QIODevice::WriteOnly);
+                pix.save(&tile_file, "PNG");
+            }
+        }
     }
-    if (use_graphics == GRAPHICS_DAVID_GERVAIS)
+    else {
+        QString race_name = to_ascii(p_info[p_ptr->prace].pr_name).toLower();
+        QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name).toLower();
+        p_ptr->tile_id = QString("player_%1_%2").arg(race_name).arg(class_name);
+    }
+    if (save && use_graphics == GRAPHICS_DAVID_GERVAIS)
     {
         tile_id = QString("%1x%2").arg(0x87 & 0x7F).arg(0xB7 & 0x7F);
         QPixmap pix = ui_get_tile(tile_id);

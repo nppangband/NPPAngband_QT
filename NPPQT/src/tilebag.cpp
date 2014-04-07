@@ -12,6 +12,9 @@ void init_tile_bags()
     QDir graf(NPP_DIR_GRAF);
 
     tiles_projections = new TileBag(graf.absoluteFilePath("projections.pak"));
+    tiles_32x32 = new TileBag(graf.absoluteFilePath("tiles_32x32.pak"));
+    tiles_8x8 = new TileBag(graf.absoluteFilePath("tiles_8x8.pak"));
+    current_tiles = 0;
 }
 
 TileBag::TileBag(QString path)

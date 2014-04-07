@@ -1291,7 +1291,7 @@ void cleanup_npp_games(void)
 
     delete_notes_file();
 
-    clear_graphics();
+    //clear_graphics();
 
     /* Free the allocation tables */
     FREE_ARRAY(alloc_ego_table);

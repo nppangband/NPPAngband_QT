@@ -166,7 +166,8 @@ void launch_game()
     if (!character_dungeon) generate_cave();
 
     // Load tile specifications
-    init_graphics();
+    //init_graphics();
+    extract_tiles(false);
 
     /* Character is now "complete" */
     character_generated = TRUE;

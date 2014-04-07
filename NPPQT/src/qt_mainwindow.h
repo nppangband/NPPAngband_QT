@@ -55,12 +55,8 @@ public:
     QString current_multiplier;
     bool do_pseudo_ascii;
 
-    QPixmap blank_pix;
-    // The key must be strings of the form "[row]x[col]"
-    QHash<QString, QPixmap> tiles;
     // For light effects
     QPixmapCache shade_cache;
-    QPixmap tile_map;
 
     QList<QGraphicsItem *> path_items;
 
@@ -82,8 +78,7 @@ public:
     void redraw();
     void update_cursor();
     void force_redraw();
-    bool panel_contains(int y, int x);
-    void rebuild_tile(QString key);
+    bool panel_contains(int y, int x);    
     bool running_command();
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
     void wait_animation(int n_animations = 1);
