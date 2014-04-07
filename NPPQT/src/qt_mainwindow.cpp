@@ -978,8 +978,8 @@ void MainWindow::set_graphic_mode(int mode)
         current_tiles = tiles_32x32;
         break;    
     case GRAPHICS_ORIGINAL:
-        tile_hgt = 24;
-        tile_wid = 18;
+        tile_hgt = 8;
+        tile_wid = 8;
         current_tiles = tiles_8x8;
         break;
     default:
