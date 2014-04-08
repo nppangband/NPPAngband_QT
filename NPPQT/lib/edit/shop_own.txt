@@ -25,7 +25,7 @@ S:30000:Lyar-el the Comely (Elf)
 N:1
 S:5000:Kon-Dar the Ugly (Half-Orc)
 S:10000:Darg-Low the Grim (Human)
-S:25000:Decado the Handsome (D['u]nadan)
+S:25000:Decado the Handsome (Dúnadan)
 S:30000:Mauglin the Grumpy (Dwarf)
 
 # Weapon Smith
@@ -54,8 +54,8 @@ S:15000:Vella the Slender (Human)
 N:5
 S:15000:Buggerby the Great (Gnome)
 S:20000:Inglorian the Mage (Human)
-S:25000:L['u]thien Starshine (High-Elf)
-S:30000:Cameronius the Conscientious (D['u]nadan)
+S:25000:Lúthien Starshine (High-Elf)
+S:30000:Cameronius the Conscientious (Dúnadan)
 
 # Black Market
 N:6
