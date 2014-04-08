@@ -220,7 +220,10 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
     this->clientSizeUpdated();
 
-    if (n > 0) this->exec();
+    if (n > 0) {
+        (this->findChildren<QPushButton *>().at(0))->setFocus();
+        this->exec();
+    }
 
     else message(tr("There is nothing to see here"));
 }
