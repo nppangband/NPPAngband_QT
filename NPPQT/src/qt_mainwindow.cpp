@@ -1364,6 +1364,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 static void process_mov_key(QKeyEvent *event, int dir)
 {
+    if (!character_dungeon) return;
+
     int mask = QApplication::keyboardModifiers();
 
     if (mask & Qt::AltModifier) {
@@ -1391,6 +1393,8 @@ bool MainWindow::check_disturb()
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
+    if (!character_dungeon) return;
+
     if (anim_depth > 0) return;
 
     if (check_disturb()) return;

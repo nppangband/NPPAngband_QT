@@ -191,19 +191,22 @@ void StoreDialog::reset_store()
     }
     // Remove previous items
     clear_grid(lay);
-    if (!home) lay->addWidget(new QLabel("Price"), 0, 2);
+    int row = 0;
+    if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
     store_type *st = &store[store_idx];
     int i;
     for (i = 0; i < st->stock_num; i++) {
         object_type *o_ptr = &st->stock[i];
         if (o_ptr->k_idx == 0) continue;
 
+        int col = 0;
+
         // Make an id for the item
         QString id = QString("s%1").arg(i);
 
         QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(i)));
         lb->setProperty("item_id", QVariant(id));
-        lay->addWidget(lb, i + 1, 0);
+        lay->addWidget(lb, row, col++);
 
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         s32b price = price_item(o_ptr, false);
@@ -218,21 +221,43 @@ void StoreDialog::reset_store()
             btn->setStyleSheet(style);
             btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
-            lay->addWidget(btn, i + 1, 1);
+            lay->addWidget(btn, row, col++);
         }
         else {
             QLabel *lb2 = new QLabel(desc);
             lb2->setStyleSheet(style);
-            lay->addWidget(lb2, i + 1, 1);
+            lay->addWidget(lb2, row, col++);
         }
 
         if (!home) {
             QLabel *l = new QLabel(_num(price));
-            lay->addWidget(l, i + 1, 2);
+            lay->addWidget(l, row, col++);
         }
+
+        QPushButton *help_button = new QPushButton;
+        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+        help_button->setObjectName(id);
+        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
+        lay->addWidget(help_button, row, col++);
+
+        ++row;
     }
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(spacer, i + 1, 0);
+    lay->addItem(spacer, row++, 0);
+}
+
+void StoreDialog::help_click()
+{
+    QString id = QObject::sender()->objectName();
+    int o_idx = id.mid(1).toInt();
+    object_type *o_ptr;
+    if (id.at(0) == 's') {
+        o_ptr = &(store[store_idx].stock[o_idx]);
+    }
+    else {
+        o_ptr = &(inventory[o_idx]);
+    }
+    object_info_screen(o_ptr);
 }
 
 void StoreDialog::set_mode(int _mode)
@@ -258,18 +283,21 @@ void StoreDialog::reset_inventory()
     }
     // Remove previous items
     clear_grid(lay);
-    if (!home) lay->addWidget(new QLabel("Price"), 0, 2);
+    int row = 0;
+    if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
     int i;
     for (i = 0; i < INVEN_WIELD - 1; i++) {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;
+
+        int col = 0;
 
         // Make an id for the item
         QString id = QString("i%1").arg(i);
 
         QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(i).toUpper()));
         lb->setProperty("item_id", QVariant(id));
-        lay->addWidget(lb, i + 1, 0);
+        lay->addWidget(lb, row, col++);
 
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         QString s = QString("color: %1;").arg(get_object_color(o_ptr).name());
@@ -283,22 +311,30 @@ void StoreDialog::reset_inventory()
             btn->setStyleSheet(style);
             btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
-            lay->addWidget(btn, i + 1, 1);
+            lay->addWidget(btn, row, col++);
         }
         else {
             QLabel *lb2 = new QLabel(desc);
             lb2->setStyleSheet(style);
-            lay->addWidget(lb2, i + 1, 1);
+            lay->addWidget(lb2, row, col++);
         }
 
         if (!home && store_will_buy(store_idx, o_ptr)) {
             s32b price = price_item(o_ptr, true);
             QLabel *l = new QLabel(_num(price));
-            lay->addWidget(l, i + 1, 2);
+            lay->addWidget(l, row, col++);
         }
+
+        QPushButton *help_button = new QPushButton;
+        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+        help_button->setObjectName(id);
+        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
+        lay->addWidget(help_button, row, col++);
+
+        ++row;
     }
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(spacer, i + 1, 0);
+    lay->addItem(spacer, row++, 0);
 }
 
 void StoreDialog::reset_equip()
@@ -314,10 +350,14 @@ void StoreDialog::reset_equip()
     clear_grid(lay);
     int n = 0;
     int i;
-    if (!home) lay->addWidget(new QLabel("Price"), 0, 2);
+    int row = 0;
+    if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
     for (i = INVEN_WIELD; i < QUIVER_END; i++) {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;
+
+        int col = 0;
+
         QString use;
         if (i < QUIVER_START) {
             use = QString("%1: ").arg(mention_use(i));
@@ -328,7 +368,7 @@ void StoreDialog::reset_equip()
 
         QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(n++).toUpper()));
         lb->setProperty("item_id", QVariant(id));
-        lay->addWidget(lb, i + 1, 0);
+        lay->addWidget(lb, row, col++);
 
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         desc.prepend(use);
@@ -343,22 +383,30 @@ void StoreDialog::reset_equip()
             btn->setStyleSheet(style);
             btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
-            lay->addWidget(btn, i + 1, 1);
+            lay->addWidget(btn, row, col++);
         }
         else {
             QLabel *lb2 = new QLabel(desc);
             lb2->setStyleSheet(style);
-            lay->addWidget(lb2, i + 1, 1);
+            lay->addWidget(lb2, row, col++);
         }
 
         if (!home && store_will_buy(store_idx, o_ptr)) {
             s32b price = price_item(o_ptr, true);
             QLabel *l = new QLabel(_num(price));
-            lay->addWidget(l, i + 1, 2);
+            lay->addWidget(l, row, col++);
         }
+
+        QPushButton *help_button = new QPushButton;
+        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+        help_button->setObjectName(id);
+        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
+        lay->addWidget(help_button, row, col++);
+
+        row++;
     }
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(spacer, i + 1, 0);
+    lay->addItem(spacer, row++, 0);
 }
 
 void StoreDialog::toggle_inven()
