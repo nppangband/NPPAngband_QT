@@ -121,7 +121,8 @@ HEADERS  += src/qt_mainwindow.h\
     src/storedialog.h \
     src/griddialog.h \
     src/package.h \
-    src/tilebag.h
+    src/tilebag.h \
+    src/wizard_mode.h
 
 
 RESOURCES += \
