@@ -177,6 +177,16 @@ void WizardModeDialog::wiz_jump(void)
     dungeon_change_level(new_level);
 }
 
+void WizardModeDialog::wiz_teleport_to_target(void)
+{
+    /* Must have a target */
+    if (target_okay())
+    {
+        /* Teleport to the target */
+        teleport_player_to(p_ptr->target_row, p_ptr->target_col);
+    }
+}
+
 // Summon one monster
 void WizardModeDialog::wiz_summon(void)
 {
@@ -184,6 +194,91 @@ void WizardModeDialog::wiz_summon(void)
     int px = p_ptr->px;
 
     (void)summon_specific(py, px, p_ptr->depth, 0, 0L);
+}
+
+// Summon one monster
+void WizardModeDialog::wiz_banish(void)
+{
+    int i;
+
+    /* Banish everyone nearby */
+    for (i = 1; i < mon_max; i++)
+    {
+        monster_type *m_ptr = &mon_list[i];
+        monster_race *r_ptr = &r_info[m_ptr->r_idx];
+
+        /* Skip dead monsters */
+        if (!m_ptr->r_idx) continue;
+
+        /* Skip distant monsters */
+        if (m_ptr->cdis > (MAX_SIGHT+10)) continue;
+
+        /* Hack -- Skip unique monsters */
+        if (r_ptr->flags1 & (RF1_UNIQUE)) continue;
+
+        /* Quest monsters can only be "killed" by the player */
+        if (m_ptr->mflag & (MFLAG_QUEST)) continue;
+
+        /* Delete the monster */
+        delete_monster_idx(i);
+    }
+
+    /* Update monster list window */
+    p_ptr->redraw |= PR_MONLIST;
+}
+
+void WizardModeDialog::wiz_detect_all_monsters(void)
+{
+    int i;
+
+    /* Process monsters */
+    for (i = 1; i < mon_max; i++)
+    {
+        monster_type *m_ptr = &mon_list[i];
+
+        /* Skip dead monsters */
+        if (!m_ptr->r_idx) continue;
+
+        /* Optimize -- Repair flags */
+        repair_mflag_mark = TRUE;
+        repair_mflag_show = TRUE;
+
+        /* Detect the monster */
+        m_ptr->mflag |= (MFLAG_MARK | MFLAG_SHOW);
+
+        /* Update the monster */
+        update_mon(i, FALSE);
+    }
+}
+
+void WizardModeDialog::wiz_detection(void)
+{
+    wiz_light();
+    (void)detect(DETECT_RADIUS, DETECT_ALL);
+}
+
+void WizardModeDialog::wiz_mass_create_items(void)
+{
+    int i;
+    object_type object_type_body;
+
+    object_type *i_ptr;
+
+    for(i=0; i < 25; i++)
+    {
+        /* Get local object */
+        i_ptr = &object_type_body;
+
+        /* Wipe the object */
+        i_ptr->object_wipe();
+
+        /* Make a object (if possible) */
+        if (!make_object(i_ptr, FALSE, FALSE, DROP_TYPE_UNTHEMED, FALSE)) continue;
+
+        /* Drop the object */
+        drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+
+    }
 }
 
 WizardModeDialog::WizardModeDialog(void)
@@ -223,10 +318,35 @@ WizardModeDialog::WizardModeDialog(void)
     connect(jump_button, SIGNAL(clicked()), this, SLOT(wiz_jump()));
     main_layout->addWidget(jump_button);
 
+    // Add the "teleport_to_target" button
+    QPushButton *teleport_target_button = new QPushButton("Teleport To Targeted Spot");
+    connect(teleport_target_button, SIGNAL(clicked()), this, SLOT(wiz_teleport_to_target()));
+    main_layout->addWidget(teleport_target_button);
+
     // Add the "summon" button
     QPushButton *summon_button = new QPushButton("Summon Monsters");
     connect(summon_button, SIGNAL(clicked()), this, SLOT(wiz_summon()));
     main_layout->addWidget(summon_button);
+
+    // Add the "banish" button
+    QPushButton *banish_button = new QPushButton("Banish Monsters");
+    connect(banish_button, SIGNAL(clicked()), this, SLOT(wiz_banish()));
+    main_layout->addWidget(banish_button);
+
+    // Add the "detect all monsters" button
+    QPushButton *display_mon_button = new QPushButton("Detect All Monsters");
+    connect(display_mon_button, SIGNAL(clicked()), this, SLOT(wiz_detect_all_monsters()));
+    main_layout->addWidget(display_mon_button);
+
+    // Add the "detect all monsters" button
+    QPushButton *detection = new QPushButton("Detection");
+    connect(detection, SIGNAL(clicked()), this, SLOT(wiz_detection()));
+    main_layout->addWidget(detection);
+
+    // Add the "mass create items" button
+    QPushButton *mass_create_items_button = new QPushButton("Create 25 Random Items");
+    connect(mass_create_items_button , SIGNAL(clicked()), this, SLOT(wiz_mass_create_items()));
+    main_layout->addWidget(mass_create_items_button );
 
     main_layout->addWidget(cancel_button);
 

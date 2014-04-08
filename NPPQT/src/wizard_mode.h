@@ -20,7 +20,12 @@ private:
     void wiz_cure_all(void);
     void wiz_know_all(void);
     void wiz_jump(void);
+    void wiz_teleport_to_target(void);
     void wiz_summon(void);
+    void wiz_banish(void);
+    void wiz_detect_all_monsters(void);
+    void wiz_detection(void);
+    void wiz_mass_create_items(void);
 
 };
 
