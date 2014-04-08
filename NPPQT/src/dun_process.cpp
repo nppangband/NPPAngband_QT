@@ -830,7 +830,9 @@ static void do_animation(void)
 
         m_ptr->m_color = add_preset_color(multi_hued_color(r_ptr));
 
-        p_ptr->redraw |= (PR_MAP | PR_MONLIST);
+        p_ptr->redraw |= (PR_MONLIST);
+
+        light_spot(m_ptr->fy, m_ptr->fx);
     }
 }
 
@@ -1832,6 +1834,31 @@ static void process_game_turns(void)
     }
 }
 
+static void redraw_hallucination()
+{
+    QRect vis = visible_dungeon();
+
+    for (int i = 0; i < vis.height(); i++) {
+        for (int j = 0; j < vis.width(); j++) {
+            int y = vis.y() + i;
+            int x = vis.x() + j;
+            int m_idx = dungeon_info[y][x].monster_idx;
+            if (m_idx > 0 && mon_list[m_idx].ml) {
+                light_spot(y, x);
+                continue;
+            }
+            int o_idx = dungeon_info[y][x].object_idx;
+            while (o_idx) {
+                if (o_list[o_idx].marked) {
+                    light_spot(y, x);
+                    break;
+                }
+                o_idx = o_list[o_idx].next_o_idx;
+            }
+        }
+    }
+}
+
 /*
  * This function should be called after every command that uses player energy.
  * Ideally, it should be the final line of code before the function ends or returns.
@@ -1854,7 +1881,7 @@ void process_player_energy(byte energy_used)
     /* Hack -- constant hallucination */
     if (p_ptr->timed[TMD_IMAGE])
     {
-        p_ptr->redraw |= (PR_MAP);
+        redraw_hallucination();
     }
 
     /* Hack -- Redraw depth if the temporary quest notification ends */
