@@ -275,7 +275,7 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
         QChar chr = k_ptr->d_char;
         QColor col = k_ptr->d_color;
         QString key = k_ptr->tile_id;
-        if (k_ptr->flavor > 0) {
+        if (use_flavor_glyph(o_ptr)) {
             flavor_type *fl_ptr = flavor_info + k_ptr->flavor;
             chr = fl_ptr->d_char;
             col = fl_ptr->d_color;
@@ -283,7 +283,7 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
         }
 
         if (use_graphics) {            
-            pix = current_tiles->get_tile(key);
+            pix = main_window->get_tile(key);
         }
         else {
             pix = pseudo_ascii(chr, col, main_window->cur_font,

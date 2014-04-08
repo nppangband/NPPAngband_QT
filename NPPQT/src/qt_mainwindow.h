@@ -54,6 +54,9 @@ public:
     QString current_multiplier;
     bool do_pseudo_ascii;
 
+    // Scaled tiles
+    QHash<QString,QPixmap> tiles;
+
     // For light effects
     QHash<QString,QPixmap> shade_cache;
 
@@ -79,6 +82,7 @@ public:
     void force_redraw();
     bool panel_contains(int y, int x);    
     bool running_command();
+    QPixmap get_tile(QString tile_id);
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
     void wait_animation(int n_animations = 1);
     void animation_done();

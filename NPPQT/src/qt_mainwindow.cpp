@@ -773,7 +773,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         QString key1 = d_ptr->dun_tile;
 
         if (key1.length() > 0) {            
-            QPixmap pix = current_tiles->get_tile(key1);
+            QPixmap pix = parent->get_tile(key1);
 
             if (flags & UI_LIGHT_TORCH) {
                 QColor color = QColor("yellow").darker(150);
@@ -795,7 +795,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 QString tile = find_cloud_tile(c_y, c_x);
                 if (!tile.isEmpty()) {
                     painter->setOpacity(0.7);                    
-                    QPixmap pix = current_tiles->get_tile(tile);
+                    QPixmap pix = parent->get_tile(tile);
                     painter->drawPixmap(0, 0, pix);
                     painter->setOpacity(1);
                     done_bg = true;
@@ -804,7 +804,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
             // Draw foreground tile
             if (key2.length() > 0) {               
-               QPixmap pix = current_tiles->get_tile(key2);
+               QPixmap pix = parent->get_tile(key2);
                if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER)) {
                    painter->setOpacity(opacity);
                }               
@@ -940,14 +940,34 @@ QPixmap lighten_pix(QPixmap src)
 
 void MainWindow::destroy_tiles()
 {    
+    tiles.clear();
     shade_cache.clear();
+}
+
+QPixmap MainWindow::get_tile(QString tile_id)
+{
+    if (tiles.contains(tile_id)) return tiles.value(tile_id);
+
+    if (!current_tiles) return ui_make_blank();
+
+    QPixmap pix = current_tiles->get_tile(tile_id);
+
+    if (pix.width() == 1) return pix;
+
+    if (cell_wid != pix.width() || cell_hgt != pix.height()) {
+        pix = pix.scaled(cell_wid, cell_hgt);
+    }
+
+    tiles.insert(tile_id, pix);
+
+    return pix;
 }
 
 void MainWindow::calculate_cell_size()
 {
-    cell_wid = tile_wid ? tile_wid: font_wid;
+    cell_wid = MAX(tile_wid, font_wid);
 
-    cell_hgt = tile_hgt ? tile_hgt: font_hgt;
+    cell_hgt = MAX(tile_hgt, font_hgt);
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
         for (int x = 0; x < MAX_DUNGEON_WID; x++) {
