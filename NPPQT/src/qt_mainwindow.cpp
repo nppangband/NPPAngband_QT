@@ -252,14 +252,27 @@ QPixmap rotate_pix(QPixmap src, qreal angle)
     return QPixmap::fromImage(img);
 }
 
-QPixmap ui_get_tile(QString tile_id)
+QPixmap ui_get_tile(QString tile_id, TileBag *tileset)
 {
     // Build a transparent 1x1 pixmap
-    if (tile_id.isEmpty() || !use_graphics) {
-        return ui_make_blank();
+    if (tile_id.isEmpty()) return ui_make_blank();
+
+    if (!tileset) tileset = current_tiles;
+
+    if (!tileset) return ui_make_blank();
+
+    QPixmap pix = tileset->get_tile(tile_id);
+
+    if (pix.width() == 1) return pix;
+
+    int w = 32;
+    int h = 32;
+
+    if (w != pix.width() || h != pix.height()) {
+        pix = pix.scaled(w, h);
     }
 
-    return current_tiles->get_tile(tile_id);
+    return pix;
 }
 
 void MainWindow::slot_something()
@@ -1559,7 +1572,10 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == ".") do_cmd_run();
             else if (keystring == "l") do_cmd_look();
             else if (keystring == "5") do_cmd_hold();
-            else if (keystring == "z") extract_tiles();
+            else if (keystring == "z") {
+                //extract_tiles();
+                describe_monster(644, true, "");
+            }
             else
             {
                 //  TODO something useful with unused keypresses

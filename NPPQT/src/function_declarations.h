@@ -668,7 +668,8 @@ extern void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
 extern void ui_animate_beam(int y0, int x0, int y1, int x1, int type);
 extern void ui_animate_ball(int y, int x, int radius, int type, u32b flg);
 extern void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids);
-extern QPixmap ui_get_tile(QString tile_id);
+class TileBag;
+extern QPixmap ui_get_tile(QString tile_id, TileBag *tileset = 0);
 extern void ui_request_size_update(QWidget *widget);
 extern void ui_resize_to_contents(QWidget *widget);
 class QTableWidget;

@@ -46,12 +46,12 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = tiles_32x32->get_tile(r_ptr->tile_id);
+        QPixmap pix = ui_get_tile(r_ptr->tile_id, tiles_32x32);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
 
-        QPixmap pix2 = tiles_8x8->get_tile(r_ptr->tile_id);        
+        QPixmap pix2 = ui_get_tile(r_ptr->tile_id, tiles_8x8);
         QLabel *lb4 = new QLabel;
         lb4->setPixmap(pix2);
         lay2->addWidget(lb4, row, col++);
@@ -94,12 +94,12 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = tiles_32x32->get_tile(tile);
+        QPixmap pix = ui_get_tile(tile, tiles_32x32);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
 
-        QPixmap pix2 = tiles_8x8->get_tile(tile);
+        QPixmap pix2 = ui_get_tile(tile, tiles_8x8);
         QLabel *lb4 = new QLabel;
         lb4->setPixmap(pix2);
         lay2->addWidget(lb4, row, col++);
@@ -125,12 +125,12 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = tiles_32x32->get_tile(f_ptr->tile_id);
+        QPixmap pix = ui_get_tile(f_ptr->tile_id, tiles_32x32);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
 
-        QPixmap pix2 = tiles_8x8->get_tile(f_ptr->tile_id);
+        QPixmap pix2 = ui_get_tile(f_ptr->tile_id, tiles_8x8);
         QLabel *lb4 = new QLabel;
         lb4->setPixmap(pix2);
         lay2->addWidget(lb4, row, col++);
@@ -162,12 +162,12 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = tiles_32x32->get_tile(f_ptr->tile_id);
+        QPixmap pix = ui_get_tile(f_ptr->tile_id, tiles_32x32);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
 
-        QPixmap pix2 = tiles_8x8->get_tile(f_ptr->tile_id);
+        QPixmap pix2 = ui_get_tile(f_ptr->tile_id, tiles_8x8);
         QLabel *lb4 = new QLabel;
         lb4->setPixmap(pix2);
         lay2->addWidget(lb4, row, col++);

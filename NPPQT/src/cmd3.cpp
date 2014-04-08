@@ -23,6 +23,8 @@
  */
 void do_cmd_look(void)
 {
+    if (!character_dungeon) return;
+
     /* Look around */
     if (target_set_interactive(TARGET_LOOK, -1, -1))
     {

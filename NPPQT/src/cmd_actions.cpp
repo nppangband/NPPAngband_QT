@@ -2331,6 +2331,8 @@ void do_cmd_bash(void)
  */
 void do_cmd_hold()
 {
+    if (!character_dungeon) return;
+
     /* Take a turn */
     int energy = BASE_ENERGY_MOVE;
 
