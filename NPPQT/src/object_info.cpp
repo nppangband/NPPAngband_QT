@@ -1558,10 +1558,16 @@ QString screen_out_head(object_type *o_ptr)
     o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
     o_name = capitalize_first(o_name);
 
-    QString obj_symbol = color_string(k_ptr->d_char, k_ptr->color_num);
+    QChar d_char = k_ptr->d_char;
+    QColor d_color = k_ptr->d_color;
+    if (use_flavor_glyph(o_ptr)) {
+        d_char = flavor_info[k_ptr->flavor].d_char;
+        d_color = flavor_info[k_ptr->flavor].d_color;
+    }
+    QString obj_symbol = color_string2(d_char, d_color);
 
     /* Print, in colour */
-    output.append(QString("<b><h1>'%1' - %2</h1></b><br><br>") .arg(obj_symbol) .arg(o_name));
+    output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(obj_symbol) .arg(o_name));
 
     /* Display the known artifact description */
     if (!adult_rand_artifacts &&

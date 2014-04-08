@@ -882,10 +882,10 @@ void describe_feature(int f_idx, bool spoilers)
         cheat_feature_lore(f_idx, &lore);
     }
 
-    QString feat_symbol = color_string(f_ptr->d_char, f_ptr->color_num);
+    QString feat_symbol = color_string2(f_ptr->d_char, f_ptr->d_color);
 
     /* Print, in colour */
-    output.append(QString("<b><h1>'%1' - %2</h1></b><br><br>") .arg(feat_symbol) .arg(feat_name));
+    output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(feat_symbol) .arg(feat_name));
 
     /* Describe the movement and level of the monster */
     output.append(describe_feature_basic(f_idx, &lore));

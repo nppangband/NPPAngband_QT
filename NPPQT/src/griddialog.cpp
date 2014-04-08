@@ -75,6 +75,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     int o_idx = d_ptr->object_idx;
     while (o_idx && !drugged) {
         object_type *o_ptr = o_list + o_idx;
+        int cur_o_idx = o_idx;
         o_idx = o_ptr->next_o_idx;
 
         if (!o_ptr->marked) continue;
@@ -112,7 +113,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         QString name = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
         name = capitalize_first(name);
         QPushButton *btn1 = new QPushButton(name);
-        QString item_id = QString("o%1").arg(o_idx);
+        QString item_id = QString("o%1").arg(cur_o_idx);
         btn1->setObjectName(item_id);
         btn1->setStyleSheet("text-align: left;");
         lay2->addWidget(btn1, row, col++);
