@@ -36,7 +36,10 @@ QPixmap TileBag::get_tile(QString name)
     }
 
     QByteArray data = pak->get_item(name);  // Get png data from package
-    if (data.size() < 1) return ui_make_blank(); // Check existence of the tile
+    if (data.size() < 1) {
+        color_message("Tile not found: " + name, TERM_ORANGE);
+        return ui_make_blank(); // Check existence of the tile
+    }
 
     QImage img;
     img.loadFromData(data);                 // Convert png data to RGB
