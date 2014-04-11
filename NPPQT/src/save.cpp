@@ -649,7 +649,11 @@ static void wr_extra(void)
     /* Special stuff */
     wr_u16b(p_ptr->panic_save);
     wr_u16b(p_ptr->total_winner);
-    wr_u16b(p_ptr->noscore);
+
+    // Record wizard mode;
+    if (p_ptr->is_wizard) wr_byte(TRUE);
+    else wr_byte(FALSE);
+    wr_byte(0);
 
     /* Write death */
     wr_byte(p_ptr->is_dead);

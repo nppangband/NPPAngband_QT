@@ -966,6 +966,7 @@ static int rd_extra(void)
     u16b tmp16u;
     u16b file_e_max;
     byte num;
+    byte dummy_byte;
 
 
     rd_string(&op_ptr->full_name);
@@ -1176,12 +1177,13 @@ static int rd_extra(void)
     rd_u32b(&seed_town);
     rd_u32b(&seed_ghost);
 
-
-
     /* Special stuff */
     rd_u16b(&p_ptr->panic_save);
     rd_u16b(&p_ptr->total_winner);
-    rd_u16b(&p_ptr->noscore);
+    rd_byte(&dummy_byte);
+    if (dummy_byte == TRUE) p_ptr->is_wizard = TRUE;
+    else p_ptr->is_wizard = FALSE;
+    strip_bytes(1);
 
 
     /* Read "death" */
@@ -1272,7 +1274,7 @@ static int rd_randarts(void)
     rd_u16b(&art_norm_count);
 
     /* Alive or cheating death */
-    if (!p_ptr->is_dead || arg_wizard)
+    if (!p_ptr->is_dead || p_ptr->is_wizard)
     {
         /* Incompatible save files */
         if ((artifact_count > z_info->art_max) || (art_norm_count > z_info->art_norm_max))
@@ -1378,7 +1380,7 @@ static int rd_randarts(void)
  */
 static bool rd_notes(void)
 {
-    int alive = (!p_ptr->is_dead || arg_wizard);
+    int alive = (!p_ptr->is_dead || p_ptr->is_wizard);
     QString tmpstr;
 
     QDataStream out_notes(&notes_file);
@@ -2309,7 +2311,7 @@ bool load_player(void)
     {
         /*note, add or_true to the arg wixard if statement to resurrect character*/
         /* Cheat death (unless the character retired) */
-        if (arg_wizard)
+        if (p_ptr->is_wizard)
         {
             /*heal the player*/
             hp_player(2000);

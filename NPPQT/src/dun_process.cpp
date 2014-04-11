@@ -1508,16 +1508,13 @@ static void change_player_level(void)
     if (p_ptr->playing && p_ptr->is_dead)
     {
         /* Mega-Hack -- Allow player to cheat death */
-        if ((p_ptr->wizard || cheat_live) && !get_check("Die? "))
+        if ((p_ptr->is_wizard || cheat_live) && !get_check("Die? "))
         {
             /* Mark social class, reset age, if needed */
             if (p_ptr->sc) p_ptr->sc = p_ptr->age = 0;
 
             /* Increase age */
             p_ptr->age++;
-
-            /* Mark savefile */
-            p_ptr->noscore |= 0x0001;
 
             /* Message */
             message(QString("You invoke wizard mode and cheat death."));

@@ -115,8 +115,8 @@ void player_type::player_type_wipe()
     for (i = 0; i < PY_MAX_LEVEL; i++)      player_hp[i] = 0;
     died_from.clear();
     history.clear();
-    total_winner = panic_save = noscore = 0;
-    is_dead = player_turn = wizard = FALSE;
+    total_winner = panic_save = 0;
+    is_dead = player_turn = is_wizard = FALSE;
     playing = noun_verb = leaving_level = autosave = FALSE;
     create_stair = cur_map_hgt = cur_map_wid = FALSE;
     total_weight = inven_cnt = equip_cnt = pack_size_reduce = quiver_remainder = quiver_slots = 0;

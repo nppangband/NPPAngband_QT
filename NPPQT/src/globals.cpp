@@ -7,8 +7,6 @@
 
 byte game_mode;
 
-bool arg_wizard;
-
 bool character_generated;	/* The character exists */
 bool character_dungeon;		/* The character has a dungeon */
 bool character_loaded;		/* The character was loaded from a savefile */

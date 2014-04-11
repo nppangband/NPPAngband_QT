@@ -1225,7 +1225,7 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
     if ((p_ptr->health_who == m_idx) || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
 
     /* Allow the debugging of damage done. */
-    if ((dam > 0) && (p_ptr->wizard))
+    if ((dam > 0) && (p_ptr->is_wizard))
     {
         if ((who == SOURCE_PLAYER) || (who == SOURCE_TRAP))
         {

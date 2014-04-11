@@ -1556,6 +1556,12 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else                    do_cmd_disarm();
             return;
         }
+        case Qt::Key_A:
+        {
+            if (keystring == "a") do_cmd_activate();
+            else do_cmd_wizard_mode();
+            return;
+        }
         case Qt::Key_BraceLeft:
         {
             do_cmd_inscribe();
@@ -1580,8 +1586,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         default:
         {
             // handle lowercase keystrokes        
-            if (keystring == "a") do_cmd_activate();
-            else if (keystring == "p") do_cmd_cast();
+
+            if (keystring == "p") do_cmd_cast();
             else if (keystring == "B") do_cmd_bash();
             else if (keystring == "R") do_cmd_rest();
             else if (keystring == "b") do_cmd_browse();

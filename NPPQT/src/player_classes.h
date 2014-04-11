@@ -401,11 +401,9 @@ public:
     u16b total_winner;		/* Total winner */
     u16b panic_save;		/* Panic save */
 
-    u16b noscore;			/* Cheating flags */
-
     bool is_dead;			/* Player is dead */
     bool player_turn;      /* It is the player's turn to move */
-    bool wizard;			/* Player is in wizard mode */
+    bool is_wizard;			/* Player is in wizard mode */
 
 
     /*** Temporary fields ***/

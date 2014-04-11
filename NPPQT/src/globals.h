@@ -13,7 +13,6 @@
 
 extern byte game_mode;
 
-extern bool arg_wizard;
 extern bool character_generated;
 extern bool character_dungeon;
 extern bool character_loaded;

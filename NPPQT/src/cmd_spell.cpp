@@ -400,6 +400,9 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     main_layout->addWidget(main_prompt);
     main_layout->addWidget(spell_dialog);
     main_layout->addWidget(buttons);
+
+
+
     setLayout(main_layout);
     setWindowTitle(tr("Spell Selection Menu"));
 

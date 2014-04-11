@@ -939,6 +939,7 @@ extern QString to_ascii(QString src);
 
 // widard_mode.cpp
 extern bool make_fake_artifact(object_type *o_ptr, byte art_num);
+extern void do_cmd_wizard_mode(void);
 
 // birth.cpp
 void init_birth();

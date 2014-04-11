@@ -33,6 +33,7 @@ SOURCES +=  src/qt_main.cpp\
             src/dun_util.cpp \
             src/emitter.cpp \
             src/globals.cpp \
+            src/griddialog.cpp \
             src/init_edit_files.cpp\
             src/init_game.cpp\
             src/load.cpp \
@@ -46,6 +47,7 @@ SOURCES +=  src/qt_main.cpp\
             src/mon_process.cpp \
             src/mon_ranged_attacks.cpp \
             src/mon_util.cpp \
+            src/nppdialog.cpp \
             src/object_classes.cpp \
             src/object_desc.cpp \
             src/object_hooks.cpp \
@@ -55,6 +57,8 @@ SOURCES +=  src/qt_main.cpp\
             src/object_use.cpp \
             src/object_util.cpp \
             src/optionsdialog.cpp \
+            src/package.cpp \
+            src/pathfind.cpp \
             src/player_attack.cpp \
             src/player_classes.cpp \
             src/player_process.cpp \
@@ -73,18 +77,13 @@ SOURCES +=  src/qt_main.cpp\
             src/spells2.cpp \
             src/squelch.cpp \
             src/store.cpp \
+            src/storedialog.cpp \
             src/tables.cpp \
             src/target.cpp \
+            src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-    src/nppdialog.cpp \
-    src/storedialog.cpp \
-    src/griddialog.cpp \
-    src/package.cpp \
-    src/tilebag.cpp \
-    src/pathfind.cpp \
-    src/wizard_mode.cpp
-
+            src/wizard_mode.cpp
 
 
 
@@ -116,12 +115,13 @@ HEADERS  += src/qt_mainwindow.h\
             src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \
-    src/cmd_spell.h \
-    src/nppdialog.h \
-    src/storedialog.h \
-    src/griddialog.h \
-    src/package.h \
-    src/tilebag.h
+            src/cmd_spell.h \
+            src/nppdialog.h \
+            src/storedialog.h \
+            src/griddialog.h \
+            src/package.h \
+            src/tilebag.h \
+            src/wizard_mode.h
 
 
 RESOURCES += \

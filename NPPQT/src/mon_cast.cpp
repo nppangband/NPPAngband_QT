@@ -976,7 +976,7 @@ int choose_ranged_attack(int m_idx, int *tar_y, int *tar_x)
         }
     }
 
-    if (p_ptr->wizard)
+    if (p_ptr->is_wizard)
     {
         message(QString("Spell rating: %1.") .arg(best_spell_rating));
     }
@@ -4059,7 +4059,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
 
     }
 
-    if (seen && p_ptr->wizard)
+    if (seen && p_ptr->is_wizard)
         message(QString("%1 has %i mana remaining.") .arg(capitalize_first(m_name)) .arg(m_ptr->mana));
 
     /* Always take note of monsters that kill you */

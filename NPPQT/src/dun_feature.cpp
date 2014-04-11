@@ -3506,7 +3506,7 @@ void decipher_strange_inscription(int x_idx)
     color_message(name, TERM_WHITE);
 
     /* Destroy the effect sometimes */
-    if ((p_ptr->noscore & 0x0008) && one_in_(3))
+    if ((!p_ptr->is_wizard) && one_in_(3))
     {
         /* Get the effect name */
         name = feature_desc(x_ptr->x_f_idx, FALSE, TRUE);
