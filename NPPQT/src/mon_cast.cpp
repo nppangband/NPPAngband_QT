@@ -4060,7 +4060,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
     }
 
     if (seen && p_ptr->is_wizard)
-        message(QString("%1 has %i mana remaining.") .arg(capitalize_first(m_name)) .arg(m_ptr->mana));
+        message(QString("%1 has %2 mana remaining.") .arg(capitalize_first(m_name)) .arg(m_ptr->mana));
 
     /* Always take note of monsters that kill you */
     if (p_ptr->is_dead && (l_ptr->deaths < MAX_SHORT))

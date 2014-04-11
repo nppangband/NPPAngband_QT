@@ -162,9 +162,9 @@ void WizardModeDialog::wiz_jump(void)
     int new_level;
 
     /* Prompt */
-    QString prompt = QString("Jump to level (0-%d): ") .arg(MAX_DEPTH-1);
+    QString prompt = QString("Jump to level (0-%1): ") .arg(MAX_DEPTH-1);
 
-    new_level = get_quantity(prompt, MAX_DEPTH - 1, p_ptr->lev);
+    new_level = get_quantity(prompt, MAX_DEPTH - 1, p_ptr->depth);
 
     // Same depth - quit
     if (new_level == p_ptr->depth) return;
@@ -174,6 +174,9 @@ void WizardModeDialog::wiz_jump(void)
 
     /* New depth */
     dungeon_change_level(new_level);
+
+    // Update everything
+    process_player_energy(BASE_ENERGY_MOVE);
 }
 
 void WizardModeDialog::wiz_teleport_to_target(void)
@@ -343,7 +346,8 @@ WizardModeDialog::WizardModeDialog(void)
     }
 
     main_prompt = new QLabel(QString("<b><big>Please select a command</big></b>"));
-    main_prompt->setAlignment(Qt::AlignCenter);
+    main_prompt->setAlignment(Qt::AlignCenter);    
+    QVBoxLayout *main_layout = new QVBoxLayout;
 
     // Add the player related commands
     QGridLayout *wizard_layout = new QGridLayout;
@@ -467,11 +471,8 @@ WizardModeDialog::WizardModeDialog(void)
 
     row++;
 
-    // TODO does not work???
-    cancel_button = new QDialogButtonBox(main_prompt);
-    cancel_button->setStandardButtons(QDialogButtonBox::Cancel);
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
-
+    buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
     wizard_layout->addWidget(cancel_button, row, 2);
 
     setLayout(wizard_layout);
