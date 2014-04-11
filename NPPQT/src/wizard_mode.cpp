@@ -161,9 +161,9 @@ void WizardModeDialog::wiz_jump(void)
     int new_level;
 
     /* Prompt */
-    QString prompt = QString("Jump to level (0-%d): ") .arg(MAX_DEPTH-1);
+    QString prompt = QString("Jump to level (0-%1): ") .arg(MAX_DEPTH-1);
 
-    new_level = get_quantity(prompt, MAX_DEPTH - 1, p_ptr->lev);
+    new_level = get_quantity(prompt, MAX_DEPTH - 1, p_ptr->depth);
 
     // Same depth - quit
     if (new_level == p_ptr->depth) return;
@@ -173,6 +173,9 @@ void WizardModeDialog::wiz_jump(void)
 
     /* New depth */
     dungeon_change_level(new_level);
+
+    // Update everything
+    process_player_energy(BASE_ENERGY_MOVE);
 }
 
 void WizardModeDialog::wiz_teleport_to_target(void)
@@ -340,15 +343,14 @@ WizardModeDialog::WizardModeDialog(void)
     }
 
     main_prompt = new QLabel(QString("<b><big>Please select a command</big></b>"));
-    main_prompt->setAlignment(Qt::AlignCenter);
-    cancel_button = new QDialogButtonBox(QDialogButtonBox::Cancel);
+    main_prompt->setAlignment(Qt::AlignCenter);    
     QVBoxLayout *main_layout = new QVBoxLayout;
 
     main_layout->addWidget(main_prompt);
 
     // Add the "cure all" button
     QPushButton *heal_button = new QPushButton("Heal Player");
-    connect(heal_button, SIGNAL(clicked()), main_layout, SLOT(wiz_cure_all()));
+    connect(heal_button, SIGNAL(clicked()), this, SLOT(wiz_cure_all()));
     main_layout->addWidget(heal_button);
 
     // Add the "know all" button
@@ -431,11 +433,9 @@ WizardModeDialog::WizardModeDialog(void)
     connect(mass_identify, SIGNAL(clicked()), this, SLOT(wiz_mass_identify_items()));
     main_layout->addWidget(mass_identify);
 
-
-    cancel_button = new QDialogButtonBox(main_prompt);
-    cancel_button->setStandardButtons(QDialogButtonBox::Cancel);
-
-    main_layout->addWidget(cancel_button);
+    buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Wizard Mode Menu"));

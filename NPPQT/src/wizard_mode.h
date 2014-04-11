@@ -13,7 +13,7 @@ public:
 
 private:
     QLabel *main_prompt;
-    QDialogButtonBox *cancel_button;
+    QDialogButtonBox *buttons;
 
 private slots:
 
@@ -35,7 +35,6 @@ private slots:
     void wiz_create_good_item(void);
     void wiz_create_great_item(void);
     void wiz_mass_identify_items(void);
-
 };
 
 #endif // WIZARD_MODE_H
