@@ -195,6 +195,7 @@ void WizardModeDialog::wiz_teleport(void)
     teleport_player(100, FALSE);
 }
 
+
 // Summon one monster
 void WizardModeDialog::wiz_summon(void)
 {
@@ -306,6 +307,7 @@ void WizardModeDialog::wiz_mass_create_items(void)
 
     }
 }
+
 
 void WizardModeDialog::wiz_create_good_item(void)
 {
@@ -431,7 +433,13 @@ WizardModeDialog::WizardModeDialog(void)
 
 
     cancel_button = new QDialogButtonBox(main_prompt);
-    cancel_button->setStandardButtons(QDialogButtonBox::Cancel);
+    cancel_button->setStandardButtons(QDialogButtonBox::Cancel);4=
+
+    // Add the "mass create items" button
+    QPushButton *mass_create_items_button = new QPushButton("Create 25 Random Items");
+    connect(mass_create_items_button , SIGNAL(clicked()), this, SLOT(wiz_mass_create_items()));
+    main_layout->addWidget(mass_create_items_button );
+
     main_layout->addWidget(cancel_button);
 
     setLayout(main_layout);
