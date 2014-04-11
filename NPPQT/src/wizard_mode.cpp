@@ -345,9 +345,12 @@ WizardModeDialog::WizardModeDialog(void)
         p_ptr->is_wizard = TRUE;
     }
 
-    main_prompt = new QLabel(QString("<b><big>Please select a command</big></b>"));
-    main_prompt->setAlignment(Qt::AlignCenter);    
-    QVBoxLayout *main_layout = new QVBoxLayout;
+    main_prompt = new QLabel(QString("<b><big>Please select a command</big></b><br>"));
+    main_prompt->setAlignment(Qt::AlignCenter);
+
+    QVBoxLayout *vlay = new QVBoxLayout;
+
+    vlay->addWidget(main_prompt);
 
     // Add the player related commands
     QGridLayout *wizard_layout = new QGridLayout;
@@ -469,13 +472,13 @@ WizardModeDialog::WizardModeDialog(void)
     connect(mass_identify, SIGNAL(clicked()), this, SLOT(wiz_mass_identify_items()));
     wizard_layout->addWidget(mass_identify, row, 0);
 
-    row++;
+    vlay->addLayout(wizard_layout);
 
     buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    wizard_layout->addWidget(cancel_button, row, 2);
+    vlay->addWidget(buttons);
 
-    setLayout(wizard_layout);
+    setLayout(vlay);
     setWindowTitle(tr("Wizard Mode Menu"));
     this->exec();
 }
