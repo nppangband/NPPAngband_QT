@@ -294,6 +294,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
                 QPushButton *button = new QPushButton(text_num);
                 button->setText(spell_name);
                 button->setStyleSheet("Text-align:left");
+                button->setToolTip(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell, 0));
                 spell_layout->addWidget(button, row_num, COL_SPELL_TITLE);
                 connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
                 button_values->setMapping(button, text_num);
