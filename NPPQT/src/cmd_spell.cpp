@@ -285,6 +285,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
                 QLabel *spell_label = new QLabel(spell_name);
                 spell_label->setAlignment(Qt::AlignLeft);
                 spell_label->setAlignment(Qt::AlignVCenter);
+                spell_label->setToolTip(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell, 0));
                 spell_layout->addWidget(spell_label, row_num, COL_SPELL_TITLE);
             }
             // Create a push button and link it
