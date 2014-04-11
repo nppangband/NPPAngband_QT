@@ -668,7 +668,8 @@ extern void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
 extern void ui_animate_beam(int y0, int x0, int y1, int x1, int type);
 extern void ui_animate_ball(int y, int x, int radius, int type, u32b flg);
 extern void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids);
-extern QPixmap ui_get_tile(QString tile_id);
+class TileBag;
+extern QPixmap ui_get_tile(QString tile_id, TileBag *tileset = 0);
 extern void ui_request_size_update(QWidget *widget);
 extern void ui_resize_to_contents(QWidget *widget);
 class QTableWidget;
@@ -924,7 +925,8 @@ extern s16b get_quantity(QString prompt, int max, int amt = 1);
 extern QColor add_preset_color(int which_color);
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);
-extern QString color_string(QString msg, int which_color);
+extern QString color_string(QString msg, byte which_color);
+extern QString color_string2(QString msg, QColor which_color);
 extern void custom_color_message(QString msg, byte red, byte green, byte blue);
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);
@@ -933,7 +935,7 @@ extern void write_note(QString note, s16b depth);
 extern QString get_player_title(void);
 extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);
-extern void extract_tiles(void);
+extern void extract_tiles(bool save = true);
 extern void display_info_window(byte mode, int index, QString info, object_type *o_ptr = 0);
 extern QString to_ascii(QString src);
 

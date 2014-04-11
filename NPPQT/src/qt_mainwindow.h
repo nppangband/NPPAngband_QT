@@ -10,7 +10,6 @@
 #include <QKeyEvent>
 #include <QActionGroup>
 #include <QEventLoop>
-#include <QPixmapCache>
 #include "defines.h"
 #include "structures.h"
 #include "nppdialog.h"
@@ -55,12 +54,11 @@ public:
     QString current_multiplier;
     bool do_pseudo_ascii;
 
-    QPixmap blank_pix;
-    // The key must be strings of the form "[row]x[col]"
-    QHash<QString, QPixmap> tiles;
+    // Scaled tiles
+    QHash<QString,QPixmap> tiles;
+
     // For light effects
-    QPixmapCache shade_cache;
-    QPixmap tile_map;
+    QHash<QString,QPixmap> shade_cache;
 
     QList<QGraphicsItem *> path_items;
 
@@ -82,9 +80,9 @@ public:
     void redraw();
     void update_cursor();
     void force_redraw();
-    bool panel_contains(int y, int x);
-    void rebuild_tile(QString key);
+    bool panel_contains(int y, int x);    
     bool running_command();
+    QPixmap get_tile(QString tile_id);
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
     void wait_animation(int n_animations = 1);
     void animation_done();

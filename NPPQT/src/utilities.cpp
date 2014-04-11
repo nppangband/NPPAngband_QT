@@ -1,5 +1,6 @@
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
+#include "tilebag.h"
 #include <QtWidgets>
 
 
@@ -304,57 +305,14 @@ void color_message(QString msg, int which_color)
  *  Colors are in 24-bit hex RGB format (#000000 - #FFFFFF)
  *  Keep this current with preset_colors table in tables.c.
  */
-QString color_string(QString msg, int which_color)
+QString color_string(QString msg, byte color_num)
 {
-    QColor msg_color;
+    return (QString("<font color='%1'>%2</font>").arg(defined_colors[color_num].name()).arg(msg));
+}
 
-    //Paranoia
-    if (which_color > MAX_COLORS) which_color = TERM_WHITE;
-
-    switch (which_color)
-    {
-        case TERM_DARK :            return (QString("<font color='#000000'>%1</font>") .arg(msg));
-        case TERM_L_DARK :          return (QString("<font color='#606060'>%1</font>") .arg(msg));
-        case TERM_SLATE :           return (QString("<font color='#808080'>%1</font>") .arg(msg));
-        case TERM_SLATE_GRAY :      return (QString("<font color='#708090'>%1</font>") .arg(msg));
-        case TERM_TAUPE :           return (QString("<font color='#8B8589'>%1</font>") .arg(msg));
-        case TERM_WHITE :           return (QString("<font color='#FFFFFF'>%1</font>") .arg(msg));
-        case TERM_LIGHT_GRAY :      return (QString("<font color='#C0C0C0'>%1</font>") .arg(msg));
-        case TERM_SNOW_WHITE :      return (QString("<font color='#FFFAFA'>%1</font>") .arg(msg));
-        case TERM_RED :             return (QString("<font color='#C00000'>%1</font>") .arg(msg));
-        case TERM_L_RED :           return (QString("<font color='#FF4040'>%1</font>") .arg(msg));
-        case TERM_RED_LAVA :        return (QString("<font color='#CF1020'>%1</font>") .arg(msg));
-        case TERM_RASPBERRY :       return (QString("<font color='#E30B5C'>%1</font>") .arg(msg));
-        case TERM_RED_RUST :        return (QString("<font color='#B7410E'>%1</font>") .arg(msg));
-        case TERM_PINK :            return (QString("<font color='#FF1493'>%1</font>") .arg(msg));
-        case TERM_ORANGE :          return (QString("<font color='#FF8000'>%1</font>") .arg(msg));
-        case TERM_MAHAGONY :        return (QString("<font color='#C04000'>%1</font>") .arg(msg));
-        case TERM_GREEN :           return (QString("<font color='#008040'>%1</font>") .arg(msg));
-        case TERM_L_GREEN :         return (QString("<font color='#00FF00'>%1</font>") .arg(msg));
-        case TERM_JUNGLE_GREEN :    return (QString("<font color='#29AB87'>%1</font>") .arg(msg));
-        case TERM_LIME_GREEN :      return (QString("<font color='#BFFF00'>%1</font>") .arg(msg));
-        case TERM_BLUE :            return (QString("<font color='#0040FF'>%1</font>") .arg(msg));
-        case TERM_L_BLUE :          return (QString("<font color='#00FFFF'>%1</font>") .arg(msg));
-        case TERM_NAVY_BLUE :       return (QString("<font color='#4C4CA6'>%1</font>") .arg(msg));
-        case TERM_SKY_BLUE :        return (QString("<font color='#00BFFF'>%1</font>") .arg(msg));
-        case TERM_UMBER :           return (QString("<font color='#804000'>%1</font>") .arg(msg));
-        case TERM_L_UMBER :         return (QString("<font color='#C08040'>%1</font>") .arg(msg));
-        case TERM_AUBURN :          return (QString("<font color='#6D351A'>%1</font>") .arg(msg));
-        case TERM_L_BROWN :         return (QString("<font color='#C19A6B'>%1</font>") .arg(msg));
-        case TERM_YELLOW :          return (QString("<font color='#FFFF00'>%1</font>") .arg(msg));
-        case TERM_EARTH_YELLOW :    return (QString("<font color='#FFFF00'>%1</font>") .arg(msg));
-        case TERM_MAIZE :           return (QString("<font color='#FBEC5D'>%1</font>") .arg(msg));
-        case TERM_VIOLET :          return (QString("<font color='#FF00FF'>%1</font>") .arg(msg));
-        case TERM_PURPLE :          return (QString("<font color='#A500FF'>%1</font>") .arg(msg));
-        case TERM_GOLD :            return (QString("<font color='#FFD700'>%1</font>") .arg(msg));
-        case TERM_SILVER :          return (QString("<font color='#C0C0C0'>%1</font>") .arg(msg));
-        case TERM_COPPER :          return (QString("<font color='#B87333'>%1</font>") .arg(msg));
-        default: break;
-    }
-
-    // handle invalid colors
-    return (QString("<font color='#FFFFFF'> %1</font>") .arg(msg));
-
+QString color_string2(QString msg, QColor which_color)
+{    
+    return (QString("<font color='%1'>%2</font>").arg(which_color.name()).arg(msg));
 }
 
 //  Add a message - assume the color of white
@@ -837,7 +795,7 @@ static QString tile_flav_name_convert(QString orig_name, int tval)
 
 
 
-void extract_tiles(void)
+void extract_tiles(bool save)
 {
     int i;
     QString tile_id;
@@ -846,22 +804,26 @@ void extract_tiles(void)
     for (i = 0; i < z_info->r_max; i++)\
     {
         monster_race *r_ptr = &r_info[i];
-        if (r_ptr->r_name_full.isEmpty()) continue;
-        tile_id = r_ptr->tile_id;
+        if (r_ptr->r_name_full.isEmpty()) continue;        
         QString race_name = monster_desc_race(i);
         if (r_ptr->flags1 & (RF1_FRIEND | RF1_FRIENDS)) race_name = plural_aux(race_name);
         race_name = tile_mon_name_convert(race_name);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(race_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
+        if (save) {
+            tile_id = r_ptr->tile_id;
+            QPixmap pix = current_tiles->get_tile(tile_id);
+            QFile tile_file;
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(race_name));
+            tile_file.open(QIODevice::WriteOnly);
+            pix.save(&tile_file, "PNG");
+        }
+        else {
+            r_ptr->tile_id = race_name;
+        }
     }
     for (i = 0; i < z_info->k_max; i++)\
     {
         object_kind *k_ptr = &k_info[i];
-        if (k_ptr->k_name.isEmpty()) continue;
-        tile_id = k_ptr->tile_id;
+        if (k_ptr->k_name.isEmpty()) continue;        
         object_type object_type_body;
         object_type *o_ptr = &object_type_body;
         /* Check for known artifacts, display them as artifacts */
@@ -891,61 +853,84 @@ void extract_tiles(void)
         if (o_ptr->tval == TV_GOLD) object_name = strip_name(i);
         else object_name = object_desc(o_ptr, ODESC_BASE);
         object_name = tile_obj_name_convert(object_name);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(object_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
+        if (save) {
+            tile_id = k_ptr->tile_id;
+            QPixmap pix = current_tiles->get_tile(tile_id);
+            QFile tile_file;
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(object_name));
+            tile_file.open(QIODevice::WriteOnly);
+            pix.save(&tile_file, "PNG");
+        }
+        else {
+            k_ptr->tile_id = object_name;
+        }
     }
     for (i = 0; i < z_info->f_max; i++)
     {
         feature_type *f_ptr = &f_info[i];
-        if (f_ptr->f_name.isEmpty()) continue;
-        tile_id = f_ptr->tile_id;
+        if (f_ptr->f_name.isEmpty()) continue;        
         QString feat_name = feature_desc(i, FALSE, FALSE);
         feat_name = tile_feat_name_convert(feat_name);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(feat_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
+        if (save) {
+            tile_id = f_ptr->tile_id;
+            QPixmap pix = current_tiles->get_tile(tile_id);
+            QFile tile_file;
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(feat_name));
+            tile_file.open(QIODevice::WriteOnly);
+            pix.save(&tile_file, "PNG");
+        }
+        else {
+            f_ptr->tile_id = feat_name;
+        }
     }
     for (i = 0; i < z_info->flavor_max; i++)
     {
         flavor_type *flavor_ptr = &flavor_info[i];
-        if (flavor_ptr->text.isEmpty() && flavor_ptr->tval != TV_SCROLL) continue;
-        tile_id = flavor_ptr->tile_id;
+        if (flavor_ptr->text.isEmpty() && flavor_ptr->tval != TV_SCROLL) continue;        
         QString flavor_name = flavor_ptr->text;
         flavor_name = tile_flav_name_convert(flavor_name, flavor_ptr->tval);
-        QPixmap pix = ui_get_tile(tile_id);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(flavor_name));
-        tile_file.open(QIODevice::WriteOnly);
-        pix.save(&tile_file, "PNG");
-    }
-    for (i = 0; i < z_info->p_max; i++)
-    {
-        p_ptr->prace = i;
-        QString race_name = to_ascii(p_info[p_ptr->prace].pr_name);
-        race_name = race_name.toLower();
-        for (int j = 0; j < z_info->c_max; j++)
-        {
-            p_ptr->pclass = j;
-            QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name);
-            class_name = class_name.toLower();
-            init_graphics();
-            tile_id = p_ptr->tile_id;
-            QPixmap pix = ui_get_tile(tile_id);
+        if (save) {
+            tile_id = flavor_ptr->tile_id;
+            QPixmap pix = current_tiles->get_tile(tile_id);
             QFile tile_file;
-            tile_file.setFileName(QString("%1player_%2_%3.png" ) .arg(NPP_DIR_GRAF) .arg(race_name) .arg(class_name));
+            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(flavor_name));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
+        else {
+            flavor_ptr->tile_id = flavor_name;
+        }
+    }    
+    if (save) {
+        for (i = 0; i < z_info->p_max; i++)
+        {
+            p_ptr->prace = i;
+            QString race_name = to_ascii(p_info[p_ptr->prace].pr_name);
+            race_name = race_name.toLower();
+            for (int j = 0; j < z_info->c_max; j++)
+            {
+                p_ptr->pclass = j;
+                QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name);
+                class_name = class_name.toLower();
+                init_graphics();
+                tile_id = p_ptr->tile_id;
+                QPixmap pix = current_tiles->get_tile(tile_id);
+                QFile tile_file;
+                tile_file.setFileName(QString("%1player_%2_%3.png" ) .arg(NPP_DIR_GRAF) .arg(race_name) .arg(class_name));
+                tile_file.open(QIODevice::WriteOnly);
+                pix.save(&tile_file, "PNG");
+            }
+        }
     }
-    if (use_graphics == GRAPHICS_DAVID_GERVAIS)
+    else {
+        QString race_name = to_ascii(p_info[p_ptr->prace].pr_name).toLower();
+        QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name).toLower();
+        p_ptr->tile_id = QString("player_%1_%2").arg(race_name).arg(class_name);
+    }
+    if (save && use_graphics == GRAPHICS_DAVID_GERVAIS)
     {
         tile_id = QString("%1x%2").arg(0x87 & 0x7F).arg(0xB7 & 0x7F);
-        QPixmap pix = ui_get_tile(tile_id);
+        QPixmap pix = current_tiles->get_tile(tile_id);
         QFile tile_file;
         tile_file.setFileName(QString("%1obj_pile.png") .arg(NPP_DIR_GRAF));
         tile_file.open(QIODevice::WriteOnly);

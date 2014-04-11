@@ -1,5 +1,6 @@
 #include "griddialog.h"
 #include "npp.h"
+#include "tilebag.h"
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QPushButton>
@@ -27,7 +28,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     lay2->setContentsMargins(0, 0, 0, 0);
     area2->setLayout(lay2);
 
-    lay2->setColumnStretch(use_graphics ? 2: 1, 1);
+    lay2->setColumnStretch(3, 1);
 
     QFont font = ui_current_font();
 
@@ -37,7 +38,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     if (m_idx > 0 && mon_list[m_idx].ml && !drugged) {
         ++n;
 
-        monster_type *m_ptr = mon_list + d_ptr->monster_idx;
+        monster_type *m_ptr = mon_list + m_idx;
         monster_race *r_ptr = r_info + m_ptr->r_idx;
 
         QLabel *lb = new QLabel(QString(" %1 ").arg(r_ptr->d_char));
@@ -45,20 +46,28 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        if (use_graphics) {
-            QPixmap pix = ui_get_tile(r_ptr->tile_id);
-            QLabel *lb2 = new QLabel;
-            lb2->setPixmap(pix);
-            lay2->addWidget(lb2, row, col++);
-        }
+        QPixmap pix = ui_get_tile(r_ptr->tile_id, tiles_32x32);
+        QLabel *lb2 = new QLabel;
+        lb2->setPixmap(pix);
+        lay2->addWidget(lb2, row, col++);
+
+        QPixmap pix2 = ui_get_tile(r_ptr->tile_id, tiles_8x8);
+        QLabel *lb4 = new QLabel;
+        lb4->setPixmap(pix2);
+        lay2->addWidget(lb4, row, col++);
 
         QString name = monster_desc(m_ptr, 0x08);
         int gain_m = calc_energy_gain(m_ptr->m_speed);
         int gain_p = calc_energy_gain(p_ptr->state.p_speed);
         QString msg = QString("%1 - HP: %4 - Energy: %2 - Player energy: %3").arg(name)
                 .arg(gain_m).arg(gain_p).arg(m_ptr->hp);
-        QLabel *lb3 = new QLabel(capitalize_first(msg));
-        lay2->addWidget(lb3, row, col++);
+        msg = capitalize_first(msg);
+        QPushButton *btn1 = new QPushButton(msg);
+        QString item_id = QString("m%1").arg(m_idx);
+        btn1->setObjectName(item_id);
+        btn1->setStyleSheet("text-align: left;");
+        lay2->addWidget(btn1, row, col++);
+        connect(btn1, SIGNAL(clicked()), this, SLOT(item_click()));
 
         ++row;
     }
@@ -66,6 +75,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     int o_idx = d_ptr->object_idx;
     while (o_idx && !drugged) {
         object_type *o_ptr = o_list + o_idx;
+        int cur_o_idx = o_idx;
         o_idx = o_ptr->next_o_idx;
 
         if (!o_ptr->marked) continue;
@@ -90,16 +100,24 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        if (use_graphics) {
-            QPixmap pix = ui_get_tile(tile);
-            QLabel *lb2 = new QLabel;
-            lb2->setPixmap(pix);
-            lay2->addWidget(lb2, row, col++);
-        }
+        QPixmap pix = ui_get_tile(tile, tiles_32x32);
+        QLabel *lb2 = new QLabel;
+        lb2->setPixmap(pix);
+        lay2->addWidget(lb2, row, col++);
+
+        QPixmap pix2 = ui_get_tile(tile, tiles_8x8);
+        QLabel *lb4 = new QLabel;
+        lb4->setPixmap(pix2);
+        lay2->addWidget(lb4, row, col++);
 
         QString name = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
-        QLabel *lb3 = new QLabel(capitalize_first(name));
-        lay2->addWidget(lb3, row, col++);
+        name = capitalize_first(name);
+        QPushButton *btn1 = new QPushButton(name);
+        QString item_id = QString("o%1").arg(cur_o_idx);
+        btn1->setObjectName(item_id);
+        btn1->setStyleSheet("text-align: left;");
+        lay2->addWidget(btn1, row, col++);
+        connect(btn1, SIGNAL(clicked()), this, SLOT(item_click()));
 
         ++row;
     }
@@ -118,16 +136,24 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        if (use_graphics) {
-            QPixmap pix = ui_get_tile(f_ptr->tile_id);
-            QLabel *lb2 = new QLabel;
-            lb2->setPixmap(pix);
-            lay2->addWidget(lb2, row, col++);
-        }
+        QPixmap pix = ui_get_tile(f_ptr->tile_id, tiles_32x32);
+        QLabel *lb2 = new QLabel;
+        lb2->setPixmap(pix);
+        lay2->addWidget(lb2, row, col++);
+
+        QPixmap pix2 = ui_get_tile(f_ptr->tile_id, tiles_8x8);
+        QLabel *lb4 = new QLabel;
+        lb4->setPixmap(pix2);
+        lay2->addWidget(lb4, row, col++);
 
         QString name = feature_desc(feat, true, false);
-        QLabel *lb3 = new QLabel(capitalize_first(name));
-        lay2->addWidget(lb3, row, col++);
+        name = capitalize_first(name);
+        QPushButton *btn1 = new QPushButton(name);
+        QString item_id = QString("f%1").arg(feat);
+        btn1->setObjectName(item_id);
+        btn1->setStyleSheet("text-align: left;");
+        lay2->addWidget(btn1, row, col++);
+        connect(btn1, SIGNAL(clicked()), this, SLOT(item_click()));
 
         ++row;
     }
@@ -152,16 +178,24 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        if (use_graphics) {
-            QPixmap pix = ui_get_tile(f_ptr->tile_id);
-            QLabel *lb2 = new QLabel;
-            lb2->setPixmap(pix);
-            lay2->addWidget(lb2, row, col++);
-        }
+        QPixmap pix = ui_get_tile(f_ptr->tile_id, tiles_32x32);
+        QLabel *lb2 = new QLabel;
+        lb2->setPixmap(pix);
+        lay2->addWidget(lb2, row, col++);
+
+        QPixmap pix2 = ui_get_tile(f_ptr->tile_id, tiles_8x8);
+        QLabel *lb4 = new QLabel;
+        lb4->setPixmap(pix2);
+        lay2->addWidget(lb4, row, col++);
 
         QString name = feature_desc(feat, true, false);
-        QLabel *lb3 = new QLabel(capitalize_first(name));
-        lay2->addWidget(lb3, row, col++);
+        name = capitalize_first(name);
+        QPushButton *btn1 = new QPushButton(name);
+        QString item_id = QString("f%1").arg(feat);
+        btn1->setObjectName(item_id);
+        btn1->setStyleSheet("text-align: left;");
+        lay2->addWidget(btn1, row, col++);
+        connect(btn1, SIGNAL(clicked()), this, SLOT(item_click()));
 
         ++n;
         ++row;
@@ -186,7 +220,26 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
     this->clientSizeUpdated();
 
-    if (n > 0) this->exec();
+    if (n > 0) {
+        (this->findChildren<QPushButton *>().at(0))->setFocus();
+        this->exec();
+    }
 
     else message(tr("There is nothing to see here"));
+}
+
+void GridDialog::item_click()
+{
+    QString item_id = QObject::sender()->objectName();
+    QChar kind = item_id.at(0);
+    int idx = item_id.mid(1).toInt();
+    if (kind == 'm') {
+        describe_monster(mon_list[idx].r_idx, false, "");
+    }
+    else if (kind == 'o') {
+        object_info_screen(o_list + idx);
+    }
+    else {
+        describe_feature(idx, false);
+    }
 }

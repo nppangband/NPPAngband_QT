@@ -121,7 +121,9 @@ QPolygonF make_beam(QPointF from, QPointF to)
     QList<QPointF> points;
     points.append(from);
     points.append(to);
-    make_beam_aux(from, to, &points, 70, 5);
+    qreal displace = 70;
+    if (main_window->cell_hgt < 16) displace = 35;
+    make_beam_aux(from, to, &points, displace, 5);
     QList<BeamPoint> bp;
     for (int i = 0; i < points.size(); i++) {
         bp.append(BeamPoint(points.at(i), from));
@@ -273,16 +275,15 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
         QChar chr = k_ptr->d_char;
         QColor col = k_ptr->d_color;
         QString key = k_ptr->tile_id;
-        if (k_ptr->flavor > 0) {
+        if (use_flavor_glyph(o_ptr)) {
             flavor_type *fl_ptr = flavor_info + k_ptr->flavor;
             chr = fl_ptr->d_char;
             col = fl_ptr->d_color;
             key = fl_ptr->tile_id;
         }
 
-        if (use_graphics) {
-            main_window->rebuild_tile(key);
-            pix = main_window->tiles.value(key);
+        if (use_graphics) {            
+            pix = main_window->get_tile(key);
         }
         else {
             pix = pseudo_ascii(chr, col, main_window->cur_font,

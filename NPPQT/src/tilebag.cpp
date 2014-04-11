@@ -12,6 +12,9 @@ void init_tile_bags()
     QDir graf(NPP_DIR_GRAF);
 
     tiles_projections = new TileBag(graf.absoluteFilePath("projections.pak"));
+    tiles_32x32 = new TileBag(graf.absoluteFilePath("tiles_32x32.pak"));
+    tiles_8x8 = new TileBag(graf.absoluteFilePath("tiles_8x8.pak"));
+    current_tiles = 0;
 }
 
 TileBag::TileBag(QString path)
@@ -28,18 +31,20 @@ QPixmap TileBag::get_tile(QString name)
 
     if (!name.endsWith(".png")) name += ".png";
 
-    QPixmap pix;
-    if (cache.find(name, &pix)) {            // Cache hit?
-        return pix;
+    if (cache.contains(name)) {            // Cache hit?
+        return cache.value(name);
     }
 
     QByteArray data = pak->get_item(name);  // Get png data from package
-    if (data.size() < 1) return ui_make_blank(); // Check existence of the tile
+    if (data.size() < 1) {
+        color_message("Tile not found: " + name, TERM_ORANGE);
+        return ui_make_blank(); // Check existence of the tile
+    }
 
     QImage img;
     img.loadFromData(data);                 // Convert png data to RGB
 
-    pix = QPixmap::fromImage(img);
+    QPixmap pix = QPixmap::fromImage(img);
 
     cache.insert(name, pix);                // Save for later use
 

@@ -6821,7 +6821,7 @@ D:A dragon that seems to be hardly moving at all, yet it approaches you
 D: with deadly menace.
 
 
-N:446:Maglor, Son of F["e]anor
+N:446:Maglor, Son of Fëanor
 A:Maglor
 G:h:TERM_ORANGE
 I:115:60d15:30:68:255
@@ -7146,7 +7146,7 @@ S:BRTH_POIS | BALL_POIS | SCARE
 D:A strange reptilian hybrid with six heads dripping venom.
 
 
-N:463:Maedhros, Son of F["e]anor
+N:463:Maedhros, Son of Fëanor
 A:Maedhros
 G:h:TERM_ORANGE
 I:120:60d15:30:68:255
@@ -10965,7 +10965,7 @@ S:SPELL_PCT_40 | POW_250
 S:LASH | BRTH_FIRE | BRTH_PLAS | BALL_FIRE | BALL_CHAOS
 S:SCARE | BLIND | CONF | S_HI_DEMON | S_HI_UNDEAD
 D:Gothmog is the Chief Balrog in Morgoth's personal guard.  He is
-D: renowned for slaying F["e]anor and Fingon, two of the High Kings of
+D: renowned for slaying Fëanor and Fingon, two of the High Kings of
 D: the Noldor Elves, and has never been defeated in combat.  With his
 D: whip of flame and awesome fiery breath he saved his master from
 D: Ungoliant's rage.
@@ -11838,7 +11838,7 @@ D: with storms of raw chaotic energy in addition to manipulative words
 D: and fear.
 
 
-N:682:Greater Servant of Aul["e]
+N:682:Greater Servant of Aulë
 A:GServntAule
 G:A:TERM_L_UMBER
 I:130:74d10:30:140:255

@@ -58,7 +58,7 @@ I:1:99:99:255
 N:8:Ben Harrison
 I:1:99:99:255
 
-N:9:Robert R["u]hlmann
+N:9:Robert Rühlmann
 I:1:99:99:255
 
 N:10:Andrew Sidwell
@@ -67,7 +67,7 @@ I:1:99:99:255
 N:11:Jeff Greene
 I:1:99:99:255
 
-N:12:Diego Gonz['a]lez
+N:12:Diego González
 I:1:99:99:255
 
 N:13:Anssi Ramela
@@ -88,7 +88,7 @@ I:1:99:99:255
 N:18:Nick McConnell
 I:1:99:99:255
 
-N:19:Pedro G['o]mez-Esteban
+N:19:Pedro Gómez-Esteban
 I:1:99:99:255
 
 N:20:Wayland Stringer

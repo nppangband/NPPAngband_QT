@@ -252,15 +252,27 @@ QPixmap rotate_pix(QPixmap src, qreal angle)
     return QPixmap::fromImage(img);
 }
 
-QPixmap ui_get_tile(QString tile_id)
+QPixmap ui_get_tile(QString tile_id, TileBag *tileset)
 {
     // Build a transparent 1x1 pixmap
-    if (tile_id.isEmpty() || !use_graphics) {
-        return ui_make_blank();
+    if (tile_id.isEmpty()) return ui_make_blank();
+
+    if (!tileset) tileset = current_tiles;
+
+    if (!tileset) return ui_make_blank();
+
+    QPixmap pix = tileset->get_tile(tile_id);
+
+    if (pix.width() == 1) return pix;
+
+    int w = 32;
+    int h = 32;
+
+    if (w != pix.width() || h != pix.height()) {
+        pix = pix.scaled(w, h);
     }
 
-    main_window->rebuild_tile(tile_id);
-    return main_window->tiles.value(tile_id);
+    return pix;
 }
 
 void MainWindow::slot_something()
@@ -773,9 +785,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         // Draw background tile
         QString key1 = d_ptr->dun_tile;
 
-        if (key1.length() > 0) {
-            parent->rebuild_tile(key1); // Grab tile from the cache
-            QPixmap pix = parent->tiles[key1];
+        if (key1.length() > 0) {            
+            QPixmap pix = parent->get_tile(key1);
 
             if (flags & UI_LIGHT_TORCH) {
                 QColor color = QColor("yellow").darker(150);
@@ -796,9 +807,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             if (!is_cloud) {
                 QString tile = find_cloud_tile(c_y, c_x);
                 if (!tile.isEmpty()) {
-                    painter->setOpacity(0.7);
-                    parent->rebuild_tile(tile);
-                    QPixmap pix = parent->tiles.value(tile);
+                    painter->setOpacity(0.7);                    
+                    QPixmap pix = parent->get_tile(tile);
                     painter->drawPixmap(0, 0, pix);
                     painter->setOpacity(1);
                     done_bg = true;
@@ -806,9 +816,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             }
 
             // Draw foreground tile
-            if (key2.length() > 0) {
-               parent->rebuild_tile(key2); // Grab tile from the cache
-               QPixmap pix = parent->tiles.value(key2);
+            if (key2.length() > 0) {               
+               QPixmap pix = parent->get_tile(key2);
                if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER)) {
                    painter->setOpacity(opacity);
                }               
@@ -867,11 +876,11 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 QPixmap MainWindow::apply_shade(QString tile_id, QPixmap tile, QString shade_id)
 {
     tile_id += ":";
-    tile_id += shade_id;
+    tile_id += shade_id;    
+
+    if (shade_cache.contains(tile_id)) return shade_cache.value(tile_id);
 
     QPixmap pix;
-
-    if (shade_cache.find(tile_id, &pix)) return pix;
 
     if (shade_id == "dim") {
         pix = gray_pix(tile);
@@ -943,18 +952,35 @@ QPixmap lighten_pix(QPixmap src)
 }
 
 void MainWindow::destroy_tiles()
-{
+{    
     tiles.clear();
     shade_cache.clear();
 }
 
+QPixmap MainWindow::get_tile(QString tile_id)
+{
+    if (tiles.contains(tile_id)) return tiles.value(tile_id);
+
+    if (!current_tiles) return ui_make_blank();
+
+    QPixmap pix = current_tiles->get_tile(tile_id);
+
+    if (pix.width() == 1) return pix;
+
+    if (cell_wid != pix.width() || cell_hgt != pix.height()) {
+        pix = pix.scaled(cell_wid, cell_hgt);
+    }
+
+    tiles.insert(tile_id, pix);
+
+    return pix;
+}
+
 void MainWindow::calculate_cell_size()
 {
-    cell_hgt = font_hgt;
-    if (tile_hgt > cell_hgt) cell_hgt = tile_hgt;
+    cell_wid = MAX(tile_wid, font_wid);
 
-    cell_wid = font_wid;
-    if (tile_wid > cell_wid) cell_wid = tile_wid;
+    cell_hgt = MAX(tile_hgt, font_hgt);
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
         for (int x = 0; x < MAX_DUNGEON_WID; x++) {
@@ -967,9 +993,7 @@ void MainWindow::calculate_cell_size()
 }
 
 void MainWindow::set_graphic_mode(int mode)
-{
-    int hgt, wid;
-    QString fname;
+{    
     int cy = -1;
     int cx = -1;
 
@@ -982,79 +1006,32 @@ void MainWindow::set_graphic_mode(int mode)
 
     switch (mode) {
     case GRAPHICS_DAVID_GERVAIS:
-        hgt = 32;
-        wid = 32;
-        fname.append("32x32.png");
+        tile_hgt = 32;
+        tile_wid = 32;
+        current_tiles = tiles_32x32;
         break;    
     case GRAPHICS_ORIGINAL:
-        hgt = 8;
-        wid = 8;
-        fname.append("8x8.png");
+        tile_hgt = 8;
+        tile_wid = 8;
+        current_tiles = tiles_8x8;
         break;
     default:
-        hgt = 0;
-        wid = 0;
+        tile_hgt = 0;
+        tile_wid = 0;
+        current_tiles = 0;
         break;
     }
 
-    if (fname.length() > 0) {
-        fname.prepend(NPP_DIR_GRAF);
-        QPixmap pix = QPixmap(fname);
-        if (pix.isNull()) {
-            pop_up_message_box(QString("Can't load tiles"));
-            return;
-        }
-        use_graphics = mode;
-        tile_hgt = hgt;
-        tile_wid = wid;
-        if (mode == GRAPHICS_ORIGINAL) {
-            /*
-            font.setPointSize(8);
-            QFontMetrics metrics(font);
-            font_hgt = metrics.height();
-            font_wid = metrics.width('M');
-            */
-        }
-        calculate_cell_size();
-        destroy_tiles();
-        tile_map = pix;
-        init_graphics();
-    }
-    // Go to text mode
-    else {
-        use_graphics = mode;
-        tile_hgt = hgt;
-        tile_wid = wid;
-        calculate_cell_size();
-        destroy_tiles();
-        tile_map = blank_pix;
-        clear_graphics();           
-    }    
+    use_graphics = mode;
+    calculate_cell_size();
+    destroy_tiles();
+    if (character_dungeon) extract_tiles(false);
 
     // Recenter the view
     if (cy != -1 && cx != -1) {
         ui_redraw_all();
         ui_center(cy, cx);
     }
-}
-
-// Tile creation on demmand
-void MainWindow::rebuild_tile(QString key)
-{
-    // Already created
-    if (tiles.contains(key)) return;
-
-    QList<QString> coords = key.split("x");
-    if (coords.size() != 2) return;
-    int x = coords.at(1).toInt();
-    int y = coords.at(0).toInt();
-    // Grab a chunk from the tile map
-    QPixmap pix = tile_map.copy(x * tile_wid, y * tile_hgt, tile_wid, tile_hgt);
-    // Scale if necessary
-    if ((cell_wid != tile_wid) || (cell_hgt != tile_hgt)) {
-        pix = pix.scaled(QSize(cell_wid, cell_hgt));
-    }
-    tiles.insert(key, pix);
 }
 
 void MainWindow::set_font(QFont newFont)
@@ -1079,9 +1056,7 @@ void MainWindow::init_scene()
     cell_hgt = cell_wid = 0;
 
     QBrush brush(QColor("black"));
-    dungeon_scene->setBackgroundBrush(brush);
-
-    blank_pix = ui_make_blank();
+    dungeon_scene->setBackgroundBrush(brush);    
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
         for (int x = 0; x < MAX_DUNGEON_WID; x++) {
@@ -1389,6 +1364,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 static void process_mov_key(QKeyEvent *event, int dir)
 {
+    if (!character_dungeon) return;
+
     int mask = QApplication::keyboardModifiers();
 
     if (mask & Qt::AltModifier) {
@@ -1416,6 +1393,8 @@ bool MainWindow::check_disturb()
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
+    if (!character_dungeon) return;
+
     if (anim_depth > 0) return;
 
     if (check_disturb()) return;
@@ -1603,7 +1582,10 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == ".") do_cmd_run();
             else if (keystring == "l") do_cmd_look();
             else if (keystring == "5") do_cmd_hold();
-            else if (keystring == "z") extract_tiles();
+            else if (keystring == "z") {
+                //extract_tiles();
+                describe_monster(644, true, "");
+            }
             else
             {
                 //  TODO something useful with unused keypresses
