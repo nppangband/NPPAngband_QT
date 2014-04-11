@@ -433,12 +433,7 @@ WizardModeDialog::WizardModeDialog(void)
 
 
     cancel_button = new QDialogButtonBox(main_prompt);
-    cancel_button->setStandardButtons(QDialogButtonBox::Cancel);4=
-
-    // Add the "mass create items" button
-    QPushButton *mass_create_items_button = new QPushButton("Create 25 Random Items");
-    connect(mass_create_items_button , SIGNAL(clicked()), this, SLOT(wiz_mass_create_items()));
-    main_layout->addWidget(mass_create_items_button );
+    cancel_button->setStandardButtons(QDialogButtonBox::Cancel);
 
     main_layout->addWidget(cancel_button);
 
