@@ -61,8 +61,12 @@ void WizardModeDialog::wiz_cure_all(void)
     /* No longer hungry */
     (void)set_food(PY_FOOD_MAX - 1);
 
+    this->accept();
+
     /* Redraw everything */
     // TODO do_cmd_redraw();
+
+
 
 }
 
@@ -154,6 +158,8 @@ void WizardModeDialog::wiz_know_all(void)
         f_l_ptr->f_l_native_to_hit_adj = MAX_UCHAR;
         f_l_ptr->f_l_non_native_to_hit_adj = MAX_UCHAR;
     }
+
+    this->accept();
 }
 
 // Jump to a new dungeon level
@@ -172,10 +178,13 @@ void WizardModeDialog::wiz_jump(void)
     /* Accept request */
     message(QString("You jump to dungeon level %1.") .arg(new_level));
 
+    this->accept();
+
     /* New depth */
     dungeon_change_level(new_level);
 
     // Update everything
+    //TODO don't use any player energy
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
@@ -186,6 +195,8 @@ void WizardModeDialog::wiz_teleport_to_target(void)
     {
         /* Teleport to the target */
         teleport_player_to(p_ptr->target_row, p_ptr->target_col);
+
+        this->accept();
     }
     else this->reject();
 }
@@ -193,11 +204,13 @@ void WizardModeDialog::wiz_teleport_to_target(void)
 void WizardModeDialog::wiz_phase_door(void)
 {
     teleport_player(10, FALSE);
+    this->accept();
 }
 
 void WizardModeDialog::wiz_teleport(void)
 {
     teleport_player(100, FALSE);
+    this->accept();
 }
 
 
@@ -208,6 +221,7 @@ void WizardModeDialog::wiz_summon(void)
     int px = p_ptr->px;
 
     (void)summon_specific(py, px, p_ptr->depth, 0, 0L);
+    this->accept();
 }
 
 // Summon one monster
@@ -239,6 +253,8 @@ void WizardModeDialog::wiz_banish(void)
 
     /* Update monster list window */
     p_ptr->redraw |= PR_MONLIST;
+
+    this->accept();
 }
 
 void WizardModeDialog::wiz_detect_all_monsters(void)
@@ -263,28 +279,36 @@ void WizardModeDialog::wiz_detect_all_monsters(void)
         /* Update the monster */
         update_mon(i, FALSE);
     }
+
+    this->accept();
+
 }
 
 void WizardModeDialog::wiz_detection(void)
 {
     wiz_light();
-    (void)detect(DETECT_RADIUS, DETECT_ALL);
+    (void)detect(DETECT_RADIUS, DETECT_ALL);  
+    this->accept();
 }
 
 void WizardModeDialog::wiz_magic_mapping(void)
 {
-    detect(DETECT_RADIUS + 10, DETECT_MAP);
+    detect(DETECT_RADIUS + 10, DETECT_MAP);    
+    this->accept();
 }
 
 void WizardModeDialog::wiz_level_light(void)
 {
     wiz_light();
+    this->accept();
 }
 
 void WizardModeDialog::wiz_redraw_dungeon(void)
 {
     p_ptr->leaving_level = TRUE;
     p_ptr->autosave = TRUE;
+
+    this->accept();
 
     // TODO re-set the dungeon.  Does this work?
 }
@@ -310,22 +334,26 @@ void WizardModeDialog::wiz_mass_create_items(void)
         /* Drop the object */
         drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
     }
+    this->accept();
 }
 
 
 void WizardModeDialog::wiz_create_good_item(void)
 {
     acquirement(p_ptr->py, p_ptr->px, 1, FALSE);
+    this->accept();
 }
 
 void WizardModeDialog::wiz_create_great_item(void)
 {
     acquirement(p_ptr->py, p_ptr->px, 1, TRUE);
+    this->accept();
 }
 
 void WizardModeDialog::wiz_mass_identify_items(void)
 {
     (void)mass_identify(4);
+    this->accept();
 }
 
 WizardModeDialog::WizardModeDialog(void)
@@ -480,6 +508,7 @@ WizardModeDialog::WizardModeDialog(void)
 
     setLayout(vlay);
     setWindowTitle(tr("Wizard Mode Menu"));
+
     this->exec();
 }
 
