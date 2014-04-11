@@ -13,7 +13,12 @@ public:
 
 private:
     QLabel *main_prompt;
+    QLabel *player_section;
+    QLabel *dungeon_section;
+    QLabel *object_section;
+
     QDialogButtonBox *cancel_button;
+
 
 private slots:
 

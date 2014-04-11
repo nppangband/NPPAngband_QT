@@ -131,7 +131,7 @@ void create_directories()
     NPP_DIR_BASE = QDir::currentPath();
 
     //Hack - figure out how this should work on all machines
-    //NPP_DIR_BASE.append ("/NPPQT");
+    NPP_DIR_BASE.append ("/NPPQT");
     NPP_DIR_EDIT = NPP_DIR_HELP = NPP_DIR_ICON = NPP_DIR_PREF = NPP_DIR_GRAF =
             NPP_DIR_SAVE = NPP_DIR_BONE = NPP_DIR_USER = NPP_DIR_BASE;
     NPP_DIR_EDIT.append ("/lib/edit/");

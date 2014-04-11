@@ -63,6 +63,7 @@ void WizardModeDialog::wiz_cure_all(void)
 
     /* Redraw everything */
     // TODO do_cmd_redraw();
+
 }
 
 // Know every object kind, ego item, feature, and monster
@@ -183,6 +184,7 @@ void WizardModeDialog::wiz_teleport_to_target(void)
         /* Teleport to the target */
         teleport_player_to(p_ptr->target_row, p_ptr->target_col);
     }
+    else this->reject();
 }
 
 void WizardModeDialog::wiz_phase_door(void)
@@ -304,7 +306,6 @@ void WizardModeDialog::wiz_mass_create_items(void)
 
         /* Drop the object */
         drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
-
     }
 }
 
@@ -326,6 +327,8 @@ void WizardModeDialog::wiz_mass_identify_items(void)
 
 WizardModeDialog::WizardModeDialog(void)
 {
+    int row = 0;
+
     // Paranoia
     if (!p_ptr->playing) return;
 
@@ -341,103 +344,137 @@ WizardModeDialog::WizardModeDialog(void)
 
     main_prompt = new QLabel(QString("<b><big>Please select a command</big></b>"));
     main_prompt->setAlignment(Qt::AlignCenter);
-    cancel_button = new QDialogButtonBox(QDialogButtonBox::Cancel);
-    QVBoxLayout *main_layout = new QVBoxLayout;
 
-    main_layout->addWidget(main_prompt);
+    // Add the player related commands
+    QGridLayout *wizard_layout = new QGridLayout;
+
+    player_section = new QLabel("<b>Player commands</b>");
+    player_section->setAlignment(Qt::AlignCenter);
+    wizard_layout->addWidget(player_section, row, 1);
+
+    row++;
 
     // Add the "cure all" button
     QPushButton *heal_button = new QPushButton("Heal Player");
-    connect(heal_button, SIGNAL(clicked()), main_layout, SLOT(wiz_cure_all()));
-    main_layout->addWidget(heal_button);
+    connect(heal_button, SIGNAL(clicked()), this, SLOT(wiz_cure_all()));
+    wizard_layout->addWidget(heal_button, row, 0);
 
     // Add the "know all" button
     QPushButton *know_button = new QPushButton("Know All");
     connect(know_button, SIGNAL(clicked()), this, SLOT(wiz_know_all()));
-    main_layout->addWidget(know_button);
+    wizard_layout->addWidget(know_button, row, 1);
 
     // Add the "jump" button
     QPushButton *jump_button = new QPushButton("Jump To New Level");
     connect(jump_button, SIGNAL(clicked()), this, SLOT(wiz_jump()));
-    main_layout->addWidget(jump_button);
+    wizard_layout->addWidget(jump_button, row, 2);
+
+    row++;
 
     // Add the "teleport_to_target" button
     QPushButton *teleport_target_button = new QPushButton("Teleport To Targeted Spot");
     connect(teleport_target_button, SIGNAL(clicked()), this, SLOT(wiz_teleport_to_target()));
-    main_layout->addWidget(teleport_target_button);
+    wizard_layout->addWidget(teleport_target_button, row, 0);
 
     // Add the "phase door" button
     QPushButton *phase_door = new QPushButton("Phase Door");
     connect(phase_door, SIGNAL(clicked()), this, SLOT(wiz_phase_door()));
-    main_layout->addWidget(phase_door);
+    wizard_layout->addWidget(phase_door, row, 1);
 
     // Add the "teleport" button
     QPushButton *teleport = new QPushButton("Teleport");
     connect(teleport, SIGNAL(clicked()), this, SLOT(wiz_teleport()));
-    main_layout->addWidget(teleport);
+    wizard_layout->addWidget(teleport, row, 2);
+
+    row++;
+
+    // Add the dungeon commands
+    dungeon_section = new QLabel("<b>Dungeon commands</b>");
+    dungeon_section->setAlignment(Qt::AlignCenter);
+    wizard_layout->addWidget(dungeon_section, row, 1);
+
+    row++;
 
     // Add the "summon" button
     QPushButton *summon_button = new QPushButton("Summon Monsters");
     connect(summon_button, SIGNAL(clicked()), this, SLOT(wiz_summon()));
-    main_layout->addWidget(summon_button);
+    wizard_layout->addWidget(summon_button, row, 0);
 
     // Add the "banish" button
     QPushButton *banish_button = new QPushButton("Banish Monsters");
     connect(banish_button, SIGNAL(clicked()), this, SLOT(wiz_banish()));
-    main_layout->addWidget(banish_button);
+    wizard_layout->addWidget(banish_button, row, 1);
 
     // Add the "detect all monsters" button
     QPushButton *display_mon_button = new QPushButton("Detect All Monsters");
     connect(display_mon_button, SIGNAL(clicked()), this, SLOT(wiz_detect_all_monsters()));
-    main_layout->addWidget(display_mon_button);
+    wizard_layout->addWidget(display_mon_button, row, 2);
+
+    row++;
 
     // Add the "detection" button
     QPushButton *detection = new QPushButton("Detection");
     connect(detection, SIGNAL(clicked()), this, SLOT(wiz_detection()));
-    main_layout->addWidget(detection);
+    wizard_layout->addWidget(detection, row, 0);
 
     // Add the "magic mapping" button
     QPushButton *magic_mapping = new QPushButton("Magic Mapping");
     connect(magic_mapping, SIGNAL(clicked()), this, SLOT(wiz_magic_mapping()));
-    main_layout->addWidget(magic_mapping);
+    wizard_layout->addWidget(magic_mapping, row, 1);
 
     // Add the "light dungeon" button
     QPushButton *dungeon_light = new QPushButton("Light Dungeon");
     connect(dungeon_light, SIGNAL(clicked()), this, SLOT(wiz_level_light()));
-    main_layout->addWidget(dungeon_light);
+    wizard_layout->addWidget(dungeon_light, row, 2);
+
+    row++;
 
     // Add the "redraw dungeon" button
     QPushButton *redraw_dungeon = new QPushButton("Redraw Dungeon");
     connect(redraw_dungeon, SIGNAL(clicked()), this, SLOT(wiz_redraw_dungeon()));
-    main_layout->addWidget(redraw_dungeon);
+    wizard_layout->addWidget(redraw_dungeon, row, 0);
+
+    row++;
+
+    // Add the object commands
+    object_section = new QLabel("<b>Object commands</b>");
+    object_section->setAlignment(Qt::AlignCenter);
+    wizard_layout->addWidget(object_section, row, 1);
+
+    row++;
 
     // Add the "mass create items" button
     QPushButton *mass_create_items_button = new QPushButton("Create 25 Random Items");
     connect(mass_create_items_button , SIGNAL(clicked()), this, SLOT(wiz_mass_create_items()));
-    main_layout->addWidget(mass_create_items_button);
+    wizard_layout->addWidget(mass_create_items_button, row, 0);
 
     // Add the "create 1 random good item" button
     QPushButton *mass_create_good_item = new QPushButton("Create 1 Random Good Item");
     connect(mass_create_good_item , SIGNAL(clicked()), this, SLOT(wiz_create_good_item()));
-    main_layout->addWidget(mass_create_good_item);
+    wizard_layout->addWidget(mass_create_good_item, row, 1);
 
     // Add the "create 1 random great item" button
     QPushButton *mass_create_great_item = new QPushButton("Create 1 Random Great Item");
     connect(mass_create_great_item , SIGNAL(clicked()), this, SLOT(wiz_create_great_item()));
-    main_layout->addWidget(mass_create_great_item);
+    wizard_layout->addWidget(mass_create_great_item, row, 2);
+
+    row++;
 
     // Add the "mass identify" button
     QPushButton *mass_identify = new QPushButton("Mass Identify");
     connect(mass_identify, SIGNAL(clicked()), this, SLOT(wiz_mass_identify_items()));
-    main_layout->addWidget(mass_identify);
+    wizard_layout->addWidget(mass_identify, row, 0);
 
+    row++;
 
+    // TODO does not work???
     cancel_button = new QDialogButtonBox(main_prompt);
     cancel_button->setStandardButtons(QDialogButtonBox::Cancel);
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 
-    main_layout->addWidget(cancel_button);
+    wizard_layout->addWidget(cancel_button, row, 2);
 
-    setLayout(main_layout);
+    setLayout(wizard_layout);
     setWindowTitle(tr("Wizard Mode Menu"));
     this->exec();
 }
