@@ -19,6 +19,79 @@
 #include "src/wizard_mode.h"
 
 
+EditCharacterDialog::EditCharacterDialog(void)
+{
+    QGridLayout *edit_info = new QGridLayout;
+
+    // First allow the 6 stats to be edited
+    // Strength
+    QLabel *str_label = new QLabel("Strength");
+    QSpinBox *str_spinner = new QSpinBox;
+    str_spinner->setRange(3,118);
+    str_spinner->setValue(p_ptr->stat_cur[A_STR]);
+    edit_info->addWidget(str_label, 1, 0);
+    edit_info->addWidget(str_spinner, 1, 1);
+
+    // Intelligence
+    QLabel *int_label = new QLabel("Intelligence");
+    QSpinBox *int_spinner = new QSpinBox;
+    int_spinner->setRange(3,118);
+    int_spinner->setValue(p_ptr->stat_cur[A_INT]);
+    edit_info->addWidget(int_label, 2, 0);
+    edit_info->addWidget(int_spinner, 2, 1);
+
+    // Wisdom
+    QLabel *wis_label = new QLabel("Wisdom");
+    QSpinBox *wis_spinner = new QSpinBox;
+    wis_spinner->setRange(3,118);
+    wis_spinner->setValue(p_ptr->stat_cur[A_WIS]);
+    edit_info->addWidget(wis_label, 3, 0);
+    edit_info->addWidget(wis_spinner, 3, 1);
+
+    // Dexterity
+    QLabel *dex_label = new QLabel("Dexterity");
+    QSpinBox *dex_spinner = new QSpinBox;
+    dex_spinner->setRange(3,118);
+    dex_spinner->setValue(p_ptr->stat_cur[A_DEX]);
+    edit_info->addWidget(dex_label, 4, 0);
+    edit_info->addWidget(dex_spinner, 4, 1);
+
+    // Constitution
+    QLabel *con_label = new QLabel("Constitution");
+    QSpinBox *con_spinner = new QSpinBox;
+    con_spinner->setRange(3,118);
+    con_spinner->setValue(p_ptr->stat_cur[A_CON]);
+    edit_info->addWidget(con_label, 5, 0);
+    edit_info->addWidget(con_spinner, 5, 1);
+
+    // Charisma
+    QLabel *chr_label = new QLabel("Charisma");
+    QSpinBox *chr_spinner = new QSpinBox;
+    chr_spinner->setRange(3,118);
+    chr_spinner->setValue(p_ptr->stat_cur[A_CHR]);
+    edit_info->addWidget(chr_label, 6, 0);
+    edit_info->addWidget(chr_spinner, 6, 1);
+
+    QPushButton *close_button = new QPushButton(tr("&Close"));
+    connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
+    edit_info->addWidget(close_button, 14, 2);
+
+    setLayout(edit_info);
+    setWindowTitle(tr("Character Edit Screen"));
+    this->exec();
+
+    p_ptr->stat_cur[A_STR] = p_ptr->stat_max[A_STR] = str_spinner->value();
+    p_ptr->stat_cur[A_INT] = p_ptr->stat_max[A_INT] = int_spinner->value();
+    p_ptr->stat_cur[A_WIS] = p_ptr->stat_max[A_WIS] = wis_spinner->value();
+    p_ptr->stat_cur[A_DEX] = p_ptr->stat_max[A_DEX] = dex_spinner->value();
+    p_ptr->stat_cur[A_CON] = p_ptr->stat_max[A_CON] = con_spinner->value();
+    p_ptr->stat_cur[A_CHR] = p_ptr->stat_max[A_CHR] = chr_spinner->value();
+
+
+    //TODO update everything
+
+}
+
 // Completely cure the player
 void WizardModeDialog::wiz_cure_all(void)
 {
@@ -284,6 +357,12 @@ void WizardModeDialog::wiz_detect_all_monsters(void)
 
 }
 
+void WizardModeDialog::wiz_edit_character(void)
+{
+    EditCharacterDialog();
+    this->accept();
+}
+
 void WizardModeDialog::wiz_detection(void)
 {
     wiz_light();
@@ -426,6 +505,14 @@ WizardModeDialog::WizardModeDialog(void)
     teleport->setToolTip("Teleports the player to a random spot up to 100 squares away.");
     connect(teleport, SIGNAL(clicked()), this, SLOT(wiz_teleport()));
     wizard_layout->addWidget(teleport, row, 2);
+
+    row++;
+
+        // Add the "edit character" button
+    QPushButton *edit_character = new QPushButton("Edit Character");
+    edit_character->setToolTip("Edit character statistics, experience, gold, and fame.");
+    connect(edit_character, SIGNAL(clicked()), this, SLOT(wiz_edit_character()));
+    wizard_layout->addWidget(edit_character, row, 0);
 
     row++;
 

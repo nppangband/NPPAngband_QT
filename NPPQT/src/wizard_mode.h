@@ -4,6 +4,14 @@
 #include <QtWidgets>
 #include "src/npp.h"
 
+class EditCharacterDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit EditCharacterDialog(void);
+};
+
 class WizardModeDialog : public QDialog
 {
     Q_OBJECT
@@ -30,6 +38,7 @@ private slots:
     void wiz_teleport_to_target(void);
     void wiz_phase_door(void);
     void wiz_teleport(void);
+    void wiz_edit_character(void);
     void wiz_summon(void);
     void wiz_banish(void);
     void wiz_detect_all_monsters(void);
