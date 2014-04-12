@@ -222,6 +222,7 @@ extern void set_dungeon_type(u16b dungeon_type);
 
 //dun_process.cpp
 extern void process_player_energy(byte energy);
+extern void change_player_level(void);
 
 /* init2.c */
 extern void init_player_graf_info();

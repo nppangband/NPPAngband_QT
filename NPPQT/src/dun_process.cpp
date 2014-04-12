@@ -1452,7 +1452,7 @@ static void process_world(void)
     notice_stuff();
 }
 
-static void change_player_level(void)
+void change_player_level(void)
 {
     /* Play ambient sound on change of level. */
     play_ambient_sound();

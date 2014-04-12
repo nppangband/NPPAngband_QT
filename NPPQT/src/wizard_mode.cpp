@@ -246,7 +246,7 @@ void WizardModeDialog::wiz_jump(void)
     new_level = get_quantity(prompt, MAX_DEPTH - 1, p_ptr->depth);
 
     // Same depth - quit
-    if (new_level == p_ptr->depth) return;
+    //if (new_level == p_ptr->depth) return;
 
     /* Accept request */
     message(QString("You jump to dungeon level %1.") .arg(new_level));
@@ -257,8 +257,7 @@ void WizardModeDialog::wiz_jump(void)
     dungeon_change_level(new_level);
 
     // Update everything
-    //TODO don't use any player energy
-    process_player_energy(BASE_ENERGY_MOVE);
+    change_player_level();
 }
 
 void WizardModeDialog::wiz_teleport_to_target(void)
@@ -327,6 +326,8 @@ void WizardModeDialog::wiz_banish(void)
     /* Update monster list window */
     p_ptr->redraw |= PR_MONLIST;
 
+    handle_stuff();
+
     this->accept();
 }
 
@@ -365,7 +366,7 @@ void WizardModeDialog::wiz_edit_character(void)
 
 void WizardModeDialog::wiz_detection(void)
 {
-    wiz_light();
+    //wiz_light();
     (void)detect(DETECT_RADIUS, DETECT_ALL);  
     this->accept();
 }
@@ -379,6 +380,7 @@ void WizardModeDialog::wiz_magic_mapping(void)
 void WizardModeDialog::wiz_level_light(void)
 {
     wiz_light();
+    handle_stuff();
     this->accept();
 }
 

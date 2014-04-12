@@ -1077,7 +1077,7 @@ void MainWindow::redraw()
     }
 
     // TODO PLAYTESTING. DONT REMOVE YET
-    wiz_light();
+    //wiz_light();
 
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
@@ -1440,19 +1440,6 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             }
             // Take a turn
             process_player_energy(BASE_ENERGY_MOVE);
-            break;
-        }
-        // TODO PLAYTESTING
-        case Qt::Key_J:
-        {
-            int l;
-            bool ok;
-            l = QInputDialog::getInt(0, "Please enter a number",
-                                     "Jump to level", p_ptr->depth, 0, 101, 1, &ok, 0);
-            if (ok) {
-                dungeon_change_level(l);
-                process_player_energy(BASE_ENERGY_MOVE);
-            }
             break;
         }
         // Move down
