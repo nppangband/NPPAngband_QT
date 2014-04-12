@@ -143,6 +143,70 @@ void WizardModeDialog::wiz_cure_all(void)
 
 }
 
+bool wiz_alloc_artifact(object_type *o_ptr, int art_num)
+{
+    artifact_type *a_ptr = a_info + art_num;
+
+    if (a_ptr->tval + a_ptr->sval == 0) return false;
+
+    //if (a_ptr->a_cur_num > 0) return false;
+
+    int k_idx = lookup_kind(a_ptr->tval, a_ptr->sval);
+
+    if (!k_idx) return false;
+
+    o_ptr->object_wipe();
+
+    object_prep(o_ptr, k_idx);
+
+    object_into_artifact(o_ptr, a_ptr);
+
+    o_ptr->art_num = art_num;
+
+    object_history(o_ptr, ORIGIN_CHEAT, -1);
+
+    //a_ptr->a_cur_num = 1;
+
+    return true;
+}
+
+void WizardModeDialog::wiz_winners_kit(void)
+{
+    if (!character_dungeon) return;
+
+    if (game_mode != GAME_NPPANGBAND) return;
+
+    int artis[] = {
+        47,     // RINGIL
+        124,    // CUBRAGOL
+        13,     // NARYA
+        14,     // NENYA
+        10,     // ELESSAR
+        12,     // GEM OF AMON SUL
+        22,     // ZORANDER
+        113,    // COLANNON
+        33,     // THORIN
+        110,    // NUMENOR
+        129,    // CAMBELEG
+        127,    // FEANOR
+        0
+    };
+
+    for (int i = 0; artis[i]; i++) {
+        object_type obj;
+        object_type *o_ptr = &obj;
+        if (!wiz_alloc_artifact(o_ptr, artis[i])) continue;
+        identify_object(o_ptr, true);
+        drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
+        QString name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+        message("Allocated " + name);
+    }
+
+    handle_stuff();
+
+    this->accept();
+}
+
 // Know every object kind, ego item, feature, and monster
 void WizardModeDialog::wiz_know_all(void)
 {
@@ -605,6 +669,12 @@ WizardModeDialog::WizardModeDialog(void)
     mass_identify->setToolTip("Identify all objects the player has, as well as all objects within 5 squares.");
     connect(mass_identify, SIGNAL(clicked()), this, SLOT(wiz_mass_identify_items()));
     wizard_layout->addWidget(mass_identify, row, 0);
+
+    // Add the "winner's kit" button
+    QPushButton *winners_kit = new QPushButton("Winner's kit");
+    winners_kit->setToolTip("Create a set of artifacts suitable for winning the game.");
+    connect(winners_kit, SIGNAL(clicked()), this, SLOT(wiz_winners_kit()));
+    wizard_layout->addWidget(winners_kit, row, 1);
 
     vlay->addLayout(wizard_layout);
 
