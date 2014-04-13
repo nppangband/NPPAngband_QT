@@ -227,9 +227,9 @@ static void target_set_interactive_prepare(int mode)
     QRect vis = visible_dungeon();
 
     /* Scan the current panel */
-    for (y = vis.y(); y < vis.y() + vis.height(); y++)
+    for (y = vis.y(); y <= vis.y() + vis.height(); y++)
     {
-        for (x = vis.x(); x < vis.x() + vis.width(); x++)
+        for (x = vis.x(); x <= vis.x() + vis.width(); x++)
         {
             bool do_continue = FALSE;
 

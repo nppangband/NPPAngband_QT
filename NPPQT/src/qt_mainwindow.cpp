@@ -120,10 +120,10 @@ QRect visible_dungeon()
 {
     QGraphicsView *view = main_window->graphics_view;
     QRectF rect1 = view->mapToScene(view->viewport()->geometry()).boundingRect();
-    QRect rect2((int)rect1.x() / main_window->cell_wid,
-                (int)rect1.y() / main_window->cell_hgt,
-                (int)rect1.width() / main_window->cell_wid,
-                (int)rect1.height() / main_window->cell_hgt);
+    QRect rect2(floor(rect1.x() / main_window->cell_wid),
+                floor(rect1.y() / main_window->cell_hgt),
+                ceil(rect1.width() / main_window->cell_wid),
+                ceil(rect1.height() / main_window->cell_hgt));
     QRect rect3(0, 0, p_ptr->cur_map_wid, p_ptr->cur_map_hgt);
     rect2 = rect2.intersected(rect3);
     return rect2;

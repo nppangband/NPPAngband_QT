@@ -1045,17 +1045,11 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     old_heavy_wield = new_state->heavy_wield;
     old_icky_wield = new_state->icky_wield;
 
-    // Hack - Dont wipe this
-    int cur_torch = new_state->cur_light;
-
-
     /*** Reset ***/
 
     /* Reset player speed */
 
     new_state->player_state_wipe();
-
-    new_state->cur_light = cur_torch;
 
     if (game_mode == GAME_NPPMORIA) new_state->p_speed = NPPMORIA_NORMAL_SPEED;
     else new_state->p_speed = 110;
@@ -2005,8 +1999,8 @@ void update_stuff(void)
     {
         calc_bonuses(inventory, &p_ptr->state, FALSE);
 
-        /*hack = always re-check stealth & nativity*/
-        p_ptr->update |= (PU_STEALTH | PU_NATIVE);
+        /*hack = always re-check stealth, torch & nativity*/
+        p_ptr->update |= (PU_STEALTH | PU_NATIVE | PU_TORCH);
     }
 
     if (p_ptr->update & (PU_TORCH))	calc_torch();
