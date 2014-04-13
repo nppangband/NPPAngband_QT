@@ -1217,7 +1217,6 @@ MainWindow::MainWindow()
     create_toolbars();
     select_font();
     create_directories();
-    init_tile_bags();
     create_signals();
     (void)statusBar();
 

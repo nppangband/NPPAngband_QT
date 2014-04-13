@@ -144,18 +144,15 @@ int create_package(QString name, QString folder, QString ext)
     }
 
     for (int i = 0; i < items.size(); i++) {
-        QString name = items.at(i).fileName();
+        QString name = items.at(i).fileName().trimmed();
         name.append("\n");
-        const char *data = name.toStdString().c_str();
-        out.write(data);
+        out.write(name.toLatin1());
 
-        QString size = QString::number(items.at(i).size());
+        QString size = QString::number(items.at(i).size()).trimmed();
         size.append("\n");
-        data = size.toStdString().c_str();
-        out.write(data);
+        out.write(size.toLatin1());
     }
-    const char *buf = "\n";  // End the header with an empty line
-    out.write(buf);
+    out.write("\n"); // End the header with an empty line
 
     for (int i = 0; i < items.size(); i++) {
         QFile in(items.at(i).absoluteFilePath());

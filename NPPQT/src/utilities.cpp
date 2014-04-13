@@ -733,6 +733,8 @@ static QString tile_obj_name_convert(QString orig_name)
     orig_name.remove(QString("'"));
     orig_name.remove(QChar('['));
     orig_name.remove(QChar(']'));
+    orig_name.remove(QChar('('));
+    orig_name.remove(QChar(')'));
     orig_name.remove(QChar('/'));
     orig_name.replace(QChar(' '), QChar('_'));
     orig_name.replace("*", "_star_");
@@ -836,6 +838,9 @@ static QPixmap old_get_tile(int y32, int x32, int y8, int x8)
 void extract_tiles(bool save)
 {
     int i;
+    QDir dir(NPP_DIR_GRAF);
+    dir.mkdir("tiles");
+    dir.cd("tiles");
 
     for (i = 0; i < z_info->r_max; i++)\
     {
@@ -847,8 +852,7 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(r_ptr->tile_32x32_y, r_ptr->tile_32x32_x,
                                        r_ptr->tile_8x8_y, r_ptr->tile_8x8_x);
-            QFile tile_file;
-            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(race_name));
+            QFile tile_file(dir.absoluteFilePath(race_name + ".png"));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
@@ -892,8 +896,8 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(k_ptr->tile_32x32_y, k_ptr->tile_32x32_x,
                                        k_ptr->tile_8x8_y, k_ptr->tile_8x8_x);
-            QFile tile_file;
-            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(object_name));
+            QFile tile_file(dir.absoluteFilePath(object_name + ".png"));
+            if (i == 0) qDebug("%d", k_ptr->tile_32x32_x);
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
@@ -910,8 +914,7 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(f_ptr->tile_32x32_y, f_ptr->tile_32x32_x,
                                        f_ptr->tile_8x8_y, f_ptr->tile_8x8_x);
-            QFile tile_file;
-            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(feat_name));
+            QFile tile_file(dir.absoluteFilePath(feat_name + ".png"));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
@@ -928,8 +931,7 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(flavor_ptr->tile_32x32_y, flavor_ptr->tile_32x32_x,
                                        flavor_ptr->tile_8x8_y, flavor_ptr->tile_8x8_x);
-            QFile tile_file;
-            tile_file.setFileName(QString("%1%2.png" ) .arg(NPP_DIR_GRAF) .arg(flavor_name));
+            QFile tile_file(dir.absoluteFilePath(flavor_name + ".png"));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
@@ -951,8 +953,7 @@ void extract_tiles(bool save)
                 init_graphics();
                 QPixmap pix = old_get_tile(p_ptr->tile_32x32_y, p_ptr->tile_32x32_x,
                                            p_ptr->tile_8x8_y, p_ptr->tile_8x8_x);
-                QFile tile_file;
-                tile_file.setFileName(QString("%1player_%2_%3.png" ) .arg(NPP_DIR_GRAF) .arg(race_name) .arg(class_name));
+                QFile tile_file(dir.absoluteFilePath("player_" + race_name + "_" + class_name + ".png"));
                 tile_file.open(QIODevice::WriteOnly);
                 pix.save(&tile_file, "PNG");
             }
@@ -966,8 +967,7 @@ void extract_tiles(bool save)
     if (save && use_graphics == GRAPHICS_DAVID_GERVAIS)
     {
         QPixmap pix = old_get_tile(0x87 & 0x7F, 0xB7 & 0x7F, 0, 0);
-        QFile tile_file;
-        tile_file.setFileName(QString("%1obj_pile.png") .arg(NPP_DIR_GRAF));
+        QFile tile_file(dir.absoluteFilePath("obj_pile.png"));
         tile_file.open(QIODevice::WriteOnly);
         pix.save(&tile_file, "PNG");
     }

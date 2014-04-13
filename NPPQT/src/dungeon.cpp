@@ -18,6 +18,7 @@
  */
 
 #include "src/npp.h"
+#include "tilebag.h"
 #include <QTime>
 
 /*
@@ -145,6 +146,8 @@ void launch_game()
 
     /* Flavor the objects */
     flavor_init();
+
+    init_tile_bags();
 
     /* Process some user pref files */
     // TODO

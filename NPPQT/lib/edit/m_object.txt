@@ -116,7 +116,7 @@ V:7.1.0
 
 N:0:<pile>
 G:&:TERM_WHITE
-T:11:11:7:55
+T:0:2:1:0
 
 
 ##### The 'Special Artifacts' #####

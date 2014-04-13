@@ -115,7 +115,7 @@ V:7.1.0
 
 N:0:<pile>
 G:&:TERM_WHITE
-T:11:11:7:55
+T:0:2:1:0
 
 
 ##### The 'Special Artifacts' #####
@@ -5105,7 +5105,7 @@ G:_:TERM_DARK
 I:55:30:0
 W:40:0:50:1000
 P:0:1d1:0:0:0
-T:-128:-33:6:25
+T:0:95:6:25
 A:40/1
 F:BLACK_MARKET
 D:It reveals all normal (magical but non-hidden) powers of all the
@@ -5118,7 +5118,7 @@ G:-:TERM_DARK
 I:66:28:50
 W:50:0:15:35000
 P:0:1d1:0:0:0
-T:-128:-83:6:22
+T:0:45:6:22
 A:50/8
 F:IGNORE_ELEC | EASY_KNOW | BLACK_MARKET
 D:It reveals all normal and hidden powers of one object, and also
@@ -5132,7 +5132,7 @@ G:-:TERM_DARK
 I:66:29:50
 W:60:0:15:35000
 P:0:1d1:0:0:0
-T:-128:-83:6:22
+T:0:45:6:22
 A:60/8
 F:IGNORE_ELEC | BLACK_MARKET
 D:It reveals all normal (magical but non-hidden) powers of all the
