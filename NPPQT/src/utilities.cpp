@@ -839,8 +839,10 @@ void extract_tiles(bool save)
 {
     int i;
     QDir dir(NPP_DIR_GRAF);
-    dir.mkdir("tiles");
-    dir.cd("tiles");
+    if (save) {
+        dir.mkdir("tiles");
+        dir.cd("tiles");
+    }
 
     for (i = 0; i < z_info->r_max; i++)\
     {
@@ -869,7 +871,12 @@ void extract_tiles(bool save)
         /* Check for known artifacts, display them as artifacts */
         if (k_ptr->k_flags3 & (TR3_INSTA_ART))
         {
-            make_fake_artifact(o_ptr, i);
+            int art_num = i;
+            if (game_mode == GAME_NPPANGBAND) {
+                if (k_ptr->tval == TV_HAFTED && k_ptr->sval == SV_GROND) art_num = ART_GROND;
+                if (k_ptr->tval == TV_CROWN && k_ptr->sval == SV_MORGOTH) art_num = ART_MORGOTH;
+            }
+            make_fake_artifact(o_ptr, art_num);
             object_aware(o_ptr);
             object_known(o_ptr);
             o_ptr->ident |= (IDENT_MENTAL);
@@ -897,7 +904,7 @@ void extract_tiles(bool save)
             QPixmap pix = old_get_tile(k_ptr->tile_32x32_y, k_ptr->tile_32x32_x,
                                        k_ptr->tile_8x8_y, k_ptr->tile_8x8_x);
             QFile tile_file(dir.absoluteFilePath(object_name + ".png"));
-            if (i == 0) qDebug("%d", k_ptr->tile_32x32_x);
+            //if (object_name == "obj_nothing") qDebug("nothing: %d", i);
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
