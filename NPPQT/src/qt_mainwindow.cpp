@@ -16,6 +16,8 @@
 
 MainWindow *main_window = 0;
 
+#define FONT_EXTRA 4
+
 void ui_request_size_update(QWidget *widget)
 {
     QObjectList lst = widget->children();
@@ -844,15 +846,21 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     }
 
     // Show a red line over a monster with its remaining hp
-    if (d_ptr->has_visible_monster() && d_ptr->monster_idx > 0) {
-        monster_type *m_ptr = mon_list + d_ptr->monster_idx;
-        if (m_ptr->maxhp > 0 && m_ptr->hp < m_ptr->maxhp) {
-            int w = parent->cell_wid * m_ptr->hp / m_ptr->maxhp;
+    if (d_ptr->has_visible_monster()) {
+        int cur = p_ptr->chp;
+        int max = p_ptr->mhp;
+        if (d_ptr->monster_idx > 0) {
+            monster_type *m_ptr = mon_list + d_ptr->monster_idx;
+            cur = m_ptr->hp;
+            max = m_ptr->maxhp;
+        }
+        if (max > 0 && cur < max) {
+            int w = parent->cell_wid * cur / max;
             w = MAX(w, 1);
             int h = 1;
             if (parent->cell_hgt > 16) h = 2;
             QColor color("red");
-            if (m_ptr->hp * 100 / m_ptr->maxhp > 50) color = QColor("yellow");
+            if (cur * 100 / max > 50) color = QColor("yellow");
             painter->fillRect(0, 0, w, h, color);
         }
     }
@@ -1038,8 +1046,8 @@ void MainWindow::set_font(QFont newFont)
 {
     cur_font = newFont;
     QFontMetrics metrics(cur_font);
-    font_hgt = metrics.height();
-    font_wid = metrics.width('M');
+    font_hgt = metrics.height() + FONT_EXTRA;
+    font_wid = metrics.width('M') + FONT_EXTRA;
 
     calculate_cell_size();
 
@@ -1050,8 +1058,8 @@ void MainWindow::init_scene()
 {
     QFontMetrics metrics(cur_font);
 
-    font_hgt = metrics.height();
-    font_wid = metrics.width('M');
+    font_hgt = metrics.height() + FONT_EXTRA;
+    font_wid = metrics.width('M') + FONT_EXTRA;
     tile_hgt = tile_wid = 0;
     cell_hgt = cell_wid = 0;
 

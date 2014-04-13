@@ -1192,6 +1192,7 @@ void take_terrain_hit(int dam, int feat, QString kb_str)
  */
 void take_hit(int dam, QString kb_str)
 {
+    /*
     // TODO - PLAYTESTING!!!
     set_timed(TMD_PARALYZED, 0, false);
     set_timed(TMD_STUN, 0, false);
@@ -1202,6 +1203,11 @@ void take_hit(int dam, QString kb_str)
     set_food(PY_FOOD_MAX - 10);
     return;
     // TODO - END PLAYTESTING!!!
+    */
+
+    // TODO MORE PLAYTESTING
+    set_food(PY_FOOD_MAX - 10);
+    if (dam > p_ptr->chp + 1) return;
 
     int old_chp = p_ptr->chp;
 

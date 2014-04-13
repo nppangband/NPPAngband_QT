@@ -3697,7 +3697,8 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                             m_name = monster_desc(m_ptr, 0x04);
 
                             /* Dump a message */
-                            message(QString("%^1 tries to pick up %2, but fails.") .arg(m_name) .arg(o_name));
+                            message(QString("%1 tries to pick up %2, but fails.") .arg(capitalize_first(m_name))
+                                    .arg(o_name));
                         }
                     }
                 }
