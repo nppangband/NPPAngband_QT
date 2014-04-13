@@ -733,6 +733,7 @@ static QString tile_obj_name_convert(QString orig_name)
     orig_name.remove(QString("'"));
     orig_name.remove(QChar('['));
     orig_name.remove(QChar(']'));
+    orig_name.remove(QChar('/'));
     orig_name.replace(QChar(' '), QChar('_'));
     orig_name.replace("*", "_star_");
     orig_name.prepend("obj_");

@@ -2918,6 +2918,8 @@ obj_rod_of_detection.png
 157
 obj_rod_of_disarming.png
 157
+obj_rod_of_doorstair_location.png
+178
 obj_rod_of_drain_life.png
 171
 obj_rod_of_fire_balls.png
@@ -3010,6 +3012,8 @@ obj_scroll_of_detect_invisible.png
 162
 obj_scroll_of_dispel_undead.png
 152
+obj_scroll_of_doorstair_location.png
+162
 obj_scroll_of_enchant_armor.png
 180
 obj_scroll_of_enchant_weapon_to-dam.png
@@ -3058,6 +3062,8 @@ obj_scroll_of_trap_creation.png
 149
 obj_scroll_of_trap_detection.png
 162
+obj_scroll_of_trapdoor_destruction.png
+152
 obj_scroll_of_treasure_detection.png
 162
 obj_scroll_of_word_of_recall.png
@@ -3125,6 +3131,8 @@ obj_staff_of_detect_evil.png
 obj_staff_of_detect_invisible.png
 168
 obj_staff_of_dispel_evil.png
+168
+obj_staff_of_doorstair_location.png
 168
 obj_staff_of_earthquakes.png
 168
@@ -3233,6 +3241,8 @@ obj_wand_of_stinking_cloud.png
 obj_wand_of_stone_to_mud.png
 157
 obj_wand_of_teleport_other.png
+157
+obj_wand_of_trapdoor_destruction.png
 157
 obj_wand_of_wonder.png
 157
@@ -6916,6 +6926,8 @@ N¼z5“‘Ñ †Æ2dsä    IEND®B`‚‰PNG
 
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   OIDAT™c400`À˜°ŠB%2MÎŸŸw~Þ…LS†. $>Ì¾ÀÀhtþtê‡ÙZ:þ30œ›™Ú	ÄiT¦&œ: µúÃ¥!§l    IEND®B`‚‰PNG
 
+   IHDR         Km)Ü   	pHYs  Ä  Ä•+   dIDAT™u1€0¯`âËxª…  b˜pÁÀWÀ\¬e€„Þx—Ë’øZóI1tì³ïîC‡»¿¢cØj öc|I’ ‘+TH7üýhÍ0;Êt#k„³”å·¸ ^­„“[¬    IEND®B`‚‰PNG
+
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   ]IDAT™c400`À˜°ŠB%.˜^8~žéy†¦.\¸€èœÍ0Ëð´‰a&ÃìRË>\Hg``˜i ÂÀP
 Ñ„ÓF¸«"/\0˜ÉÀÀ~áC7N Îë‘«Ÿ\    IEND®B`‚‰PNG
 
@@ -7030,6 +7042,9 @@ N¼z5“‘Ñ †Æ2dsä    IEND®B`‚‰PNG
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   JIDAT™}ŽÁ€0¯LtF¢C•P6
 RàQðÃR|Vä¢@¬ ìq%jæabÂfw`a(ª¶¸ÏØ"ªÐÙ¼ë¯Ê×ÜBW@VL	³    IEND®B`‚‰PNG
 
+   IHDR         Km)Ü   	pHYs  Ä  Ä•+   TIDAT™}Ž»€0C_˜È)%#Îå;9ld
+¾E@ôt: æu;qÃÝÜÍ–ÉÝRJÀÀ¥VKÌzÛÄ¬­–8X¼ëSáëîŸ” ¹¬ÅYù    IEND®B`‚‰PNG
+
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   fIDAT™}Ž»À CMÒ1Á‰2ý·
 5›eV9	¦ ¤§KqÊ§@qg?Ë²cf ­µ”€RŠ%;Õzz„zï9ç9çcÃ-U‘Ç¾@DTuŒ-À·þ7åì€£ÝÀÌùj"¼'H~    IEND®B`‚‰PNG
 
@@ -7088,6 +7103,9 @@ N¼z5“‘Ñ †Æ2dsä    IEND®B`‚‰PNG
 
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   TIDAT™}Ž»€0C_˜È)%#Îå;9ld
 ¾E@ôt: æu;qÃÝÜÍ–ÉÝRJÀÀ¥VKÌzÛÄ¬­–8X¼ëSáëîŸ” ¹¬ÅYù    IEND®B`‚‰PNG
+
+   IHDR         Km)Ü   	pHYs  Ä  Ä•+   JIDAT™}ŽÁ€0¯LtF¢C•P6
+RàQðÃR|Vä¢@¬ ìq%jæabÂfw`a(ª¶¸ÏØ"ªÐÙ¼ë¯Ê×ÜBW@VL	³    IEND®B`‚‰PNG
 
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   TIDAT™}Ž»€0C_˜È)%#Îå;9ld
 ¾E@ôt: æu;qÃÝÜÍ–ÉÝRJÀÀ¥VKÌzÛÄ¬­–8X¼ëSáëîŸ” ¹¬ÅYù    IEND®B`‚‰PNG
@@ -7169,6 +7187,8 @@ SŽ®M!&‡", Í,Ø	å¬    IEND®B`‚‰PNG
 
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   ZIDAT™eÉK€0ÀW0ÀqAÅƒt%ÕB=€t ‚Ãª¨Â¥	ýÌuÜDÀ$Q"p g ™U±’S zmn‘'aqI½nó{Ý&"9 ô—£¿?š«¢¼/Ó)Ì
 ˆè’    IEND®B`‚‰PNG
+
+   IHDR         Km)Ü   	pHYs  Ä  Ä•+   ZIDAT™cüŽÁð#£‘`b0<ÇpÞhfªÁ…%˜7n<ÉôLÂÔÄÔHòßœm$$$ gž1H1>C“c†P˜rÌp½hr	49	d9 Œ .×æld    IEND®B`‚‰PNG
 
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   ZIDAT™cd`øÏ0“!ÑÀÀ€	01Ìd`Hg˜™jpáÂd	fƒ'}gšš˜Iþ›³í‚„„TBBBâÌ3)ÆghrÌ
 SŽ®M!&‡", Í,Ø	å¬    IEND®B`‚‰PNG
@@ -7292,6 +7312,10 @@ $º¹îïõzYk€™¹{ÇQjÎ	¨ª™EÀÞ»TæUÕ6ãœÓó¢Ìàƒÿ…ÔADd^‘§ÿ^U+‰C    IEND®B`‚‰PNG
 „ôàòÎ–MY¶”¾D/¬Ã—{/¸û#Ú¬v†mV I’`°Œ~~Öÿž±¯Â>v…    IEND®B`‚‰PNG
 
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   PIDAT™}Á	€0'V´))”’$†ïJIúD8ÝçÌ.›$e	éKÔŒÙ°á5ãî˜ÝI«íev$©Á	ÇV7üü ¬ÿ-.aúÃß÷Ë    IEND®B`‚‰PNG
+
+   IHDR         Km)Ü   	pHYs  Ä  Ä•+   OIDAT™}±€0ï™ÈMFÈ,QÈ0(Qä7z
+
+„ôàòÎ–MY¶”¾D/¬Ã—{/¸û#Ú¬v†mV I’`°Œ~~Öÿž±¯Â>v…    IEND®B`‚‰PNG
 
    IHDR         Km)Ü   	pHYs  Ä  Ä•+   OIDAT™}±€0ï™ÈMFÈ,QÈ0(Qä7z
 
