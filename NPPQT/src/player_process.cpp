@@ -270,7 +270,10 @@ void process_player(void)
             p_ptr->resting--;
 
             // Message
-            if (p_ptr->resting == 0) message("Done resting.");
+            if (p_ptr->resting == 0) {
+                message("Done resting.");
+                light_spot(p_ptr->py, p_ptr->px);
+            }
 
             /* Redraw the state */
             p_ptr->redraw |= (PR_STATE);

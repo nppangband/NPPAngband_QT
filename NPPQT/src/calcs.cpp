@@ -1045,12 +1045,17 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     old_heavy_wield = new_state->heavy_wield;
     old_icky_wield = new_state->icky_wield;
 
+    // Hack - Dont wipe this
+    int cur_torch = new_state->cur_light;
+
 
     /*** Reset ***/
 
     /* Reset player speed */
 
     new_state->player_state_wipe();
+
+    new_state->cur_light = cur_torch;
 
     if (game_mode == GAME_NPPMORIA) new_state->p_speed = NPPMORIA_NORMAL_SPEED;
     else new_state->p_speed = 110;
