@@ -40,6 +40,15 @@ TileBag::TileBag(QString path)
     }
 }
 
+bool TileBag::has_tile(QString name)
+{
+    if (!pak->is_open()) return false;
+    QString ext(".png");
+    if (!name.endsWith(ext)) name += ext;
+    if (pak->item_position(name) < 0) return false;
+    return true;
+}
+
 QPixmap TileBag::get_tile(QString name)
 {
     if (!pak->is_open()) return ui_make_blank();

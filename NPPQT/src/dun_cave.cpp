@@ -18,6 +18,7 @@
 
 #include "src/npp.h"
 #include "src/init.h"
+#include "tilebag.h"
 
 /*
  * Support for Adam Bolt's tileset, lighting and transparency effects
@@ -968,18 +969,20 @@ static void map_objects (s16b y, s16b x)
         {
             dun_ptr->object_color = defined_colors[TERM_VIOLET];
             dun_ptr->object_char = f_info[1].d_char; // Floor
+            dun_ptr->object_tile.clear();
         }
 
         /* Special stack symbol, unless everything in the pile is squelchable */
         else if (++floor_num > 1)
         {
-            if (use_graphics) {
+            if (use_graphics && current_tiles->has_tile("obj_pile")) {
                 dun_ptr->object_tile = "obj_pile";
             }
             else {
-                dun_ptr->object_char = k_info[0].d_char;
-                dun_ptr->object_color = k_info[0].d_color;                
+                dun_ptr->object_tile.clear();
             }
+            dun_ptr->object_char = k_info[0].d_char;
+            dun_ptr->object_color = k_info[0].d_color;
 
             // We are done
             return;
@@ -1229,7 +1232,7 @@ static void map_monster (s16b y, s16b x)
 
         */
 
-        if ((hp_changes_color) && (use_graphics == GRAPHICS_NONE))
+        if (hp_changes_color)
         {
             byte a;
             /* check for hunger first */

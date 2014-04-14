@@ -20,6 +20,8 @@ public:
 
     void clear_cache();
 
+    bool has_tile(QString name);
+
     virtual ~TileBag();
 };
 
