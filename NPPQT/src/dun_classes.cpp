@@ -20,7 +20,7 @@
 
 bool dungeon_type::has_visible_artifact()
 {
-    if (!(cave_info & CAVE_SEEN)) return false;
+    //if (!(cave_info & CAVE_SEEN)) return false;
 
     object_type *o_ptr;
 
