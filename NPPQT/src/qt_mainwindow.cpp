@@ -1159,6 +1159,64 @@ QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size)
     return QPixmap::fromImage(img);
 }
 
+void ui_event_signal(int event)
+{
+    switch (event)
+    {
+    case PR_STATUS:
+    case PR_MANA:
+    case PR_HP:
+    case PR_EXP:
+        main_window->update_sidebar();
+        break;
+    }
+}
+
+void MainWindow::update_sidebar()
+{
+    sidebar->clear();
+
+    if (!character_dungeon) return;
+
+    int row = 0;
+
+    sidebar->setEditTriggers(0);
+
+    sidebar->insertRow(row);
+
+    QString hp = QString("Hit points: %1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
+
+    sidebar->setItem(row, 0, new QTableWidgetItem(hp));
+
+    if (p_ptr->chp < p_ptr->mhp) sidebar->item(row, 0)->setTextColor("yellow");
+
+    row++;
+
+    sidebar->insertRow(row);
+
+    QString sp = QString("Spell points: %1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
+
+    sidebar->setItem(row, 0, new QTableWidgetItem(sp));
+
+    if (p_ptr->csp < p_ptr->msp) sidebar->item(row, 0)->setTextColor("yellow");
+
+    row++;
+
+    sidebar->insertRow(row);
+
+    QString exp;
+
+    exp = QString("Experience: %1").arg(p_ptr->exp);
+
+    sidebar->setItem(row, 0, new QTableWidgetItem(exp));
+
+    if (p_ptr->exp < p_ptr->max_exp) sidebar->item(row, 0)->setTextColor("yellow");
+
+    row++;
+
+    sidebar->resizeColumnToContents(0);
+}
+
 // The main function - intitalize the main window and set the menus.
 MainWindow::MainWindow()
 {
@@ -1192,7 +1250,30 @@ MainWindow::MainWindow()
     message_area->setStyleSheet("background-color: black;");
     lay1->addWidget(message_area);
 
-    lay1->addWidget(graphics_view);
+    QSplitter *splitter = new QSplitter;
+
+    QWidget *container_33 = new QWidget;
+    QVBoxLayout *layout_33 = new QVBoxLayout;
+    container_33->setLayout(layout_33);
+    layout_33->setContentsMargins(0, 0, 0, 0);
+    splitter->addWidget(container_33);
+
+    sidebar = new QTableWidget;
+    sidebar->insertColumn(0);
+    sidebar->verticalHeader()->setVisible(false);
+    sidebar->horizontalHeader()->setVisible(false);
+    sidebar->setShowGrid(false);
+    sidebar->setStyleSheet("background-color: black; color: #00FF00;");
+    layout_33->addWidget(sidebar);
+    QFontMetrics metrics(sidebar->font());
+    sidebar->setMinimumSize(metrics.width("MMMMMMMMMMMMMMMMMM"), 10);
+
+    splitter->addWidget(graphics_view);
+
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 100);
+
+    lay1->addWidget(splitter);
 
     QHBoxLayout *lay2 = new QHBoxLayout;
     lay1->addLayout(lay2);

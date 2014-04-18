@@ -2175,7 +2175,7 @@ void redraw_stuff(void)
 
         if (p_ptr->redraw & (hnd->flag))
         {
-            // TODO event_signal(hnd->event);
+            ui_event_signal(hnd->flag);
         }
     }
 

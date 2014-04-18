@@ -28,6 +28,7 @@ class DungeonGrid;
 class DungeonCursor;
 class QTextEdit;
 class QLineEdit;
+class QTableWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -68,6 +69,8 @@ public:
 
     QToolBar *toolbar1; // Targeting
 
+    QTableWidget *sidebar;
+
     MainWindow();
 
     void load_messages();
@@ -87,6 +90,7 @@ public:
     void wait_animation(int n_animations = 1);
     void animation_done();
     bool check_disturb();
+    void update_sidebar();
 
 protected:
     void closeEvent(QCloseEvent *event);
