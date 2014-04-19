@@ -2014,5 +2014,7 @@ void process_player_energy(byte energy_used)
     // process game turns until it is the player's turn again, or the player is dead;
     process_game_turns();
 
+    ui_flush_graphics();
+
     depth_counter = 0;
 }

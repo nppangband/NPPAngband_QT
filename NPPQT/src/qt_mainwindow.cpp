@@ -1169,8 +1169,16 @@ void ui_event_signal(int event)
     case PR_EXP:
     case PR_MONLIST:
     case PR_MONSTER:
-        main_window->update_sidebar();
+        main_window->delayed_sidebar_update = true;
         break;
+    }
+}
+
+void ui_flush_graphics()
+{
+    if (main_window->delayed_sidebar_update && !p_ptr->resting &&
+            !p_ptr->running) {
+        main_window->update_sidebar();
     }
 }
 
@@ -1233,7 +1241,7 @@ QList<int> get_visible_monsters()
 
     qSort(items.begin(), items.end(), my_less_than);
 
-    return items.mid(0, 12);
+    return items.mid(0, 15);
 }
 
 static void display_mon(QGridLayout *grid, int row, int m_idx)
@@ -1260,7 +1268,7 @@ static void display_mon(QGridLayout *grid, int row, int m_idx)
     int h = 6;
     QImage img(w, h, QImage::Format_ARGB32);
     QPainter p(&img);
-    p.fillRect(0, 0, w, h, "#AAAAAA");
+    p.fillRect(0, 0, w, h, "#FFFFFF");
 
     int h2 = h;
     if (r_ptr->mana > 0) h2 = h / 2;
@@ -1270,7 +1278,7 @@ static void display_mon(QGridLayout *grid, int row, int m_idx)
         w2 = MAX(w2, 1);
         int n = m_ptr->hp * 100 / m_ptr->maxhp;
         QString color("#00FF00");
-        if (n < 50) color = "red";
+        if (n <= 50) color = "red";
         else if (n < 100) color = "yellow";
         p.fillRect(0, 0, w2, h2, color);
     }
@@ -1288,11 +1296,11 @@ static void display_mon(QGridLayout *grid, int row, int m_idx)
 
 void MainWindow::update_sidebar()
 {
-    sidebar->clear();
+    delayed_sidebar_update = false;
+
+    sidebar->setRowCount(0);
 
     if (!character_dungeon) return;
-
-    if (p_ptr->resting || p_ptr->running) return;
 
     int row = 0;
 
@@ -1363,6 +1371,8 @@ MainWindow::MainWindow()
     if (!main_window) main_window = this;
 
     anim_depth = 0;
+
+    delayed_sidebar_update = false;
 
     setAttribute(Qt::WA_DeleteOnClose);
 

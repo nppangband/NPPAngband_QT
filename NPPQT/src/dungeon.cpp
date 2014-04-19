@@ -198,6 +198,8 @@ void launch_game()
 
     handle_stuff();
 
+    ui_flush_graphics();
+
     // TODO PLAYTESTING
     debug_rarities();
 }

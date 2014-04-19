@@ -682,6 +682,7 @@ extern void ui_animate_victory(int y, int x);
 extern qreal ui_get_angle(int y1, int x1, int y2, int x2);
 extern QPoint ui_get_center(int y, int x);
 extern void ui_event_signal(int event);
+extern void ui_flush_graphics();
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);
