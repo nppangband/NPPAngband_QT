@@ -1167,9 +1167,123 @@ void ui_event_signal(int event)
     case PR_MANA:
     case PR_HP:
     case PR_EXP:
+    case PR_MONLIST:
+    case PR_MONSTER:
         main_window->update_sidebar();
         break;
     }
+}
+
+/*
+ * Display the experience
+ */
+static void prt_exp(QTableWidget *sidebar, int row, int col)
+{
+    QTableWidgetItem *item;
+
+    QString s1;
+    QString s2;
+    bool max_lev = (p_ptr->lev == z_info->max_level);
+
+    long xp = (long)p_ptr->exp;
+
+    /* Calculate XP for next level */
+    if (!max_lev)
+        xp = (long)(get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L) - p_ptr->exp;
+
+    /* Format XP */
+    s2 = QString("%1").arg(xp);
+
+    if (p_ptr->exp >= p_ptr->max_exp)
+    {
+        s1 = (max_lev ? "EXP " : "NEXT ");
+        s1 += s2;
+        item = new QTableWidgetItem(s1);
+    }
+    else
+    {
+        s1 = (max_lev ? "Exp " : "Next ");
+        s1 += s2;
+        item = new QTableWidgetItem(s1);
+        item->setTextColor("yellow");
+    }
+
+    sidebar->setItem(row, col, item);
+}
+
+bool my_less_than(const int &i1, const int &i2)
+{
+    return mon_list[i1].cdis < mon_list[i2].cdis;
+}
+
+QList<int> get_visible_monsters()
+{
+    QList<int> items;
+
+    for (int y = p_ptr->py - MAX_SIGHT; y <= p_ptr->py + MAX_SIGHT; y++) {
+        for (int x = p_ptr->px - MAX_SIGHT; x < p_ptr->px + MAX_SIGHT; x++) {
+            if (!in_bounds(y, x)) continue;
+            int m_idx = dungeon_info[y][x].monster_idx;
+            if (m_idx < 1) continue;
+            monster_type *m_ptr = mon_list + m_idx;
+            if (!m_ptr->ml) continue;
+            items.append(m_idx);
+        }
+    }
+
+    qSort(items.begin(), items.end(), my_less_than);
+
+    return items.mid(0, 12);
+}
+
+static void display_mon(QGridLayout *grid, int row, int m_idx)
+{
+    monster_type *m_ptr = mon_list + m_idx;
+    monster_race *r_ptr = r_info + m_ptr->r_idx;
+
+    if (use_graphics && !main_window->do_pseudo_ascii) {
+        QPixmap pix = current_tiles->get_tile(r_ptr->tile_id);
+        pix = pix.scaled(24, 24);
+        QLabel *lb = new QLabel("");
+        lb->setPixmap(pix);
+        grid->addWidget(lb, row, 0);
+    }
+    else {
+        QLabel *lb = new QLabel(r_ptr->d_char);
+        lb->setStyleSheet(QString("color: %1;").arg(r_ptr->d_color.name()));
+        grid->addWidget(lb, row, 0);
+    }
+
+    grid->addWidget(new QLabel(r_ptr->r_name_short), row, 1);
+
+    int w = 100;
+    int h = 6;
+    QImage img(w, h, QImage::Format_ARGB32);
+    QPainter p(&img);
+    p.fillRect(0, 0, w, h, "#AAAAAA");
+
+    int h2 = h;
+    if (r_ptr->mana > 0) h2 = h / 2;
+
+    if (m_ptr->maxhp > 0) {
+        int w2 = w * m_ptr->hp / m_ptr->maxhp;
+        w2 = MAX(w2, 1);
+        int n = m_ptr->hp * 100 / m_ptr->maxhp;
+        QString color("#00FF00");
+        if (n < 50) color = "red";
+        else if (n < 100) color = "yellow";
+        p.fillRect(0, 0, w2, h2, color);
+    }
+
+    if (r_ptr->mana > 0) {
+        int w2 = w * m_ptr->mana / r_ptr->mana;
+        w2 = MAX(w2, 1);
+        p.fillRect(0, h2, w2, h2, "purple");
+    }
+
+    QLabel *lb2 = new QLabel("");
+    lb2->setPixmap(QPixmap::fromImage(img));
+    grid->addWidget(lb2, row + 1, 0, 1, 2);
 }
 
 void MainWindow::update_sidebar()
@@ -1178,13 +1292,19 @@ void MainWindow::update_sidebar()
 
     if (!character_dungeon) return;
 
+    if (p_ptr->resting || p_ptr->running) return;
+
     int row = 0;
+
+    QFontMetrics metrics(sidebar->font());
+
+    int h = metrics.height() + 4;
 
     sidebar->setEditTriggers(0);
 
     sidebar->insertRow(row);
 
-    QString hp = QString("Hit points: %1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
+    QString hp = QString("HP %1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
 
     sidebar->setItem(row, 0, new QTableWidgetItem(hp));
 
@@ -1194,7 +1314,7 @@ void MainWindow::update_sidebar()
 
     sidebar->insertRow(row);
 
-    QString sp = QString("Spell points: %1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
+    QString sp = QString("SP %1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
 
     sidebar->setItem(row, 0, new QTableWidgetItem(sp));
 
@@ -1204,15 +1324,34 @@ void MainWindow::update_sidebar()
 
     sidebar->insertRow(row);
 
-    QString exp;
-
-    exp = QString("Experience: %1").arg(p_ptr->exp);
-
-    sidebar->setItem(row, 0, new QTableWidgetItem(exp));
-
-    if (p_ptr->exp < p_ptr->max_exp) sidebar->item(row, 0)->setTextColor("yellow");
+    prt_exp(sidebar, row, 0);
 
     row++;
+
+    QList<int> monsters = get_visible_monsters();
+    QWidget *temp = new QWidget;
+    QGridLayout *grid = new QGridLayout;
+    grid->setContentsMargins(2, 0, 2, 0);
+    temp->setLayout(grid);
+
+    for (int i = 0; i < monsters.size(); i++) {
+        int m_idx = monsters.at(i);
+
+        display_mon(grid, i * 2, m_idx);
+    }
+
+    sidebar->insertRow(row);
+
+    sidebar->setCellWidget(row, 0, temp);
+
+    sidebar->setRowHeight(row, temp->sizeHint().height() + 4);
+
+    ++row;
+
+    for (int i = 0; i < row; i++) {
+        if (sidebar->cellWidget(i, 0)) continue;
+        sidebar->setRowHeight(i, h);
+    }
 
     sidebar->resizeColumnToContents(0);
 }
