@@ -1034,6 +1034,7 @@ void MainWindow::set_graphic_mode(int mode)
     calculate_cell_size();
     destroy_tiles();
     if (character_dungeon) extract_tiles(false);
+    update_sidebar();
 
     // Recenter the view
     if (cy != -1 && cx != -1) {
@@ -1296,6 +1297,8 @@ static void display_mon(QGridLayout *grid, int row, int m_idx)
 
 void MainWindow::update_sidebar()
 {
+    //message("update sidebar");
+
     delayed_sidebar_update = false;
 
     sidebar->setRowCount(0);
@@ -2052,6 +2055,7 @@ void MainWindow::set_pseudo_ascii()
 {
     do_pseudo_ascii = pseudo_ascii_act->isChecked();
     ui_redraw_all();
+    update_sidebar();
 }
 
 //  Set's up many of the keystrokes and commands used during the game.
