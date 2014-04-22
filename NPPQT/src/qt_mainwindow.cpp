@@ -1164,12 +1164,12 @@ void ui_event_signal(int event)
 {
     switch (event)
     {
-    case PR_STATUS:
-    case PR_MANA:
-    case PR_HP:
-    case PR_EXP:
-    case PR_MONLIST:
-    case PR_MONSTER:
+    case EVENT_STATUS:
+    case EVENT_MANA:
+    case EVENT_HP:
+    case EVENT_EXPERIENCE:
+    case EVENT_MONSTERLIST:
+    case EVENT_MONSTERTARGET:
         main_window->delayed_sidebar_update = true;
         break;
     }
