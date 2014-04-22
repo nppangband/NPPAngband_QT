@@ -2047,64 +2047,6 @@ struct flag_event_trigger
     int event;
 };
 
-
-//TODO figure out what to do with events.
-enum
-{
-    EVENT_MAP = 0,		/* Some part of the map has changed. */
-
-    EVENT_STATS,		/* One or more of the stats. */
-    EVENT_HP,			/* HP or MaxHP. */
-    EVENT_MANA,			/* Mana or MaxMana. */
-    EVENT_AC,			/* Armour Class. */
-    EVENT_EXPERIENCE,	/* Experience or MaxExperience. */
-    EVENT_PLAYERLEVEL,	/* Player's level has changed */
-    EVENT_PLAYERTITLE,	/* Player's title has changed */
-    EVENT_GOLD,			/* Player's gold amount. */
-    EVENT_MONSTERHEALTH,	/* Observed monster's health level. */
-    EVENT_DUNGEONLEVEL,	/* Dungeon depth */
-    EVENT_QUEST_TICKER,	/* Update status of quest */
-    EVENT_FEELING,		/* Update status of quest */
-    EVENT_PLAYERSPEED,	/* Player's speed */
-    EVENT_RACE_CLASS,	/* Race or Class */
-    EVENT_STUDYSTATUS,	/* "Study" availability */
-    EVENT_STATUS,		/* Status */
-    EVENT_DETECTIONSTATUS,	/* Trap detection status */
-    EVENT_STATE,		/* The three 'R's: Resting, Repeating and Searching */
-    EVENT_RESISTANCES,	/*Player resistances */
-    EVENT_MOUSEBUTTONS,	/* Displayed mouse buttons need changing */
-
-    EVENT_PLAYERMOVED,
-
-    EVENT_INVENTORY,
-    EVENT_EQUIPMENT,
-    EVENT_ITEMLIST,
-    EVENT_MONSTERLIST,
-    EVENT_MONSTERTARGET,
-    EVENT_OBJECTTARGET,
-    EVENT_MESSAGE,
-    EVENT_FEATURE,
-
-    EVENT_INITSTATUS,	/* New status message for initialisation */
-    EVENT_BIRTHPOINTS,	/* Change in the birth points */
-
-    /* Changing of the game state/context. */
-    EVENT_ENTER_INIT,
-    EVENT_LEAVE_INIT,
-    EVENT_ENTER_BIRTH,
-    EVENT_LEAVE_BIRTH,
-    EVENT_ENTER_GAME,
-    EVENT_LEAVE_GAME,
-    EVENT_ENTER_STORE,
-    EVENT_LEAVE_STORE,
-    EVENT_ENTER_DEATH,
-    EVENT_LEAVE_DEATH,
-    EVENT_INIT_STATUSLINE,
-    EVENT_REMOVE_STATUSLINE,
-
-    EVENT_END  /* Can be sent at the end of a series of events */
-};
-
 /*
  * Events triggered by the various flags.
  */
@@ -2175,7 +2117,7 @@ void redraw_stuff(void)
 
         if (p_ptr->redraw & (hnd->flag))
         {
-            ui_event_signal(hnd->flag);
+            ui_event_signal(hnd->event);
         }
     }
 
