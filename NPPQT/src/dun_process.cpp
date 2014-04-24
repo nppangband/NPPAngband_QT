@@ -940,7 +940,10 @@ static void process_world(void)
             int n;
 
             /* Message */
-            if (cheat_xtra) message(QString("Updating Shops..."));
+            if (cheat_xtra)
+            {
+                message(QString("Updating Shops..."));
+            }
 
             /* Maintain each shop (except home and guild) */
             for (n = 0; n < MAX_STORES; n++)
@@ -958,7 +961,10 @@ static void process_world(void)
             {
 
                 /* Message */
-                if (cheat_xtra) message(QString("Shuffling a Shopkeeper..."));
+                if (cheat_xtra)
+                {
+                    message(QString("Shuffling a Shopkeeper..."));
+                }
 
                 /* Pick a random shop (except home and guild) */
                 while (1)
@@ -972,7 +978,10 @@ static void process_world(void)
             }
 
             /* Message */
-            if (cheat_xtra) message(QString("Done."));
+            if (cheat_xtra)
+            {
+                message(QString("Done."));
+            }
         }
     }
 
@@ -1512,6 +1521,8 @@ void change_player_level(void)
         /* Mega-Hack -- Allow player to cheat death */
         if ((p_ptr->is_wizard || cheat_live) && !get_check("Die? "))
         {
+            if (cheat_live) p_ptr->is_wizard = TRUE;
+
             /* Mark social class, reset age, if needed */
             if (p_ptr->sc) p_ptr->sc = p_ptr->age = 0;
 

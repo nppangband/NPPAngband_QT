@@ -3887,6 +3887,7 @@ static void cave_set_feat_aux(int y, int x, u16b feat)
         /* Debug message */
         if (cheat_room && !(level_flag & flag))
         {
+
             QString name = feature_desc(feat, TRUE, TRUE);
 
             message(QString("Adding %1 to the level.") .arg(name));

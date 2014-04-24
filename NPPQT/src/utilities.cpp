@@ -434,6 +434,8 @@ void write_note(QString note, s16b depth)
 
 QString get_player_title(void)
 {
+    if(p_ptr->is_wizard) return ("Wizard Mode");
+
     if (game_mode == GAME_NPPMORIA)
     {
         return (cp_ptr->cl_title[p_ptr->lev-1]);

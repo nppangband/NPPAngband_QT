@@ -1727,7 +1727,7 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
     /* Cheat -- know everything */
     if ((cheat_know) || (r_ptr->flags2 & (RF2_PLAYER_GHOST)))
     {
-        /* XXX XXX XXX */
+        if (cheat_know) p_ptr->is_wizard = TRUE;
 
         /* Hack -- save memory */
         COPY(&save_mem, l_ptr, monster_lore);
@@ -1752,6 +1752,8 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
     /* Cheat -- know everything */
     if (cheat_know || spoilers || (r_ptr->flags2 & (RF2_PLAYER_GHOST)))
     {
+        if (cheat_know) p_ptr->is_wizard = TRUE;
+
         cheat_monster_lore(r_idx, &lore);
     }
 
@@ -1796,6 +1798,8 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
     /* Cheat -- know everything */
     if ((cheat_know) || (r_ptr->flags2 & (RF2_PLAYER_GHOST)))
     {
+        if (cheat_know) p_ptr->is_wizard = TRUE;
+
         /* Hack -- restore memory */
         COPY(l_ptr, &save_mem, monster_lore);
     }

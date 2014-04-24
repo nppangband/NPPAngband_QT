@@ -862,6 +862,9 @@ void describe_feature(int f_idx, bool spoilers)
     /* Cheat -- know everything */
     if (cheat_know)
     {
+        // mark savefile as a "cheater"
+        p_ptr->is_wizard = TRUE;
+
         /* XXX XXX XXX */
 
         /* Hack -- save memory */
@@ -879,6 +882,8 @@ void describe_feature(int f_idx, bool spoilers)
     /* Cheat -- know everything*/
     if (cheat_know || spoilers)
     {
+        if (cheat_know) p_ptr->is_wizard = TRUE;
+
         cheat_feature_lore(f_idx, &lore);
     }
 

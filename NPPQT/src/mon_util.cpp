@@ -2900,7 +2900,10 @@ static bool place_monster_one(int y, int x, int r_idx, byte mp_flags)
         if (r_ptr->flags1 & (RF1_UNIQUE))
         {
             /* Message for cheaters */
-            if (cheat_hear) message(QString("Deep Unique (%1).") . arg(name));
+            if (cheat_hear)
+            {
+                message(QString("Deep Unique (%1).") . arg(name));
+            }
 
             /* Boost rating by twice delta-depth */
             rating += (r_ptr->level - p_ptr->depth) * 2;
@@ -2910,7 +2913,10 @@ static bool place_monster_one(int y, int x, int r_idx, byte mp_flags)
         else
         {
             /* Message for cheaters */
-            if (cheat_hear) message(QString("Deep Monster (%1).") . arg(name));
+            if (cheat_hear)
+            {
+                message(QString("Deep Monster (%1).") . arg(name));
+            }
             /* Boost rating by half delta-depth */
             rating += (r_ptr->level - p_ptr->depth) / 2;
         }

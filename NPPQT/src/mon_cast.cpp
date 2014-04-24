@@ -976,7 +976,7 @@ int choose_ranged_attack(int m_idx, int *tar_y, int *tar_x)
         }
     }
 
-    if (p_ptr->is_wizard)
+    if (cheat_know)
     {
         message(QString("Spell rating: %1.") .arg(best_spell_rating));
     }

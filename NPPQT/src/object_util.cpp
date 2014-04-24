@@ -2417,7 +2417,7 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
 
 
         /* Debug */
-        if (p_ptr->is_wizard) message(QString("Breakage (breakage)."));
+        if (cheat_hear) message(QString("Breakage (breakage)."));
 
         p_ptr->redraw |= (PR_ITEMLIST);
 
@@ -2539,7 +2539,7 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
         }
 
         /* Debug */
-        if (p_ptr->is_wizard) message(QString("Breakage (no floor space)."));
+        if (cheat_hear) message(QString("Breakage (no floor space)."));
 
         p_ptr->redraw |= (PR_ITEMLIST);
 
@@ -2590,7 +2590,7 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
         }
 
         /* Debug */
-        if (p_ptr->is_wizard) message(QString("Breakage (too many objects)."));
+        if (cheat_hear) message(QString("Breakage (too many objects)."));
 
         /* Hack -- Preserve artifacts */
         a_info[j_ptr->art_num].a_cur_num = 0;

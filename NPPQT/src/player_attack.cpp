@@ -769,7 +769,7 @@ void py_attack(int y, int x)
             if (p_ptr->state.impact && (k > 50)) do_quake = TRUE;
 
             /* Complex message */
-            if (p_ptr->is_wizard)
+            if (cheat_know)
             {
                 message(QString("You do %1 (out of %2) damage.") .arg(k) .arg(m_ptr->hp));
             }
@@ -1146,7 +1146,7 @@ void command_fire(cmd_arg args)
             if (tdam < 0) tdam = 0;
 
             /* Complex message */
-            if (p_ptr->is_wizard)
+            if (cheat_know)
             {
                 message(QString("You do %1d%2 + %3 damage.") .arg(dd) .arg(ds) .arg(plus));
                 message(QString("You do %1 (out of %1) damage.") .arg(tdam) .arg(m_ptr->hp));
@@ -2112,7 +2112,7 @@ void command_throw(cmd_arg args)
             if (tdam < 0) tdam = 0;
 
             /* Complex message */
-            if (p_ptr->is_wizard)
+            if (cheat_know)
             {
                 message(QString("You do %1d%2 + %3 damage.") .arg(dd)  .arg(ds) .arg(plus));
                 message(QString("You do %1 (out of %2) damage.")
