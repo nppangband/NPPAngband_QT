@@ -174,7 +174,54 @@ void WizardModeDialog::wiz_winners_kit(void)
 {
     if (!character_dungeon) return;
 
-    if (game_mode != GAME_NPPANGBAND) return;
+    if (game_mode == GAME_NPPMORIA)
+    {
+        // Make 2 rings of speed
+        int k_idx = lookup_kind(TV_RING, SV_RING_SPEED);
+        object_type object_type_body;
+        object_type *i_ptr = &object_type_body;
+        i_ptr->object_wipe();
+        if (k_idx)
+        {
+            object_prep(i_ptr, k_idx);
+            apply_magic(i_ptr, FALSE, TRUE, TRUE, TRUE);
+            i_ptr->number = 2;
+            object_aware(i_ptr);
+            object_known(i_ptr);
+            k_info[k_idx].everseen = TRUE;
+            object_history(i_ptr, ORIGIN_CHEAT, 0);
+            (void)inven_carry(i_ptr);
+        }
+        //Give an amulet of the magi;
+        k_idx = lookup_kind(TV_AMULET, SV_AMULET_THE_MAGI);
+        if (k_idx)
+        {
+            object_prep(i_ptr, k_idx);
+            apply_magic(i_ptr, FALSE, TRUE, TRUE, TRUE);
+            object_aware(i_ptr);
+            object_known(i_ptr);
+            k_info[k_idx].everseen = TRUE;
+            object_history(i_ptr, ORIGIN_CHEAT, 0);
+            (void)inven_carry(i_ptr);
+        }
+        //boots of speed
+        k_idx = lookup_kind(TV_BOOTS, SV_PAIR_OF_SOFT_LEATHER_BOOTS);
+        if (k_idx)
+        {
+            object_prep(i_ptr, k_idx);
+            object_aware(i_ptr);
+            object_known(i_ptr);
+            k_info[k_idx].everseen = TRUE;
+
+            adhbaagfb
+
+            object_history(i_ptr, ORIGIN_CHEAT, 0);
+            (void)inven_carry(i_ptr);
+        }
+
+    }
+
+    else if (game_mode != GAME_NPPANGBAND) return;
 
     int artis[] = {
         47,     // RINGIL

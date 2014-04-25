@@ -743,13 +743,13 @@ static void player_outfit(void)
 
             object_aware(i_ptr);
             object_known(i_ptr);
-            (void)inven_carry(i_ptr);
-            k_info[k_idx].everseen = TRUE;
 
+            k_info[k_idx].everseen = TRUE;
             apply_autoinscription(i_ptr);
 
             /* Remember history */
             object_history(i_ptr, ORIGIN_BIRTH, 0);
+            (void)inven_carry(i_ptr);
         }
     }
 
