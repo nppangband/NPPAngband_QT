@@ -295,6 +295,19 @@ bool item_tester_hook_activate(object_type *o_ptr)
 }
 
 /*
+ * Hook to determine if an object is not an artifact
+ */
+bool item_tester_hook_not_artifact(object_type *o_ptr)
+{
+
+    /* Not known */
+    if (!o_ptr->is_artifact()) return (TRUE);
+
+    /* Assume not */
+    return (FALSE);
+}
+
+/*
  * Determine if an object can be browsed (spellbook)
  */
 bool obj_can_browse(object_type *o_ptr)

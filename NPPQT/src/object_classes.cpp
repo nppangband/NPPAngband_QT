@@ -132,6 +132,38 @@ bool object_type::has_hidden_powers()
 }
 
 /*
+ * Hack -- determine if an item is "wearable" (not ammo)
+ */
+bool object_type::is_wieldable()
+{
+    /* Valid "tval" codes */
+    switch (tval)
+    {
+        case TV_BOW:
+        case TV_DIGGING:
+        case TV_HAFTED:
+        case TV_POLEARM:
+        case TV_SWORD:
+        case TV_BOOTS:
+        case TV_GLOVES:
+        case TV_HELM:
+        case TV_CROWN:
+        case TV_SHIELD:
+        case TV_CLOAK:
+        case TV_SOFT_ARMOR:
+        case TV_HARD_ARMOR:
+        case TV_DRAG_ARMOR:
+        case TV_DRAG_SHIELD:
+        case TV_LIGHT:
+        case TV_AMULET:
+        case TV_RING: return (TRUE);
+    }
+
+    /* Nope */
+    return (FALSE);
+}
+
+/*
  * Hack -- determine if an item is "wearable" (or a missile)
  */
 bool object_type::is_wearable()

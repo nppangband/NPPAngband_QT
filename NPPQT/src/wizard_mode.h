@@ -4,6 +4,15 @@
 #include <QtWidgets>
 #include "src/npp.h"
 
+class EditObjectDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit EditObjectDialog(void);
+};
+
+
 class EditCharacterDialog : public QDialog
 {
     Q_OBJECT
@@ -49,6 +58,7 @@ private slots:
     void wiz_mass_create_items(void);
     void wiz_create_good_item(void);
     void wiz_create_great_item(void);
+    void wiz_edit_object(void);
     void wiz_mass_identify_items(void);
     void wiz_winners_kit(void);
 };

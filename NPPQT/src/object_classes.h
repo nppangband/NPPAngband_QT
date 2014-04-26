@@ -115,6 +115,7 @@ class object_type
     void object_wipe();
     void object_copy (object_type *j_ptr);
     bool has_hidden_powers();
+    bool is_wieldable();
     bool is_wearable();
     bool is_easy_know();
     bool is_known();

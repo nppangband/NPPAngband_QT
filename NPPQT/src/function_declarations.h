@@ -344,6 +344,7 @@ extern bool item_tester_hook_recharge(object_type *o_ptr);
 extern bool item_tester_hook_randart(object_type *o_ptr);
 extern bool item_tester_hook_flammable_book(object_type *o_ptr);
 extern bool item_tester_hook_activate(object_type *o_ptr);
+extern bool item_tester_hook_not_artifact(object_type *o_ptr);
 extern bool obj_can_browse(object_type *o_ptr);
 
 // object_info.cpp

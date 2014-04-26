@@ -18,6 +18,111 @@
 
 #include "src/wizard_mode.h"
 
+EditObjectDialog::EditObjectDialog(void)
+{
+    QGridLayout *edit_info = new QGridLayout;
+
+    object_type *o_ptr;
+    int item;
+
+    /* Get an item */
+    QString q = "Choose a non-artifact item to edit. ";
+    QString s = "You have no eligible item.";
+    /* Only accept legal items. */
+    item_tester_hook = item_tester_hook_not_artifact;
+
+    if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR | USE_QUIVER))) return;
+
+    /* Get the item (in the pack) */
+    if (item >= 0)
+    {
+        o_ptr = &inventory[item];
+    }
+
+    /* Get the item (on the floor) */
+    else
+    {
+        o_ptr = &o_list[0 - item];
+    }
+
+    QString o_name = object_desc(o_ptr, ODESC_BASE);
+
+    // Edit quantity
+    QLabel *quant_label = new QLabel("Edit quantity");
+    QSpinBox *quant_spinner = new QSpinBox;
+    quant_spinner->setRange(1,MAX_STACK_SIZE);
+    quant_spinner->setValue(o_ptr->number);
+    edit_info->addWidget(quant_label, 1, 0);
+    edit_info->addWidget(quant_spinner, 1, 1);
+
+    // Pval
+    QLabel *pval_label = new QLabel("Edit pval");
+    QSpinBox *pval_spinner = new QSpinBox;
+    pval_spinner->setRange(-99,99);
+    pval_spinner->setValue(o_ptr->pval);
+    if (o_ptr->is_wieldable())
+    {
+        edit_info->addWidget(pval_label, 2, 0);
+        edit_info->addWidget(pval_spinner, 2, 1);
+    }
+
+    // To-hit
+    QLabel *to_h_label = new QLabel("Edit To-Hit");
+    QSpinBox *to_h_spinner = new QSpinBox;
+    to_h_spinner->setRange(-99,99);
+    to_h_spinner->setValue(o_ptr->to_h);
+    if (o_ptr->is_wieldable())
+    {
+        edit_info->addWidget(to_h_label, 3, 0);
+        edit_info->addWidget(to_h_spinner, 3, 1);
+    }
+
+    // To-damage
+    QLabel *to_d_label = new QLabel("Edit To-Dam");
+    QSpinBox *to_d_spinner = new QSpinBox;
+    to_d_spinner->setRange(-99,99);
+    to_d_spinner->setValue(o_ptr->to_d);
+    if (o_ptr->is_wieldable())
+    {
+        edit_info->addWidget(to_d_label, 4, 0);
+        edit_info->addWidget(to_d_spinner, 4, 1);
+    }
+
+    // Armor Class
+    QLabel *to_ac_label = new QLabel("Edit Armor Class");
+    QSpinBox *to_ac_spinner = new QSpinBox;
+    to_ac_spinner->setRange(-99,99);
+    to_ac_spinner->setValue(o_ptr->to_d);
+    if (o_ptr->is_wieldable())
+    {
+        edit_info->addWidget(to_ac_label, 5, 0);
+        edit_info->addWidget(to_ac_spinner, 5, 1);
+    }
+
+
+    QPushButton *close_button = new QPushButton(tr("&Close"));
+    connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
+    edit_info->addWidget(close_button, 7, 2);
+
+    setLayout(edit_info);
+    setWindowTitle(o_name);
+    this->exec();
+
+    o_ptr->number = quant_spinner->value();
+    o_ptr->pval = pval_spinner->value();
+    o_ptr->to_h = to_h_spinner->value();
+    o_ptr->to_d = to_d_spinner->value();
+    o_ptr->to_a = to_ac_spinner->value();
+
+    /* Combine and Reorder the pack (later) */
+    p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
+
+    /* Update stuff */
+    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+
+    handle_stuff();
+}
+
 
 EditCharacterDialog::EditCharacterDialog(void)
 {
@@ -134,8 +239,6 @@ EditCharacterDialog::EditCharacterDialog(void)
                       PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
 
     handle_stuff();
-
-
 }
 
 // Completely cure the player
@@ -617,6 +720,12 @@ void WizardModeDialog::wiz_detect_all_monsters(void)
 
 }
 
+void WizardModeDialog::wiz_edit_object(void)
+{
+    EditObjectDialog();
+    this->accept();
+}
+
 void WizardModeDialog::wiz_edit_character(void)
 {
     EditCharacterDialog();
@@ -769,7 +878,7 @@ WizardModeDialog::WizardModeDialog(void)
 
     row++;
 
-        // Add the "edit character" button
+    // Add the "edit character" button
     QPushButton *edit_character = new QPushButton("Edit Character");
     edit_character->setToolTip("Edit character statistics, experience, gold, and fame.");
     connect(edit_character, SIGNAL(clicked()), this, SLOT(wiz_edit_character()));
@@ -870,6 +979,12 @@ WizardModeDialog::WizardModeDialog(void)
     winners_kit->setToolTip("Create a set of artifacts suitable for winning the game.");
     connect(winners_kit, SIGNAL(clicked()), this, SLOT(wiz_winners_kit()));
     wizard_layout->addWidget(winners_kit, row, 1);
+
+    // Add the "edit object" button
+    QPushButton *edit_object = new QPushButton("Edit Object");
+    edit_object->setToolTip("Edit a non-artifact object.");
+    connect(edit_object, SIGNAL(clicked()), this, SLOT(wiz_edit_object()));
+    wizard_layout->addWidget(edit_object, row, 2);
 
     vlay->addLayout(wizard_layout);
 

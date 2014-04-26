@@ -1312,8 +1312,17 @@ static bool read_scroll(object_type *o_ptr, bool *ident)
 
             if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN | USE_FLOOR))) break;
 
-            /* Got the item */
-            o_ptr = &inventory[item];
+            /* Get the item (in the pack) */
+            if (item >= 0)
+            {
+                o_ptr = &inventory[item];
+            }
+
+            /* Get the item (on the floor) */
+            else
+            {
+                o_ptr = &o_list[0 - item];
+            }
 
             if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
             {
