@@ -763,7 +763,7 @@ static int choose_chest_contents (void)
  * Hack -- note special processing for weapon/digger
  * Hack -- note special rating boost for dragon scale mail
  */
-static void a_m_aux_1(object_type *o_ptr, int level, int power)
+void a_m_aux_1(object_type *o_ptr, int level, int power)
 {
     int tohit1 = randint(5) + m_bonus(5, level);
     int todam1 = randint(5) + m_bonus(5, level);
@@ -875,11 +875,8 @@ static void a_m_aux_1(object_type *o_ptr, int level, int power)
 
 /*
  * Apply magic to an item known to be "armor"
- *
- * Hack -- note special processing for crown/helm
- * Hack -- note special processing for robe of permanence
  */
-static void a_m_aux_2(object_type *o_ptr, int level, int power)
+void a_m_aux_2(object_type *o_ptr, int level, int power)
 {
     int toac1 = randint(5) + m_bonus(5, level);
 
@@ -1503,6 +1500,225 @@ void object_into_artifact(object_type *o_ptr, artifact_type *a_ptr)
     if (a_ptr->a_flags3 & (TR3_PERFECT_BALANCE)) o_ptr->ident |= (IDENT_PERFECT_BALANCE);
 }
 
+void apply_ego_item_magic(object_type *o_ptr, int lev)
+{
+    ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
+    u32b f1, f2, f3, fn;
+
+    /* Examine the item */
+    object_flags(o_ptr, &f1, &f2, &f3, &fn);
+
+    /* Extra powers */
+    if (e_ptr->xtra)
+    {
+        byte size = 0;
+        byte max_flags;
+        u32b flag, base = 0;
+        u32b flag_cur = 0;
+        int x;
+
+        /*Mark what type of extra feature we have here*/
+        o_ptr->xtra1 = e_ptr->xtra;
+
+        switch (o_ptr->xtra1)
+        {
+            case OBJECT_XTRA_STAT_SUSTAIN:
+            {
+                size = OBJECT_XTRA_SIZE_SUSTAIN;
+                base = OBJECT_XTRA_BASE_SUSTAIN;
+                flag_cur = f2;
+                break;
+            }
+
+            case OBJECT_XTRA_TYPE_HIGH_RESIST:
+            {
+                size = OBJECT_XTRA_SIZE_HIGH_RESIST;
+                base = OBJECT_XTRA_BASE_HIGH_RESIST;
+                flag_cur = f2;
+                break;
+            }
+
+            case OBJECT_XTRA_TYPE_POWER:
+            {
+                size = OBJECT_XTRA_SIZE_POWER;
+                base = OBJECT_XTRA_BASE_POWER;
+                flag_cur = f3;
+                break;
+            }
+            case OBJECT_XTRA_TYPE_IMMUNITY:
+            {
+                size = OBJECT_XTRA_SIZE_IMMUNITY;
+                base = OBJECT_XTRA_BASE_IMMUNITY;
+                flag_cur = f2;
+                break;
+            }
+            case OBJECT_XTRA_TYPE_STAT_ADD:
+            {
+                size = OBJECT_XTRA_SIZE_STAT_ADD;
+                base = OBJECT_XTRA_BASE_STAT_ADD;
+                flag_cur = f1;
+
+                /* Calculate Stat bonus */
+                o_ptr->pval = 1 + m_bonus(5 + (lev / 35), lev);
+
+                /*cut it off at 6*/
+                if (o_ptr->pval > 6) o_ptr->pval = 6;
+                break;
+            }
+            case OBJECT_XTRA_TYPE_SLAY:
+            {
+                size = OBJECT_XTRA_SIZE_SLAY;
+                base = OBJECT_XTRA_BASE_SLAY;
+                flag_cur = f1;
+                break;
+            }
+            case OBJECT_XTRA_TYPE_KILL:
+            {
+                size = OBJECT_XTRA_SIZE_KILL;
+                base = OBJECT_XTRA_BASE_KILL;
+                flag_cur = f1;
+                break;
+            }
+            case OBJECT_XTRA_TYPE_BRAND:
+            {
+                size = OBJECT_XTRA_SIZE_BRAND;
+                base = OBJECT_XTRA_BASE_BRAND;
+                flag_cur = f1;
+                break;
+            }
+            case OBJECT_XTRA_TYPE_LOW_RESIST:
+            {
+                size = OBJECT_XTRA_SIZE_LOW_RESIST;
+                base = OBJECT_XTRA_BASE_LOW_RESIST;
+                flag_cur = f2;
+                break;
+            }
+            case OBJECT_XTRA_TYPE_NATIVE:
+            {
+                size = OBJECT_XTRA_SIZE_NATIVE;
+                base = OBJECT_XTRA_BASE_NATIVE;
+                flag_cur = fn;
+                break;
+            }
+        }
+
+        /*start with a clean slate*/
+        o_ptr->xtra2 = 0;
+
+        /* Mark when there are no more flags to give */
+        max_flags = size;
+
+        /*Check to see if any object already has some of these flags*/
+        for (x = 0; x < size; x++)
+        {
+            /*Go to the flag*/
+            u32b current_bit = base << x;
+
+            /* Do we have this flag already?*/
+            if (flag_cur & current_bit)
+            {
+                /*Mark it in xtra2*/
+                flag = 0x00000001L << x;
+
+                /* Assign the flag */
+                o_ptr->xtra2 |= flag;
+
+                /* Note how many we have left */
+                max_flags--;
+            }
+
+
+        }
+
+        while (max_flags)
+        {
+            /* Make a random flag */
+            flag = 0x00000001L << rand_int(size);
+
+            /* Duplicated flag? */
+            if (o_ptr->xtra2 & flag)	continue;
+
+            /* Assign the flag */
+            o_ptr->xtra2 |= flag;
+
+            /* Note how many we have left */
+            max_flags--;
+
+            /* Another flag sometimes? */
+            if (!one_in_(EXTRA_FLAG_CHANCE)) break;
+
+        }
+    }
+
+    /* Ego-item throwing weapons may sometimes be perfectly
+     * balanced.
+     */
+    if ((f3 & (TR3_THROWING)) && (randint(3) == 1))
+    {
+        (o_ptr->ident |= IDENT_PERFECT_BALANCE);
+    }
+
+    if (f3 & (TR3_PERFECT_BALANCE))
+    {
+        (o_ptr->ident |= IDENT_PERFECT_BALANCE);
+    }
+
+    /* Hack -- acquire "broken" flag */
+    if (!e_ptr->cost) o_ptr->ident |= (IDENT_BROKEN);
+
+    /* Hack -- acquire "cursed" flag */
+    if (e_ptr->e_flags3 & (TR3_LIGHT_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+    if (e_ptr->e_flags3 & (TR3_HEAVY_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+    if (e_ptr->e_flags3 & (TR3_PERMA_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+
+    /* Hack -- apply extra penalties if needed */
+    if (o_ptr->is_cursed() || o_ptr->is_broken())
+    {
+        /* Hack -- obtain bonuses */
+        if (e_ptr->max_to_h > 0) o_ptr->to_h -= randint(e_ptr->max_to_h);
+        if (e_ptr->max_to_d > 0) o_ptr->to_d -= randint(e_ptr->max_to_d);
+        if (e_ptr->max_to_a > 0) o_ptr->to_a -= randint(e_ptr->max_to_a);
+
+        /* Hack -- obtain pval, unless one has already been assigned */
+        if ((e_ptr->max_pval > 0) && (o_ptr->pval == 0))
+              o_ptr->pval -= randint(e_ptr->max_pval);
+    }
+
+    /* Hack -- apply extra bonuses if needed */
+    else
+    {
+        /* Hack -- obtain bonuses */
+        if (e_ptr->max_to_h > 0) o_ptr->to_h += randint(e_ptr->max_to_h);
+        if (e_ptr->max_to_d > 0) o_ptr->to_d += randint(e_ptr->max_to_d);
+        if (e_ptr->max_to_a > 0) o_ptr->to_a += randint(e_ptr->max_to_a);
+
+        /* Hack -- obtain pval */
+        if (e_ptr->max_pval > 0)
+        {
+            /*Handle stat pvals differently*/
+            if (e_ptr->e_flags1 & TR1_ALL_STATS)
+            {
+                byte bonus = m_bonus(e_ptr->max_pval, lev);
+
+                /*min of 1*/
+                if (bonus < 1) bonus = 1;
+
+                o_ptr->pval += bonus;
+
+                /*hard limit*/
+                if(o_ptr->pval > 6) o_ptr->pval = 6;
+            }
+            else o_ptr->pval += randint(e_ptr->max_pval);
+        }
+    }
+
+    /* Hack -- apply rating bonus */
+    rating += e_ptr->rating;
+
+    /* Cheat -- describe the item */
+    if (cheat_peek) object_mention(o_ptr);
+}
+
 /*
  * Complete the "creation" of an object by applying "magic" to the item
  *
@@ -1745,226 +1961,11 @@ void apply_magic(object_type *o_ptr, int lev, bool okay, bool good, bool great, 
     /* Hack -- analyze ego-items */
     if (o_ptr->ego_num)
     {
-        ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
-        u32b f1, f2, f3, fn;
-
-        /* Examine the item */
-        object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-        /* Extra powers */
-        if (e_ptr->xtra)
-        {
-            byte size = 0;
-            byte max_flags;
-            u32b flag, base = 0;
-            u32b flag_cur = 0;
-            int x;
-
-            /*Mark what type of extra feature we have here*/
-            o_ptr->xtra1 = e_ptr->xtra;
-
-            switch (o_ptr->xtra1)
-            {
-                case OBJECT_XTRA_STAT_SUSTAIN:
-                {
-                    size = OBJECT_XTRA_SIZE_SUSTAIN;
-                    base = OBJECT_XTRA_BASE_SUSTAIN;
-                    flag_cur = f2;
-                    break;
-                }
-
-                case OBJECT_XTRA_TYPE_HIGH_RESIST:
-                {
-                    size = OBJECT_XTRA_SIZE_HIGH_RESIST;
-                    base = OBJECT_XTRA_BASE_HIGH_RESIST;
-                    flag_cur = f2;
-                    break;
-                }
-
-                case OBJECT_XTRA_TYPE_POWER:
-                {
-                    size = OBJECT_XTRA_SIZE_POWER;
-                    base = OBJECT_XTRA_BASE_POWER;
-                    flag_cur = f3;
-                    break;
-                }
-                case OBJECT_XTRA_TYPE_IMMUNITY:
-                {
-                    size = OBJECT_XTRA_SIZE_IMMUNITY;
-                    base = OBJECT_XTRA_BASE_IMMUNITY;
-                    flag_cur = f2;
-                    break;
-                }
-                case OBJECT_XTRA_TYPE_STAT_ADD:
-                {
-                    size = OBJECT_XTRA_SIZE_STAT_ADD;
-                    base = OBJECT_XTRA_BASE_STAT_ADD;
-                    flag_cur = f1;
-
-                    /* Calculate Stat bonus */
-                    o_ptr->pval = 1 + m_bonus(5 + (lev / 35), lev);
-
-                    /*cut it off at 6*/
-                    if (o_ptr->pval > 6) o_ptr->pval = 6;
-                    break;
-                }
-                case OBJECT_XTRA_TYPE_SLAY:
-                {
-                    size = OBJECT_XTRA_SIZE_SLAY;
-                    base = OBJECT_XTRA_BASE_SLAY;
-                    flag_cur = f1;
-                    break;
-                }
-                case OBJECT_XTRA_TYPE_KILL:
-                {
-                    size = OBJECT_XTRA_SIZE_KILL;
-                    base = OBJECT_XTRA_BASE_KILL;
-                    flag_cur = f1;
-                    break;
-                }
-                case OBJECT_XTRA_TYPE_BRAND:
-                {
-                    size = OBJECT_XTRA_SIZE_BRAND;
-                    base = OBJECT_XTRA_BASE_BRAND;
-                    flag_cur = f1;
-                    break;
-                }
-                case OBJECT_XTRA_TYPE_LOW_RESIST:
-                {
-                    size = OBJECT_XTRA_SIZE_LOW_RESIST;
-                    base = OBJECT_XTRA_BASE_LOW_RESIST;
-                    flag_cur = f2;
-                    break;
-                }
-                case OBJECT_XTRA_TYPE_NATIVE:
-                {
-                    size = OBJECT_XTRA_SIZE_NATIVE;
-                    base = OBJECT_XTRA_BASE_NATIVE;
-                    flag_cur = fn;
-                    break;
-                }
-            }
-
-            /*start with a clean slate*/
-            o_ptr->xtra2 = 0;
-
-            /* Mark when there are no more flags to give */
-            max_flags = size;
-
-            /*Check to see if any object already has some of these flags*/
-            for (x = 0; x < size; x++)
-            {
-                /*Go to the flag*/
-                u32b current_bit = base << x;
-
-                /* Do we have this flag already?*/
-                if (flag_cur & current_bit)
-                {
-                    /*Mark it in xtra2*/
-                    flag = 0x00000001L << x;
-
-                    /* Assign the flag */
-                    o_ptr->xtra2 |= flag;
-
-                    /* Note how many we have left */
-                    max_flags--;
-                }
-
-
-            }
-
-            while (max_flags)
-            {
-                /* Make a random flag */
-                flag = 0x00000001L << rand_int(size);
-
-                /* Duplicated flag? */
-                if (o_ptr->xtra2 & flag)	continue;
-
-                /* Assign the flag */
-                o_ptr->xtra2 |= flag;
-
-                /* Note how many we have left */
-                max_flags--;
-
-                /* Another flag sometimes? */
-                if (!one_in_(EXTRA_FLAG_CHANCE)) break;
-
-            }
-        }
-
-        /* Ego-item throwing weapons may sometimes be perfectly
-         * balanced.
-         */
-        if ((f3 & (TR3_THROWING)) && (randint(3) == 1))
-        {
-            (o_ptr->ident |= IDENT_PERFECT_BALANCE);
-        }
-
-        if (f3 & (TR3_PERFECT_BALANCE))
-        {
-            (o_ptr->ident |= IDENT_PERFECT_BALANCE);
-        }
-
-        /* Hack -- acquire "broken" flag */
-        if (!e_ptr->cost) o_ptr->ident |= (IDENT_BROKEN);
-
-        /* Hack -- acquire "cursed" flag */
-        if (e_ptr->e_flags3 & (TR3_LIGHT_CURSE)) o_ptr->ident |= (IDENT_CURSED);
-        if (e_ptr->e_flags3 & (TR3_HEAVY_CURSE)) o_ptr->ident |= (IDENT_CURSED);
-        if (e_ptr->e_flags3 & (TR3_PERMA_CURSE)) o_ptr->ident |= (IDENT_CURSED);
-
-        /* Hack -- apply extra penalties if needed */
-        if (o_ptr->is_cursed() || o_ptr->is_broken())
-        {
-            /* Hack -- obtain bonuses */
-            if (e_ptr->max_to_h > 0) o_ptr->to_h -= randint(e_ptr->max_to_h);
-            if (e_ptr->max_to_d > 0) o_ptr->to_d -= randint(e_ptr->max_to_d);
-            if (e_ptr->max_to_a > 0) o_ptr->to_a -= randint(e_ptr->max_to_a);
-
-            /* Hack -- obtain pval, unless one has already been assigned */
-            if ((e_ptr->max_pval > 0) && (o_ptr->pval == 0))
-                  o_ptr->pval -= randint(e_ptr->max_pval);
-        }
-
-        /* Hack -- apply extra bonuses if needed */
-        else
-        {
-            /* Hack -- obtain bonuses */
-            if (e_ptr->max_to_h > 0) o_ptr->to_h += randint(e_ptr->max_to_h);
-            if (e_ptr->max_to_d > 0) o_ptr->to_d += randint(e_ptr->max_to_d);
-            if (e_ptr->max_to_a > 0) o_ptr->to_a += randint(e_ptr->max_to_a);
-
-            /* Hack -- obtain pval */
-            if (e_ptr->max_pval > 0)
-            {
-                /*Handle stat pvals differently*/
-                if (e_ptr->e_flags1 & TR1_ALL_STATS)
-                {
-                    byte bonus = m_bonus(e_ptr->max_pval, lev);
-
-                    /*min of 1*/
-                    if (bonus < 1) bonus = 1;
-
-                    o_ptr->pval += bonus;
-
-                    /*hard limit*/
-                    if(o_ptr->pval > 6) o_ptr->pval = 6;
-                }
-                else o_ptr->pval += randint(e_ptr->max_pval);
-            }
-        }
-
-        /* Hack -- apply rating bonus */
-        rating += e_ptr->rating;
-
-        /* Cheat -- describe the item */
-        if (cheat_peek) object_mention(o_ptr);
+        apply_ego_item_magic(o_ptr, lev);
 
         /* Done */
         return;
     }
-
 
     /* Examine real objects */
     if (o_ptr->k_idx)

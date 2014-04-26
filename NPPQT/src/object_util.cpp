@@ -4346,7 +4346,48 @@ s16b lookup_kind(int tval, int sval)
     }
 
     /* Oops */
-    pop_up_message_box(QString("No object (%1,%2)") .arg(tval)  .arg(sval));
+    pop_up_message_box(QString("Lookup_kind could not find object (%1,%2)") .arg(tval)  .arg(sval));
+
+    /* Oops */
+    return (0);
+}
+
+/*
+ * Find the index of the object_kind with the given tval and sval
+ */
+s16b lookup_ego(s16b tval, s16b sval, QString ego_title)
+{
+    int e;
+
+    ego_title = ego_title.toLower();
+
+    /* Look for a matching ego-entry */
+    for (e = 1; e < z_info->e_max; e++)
+    {
+        ego_item_type *e_ptr = &e_info[e];
+
+        /* Test if this is a legal ego-item type for this object */
+        for (int j = 0; j < EGO_TVALS_MAX; j++)
+        {
+            /* Require identical base type */
+            if (tval != e_ptr->tval[j]) continue;
+
+            // require matching sval range
+            if (sval <  e_ptr->min_sval[j]) continue;
+            if (sval >  e_ptr->max_sval[j]) continue;
+
+            QString ego_name = e_ptr->e_name.toLower();
+
+            // Make sure the name atches
+            if (!ego_name.contains(ego_title)) continue;
+
+            // We have a match
+            return (e);
+        }
+    }
+
+    /* Oops */
+    pop_up_message_box(QString("No ego_item %1") .arg(ego_title));
 
     /* Oops */
     return (0);

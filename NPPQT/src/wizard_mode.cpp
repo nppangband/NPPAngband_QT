@@ -72,6 +72,33 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(chr_label, 6, 0);
     edit_info->addWidget(chr_spinner, 6, 1);
 
+    // Gold
+    QLabel *gold_label = new QLabel("Gold");
+    QSpinBox *gold_spinner = new QSpinBox;
+    gold_spinner->setRange(0,500000000);
+    gold_spinner->setValue(p_ptr->au);
+    gold_spinner->setSingleStep(1000000);
+    edit_info->addWidget(gold_label, 7, 0);
+    edit_info->addWidget(gold_spinner, 7, 1);
+
+    // Experience
+    QLabel *exp_label = new QLabel("Experience");
+    QSpinBox *exp_spinner = new QSpinBox;
+    exp_spinner->setRange(0,10000000);
+    exp_spinner->setValue(p_ptr->max_exp);
+    exp_spinner->setSingleStep(10000);
+    edit_info->addWidget(exp_label, 8, 0);
+    edit_info->addWidget(exp_spinner, 8, 1);
+
+        // Experience
+    QLabel *fame_label = new QLabel("Fame");
+    QSpinBox *fame_spinner = new QSpinBox;
+    fame_spinner->setRange(0,5000);
+    fame_spinner->setValue(p_ptr->q_fame);
+    fame_spinner->setSingleStep(100);
+    edit_info->addWidget(fame_label, 9, 0);
+    edit_info->addWidget(fame_spinner, 9, 1);
+
     QPushButton *close_button = new QPushButton(tr("&Close"));
     connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
     edit_info->addWidget(close_button, 14, 2);
@@ -86,9 +113,28 @@ EditCharacterDialog::EditCharacterDialog(void)
     p_ptr->stat_cur[A_DEX] = p_ptr->stat_max[A_DEX] = dex_spinner->value();
     p_ptr->stat_cur[A_CON] = p_ptr->stat_max[A_CON] = con_spinner->value();
     p_ptr->stat_cur[A_CHR] = p_ptr->stat_max[A_CHR] = chr_spinner->value();
+    p_ptr->au = gold_spinner->value();
+    p_ptr->max_exp = p_ptr->exp = exp_spinner->value();
+    check_experience();
+    p_ptr->q_fame = fame_spinner->value();
 
 
-    //TODO update everything
+        /* Combine and Reorder the pack (later) */
+    p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
+
+    /* Update stuff */
+    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+
+    /* Fully update the visuals */
+    p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
+
+    /* Redraw everything */
+    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP | PR_INVEN | PR_EQUIP |
+                      PR_MESSAGE | PR_MONSTER | PR_OBJECT |
+                      PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
+
+    handle_stuff();
+
 
 }
 
@@ -136,8 +182,21 @@ void WizardModeDialog::wiz_cure_all(void)
 
     this->accept();
 
+    /* Combine and Reorder the pack (later) */
+    p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
+
+    /* Update stuff */
+    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+
+    /* Fully update the visuals */
+    p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
+
     /* Redraw everything */
-    // TODO do_cmd_redraw();
+    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP | PR_INVEN | PR_EQUIP |
+                      PR_MESSAGE | PR_MONSTER | PR_OBJECT |
+                      PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
+
+    handle_stuff();
 
 
 
@@ -184,7 +243,7 @@ void WizardModeDialog::wiz_winners_kit(void)
         if (k_idx)
         {
             object_prep(i_ptr, k_idx);
-            apply_magic(i_ptr, FALSE, TRUE, TRUE, TRUE);
+            apply_magic(i_ptr, k_info[k_idx].k_level, FALSE, TRUE, TRUE, TRUE);
             i_ptr->number = 2;
             object_aware(i_ptr);
             object_known(i_ptr);
@@ -196,8 +255,9 @@ void WizardModeDialog::wiz_winners_kit(void)
         k_idx = lookup_kind(TV_AMULET, SV_AMULET_THE_MAGI);
         if (k_idx)
         {
+            i_ptr->object_wipe();
             object_prep(i_ptr, k_idx);
-            apply_magic(i_ptr, FALSE, TRUE, TRUE, TRUE);
+            apply_magic(i_ptr, k_info[k_idx].k_level, FALSE, TRUE, TRUE, TRUE);
             object_aware(i_ptr);
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
@@ -206,18 +266,105 @@ void WizardModeDialog::wiz_winners_kit(void)
         }
         //boots of speed
         k_idx = lookup_kind(TV_BOOTS, SV_PAIR_OF_SOFT_LEATHER_BOOTS);
-        if (k_idx)
+        int ego_num = lookup_ego(TV_BOOTS, SV_PAIR_OF_SOFT_LEATHER_BOOTS, "speed");
+        if (k_idx && ego_num)
         {
+            i_ptr->object_wipe();
             object_prep(i_ptr, k_idx);
+            i_ptr->ego_num = ego_num;
+            a_m_aux_2(i_ptr, k_info[k_idx].k_level, 2);
+            apply_ego_item_magic(i_ptr, k_info[k_idx].k_level);
+            i_ptr->to_a = 25;
             object_aware(i_ptr);
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
-
-            adhbaagfb
-
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             (void)inven_carry(i_ptr);
         }
+        // Robe of Resistance
+        k_idx = lookup_kind(TV_SOFT_ARMOR, SV_ROBE);
+        ego_num = lookup_ego(TV_SOFT_ARMOR, SV_ROBE, "resistance");
+        if (k_idx && ego_num)
+        {
+            i_ptr->object_wipe();
+            object_prep(i_ptr, k_idx);
+            i_ptr->ego_num = ego_num;
+            a_m_aux_2(i_ptr, k_info[k_idx].k_level, 2);
+            apply_ego_item_magic(i_ptr, k_info[k_idx].k_level);
+            i_ptr->to_a = 25;
+            object_aware(i_ptr);
+            object_known(i_ptr);
+            k_info[k_idx].everseen = TRUE;
+            object_history(i_ptr, ORIGIN_CHEAT, 0);
+            (void)inven_carry(i_ptr);
+        }
+        // super-charged holy avenger dagger
+        k_idx = lookup_kind(TV_SWORD, SV_DAGGER);
+        ego_num = lookup_ego(TV_SWORD, SV_DAGGER, "holy avenger");
+        if (k_idx && ego_num)
+        {
+            i_ptr->object_wipe();
+            object_prep(i_ptr, k_idx);
+            i_ptr->ego_num = ego_num;
+            a_m_aux_1(i_ptr, k_info[k_idx].k_level, 2);
+            apply_ego_item_magic(i_ptr, k_info[k_idx].k_level);
+            i_ptr->to_a = i_ptr->to_h = i_ptr->to_d = 25;
+            i_ptr->dd = i_ptr->ds = 9;
+            object_aware(i_ptr);
+            object_known(i_ptr);
+            k_info[k_idx].everseen = TRUE;
+            object_history(i_ptr, ORIGIN_CHEAT, 0);
+            (void)inven_carry(i_ptr);
+        }
+        // crown of the magi
+        k_idx = lookup_kind(TV_CROWN, SV_SILVER_CROWN);
+        ego_num = lookup_ego(TV_CROWN, SV_SILVER_CROWN, "magi");
+        if (k_idx && ego_num)
+        {
+            i_ptr->object_wipe();
+            object_prep(i_ptr, k_idx);
+            i_ptr->ego_num = ego_num;
+            a_m_aux_2(i_ptr, k_info[k_idx].k_level, 2);
+            apply_ego_item_magic(i_ptr, k_info[k_idx].k_level);
+            i_ptr->to_a = 25;
+            object_aware(i_ptr);
+            object_known(i_ptr);
+            k_info[k_idx].everseen = TRUE;
+            object_history(i_ptr, ORIGIN_CHEAT, 0);
+            (void)inven_carry(i_ptr);
+        }
+        // super charged gloves of slaying
+        k_idx = lookup_kind(TV_GLOVES, SV_SET_OF_LEATHER_GLOVES);
+        ego_num = lookup_ego(TV_GLOVES, SV_SET_OF_LEATHER_GLOVES, "slaying");
+        if (k_idx && ego_num)
+        {
+            i_ptr->object_wipe();
+            object_prep(i_ptr, k_idx);
+            i_ptr->ego_num = ego_num;
+            a_m_aux_2(i_ptr, k_info[k_idx].k_level, 2);
+            apply_ego_item_magic(i_ptr, k_info[k_idx].k_level);
+            i_ptr->to_a = i_ptr->to_h = i_ptr->to_d = 25;
+            object_aware(i_ptr);
+            object_known(i_ptr);
+            k_info[k_idx].everseen = TRUE;
+            object_history(i_ptr, ORIGIN_CHEAT, 0);
+            (void)inven_carry(i_ptr);
+        }
+        //finally the Phial
+        if (TRUE)
+        {
+            i_ptr->object_wipe();
+            if (wiz_alloc_artifact(i_ptr, 1))
+            {
+                object_history(i_ptr, ORIGIN_CHEAT, 0);
+                identify_object(i_ptr, true);
+                (void)inven_carry(i_ptr);
+            }
+        }
+
+        handle_stuff();
+        this->accept();
+        return;
 
     }
 
@@ -243,6 +390,7 @@ void WizardModeDialog::wiz_winners_kit(void)
         object_type obj;
         object_type *o_ptr = &obj;
         if (!wiz_alloc_artifact(o_ptr, artis[i])) continue;
+        object_history(o_ptr, ORIGIN_CHEAT, 0);
         identify_object(o_ptr, true);
         drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
         QString name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
