@@ -18,16 +18,46 @@
 
 #include "src/wizard_mode.h"
 
+static bool wiz_alloc_artifact(object_type *o_ptr, int art_num)
+{
+    artifact_type *a_ptr = a_info + art_num;
+
+    if (a_ptr->tval + a_ptr->sval == 0) return false;
+
+    //if (a_ptr->a_cur_num > 0) return false;
+
+    int k_idx = lookup_kind(a_ptr->tval, a_ptr->sval);
+
+    if (!k_idx) return false;
+
+    o_ptr->object_wipe();
+
+    object_prep(o_ptr, k_idx);
+
+    object_into_artifact(o_ptr, a_ptr);
+
+    o_ptr->art_num = art_num;
+
+    object_history(o_ptr, ORIGIN_CHEAT, -1);
+
+    a_ptr->a_cur_num = 1;
+
+    return true;
+}
+
+
 EditObjectDialog::EditObjectDialog(void)
 {
+    QVBoxLayout *vlay = new QVBoxLayout;
+
     QGridLayout *edit_info = new QGridLayout;
 
     object_type *o_ptr;
     int item;
 
     /* Get an item */
-    QString q = "Choose a non-artifact item to edit. ";
-    QString s = "You have no eligible item.";
+    QString q = "Choose an item to edit. ";
+    QString s = "You have no eligible items.";
     /* Only accept legal items. */
     item_tester_hook = item_tester_hook_not_artifact;
 
@@ -45,7 +75,10 @@ EditObjectDialog::EditObjectDialog(void)
         o_ptr = &o_list[0 - item];
     }
 
-    QString o_name = object_desc(o_ptr, ODESC_BASE);
+    QLabel *obj_label = new QLabel(QString("<b><big>Editing %1</b></big>") .arg(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL)));
+    obj_label->setAlignment(Qt::AlignCenter);
+
+    vlay->addWidget(obj_label);
 
     // Edit quantity
     QLabel *quant_label = new QLabel("Edit quantity");
@@ -102,10 +135,14 @@ EditObjectDialog::EditObjectDialog(void)
 
     QPushButton *close_button = new QPushButton(tr("&Close"));
     connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
-    edit_info->addWidget(close_button, 7, 2);
 
-    setLayout(edit_info);
-    setWindowTitle(o_name);
+
+    vlay->addLayout(edit_info);
+    vlay->addStretch();
+    vlay->addWidget(close_button);
+
+    setLayout(vlay);
+    setWindowTitle("Object Editor");
     this->exec();
 
     o_ptr->number = quant_spinner->value();
@@ -127,6 +164,7 @@ EditObjectDialog::EditObjectDialog(void)
 EditCharacterDialog::EditCharacterDialog(void)
 {
     QGridLayout *edit_info = new QGridLayout;
+    QVBoxLayout *vlay = new QVBoxLayout;
 
     // First allow the 6 stats to be edited
     // Strength
@@ -206,9 +244,13 @@ EditCharacterDialog::EditCharacterDialog(void)
 
     QPushButton *close_button = new QPushButton(tr("&Close"));
     connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
-    edit_info->addWidget(close_button, 14, 2);
 
-    setLayout(edit_info);
+    vlay->addLayout(edit_info);
+    vlay->addStretch();
+    vlay->addWidget(close_button);
+
+    setLayout(vlay);
+
     setWindowTitle(tr("Character Edit Screen"));
     this->exec();
 
@@ -239,6 +281,215 @@ EditCharacterDialog::EditCharacterDialog(void)
                       PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
 
     handle_stuff();
+}
+
+
+//Helper function to get the complete artifacts name.
+QString MakeArtifactDialog::get_artifact_display_name(int a_idx)
+{
+    object_type object_type_body;
+    object_type *o_ptr = &object_type_body;
+
+    /* Make fake artifact */
+    o_ptr = &object_type_body;
+    o_ptr->object_wipe();
+    if (!make_fake_artifact(o_ptr, a_idx)) return ("Error");
+    object_aware(o_ptr);
+    object_known(o_ptr);
+    o_ptr->ident |= (IDENT_MENTAL);
+
+    return (object_desc(o_ptr, ODESC_PREFIX | ODESC_BASE | ODESC_SPOIL));
+}
+
+// Record the new selected item
+void MakeArtifactDialog::update_art_choice(int choice)
+{
+    art_num = choice;
+}
+
+// Select an artifact from a list and place it in the player's inventory
+MakeArtifactDialog::MakeArtifactDialog(void)
+{
+    int i;
+    QVBoxLayout *vlay = new QVBoxLayout;
+    art_choice = new QComboBox;
+    object_type object_type_body;
+    object_type *i_ptr = &object_type_body;
+
+
+    QLabel *obj_label = new QLabel(QString("<b><big>Please select an artifact:</b></big>"));
+    obj_label->setAlignment(Qt::AlignCenter);
+
+    vlay->addWidget(obj_label);
+    vlay->addStretch();
+
+    connect(art_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(update_art_choice(int)));
+
+    QPushButton *close_button = new QPushButton(tr("&Close"));
+    connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
+
+    int count = 0;
+    art_num = 0;
+
+    for (i = 1; i < z_info->art_norm_max; i++)
+    {
+        artifact_type *a_ptr = &a_info[i];
+
+        /* Skip "empty" items */
+        if (a_ptr->tval + a_ptr->sval == 0) continue;
+
+        art_choice->addItem(QString("%1") .arg(i));
+
+        art_choice->setItemText(count++, get_artifact_display_name(i));
+    }
+
+    vlay->addWidget(art_choice);
+    vlay->addStretch();
+    vlay->addWidget(close_button);
+
+    setLayout(vlay);
+
+    setWindowTitle(tr("Make Artifact"));
+    this->exec();
+
+    // find the artifact
+    count = 0;
+    for (i = 1; i < z_info->art_norm_max; i++)
+    {
+        artifact_type *a_ptr = &a_info[i];
+
+        /* Skip "empty" items */
+        if (a_ptr->tval + a_ptr->sval == 0) continue;
+
+        // Found the match
+        if (count == art_num) break;
+        count++;
+    }
+
+    i_ptr->object_wipe();
+    if (!wiz_alloc_artifact(i_ptr, i))
+    {
+
+     return;
+    }
+    object_history(i_ptr, ORIGIN_CHEAT, 0);
+    identify_object(i_ptr, true);
+    if(inven_carry(i_ptr) < 0)
+    {
+        drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+    }
+}
+
+//Helper function to get the complete artifacts name.
+QString MakeObjectDialog::get_object_display_name(int o_idx)
+{
+    object_type object_type_body;
+    object_type *o_ptr = &object_type_body;
+
+    /* Make fake artifact */
+    o_ptr = &object_type_body;
+    o_ptr->object_wipe();
+    object_prep(o_ptr, o_idx);
+    bool good = FALSE;
+
+    //  This is necessary to keep the game from freezing on dragon armor
+    object_level = k_info[o_idx].k_level;
+
+    apply_magic(o_ptr, k_info[o_idx].k_level, FALSE, FALSE, FALSE, FALSE);
+    object_aware(o_ptr);
+    object_known(o_ptr);
+    o_ptr->ident |= (IDENT_MENTAL);
+
+    object_level = p_ptr->depth;
+
+    return (object_desc(o_ptr, ODESC_BASE | ODESC_SPOIL));
+}
+
+// Record the new selected item
+void MakeObjectDialog::update_obj_choice(int choice)
+{
+    obj_num = choice;
+}
+
+// Select an artifact from a list and place it in the player's inventory.
+// Note that dragon armor comes out doesn't work too well, since it
+// is always make into an ego item.
+MakeObjectDialog::MakeObjectDialog(void)
+{
+    int i;
+    QVBoxLayout *vlay = new QVBoxLayout;
+    obj_choice = new QComboBox;
+    object_type object_type_body;
+    object_type *i_ptr = &object_type_body;
+
+
+    QLabel *obj_label = new QLabel(QString("<b><big>Please select an object:</b></big>"));
+    obj_label->setAlignment(Qt::AlignCenter);
+
+    vlay->addWidget(obj_label);
+    vlay->addStretch();
+
+    connect(obj_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(update_obj_choice(int)));
+
+    QPushButton *close_button = new QPushButton(tr("&Close"));
+    connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
+
+    int count = 0;
+    obj_num = 0;
+
+    for (i = 1; i < z_info->k_max; i++)
+    {
+        object_kind *k_ptr = &k_info[i];
+
+        /* Skip "empty" items */
+        if (k_ptr->k_name.isEmpty()) continue;
+        // Skip artifact templates
+        if (k_ptr->k_flags3 & (TR3_INSTA_ART)) continue;
+
+        obj_choice->addItem(QString("%1") .arg(i));
+
+        obj_choice->setItemText(count++, get_object_display_name(i));
+    }
+
+    vlay->addWidget(obj_choice);
+    vlay->addStretch();
+    vlay->addWidget(close_button);
+
+    setLayout(vlay);
+
+    setWindowTitle(tr("Make Object"));
+    this->exec();
+
+    // find the object
+    count = 0;
+    for (i = 1; i < z_info->k_max; i++)
+    {
+        object_kind *k_ptr = &k_info[i];
+
+        /* Skip "empty" items */
+        if (k_ptr->k_name.isEmpty()) continue;
+        // Skip artifact templates
+        if (k_ptr->k_flags3 & (TR3_INSTA_ART)) continue;
+
+        // Found the match
+        if (count == obj_num) break;
+        count++;
+    }
+
+    //  This is necessary to keep the game from freezing on dragon armor
+    object_level = k_info[i].k_level;
+
+    i_ptr->object_wipe();
+    object_prep(i_ptr, i);
+    apply_magic(i_ptr, p_ptr->depth, FALSE, FALSE, FALSE, FALSE);
+    object_history(i_ptr, ORIGIN_CHEAT, 0);
+    identify_object(i_ptr, true);
+    if(inven_carry(i_ptr) < 0)
+    {
+        drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+    }
+
+    object_level = p_ptr->depth;
 }
 
 // Completely cure the player
@@ -305,31 +556,16 @@ void WizardModeDialog::wiz_cure_all(void)
 
 }
 
-bool wiz_alloc_artifact(object_type *o_ptr, int art_num)
+void WizardModeDialog::wiz_create_artifact()
 {
-    artifact_type *a_ptr = a_info + art_num;
+    MakeArtifactDialog();
+    this->accept();
+}
 
-    if (a_ptr->tval + a_ptr->sval == 0) return false;
-
-    //if (a_ptr->a_cur_num > 0) return false;
-
-    int k_idx = lookup_kind(a_ptr->tval, a_ptr->sval);
-
-    if (!k_idx) return false;
-
-    o_ptr->object_wipe();
-
-    object_prep(o_ptr, k_idx);
-
-    object_into_artifact(o_ptr, a_ptr);
-
-    o_ptr->art_num = art_num;
-
-    object_history(o_ptr, ORIGIN_CHEAT, -1);
-
-    //a_ptr->a_cur_num = 1;
-
-    return true;
+void WizardModeDialog::wiz_create_object()
+{
+    MakeObjectDialog();
+    this->accept();
 }
 
 void WizardModeDialog::wiz_winners_kit(void)
@@ -352,7 +588,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
             object_history(i_ptr, ORIGIN_CHEAT, 0);
-            (void)inven_carry(i_ptr);
+            if(inven_carry(i_ptr) < 0)
+            {
+                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+            }
         }
         //Give an amulet of the magi;
         k_idx = lookup_kind(TV_AMULET, SV_AMULET_THE_MAGI);
@@ -365,7 +604,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
             object_history(i_ptr, ORIGIN_CHEAT, 0);
-            (void)inven_carry(i_ptr);
+            if(inven_carry(i_ptr) < 0)
+            {
+                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+            }
         }
         //boots of speed
         k_idx = lookup_kind(TV_BOOTS, SV_PAIR_OF_SOFT_LEATHER_BOOTS);
@@ -382,7 +624,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
             object_history(i_ptr, ORIGIN_CHEAT, 0);
-            (void)inven_carry(i_ptr);
+            if(inven_carry(i_ptr) < 0)
+            {
+                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+            }
         }
         // Robe of Resistance
         k_idx = lookup_kind(TV_SOFT_ARMOR, SV_ROBE);
@@ -399,7 +644,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
             object_history(i_ptr, ORIGIN_CHEAT, 0);
-            (void)inven_carry(i_ptr);
+            if(inven_carry(i_ptr) < 0)
+            {
+                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+            }
         }
         // super-charged holy avenger dagger
         k_idx = lookup_kind(TV_SWORD, SV_DAGGER);
@@ -417,7 +665,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
             object_history(i_ptr, ORIGIN_CHEAT, 0);
-            (void)inven_carry(i_ptr);
+            if(inven_carry(i_ptr) < 0)
+            {
+                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+            }
         }
         // crown of the magi
         k_idx = lookup_kind(TV_CROWN, SV_SILVER_CROWN);
@@ -434,7 +685,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
             object_history(i_ptr, ORIGIN_CHEAT, 0);
-            (void)inven_carry(i_ptr);
+            if(inven_carry(i_ptr) < 0)
+            {
+                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+            }
         }
         // super charged gloves of slaying
         k_idx = lookup_kind(TV_GLOVES, SV_SET_OF_LEATHER_GLOVES);
@@ -451,7 +705,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             object_known(i_ptr);
             k_info[k_idx].everseen = TRUE;
             object_history(i_ptr, ORIGIN_CHEAT, 0);
-            (void)inven_carry(i_ptr);
+            if(inven_carry(i_ptr) < 0)
+            {
+                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+            }
         }
         //finally the Phial
         if (TRUE)
@@ -461,7 +718,10 @@ void WizardModeDialog::wiz_winners_kit(void)
             {
                 object_history(i_ptr, ORIGIN_CHEAT, 0);
                 identify_object(i_ptr, true);
-                (void)inven_carry(i_ptr);
+                if(inven_carry(i_ptr) < 0)
+                {
+                    drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+                }
             }
         }
 
@@ -495,7 +755,10 @@ void WizardModeDialog::wiz_winners_kit(void)
         if (!wiz_alloc_artifact(o_ptr, artis[i])) continue;
         object_history(o_ptr, ORIGIN_CHEAT, 0);
         identify_object(o_ptr, true);
-        drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
+        if(inven_carry(o_ptr) < 0)
+        {
+            drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
+        }
         QString name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         message("Allocated " + name);
     }
@@ -986,10 +1249,25 @@ WizardModeDialog::WizardModeDialog(void)
     connect(edit_object, SIGNAL(clicked()), this, SLOT(wiz_edit_object()));
     wizard_layout->addWidget(edit_object, row, 2);
 
+    row++;
+
+    // Add the "make artifact" button
+    QPushButton *create_artifact = new QPushButton("Create artifact");
+    create_artifact->setToolTip("Create an artifact.");
+    connect(create_artifact, SIGNAL(clicked()), this, SLOT(wiz_create_artifact()));
+    wizard_layout->addWidget(create_artifact, row, 0);
+
+    // Add the "make objecct" button
+    QPushButton *create_object = new QPushButton("Create object");
+    create_object->setToolTip("Create a normal object.");
+    connect(create_object, SIGNAL(clicked()), this, SLOT(wiz_create_object()));
+    wizard_layout->addWidget(create_object, row, 1);
+
     vlay->addLayout(wizard_layout);
 
     buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    vlay->addStretch();
     vlay->addWidget(buttons);
 
     setLayout(vlay);

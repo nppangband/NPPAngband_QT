@@ -21,6 +21,45 @@ public:
     explicit EditCharacterDialog(void);
 };
 
+class MakeArtifactDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit MakeArtifactDialog(void);
+
+private slots:
+    void update_art_choice(int choice);
+
+private:
+
+    QComboBox *art_choice;
+    QString get_artifact_display_name(int a_idx);
+
+    int art_num;
+};
+
+class MakeObjectDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit MakeObjectDialog(void);
+
+private slots:
+    void update_obj_choice(int choice);
+
+private:
+
+    QComboBox *obj_choice;
+    QString get_object_display_name(int o_idx);
+
+    int obj_num;
+};
+
+
+
+
 class WizardModeDialog : public QDialog
 {
     Q_OBJECT
@@ -61,6 +100,8 @@ private slots:
     void wiz_edit_object(void);
     void wiz_mass_identify_items(void);
     void wiz_winners_kit(void);
+    void wiz_create_artifact(void);
+    void wiz_create_object(void);
 };
 
 #endif // WIZARD_MODE_H
