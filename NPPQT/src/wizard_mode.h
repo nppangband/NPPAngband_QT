@@ -57,7 +57,41 @@ private:
     int obj_num;
 };
 
+class MakeMonsterDialog : public QDialog
+{
+    Q_OBJECT
 
+public:
+    explicit MakeMonsterDialog(void);
+
+private slots:
+    void update_mon_choice(int choice);
+
+private:
+
+    QComboBox *mon_choice;
+    QString get_mon_display_name(int r_idx);
+
+    int mon_num;
+};
+
+class MakeFeatureDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit MakeFeatureDialog(void);
+
+private slots:
+    void update_feat_choice(int choice);
+
+private:
+
+    QComboBox *feat_choice;
+    QString get_feat_display_name(int f_idx);
+
+    int feat_num;
+};
 
 
 class WizardModeDialog : public QDialog
@@ -89,11 +123,13 @@ private slots:
     void wiz_edit_character(void);
     void wiz_summon(void);
     void wiz_banish(void);
+    void wiz_create_monster(void);
     void wiz_detect_all_monsters(void);
     void wiz_detection(void);
     void wiz_magic_mapping(void);
     void wiz_level_light(void);
     void wiz_redraw_dungeon(void);
+    void wiz_create_feature(void);
     void wiz_mass_create_items(void);
     void wiz_create_good_item(void);
     void wiz_create_great_item(void);

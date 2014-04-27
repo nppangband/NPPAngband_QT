@@ -390,7 +390,6 @@ QString MakeObjectDialog::get_object_display_name(int o_idx)
     o_ptr = &object_type_body;
     o_ptr->object_wipe();
     object_prep(o_ptr, o_idx);
-    bool good = FALSE;
 
     //  This is necessary to keep the game from freezing on dragon armor
     object_level = k_info[o_idx].k_level;
@@ -492,6 +491,183 @@ MakeObjectDialog::MakeObjectDialog(void)
     object_level = p_ptr->depth;
 }
 
+//Helper function to get the complete monster name.
+QString MakeMonsterDialog::get_mon_display_name(int r_idx)
+{
+    return (monster_desc_race(r_idx));
+}
+// Record the new selected monster
+void MakeMonsterDialog::update_mon_choice(int choice)
+{
+    mon_num = choice;
+}
+
+// Select a monster from a list and place it in the dungeon.
+MakeMonsterDialog::MakeMonsterDialog(void)
+{
+    int i;
+    QVBoxLayout *vlay = new QVBoxLayout;
+    mon_choice = new QComboBox;
+    int y, x;
+
+    QLabel *mon_label = new QLabel(QString("<b><big>Please select a monster:</b></big>"));
+    mon_label->setAlignment(Qt::AlignCenter);
+
+    vlay->addWidget(mon_label);
+    vlay->addStretch();
+
+    connect(mon_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(update_mon_choice(int)));
+
+    QPushButton *close_button = new QPushButton(tr("&Close"));
+    connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
+
+    int count = 0;
+    mon_num = 0;
+
+    for (i = 1; i < z_info->r_max; i++)
+    {
+        monster_race *r_ptr = &r_info[i];
+
+        /* Skip "empty" items */
+        if (r_ptr->r_name_full.isEmpty()) continue;
+        // Skip player_ghost templates
+        if (r_ptr->flags2 & (RF2_PLAYER_GHOST)) continue;
+
+        mon_choice->addItem(QString("%1") .arg(i));
+
+        mon_choice->setItemText(count++, get_mon_display_name(i));
+    }
+
+    vlay->addWidget(mon_choice);
+    vlay->addStretch();
+    vlay->addWidget(close_button);
+
+    setLayout(vlay);
+
+    setWindowTitle(tr("Make Monster"));
+    this->exec();
+
+    // find the monster
+    count = 0;
+    for (i = 1; i < z_info->r_max; i++)
+    {
+        monster_race *r_ptr = &r_info[i];
+
+        /* Skip "empty" items */
+        if (r_ptr->r_name_full.isEmpty()) continue;
+        // Skip player_ghost templates
+        if (r_ptr->flags2 & (RF2_PLAYER_GHOST)) continue;
+
+        // Found the match
+        if (count == mon_num) break;
+        count++;
+    }
+
+    /* Try 10 times */
+    for (int k = 0; k < 10; k++)
+    {
+        int d = 2;
+
+        /* Pick a location */
+        scatter(&y, &x, p_ptr->py, p_ptr->px, d, 0);
+
+        /* Require empty grids */
+        if (!cave_empty_bold(y, x)) continue;
+
+        /* Place it (allow groups) */
+        if (place_monster_aux(y, x, i, (MPLACE_GROUP | MPLACE_OVERRIDE | MPLACE_SLEEP))) break;
+    }
+    p_ptr->redraw |= (PR_MAP | PR_MONLIST);
+}
+
+//Helper function to get the complete monster name.
+QString MakeFeatureDialog::get_feat_display_name(int f_idx)
+{
+    return (feature_desc(f_idx, FALSE, FALSE));
+}
+
+// Record the new selected monster
+void MakeFeatureDialog::update_feat_choice(int choice)
+{
+    feat_num = choice;
+}
+
+// Select a monster from a list and place it in the dungeon.
+MakeFeatureDialog::MakeFeatureDialog(void)
+{
+    int i;
+    QVBoxLayout *vlay = new QVBoxLayout;
+    feat_choice = new QComboBox;
+
+    QLabel *feat_label = new QLabel(QString("<b><big>Please select a feature:</b></big>"));
+    feat_label->setAlignment(Qt::AlignCenter);
+
+    vlay->addWidget(feat_label);
+    vlay->addStretch();
+
+    connect(feat_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(update_feat_choice(int)));
+
+    QPushButton *close_button = new QPushButton(tr("&Close"));
+    connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
+
+    int count = 0;
+    feat_num = 0;
+
+    for (i = 1; i < z_info->f_max; i++)
+    {
+        /* Get the feature */
+        feature_type *f_ptr = &f_info[i];
+
+        if (f_ptr->f_name.isEmpty()) continue;
+
+        feat_choice->addItem(QString("%1") .arg(i));
+
+        feat_choice->setItemText(count++, get_feat_display_name(i));
+    }
+
+    vlay->addWidget(feat_choice);
+    vlay->addStretch();
+    vlay->addWidget(close_button);
+
+    setLayout(vlay);
+
+    setWindowTitle(tr("Make Feature"));
+    this->exec();
+
+    // find the feature
+    count = 0;
+    for (i = 1; i < z_info->f_max; i++)
+    {
+        /* Get the feature */
+        feature_type *f_ptr = &f_info[i];
+
+        if (f_ptr->f_name.isEmpty()) continue;
+
+        // Found the match
+        if (count == feat_num) break;
+        count++;
+    }
+
+        /* Pick a location */
+    if (!target_set_interactive(TARGET_GRID, -1, -1)) return;
+
+    /* Paranoia */
+    if (!p_ptr->target_set) return;
+
+    int y = p_ptr->target_row;
+    int x = p_ptr->target_col;
+
+    /* Paranoia */
+    if (dungeon_info[y][x].has_object() || dungeon_info[y][x].has_monster())
+    {
+        pop_up_message_box("Must be an empty grid");
+        return;
+    }
+
+    /* Create the feature */
+    cave_set_feat(y, x, i);
+}
+
 // Completely cure the player
 void WizardModeDialog::wiz_cure_all(void)
 {
@@ -551,9 +727,6 @@ void WizardModeDialog::wiz_cure_all(void)
                       PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
 
     handle_stuff();
-
-
-
 }
 
 void WizardModeDialog::wiz_create_artifact()
@@ -857,6 +1030,19 @@ void WizardModeDialog::wiz_know_all(void)
         f_l_ptr->f_l_non_native_to_hit_adj = MAX_UCHAR;
     }
 
+    this->accept();
+}
+
+void WizardModeDialog::wiz_create_monster()
+{
+    MakeMonsterDialog();
+    this->accept();
+}
+
+void WizardModeDialog::wiz_create_feature()
+{
+    this->hide();
+    MakeFeatureDialog();
     this->accept();
 }
 
@@ -1201,6 +1387,18 @@ WizardModeDialog::WizardModeDialog(void)
     redraw_dungeon->setToolTip("Redraw a new dungeon level at the current depth.");
     connect(redraw_dungeon, SIGNAL(clicked()), this, SLOT(wiz_redraw_dungeon()));
     wizard_layout->addWidget(redraw_dungeon, row, 0);
+
+    // Add the "make monster" button
+    QPushButton *make_monster = new QPushButton("Make Monster");
+    make_monster->setToolTip("Attempt to make a monster of a specified monster race.");
+    connect(make_monster, SIGNAL(clicked()), this, SLOT(wiz_create_monster()));
+    wizard_layout->addWidget(make_monster, row, 1);
+
+    // Add the "make feature" button
+    QPushButton *make_feature = new QPushButton("Make Feature");
+    make_feature->setToolTip("Attempt to make a specified feature type.");
+    connect(make_feature, SIGNAL(clicked()), this, SLOT(wiz_create_feature()));
+    wizard_layout->addWidget(make_feature, row, 2);
 
     row++;
 
