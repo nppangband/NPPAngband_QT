@@ -1059,3 +1059,37 @@ QString to_ascii(QString src)
 
     return src;
 }
+
+/*
+ * Converts stat num into a six-char (right justified) string
+ */
+QString cnv_stat(int val)
+{
+    QString str;
+
+    /* Above 18 */
+    if (val > 18)
+    {
+        int bonus = (val - 18);
+
+        if (game_mode == GAME_NPPMORIA)
+        {
+            if (bonus > 99) bonus = 100;
+        }
+
+        if (bonus >= 220)
+            str = "18/***";
+        else if (bonus >= 100)
+            str = QString("18/%1").arg(_num(bonus), 3, '0');
+        else
+            str = QString(" 18/%1").arg(_num(bonus), 2, '0');
+    }
+
+    /* From 3 to 18 */
+    else
+    {
+        str = QString("%1").arg(_num(val), 6, ' ');
+    }
+
+    return str;
+}
