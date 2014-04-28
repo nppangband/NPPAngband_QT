@@ -74,13 +74,21 @@ int SpellSelectDialog::get_selected_spell(int chosen_button)
         if (!available_books[i]) continue;
         for (int j = 0; j < SPELLS_PER_BOOK; j++)
         {
-            if (!available_spells[i][j]) continue;
+            int spell = get_spell_from_list(i, j);
+
+            if (spell == -1) continue;
+
+            if (!available_spells[i][j])
+            {
+                spell_counter++;
+                continue;
+            }
 
             // Found it
             if (chosen_button == spell_counter)
             {
-                // Either return the book or the chosen spell
-                return (get_spell_from_list(i, j));
+                // Return the chosen spell
+                return (spell);
             }
 
             spell_counter++;
@@ -126,7 +134,6 @@ void SpellSelectDialog::count_spells(int mode)
 
             if (mode != BOOK_BROWSE)
             {
-
                 if (!spell_okay(spell, (mode == BOOK_CAST))) continue;
             }
 
@@ -291,7 +298,6 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             // Create a push button and link it
             else
             {
-                QString text_num = QString::number(num_buttons);
                 QPushButton *button = new QPushButton(text_num);
                 button->setText(spell_name);
                 button->setStyleSheet("Text-align:left");
@@ -402,8 +408,6 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     main_layout->addWidget(main_prompt);
     main_layout->addWidget(spell_dialog);
     main_layout->addWidget(buttons);
-
-
 
     setLayout(main_layout);
     setWindowTitle(tr("Spell Selection Menu"));
