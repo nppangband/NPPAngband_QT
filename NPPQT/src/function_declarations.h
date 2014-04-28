@@ -946,6 +946,7 @@ extern QColor make_color_readable(QColor clr);
 extern void extract_tiles(bool save = true);
 extern void display_info_window(byte mode, int index, QString info, object_type *o_ptr = 0);
 extern QString to_ascii(QString src);
+extern QString cnv_stat(int val);
 
 // widard_mode.cpp
 extern bool make_fake_artifact(object_type *o_ptr, byte art_num);

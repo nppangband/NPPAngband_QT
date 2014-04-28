@@ -17,6 +17,64 @@
 MainWindow *main_window = 0;
 
 #define FONT_EXTRA 4
+#define SBAR_NORMAL "#00FF00"
+#define SBAR_DRAINED "yellow"
+
+enum {
+    SBAR_HP = 0,
+    SBAR_MANA,
+    SBAR_EXP,
+    SBAR_GOLD,
+    SBAR_STATS,
+    SBAR_SPEED = SBAR_STATS + A_MAX,
+    SBAR_DLVL,
+    SBAR_QUEST,
+    SBAR_FEELING,
+    SBAR_MONSTERS,
+    SBAR_MAX = SBAR_MONSTERS + 15
+};
+
+void MainWindow::create_sidebar()
+{
+    sidebar->insertColumn(0);
+    sidebar->verticalHeader()->setVisible(false);
+    sidebar->horizontalHeader()->setVisible(false);
+    sidebar->setShowGrid(false);
+    sidebar->setStyleSheet(QString("background-color: black; color: %1;").arg(SBAR_NORMAL));
+    QFontMetrics metrics(sidebar->font());
+    sidebar->setMinimumSize(metrics.width("MMMMMMMMMMMMMMMMMM"), 10);
+    sidebar->setEditTriggers(0);
+
+    int row = 0;
+
+    while (row < SBAR_MONSTERS) {
+        sidebar->insertRow(row);
+        sidebar->setItem(row, 0, new QTableWidgetItem(""));
+        sidebar->setRowHidden(row, true);
+        sidebar->setRowHeight(row, metrics.height() + 4);
+        row++;
+    }
+
+    while (row < SBAR_MAX) {
+        QWidget *wid = new QWidget;
+        QGridLayout *lay = new QGridLayout;
+        lay->setContentsMargins(2, 2, 2, 2);
+        wid->setLayout(lay);
+        QLabel *lb = new QLabel("");
+        lb->setObjectName("tile");
+        lay->addWidget(lb, 0, 0);
+        lb = new QLabel("");
+        lb->setObjectName("name");
+        lay->addWidget(lb, 0, 1);
+        lb = new QLabel("");
+        lb->setObjectName("health");
+        lay->addWidget(lb, 1, 0, 1, 2);
+        sidebar->insertRow(row);
+        sidebar->setCellWidget(row, 0, wid);
+        sidebar->setRowHidden(row, true);
+        row++;
+    }
+}
 
 void ui_request_size_update(QWidget *widget)
 {
@@ -1170,6 +1228,14 @@ void ui_event_signal(int event)
     case EVENT_EXPERIENCE:
     case EVENT_MONSTERLIST:
     case EVENT_MONSTERTARGET:
+    case EVENT_STATS:
+    case EVENT_STATE:
+    case EVENT_GOLD:
+    case EVENT_DUNGEONLEVEL:
+    case EVENT_FEELING:
+    case EVENT_PLAYERTITLE:
+    case EVENT_PLAYERSPEED:
+    case EVENT_PLAYERLEVEL:
         main_window->delayed_sidebar_update = true;
         break;
     }
@@ -1186,10 +1252,8 @@ void ui_flush_graphics()
 /*
  * Display the experience
  */
-static void prt_exp(QTableWidget *sidebar, int row, int col)
+static void prt_exp(QTableWidget *sidebar, int row)
 {
-    QTableWidgetItem *item;
-
     QString s1;
     QString s2;
     bool max_lev = (p_ptr->lev == z_info->max_level);
@@ -1203,21 +1267,24 @@ static void prt_exp(QTableWidget *sidebar, int row, int col)
     /* Format XP */
     s2 = QString("%1").arg(xp);
 
+    QTableWidgetItem *item = sidebar->item(row, 0);
+
     if (p_ptr->exp >= p_ptr->max_exp)
     {
         s1 = (max_lev ? "EXP " : "NEXT ");
         s1 += s2;
-        item = new QTableWidgetItem(s1);
+        item->setText(s1);
+        item->setTextColor(SBAR_NORMAL);
     }
     else
     {
         s1 = (max_lev ? "Exp " : "Next ");
         s1 += s2;
-        item = new QTableWidgetItem(s1);
-        item->setTextColor("yellow");
+        item->setText(s1);
+        item->setTextColor(SBAR_DRAINED);
     }
 
-    sidebar->setItem(row, col, item);
+    sidebar->setRowHidden(row, false);
 }
 
 bool my_less_than(const int &i1, const int &i2)
@@ -1242,34 +1309,36 @@ QList<int> get_visible_monsters()
 
     qSort(items.begin(), items.end(), my_less_than);
 
-    return items.mid(0, 15);
+    return items;
 }
 
-static void display_mon(QGridLayout *grid, int row, int m_idx)
+static void display_mon(QTableWidget *sidebar, int row, int m_idx)
 {
     monster_type *m_ptr = mon_list + m_idx;
     monster_race *r_ptr = r_info + m_ptr->r_idx;
 
+    QWidget *wid;
+    wid = sidebar->cellWidget(row, 0);
+    QLabel *lb = wid->findChild<QLabel *>("tile");
+
     if (use_graphics && !main_window->do_pseudo_ascii) {
         QPixmap pix = current_tiles->get_tile(r_ptr->tile_id);
         pix = pix.scaled(24, 24);
-        QLabel *lb = new QLabel("");
         lb->setPixmap(pix);
-        grid->addWidget(lb, row, 0);
     }
     else {
-        QLabel *lb = new QLabel(r_ptr->d_char);
+        lb->setText(r_ptr->d_char);
         lb->setStyleSheet(QString("color: %1;").arg(r_ptr->d_color.name()));
-        grid->addWidget(lb, row, 0);
     }
 
-    grid->addWidget(new QLabel(r_ptr->r_name_short), row, 1);
+    lb = wid->findChild<QLabel *>("name");
+    lb->setText(r_ptr->r_name_short);
 
     int w = 100;
     int h = 6;
     QImage img(w, h, QImage::Format_ARGB32);
     QPainter p(&img);
-    p.fillRect(0, 0, w, h, "#FFFFFF");
+    p.fillRect(0, 0, w, h, "black");
 
     int h2 = h;
     if (r_ptr->mana > 0) h2 = h / 2;
@@ -1281,6 +1350,7 @@ static void display_mon(QGridLayout *grid, int row, int m_idx)
         QString color("#00FF00");
         if (n <= 50) color = "red";
         else if (n < 100) color = "yellow";
+        else if (m_ptr->m_timed[MON_TMD_SLEEP] > 0) color = "#000077";
         p.fillRect(0, 0, w2, h2, color);
     }
 
@@ -1290,9 +1360,11 @@ static void display_mon(QGridLayout *grid, int row, int m_idx)
         p.fillRect(0, h2, w2, h2, "purple");
     }
 
-    QLabel *lb2 = new QLabel("");
-    lb2->setPixmap(QPixmap::fromImage(img));
-    grid->addWidget(lb2, row + 1, 0, 1, 2);
+    lb = wid->findChild<QLabel *>("health");
+    lb->setPixmap(QPixmap::fromImage(img));
+
+    sidebar->setRowHidden(row, false);
+    sidebar->setRowHeight(row, wid->sizeHint().height() + 4);
 }
 
 void MainWindow::update_sidebar()
@@ -1301,67 +1373,84 @@ void MainWindow::update_sidebar()
 
     delayed_sidebar_update = false;
 
-    sidebar->setRowCount(0);
+    for (int i = 0; i < SBAR_MAX; i++) {
+        sidebar->setRowHidden(i, true);
+    }
 
     if (!character_dungeon) return;
 
-    int row = 0;
-
-    QFontMetrics metrics(sidebar->font());
-
-    int h = metrics.height() + 4;
-
-    sidebar->setEditTriggers(0);
-
-    sidebar->insertRow(row);
+    // HP
 
     QString hp = QString("HP %1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
 
-    sidebar->setItem(row, 0, new QTableWidgetItem(hp));
+    QTableWidgetItem *item = sidebar->item(SBAR_HP, 0);
 
-    if (p_ptr->chp < p_ptr->mhp) sidebar->item(row, 0)->setTextColor("yellow");
+    item->setText(hp);
 
-    row++;
+    if (p_ptr->chp >= p_ptr->mhp) item->setTextColor(SBAR_NORMAL);
+    else item->setTextColor(SBAR_DRAINED);
 
-    sidebar->insertRow(row);
+    sidebar->setRowHidden(SBAR_HP, false);
+
+    // MANA
 
     QString sp = QString("SP %1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
+    item = sidebar->item(SBAR_MANA, 0);
+    item->setText(sp);
+    if (p_ptr->csp >= p_ptr->msp) item->setTextColor(SBAR_NORMAL);
+    else item->setTextColor(SBAR_DRAINED);
+    sidebar->setRowHidden(SBAR_MANA, false);
 
-    sidebar->setItem(row, 0, new QTableWidgetItem(sp));
+    // STATS
 
-    if (p_ptr->csp < p_ptr->msp) sidebar->item(row, 0)->setTextColor("yellow");
+    for (int i = 0; i < A_MAX; i++) {
+        int row = i + SBAR_STATS;
 
-    row++;
+        QString str;
 
-    sidebar->insertRow(row);
+        if (p_ptr->stat_cur[i] < p_ptr->stat_max[i]) {
+            str += stat_names_reduced[i];
+        }
+        else {
+            str += stat_names[i];
+        }
 
-    prt_exp(sidebar, row, 0);
+        if (p_ptr->stat_max[i] >= 18+100) {
+            str[3] = '!';
+        }
 
-    row++;
+        str += " ";
 
-    QList<int> monsters = get_visible_monsters();
-    QWidget *temp = new QWidget;
-    QGridLayout *grid = new QGridLayout;
-    grid->setContentsMargins(2, 0, 2, 0);
-    temp->setLayout(grid);
+        str += cnv_stat(p_ptr->state.stat_use[i]);
 
-    for (int i = 0; i < monsters.size(); i++) {
-        int m_idx = monsters.at(i);
+        item = sidebar->item(row, 0);
+        item->setText(str);
+        if (p_ptr->stat_cur[i] >= p_ptr->stat_max[i]) item->setTextColor(SBAR_NORMAL);
+        else item->setTextColor(SBAR_DRAINED);
 
-        display_mon(grid, i * 2, m_idx);
+        sidebar->setRowHidden(row, false);
     }
 
-    sidebar->insertRow(row);
+    // EXPERIENCE
 
-    sidebar->setCellWidget(row, 0, temp);
+    prt_exp(sidebar, SBAR_EXP);
 
-    sidebar->setRowHeight(row, temp->sizeHint().height() + 4);
+    // GOLD
 
-    ++row;
+    QString gold = QString("GOLD %1").arg(p_ptr->au);
+    item = sidebar->item(SBAR_GOLD, 0);
+    item->setText(gold);
+    item->setTextColor(SBAR_NORMAL);
+    sidebar->setRowHidden(SBAR_GOLD, false);
 
-    for (int i = 0; i < row; i++) {
-        if (sidebar->cellWidget(i, 0)) continue;
-        sidebar->setRowHeight(i, h);
+    // MONSTERS
+
+    QList<int> monsters = get_visible_monsters();
+
+    for (int i = 0, row = SBAR_MONSTERS; i < monsters.size() && row < SBAR_MAX; i++, row++) {
+        int m_idx = monsters.at(i);
+
+        display_mon(sidebar, row, m_idx);
     }
 
     sidebar->resizeColumnToContents(0);
@@ -1411,14 +1500,8 @@ MainWindow::MainWindow()
     splitter->addWidget(container_33);
 
     sidebar = new QTableWidget;
-    sidebar->insertColumn(0);
-    sidebar->verticalHeader()->setVisible(false);
-    sidebar->horizontalHeader()->setVisible(false);
-    sidebar->setShowGrid(false);
-    sidebar->setStyleSheet("background-color: black; color: #00FF00;");
+    create_sidebar();
     layout_33->addWidget(sidebar);
-    QFontMetrics metrics(sidebar->font());
-    sidebar->setMinimumSize(metrics.width("MMMMMMMMMMMMMMMMMM"), 10);
 
     splitter->addWidget(graphics_view);
 
@@ -1573,6 +1656,8 @@ void MainWindow::save_and_close()
     cleanup_npp_games();
 
     message_area->clear();
+
+    update_sidebar();
 
     cursor->setVisible(false);
     destroy_tiles();

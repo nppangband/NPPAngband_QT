@@ -46,15 +46,10 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = ui_get_tile(r_ptr->tile_id, tiles_32x32);
+        QPixmap pix = ui_get_tile(r_ptr->tile_id);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
-
-        QPixmap pix2 = ui_get_tile(r_ptr->tile_id, tiles_8x8);
-        QLabel *lb4 = new QLabel;
-        lb4->setPixmap(pix2);
-        lay2->addWidget(lb4, row, col++);
 
         QString name = monster_desc(m_ptr, 0x08);
         int gain_m = calc_energy_gain(m_ptr->m_speed);
@@ -100,15 +95,10 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = ui_get_tile(tile, tiles_32x32);
+        QPixmap pix = ui_get_tile(tile);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
-
-        QPixmap pix2 = ui_get_tile(tile, tiles_8x8);
-        QLabel *lb4 = new QLabel;
-        lb4->setPixmap(pix2);
-        lay2->addWidget(lb4, row, col++);
 
         QString name = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
         name = capitalize_first(name);
@@ -136,15 +126,10 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = ui_get_tile(f_ptr->tile_id, tiles_32x32);
+        QPixmap pix = ui_get_tile(f_ptr->tile_id);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
-
-        QPixmap pix2 = ui_get_tile(f_ptr->tile_id, tiles_8x8);
-        QLabel *lb4 = new QLabel;
-        lb4->setPixmap(pix2);
-        lay2->addWidget(lb4, row, col++);
 
         QString name = feature_desc(feat, true, false);
         name = capitalize_first(name);
@@ -178,15 +163,10 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lb->setFont(font);
         lay2->addWidget(lb, row, col++);
 
-        QPixmap pix = ui_get_tile(f_ptr->tile_id, tiles_32x32);
+        QPixmap pix = ui_get_tile(f_ptr->tile_id);
         QLabel *lb2 = new QLabel;
         lb2->setPixmap(pix);
         lay2->addWidget(lb2, row, col++);
-
-        QPixmap pix2 = ui_get_tile(f_ptr->tile_id, tiles_8x8);
-        QLabel *lb4 = new QLabel;
-        lb4->setPixmap(pix2);
-        lay2->addWidget(lb4, row, col++);
 
         QString name = feature_desc(feat, true, false);
         name = capitalize_first(name);

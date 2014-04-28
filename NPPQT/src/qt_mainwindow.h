@@ -92,6 +92,7 @@ public:
     void wait_animation(int n_animations = 1);
     void animation_done();
     bool check_disturb();
+    void create_sidebar();
     void update_sidebar();
 
 protected:
