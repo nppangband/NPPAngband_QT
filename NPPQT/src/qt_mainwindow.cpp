@@ -1228,6 +1228,14 @@ void ui_event_signal(int event)
     case EVENT_EXPERIENCE:
     case EVENT_MONSTERLIST:
     case EVENT_MONSTERTARGET:
+    case EVENT_STATS:
+    case EVENT_STATE:
+    case EVENT_GOLD:
+    case EVENT_DUNGEONLEVEL:
+    case EVENT_FEELING:
+    case EVENT_PLAYERTITLE:
+    case EVENT_PLAYERSPEED:
+    case EVENT_PLAYERLEVEL:
         main_window->delayed_sidebar_update = true;
         break;
     }
@@ -1244,7 +1252,7 @@ void ui_flush_graphics()
 /*
  * Display the experience
  */
-static void prt_exp(QTableWidgetItem *item)
+static void prt_exp(QTableWidget *sidebar, int row)
 {
     QString s1;
     QString s2;
@@ -1258,6 +1266,8 @@ static void prt_exp(QTableWidgetItem *item)
 
     /* Format XP */
     s2 = QString("%1").arg(xp);
+
+    QTableWidgetItem *item = sidebar->item(row, 0);
 
     if (p_ptr->exp >= p_ptr->max_exp)
     {
@@ -1273,6 +1283,8 @@ static void prt_exp(QTableWidgetItem *item)
         item->setText(s1);
         item->setTextColor(SBAR_DRAINED);
     }
+
+    sidebar->setRowHidden(row, false);
 }
 
 bool my_less_than(const int &i1, const int &i2)
@@ -1326,7 +1338,7 @@ static void display_mon(QTableWidget *sidebar, int row, int m_idx)
     int h = 6;
     QImage img(w, h, QImage::Format_ARGB32);
     QPainter p(&img);
-    p.fillRect(0, 0, w, h, "#FFFFFF");
+    p.fillRect(0, 0, w, h, "black");
 
     int h2 = h;
     if (r_ptr->mana > 0) h2 = h / 2;
@@ -1361,11 +1373,11 @@ void MainWindow::update_sidebar()
 
     delayed_sidebar_update = false;
 
-    if (!character_dungeon) return;
-
     for (int i = 0; i < SBAR_MAX; i++) {
         sidebar->setRowHidden(i, true);
     }
+
+    if (!character_dungeon) return;
 
     // HP
 
@@ -1421,8 +1433,7 @@ void MainWindow::update_sidebar()
 
     // EXPERIENCE
 
-    prt_exp(sidebar->item(SBAR_EXP, 0));
-    sidebar->setRowHidden(SBAR_EXP, false);
+    prt_exp(sidebar, SBAR_EXP);
 
     // GOLD
 
@@ -1645,6 +1656,8 @@ void MainWindow::save_and_close()
     cleanup_npp_games();
 
     message_area->clear();
+
+    update_sidebar();
 
     cursor->setVisible(false);
     destroy_tiles();
