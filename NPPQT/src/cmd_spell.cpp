@@ -63,48 +63,10 @@ void SpellSelectDialog::keyPressEvent(QKeyEvent* which_key)
 }
 
 
-
-// Return the index off the actual object selected.
-int SpellSelectDialog::get_selected_spell(int chosen_button)
-{
-    int spell_counter = 0;
-
-    for (int i = 0; i < max_spellbooks; i++)
-    {
-        if (!available_books[i]) continue;
-        for (int j = 0; j < SPELLS_PER_BOOK; j++)
-        {
-            int spell = get_spell_from_list(i, j);
-
-            if (spell == -1) continue;
-
-            if (!available_spells[i][j])
-            {
-                spell_counter++;
-                continue;
-            }
-
-            // Found it
-            if (chosen_button == spell_counter)
-            {
-                // Return the chosen spell
-                return (spell);
-            }
-
-            spell_counter++;
-        }
-    }
-
-    // Oops! Should never happen
-    return (-1);
-}
-
 // Receives the number of the button pressed.
 void SpellSelectDialog::help_press(QString num_string)
 {
-    int help_spell_num = num_string.toInt();
-
-    int spell_num = get_selected_spell(help_spell_num);
+    int spell_num = num_string.toInt();
 
     QString spell_desc = (QString("<b><big>%1</big></b><br><br>")
                         .arg(cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, spell_num, 0)));
@@ -229,7 +191,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
         if (choosing_book)
         {
             QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
-            QString text_num = QString::number(num_buttons);
+            QString text_num = QString::number(i);
             QPushButton *button = new QPushButton(text_num);
             button->setText(QString("Study a %1 from %2") .arg(noun) .arg(book_name));
             button->setStyleSheet("Text-align:left");
@@ -285,7 +247,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             spell_name.append(cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, spell, 0));
             QString spell_comment = get_spell_comment(spell);
 
-            QString text_num = QString::number(num_buttons);
+            QString text_num = QString::number(spell);
             // Either do a pushbutton or a text label
             if (do_text)
             {
@@ -333,7 +295,6 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             help_values->setMapping(help_button, text_num);
             spell_layout->addWidget(help_button, row_num, COL_HELP);
 
-            num_buttons++;
             row_num++;
 
         }
@@ -359,7 +320,6 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     connect(help_values, SIGNAL(mapped(QString)), this, SLOT(help_press(QString)));
 
     // Start with a clean slate
-    num_buttons = 0;
     num_spells = 0;
     max_spellbooks = (game_mode == GAME_NPPANGBAND ? BOOKS_PER_REALM_ANGBAND : BOOKS_PER_REALM_MORIA);
     num_available_spellbooks = 0;
@@ -419,7 +379,7 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     }
     else
     {
-        *spell = get_selected_spell(selected_button);
+        *spell = selected_button;
         if (*spell > -1) *success = TRUE;
         else *success = FALSE;
     }

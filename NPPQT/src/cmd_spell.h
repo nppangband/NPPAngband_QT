@@ -65,13 +65,8 @@ private:
 
     QString get_spell_comment(int spell);
 
-
-    //Record an item selection
-    int  get_selected_spell(int chosen_button);
-
     // Variables for keeping track of which item is selected
     int selected_button;
-    int num_buttons;
 
     bool available_spells[BOOKS_PER_REALM_ANGBAND][SPELLS_PER_BOOK];
     bool available_books[BOOKS_PER_REALM_ANGBAND];
