@@ -1460,6 +1460,84 @@ static void prt_speed(QTableWidget *sidebar, int row)
     }
 }
 
+/*
+ * Prints depth in stat area
+ */
+static void prt_feeling(QTableWidget *sidebar, int row)
+{
+    QString feel;
+    byte attr = TERM_L_GREEN;
+
+    /* No sensing things in Moria */
+    if (game_mode == GAME_NPPMORIA) return;
+
+    /* No useful feeling in town, or no feeling yet */
+    if ((!p_ptr->depth) || (!feeling) || (!do_feeling))
+    {
+        return;
+    }
+
+    if (p_ptr->dungeon_type == DUNGEON_TYPE_ARENA)
+    {
+        attr = TERM_RED_LAVA;
+        feel = "F:Arena";
+    }
+
+    /* Get color of level based on feeling  -JSV- */
+    else if (p_ptr->dungeon_type == DUNGEON_TYPE_LABYRINTH)
+    {
+        attr = TERM_L_BLUE;
+        feel = "F:Labyrinth";
+    }
+
+    /* Get color of level based on feeling  -JSV- */
+    else if (p_ptr->dungeon_type == DUNGEON_TYPE_WILDERNESS)
+    {
+        attr = TERM_GREEN;
+        feel = "F:Wilderness";
+    }
+    else if (p_ptr->dungeon_type == DUNGEON_TYPE_GREATER_VAULT)
+    {
+        attr = TERM_VIOLET;
+        feel = "F:GreatVault";
+    }
+    else if (feeling ==  1) {attr = TERM_RED;		feel = "F:Special";}
+    else if (feeling ==  2) {attr = TERM_L_RED;		feel = "F:Superb";}
+    else if (feeling ==  3) {attr = TERM_ORANGE;	feel = "F:Excellent";}
+    else if (feeling ==  4) {attr = TERM_ORANGE;	feel = "F:Very Good";}
+    else if (feeling ==  5) {attr = TERM_YELLOW;	feel = "F:Good";}
+    else if (feeling ==  6) {attr = TERM_YELLOW;	feel = "F:Lucky";}
+    else if (feeling ==  7) {attr = TERM_YELLOW;	feel = "F:LuckTurning";}
+    else if (feeling ==  8) {attr = TERM_L_GREEN;		feel = "F:Like Looks";}
+    else if (feeling ==  9) {attr = TERM_L_GREEN;		feel = "F:Not All Bad";}
+    else if (feeling == 10) {attr = TERM_L_GREEN;  	feel = "F:Boring";}
+
+    /* (feeling >= LEV_THEME_HEAD) */
+    else  					{attr = TERM_BLUE;		feel = "F:Themed";}
+
+    /* Right-Adjust the "depth", and clear old values */
+    sidebar->item(row, 0)->setText(feel);
+    sidebar->item(row, 0)->setTextColor(defined_colors[attr]);
+    sidebar->setRowHidden(row, false);
+}
+
+/*
+ * Calculate the hp color separately, for ports.
+ */
+byte player_hp_attr(void)
+{
+    byte attr;
+
+    if (p_ptr->chp >= p_ptr->mhp)
+        attr = TERM_L_GREEN;
+    else if (p_ptr->chp > (p_ptr->mhp * op_ptr->hitpoint_warn) / 10)
+        attr = TERM_YELLOW;
+    else
+        attr = TERM_RED;
+
+    return attr;
+}
+
 void MainWindow::update_sidebar()
 {
     //message("update sidebar");
@@ -1479,9 +1557,7 @@ void MainWindow::update_sidebar()
     QTableWidgetItem *item = sidebar->item(SBAR_HP, 0);
 
     item->setText(hp);
-
-    if (p_ptr->chp >= p_ptr->mhp) item->setTextColor(SBAR_NORMAL);
-    else item->setTextColor(SBAR_DRAINED);
+    item->setTextColor(defined_colors[player_hp_attr()]);
 
     sidebar->setRowHidden(SBAR_HP, false);
 
@@ -1552,6 +1628,21 @@ void MainWindow::update_sidebar()
     }
     sidebar->item(SBAR_DLVL, 0)->setText(dp);
     sidebar->setRowHidden(SBAR_DLVL, false);
+
+    // FEELING
+
+    prt_feeling(sidebar, SBAR_FEELING);
+
+    // QUEST STATUS
+
+    byte attr;
+    QString qst = format_quest_indicator(&attr);
+    if (!qst.isEmpty()) {
+        int row = SBAR_QUEST;
+        sidebar->item(row, 0)->setText(qst);
+        sidebar->item(row, 0)->setTextColor(defined_colors[attr]);
+        sidebar->setRowHidden(row, false);
+    }
 
     // MONSTERS
 

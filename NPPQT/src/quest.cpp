@@ -2918,7 +2918,7 @@ QString format_quest_indicator(byte *attr)
     /* No quest */
     if (!q_ptr->q_type)
     {
-        dest = "Qst: None";
+        //dest = "Qst: None";
     }
 
     /* Completed Quest! */
