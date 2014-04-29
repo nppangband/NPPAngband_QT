@@ -444,6 +444,8 @@ MakeObjectDialog::MakeObjectDialog(void)
         if (k_ptr->k_name.isEmpty()) continue;
         // Skip artifact templates
         if (k_ptr->k_flags3 & (TR3_INSTA_ART)) continue;
+        // Skip gold
+        if (k_ptr->tval == TV_GOLD) continue;
 
         obj_choice->addItem(QString("%1") .arg(i));
 
@@ -469,6 +471,8 @@ MakeObjectDialog::MakeObjectDialog(void)
         if (k_ptr->k_name.isEmpty()) continue;
         // Skip artifact templates
         if (k_ptr->k_flags3 & (TR3_INSTA_ART)) continue;
+        // Skip gold
+        if (k_ptr->tval == TV_GOLD) continue;
 
         // Found the match
         if (count == obj_num) break;

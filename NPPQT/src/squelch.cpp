@@ -598,7 +598,7 @@ int do_squelch_item(int squelch, int item, object_type *o_ptr)
 
 bool squelch_item_ok(object_type *o_ptr)
 {
-    object_kind *k_ptr = k_ptr = &k_info[o_ptr->k_idx];
+    object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
     /* Always delete "nothings" */
     if (!o_ptr->k_idx) return (TRUE);
