@@ -65,6 +65,7 @@ void MainWindow::create_sidebar()
         lay->addWidget(lb, 0, 0);
         lb = new QLabel("");
         lb->setObjectName("name");
+        lb->setAlignment(Qt::AlignRight);
         lay->addWidget(lb, 0, 1);
         lb = new QLabel("");
         lb->setObjectName("health");
@@ -1443,12 +1444,12 @@ static void prt_speed(QTableWidget *sidebar, int row)
     else if (i > 110)
     {
         attr = analyze_speed_bonuses(TERM_L_GREEN);
-        str = QString("Fast (+%d)").arg(i - 110);
+        str = QString("Fast (+%1)").arg(i - 110);
     }
     else if (i < 110)
     {
         attr = analyze_speed_bonuses(TERM_L_UMBER);
-        str = QString("Slow (-%d)").arg(110 - i);
+        str = QString("Slow (-%1)").arg(110 - i);
     }
 
     /* Display the speed */
@@ -1538,6 +1539,19 @@ void MainWindow::update_sidebar()
     // SPEED
 
     prt_speed(sidebar, SBAR_SPEED);
+
+    // DEPTH
+
+    QString dp;
+
+    if (!p_ptr->depth) {
+        dp = "Town";
+    }
+    else {
+        dp = QString("%1' (L%2)").arg(p_ptr->depth * 50).arg(p_ptr->depth);
+    }
+    sidebar->item(SBAR_DLVL, 0)->setText(dp);
+    sidebar->setRowHidden(SBAR_DLVL, false);
 
     // MONSTERS
 
