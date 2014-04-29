@@ -2922,7 +2922,7 @@ QString format_quest_indicator(byte *attr)
     }
 
     /* Completed Quest! */
-    if (guild_quest_complete())
+    else if (guild_quest_complete())
     {
         dest = "Q:Reward!";
         *attr = TERM_GREEN;

@@ -1533,7 +1533,24 @@ byte player_hp_attr(void)
     else if (p_ptr->chp > (p_ptr->mhp * op_ptr->hitpoint_warn) / 10)
         attr = TERM_YELLOW;
     else
-        attr = TERM_RED;
+        attr = TERM_L_RED;
+
+    return attr;
+}
+
+/*
+ * Calculate the sp color separately, for ports.
+ */
+byte player_sp_attr(void)
+{
+    byte attr;
+
+    if (p_ptr->csp >= p_ptr->msp)
+        attr = TERM_L_GREEN;
+    else if (p_ptr->csp > (p_ptr->msp * op_ptr->hitpoint_warn) / 10)
+        attr = TERM_YELLOW;
+    else
+        attr = TERM_L_RED;
 
     return attr;
 }
@@ -1553,12 +1570,9 @@ void MainWindow::update_sidebar()
     // HP
 
     QString hp = QString("HP %1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
-
     QTableWidgetItem *item = sidebar->item(SBAR_HP, 0);
-
     item->setText(hp);
     item->setTextColor(defined_colors[player_hp_attr()]);
-
     sidebar->setRowHidden(SBAR_HP, false);
 
     // MANA
@@ -1566,8 +1580,7 @@ void MainWindow::update_sidebar()
     QString sp = QString("SP %1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
     item = sidebar->item(SBAR_MANA, 0);
     item->setText(sp);
-    if (p_ptr->csp >= p_ptr->msp) item->setTextColor(SBAR_NORMAL);
-    else item->setTextColor(SBAR_DRAINED);
+    item->setTextColor(defined_colors[player_sp_attr()]);
     sidebar->setRowHidden(SBAR_MANA, false);
 
     // STATS
@@ -2149,8 +2162,10 @@ void MainWindow::options_dialog()
 {
     OptionsDialog *dlg = new OptionsDialog(this);
     dlg->exec();
-    ui_redraw_all();
     delete dlg;
+    p_ptr->redraw |= (PR_MAP | PR_STATUS);
+    handle_stuff();
+    ui_flush_graphics();
 }
 
 void MainWindow::fontselect_dialog()
