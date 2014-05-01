@@ -917,7 +917,7 @@ void WizardModeDialog::wiz_winners_kit(void)
         14,     // NENYA
         10,     // ELESSAR
         12,     // GEM OF AMON SUL
-        22,     // ZORANDER
+        38,     // BLADETUNDER
         113,    // COLANNON
         33,     // THORIN
         110,    // NUMENOR
@@ -932,7 +932,7 @@ void WizardModeDialog::wiz_winners_kit(void)
         if (!wiz_alloc_artifact(o_ptr, artis[i])) continue;
         object_history(o_ptr, ORIGIN_CHEAT, 0);
         identify_object(o_ptr, true);
-        if(inven_carry(o_ptr) < 0)
+        if (inven_carry(o_ptr) < 0)
         {
             drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
         }

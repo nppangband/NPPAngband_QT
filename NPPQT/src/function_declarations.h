@@ -614,7 +614,7 @@ extern s32b quest_player_turns_remaining(void);
 extern void guild_quest_wipe(bool reset_defer);
 extern void write_quest_note(bool success);
 extern void quest_fail(void);
-extern QString format_quest_indicator(char dest[], int max, byte *attr);
+extern QString format_quest_indicator(byte *attr);
 extern void quest_status_update(void);
 extern bool quest_fixed(const quest_type *q_ptr);
 extern bool quest_slot_fixed(int quest_num);

@@ -2918,11 +2918,11 @@ QString format_quest_indicator(byte *attr)
     /* No quest */
     if (!q_ptr->q_type)
     {
-        dest = "Qst: None";
+        //dest = "Qst: None";
     }
 
     /* Completed Quest! */
-    if (guild_quest_complete())
+    else if (guild_quest_complete())
     {
         dest = "Q:Reward!";
         *attr = TERM_GREEN;
