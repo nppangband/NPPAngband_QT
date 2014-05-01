@@ -1640,6 +1640,11 @@ void ui_show_message(int idx)
     }
 }
 
+void MainWindow::close_game_death()
+{
+    save_and_close();
+}
+
 void MainWindow::save_and_close()
 {
     if (running_command()) return;
@@ -1648,7 +1653,7 @@ void MainWindow::save_and_close()
 
     set_current_savefile("");
 
-    character_loaded = character_dungeon = character_generated = character_icky = false;
+    character_loaded = character_dungeon = character_generated = false;
 
     update_file_menu_game_inactive();
 
@@ -2602,4 +2607,9 @@ void ui_redraw_grid(int y, int x)
 void ui_redraw_all()
 {
     main_window->redraw();
+}
+
+void player_death_close_game(void)
+{
+    main_window->close_game_death();
 }

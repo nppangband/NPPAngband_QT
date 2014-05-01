@@ -1684,8 +1684,7 @@ void change_player_level(void)
         p_ptr->create_stair = FALSE;
     }    
 
-    /* Hack -- Increase "xtra" depth */
-    character_xtra++;
+    character_xtra = TRUE;
 
     /* Update stuff */
     p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
@@ -1714,8 +1713,7 @@ void change_player_level(void)
     /* Redraw stuff */
     redraw_stuff();
 
-    /* Hack -- Decrease "xtra" depth */
-    character_xtra--;
+    character_xtra = FALSE;
 
     /* Update stuff */
     p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE | PU_PANEL);
@@ -1813,7 +1811,6 @@ static void process_game_turns(void)
         if (p_ptr->leaving_level) change_player_level();
         if (p_ptr->is_dead)
         {
-            // TODO handle player death
             return;
         }
 
@@ -1831,14 +1828,11 @@ static void process_game_turns(void)
         if (p_ptr->leaving_level) change_player_level();
         if (p_ptr->is_dead)
         {
-            // TODO handle player death
             return;
         }
 
         /* Count game turns */
         turn++;
-
-        //pop_up_message_box(QString("ending game turns turn is %1 p_ptr->energy is %2") .arg(turn) .arg(p_ptr->p_energy));
     }
 }
 
@@ -1893,8 +1887,7 @@ void process_player_energy(byte energy_used)
     }
 
     /* Hack -- Redraw depth if the temporary quest notification ends */
-    if ((quest_indicator_timer > 0) && (--quest_indicator_timer == 0) &&
-        !(character_icky))
+    if ((quest_indicator_timer > 0) && (--quest_indicator_timer == 0))
     {
         quest_indicator_complete = FALSE;
         p_ptr->redraw |= (PR_QUEST_ST);
@@ -2028,4 +2021,10 @@ void process_player_energy(byte energy_used)
     ui_flush_graphics();
 
     depth_counter = 0;
+
+    if (p_ptr->is_dead)
+    {
+        player_death();
+        player_death_close_game();
+    }
 }

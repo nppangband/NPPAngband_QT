@@ -495,6 +495,9 @@ extern int weapon_throw_adjust(const object_type *o_ptr, u32b f3, int *plus, boo
 extern void command_throw(cmd_arg args);
 extern void do_cmd_throw(void);
 
+//player_death.cpp
+extern void player_death(void);
+
 //player_ghost.cpp
 extern void prepare_ghost_name(void);
 extern bool prepare_ghost(int r_idx);
@@ -688,6 +691,7 @@ extern qreal ui_get_angle(int y1, int x1, int y2, int x2);
 extern QPoint ui_get_center(int y, int x);
 extern void ui_event_signal(int event);
 extern void ui_flush_graphics();
+extern void player_death_close_game(void);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

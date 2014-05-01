@@ -1191,7 +1191,7 @@ void init_npp_games(void)
 
     init_rng();
 
-    character_dungeon = character_generated = character_loaded = character_icky = FALSE;
+    character_dungeon = character_generated = character_loaded = FALSE;
 
     QLabel status_update;
     status_update.setText (QString("Starting game"));

@@ -2831,7 +2831,7 @@ void quest_fail(void)
     /* Show a special mark for some player turns. Redraw if necessary */
     quest_indicator_timer = 50;
     quest_indicator_complete = FALSE;
-    if (!character_icky) p_ptr->redraw |= (PR_QUEST_ST);
+    p_ptr->redraw |= (PR_QUEST_ST);
 
     /* Reputation penalty */
     if (p_ptr->q_fame)

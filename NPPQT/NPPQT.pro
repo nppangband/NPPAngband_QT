@@ -60,6 +60,7 @@ SOURCES +=  src/qt_main.cpp\
             src/package.cpp \
             src/pathfind.cpp \
             src/player_attack.cpp \
+            src/player_death.cpp \
             src/player_classes.cpp \
             src/player_process.cpp \
             src/player_spell.cpp \
@@ -121,7 +122,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/griddialog.h \
             src/package.h \
             src/tilebag.h \
-            src/wizard_mode.h
+            src/wizard_mode.h \
+    src/player_death.h
 
 
 RESOURCES += \

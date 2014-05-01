@@ -94,6 +94,7 @@ public:
     bool check_disturb();
     void create_sidebar();
     void update_sidebar();
+    void close_game_death();
 
 protected:
     void closeEvent(QCloseEvent *event);

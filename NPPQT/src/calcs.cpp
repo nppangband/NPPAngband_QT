@@ -2017,7 +2017,7 @@ void update_stuff(void)
     if (p_ptr->update & (PU_SPELLS)) 	calc_spells();
 
     /* Character is not ready yet or in icky mode, no screen updates */
-    if ((!character_generated) || (character_icky))
+    if (!character_generated)
     {
         /* Clear the flags */
         p_ptr->update &= ~(PU_TORCH | PU_BONUS | PU_STEALTH | PU_NATIVE | \
@@ -2099,9 +2099,6 @@ void redraw_stuff(void)
 
     /* Character is not ready yet, no screen updates */
     if (!character_generated) return;
-
-    /* Character is in "icky" mode, no screen updates */
-    if (character_icky) return;
 
     /* See if we need to re-prioritize the monster targets */
     if (p_ptr->redraw & (PR_MONLIST))
