@@ -94,6 +94,7 @@ public:
     bool check_disturb();
     void create_sidebar();
     void update_sidebar();
+    void update_titlebar();
 
 protected:
     void closeEvent(QCloseEvent *event);

@@ -1555,6 +1555,34 @@ byte player_sp_attr(void)
     return attr;
 }
 
+/*
+ * Prints "title", including "wizard" or "winner" as needed.
+ */
+QString prt_title()
+{
+    QString p;
+
+    /* Wizard */
+    if (p_ptr->is_wizard)
+    {
+        p = "[=-WIZARD-=]";
+    }
+
+    /* Winner */
+    else if (p_ptr->total_winner || (p_ptr->lev > z_info->max_level))
+    {
+        p = "***WINNER***";
+    }
+
+    /* Normal */
+    else
+    {
+        p = get_player_title();
+    }
+
+    return p;
+}
+
 void MainWindow::update_sidebar()
 {
     //message("update sidebar");
@@ -1564,6 +1592,8 @@ void MainWindow::update_sidebar()
     for (int i = 0; i < SBAR_MAX; i++) {
         sidebar->setRowHidden(i, true);
     }
+
+    update_titlebar();
 
     if (!character_dungeon) return;
 
@@ -1577,11 +1607,13 @@ void MainWindow::update_sidebar()
 
     // MANA
 
-    QString sp = QString("SP %1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
-    item = sidebar->item(SBAR_MANA, 0);
-    item->setText(sp);
-    item->setTextColor(defined_colors[player_sp_attr()]);
-    sidebar->setRowHidden(SBAR_MANA, false);
+    if (p_ptr->msp > 0) {
+        QString sp = QString("SP %1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
+        item = sidebar->item(SBAR_MANA, 0);
+        item->setText(sp);
+        item->setTextColor(defined_colors[player_sp_attr()]);
+        sidebar->setRowHidden(SBAR_MANA, false);
+    }
 
     // STATS
 
@@ -1668,6 +1700,38 @@ void MainWindow::update_sidebar()
     }
 
     sidebar->resizeColumnToContents(0);
+}
+
+void MainWindow::update_titlebar()
+{
+    QString str("NPPGames");
+
+    if (character_dungeon) {
+        if (game_mode == GAME_NPPANGBAND) {
+            str = "NPPAngband";
+        }
+        else {
+            str = "NPPMoria";
+        }
+
+        str += " - Playing a level ";
+
+        str += _num(p_ptr->lev);
+
+        str += " ";
+
+        str += rp_ptr->pr_name;
+
+        str += " ";
+
+        str += cp_ptr->cl_name;
+
+        str += " - ";
+
+        str += prt_title();
+    }
+
+    this->setWindowTitle(str);
 }
 
 // The main function - intitalize the main window and set the menus.
