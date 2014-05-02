@@ -1298,7 +1298,7 @@ QList<int> get_visible_monsters()
     QList<int> items;
 
     for (int y = p_ptr->py - MAX_SIGHT; y <= p_ptr->py + MAX_SIGHT; y++) {
-        for (int x = p_ptr->px - MAX_SIGHT; x < p_ptr->px + MAX_SIGHT; x++) {
+        for (int x = p_ptr->px - MAX_SIGHT; x <= p_ptr->px + MAX_SIGHT; x++) {
             if (!in_bounds(y, x)) continue;
             int m_idx = dungeon_info[y][x].monster_idx;
             if (m_idx < 1) continue;
