@@ -95,6 +95,8 @@ public:
     void create_sidebar();
     void update_sidebar();
     void close_game_death();
+    void update_titlebar();
+
 
 protected:
     void closeEvent(QCloseEvent *event);

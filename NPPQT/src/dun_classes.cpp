@@ -29,7 +29,11 @@ bool dungeon_type::has_visible_artifact()
 
         if (!o_ptr->marked || !o_ptr->is_artifact()) continue;
 
-        if (o_ptr->is_known() || o_ptr->is_known_artifact()) return true;
+        if (o_ptr->is_known()) return true;
+
+        if (o_ptr->discount == INSCRIP_INDESTRUCTIBLE ||
+                o_ptr->discount == INSCRIP_TERRIBLE ||
+                o_ptr->discount == INSCRIP_SPECIAL) return true;
     }
 
     return false;

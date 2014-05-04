@@ -364,7 +364,7 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b f
 
     int size = (newRadius * 2 + 1 + 5); // 5 extra
 
-    maxLength = (size * main_window->cell_hgt) * 0.5;
+    maxLength = (size * (main_window->cell_hgt + main_window->cell_wid) / 2) * 0.5;
 
     length = previousLength = 0;
 
@@ -510,8 +510,9 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
     rad = newRad;
 
     QPointF pp(main_window->cell_wid, main_window->cell_hgt);
-    QPointF p1(from.x() - rad - 5, from.y() - rad - 5); // +-5 extra
-    QPointF p2(from.x() + rad + 5, from.y() + rad + 5);
+    int extra = 5;
+    QPointF p1(from.x() - rad - extra, from.y() - rad - extra); // +-5 extra
+    QPointF p2(from.x() + rad + extra, from.y() + rad + extra);
 
     // Collect valid grids
     for (int y = p1.y(); y <= p2.y(); y++) {
@@ -535,7 +536,7 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
 
     QPointF h = mulp(to - from, pp);
     centerAngle = getAngle(h);
-    maxLength = rad * MAX(main_window->cell_wid, main_window->cell_hgt);
+    maxLength = rad * MIN(main_window->cell_wid, main_window->cell_hgt);
     drawnLength = length = previousLength = 0;
 
     degrees = newDegrees;
@@ -619,6 +620,8 @@ int get_pix_index(int size, qreal percent)
 void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->save();
+
+    //painter->fillRect(brect, "yellow");
 
     qreal max = 0;
 
