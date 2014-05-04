@@ -1808,11 +1808,8 @@ static void process_game_turns(void)
 
         /* Handle reasons to break the loop */
         if (p_ptr->player_turn) return;
+        if (p_ptr->is_dead)  return;
         if (p_ptr->leaving_level) change_player_level();
-        if (p_ptr->is_dead)
-        {
-            return;
-        }
 
         /* Process the world */
         process_world();
@@ -1825,11 +1822,9 @@ static void process_game_turns(void)
 
         /* Handle reasons to break the loop */
         if (p_ptr->player_turn) return;
+
+        if (p_ptr->is_dead) return;
         if (p_ptr->leaving_level) change_player_level();
-        if (p_ptr->is_dead)
-        {
-            return;
-        }
 
         /* Count game turns */
         turn++;
@@ -2024,7 +2019,7 @@ void process_player_energy(byte energy_used)
 
     if (p_ptr->is_dead)
     {
-        player_death();
+
         player_death_close_game();
     }
 }

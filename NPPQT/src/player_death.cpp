@@ -208,4 +208,6 @@ void player_death(void)
     print_tomb();
     death_knowledge();
     // TODO enter_score(&right_now);
+
+    PlayerDeathDialog();
 }

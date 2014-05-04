@@ -16,7 +16,6 @@ extern byte game_mode;
 extern bool character_generated;
 extern bool character_dungeon;
 extern bool character_loaded;
-extern bool character_saved;
 extern bool character_xtra;
 extern u32b seed_randart;
 extern u32b seed_flavor;
@@ -43,7 +42,6 @@ extern bool do_feeling;
 extern s16b rating;
 extern u32b level_flag;
 extern bool good_item_flag;
-extern bool closing_flag;
 
 extern QString current_savefile;
 extern QFile notes_file;

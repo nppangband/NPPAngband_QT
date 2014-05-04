@@ -1184,25 +1184,12 @@ void take_terrain_hit(int dam, int feat, QString kb_str)
 /*
  * Decreases players hit points and sets death flag if necessary
  *
- * Invulnerability needs to be changed into a "shield" XXX XXX XXX
- *
  * Hack -- this function allows the user to save (or quit) the game
  * when he dies, since the "You die." message is shown before setting
  * the player to "dead".
  */
 void take_hit(int dam, QString kb_str)
 {
-    // TODO MORE PLAYTESTING
-    set_food(PY_FOOD_MAX - 10);
-    if (dam > p_ptr->chp + 1) {
-        set_timed(TMD_PARALYZED, 0, false);
-        set_timed(TMD_STUN, 0, false);
-        set_timed(TMD_CUT, 0, false);
-        set_timed(TMD_CONFUSED, 0, false);
-        set_timed(TMD_SINVIS, 100, false);
-        set_timed(TMD_BLIND, 0, false);
-        return;
-    }
 
     int old_chp = p_ptr->chp;
 
@@ -1227,7 +1214,7 @@ void take_hit(int dam, QString kb_str)
     if (p_ptr->chp < 0)
     {
         /* Hack -- Note death */
-        color_message(QString("You die."), TERM_WHITE);
+        pop_up_message_box("You Die.", QMessageBox::Critical);
 
         /* Note cause of death */
         p_ptr->died_from = kb_str;
@@ -6870,7 +6857,7 @@ static void calc_starburst(int height, int width, byte *arc_first,
 bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
              u32b flg, int degrees, byte source_diameter)
 {
-    int i, j, k, m;
+    int i, j, k;
     int dist = 0;
 
     u32b dam_temp;
@@ -6882,16 +6869,8 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     int n1x = 0;
     int y2, x2;
 
-    int msec = op_ptr->delay_factor * op_ptr->delay_factor;
-
     /* Assume the player sees nothing */
     bool notice = FALSE;
-
-    /* Assume the player has seen nothing */
-    bool visual = FALSE;
-
-    /* Assume the player has seen no blast grids */
-    bool drawn = FALSE;
 
     /* Is the player blind? */
     bool blind = (p_ptr->timed[TMD_BLIND] ? TRUE : FALSE);
@@ -6968,8 +6947,6 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
         /* Project along the path */
         for (i = 0; i < path_n; ++i)
         {
-            int oy = y;
-            int ox = x;
 
             int ny = GRID_Y(path_g[i]);
             int nx = GRID_X(path_g[i]);

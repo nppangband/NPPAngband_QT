@@ -338,22 +338,7 @@ QPixmap ui_get_tile(QString tile_id, TileBag *tileset)
 
 void MainWindow::slot_something()
 {
-    int dir;
-    p_ptr->command_dir = 0;
-    graphics_view->setFocus();
-    if (!get_aim_dir(&dir, false) || dir == 0) return;
-    int k = rand_int(8);
-
-    k = 3;
-
-    if (k == 0) fire_arc(GF_DISENCHANT, dir, 300, 0, 45);
-    else if (k == 1) fire_bolt(GF_DISENCHANT, dir, 300);
-    else if (k == 2) fire_beam(GF_DISENCHANT, dir, 300, 0);
-    else if (k == 3) fire_ball(GF_DISENCHANT, dir, 300, 2);
-    else if (k == 4) fire_star(GF_DISENCHANT, 300, 4, 0);
-    else if (k == 5) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_AMMO);
-    else if (k == 6) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_SHOT);
-    else if (k == 7) fire_bolt_beam_special(GF_ARROW, dir, 300, 0, PROJECT_ROCK);
+    take_hit(p_ptr->chp+2, "testing");
 }
 
 void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
@@ -2827,5 +2812,6 @@ void ui_redraw_all()
 
 void player_death_close_game(void)
 {
+    player_death();
     main_window->close_game_death();
 }

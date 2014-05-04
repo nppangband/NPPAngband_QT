@@ -10,7 +10,6 @@ byte game_mode;
 bool character_generated;	/* The character exists */
 bool character_dungeon;		/* The character has a dungeon */
 bool character_loaded;		/* The character was loaded from a savefile */
-bool character_saved;		/* The character was just saved to a savefile */
 
 bool character_xtra;		/* Depth of the game in startup mode */
 
@@ -72,7 +71,6 @@ u32b  level_flag;		/* Level type */
 
 bool good_item_flag;	/* True if "Artifact" on this level */
 
-bool closing_flag;		/* Dungeon is closing */
 
 
 /*
