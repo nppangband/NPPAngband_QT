@@ -2174,7 +2174,7 @@ int do_ident_item(int item, object_type *o_ptr)
     /* Describe */
     if (item >= INVEN_WIELD)
     {
-        color_message(QString("%^1: %2 (%3).") .arg(describe_use(item)) .arg(o_name) .arg(index_to_label(item)), color);
+        color_message(QString("%1: %2 (%3).") .arg(capitalize_first(describe_use(item))) .arg(o_name) .arg(index_to_label(item)), color);
     }
     else if (item >= 0)
     {

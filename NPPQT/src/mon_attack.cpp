@@ -483,7 +483,7 @@ bool make_attack_normal(monster_type *m_ptr)
                 }
 
                 /* Message */
-                message(QString("%^1 is repelled.") .arg(m_name));
+                message(QString("%1 is repelled.") .arg(capitalize_first(m_name)));
 
                 /* Hack -- Next attack */
                 continue;

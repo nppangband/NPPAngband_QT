@@ -778,8 +778,8 @@ static void clear_square(int y, int x, bool do_wall, u16b feat)
                 /* Get "the monster" or "it" */
                 QString m_name = monster_desc(m_ptr, 0);
 
-                if (new_seen) message(QString("%^1 blinks.") .arg(m_name));
-                else message(QString("%^1 disappears.") .arg(m_name));
+                if (new_seen) message(QString("%1 blinks.") .arg(capitalize_first(m_name)));
+                else message(QString("%1 disappears.") .arg(capitalize_first(m_name)));
             }
         }
     }

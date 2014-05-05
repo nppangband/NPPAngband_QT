@@ -183,9 +183,9 @@
 
 /* The "sval" codes for TV_SHOT/TV_ARROW/TV_BOLT */
 #define SV_AMMO_LIGHT		0	/* pebbles */
-#define SV_AMMO_NORMAL		1	/* shots, arrows, bolts */
-#define SV_AMMO_HEAVY		2	/* seeker arrows and bolts */
-
+#define SV_AMMO_NORMAL		1	/* iron shots, arrows, bolts */
+#define SV_AMMO_HEAVY		2	/* seeker arrows and bolts, mithril shots */
+#define SV_AMMO_MITHRIL		3	/* mithril arrows and bolts, no shots */
 
 /* The "sval" codes for TV_BOW (note inQStringion in "sval") */
 #define SV_SLING			2	/* (x2) */

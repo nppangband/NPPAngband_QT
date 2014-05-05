@@ -206,7 +206,7 @@ static int mod_dd_succept(u32b f1, u32b r3, u32b *r_l3, bool seen)
     return (extra_dam);
 }
 
-static void mod_dd_elem_brand(u32b f1, u32b r3, u32b *r_l3, int *mult, bool seen, bool is_weapon)
+static void mod_dd_elem_brand(u32b r3, u32b *r_l3, int *mult, bool seen, bool is_weapon)
 {
     if (!is_weapon) 					return;
     if (!p_ptr->timed[TMD_SLAY_ELEM]) 	return;
@@ -329,7 +329,7 @@ static void dam_dice_aux(object_type *o_ptr, int *dd, const monster_type *m_ptr,
 
     extra_dam = mod_dd_succept(f1, r_ptr->flags3, &l_ptr->r_l_flags3, m_ptr->ml);
 
-    mod_dd_elem_brand(f1, r_ptr->flags3, &l_ptr->r_l_flags3, &mult, m_ptr->ml, is_weapon);
+    mod_dd_elem_brand(r_ptr->flags3, &l_ptr->r_l_flags3, &mult, m_ptr->ml, is_weapon);
 
     mult += extra_dam;
 
@@ -1069,7 +1069,7 @@ void command_fire(cmd_arg args)
                 /* Get "the monster" or "it" */
                 QString m_name = monster_desc(m_ptr, 0);
 
-                message(QString("%^1 dodges!") .arg(m_name));
+                message(QString("%1 dodges!") .arg(capitalize_first(m_name)));
 
                 /* Learn that monster can dodge */
                 l_ptr->r_l_flags2 |= (RF2_EVASIVE);
@@ -1136,6 +1136,7 @@ void command_fire(cmd_arg args)
 
             /* Check for extra damage from a brigand */
             tmul += brigand_shot(o_ptr, r_ptr->flags1, (m_ptr->m_timed[MON_TMD_SLEEP] ? TRUE: FALSE), p_ptr->state);
+
             /* Now factor the extra damage */
             plus *= tmul;
 
@@ -1230,7 +1231,7 @@ void do_cmd_fire(void)
     command_fire(args);
 }
 
-void textui_cmd_fire_at_nearest(void)
+void do_cmd_fire_at_nearest(void)
 {
     object_type *j_ptr = &inventory[INVEN_BOW];
 
@@ -1284,7 +1285,7 @@ void textui_cmd_fire_at_nearest(void)
     /* Require usable ammo */
     if (item < 0)
     {
-        message(QString("You have no ammunition in the quiver to fire"));
+        message(QString("You have no ammunition to fire"));
         return;
     }
 
@@ -1299,8 +1300,11 @@ void textui_cmd_fire_at_nearest(void)
         dir = ddd[randint0(8)];
     }
 
-    /* Fire! */
-    // TODO cmd_insert(CMD_FIRE, item, dir);
+    cmd_arg args;
+    args.item = item;
+    args.direction = dir;
+
+    command_fire(args);
 }
 
 /*
@@ -1453,7 +1457,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
                     ident = TRUE;
 
                     /*monster forgets player history*/
-                    message(QString("%^1 forgets all %2 knows about you!") .arg(m_name) .arg(m_poss));
+                    message(QString("%1 forgets all %2 knows about you!") .arg(capitalize_first(m_name)) .arg(m_poss));
                 }
             }
             /*monster forgets player history*/
@@ -1471,7 +1475,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
                     ident = TRUE;
 
                     /*monster forgets player history*/
-                    message(QString("%^1 loses some of %1 mana!") .arg(m_name) .arg(m_poss));
+                    message(QString("%1 loses some of %1 mana!") .arg(capitalize_first(m_name)) .arg(m_poss));
                 }
 
                 /*reduce mana by about 11%*/
@@ -1531,7 +1535,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
                 m_name = monster_desc(m_ptr, 0);
 
                 /*monster appears for a turn*/
-                message(QString("%^1 appears for an instant!") .arg(m_name));
+                message(QString("%1 appears for an instant!") .arg(capitalize_first(m_name)));
 
                 /*update the lore*/
                 l_ptr->r_l_flags2 |= (RF2_INVISIBLE);
@@ -1662,7 +1666,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
                     ident = TRUE;
 
                     /*monster forgets player history*/
-                    message(QString("%^1 gains back all %2 mana!") .arg(m_name) .arg(m_poss));
+                    message(QString("%1 gains back all %2 mana!") .arg(capitalize_first(m_name)) .arg(m_poss));
                 }
 
                 /*restore mana%*/
@@ -2015,7 +2019,7 @@ void command_throw(cmd_arg args)
                 /* Get "the monster" or "it" */
                 QString m_name = monster_desc(m_ptr, 0);
 
-                message(QString("%^1 dodges!") .arg(m_name));
+                message(QString("%1 dodges!") .arg(capitalize_first(m_name)));
 
                 /* Learn that monster can dodge */
                 l_ptr->r_l_flags2 |= (RF2_EVASIVE);

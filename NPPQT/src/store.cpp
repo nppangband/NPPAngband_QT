@@ -789,7 +789,7 @@ static bool store_service_aux(int store_num, s16b choice)
             /*If artifact, or ego item, don't bother*/
             if ((o_ptr->art_num) || (o_ptr->ego_num))
             {
-                message(QString("%^1 cannot be branded!") .arg(o_name));
+                message(QString("%1 cannot be branded!") .arg(capitalize_first(o_name)));
 
                 return (FALSE);
             }

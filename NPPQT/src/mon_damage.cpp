@@ -1266,7 +1266,7 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
 
             else
             {
-                message(QString("%^1%2") .arg(m_name) .arg(note));
+                message(QString("%1%2") .arg(capitalize_first(m_name)) .arg(note));
             }
 
         }
@@ -1278,7 +1278,7 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
             {
                 message(QString("You have killed %1.") .arg(m_name));
             }
-            else message(QString("%^1 has been killed.") .arg(m_name));
+            else message(QString("%1 has been killed.") .arg(capitalize_first(m_name)));
         }
 
         /* Death by Physical attack -- non-living monster */
@@ -1288,7 +1288,7 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
             {
                 message(QString("You have destroyed %1.") .arg(m_name));
             }
-            else message(QString("%^1 has been destroyed") .arg(m_name));
+            else message(QString("%1 has been destroyed") .arg(capitalize_first(m_name)));
         }
 
         /* Death by Physical attack -- living monster */
@@ -1298,7 +1298,7 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
             {
                 message(QString("You have slain %1.") .arg(m_name));
             }
-            else message(QString("%^1 has been slain") .arg(m_name));
+            else message(QString("%1 has been slain") .arg(capitalize_first(m_name)));
         }
 
         if ((who == SOURCE_PLAYER) || (who == SOURCE_TRAP))

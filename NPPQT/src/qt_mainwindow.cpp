@@ -2095,7 +2095,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_F:
         {
             if (keystring == "f")   do_cmd_fire();
-            else                    do_cmd_refuel();
+            else                    do_cmd_fire_at_nearest();
             return;
         }
         case Qt::Key_I:
@@ -2119,6 +2119,12 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         {
             if (keystring == "a") do_cmd_activate();
             else do_cmd_wizard_mode();
+            return;
+        }
+        case Qt::Key_R:
+        {
+            if (keystring == "r") do_cmd_rest();
+            else do_cmd_refuel();
             return;
         }
         case Qt::Key_BraceLeft:

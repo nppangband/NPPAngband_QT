@@ -11861,6 +11861,7 @@ void generate_cave(void)
  */
 static bool can_place_escorts_true(s16b r_idx)
 {
+    (void)r_idx;
     return (TRUE);
 }
 
@@ -11869,6 +11870,7 @@ static bool can_place_escorts_true(s16b r_idx)
  */
 static bool can_place_escorts_false(s16b r_idx)
 {
+    (void)r_idx;
     return (FALSE);
 }
 

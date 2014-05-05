@@ -377,7 +377,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
             if (m_ptr->ml)
             {
                 /* Message */
-                message(QString("%^1 dodges your trap.") .arg(m_name));
+                message(QString("%1 dodges your trap.") .arg(capitalize_first(m_name)));
 
                 /* Note that monster is evasive */
                 l_ptr->r_l_flags2 |= (RF2_EVASIVE);
@@ -391,7 +391,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
         {
             if (r_ptr->flags2 & (RF2_PASS_WALL))
             {
-                if (m_ptr->ml) message(QString("%^1 passes through your trap.") .arg(m_name));
+                if (m_ptr->ml) message(QString("%1 passes through your trap.") .arg(capitalize_first(m_name)));
 
                 trap_hit = FALSE;
             }
@@ -401,7 +401,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
         else if ((r_ptr->flags2 & (RF2_PASS_WALL)) &&
               (rand_int(4) != 1) && (mode == MODE_ACTION))
         {
-            if (m_ptr->ml) message(QString("%^1 passes through your trap.") .arg(m_name));
+            if (m_ptr->ml) message(QString("%1 passes through your trap.") .arg(capitalize_first(m_name)));
             trap_hit = FALSE;
         }
 
@@ -433,7 +433,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
             {
                 if (m_ptr->ml)
                 {
-                    message(QString("%^1 tries to disarm your trap, but sets it off!") .arg(m_name));
+                    message(QString("%1 tries to disarm your trap, but sets it off!") .arg(capitalize_first(m_name)));
                 }
 
                 /* worked */
@@ -449,7 +449,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
             {
                 if (m_ptr->ml)
                 {
-                    message(QString("%^1 finds your trap and disarms it.") .arg(m_name));
+                    message(QString("%1 finds your trap and disarms it.") .arg(capitalize_first(m_name)));
                     }
 
                 /* Trap is gone */
@@ -469,7 +469,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
             {
                 if (m_ptr->ml)
                 {
-                    message(QString("%^1 avoids your trap.") .arg(m_name));
+                    message(QString("%1 avoids your trap.") .arg(capitalize_first(m_name)));
                 }
 
                 /* Didn't work */
@@ -504,7 +504,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
             }
 
             /* Players sees the monster, butfailed to disarm got it's own message */
-            if ((m_ptr->ml) && (!(fail_disarm))) message(QString("%^1 sets off your cunning trap!") .arg(m_name));
+            if ((m_ptr->ml) && (!(fail_disarm))) message(QString("%1 sets off your cunning trap!") .arg(capitalize_first(m_name)));
 
             /* Not seen but in line of sight */
             else if ((player_has_los_bold(y, x)) && (!(fail_disarm)))
@@ -590,7 +590,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                     if (tmp < 0)
                     {
-                        if (m_ptr->ml) message(QString("%^1 is unaffected!") .arg(m_name));
+                        if (m_ptr->ml) message(QString("%1 is unaffected!") .arg(capitalize_first(m_name)));
                     }
                     else mon_inc_timed(m_idx, MON_TMD_CONF, 4 + tmp, MON_TMD_FLG_NOTIFY);
                 }
@@ -614,7 +614,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
 
                     if (tmp < 0)
                     {
-                        if (m_ptr->ml) message(QString("%^1 is unaffected!") .arg(m_name));
+                        if (m_ptr->ml) message(QString("%1 is unaffected!") .arg(capitalize_first(m_name)));
                     }
 
                     /* set or add to slow counter */
@@ -732,7 +732,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
                     if (teleport_away(dungeon_info[y][x].monster_idx, 5 + (trap_power / 10)))
                     {
                         /*give message if in LOS*/
-                        if (m_ptr->ml) message(QString("%^1 is teleported.") .arg(m_name));
+                        if (m_ptr->ml) message(QString("%1 is teleported.") .arg(capitalize_first(m_name)));
                     }
                 }
 
@@ -2619,7 +2619,7 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
     /* Monster is frightened */
     if ((!death) && (fear) && (seen))
     {
-        message(QString("%^1 panics!")  .arg(m_name));
+        message(QString("%1 panics!")  .arg(capitalize_first(m_name)));
     }
 }
 

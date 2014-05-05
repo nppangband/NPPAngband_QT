@@ -3670,7 +3670,7 @@ bool make_one_randart(object_type *o_ptr, int art_power, bool tailored)
             buf = (get_string("Enter a name for your artifact:", "artifact_name", NULL));
 
             /*The additional check is because players sometimes hit return accidentally*/
-            if (buf.length()) tmp = (QString("'%^1'") .arg(buf));
+            if (buf.length()) tmp = (QString("'%1'") .arg(capitalize_first(buf)));
         }
     }
     /*If none selected, make one at random*/

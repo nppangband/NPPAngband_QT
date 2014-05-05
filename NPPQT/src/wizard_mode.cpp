@@ -104,7 +104,8 @@ EditObjectDialog::EditObjectDialog(void)
     QSpinBox *to_h_spinner = new QSpinBox;
     to_h_spinner->setRange(-99,99);
     to_h_spinner->setValue(o_ptr->to_h);
-    if (o_ptr->is_wieldable())
+
+    if (o_ptr->is_wieldable() || o_ptr->is_ammo())
     {
         edit_info->addWidget(to_h_label, 3, 0);
         edit_info->addWidget(to_h_spinner, 3, 1);
@@ -115,7 +116,7 @@ EditObjectDialog::EditObjectDialog(void)
     QSpinBox *to_d_spinner = new QSpinBox;
     to_d_spinner->setRange(-99,99);
     to_d_spinner->setValue(o_ptr->to_d);
-    if (o_ptr->is_wieldable())
+    if (o_ptr->is_wieldable() || o_ptr->is_ammo())
     {
         edit_info->addWidget(to_d_label, 4, 0);
         edit_info->addWidget(to_d_spinner, 4, 1);
@@ -926,9 +927,12 @@ void WizardModeDialog::wiz_winners_kit(void)
         0
     };
 
-    for (int i = 0; artis[i]; i++) {
-        object_type obj;
-        object_type *o_ptr = &obj;
+    object_type obj;
+    object_type *o_ptr = &obj;
+
+    for (int i = 0; artis[i]; i++)
+    {
+        o_ptr->object_wipe();
         if (!wiz_alloc_artifact(o_ptr, artis[i])) continue;
         object_history(o_ptr, ORIGIN_CHEAT, 0);
         identify_object(o_ptr, true);
@@ -938,6 +942,31 @@ void WizardModeDialog::wiz_winners_kit(void)
         }
         QString name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         message("Allocated " + name);
+    }
+
+    //Some amazing ammo;
+    int k_idx = lookup_kind(TV_BOLT, SV_AMMO_MITHRIL);
+    int ego_num = lookup_ego(TV_BOLT, SV_AMMO_MITHRIL, "holy might");
+    if (k_idx && ego_num)
+    {
+        o_ptr->object_wipe();
+        object_prep(o_ptr, k_idx);
+        o_ptr->ego_num = ego_num;
+        a_m_aux_1(o_ptr, k_info[k_idx].k_level, 2);
+        apply_ego_item_magic(o_ptr, k_info[k_idx].k_level);
+        o_ptr->to_h = 99;
+        o_ptr->to_d = 99;
+        o_ptr->dd = 25;
+        o_ptr->ds = 25;
+        o_ptr->number = 99;
+        object_aware(o_ptr);
+        object_known(o_ptr);
+        k_info[k_idx].everseen = TRUE;
+        object_history(o_ptr, ORIGIN_CHEAT, 0);
+        if(inven_carry(o_ptr) < 0)
+        {
+            drop_near(o_ptr, -1, p_ptr->py, p_ptr->px);
+        }
     }
 
     handle_stuff();

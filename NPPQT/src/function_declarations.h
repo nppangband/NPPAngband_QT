@@ -490,7 +490,7 @@ extern int critical_shot_chance(object_type *o_ptr, player_state a_state, bool i
 extern void py_attack(int y, int x);
 extern void do_cmd_fire();
 extern void command_fire(cmd_arg args);
-extern void textui_cmd_fire_at_nearest(void);
+extern void do_cmd_fire_at_nearest(void);
 extern int weapon_throw_adjust(const object_type *o_ptr, u32b f3, int *plus, bool id_only);
 extern void command_throw(cmd_arg args);
 extern void do_cmd_throw(void);
