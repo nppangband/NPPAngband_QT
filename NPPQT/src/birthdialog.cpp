@@ -385,7 +385,7 @@ void BirthDialog::on_cancel_button_clicked()
 void BirthDialog::on_options_button_clicked()
 {
     bool old_maximize = birth_maximize;
-    OptionsDialog *dlg = new OptionsDialog(this);
+    OptionsDialog *dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
     if (birth_maximize != old_maximize) {

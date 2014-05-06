@@ -2231,7 +2231,7 @@ void MainWindow::open_recent_file()
 
 void MainWindow::options_dialog()
 {
-    OptionsDialog *dlg = new OptionsDialog(this);
+    OptionsDialog *dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
     p_ptr->redraw |= (PR_MAP | PR_STATUS);

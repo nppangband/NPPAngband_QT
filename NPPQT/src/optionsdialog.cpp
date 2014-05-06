@@ -1,5 +1,4 @@
 #include "optionsdialog.h"
-#include "ui_optionsdialog.h"
 #include "npp.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -20,12 +19,9 @@ static int calc_table_width(QTableWidget *table)
     return w;
 }
 
-OptionsDialog::OptionsDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::OptionsDialog)
-{
-    ui->setupUi(this);
-
+OptionsDialog::OptionsDialog()
+{    
+    /*
     int max = 0;
     int w;
 
@@ -89,13 +85,12 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
      ui->spin_hitpoint_warning->setValue(op_ptr->hitpoint_warn);
 
      ui->tabWidget->setCurrentIndex(0);
+     */
+
+    this->clientSizeUpdated();
 }
 
-OptionsDialog::~OptionsDialog()
-{
-    delete ui;
-}
-
+/*
 void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
     if (button->text().compare("Save") == 0) {
@@ -117,3 +112,4 @@ void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
 
     this->close();
 }
+*/
