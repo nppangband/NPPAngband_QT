@@ -4742,10 +4742,8 @@ P:0:1d1:0:0:0
 T:7:24:11:4
 A:1/1
 F:EASY_KNOW | GENERAL_STORE
-D:These can be placed in doors to make them harder to open.  Multiple
-D: spikes may be used on a single door.  Each of the first 7 spikes will
-D: increase the door's resistance to bashing.  Placing more than 7
-D: spikes in one door will not have any further effect. 
+D:A spike can be placed in doors to make them harder to open.  Placing
+D: mulitple spikes in one door will not have any further effect.
 
 
 

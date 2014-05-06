@@ -1876,7 +1876,6 @@ void command_spike(cmd_arg args)
     /* Verify legality */
     if (!do_cmd_test(y, x, FS_SPIKE, TRUE)) return;
 
-
     /* Confuse direction */
     if (confuse_dir(&dir))
     {
@@ -1899,6 +1898,9 @@ void command_spike(cmd_arg args)
     /* Go for it */
     int feat = dungeon_info[y][x].feat;
 
+
+
+
     /*Mark the feature lore*/
     feature_lore *f_l_ptr = &f_l_list[feat];
     f_l_ptr->f_l_flags1 |= (FF1_CAN_SPIKE);
@@ -1915,6 +1917,13 @@ void command_spike(cmd_arg args)
         /* Update the visuals */
         p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
 
+    }
+
+    //The door is already jammed
+    if (f_info[feat].is_jammed_door())
+    {
+        message(QString("The %1 is already jammed.") .arg(feature_desc(feat, FALSE, TRUE)));
+        return;
     }
 
     /* Successful jamming */

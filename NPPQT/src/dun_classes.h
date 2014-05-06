@@ -178,6 +178,8 @@ public:
     QString tile_id;
 
     void feature_wipe();
+    bool is_door(void);
+    bool is_jammed_door(void);
 
 };
 

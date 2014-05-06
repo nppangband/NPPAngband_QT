@@ -156,6 +156,22 @@ void feature_type::feature_wipe()
     tile_id.clear();
 }
 
+bool feature_type::is_door(void)
+{
+    /* Decline non-door */
+    if (!(f_flags1 & (FF1_DOOR))) return (FALSE);
+    return (TRUE);
+}
+
+bool feature_type::is_jammed_door(void)
+{
+    if (!is_door()) return (FALSE);
+
+    /* Jammed doors */
+    if (f_flags3 & (FF3_DOOR_JAMMED)) return (TRUE);
+    return (FALSE);
+}
+
 vault_type::vault_type()
 {
     vault_wipe();
