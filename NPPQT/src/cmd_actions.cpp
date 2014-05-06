@@ -1816,6 +1816,137 @@ void do_cmd_alter_aux(int dir)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
+/*
+ * Find the index of some "spikes", if possible.
+ *
+ * XXX XXX XXX Let user choose a pile of spikes, perhaps?
+ */
+static bool get_spike(int *ip)
+{
+    int i;
+
+    /* Check every item in the pack */
+    for (i = 0; i < INVEN_PACK; i++)
+    {
+        object_type *o_ptr = &inventory[i];
+
+        /* Skip non-objects */
+        if (!o_ptr->k_idx) continue;
+
+        /* Check the "tval" code */
+        if (o_ptr->tval == TV_SPIKE)
+        {
+            /* Save the spike index */
+            (*ip) = i;
+
+            /* Success */
+            return (TRUE);
+        }
+    }
+
+    /* Oops */
+    return (FALSE);
+}
+
+/*
+ * Jam a closed door with a spike
+ *
+ * This command may NOT be repeated
+ */
+void command_spike(cmd_arg args)
+{
+    int y, x, dir, item = 0;
+
+    dir = args.direction;
+
+    /* Get a spike */
+    if (!get_spike(&item))
+    {
+        /* Message */
+        message(QString("You have no spikes!"));
+
+        /* Done */
+        return;
+    }
+
+    /* Get location */
+    y = p_ptr->py + ddy[dir];
+    x = p_ptr->px + ddx[dir];
+
+    /* Verify legality */
+    if (!do_cmd_test(y, x, FS_SPIKE, TRUE)) return;
+
+
+    /* Confuse direction */
+    if (confuse_dir(&dir))
+    {
+        /* Get location */
+        y = p_ptr->py + ddy[dir];
+        x = p_ptr->px + ddx[dir];
+    }
+
+    /* Monster */
+    if (dungeon_info[y][x].monster_idx > 0)
+    {
+        /* Message */
+        message(QString("There is a monster in the way!"));
+
+        /* Attack */
+        py_attack(y, x);
+        return;
+    }
+
+    /* Go for it */
+    int feat = dungeon_info[y][x].feat;
+
+    /*Mark the feature lore*/
+    feature_lore *f_l_ptr = &f_l_list[feat];
+    f_l_ptr->f_l_flags1 |= (FF1_CAN_SPIKE);
+
+    /* Verify legality */
+    if (!do_cmd_test(y, x, FS_SPIKE, TRUE)) return;
+
+    /* Secrets on door/permanent doors */
+    if (feat_ff1_match(feat, FF1_SECRET | FF1_PERMANENT))
+    {
+        /* Stuck */
+        find_secret(y,x);
+
+        /* Update the visuals */
+        p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
+
+    }
+
+    /* Successful jamming */
+    message(QString("You jam the %1 with a spike.") .arg(feature_desc(feat, FALSE, TRUE)));
+
+    /*Spike the door*/
+    cave_alter_feat(y, x, FS_SPIKE);
+
+    /* Use up, and describe, a single spike, from the bottom */
+    inven_item_increase(item, -1);
+    inven_item_describe(item);
+    inven_item_optimize(item);
+
+    /* Take a turn */
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+
+void do_cmd_spike(void)
+{
+    if (!character_dungeon) return;
+
+    int dir;
+    if (!get_rep_dir(&dir)) return;
+
+    cmd_arg args;
+
+    args.direction = dir;
+
+    command_spike(args);
+}
+
 void command_rest(int choice)
 {
     p_ptr->resting = choice;

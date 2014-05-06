@@ -236,7 +236,7 @@ static int init_color_info(void)
         defined_colors[i].setRgb(preset_colors[i].red, preset_colors[i].green, preset_colors[i].blue, 255);
     }
 
-    for (int i = 0; i < N_ELEMENTS(tval_to_attr); i++) {
+    for (u16b i = 0; i < N_ELEMENTS(tval_to_attr); i++) {
         tval_to_attr[i] = TERM_WHITE;
     }
 

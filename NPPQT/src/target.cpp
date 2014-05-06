@@ -550,7 +550,7 @@ bool target_set_interactive(int mode, int x, int y)
             /* Draw the path in "target" mode. If there is one */
             if ((mode & (TARGET_KILL)) && (dungeon_info[y][x].cave_info & (CAVE_FIRE)))
             {
-                path_drawn = ui_draw_path(path_n, path_g, py, px, y, x);
+                path_drawn = ui_draw_path(path_n, path_g, y, x);
             }
 
             ui_show_cursor(y, x);
@@ -789,7 +789,7 @@ bool target_set_interactive(int mode, int x, int y)
             if ((mode & (TARGET_KILL)) && (dungeon_info[y][x].cave_info & (CAVE_FIRE)))
             {
                 /* Save target info */
-                path_drawn = ui_draw_path(path_n, path_g, py, px, y, x);
+                path_drawn = ui_draw_path(path_n, path_g, y, x);
             }
 
             //event_signal(EVENT_MOUSEBUTTONS);

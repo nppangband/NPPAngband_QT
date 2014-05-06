@@ -70,6 +70,8 @@ extern void do_cmd_tunnel(void);
 extern void command_close(cmd_arg args);
 extern void do_cmd_close(void);
 extern void do_cmd_alter_aux(int dir);
+extern void command_spike(cmd_arg args);
+extern void do_cmd_spike(void);
 extern void command_rest(int choice);
 extern void do_cmd_rest(void);
 extern void do_cmd_run(int dir = 0);
@@ -668,7 +670,7 @@ extern QPixmap colorize_pix2(QPixmap src, QColor color);
 extern QPixmap colorize_pix3(QPixmap src, QColor color);
 extern QPixmap gray_pix(QPixmap src);
 extern UserInput ui_get_input();
-extern bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_y, int cur_tar_x);
+extern bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x);
 extern void ui_destroy_path();
 extern void ui_show_cursor(int y, int x);
 extern void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg);
@@ -969,7 +971,5 @@ void save_prev_character();
 void load_prev_character();
 bool has_prev_character();
 
-// prefs.cpp
-extern int process_pref_file(QString name);
 
 #endif // FUNCTION_DECLARATIONS_H

@@ -133,7 +133,7 @@ QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
     return p2;
 }
 
-bool ui_draw_path(u16b path_n, u16b *path_g, int y1, int x1, int cur_tar_y, int cur_tar_x)
+bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x)
 {
     if (path_n < 1) return false;
 
@@ -2087,9 +2087,10 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             process_mov_key(which_key, 3);
             return;
         }
-        case Qt::Key_V:
+        case Qt::Key_A:
         {
-            if (keystring == "v")   do_cmd_throw();
+            if (keystring == "a") do_cmd_activate();
+            else do_cmd_wizard_mode();
             return;
         }
         case Qt::Key_F:
@@ -2101,6 +2102,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_I:
         {
             do_cmd_observe();
+            return;
+        }
+        case Qt::Key_J:
+        {
+            do_cmd_spike();
             return;
         }
         case Qt::Key_G:
@@ -2115,16 +2121,21 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else                    do_cmd_disarm();
             return;
         }
-        case Qt::Key_A:
-        {
-            if (keystring == "a") do_cmd_activate();
-            else do_cmd_wizard_mode();
-            return;
-        }
+
         case Qt::Key_R:
         {
             if (keystring == "r") do_cmd_rest();
             else do_cmd_refuel();
+            return;
+        }
+        case Qt::Key_S:
+        {
+            if (keystring == "s")   do_cmd_search();
+            return;
+        }
+        case Qt::Key_V:
+        {
+            if (keystring == "v")   do_cmd_throw();
             return;
         }
         case Qt::Key_BraceLeft:

@@ -577,7 +577,7 @@ static void get_ahw(void)
 /*
  * Get the player's starting money
  */
-static void get_money(int stat_use[A_MAX])
+static void get_money(void)
 {
     if (birth_money)
     {
@@ -633,7 +633,7 @@ void roll_player(int stats[A_MAX])
     get_stats(stats);
 
     /* Roll for gold */
-    get_money(stats);
+    get_money();
 
     /* Update stats with bonuses, etc. */
     get_bonuses();
