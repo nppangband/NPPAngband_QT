@@ -9,10 +9,9 @@ class OptionsDialog : public NPPDialog
 
 public:
     OptionsDialog();
-/*
+
 private slots:
-    void on_buttonBox_clicked(QAbstractButton *button);
-*/
+    void on_save();
 };
 
 #endif // OPTIONSDIALOG_H
