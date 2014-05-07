@@ -57,7 +57,7 @@ private slots:
 
     void on_random_class_clicked();
 
-    void on_sex_combo_currentIndexChanged();
+    void on_sex_combo_currentIndexChanged(int);
 
     void on_ran_char_button_clicked();
 

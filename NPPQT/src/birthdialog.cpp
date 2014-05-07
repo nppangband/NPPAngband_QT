@@ -575,8 +575,10 @@ void BirthDialog::on_ran_sex_button_clicked()
     ui->sex_combo->setCurrentIndex(rand_int(MAX_SEXES));
 }
 
-void BirthDialog::on_sex_combo_currentIndexChanged(void)
+void BirthDialog::on_sex_combo_currentIndexChanged(int idx)
 {
+    (void)idx;
+
     dirty = true;
 }
 
