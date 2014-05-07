@@ -1687,6 +1687,11 @@ void MainWindow::update_sidebar()
     sidebar->resizeColumnToContents(0);
 }
 
+QWidget *ui_main_window()
+{
+    return main_window;
+}
+
 void MainWindow::update_titlebar()
 {
     QString str("NPPGames");

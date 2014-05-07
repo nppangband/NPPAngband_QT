@@ -10,7 +10,7 @@ class NPPDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit NPPDialog(QWidget *parent = 0, int _padding = 30, qreal _max_ratio = 0.8);
+    explicit NPPDialog(QWidget *parent = 0, int _padding = 0, qreal _max_ratio = 0.9);
 
     int padding;
     qreal max_ratio;

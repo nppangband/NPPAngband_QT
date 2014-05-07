@@ -47,7 +47,7 @@ OptionsDialog::OptionsDialog()
             if (idx == OPT_NONE) continue;
 
             option_entry *opt = options + idx;
-            if (opt->name == NULL) continue;
+            if (opt->name.isEmpty()) continue;
 
             QCheckBox *chk = new QCheckBox(opt->name + " - " + opt->description);
             chk->setChecked(op_ptr->opt[idx]);
