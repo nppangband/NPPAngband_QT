@@ -1128,7 +1128,7 @@ enum
 
 
 #define CHECK_DISTURB(stop_search) \
-(p_ptr->command_rep || p_ptr->running || p_ptr->resting || ((stop_search) && p_ptr->searching))
+(p_ptr->command_current || ((stop_search) && p_ptr->searching))
 
 
 /*

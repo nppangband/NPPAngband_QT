@@ -1212,14 +1212,9 @@ void do_cmd_fire(void)
 
     /* Require proper missile; prefer the quiver */
     item_tester_tval = p_ptr->state.ammo_tval;
-    p_ptr->command_wrk = USE_EQUIP;
 
     /* Get an item */
     if (!get_item(&item, q, s, (USE_INVEN | USE_QUIVER | QUIVER_FIRST | USE_FLOOR))) return;
-
-    // Clear current command
-    p_ptr->command_arg = 0;
-    p_ptr->command_dir = 0;
 
     /* Get a direction (or cancel) */
     if (!get_aim_dir(&dir, FALSE)) return;
@@ -2172,8 +2167,6 @@ void do_cmd_throw(void)
         message(QString("You have cannot throw wielded items."));
         return;
     }
-
-    p_ptr->command_arg = p_ptr->command_dir = 0;
 
     /* Get a direction (or cancel) */
     if (!get_aim_dir(&dir, FALSE)) return;

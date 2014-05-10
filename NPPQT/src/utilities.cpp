@@ -195,29 +195,9 @@ QString get_string(QString question, QString description, QString answer)
 
 /*
  * Request a "quantity" from the user
- *
- * Allow "p_ptr->command_arg" to specify a quantity
  */
 s16b get_quantity(QString prompt, int max, int amt)
 {
-    /* Use "command_arg" */
-    if (p_ptr->command_arg)
-    {
-        /* Extract a number */
-        amt = p_ptr->command_arg;
-
-        /* Clear "command_arg" */
-        p_ptr->command_arg = 0;
-
-        /* Enforce the maximum */
-        if (amt > max) amt = max;
-
-        /* Enforce the minimum */
-        if (amt < 0) amt = 0;
-
-        return (amt);
-    }
-
     if (max > 1)
     {
         bool ok;

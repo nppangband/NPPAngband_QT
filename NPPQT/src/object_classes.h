@@ -364,6 +364,7 @@ public:
     int direction;
     int slot;
     bool verify;
+    int repeats;
 
     void wipe();
 } ;

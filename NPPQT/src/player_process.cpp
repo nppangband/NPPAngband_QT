@@ -171,69 +171,13 @@ void process_player(void)
     /* Dead player? */
     if (p_ptr->is_dead) return;
 
-    /*** Check for interrupts ***/
-
-    /* Complete resting */
-    if (p_ptr->resting < 0)
-    {
-
-        /* Basic resting */
-        if (p_ptr->resting == -1)
-        {
-            /* Stop resting */
-            if ((p_ptr->chp == p_ptr->mhp) &&
-                (p_ptr->csp == p_ptr->msp))
-            {
-                disturb(0, 0);
-            }
-        }
-
-        /* Complete resting */
-        else if (p_ptr->resting == -2)
-        {
-            /* Stop resting */
-            if ((p_ptr->chp == p_ptr->mhp) &&
-                (p_ptr->csp == p_ptr->msp) &&
-                !p_ptr->timed[TMD_BLIND] && !p_ptr->timed[TMD_CONFUSED] &&
-                !p_ptr->timed[TMD_POISONED] && !p_ptr->timed[TMD_AFRAID] &&
-                !p_ptr->timed[TMD_STUN] && !p_ptr->timed[TMD_CUT] &&
-                !p_ptr->timed[TMD_SLOW] && !p_ptr->timed[TMD_PARALYZED] &&
-                !p_ptr->timed[TMD_IMAGE] && !p_ptr->word_recall &&
-                (p_ptr->food < PY_FOOD_UPPER))
-            {
-                disturb(0, 0);
-            }
-        }
-
-        /* Rest hit points */
-        else if (p_ptr->resting == -3)
-        {
-            if (p_ptr->chp == p_ptr->mhp)
-            {
-                disturb(0, 0);
-            }
-        }
-
-        /* Rest spell points */
-        else if (p_ptr->resting == -4)
-        {
-            if (p_ptr->csp == p_ptr->msp)
-            {
-                disturb(0, 0);
-            }
-        }
-    }
-
     /* Check for "player abort" */
-    if (p_ptr->running ||
-        p_ptr->command_rep || p_ptr->resting)
+    if (p_ptr->is_running() ||
+        p_ptr->command_current || p_ptr->is_resting())
     {
         // Allow the check_disturb method of MainWindow to be executed
         QCoreApplication::processEvents();
     }
-
-    /*** Handle actual user input ***/
-
 
     /* Notice stuff (if needed) */
     if (p_ptr->notice) notice_stuff();
@@ -247,9 +191,6 @@ void process_player(void)
     /* Hack -- Pack Overflow */
     pack_overflow();
 
-    /* Hack -- reset to inventory display */
-    if (!p_ptr->command_new) p_ptr->command_wrk = USE_INVEN;
-
     /* Paralyzed or Knocked Out */
     if ((p_ptr->timed[TMD_PARALYZED]) || (p_ptr->timed[TMD_STUN] >= 100))
     {
@@ -260,82 +201,11 @@ void process_player(void)
          p_ptr->player_turn = false;
     }
 
-    /* Resting */
-    else if (p_ptr->resting)
-    {
-        /* Timed rest */
-        if (p_ptr->resting > 0)
-        {
-            /* Reduce rest count */
-            p_ptr->resting--;
-
-            // Message
-            if (p_ptr->resting == 0) {
-                message("Done resting.");
-                light_spot(p_ptr->py, p_ptr->px);
-            }
-
-            /* Redraw the state */
-            p_ptr->redraw |= (PR_STATE);
-        }
-
-        /* Take a turn */
-        p_ptr->p_energy -= BASE_ENERGY_MOVE;
-
-        // Cancel user interaction
-        p_ptr->player_turn = false;
-    }
-
-    /* Running */
-    else if (p_ptr->running)
-    {
-        /* Take a step */
-        int energy = run_step(0);
-
-        if (energy > 0) {
-            /* Take a turn */
-            p_ptr->p_energy -= energy;
-
-            // Cancel user interaction
-            p_ptr->player_turn = false;
-        }
-    }
-
-    /* Repeated command */
-    else if (p_ptr->command_rep)
-    {
-
-        /* Process the command */
-        // TODO handle commands process_command(CMD_GAME, TRUE);
-
-        /* Count this execution */
-        if (p_ptr->command_rep)
-        {
-            /* Count this execution */
-            p_ptr->command_rep--;
-
-            /* Redraw the state */
-            p_ptr->redraw |= (PR_STATE);
-
-        }
-    }
-
-
     /* Normal command */
     else
     {
         /* Check monster recall */
         process_player_aux();
-
-        /* Using the noun-verb menu */
-        if (p_ptr->noun_verb)
-        {
-            // TODO handle using items cmd_use_item();
-            // TODO process commands process_command(CMD_GAME, TRUE);
-        }
-
-        /* Get and process a command */
-        // TODO handle processing commands else process_command(CMD_GAME, FALSE);
 
         py_pickup_gold();
     }
@@ -381,10 +251,8 @@ void process_player(void)
     }
 
     /* Get base noise increase -- less when resting */
-    if (p_ptr->resting)
-        total_wakeup_chance += p_ptr->base_wakeup_chance / 2;
-    else
-        total_wakeup_chance += p_ptr->base_wakeup_chance;
+    if (p_ptr->is_resting()) total_wakeup_chance += p_ptr->base_wakeup_chance / 2;
+    else total_wakeup_chance += p_ptr->base_wakeup_chance;
 
     /* Increase noise if necessary */
     if (add_wakeup_chance)

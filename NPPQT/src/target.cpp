@@ -1208,7 +1208,8 @@ int dir_transitions[10][10] =
 bool get_aim_dir(int *dp, bool target_trap)
 {
     /* Global direction */
-    int dir = p_ptr->command_dir;    
+    int dir = 0;
+    int old_dir;
 
     /* Initialize */
     (*dp) = 0;
@@ -1288,7 +1289,7 @@ bool get_aim_dir(int *dp, bool target_trap)
     if (!dir) return (FALSE);
 
     /* Save the direction */
-    p_ptr->command_dir = dir;
+    old_dir = dir;
 
     /* Check for confusion */
     if (p_ptr->timed[TMD_CONFUSED])
@@ -1298,7 +1299,7 @@ bool get_aim_dir(int *dp, bool target_trap)
     }
 
     /* Notice confusion */
-    if (p_ptr->command_dir != dir)
+    if (old_dir != dir)
     {
         /* Warn the user */
         message(QString("You are confused."));
@@ -1384,8 +1385,6 @@ bool get_rep_dir(int *dp)
     /* Initialize */
     (*dp) = 0;
 
-    /* Global direction */
-    //dir = p_ptr->command_dir;
 
     if (!dir) {
         color_message(QObject::tr("Enter a direction"), TERM_YELLOW);
@@ -1436,7 +1435,7 @@ bool get_rep_dir(int *dp)
     }
 
     /* Save desired direction */
-    p_ptr->command_dir = dir;
+    p_ptr->player_args.direction = dir;
 
     /* Save direction */
     (*dp) = dir;

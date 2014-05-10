@@ -2,7 +2,6 @@
 #define PLAYER_CLASSES_H
 
 
-
 class magic_type
 {
 public:
@@ -445,8 +444,6 @@ public:
 
     s16b feature_kind_idx;	/* Feature kind tracker*/
 
-    s16b resting;			/* Resting counter */
-    s16b running;			/* Running counter */
     bool running_withpathfind;      /* Are we using the pathfinder ? */
 
     s16b run_cur_dir;		/* Direction we are running */
@@ -456,15 +453,12 @@ public:
     bool run_break_right;	/* Looking for a break (right) */
     bool run_break_left;	/* Looking for a break (left) */
 
-    s16b command_cmd;		/* Gives identity of current command */
-    s16b command_arg;		/* Gives argument of current command */
-    s16b command_rep;		/* Gives repetition of current command */
-    s16b command_dir;		/* Gives direction of current command */
-    s16b  command_inv;		/* Gives item of current command */
-    //ui_event_data command_cmd_ex; /* Gives additional information of current command */
+    s16b command_current;	/* Gives identity of current command */
+    cmd_arg player_args;    /* All information about the current player command */
+
+
 
     s16b command_see;	/**< See "cmd1.c" */
-    s16b command_wrk;		/* See "cmd1.c" */
 
     s16b command_new;		/* Hack -- command chaining XXX XXX */
 
@@ -501,11 +495,15 @@ public:
 
     u16b dungeon_type;	/* One of the DUNGEON_TYPE_* constants */
 
+    void player_command_wipe();
     void player_type_wipe();
 
     bool can_cast();
     bool can_study();
     bool chooses_spells();
+    bool is_running();
+    bool is_resting();
+    bool should_stop_resting();
 
 };
 

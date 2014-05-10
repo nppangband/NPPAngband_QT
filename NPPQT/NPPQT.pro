@@ -62,10 +62,10 @@ SOURCES +=  src/qt_main.cpp\
             src/player_attack.cpp \
             src/player_death.cpp \
             src/player_classes.cpp \
+            src/player_command.cpp \
             src/player_process.cpp \
             src/player_spell.cpp \
             src/player_util.cpp \
-            src/prefs.cpp \
             src/project.cpp \
             src/project_util.cpp \
             src/quest.cpp \
@@ -113,6 +113,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/optionsdialog.h \
             src/mon_classes.h \
             src/player_classes.h \
+            src/player_command.h \
             src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \

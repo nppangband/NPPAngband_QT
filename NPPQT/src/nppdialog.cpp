@@ -9,19 +9,21 @@
 #include <QCoreApplication>
 #include <QIntValidator>
 #include "npp.h"
+#include "player_command.h"
 
 void RestDialog::on_clicked()
 {
     QObject *obj = QObject::sender();
     int value = obj->property("choice").toInt();
-    if (value < 0) choice = value;
+    if (value != REST_TURNCOUNT) choice = value;
     else {
         value = turns_edit->text().toInt();
         if (value < 0 || value > 9999) {
             pop_up_message_box("Invalid turns value", QMessageBox::Critical);
             return;
         }
-        choice = value;
+        choice = REST_TURNCOUNT;
+        p_ptr->player_args.repeats = value;
     }
     this->accept();
 }
@@ -73,10 +75,10 @@ RestDialog::RestDialog(int *_choice)
         QString name;
         int value;
     } choices[] = {
-      {"Complete", -2},
-      {"Hit points and Spell points", -1},
-      {"Hit points", -3},
-      {"Spell points", -4},
+      {"Complete", REST_COMPLETE},
+      {"Hit points and Spell points", REST_BOTH_SP_HP},
+      {"Hit points", REST_HP},
+      {"Spell points", REST_SP},
       {"", 0}
     };
 
@@ -104,7 +106,7 @@ RestDialog::RestDialog(int *_choice)
     btn2->setObjectName("turns");
     lay2->addWidget(btn2);
     btn2->setStyleSheet("text-align: left");
-    btn2->setProperty("choice", 1);
+    btn2->setProperty("choice", REST_TURNCOUNT);
     connect(btn2, SIGNAL(clicked()), this, SLOT(on_clicked()));
 
     this->exec();

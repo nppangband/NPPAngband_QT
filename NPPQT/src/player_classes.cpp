@@ -1,4 +1,4 @@
-/* File: generate.c */
+/* File: player_classes.cpp */
 
 /*
  * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
@@ -8,7 +8,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "src/player_command.h"
 
 player_class::player_class()
 {
@@ -93,6 +94,74 @@ void player_other::player_other_wipe()
     hitpoint_warn = delay_factor = 0;
 }
 
+void player_type::player_command_wipe()
+{
+    command_current = CMD_NONE;
+    player_args.wipe();
+}
+
+bool player_type::is_running()
+{
+    if (p_ptr->command_current == CMD_RUNNING) return (TRUE);
+    return (FALSE);
+}
+
+bool player_type::is_resting()
+{
+    if (p_ptr->command_current == CMD_RESTING) return (TRUE);
+    return (FALSE);
+}
+
+/* Determine if the player should stop resting
+ */
+bool player_type::should_stop_resting()
+{
+    if (!is_resting()) return(FALSE);
+
+    if (player_args.choice == REST_BOTH_SP_HP)
+    {
+        if (chp != mhp) return (FALSE);
+        if (csp != msp) return (FALSE);
+        return (TRUE);
+    }
+
+    if (player_args.choice == REST_HP)
+    {
+        if (chp != mhp) return (FALSE);
+        return (TRUE);
+    }
+    if (player_args.choice == REST_SP)
+    {
+        if (csp != msp) return (FALSE);
+        return (TRUE);
+    }
+
+    if ((player_args.choice == REST_COMPLETE) ||
+        (player_args.choice == REST_TURNCOUNT))
+    {
+        if (chp != mhp) return (FALSE);
+        if (csp != msp) return (FALSE);
+        if (timed[TMD_BLIND])  return (FALSE);
+        if (timed[TMD_CONFUSED])  return (FALSE);
+        if (timed[TMD_AFRAID])  return (FALSE);
+        if (timed[TMD_STUN])  return (FALSE);
+        if (timed[TMD_SLOW])  return (FALSE);
+        if (timed[TMD_PARALYZED])  return (FALSE);
+        if (timed[TMD_IMAGE])  return (FALSE);
+        if (word_recall)  return (FALSE);
+        if (food < PY_FOOD_UPPER)  return (FALSE);
+
+        if (player_args.choice == REST_TURNCOUNT)
+        {
+            if (player_args.repeats) return (FALSE);
+        }
+        return (TRUE);
+    }
+
+    // Oops!  Code shouldn't get this far.
+    return TRUE;
+}
+
 void player_type::player_type_wipe()
 {
     int i;
@@ -122,12 +191,10 @@ void player_type::player_type_wipe()
     total_weight = inven_cnt = equip_cnt = pack_size_reduce = quiver_remainder = quiver_slots = 0;
     target_set = target_who = target_row = target_col = health_who = monster_race_idx = 0;
     object_idx = object_kind_idx = feature_kind_idx = 0;
-    resting = running = 0;
     running_withpathfind = FALSE;
     run_cur_dir = run_old_dir = 0;
     run_unused = run_open_area = run_break_right = run_break_left = FALSE;
-    command_cmd = command_arg = command_rep = command_dir = command_inv = 0;
-    command_see = command_wrk  = command_new = 0;
+    player_command_wipe();
     new_spells = 0;
     notice = update = redraw = window = 0;
     p_native = p_native_known = 0;
@@ -169,7 +236,6 @@ bool player_type::can_cast(void)
 
     return (TRUE);
 }
-
 
 /*
  * Is the player capable of studying?

@@ -8,9 +8,6 @@
 #include <QPixmap>
 #include <QFont>
 
-//was externs.h
-
-
 
 
 //calcs.cpp
@@ -64,6 +61,9 @@ extern void command_open(cmd_arg args);
 extern void do_cmd_open(void);
 extern void command_disarm(cmd_arg args);
 extern void do_cmd_disarm(void);
+extern void do_search(void);
+extern void do_cmd_toggle_search(void);
+extern void command_search(cmd_arg args);
 extern void do_cmd_search(void);
 extern void command_tunnel(cmd_arg args);
 extern void do_cmd_tunnel(void);
@@ -72,7 +72,7 @@ extern void do_cmd_close(void);
 extern void do_cmd_alter_aux(int dir);
 extern void command_spike(cmd_arg args);
 extern void do_cmd_spike(void);
-extern void command_rest(int choice);
+extern void command_rest(cmd_arg args);
 extern void do_cmd_rest(void);
 extern void do_cmd_run(int dir = 0);
 extern void do_cmd_walk(cmd_arg args);
@@ -123,7 +123,6 @@ extern void py_pickup_gold(void);
 extern void py_pickup(bool pickup);
 extern void do_cmd_pickup(void);
 extern int move_player(int dir, int jumping);
-extern void search(void);
 
 // cmd_spell.cpp
 extern int spell_chance(int spell);

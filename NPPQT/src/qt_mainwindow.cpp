@@ -264,7 +264,7 @@ void ui_player_moved()
     int py = p_ptr->py;
     int px = p_ptr->px;
 
-    if (center_player && !p_ptr->running) {
+    if (center_player && !p_ptr->is_running()) {
         ui_center(py, px);
         return;
     }
@@ -1229,8 +1229,8 @@ void ui_event_signal(int event)
 
 void ui_flush_graphics()
 {
-    if (main_window->delayed_sidebar_update && !p_ptr->resting &&
-            !p_ptr->running) {
+    if (main_window->delayed_sidebar_update && !p_ptr->is_resting() &&
+            !p_ptr->is_running()) {
         main_window->update_sidebar();
     }
 }
@@ -1976,7 +1976,7 @@ static void process_mov_key(QKeyEvent *event, int dir)
 
 bool MainWindow::check_disturb()
 {
-    if (p_ptr->resting || p_ptr->running || p_ptr->command_rep) {
+    if (p_ptr->is_resting() || p_ptr->is_running() || p_ptr->command_current) {
         disturb(0, 0);
         message("Cancelled.");
         return true;
@@ -2022,7 +2022,6 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             // Stone to mud
             if (which_key->modifiers() & Qt::ControlModifier) {
                 int dir;
-                p_ptr->command_dir = 0;
                 if (get_aim_dir(&dir, false)) {
                     wall_to_mud(dir, 100);
                 }
@@ -2131,6 +2130,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_S:
         {
             if (keystring == "s")   do_cmd_search();
+            else do_cmd_toggle_search();
             return;
         }
         case Qt::Key_V:
@@ -2175,7 +2175,6 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "x") do_cmd_swap_weapon();
             else if (keystring == "c") do_cmd_close();
             else if (keystring == "o") do_cmd_open();
-            else if (keystring == "s") do_cmd_search();
             else if (keystring == ".") do_cmd_run();
             else if (keystring == "l") do_cmd_look();
             else if (keystring == "5") do_cmd_hold();

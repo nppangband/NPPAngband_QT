@@ -654,9 +654,6 @@ void do_cmd_cast(void)
 
     bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
 
-    // TODO solve this
-    p_ptr->command_dir = 0;
-
     if (spell_needs_aim(cp_ptr->spell_book, spell) && !get_aim_dir(&dir, trap_spell)) return;
 
     /* Get the spell */

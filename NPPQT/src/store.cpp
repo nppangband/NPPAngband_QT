@@ -4228,8 +4228,6 @@ static bool store_sell(void)
     }
 
     /* Get an item */
-    p_ptr->command_wrk = USE_INVEN;
-    p_ptr->command_cmd = 'd';
     if (!get_item(&item, prompt, reject, get_mode))
     {
         return (FALSE);
@@ -4488,15 +4486,9 @@ void do_cmd_store(int code, cmd_arg args[])
     forget_view();
 
     /* Reset the command variables */
-    p_ptr->command_arg = 0;
-    p_ptr->command_rep = 0;
-    p_ptr->command_new = 0;
+    p_ptr->player_command_wipe();
 
     /*** Display ***/
-
-
-
-
     /* Say a friendly hello. */
     if (this_store != STORE_HOME)
     {

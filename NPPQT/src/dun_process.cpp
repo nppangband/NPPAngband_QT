@@ -18,6 +18,7 @@
 
 #include "src/npp.h"
 #include "src/store.h"
+#include "src/player_command.h"
 
 
 /*
@@ -1169,7 +1170,7 @@ static void process_world(void)
     }
 
     /* Searching or Resting */
-    if (p_ptr->searching || p_ptr->resting)
+    if (p_ptr->searching || p_ptr->is_resting())
     {
         regen_amount = regen_amount * 2;
     }
@@ -1593,11 +1594,7 @@ void change_player_level(void)
     p_ptr->leaving_level = FALSE;
 
     /* Reset the "command" vars */
-    p_ptr->command_cmd = 0;
-    p_ptr->command_new = 0;
-    p_ptr->command_rep = 0;
-    p_ptr->command_arg = 0;
-    p_ptr->command_dir = 0;
+    p_ptr->player_command_wipe();
 
     /* Cancel the target */
     target_set_monster(0);
@@ -1857,10 +1854,11 @@ static void redraw_hallucination()
 }
 
 /*
- * This function should be called after every command that uses player energy.
- * Ideally, it should be the final line of code before the function ends or returns.
+ * the actual process player energy function.
+ * Separated so that repeated commands and macros can
+ * easily call this command multiple times in a loop.
  */
-void process_player_energy(byte energy_used)
+void process_player_energy_aux(byte energy_used)
 {
     static int depth_counter = 0;
 
@@ -2019,7 +2017,44 @@ void process_player_energy(byte energy_used)
 
     if (p_ptr->is_dead)
     {
-
         player_death_close_game();
     }
+}
+
+/*
+ * This function should be called after every command that uses player energy.
+ * This will be the main 'loop' for repeated commands, so this function
+ * assumes it is the final line of code in the function that calls it.
+ */
+void process_player_energy(byte energy_used)
+{
+    process_player_energy_aux(energy_used);
+
+    //Handle repeated commands
+    if (!p_ptr->command_current) return;
+
+    command_type *command_ptr = &command_info[p_ptr->command_current];
+
+    /*
+     * If resting, check if we should stop.
+     */
+    if (p_ptr->is_resting())
+    {
+        if (p_ptr->should_stop_resting())
+        {
+            disturb(0,0);
+            return;
+        }
+    }
+
+    // Check if we are done with the command
+    else if (command_ptr->repeated_command_completed())
+    {
+        p_ptr->player_command_wipe();
+        return;
+    }
+
+    //Run the command, reduce repeat command count
+    if (p_ptr->player_args.repeats) p_ptr->player_args.repeats--;
+    command_ptr->command_function(p_ptr->player_args);
 }

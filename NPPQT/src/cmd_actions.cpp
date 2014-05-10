@@ -19,6 +19,7 @@
 #include "src/npp.h"
 #include "nppdialog.h"
 #include "storedialog.h"
+#include "player_command.h"
 
 
 /*
@@ -872,6 +873,7 @@ void do_cmd_open(void)
     if (!get_rep_dir(&dir)) return;
 
     cmd_arg args;
+    args.wipe();
     args.direction = dir;
 
     command_open(args);
@@ -1284,9 +1286,148 @@ void do_cmd_disarm(void)
     if (!get_rep_dir(&dir)) return;
 
     cmd_arg args;
+    args.wipe();
     args.direction = dir;
 
     command_disarm(args);
+}
+
+/*
+ * Search for hidden things
+ * Process energy is not called from this function.
+ */
+void do_search(void)
+{
+    int py = p_ptr->py;
+    int px = p_ptr->px;
+
+    int y, x, chance;
+
+    object_type *o_ptr;
+
+
+    /* Start with base search ability */
+    chance = p_ptr->state.skills[SKILL_SEARCH];
+
+    /* Penalize various conditions */
+    if (p_ptr->timed[TMD_BLIND] || no_light()) chance = chance / 10;
+    if (p_ptr->timed[TMD_CONFUSED] || p_ptr->timed[TMD_IMAGE]) chance = chance / 10;
+
+    /* Search the nearby grids, which are always in bounds */
+    for (y = (py - 1); y <= (py + 1); y++)
+    {
+        for (x = (px - 1); x <= (px + 1); x++)
+        {
+            /* Sometimes, notice things */
+            if (rand_int(100) < chance)
+            {
+                /* Get the feature */
+                int feat = dungeon_info[y][x].feat;
+
+                /* Reveal interesting secret features */
+                if (feat_ff1_match(feat, FF1_SECRET) &&
+                    (feat_ff3_match(feat, FF3_PICK_TRAP |
+                        FF3_PICK_DOOR) ||
+                     !feat_ff1_match(feat, FF1_MOVE)))
+                {
+                    find_secret(y, x);
+                }
+
+                /* Find hidden player traps */
+                if (cave_player_trap_bold(y, x))
+                {
+                    /* Get the trap */
+                    effect_type *x_ptr = &x_list[dungeon_info[y][x].effect_idx];
+
+                    /* Ignore known traps */
+                    if (x_ptr->x_flags & (EF1_HIDDEN))
+                    {
+                        /* Reveal the trap */
+                        x_ptr->x_flags &= ~(EF1_HIDDEN);
+
+                        /* Show the trap */
+                        note_spot(y, x);
+
+                        light_spot(y, x);
+
+                        /* Message */
+                        message(QString("You have found a trap!"));
+
+                        /* Disturb the player */
+                        disturb(0, 0);
+                    }
+                }
+
+                /* Scan all objects in the grid */
+                for (o_ptr = get_first_object(y, x); o_ptr; o_ptr = get_next_object(o_ptr))
+                {
+                    /* Skip non-chests */
+                    if (!o_ptr->is_chest()) continue;
+
+                    /* Skip disarmed chests */
+                    if (o_ptr->pval <= 0) continue;
+
+                    /* Skip non-trapped chests */
+                    if (!chest_traps[o_ptr->pval]) continue;
+
+                    if (o_ptr->ident & (IDENT_QUEST)) continue;
+
+                    /* Identify once */
+                    if (!object_known_p(o_ptr))
+                    {
+                        /* Message */
+                        message(QString("You have discovered a trap on the chest!"));
+
+                        /* Know the trap */
+                        object_known(o_ptr);
+
+                        /* Notice it */
+                        disturb(0, 0);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/*
+ * Hack -- toggle search mode
+ */
+void do_cmd_toggle_search(void)
+{
+    /* Stop searching */
+    if (p_ptr->searching)
+    {
+        /* Clear the searching flag */
+        p_ptr->searching = FALSE;
+
+        /* Recalculate bonuses */
+        p_ptr->update |= (PU_BONUS);
+
+        /* Redraw the state */
+        p_ptr->redraw |= (PR_STATE);
+    }
+
+    /* Start searching */
+    else
+    {
+        /* Set the searching flag */
+        p_ptr->searching = TRUE;
+
+        /* Update stuff */
+        p_ptr->update |= (PU_BONUS);
+
+        /* Redraw stuff */
+        p_ptr->redraw |= (PR_STATE | PR_SPEED | PR_STATUS);
+    }
+}
+
+void command_search(cmd_arg args)
+{
+    (void)args;
+    do_search();
+    process_player_energy(BASE_ENERGY_MOVE);
 }
 
 /*
@@ -1296,26 +1437,12 @@ void do_cmd_search(void)
 {
     if (!character_dungeon) return;
 
+    cmd_arg args;
+    args.wipe();
     // TODO solve this
-#if 0
-    /* Allow repeated command */
-    if (p_ptr->command_arg)
-    {
-        /* Set repeat count */
-        p_ptr->command_rep = p_ptr->command_arg - 1;
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
-
-        /* Cancel the arg */
-        p_ptr->command_arg = 0;
-    }
-#endif
 
     /* Search */
-    search();
-
-    process_player_energy(BASE_ENERGY_MOVE);
+    command_search(args);
 }
 
 /*
@@ -1581,6 +1708,7 @@ void do_cmd_tunnel(void)
     if (!get_rep_dir(&dir)) return;
 
     cmd_arg args;
+    args.wipe();
     args.direction = dir;
 
     command_tunnel(args);
@@ -1707,6 +1835,7 @@ void do_cmd_close(void)
     if (!get_rep_dir(&dir)) return;
 
     cmd_arg args;
+    args.wipe();
     args.direction = dir;
 
     command_close(args);
@@ -1950,18 +2079,34 @@ void do_cmd_spike(void)
     if (!get_rep_dir(&dir)) return;
 
     cmd_arg args;
-
+    args.wipe();
     args.direction = dir;
 
     command_spike(args);
 }
 
-void command_rest(int choice)
+// Just burn some energy
+void command_rest(cmd_arg args)
 {
-    p_ptr->resting = choice;
+    (void) args;
+    process_player_energy(BASE_ENERGY_MOVE);
+}
 
-    /* Cancel the arg */
-    p_ptr->command_arg = 0;
+void do_cmd_rest(void)
+{
+    if (!character_dungeon) return;
+
+    int choice;
+
+    /* Cancel the command */
+    p_ptr->player_command_wipe();
+
+    RestDialog dlg(&choice);
+
+    if (choice == 0) return;
+
+    p_ptr->command_current = CMD_RESTING;
+    p_ptr->player_args.choice = choice;
 
     /* Cancel searching */
     p_ptr->searching = FALSE;
@@ -1975,20 +2120,7 @@ void command_rest(int choice)
     /* Handle stuff */
     handle_stuff();
 
-    process_player_energy(BASE_ENERGY_MOVE);
-}
-
-void do_cmd_rest(void)
-{
-    if (!character_dungeon) return;
-
-    int choice;
-
-    RestDialog dlg(&choice);
-
-    if (choice == 0) return;
-
-    command_rest(choice);
+    command_rest(p_ptr->player_args);
 }
 
 /*
@@ -2136,19 +2268,6 @@ static int do_cmd_walk_or_jump(int jumping, int dir = 0)
 
         /* Verify legality */
         if (!do_cmd_walk_test(y, x)) return BASE_ENERGY_MOVE;
-    }
-
-    /* Allow repeated command */
-    if (p_ptr->command_arg)
-    {
-        /* Set repeat count */
-        p_ptr->command_rep = p_ptr->command_arg - 1;
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
-
-        /* Cancel the arg */
-        p_ptr->command_arg = 0;
     }
 
     /* Move the player, record energy used */
@@ -2418,19 +2537,6 @@ void command_bash(cmd_arg args)
         x = p_ptr->px + ddx[dir];
     }
 
-    /* Allow repeated command */
-    if (p_ptr->command_arg)
-    {
-        /* Set repeat count */
-        p_ptr->command_rep = p_ptr->command_arg - 1;
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
-
-        /* Cancel the arg */
-        p_ptr->command_arg = 0;
-    }
-
     /* Monster */
     if (m_idx > 0)
     {
@@ -2460,6 +2566,7 @@ void do_cmd_bash(void)
     if (!get_rep_dir(&dir)) return;
 
     cmd_arg args;
+    args.wipe();
     args.direction = dir;
 
     command_bash(args);
@@ -2480,13 +2587,13 @@ void do_cmd_hold()
     if ((p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] >= 50) ||
         (0 == rand_int(50 - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY])))
     {
-        search();
+        do_search();
     }
 
     /* Continuous Searching */
     if (p_ptr->searching)
     {
-        search();
+        do_search();
     }
 
     /* Handle "objects" */

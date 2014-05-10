@@ -21,102 +21,6 @@
 
 
 
-/*
- * Search for hidden things
- */
-void search(void)
-{
-	int py = p_ptr->py;
-	int px = p_ptr->px;
-
-	int y, x, chance;
-
-	object_type *o_ptr;
-
-
-	/* Start with base search ability */
-	chance = p_ptr->state.skills[SKILL_SEARCH];
-
-	/* Penalize various conditions */
-	if (p_ptr->timed[TMD_BLIND] || no_light()) chance = chance / 10;
-	if (p_ptr->timed[TMD_CONFUSED] || p_ptr->timed[TMD_IMAGE]) chance = chance / 10;
-
-	/* Search the nearby grids, which are always in bounds */
-	for (y = (py - 1); y <= (py + 1); y++)
-	{
-		for (x = (px - 1); x <= (px + 1); x++)
-		{
-			/* Sometimes, notice things */
-			if (rand_int(100) < chance)
-			{
-				/* Get the feature */
-                int feat = dungeon_info[y][x].feat;
-
-				/* Reveal interesting secret features */
-				if (feat_ff1_match(feat, FF1_SECRET) &&
-					(feat_ff3_match(feat, FF3_PICK_TRAP |
-						FF3_PICK_DOOR) ||
-					 !feat_ff1_match(feat, FF1_MOVE)))
-				{
-					find_secret(y, x);
-				}
-
-				/* Find hidden player traps */
-				if (cave_player_trap_bold(y, x))
-				{
-					/* Get the trap */                    
-                    effect_type *x_ptr = &x_list[dungeon_info[y][x].effect_idx];
-
-					/* Ignore known traps */
-					if (x_ptr->x_flags & (EF1_HIDDEN))
-					{
-						/* Reveal the trap */
-						x_ptr->x_flags &= ~(EF1_HIDDEN);
-
-						/* Show the trap */
-                        note_spot(y, x);
-
-						light_spot(y, x);
-
-						/* Message */
-                        message(QString("You have found a trap!"));
-
-						/* Disturb the player */
-						disturb(0, 0);
-					}
-				}
-
-				/* Scan all objects in the grid */
-				for (o_ptr = get_first_object(y, x); o_ptr; o_ptr = get_next_object(o_ptr))
-				{
-					/* Skip non-chests */
-                    if (!o_ptr->is_chest()) continue;
-
-					/* Skip disarmed chests */
-					if (o_ptr->pval <= 0) continue;
-
-					/* Skip non-trapped chests */
-					if (!chest_traps[o_ptr->pval]) continue;
-
-					if (o_ptr->ident & (IDENT_QUEST)) continue;
-
-					/* Identify once */
-					if (!object_known_p(o_ptr))
-					{
-						/* Message */
-                        message(QString("You have discovered a trap on the chest!"));
-
-						/* Know the trap */
-						object_known(o_ptr);
-
-						/* Notice it */
-						disturb(0, 0);
-					}
-				}
-			}
-		}
-	}
-}
 
 
 /*
@@ -828,15 +732,6 @@ int move_player(int dir, int jumping)
             !(x_list[dungeon_info[y][x].effect_idx].x_flags & (EF1_HIDDEN)))))
 
 	{
-		/* Auto-repeat if not already repeating */
-		if (!p_ptr->command_rep && (p_ptr->command_arg <= 0))
-		{
-			p_ptr->command_rep = 99;
-
-			/* Reset the command count */
-			p_ptr->command_arg = 0;
-		}
-
 		/* Alter */
         do_cmd_alter_aux(dir);
 
@@ -984,7 +879,7 @@ int move_player(int dir, int jumping)
 
 		/* Disturb player if the player is about to leave the area */
 		if (disturb_detect &&
-				p_ptr->running && old_dtrap && !new_dtrap)
+                p_ptr->is_running() && old_dtrap && !new_dtrap)
 		{
 			disturb(0, 0);
             return 0;
@@ -1028,13 +923,13 @@ int move_player(int dir, int jumping)
 		if ((p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] >= 50) ||
 			(0 == rand_int(50 - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY])))
 		{
-			search();
+            do_search();
 		}
 
 		/* Continuous Searching */
 		if (p_ptr->searching)
 		{
-			search();
+            do_search();
 		}
 
 		/* Handle "objects" */

@@ -5095,41 +5095,25 @@ void disturb(int stop_search, int unused_flag)
     /* Unused parameter */
     (void)unused_flag;
 
-    /* Cancel auto-commands */
-    /* p_ptr->command_new = 0; */
-
-    /* Cancel repeated commands */
-    if (p_ptr->command_rep)
-    {
-        /* Cancel */
-        p_ptr->command_rep = 0;
-
-        /* Redraw the state (later) */
-        p_ptr->redraw |= (PR_STATE);
-    }
-
     /* Cancel Resting */
-    if (p_ptr->resting)
+    if (p_ptr->is_resting())
     {
-        /* Cancel */
-        p_ptr->resting = 0;
-
         /* Redraw the state (later) */
         p_ptr->redraw |= (PR_STATE);
     }
 
     /* Cancel running */
-    if (p_ptr->running)
+    if (p_ptr->is_running())
     {
-        /* Cancel */
-        p_ptr->running = 0;
-
         /* Check for new panel if appropriate */
         // TODO if (center_player) verify_panel();
 
         /* Calculate torch radius */
         p_ptr->update |= (PU_TORCH);
     }
+
+    /* Cancel repeated commands */
+    p_ptr->player_command_wipe();
 
     /* Cancel searching if requested */
     if (stop_search && p_ptr->searching)
