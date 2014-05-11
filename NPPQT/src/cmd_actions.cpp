@@ -238,6 +238,103 @@ void do_cmd_go_down(void)
 }
 
 /*
+ * Given a "source" and "target" location, extract a "direction",
+ * which will move one step from the "source" towards the "target".
+ *
+ * Note that we use "diagonal" motion whenever possible.
+ *
+ * We return "5" if no motion is needed.
+ */
+static int motion_dir(int y1, int x1, int y2, int x2)
+{
+    /* No movement required */
+    if ((y1 == y2) && (x1 == x2)) return (5);
+
+    /* South or North */
+    if (x1 == x2) return ((y1 < y2) ? 2 : 8);
+
+    /* East or West */
+    if (y1 == y2) return ((x1 < x2) ? 6 : 4);
+
+    /* South-east or South-west */
+    if (y1 < y2) return ((x1 < x2) ? 3 : 1);
+
+    /* North-east or North-west */
+    if (y1 > y2) return ((x1 < x2) ? 9 : 7);
+
+    /* Paranoia */
+    return (5);
+}
+
+/*
+ * Extract a "direction" which will move one step from the player location
+ * towards the given "target" location (or "5" if no motion necessary).
+ */
+static int coords_to_dir(int y, int x)
+{
+    return (motion_dir(p_ptr->py, p_ptr->px, y, x));
+}
+
+/*
+ * Return the number of features around (or under) the character.
+ * Usually look for doors and floor traps.
+ * ANDY - Counts features that allow action.
+ */
+static int count_feats(int *y, int *x, int action)
+{
+    int d, count;
+
+    feature_type *f_ptr;
+
+    u32b flag, bitzero = 0x01;
+
+    /* Count how many matches */
+    count = 0;
+
+    /* Check around the character */
+    for (d = 0; d < 8; d++)
+    {
+        /* Extract adjacent (legal) location */
+        int yy = p_ptr->py + ddy_ddd[d];
+        int xx = p_ptr->px + ddx_ddd[d];
+
+        /* Must have knowledge */
+        if (!(dungeon_info[yy][xx].cave_info & (CAVE_MARK))) continue;
+
+        /* Get the mimiced feature */
+        f_ptr = &f_info[dungeon_info[yy][xx].feat];
+
+        if (action < FS_FLAGS2)
+        {
+            flag = bitzero << (action - FS_FLAGS1);
+            if (!(f_ptr->f_flags1 & flag)) continue;
+        }
+
+        else if (action < FS_FLAGS3)
+        {
+            flag = bitzero << (action - FS_FLAGS2);
+            if (!(f_ptr->f_flags2 & flag)) continue;
+        }
+
+        else if (action < FS_FLAGS_END)
+        {
+            flag = bitzero << (action - FS_FLAGS3);
+            if (!(f_ptr->f_flags3 & flag)) continue;
+        }
+
+        /* Count it */
+        ++count;
+
+        /* Remember the location of the last door found */
+        *y = yy;
+        *x = xx;
+    }
+
+    /* All done */
+    return count;
+}
+
+/*
  * Perform the basic "open" command on doors
  *
  * Assume there is no monster blocking the destination
@@ -364,9 +461,6 @@ static s16b chest_check(int y, int x, bool check_locked)
 
         /* Get the next object */
         next_o_idx = o_ptr->next_o_idx;
-
-        /* Skip unknown chests XXX XXX */
-        /* if (!o_ptr->marked) continue; */
 
         /* Check for chest */
         if (o_ptr->tval != TV_CHEST) continue;
@@ -811,6 +905,8 @@ void command_open(cmd_arg args)
 
         /* Attack */
         py_attack(y, x);
+        // Energy expeneded in py_attack
+        return;
     }
 
     /* Chest */
@@ -877,9 +973,31 @@ void do_cmd_open(void)
 {
     if (!character_dungeon) return;
 
-    int dir;
+    int dir = DIR_UNKNOWN;
 
-    if (!get_rep_dir(&dir)) return;
+    /* Easy Open */
+    if (easy_open)
+    {
+        int y, x;
+        int num_doors, num_chests;
+
+        /* Count closed doors */
+        num_doors = count_feats(&y, &x, FS_OPEN);
+
+        /* Count chests (locked) */
+        num_chests = count_chests(&y, &x, FALSE);
+
+        /* See if only one target */
+        if ((num_doors + num_chests) == 1)
+        {
+            dir = coords_to_dir(y, x);
+        }
+    }
+
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     cmd_arg args;
     args.wipe();
@@ -969,7 +1087,7 @@ static bool do_cmd_disarm_chest(int y, int x, s16b o_idx)
  *
  * Returns TRUE if repeated commands may continue
  */
-static bool do_cmd_disarm_aux(int y, int x, bool disarm)
+static bool command_disarm_aux(int y, int x, bool disarm)
 {
     int i, j, power;
 
@@ -1150,28 +1268,6 @@ void command_disarm(cmd_arg args)
     /* Verify legality */
     if (!num_traps && !num_chests) return;
 
-    /* Easy Disarm */
-    if (easy_open)
-    {
-        /* See if only one target */
-        if ((num_traps + num_chests) == 1)
-        {
-            if (num_traps)
-            {
-                dir_y = trap_y;
-                dir_x = trap_x;
-            }
-            else  /* (num_chests) */
-            {
-                dir_y = chest_y;
-                dir_x = chest_x;
-            }
-
-            // TODO solve this
-            //p_ptr->command_dir = coords_to_dir(dir_y, dir_x);
-        }
-    }
-
     /* Apply confusion */
     if (confuse_dir(&dir))
     {
@@ -1216,21 +1312,15 @@ void command_disarm(cmd_arg args)
         }
     }
 
-    // TODO solve this
-#if 0
-    /* Allow repeated command */
-    if (p_ptr->command_arg)
+    // Repeat commands if necessary
+    if (easy_open && !p_ptr->command_current)
     {
-        /* Set repeat count */
-        p_ptr->command_rep = p_ptr->command_arg - 1;
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
-
-        /* Cancel the arg */
-        p_ptr->command_arg = 0;
+        p_ptr->player_command_wipe();
+        p_ptr->command_current = CMD_DISARM;
+        p_ptr->player_args.direction = dir;
+        command_type *command_ptr = &command_info[CMD_DISARM];
+        p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
-#endif
 
     /* Monster */
     if (dungeon_info[dir_y][dir_x].monster_idx > 0)
@@ -1240,6 +1330,8 @@ void command_disarm(cmd_arg args)
 
         /* Attack */
         py_attack(dir_y, dir_x);
+        //Energy burned by py_attack.
+        return;
     }
 
     /* Chest */
@@ -1277,7 +1369,7 @@ void command_disarm(cmd_arg args)
     else
     {
         /* Disarm the trap */
-        more = do_cmd_disarm_aux(trap_y, trap_x, TRUE);
+        more = command_disarm_aux(trap_y, trap_x, TRUE);
     }
 
     /* Cancel repeat unless told not to */
@@ -1290,9 +1382,36 @@ void do_cmd_disarm(void)
 {
     if (!character_dungeon) return;
 
-    int dir;
+    int dir = DIR_UNKNOWN;
+    int chest_y, chest_x, trap_y, trap_x;
 
-    if (!get_rep_dir(&dir)) return;
+    /* Count visible traps */
+    int num_traps = count_traps(&trap_y, &trap_x, TRUE);
+
+    /* Count chests (trapped) */
+    int num_chests = count_chests(&chest_y, &chest_x, TRUE);
+
+    /* Easy Disarm */
+    if (easy_open)
+    {
+        /* See if only one target */
+        if ((num_traps + num_chests) == 1)
+        {
+            if (num_traps)
+            {
+                dir = coords_to_dir(trap_y, trap_x);
+            }
+            else  /* (num_chests) */
+            {
+                dir = coords_to_dir(chest_y, chest_x);
+            }
+        }
+    }
+
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     cmd_arg args;
     args.wipe();
@@ -1463,7 +1582,7 @@ void do_cmd_search(void)
  *
  * Returns TRUE if repeated commands may continue
  */
-static bool do_cmd_tunnel_aux(int y, int x)
+static bool command_tunnel_aux(int y, int x)
 {
     bool more = FALSE;
 
@@ -1565,64 +1684,7 @@ static bool do_cmd_tunnel_aux(int y, int x)
     return (more);
 }
 
-/*
- * Return the number of features around (or under) the character.
- * Usually look for doors and floor traps.
- * ANDY - Counts features that allow action.
- */
-static int count_feats(int *y, int *x, int action)
-{
-    int d, count;
 
-    feature_type *f_ptr;
-
-    u32b flag, bitzero = 0x01;
-
-    /* Count how many matches */
-    count = 0;
-
-    /* Check around the character */
-    for (d = 0; d < 8; d++)
-    {
-        /* Extract adjacent (legal) location */
-        int yy = p_ptr->py + ddy_ddd[d];
-        int xx = p_ptr->px + ddx_ddd[d];
-
-        /* Must have knowledge */
-        if (!(dungeon_info[yy][xx].cave_info & (CAVE_MARK))) continue;
-
-        /* Get the mimiced feature */
-        f_ptr = &f_info[dungeon_info[yy][xx].feat];
-
-        if (action < FS_FLAGS2)
-        {
-            flag = bitzero << (action - FS_FLAGS1);
-            if (!(f_ptr->f_flags1 & flag)) continue;
-        }
-
-        else if (action < FS_FLAGS3)
-        {
-            flag = bitzero << (action - FS_FLAGS2);
-            if (!(f_ptr->f_flags2 & flag)) continue;
-        }
-
-        else if (action < FS_FLAGS_END)
-        {
-            flag = bitzero << (action - FS_FLAGS3);
-            if (!(f_ptr->f_flags3 & flag)) continue;
-        }
-
-        /* Count it */
-        ++count;
-
-        /* Remember the location of the last door found */
-        *y = yy;
-        *x = xx;
-    }
-
-    /* All done */
-    return count;
-}
 
 /*
  * Tunnel through "walls" (including rubble and secret doors)
@@ -1637,21 +1699,6 @@ void command_tunnel(cmd_arg args)
     bool more = FALSE;
 
     dir = args.direction;
-
-    /* Easy Tunnel */
-    if (easy_open)
-    {
-        /* Handle a single open door */
-        if (count_feats(&y, &x, FS_TUNNEL) == 1)
-        {
-            /* Don't close door player is on */
-            if ((y != p_ptr->py) || (x != p_ptr->px))
-            {
-                // TODO solve this
-                //p_ptr->command_dir = coords_to_dir(y, x);
-            }
-        }
-    }
 
     /* Get location */
     y = p_ptr->py + ddy[dir];
@@ -1668,21 +1715,15 @@ void command_tunnel(cmd_arg args)
         x = p_ptr->px + ddx[dir];
     }
 
-    // TODO solve this
-#if 0
-    /* Allow repeated command */
-    if (p_ptr->command_arg)
+    // Repeat commands if necessary
+    if (easy_open && !p_ptr->command_current)
     {
-        /* Set repeat count */
-        p_ptr->command_rep = p_ptr->command_arg - 1;
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
-
-        /* Cancel the arg */
-        p_ptr->command_arg = 0;
+        p_ptr->player_command_wipe();
+        p_ptr->command_current = CMD_TUNNEL;
+        p_ptr->player_args.direction = dir;
+        command_type *command_ptr = &command_info[CMD_TUNNEL];
+        p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
-#endif
 
     /* Monster */
     if (dungeon_info[y][x].monster_idx > 0)
@@ -1696,9 +1737,9 @@ void command_tunnel(cmd_arg args)
 
     /* Walls */
     else
-    {
+    {  
         /* Tunnel through walls */
-        more = do_cmd_tunnel_aux(y, x);
+        more = command_tunnel_aux(y, x);
     }
 
     /* Cancel repetition unless we can continue */
@@ -1712,7 +1753,27 @@ void do_cmd_tunnel(void)
 {
     if (!character_dungeon) return;
 
-    int dir;
+    int dir = DIR_UNKNOWN;
+
+    /* Easy Close */
+    if (easy_open)
+    {
+        int y, x;
+
+        /* Handle a single open door */
+        if (count_feats(&y, &x, FS_TUNNEL) == 1)
+        {
+            /* Don't close door player is on */
+            if ((y != p_ptr->py) || (x != p_ptr->px))
+            {
+                dir = coords_to_dir(y, x);
+            }
+        }
+    }
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     if (!get_rep_dir(&dir)) return;
 
@@ -1811,13 +1872,15 @@ void command_close(cmd_arg args)
     }
 
     /* Monster */
-    if (dungeon_info[y][x].monster_idx > 0)
+    if (dungeon_info[y][x].has_monster())
     {
         /* Message */
         message("There is a monster in the way!");
 
         /* Attack */
         py_attack(y, x);
+        //Energy burned by py_attack.
+        return;
     }
 
     /* Door */
@@ -1841,7 +1904,23 @@ void do_cmd_close(void)
 
     int dir;
 
-    if (!get_rep_dir(&dir)) return;
+    /* Easy Close */
+    if (easy_open)
+    {
+        int y, x;
+
+        /* Count open doors */
+        if (count_feats(&y, &x, FS_CLOSE) == 1)
+        {
+            dir = coords_to_dir(y, x);
+        }
+    }
+    else
+    {
+        if (!get_rep_dir(&dir))
+            return;
+    }
+
 
     cmd_arg args;
     args.wipe();
@@ -1850,20 +1929,26 @@ void do_cmd_close(void)
     command_close(args);
 }
 
-void do_cmd_alter_aux(int dir)
+/*
+ * The alter command tries to figure the most logical
+ * command to do to the given square.
+ * Most functions called apply their own confusion and
+ * burn their own energy.
+ */
+
+void command_alter(cmd_arg args)
 {
     int y, x;
 
     u16b feat;
 
-    bool more = FALSE;
-
-    /* Get a direction */
-    if (!dir && !get_rep_dir(&dir)) return;
+    int dir = args.direction;
 
     /* Get location */
     y = p_ptr->py + ddy[dir];
     x = p_ptr->px + ddx[dir];
+
+    if (!in_bounds_fully(y, x)) return;
 
     /* Original feature */
     feat = dungeon_info[y][x].feat;
@@ -1871,74 +1956,63 @@ void do_cmd_alter_aux(int dir)
     /* Must have knowledge to know feature XXX XXX */
     if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) feat = FEAT_NONE;
 
-    /* Apply confusion */
-    if (confuse_dir(&dir))
-    {
-        /* Get location */
-        y = p_ptr->py + ddy[dir];
-        x = p_ptr->px + ddx[dir];
-    }
-
-    // TODO solve this
-#if 0
-    /* Allow repeated command */
-    if (p_ptr->command_arg)
-    {
-        /* Set repeat count */
-        p_ptr->command_rep = p_ptr->command_arg - 1;
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
-
-        /* Cancel the arg */
-        p_ptr->command_arg = 0;
-    }
-#endif
-
     /*Is there a monster on the space?*/
     if (dungeon_info[y][x].monster_idx > 0)
     {
+        /* Apply confusion */
+        if (confuse_dir(&dir))
+        {
+            /* Get location */
+            y = p_ptr->py + ddy[dir];
+            x = p_ptr->px + ddx[dir];
+        }
         py_attack(y, x);
+        //Energy burned by py_attack.
+        return;
     }
 
     /* Tunnel through walls */
     else if (feat_ff1_match(feat, FF1_DOOR | FF1_CAN_TUNNEL) ==	(FF1_CAN_TUNNEL))
     {
         /* Tunnel */
-        more = do_cmd_tunnel_aux(y, x);
+        command_tunnel(args);
+        return;
     }
-#if 0
+
     /* Bash jammed doors */
     else if (feat_ff1_match(feat, FF1_CAN_BASH))
     {
         /* Bash */
-        more = do_cmd_bash_aux(y, x);
+        command_bash(args);
+        return;
     }
-#endif
+
     /* Open closed doors */
     else if (feat_ff1_match(feat, FF1_CAN_OPEN))
     {
         /* Open */
-        more = do_cmd_open_aux(y, x);
+        command_open(args);
+        //Energy burned by open.
+        return;
     }
 
     /* Disarm traps */
     else if (cave_any_trap_bold(y, x))
     {
-        /* Disarm */
-        more = do_cmd_disarm_aux(y, x, TRUE);
+        /* Open */
+        command_disarm(args);
+        //Energy burned by function.
+        return;
     }
-
-#if 0
 
     /* Close open doors */
     else if (feat_ff1_match(feat, FF1_CAN_CLOSE))
     {
         /* Close */
-        more = do_cmd_close_aux(y, x);
+        command_close(args);
+        //Energy burned by function.
+        return;
     }
-
-#endif
 
     /* Oops */
     else
@@ -1947,11 +2021,19 @@ void do_cmd_alter_aux(int dir)
         message("You spin around.");
     }
 
-    /* Cancel repetition unless we can continue */
-    if (!more) disturb(0, 0);
-
     // Take a turn
     process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_alter(int dir)
+{
+    if (!character_dungeon) return;
+
+    cmd_arg args;
+    args.wipe();
+    args.direction = dir;
+
+    command_alter(args);
 }
 
 /*
@@ -2030,14 +2112,12 @@ void command_spike(cmd_arg args)
 
         /* Attack */
         py_attack(y, x);
+        //Energy burned by py_attack.
         return;
     }
 
     /* Go for it */
     int feat = dungeon_info[y][x].feat;
-
-
-
 
     /*Mark the feature lore*/
     feature_lore *f_l_ptr = &f_l_list[feat];
@@ -2312,6 +2392,7 @@ void do_cmd_walk(int dir)
     if (energy > 0) process_player_energy(energy);
 }
 
+// Does not burn player energy
 static bool player_bash(int y, int x)
 {
     int m_idx = dungeon_info[y][x].monster_idx;
@@ -2386,14 +2467,11 @@ static bool player_bash(int y, int x)
  * Perform the basic "bash" command
  *
  * Assume there is no monster blocking the destination
- *
- * Returns TRUE if repeated commands may continue
+ * returns FALSE if the command should be cancelled.
  */
 static bool do_cmd_bash_aux(int y, int x)
 {
     int bash, temp;
-
-    bool more = FALSE;
 
     int feat = dungeon_info[y][x].feat;
 
@@ -2471,6 +2549,8 @@ static bool do_cmd_bash_aux(int y, int x)
 
         /* Update the visuals */
         p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
+
+        return (FALSE);
     }
 
     /* Take a hit from the feature, sometimes */
@@ -2494,9 +2574,6 @@ static bool do_cmd_bash_aux(int y, int x)
     {
         /* Message */
         message("The " + name + " remains intact.");
-
-        /* Allow repeated bashing */
-        more = TRUE;
     }
 
     /* Saving throw against stun */
@@ -2505,9 +2582,6 @@ static bool do_cmd_bash_aux(int y, int x)
     {
         /* Message */
         message("The " + name + " holds firm.");
-
-        /* Allow repeated bashing */
-        more = TRUE;
     }
 
     /* High dexterity yields coolness */
@@ -2518,10 +2592,11 @@ static bool do_cmd_bash_aux(int y, int x)
 
         /* Hack -- Lose balance ala paralysis */
         (void)inc_timed(TMD_PARALYZED, 2 + rand_int(2), TRUE);
+
+        return (FALSE);
     }
 
-    /* Result */
-    return (more);
+    return (TRUE);
 }
 
 /*
@@ -2558,6 +2633,16 @@ void command_bash(cmd_arg args)
 
     /* Verify legality */
     else if (!do_cmd_test(y, x, FS_BASH, TRUE)) return;
+
+    // Repeat commands if necessary
+    if (easy_open && !p_ptr->command_current)
+    {
+        p_ptr->player_command_wipe();
+        p_ptr->command_current = CMD_BASH;
+        p_ptr->player_args.direction = dir;
+        command_type *command_ptr = &command_info[CMD_BASH];
+        p_ptr->player_args.repeats = command_ptr->repeat_num;
+    }
 
     /* Apply confusion */
     if (confuse_dir(&dir))

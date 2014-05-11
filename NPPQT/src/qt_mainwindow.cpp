@@ -1960,7 +1960,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-static void process_mov_key(QKeyEvent *event, int dir)
+static void process_mov_key(QKeyEvent* event, int dir)
 {
     if (!character_dungeon) return;
 
@@ -1973,9 +1973,9 @@ static void process_mov_key(QKeyEvent *event, int dir)
     bool meta_key = FALSE;
     if (event->modifiers() & Qt::MetaModifier) meta_key = TRUE;
 
-    if (alt_key) do_cmd_alter_aux(dir);
-    else if (meta_key) ui_change_panel(dir);
-    else if (shift_key) do_cmd_run(dir);
+    if (shift_key) do_cmd_run(dir);
+    else if (alt_key) do_cmd_alter(dir);
+    else if (ctrl_key) ui_change_panel(dir);
     else do_cmd_walk(dir);
 }
 
@@ -2018,6 +2018,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     if (which_key->modifiers() & Qt::ControlModifier) ctrl_key = TRUE;
     bool alt_key = FALSE;
     if (which_key->modifiers() & Qt::AltModifier) alt_key = TRUE;
+    bool meta_key = FALSE;
+    if (which_key->modifiers() & Qt::MetaModifier) meta_key = TRUE;
 
     // Normal mode
     switch (which_key->key())
@@ -2118,14 +2120,20 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_A:
         {
-            if (keystring == "a") do_cmd_activate();
-            else do_cmd_wizard_mode();
+            if (ctrl_key) do_cmd_wizard_mode();
+            else do_cmd_activate();
             return;
         }
+
         case Qt::Key_D:
         {
             if (keystring == "d")   do_cmd_drop();
             else                    do_cmd_disarm();
+            return;
+        }
+        case Qt::Key_E:
+        {
+            do_cmd_use_item();
             return;
         }
         case Qt::Key_F:
@@ -2134,19 +2142,22 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else                    do_cmd_fire_at_nearest();
             return;
         }
-        case Qt::Key_Q:
-        {
-            do_cmd_spike();
-            return;
-        }
         case Qt::Key_G:
         {
             if (keystring == "g")   do_cmd_pickup();
             else                    do_cmd_study();
             return;
         }
-
-
+        case Qt::Key_P:
+        {
+            do_cmd_cast();
+            return;
+        }
+        case Qt::Key_Q:
+        {
+            do_cmd_spike();
+            return;
+        }
         case Qt::Key_R:
         {
             if (keystring == "r") do_cmd_rest();
@@ -2159,9 +2170,21 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else do_cmd_toggle_search();
             return;
         }
+        case Qt::Key_T:
+        {
+            if (shift_key) do_cmd_tunnel();
+            else do_cmd_takeoff();
+            return;
+        }
         case Qt::Key_V:
         {
             if (keystring == "v")   do_cmd_throw();
+            return;
+        }
+        case Qt::Key_Z:
+        {
+            if (shift_key) do_cmd_bash();
+            else do_cmd_browse();
             return;
         }
         case Qt::Key_BraceLeft:
@@ -2189,14 +2212,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         {
             // handle lowercase keystrokes        
 
-            if (keystring == "p") do_cmd_cast();
-            else if (keystring == "B") do_cmd_bash();
-            else if (keystring == "R") do_cmd_rest();
-            else if (keystring == "b") do_cmd_browse();
-            else if (keystring == "e") do_cmd_use_item();
+            if (keystring == "e") do_cmd_use_item();
             else if (keystring == "k") do_cmd_destroy();
-            else if (keystring == "t") do_cmd_takeoff();
-            else if (keystring == "T") do_cmd_tunnel();
             else if (keystring == "w") do_cmd_wield();
             else if (keystring == "x") do_cmd_swap_weapon();
             else if (keystring == "c") do_cmd_close();

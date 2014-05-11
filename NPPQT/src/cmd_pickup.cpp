@@ -723,23 +723,30 @@ int move_player(int dir, int jumping)
 	{
 		/* Attack */
         py_attack(y, x);
+        // Energy expended by py_attack
+        return (0);
 	}
 
 	/* Optionally alter known traps/doors on (non-jumping) movement */
-    else if ((easy_alter) && (!jumping) && (dungeon_info[y][x].cave_info & (CAVE_MARK)) &&
+    if ((easy_alter) && (!jumping) && (dungeon_info[y][x].cave_info & (CAVE_MARK)) &&
 		 	 (_feat_ff1_match(f_ptr, FF1_CAN_OPEN | FF1_CAN_DISARM) ||
 			 (cave_player_trap_bold(y, x) &&
             !(x_list[dungeon_info[y][x].effect_idx].x_flags & (EF1_HIDDEN)))))
 
 	{
-		/* Alter */
-        do_cmd_alter_aux(dir);
+        cmd_arg args;
+        args.wipe();
+        args.direction = dir;
 
-        used_energy = 0; // Hack - already processed energy in alter_aux
+		/* Alter */
+        command_alter(args);
+
+        // Energy expended by command alter
+        return(0);
 	}
 
 	/* Player can not walk through certain terrain */
-	else if (!cave_ff1_match(y, x, FF1_MOVE))
+    if (!cave_ff1_match(y, x, FF1_MOVE))
 	{
 		/* Disturb the player */
 		disturb(0, 0);

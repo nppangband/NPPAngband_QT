@@ -754,6 +754,8 @@ int run_step(int dir)
 {
     int x, y;
 
+    int energy = BASE_ENERGY_MOVE;
+
     /* Start run */
     if (dir)
     {
@@ -848,8 +850,8 @@ int run_step(int dir)
     }
 
     /* Move the player */
-    move_player(p_ptr->run_cur_dir, FALSE);
+    energy = move_player(p_ptr->run_cur_dir, FALSE);
 
-    return BASE_ENERGY_MOVE;
+    return (energy);
 }
 

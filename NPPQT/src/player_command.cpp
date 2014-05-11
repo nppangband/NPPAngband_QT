@@ -32,5 +32,9 @@ command_type command_info[] =
     {ARG_SPECIAL,   command_rest,   TRUE,  0},      // CMD_RESTING
     {ARG_DIRECTION, command_run,    TRUE,  9999},   // CMD_RUNNING
     {ARG_DIRECTION, command_open,   TRUE,  99 },    // CMD_OPEN
-    {ARG_DIRECTION, command_close,  FALSE, 0 }      // CMD_CLOSE
+    {ARG_DIRECTION, command_close,  FALSE, 0 },     // CMD_CLOSE
+    {ARG_DIRECTION, command_disarm, TRUE,  99 },    // CMD_DISARM
+    {ARG_DIRECTION, command_bash,   TRUE,  99 },    // CMD_BASH
+    {ARG_DIRECTION, command_tunnel, TRUE,  99 },    // CMD_TUNNEL
+    {ARG_DIRECTION, command_alter,  TRUE,  99 },    // CMD_ALTER
 };

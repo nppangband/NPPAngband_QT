@@ -34,6 +34,10 @@ enum
     CMD_RUNNING,
     CMD_OPEN,
     CMD_CLOSE,
+    CMD_DISARM,
+    CMD_BASH,
+    CMD_TUNNEL,
+    CMD_ALTER,
     CMD_MAX
 };
 
