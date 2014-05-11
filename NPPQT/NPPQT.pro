@@ -65,7 +65,7 @@ SOURCES +=  src/qt_main.cpp\
             src/player_command.cpp \
             src/player_process.cpp \
             src/player_spell.cpp \
-            src/player_util.cpp \
+            src/player_util.cpp \          
             src/project.cpp \
             src/project_util.cpp \
             src/quest.cpp \
@@ -130,6 +130,5 @@ HEADERS  += src/qt_mainwindow.h\
 RESOURCES += \
     NPP_Resources.qrc
 
-FORMS += \
-    src/optionsdialog.ui \
+FORMS += \    
     src/birthdialog.ui

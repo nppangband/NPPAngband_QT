@@ -142,7 +142,7 @@ QSize NPPDialog::sizeHint() const
 
     QDesktopWidget dsk;
 
-    QRect geo = dsk.screenGeometry();
+    QRect geo = dsk.availableGeometry();
 
     // Check screen size
     int w = geo.width() * max_ratio;

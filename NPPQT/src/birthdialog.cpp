@@ -385,7 +385,7 @@ void BirthDialog::on_cancel_button_clicked()
 void BirthDialog::on_options_button_clicked()
 {
     bool old_maximize = birth_maximize;
-    OptionsDialog *dlg = new OptionsDialog(this);
+    OptionsDialog *dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
     if (birth_maximize != old_maximize) {
@@ -575,8 +575,10 @@ void BirthDialog::on_ran_sex_button_clicked()
     ui->sex_combo->setCurrentIndex(rand_int(MAX_SEXES));
 }
 
-void BirthDialog::on_sex_combo_currentIndexChanged(void)
+void BirthDialog::on_sex_combo_currentIndexChanged(int idx)
 {
+    (void)idx;
+
     dirty = true;
 }
 

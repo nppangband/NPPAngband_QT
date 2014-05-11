@@ -1,26 +1,17 @@
 #ifndef OPTIONSDIALOG_H
 #define OPTIONSDIALOG_H
 
-#include <QDialog>
-#include <QAbstractButton>
+#include "nppdialog.h"
 
-namespace Ui {
-class OptionsDialog;
-}
-
-class OptionsDialog : public QDialog
+class OptionsDialog : public NPPDialog
 {
     Q_OBJECT
 
 public:
-    explicit OptionsDialog(QWidget *parent = 0);
-    ~OptionsDialog();
+    OptionsDialog();
 
 private slots:
-    void on_buttonBox_clicked(QAbstractButton *button);
-
-private:
-    Ui::OptionsDialog *ui;
+    void on_save();
 };
 
 #endif // OPTIONSDIALOG_H

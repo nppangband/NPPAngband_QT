@@ -1,119 +1,117 @@
 #include "optionsdialog.h"
-#include "ui_optionsdialog.h"
 #include "npp.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QScrollArea>
 #include <QPushButton>
 #include <QCheckBox>
-#include <QTableWidget>
 #include <QLabel>
-#include <QDesktopWidget>
+#include <QGridLayout>
+#include <QSpinBox>
+#include <QTabWidget>
+#include <QSpacerItem>
 
-static int calc_table_width(QTableWidget *table)
-{
-    int w = 0;
-    for (int i = 0; i < table->columnCount(); i++) {
-        if (table->isColumnHidden(i)) continue;
-        w += table->columnWidth(i);
-    }
-    return w;
-}
+OptionsDialog::OptionsDialog()
+{    
+    QWidget *central = new QWidget;
+    QVBoxLayout *lay1 = new QVBoxLayout;
+    central->setLayout(lay1);
+    this->setClient(central);
 
-OptionsDialog::OptionsDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::OptionsDialog)
-{
-    ui->setupUi(this);
+    QTabWidget *tabs = new QTabWidget;
+    lay1->addWidget(tabs);
 
-    int max = 0;
-    int w;
+    QString titles[] = {
+        "Gameplay",
+        "Display",
+        "Disturbance",
+        "Birth",
+        "Cheat",
+        ""
+    };
 
-    for (int t = 0; t < 5; t++) {
-         QWidget *tab = ui->tabWidget->widget(t);
+    for (int t = 0; titles[t] != ""; t++)  {
+        QWidget *wid2 = new QWidget;
+        QVBoxLayout *lay2 = new QVBoxLayout;
+        wid2->setLayout(lay2);
 
-         QVBoxLayout *l1 = new QVBoxLayout;
-         tab->setLayout(l1);
+        tabs->addTab(wid2, titles[t]);
 
-         QTableWidget *table = new QTableWidget(0, 4);
-         table->verticalHeader()->hide();
-         table->horizontalHeader()->hide();
-         table->hideColumn(3);
-         table->setShowGrid(false);
-         table->setAlternatingRowColors(true);
-         l1->addWidget(table);
-
-         for (int i = 0, j = 0; i < OPT_PAGE_PER; i++) {
-             byte idx;
-             if ((game_mode == GAME_NPPANGBAND) || (game_mode == GAME_MODE_UNDEFINED)) {
-                 idx = option_page_nppangband[t][i];
-             }
-             else {
-                 idx = option_page_nppmoria[t][i];
-             }
-             if (idx == OPT_NONE) continue;
-
-             option_entry *opt = options + idx;
-             if (opt->name == NULL) continue;
-
-             table->insertRow(j);
-
-             QTableWidgetItem *item = new QTableWidgetItem;
-             item->setCheckState(op_ptr->opt[idx] ? Qt::Checked : Qt::Unchecked);
-             table->setItem(j, 0, item);
-
-             item = new QTableWidgetItem(opt->name);
-             table->setItem(j, 1, item);
-
-             item = new QTableWidgetItem(opt->description);
-             table->setItem(j, 2, item);
-
-             // Save the option number in the hidden column
-             table->setItem(j, 3, new QTableWidgetItem(QString::number(idx)));
-
-             ++j;
-         }
-
-         table->resizeColumnsToContents();
-
-         w = calc_table_width(table);
-         if (w > max) max = w;
-     }
-
-     QDesktopWidget dsk;
-
-     // Default size
-     this->resize(max + 100, dsk.screenGeometry().height() * 0.8);
-
-     ui->spin_base_delay->setValue(op_ptr->delay_factor);
-     ui->spin_hitpoint_warning->setValue(op_ptr->hitpoint_warn);
-
-     ui->tabWidget->setCurrentIndex(0);
-}
-
-OptionsDialog::~OptionsDialog()
-{
-    delete ui;
-}
-
-void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
-{
-    if (button->text().compare("Save") == 0) {
-        for (int t = 0; t < 5; t++) {
-            QWidget *tab = ui->tabWidget->widget(t);
-
-            QTableWidget *table = tab->findChild<QTableWidget *>();
-            for (int i = 0; i < table->rowCount(); i++) {
-                QTableWidgetItem *item_check = table->item(i, 0);
-                QTableWidgetItem *item_idx = table->item(i, 3);
-                int opt_idx = item_idx->text().toInt();
-                op_ptr->opt[opt_idx] = (item_check->checkState() == Qt::Checked);
+        for (int i = 0; i < OPT_PAGE_PER; i++) {
+            byte idx;
+            if ((game_mode == GAME_NPPANGBAND) || (game_mode == GAME_MODE_UNDEFINED)) {
+                idx = option_page_nppangband[t][i];
             }
+            else {
+                idx = option_page_nppmoria[t][i];
+            }
+            if (idx == OPT_NONE) continue;
+
+            option_entry *opt = options + idx;
+            if (opt->name.isEmpty()) continue;
+
+            QCheckBox *chk = new QCheckBox(opt->name + " - " + opt->description);
+            chk->setChecked(op_ptr->opt[idx]);
+            chk->setProperty("opt_idx", idx);
+
+            lay2->addWidget(chk);
         }
 
-        op_ptr->delay_factor = ui->spin_base_delay->value();
-        op_ptr->hitpoint_warn = ui->spin_hitpoint_warning->value();
+        QSpacerItem *sp = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+        lay2->addItem(sp);
     }
 
-    this->close();
+    QWidget *wid3 = new QWidget;
+    QHBoxLayout *lay3 = new QHBoxLayout;
+    wid3->setLayout(lay3);
+
+    lay1->addWidget(wid3);
+
+    QSpacerItem *sp2 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay3->addItem(sp2);
+
+    QPushButton *btn1 = new QPushButton(tr("Save"));
+    lay3->addWidget(btn1);
+    connect(btn1, SIGNAL(clicked()), this, SLOT(on_save()));
+
+    QPushButton *btn2 = new QPushButton(tr("Cancel"));
+    lay3->addWidget(btn2);
+    connect(btn2, SIGNAL(clicked()), this, SLOT(reject()));
+
+    QWidget *wid4 = new QWidget;
+    QGridLayout *lay4 = new QGridLayout;
+    lay4->setColumnStretch(1, 1);
+    wid4->setLayout(lay4);
+
+    tabs->addTab(wid4, "Misc.");
+
+    QLabel *lb = new QLabel("Hitpoint warning");
+    lay4->addWidget(lb, 0, 0);
+
+    QSpinBox *spin1 = new QSpinBox;
+    spin1->setObjectName("spin_hp_warn");
+    spin1->setMinimum(0);
+    spin1->setMaximum(9);
+    spin1->setValue(op_ptr->hitpoint_warn);
+
+    lay4->addWidget(spin1, 0, 1);
+
+    QSpacerItem *sp3 = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    lay4->addItem(sp3, 1, 0);
+
+    this->clientSizeUpdated();
+}
+
+void OptionsDialog::on_save()
+{
+    QList<QCheckBox *> ops = this->findChildren<QCheckBox *>();
+    for (int i = 0; i < ops.size(); i++) {
+        QCheckBox *chk = ops.at(i);
+        int idx = chk->property("opt_idx").toInt();
+        op_ptr->opt[idx] = chk->isChecked();
+    }
+
+    QSpinBox *spin1 = this->findChild<QSpinBox *>("spin_hp_warn");
+    op_ptr->hitpoint_warn = spin1->value();
+
+    this->accept();
 }
