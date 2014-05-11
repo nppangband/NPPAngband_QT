@@ -28,8 +28,9 @@ bool command_type::repeated_command_completed(void)
 
 command_type command_info[] =
 {
-    {0L,            NULL, FALSE, 0},            // CMD_NONE
-    {ARG_SPECIAL,   command_rest, TRUE, 0},    // CMD_RESTING
-    {ARG_DIRECTION, command_run, TRUE, 9999}             // CMD_RUNNING
-
+    {0L,            NULL, FALSE, 0},                // CMD_NONE
+    {ARG_SPECIAL,   command_rest,   TRUE,  0},      // CMD_RESTING
+    {ARG_DIRECTION, command_run,    TRUE,  9999},   // CMD_RUNNING
+    {ARG_DIRECTION, command_open,   TRUE,  99 },    // CMD_OPEN
+    {ARG_DIRECTION, command_close,  FALSE, 0 }      // CMD_CLOSE
 };

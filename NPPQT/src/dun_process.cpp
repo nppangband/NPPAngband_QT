@@ -2054,7 +2054,10 @@ void process_player_energy(byte energy_used)
         return;
     }
 
-    //Run the command, reduce repeat command count
+    // Run the command, reduce repeat command count
     if (p_ptr->player_args.repeats) p_ptr->player_args.repeats--;
     command_ptr->command_function(p_ptr->player_args);
+
+    /* Redraw the state */
+    p_ptr->redraw |= (PR_STATE);
 }

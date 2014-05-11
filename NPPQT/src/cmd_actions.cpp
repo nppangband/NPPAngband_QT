@@ -318,8 +318,6 @@ static bool do_cmd_open_aux(int y, int x)
         /* Failure */
         else
         {
-            /* Failure */
-            //if (flush_failure) flush();
 
             /* Message */
             message("You failed to pick the lock.");
@@ -508,6 +506,7 @@ static void chest_trap(int y, int x, s16b o_idx)
         {
             (void)summon_specific(y, x, p_ptr->depth, 0, MPLACE_OVERRIDE);
         }
+        disturb(TRUE,0);
     }
 
     /* Explode */
@@ -732,7 +731,6 @@ static bool do_cmd_open_chest(int y, int x, s16b o_idx)
         {
             /* We may continue repeating */
             more = TRUE;
-            //if (flush_failure) flush();
             message("You failed to pick the lock.");
         }
     }
@@ -794,21 +792,16 @@ void command_open(cmd_arg args)
         o_idx = chest_check(y, x, FALSE);
     }
 
-    // TODO solve this
-#if 0
-    /* Allow repeated command */
-    if (p_ptr->command_arg)
+
+    /* Set up repeated command, if necessary */
+    if (!p_ptr->command_current && easy_open)
     {
-        /* Set repeat count */
-        p_ptr->command_rep = p_ptr->command_arg - 1;
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
-
-        /* Cancel the arg */
-        p_ptr->command_arg = 0;
+        p_ptr->player_command_wipe();
+        p_ptr->command_current = CMD_OPEN;
+        p_ptr->player_args.direction = dir;
+        command_type *command_ptr = &command_info[CMD_OPEN];
+        p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
-#endif
 
     /* Monster */
     if (dungeon_info[y][x].monster_idx > 0)
@@ -832,22 +825,38 @@ void command_open(cmd_arg args)
         /* More than one */
         else
         {
-            QString q, s;
+            bool do_open = FALSE;
+            // See if we have already selected the chest
+            if (p_ptr->command_current == CMD_OPEN)
+            {
+                o_idx = p_ptr->player_args.item;
+                do_open = TRUE;
+            }
+            else
+            {
 
-            o_idx = 0;
+                QString q, s;
 
-            /* Get an item */
-            q = "Open which chest? ";
-            s = "There are no chests in that direction!";
+                o_idx = 0;
 
-            /*clear the restriction*/
-            item_tester_hook = obj_is_openable_chest;
+                /* Get an item */
+                q = "Open which chest? ";
+                s = "There are no chests in that direction!";
 
-            /*player chose escape*/
-            if (!get_item_beside(&o_idx, q, s, cy, cx)) more = 0;
+                /*clear the restriction*/
+                item_tester_hook = obj_is_openable_chest;
+
+                /*player chose escape*/
+                if (!get_item_beside(&o_idx, q, s, cy, cx)) more = 0;
+                else
+                {
+                    do_open = TRUE;
+                    p_ptr->player_args.item = o_idx;
+                }
+            }
 
             /* Open the chest */
-            else more = do_cmd_open_chest(cy, cx, -o_idx);
+            if (do_open) more = do_cmd_open_chest(cy, cx, -o_idx);
         }
     }
 

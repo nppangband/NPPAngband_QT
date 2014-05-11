@@ -32,6 +32,8 @@ enum
     CMD_NONE = 0,
     CMD_RESTING,
     CMD_RUNNING,
+    CMD_OPEN,
+    CMD_CLOSE,
     CMD_MAX
 };
 

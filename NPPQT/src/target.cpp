@@ -1147,25 +1147,79 @@ int target_dir(UserInput input)
         d = input.text.mid(0, 1).toInt();
     }
     // handle arrow directions
-    else if (input.key == Qt::Key_Left) {
-        d = 4;
-    }
-    else if (input.key == Qt::Key_Up) {
-        d = 8;
-    }
-    else if (input.key == Qt::Key_Right) {
-        d = 6;
-    }
-    else if (input.key == Qt::Key_Down) {
-        d = 2;
-    }
-    else
+    else switch (input.key)
     {
-        // TODO handle keystroke commands
+        // Left
+        case Qt::Key_Left:
+        case Qt::Key_4:
+        case Qt::Key_H:
+        {
+            d = 4;
+            break;
+        }
+        // Right
+        case Qt::Key_Right:
+        case Qt::Key_6:
+        case Qt::Key_K:
+        {
+            d = 6;
+            break;
+        }
+        // Up
+        case Qt::Key_Up:
+        case Qt::Key_8:
+        case Qt::Key_U:
+        {
+            d = 8;
+            break;
+        }
+        // Down
+        case Qt::Key_Down:
+        case Qt::Key_2:
+        case Qt::Key_N:
+        {
+            d = 2;
+            break;
+        }
+        // left and up
+        case Qt::Key_7:
+        case Qt::Key_Y:
+        case Qt::Key_Home:
+        {
+            d = 7;
+            break;
+        }
+        // right and up
+        case Qt::Key_9:
+        case Qt::Key_I:
+        case Qt::Key_PageUp:
+        {
+            d = 9;
+            break;
+        }
+        // left and down
+        case Qt::Key_1:
+        case Qt::Key_B:
+        case Qt::Key_End:
+        {
+            d = 1;
+            break;
+        }
+        // right and down
+        case Qt::Key_3:
+        case Qt::Key_M:
+        case Qt::Key_PageDown:
+        {
+            d = 3;
+            break;
+        }
+        // Illegal direction
+        default:
+        {
+            d = 0;
+            break;
+        }
     }
-
-    /* Paranoia */
-    if (d == 5) d = 0;
 
     /* Return direction */
     return (d);
