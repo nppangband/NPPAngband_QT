@@ -1959,19 +1959,19 @@ static void process_mov_key(QKeyEvent *event, int dir)
 {
     if (!character_dungeon) return;
 
-    int mask = QApplication::keyboardModifiers();
+    bool shift_key = FALSE;
+    if (event->modifiers() & Qt::ShiftModifier) shift_key = TRUE;
+    bool ctrl_key = FALSE;
+    if (event->modifiers() & Qt::ControlModifier) ctrl_key = TRUE;
+    bool alt_key = FALSE;
+    if (event->modifiers() & Qt::AltModifier) alt_key = TRUE;
+    bool meta_key = FALSE;
+    if (event->modifiers() & Qt::MetaModifier) meta_key = TRUE;
 
-    if (mask & Qt::AltModifier) {
-        do_cmd_alter_aux(dir);
-    }
-    else if (mask & Qt::ControlModifier) {
-        ui_change_panel(dir);
-    }
-    else {
-        cmd_arg args;
-        args.direction = dir;
-        do_cmd_walk(args);
-    }
+    if (alt_key) do_cmd_alter_aux(dir);
+    else if (meta_key) ui_change_panel(dir);
+    else if (shift_key) do_cmd_run(dir);
+    else do_cmd_walk(dir);
 }
 
 bool MainWindow::check_disturb()
@@ -2007,6 +2007,13 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         return;
     }
 
+    bool shift_key = FALSE;
+    if (which_key->modifiers() & Qt::ShiftModifier) shift_key = TRUE;
+    bool ctrl_key = FALSE;
+    if (which_key->modifiers() & Qt::ControlModifier) ctrl_key = TRUE;
+    bool alt_key = FALSE;
+    if (which_key->modifiers() & Qt::AltModifier) alt_key = TRUE;
+
     // Normal mode
     switch (which_key->key())
     {
@@ -2037,6 +2044,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         // Move down
         case Qt::Key_2:
         case Qt::Key_Down:
+        case Qt::Key_N:
         {
             process_mov_key(which_key, 2);
             return;
@@ -2044,13 +2052,16 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         // Move up
         case Qt::Key_8:
         case Qt::Key_Up:
+        case Qt::Key_U:
         {
             process_mov_key(which_key, 8);
             return;
         }
+
         // Move left
         case Qt::Key_4:
         case Qt::Key_Left:
+        case Qt::Key_H:
         {
             process_mov_key(which_key, 4);;
             return;
@@ -2058,38 +2069,58 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         // Move right
         case Qt::Key_6:
         case Qt::Key_Right:
+        case Qt::Key_K:
         {
             process_mov_key(which_key, 6);
             return;
         }
         // Move diagonally left and up
         case Qt::Key_7:
+        case Qt::Key_Y:
+        case Qt::Key_Home:
         {
             process_mov_key(which_key, 7);
             return;
         }
         // Move diagonally right and up
         case Qt::Key_9:
+        case Qt::Key_I:
+        case Qt::Key_PageUp:
         {
             process_mov_key(which_key, 9);
             return;
         }
         // Move diagonally left and down
         case Qt::Key_1:
+        case Qt::Key_B:
+        case Qt::Key_End:
         {
             process_mov_key(which_key, 1);
             return;
         }
         // Move diagonally right and down
         case Qt::Key_3:
+        case Qt::Key_M:
+        case Qt::Key_PageDown:
         {
             process_mov_key(which_key, 3);
             return;
+        }
+        case Qt::Key_5:
+        case Qt::Key_J:
+        {
+            do_cmd_hold();
         }
         case Qt::Key_A:
         {
             if (keystring == "a") do_cmd_activate();
             else do_cmd_wizard_mode();
+            return;
+        }
+        case Qt::Key_D:
+        {
+            if (keystring == "d")   do_cmd_drop();
+            else                    do_cmd_disarm();
             return;
         }
         case Qt::Key_F:
@@ -2098,12 +2129,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else                    do_cmd_fire_at_nearest();
             return;
         }
-        case Qt::Key_I:
-        {
-            do_cmd_observe();
-            return;
-        }
-        case Qt::Key_J:
+        case Qt::Key_Q:
         {
             do_cmd_spike();
             return;
@@ -2114,12 +2140,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else                    do_cmd_study();
             return;
         }
-        case Qt::Key_D:
-        {            
-            if (keystring == "d")   do_cmd_drop();
-            else                    do_cmd_disarm();
-            return;
-        }
+
 
         case Qt::Key_R:
         {
@@ -2175,13 +2196,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (keystring == "x") do_cmd_swap_weapon();
             else if (keystring == "c") do_cmd_close();
             else if (keystring == "o") do_cmd_open();
-            else if (keystring == ".") do_cmd_run();
             else if (keystring == "l") do_cmd_look();
-            else if (keystring == "5") do_cmd_hold();
-            else if (keystring == "z") {
-                //extract_tiles();
-                describe_monster(644, true, "");
-            }
+            else if (keystring == "z") do_cmd_observe();
             else
             {
                 //  TODO something useful with unused keypresses

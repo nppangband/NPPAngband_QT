@@ -2173,6 +2173,19 @@ static bool do_cmd_walk_test(int y, int x)
     return (TRUE);
 }
 
+void command_run(cmd_arg args)
+{
+    // Args.verify should be true if we are starting a run
+    // and false if we are continuing one.
+    int dir = 0;
+    if (args.verify) dir = args.direction;
+
+    int energy = run_step(dir);
+
+    if (energy > 0) process_player_energy(energy);
+
+}
+
 void do_cmd_run(int dir)
 {
     if (!character_dungeon) return;
@@ -2183,8 +2196,6 @@ void do_cmd_run(int dir)
         return;
     }
 
-    if (!dir && !get_rep_dir(&dir)) return;
-
     /* Get location */
     int y = p_ptr->py + ddy[dir];
     int x = p_ptr->px + ddx[dir];
@@ -2192,10 +2203,20 @@ void do_cmd_run(int dir)
     /* Verify legality */
     if (!do_cmd_walk_test(y, x)) return;
 
-    /* Start run */
-    int energy = run_step(dir);
+    cmd_arg args;
+    args.wipe();
 
-    if (energy > 0) process_player_energy(energy);
+    args.direction = dir;
+    p_ptr->player_command_wipe();
+    p_ptr->command_current = CMD_RUNNING;
+
+    command_type *command_ptr = &command_info[CMD_RUNNING];
+    p_ptr->player_args.repeats = command_ptr->repeat_num;
+
+    //This means this will be the first step of the run
+    args.verify = TRUE;
+
+    command_run(args);
 }
 
 /*
@@ -2274,10 +2295,10 @@ static int do_cmd_walk_or_jump(int jumping, int dir = 0)
     return move_player(dir, jumping);
 }
 
-void do_cmd_walk(cmd_arg args)
+void do_cmd_walk(int dir)
 {
     /* Move (normal) */
-    int energy = do_cmd_walk_or_jump(FALSE, args.direction);
+    int energy = do_cmd_walk_or_jump(FALSE, dir);
 
     if (energy > 0) process_player_energy(energy);
 }

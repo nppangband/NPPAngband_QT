@@ -30,6 +30,6 @@ command_type command_info[] =
 {
     {0L,            NULL, FALSE, 0},            // CMD_NONE
     {ARG_SPECIAL,   command_rest, TRUE, 0},    // CMD_RESTING
-    {ARG_DIRECTION, NULL, FALSE, 0}             // CMD_RUNNING
+    {ARG_DIRECTION, command_run, TRUE, 9999}             // CMD_RUNNING
 
 };

@@ -760,9 +760,6 @@ int run_step(int dir)
         /* Initialize */
         run_init(dir);
 
-        /* Hack -- Set the run counter */
-        // TODO p_ptr->running = (p_ptr->command_arg ? p_ptr->command_arg : 1000);
-
         /* Calculate torch radius */
         p_ptr->update |= (PU_TORCH);
     }
@@ -847,8 +844,6 @@ int run_step(int dir)
 
             p_ptr->run_cur_dir = pf_result[pf_result_index--] - '0';
 
-            /* Hack -- allow OPT(easy_alter) */
-            // TODO p_ptr->command_dir = p_ptr->run_cur_dir;
         }
     }
 
