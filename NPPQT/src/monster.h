@@ -759,17 +759,6 @@
  */
 #define PANIC_RANGE      100
 
-/* Spell Desire Table Columns */
-#define D_BASE     0
-#define D_SUMM     1
-#define D_HURT     2
-#define D_MANA     3
-#define D_ESC      4
-#define D_TACT     5
-#define D_RES      6
-#define D_RANGE    7
-
-
 
 
 /*
@@ -792,12 +781,11 @@
     (RF4_SHRIEK)
 
 #define RF5_ANNOY_MASK \
-    (RF5_DRAIN_MANA | RF5_SCARE | \
-     RF5_BLIND | RF5_CONF | RF5_SLOW | RF5_HOLD)
+    (0L)
 
 #define RF6_ANNOY_MASK \
-    (RF6_TELE_TO | RF6_DARKNESS | RF6_TRAPS)
-
+    (RF6_TELE_TO | RF6_DARKNESS | RF6_TRAPS | RF6_DRAIN_MANA | RF6_SCARE | \
+        RF6_BLIND | RF6_CONF | RF6_SLOW | RF6_HOLD)
 
 /*
  * Spells that increase the caster's relative speed
@@ -806,10 +794,10 @@
     (0L)
 
 #define RF5_HASTE_MASK \
-    (RF5_SLOW | RF5_HOLD)
+    (0L)
 
 #define RF6_HASTE_MASK \
-    (RF6_HASTE)
+    (RF6_HASTE | RF6_SLOW | RF6_HOLD)
 
 
 /*
@@ -845,17 +833,6 @@
  /*
   * Monster macros
   */
-
-/*
- * Determine if a given monster is "non-living"
- *
- * Neither demons nor undead are alive.  Neither vortexes nor elementals
- * are alive.  Storms and events are not alive.
- *
- * An chest, wand, rod or staff mimic is assumed to be "animated", and therefore
- * not alive.  All other mimics are "mimics", living creatures that look
- * like something non-living.
- */
 
 
 

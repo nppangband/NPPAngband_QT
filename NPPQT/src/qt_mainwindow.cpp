@@ -1964,10 +1964,12 @@ static void process_mov_key(QKeyEvent* event, int dir, bool shift_key, bool alt_
 {
     if (!character_dungeon) return;
 
-    if (shift_key) do_cmd_run(dir);
+    // Flip pickup
+    if (shift_key && alt_key) do_cmd_walk(dir, TRUE);
+    else if (shift_key) do_cmd_run(dir);
     else if (alt_key) do_cmd_alter(dir);
     else if (ctrl_key) ui_change_panel(dir);
-    else do_cmd_walk(dir);
+    else do_cmd_walk(dir, FALSE);
 }
 
 bool MainWindow::check_disturb()
@@ -2003,14 +2005,12 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         return;
     }
 
-    bool shift_key = FALSE;
-    if (which_key->modifiers() & Qt::ShiftModifier) shift_key = TRUE;
-    bool ctrl_key = FALSE;
-    if (which_key->modifiers() & Qt::ControlModifier) ctrl_key = TRUE;
-    bool alt_key = FALSE;
-    if (which_key->modifiers() & Qt::AltModifier) alt_key = TRUE;
-    bool meta_key = FALSE;
-    if (which_key->modifiers() & Qt::MetaModifier) meta_key = TRUE;
+    Qt::KeyboardModifiers modifiers = which_key->modifiers();
+
+    bool shift_key = modifiers.testFlag(Qt::ShiftModifier);
+    bool ctrl_key = modifiers.testFlag(Qt::ControlModifier);
+    bool alt_key = modifiers.testFlag(Qt::AltModifier);
+    bool meta_key = modifiers.testFlag(Qt::MetaModifier);
 
     // Normal mode
     switch (which_key->key())
@@ -2135,7 +2135,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_F:
         {
-            if (shift_key)          do_cmd_fire_at_nearest();
+            if (alt_key)            do_cmd_feeling();
+            else if (shift_key)     do_cmd_fire_at_nearest();
             else                    do_cmd_fire();
             return;
         }
@@ -2180,7 +2181,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_T:
         {
-            if (shift_key)      do_cmd_tunnel();
+            if (alt_key)        do_cmd_make_trap();
+            else if (shift_key) do_cmd_tunnel();
             else                do_cmd_takeoff();
             return;
         }

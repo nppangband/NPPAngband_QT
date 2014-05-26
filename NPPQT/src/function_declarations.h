@@ -78,7 +78,7 @@ extern void do_cmd_rest(void);
 extern void command_run(cmd_arg args);
 extern void do_cmd_run(int dir);
 extern void command_walk(cmd_arg args);
-extern void do_cmd_walk(int dir);
+extern void do_cmd_walk(int dir, bool jumping);
 extern void command_bash(cmd_arg args);
 extern void do_cmd_bash(void);
 extern void do_cmd_hold();
@@ -91,6 +91,8 @@ extern bool make_monster_trap(void);
 extern void py_set_trap(int y, int x);
 extern bool py_modify_trap(int y, int x);
 extern void do_cmd_look(void);
+extern void command_make_trap(cmd_arg args);
+extern void do_cmd_make_trap(void);
 
 // cmd4.cpp
 extern void do_cmd_feeling(void);

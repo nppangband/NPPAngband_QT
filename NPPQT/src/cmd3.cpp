@@ -16,7 +16,142 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "src/npp.h"
+#include "src/dun_traps.h"
+
+
+
+void TrapSelectDialog::trap_choice_sturdy(void)     {trap_choice = FEAT_MTRAP_STURDY;       this->accept();}
+void TrapSelectDialog::trap_choice_slowing(void)    {trap_choice = FEAT_MTRAP_SLOWING;      this->accept();}
+void TrapSelectDialog::trap_choice_confusion(void)  {trap_choice = FEAT_MTRAP_CONFUSION;    this->accept();}
+void TrapSelectDialog::trap_choice_poison(void)     {trap_choice = FEAT_MTRAP_POISON;       this->accept();}
+void TrapSelectDialog::trap_choice_life_drain(void) {trap_choice = FEAT_MTRAP_DRAIN_LIFE;   this->accept();}
+void TrapSelectDialog::trap_choice_lightning(void)  {trap_choice = FEAT_MTRAP_ELEC;         this->accept();}
+void TrapSelectDialog::trap_choice_explosive(void)  {trap_choice = FEAT_MTRAP_EXPLOSIVE;    this->accept();}
+void TrapSelectDialog::trap_choice_portal(void)     {trap_choice = FEAT_MTRAP_PORTAL;       this->accept();}
+void TrapSelectDialog::trap_choice_dispell(void)    {trap_choice = FEAT_MTRAP_DISPEL_M;     this->accept();}
+
+void TrapSelectDialog::on_dialog_buttons_pressed(QAbstractButton *)
+{
+    trap_choice = -1;
+    this->reject();
+}
+
+
+/*
+ * Choose advanced monster trap type
+ */
+TrapSelectDialog::TrapSelectDialog(void)
+{
+    int num = 1 + (p_ptr->lev / 6);
+
+    trap_choice = -1;
+
+    QLabel *main_prompt = new QLabel(QString("<b><big>Please select an advanced trap</big></b><br>"));
+    main_prompt->setAlignment(Qt::AlignCenter);
+
+    QVBoxLayout *vlay = new QVBoxLayout;
+
+    vlay->addWidget(main_prompt);
+
+    vlay->addStretch();
+
+    // Add the "Sturdy Trap" button
+    QPushButton *sturdy_button = new QPushButton("&Resilient Trap");
+    sturdy_button->setToolTip(apply_monster_trap(FEAT_MTRAP_STURDY, 0, 0, MODE_DESCRIBE));
+    connect(sturdy_button, SIGNAL(clicked()), this, SLOT(trap_choice_sturdy()));
+    vlay->addWidget(sturdy_button);
+
+    if (num > 1)
+    {
+        // Add the "Slowing Trap" button
+        QPushButton *slowing_button = new QPushButton("&Slowing Trap");
+        slowing_button->setToolTip(apply_monster_trap(FEAT_MTRAP_SLOWING, 0, 0, MODE_DESCRIBE));
+        connect(slowing_button, SIGNAL(clicked()), this, SLOT(trap_choice_slowing()));
+        vlay->addWidget(slowing_button);
+    }
+
+    if (num > 2)
+    {
+        // Add the "Confusion Trap" button
+        QPushButton *cofusion_button = new QPushButton("&Confusion Trap");
+        cofusion_button->setToolTip(apply_monster_trap(FEAT_MTRAP_CONFUSION, 0, 0, MODE_DESCRIBE));
+        connect(cofusion_button, SIGNAL(clicked()), this, SLOT(trap_choice_cofusion()));
+        vlay->addWidget(cofusion_button);
+    }
+
+    if (num > 3)
+    {
+        // Add the "Poison Trap" button
+        QPushButton *poison_button = new QPushButton("&Poison Trap");
+        poison_button->setToolTip(apply_monster_trap(FEAT_MTRAP_POISON, 0, 0, MODE_DESCRIBE));
+        connect(poison_button, SIGNAL(clicked()), this, SLOT(trap_choice_poison()));
+        vlay->addWidget(poison_button);
+    }
+
+    if (num > 4)
+    {
+        // Add the "Life Draining Trap" button
+        QPushButton *life_drain_button = new QPushButton("&Drain Life Trap");
+        life_drain_button->setToolTip(apply_monster_trap(FEAT_MTRAP_DRAIN_LIFE, 0, 0, MODE_DESCRIBE));
+        connect(life_drain_button, SIGNAL(clicked()), this, SLOT(trap_choice_life_drain()));
+        vlay->addWidget(life_drain_button);
+    }
+
+    if (num > 5)
+    {
+        // Add the "Lightning Trap" button
+        QPushButton *lightning_button = new QPushButton("&Lightning Ball Trap");
+        lightning_button->setToolTip(apply_monster_trap(FEAT_MTRAP_ELEC, 0, 0, MODE_DESCRIBE));
+        connect(lightning_button, SIGNAL(clicked()), this, SLOT(trap_choice_lightning()));
+        vlay->addWidget(lightning_button);
+    }
+
+    if (num > 6)
+    {
+        // Add the "Explosive Trap" button
+        QPushButton *explosive_button = new QPushButton("&Explosive Trap");
+        explosive_button->setToolTip(apply_monster_trap(FEAT_MTRAP_EXPLOSIVE, 0, 0, MODE_DESCRIBE));
+        connect(explosive_button, SIGNAL(clicked()), this, SLOT(trap_choice_explosive()));
+        vlay->addWidget(explosive_button);
+    }
+
+    if (num > 7)
+    {
+        // Add the "Portal Trap" button
+        QPushButton *portal_button = new QPushButton("&Teleport Trap");
+        portal_button->setToolTip(apply_monster_trap(FEAT_MTRAP_PORTAL, 0, 0, MODE_DESCRIBE));
+        connect(portal_button, SIGNAL(clicked()), this, SLOT(trap_choice_portal()));
+        vlay->addWidget(portal_button);
+    }
+
+     if (num > 8)
+    {
+        // Add the "Dispel Monster Trap" button
+        QPushButton *dispel_button = new QPushButton("&Monster Dispelling Trap");
+        dispel_button->setToolTip(apply_monster_trap(FEAT_MTRAP_DISPEL_M, 0, 0, MODE_DESCRIBE));
+        connect(dispel_button, SIGNAL(clicked()), this, SLOT(trap_choice_dispell()));
+        vlay->addWidget(dispel_button);
+    }
+
+
+    vlay->addStretch();
+
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(clicked(QAbstractButton*)), this,
+            SLOT(on_dialog_buttons_pressed(QAbstractButton*)));
+    vlay->addWidget(buttons);
+
+    setLayout(vlay);
+
+    setWindowTitle(tr("Trap Selection Screen"));
+    this->exec();
+}
+
+int TrapSelectDialog::return_trap_choice(void)
+{
+    TrapSelectDialog();
+    return (trap_choice);
+}
 
 /*
  * Look command
@@ -287,7 +422,7 @@ bool make_monster_trap(void)
     int y, x, dir;
 
     /* Get a direction */
-    // TODO if (!get_rep_dir(&dir)) return (FALSE);
+    if (!get_rep_dir(&dir)) return (FALSE);
 
     /* Get location */
     y = p_ptr->py + ddy[dir];
@@ -350,40 +485,7 @@ void py_set_trap(int y, int x)
 }
 
 
-/*
- * Choose advanced monster trap type
- */
-static bool choose_mtrap(int *choice)
-{
-    int num;
 
-    char c;
-
-    bool done=FALSE;
-
-    /* TODO select the mtrap
-
-    prt("        Choose an advanced monster trap (ESC to cancel):", 1, 8);
-
-    num = 1 + (p_ptr->lev / 6);
-
-                  prt("    a) Sturdy Trap          - (less likely to break)", 2, 8);
-    if (num >= 2) prt("    b) Slowing Trap         - (slows monsters)", 3, 8);
-    if (num >= 3) prt("    c) Confusion Trap       - (confuses monsters)", 4, 8);
-    if (num >= 4) prt("    d) Poison Gas Trap      - (creates a toxic cloud)", 5, 8);
-    if (num >= 5) prt("    e) Life Draining Trap   - (Hurts living monsters)", 6, 8);
-    if (num >= 6) prt("    f) Lightning Trap       - (shoots a lightning bolt)", 7, 8);
-    if (num >= 7) prt("    g) Explosive Trap       - (causes area damage)", 8, 8);
-    if (num >= 8) prt("    h) Portal Trap          - (teleports monsters)", 9, 8);
-    if (num >= 9) prt("    i) Dispel Monsters Trap - (hurt all monsters in area)", 10, 8);
-
-    */
-
-
-
-    /* Return */
-    return (TRUE);
-}
 
 
 /*
@@ -391,7 +493,7 @@ static bool choose_mtrap(int *choice)
  */
 bool py_modify_trap(int y, int x)
 {
-    int trap_choice = 0;
+
 
     if (p_ptr->timed[TMD_BLIND] || no_light())
     {
@@ -406,10 +508,12 @@ bool py_modify_trap(int y, int x)
         return (FALSE);
     }
 
-    if (!(choose_mtrap(&trap_choice))) return (FALSE);
+    int which_trap = return_trap_choice();
+
+    if (which_trap == -1) return (FALSE);
 
     /* Set the trap, and draw it. */
-    x_list[dungeon_info[y][x].effect_idx].x_f_idx = FEAT_MTRAP_BASE + 1 + trap_choice;
+    x_list[dungeon_info[y][x].effect_idx].x_f_idx = which_trap;
 
     /*check if player did not modify trap*/
     if (x_list[dungeon_info[y][x].effect_idx].x_f_idx == FEAT_MTRAP_BASE) return(FALSE);
@@ -426,5 +530,81 @@ bool py_modify_trap(int y, int x)
     return (TRUE);
 }
 
+void command_make_trap(cmd_arg args)
+{
+    int max_traps;
 
+    int dir = args.direction;
+
+    /* Get location */
+    int y = p_ptr->py + ddy[dir];
+    int x = p_ptr->px + ddx[dir];
+
+    /* Oops */
+    if (!(cp_ptr->flags & CF_SET_TRAPS))
+    {
+        message(QString("You don't have the ability to set traps!"));
+        return;
+    }
+
+    /* Hack XXX XXX XXX */
+    if (p_ptr->timed[TMD_CONFUSED] || p_ptr->timed[TMD_IMAGE])
+    {
+        message(QString("You are too confused!"));
+        return;
+    }
+
+    if (!in_bounds(y, x)) return;
+
+    if (cave_trappable_bold(y, x) && !dungeon_info[y][x].monster_idx > 0)
+    {
+        /*two traps for advanced rogues, one for lower level*/
+        if (p_ptr->lev >= 26) max_traps = 2;
+        else max_traps = 1;
+
+        /*if not at max traps, set a trap, else fail*/
+        if (num_trap_on_level < max_traps)
+        {
+            py_set_trap(y, x);
+        }
+        else
+        {
+            /*give a message and don't burn any energy*/
+            message(QString("You must disarm an existing trap to free up your equipment."));
+
+            return;
+        }
+    }
+
+    /* Only rogues can modify basic monster traps */
+    else if (cave_monster_trap_bold(y, x))
+    {
+        /* Modify */
+        if (!py_modify_trap(y, x))return;
+    }
+
+    /*empty floor space*/
+    else
+    {
+        message(QString("You can not set a trap here."));
+        return;
+    }
+
+    process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void do_cmd_make_trap()
+{
+    if (!character_dungeon) return;
+
+    int dir;
+
+    if (!get_rep_dir(&dir)) return;
+
+    cmd_arg args;
+    args.wipe();
+    args.direction = dir;
+
+    command_make_trap(args);
+}
 

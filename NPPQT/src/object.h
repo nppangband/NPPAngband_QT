@@ -1205,7 +1205,7 @@
     (TR3_LOW_ABILITIES_MASK | TR3_HIGH_ABILITIES_MASK)
 
 #define TN1_ABILITIES_MASK \
-        (TN1_LOW_ABILITIES_MASK | TR3_HIGH_ABILITIES_MASK)
+        (TN1_LOW_ABILITIES_MASK | TN1_HIGH_ABILITIES_MASK)
 
 
 /*Slay weapon types*/
@@ -1563,23 +1563,23 @@ typedef enum
 /**
  * Pseudo-ID markers.
  */
-typedef enum
+enum
 {
     INSCRIP_NULL = 100,
-    INSCRIP_TERRIBLE   =    101,
-    INSCRIP_WORTHLESS  =    102,
-    INSCRIP_CURSED     =    103,
-    INSCRIP_BROKEN     =    104,
-    INSCRIP_AVERAGE    =    105,
-    INSCRIP_GOOD_STRONG=    106,
-    INSCRIP_GOOD_WEAK  =	107,
-    INSCRIP_EXCELLENT  =    108,
-    INSCRIP_SPECIAL    =    109,
-    INSCRIP_UNCURSED   =    110,
-    INSCRIP_INDESTRUCTIBLE =111,
+    INSCRIP_TERRIBLE,
+    INSCRIP_WORTHLESS,
+    INSCRIP_CURSED,
+    INSCRIP_BROKEN,
+    INSCRIP_AVERAGE,
+    INSCRIP_GOOD_STRONG,
+    INSCRIP_GOOD_WEAK,
+    INSCRIP_EXCELLENT,
+    INSCRIP_SPECIAL,
+    INSCRIP_UNCURSED,
+    INSCRIP_INDESTRUCTIBLE,
 
     INSCRIP_MAX                  /*!< Maximum number of pseudo-ID markers */
-} obj_pseudo_t;
+};
 
 /*
  * Objects in the quiver are stored in groups. Each group has its own set of tags ranging from 0 to 9.

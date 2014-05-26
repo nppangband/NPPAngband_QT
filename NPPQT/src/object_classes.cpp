@@ -308,9 +308,9 @@ bool object_type::is_known_artifact()
 {
 
     if (is_artifact() && was_sensed()) return (TRUE);
-    if (ident & (IDENT_INDESTRUCT)) return (TRUE);
-    if (ident & (INSCRIP_TERRIBLE)) return (TRUE);
-    if (ident & (INSCRIP_SPECIAL)) return (TRUE);
+    if (discount == IDENT_INDESTRUCT) return (TRUE);
+    if (discount == INSCRIP_TERRIBLE) return (TRUE);
+    if (discount == INSCRIP_SPECIAL) return (TRUE);
     return (FALSE);
 }
 

@@ -2348,12 +2348,15 @@ static bool found_dangerous_grid(int y, int x)
 /*
  * Helper function for the "walk" and "jump" commands.
  */
-static int do_cmd_walk_or_jump(int jumping, int dir = 0)
+void command_walk(cmd_arg args)
 {
+    int dir = args.direction;
+    bool jumping = args.verify;
+
     int y, x;
 
     /* Get a direction (or abort) */
-    if (!dir && !get_rep_dir(&dir)) return 0;
+    if (!dir && !get_rep_dir(&dir)) return;
 
     /* Get location */
     y = p_ptr->py + ddy[dir];
@@ -2363,10 +2366,10 @@ static int do_cmd_walk_or_jump(int jumping, int dir = 0)
     if (!p_ptr->timed[TMD_CONFUSED])
     {
         /* Can the player walk over there? */
-        if (!do_cmd_walk_test(y, x)) return 0;
+        if (!do_cmd_walk_test(y, x)) return;
 
         /* Dangerous grid? */
-        if (found_dangerous_grid(y, x)) return 0;
+        if (found_dangerous_grid(y, x)) return;
     }
 
     /* Confuse direction */
@@ -2377,19 +2380,27 @@ static int do_cmd_walk_or_jump(int jumping, int dir = 0)
         x = p_ptr->px + ddx[dir];
 
         /* Verify legality */
-        if (!do_cmd_walk_test(y, x)) return BASE_ENERGY_MOVE;
+        if (!do_cmd_walk_test(y, x)) return;
     }
 
     /* Move the player, record energy used */
-    return move_player(dir, jumping);
-}
-
-void do_cmd_walk(int dir)
-{
-    /* Move (normal) */
-    int energy = do_cmd_walk_or_jump(FALSE, dir);
+    int energy = move_player(dir, jumping);
 
     if (energy > 0) process_player_energy(energy);
+}
+
+void do_cmd_walk(int dir, bool jumping)
+{
+    if (!character_dungeon) return;
+
+    cmd_arg args;
+    args.wipe();
+
+    args.direction = dir;
+    args.verify = jumping;
+
+    /* Move (normal) */
+    command_walk(args);
 }
 
 // Does not burn player energy

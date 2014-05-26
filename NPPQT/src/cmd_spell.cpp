@@ -306,7 +306,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 }
 
 
-// This assumes the check that the player cna cast has already been done.
+// This assumes the check that the player can cast has already been done.
 SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool *success, bool *cancelled)
 {
     spell_dialog = new QTabWidget;
