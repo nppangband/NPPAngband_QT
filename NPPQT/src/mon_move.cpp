@@ -357,12 +357,6 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
     {
         f_l_ptr->f_l_power++;
     }
-    /* Don't describe if not set off*/
-    if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power))
-    {
-        return(QString("  The effects of this trap are unknown."));
-
-    }
 
     /*Skip all this unless we are setting off a trap*/
     if (mode == MODE_ACTION)

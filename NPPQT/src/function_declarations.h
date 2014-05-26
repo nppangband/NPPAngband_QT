@@ -81,6 +81,7 @@ extern void command_walk(cmd_arg args);
 extern void do_cmd_walk(int dir, bool jumping);
 extern void command_bash(cmd_arg args);
 extern void do_cmd_bash(void);
+extern void command_hold(cmd_arg args);
 extern void do_cmd_hold();
 
 
@@ -98,6 +99,7 @@ extern void do_cmd_make_trap(void);
 extern void do_cmd_feeling(void);
 extern void create_notes_file(void);
 extern void delete_notes_file(void);
+extern void do_cmd_repeat(void);
 
 //cmd_objects
 extern cmd_arg obj_uninscribe(object_type *o_ptr, cmd_arg args);
@@ -134,6 +136,7 @@ extern int spell_chance(int spell);
 extern bool spell_okay(int spell, bool known);
 extern void do_cmd_browse(void);
 extern void do_cmd_study(void);
+extern void command_cast(cmd_arg args);
 extern void do_cmd_cast(void);
 extern s16b get_spell_from_list(s16b book, s16b spell);
 

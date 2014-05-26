@@ -31,10 +31,21 @@ command_type command_info[] =
     {0L,            NULL, FALSE, 0},                // CMD_NONE
     {ARG_SPECIAL,   command_rest,   TRUE,  0},      // CMD_RESTING
     {ARG_DIRECTION, command_run,    TRUE,  9999},   // CMD_RUNNING
+    {ARG_DIRECTION, command_walk,   FALSE,  0 },    // CMD_WALK
     {ARG_DIRECTION, command_open,   TRUE,  99 },    // CMD_OPEN
     {ARG_DIRECTION, command_close,  FALSE, 0 },     // CMD_CLOSE
+    {ARG_DIRECTION, command_spike,  FALSE, 0 },     // CMD_SPIKE
     {ARG_DIRECTION, command_disarm, TRUE,  99 },    // CMD_DISARM
     {ARG_DIRECTION, command_bash,   TRUE,  99 },    // CMD_BASH
     {ARG_DIRECTION, command_tunnel, TRUE,  99 },    // CMD_TUNNEL
     {ARG_DIRECTION, command_alter,  TRUE,  99 },    // CMD_ALTER
+    {ARG_DIRECTION, command_search, FALSE,  0 },    // CMD_SEARCH
+    {ARG_DIRECTION, command_make_trap, FALSE, 0},   // CMD_MAKE_TRAP
+    {0L,            command_hold,   FALSE, 0},      // CMD_HOLD
+    {ARG_ITEM,      command_refuel, FALSE, 0},      // CMD_REFUEL
+    {ARG_ITEM,      command_use,    FALSE, 0},      // CMD_ITEM_USE
+    {ARG_ITEM,      command_use,    FALSE, 0},      // CMD_ACTIVATE
+    {ARG_NUMBER | ARG_DIRECTION,command_cast,FALSE, 0}, // CMD_CAST
+    {ARG_ITEM | ARG_DIRECTION,command_fire,FALSE, 0}, // CMD_FIRE
+    {ARG_ITEM | ARG_DIRECTION,command_throw,FALSE, 0}, // CMD_THROW
 };

@@ -16,7 +16,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "src/npp.h"
+#include "src/player_command.h"
 #include "src/dun_traps.h"
 
 
@@ -590,6 +590,9 @@ void command_make_trap(cmd_arg args)
         message(QString("You can not set a trap here."));
         return;
     }
+
+    // Update the last command
+    p_ptr->player_previous_command_update(CMD_MAKE_TRAP, args);
 
     process_player_energy(BASE_ENERGY_MOVE);
 }

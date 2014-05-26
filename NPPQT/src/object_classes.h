@@ -365,6 +365,7 @@ public:
     int slot;
     bool verify;
     int repeats;
+    int k_idx;
 
     void wipe();
 } ;

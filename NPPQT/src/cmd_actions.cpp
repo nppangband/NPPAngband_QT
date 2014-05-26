@@ -16,10 +16,10 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "src/npp.h"
+#include "player_command.h"
 #include "nppdialog.h"
 #include "storedialog.h"
-#include "player_command.h"
+
 
 
 /*
@@ -897,6 +897,8 @@ void command_open(cmd_arg args)
         p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
 
+    p_ptr->player_previous_command_update(CMD_OPEN, args);
+
     /* Monster */
     if (dungeon_info[y][x].monster_idx > 0)
     {
@@ -1322,6 +1324,8 @@ void command_disarm(cmd_arg args)
         p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
 
+     p_ptr->player_previous_command_update(CMD_DISARM, args);
+
     /* Monster */
     if (dungeon_info[dir_y][dir_x].monster_idx > 0)
     {
@@ -1553,7 +1557,8 @@ void do_cmd_toggle_search(void)
 
 void command_search(cmd_arg args)
 {
-    (void)args;
+     p_ptr->player_previous_command_update(CMD_SEARCH, args);
+
     do_search();
     process_player_energy(BASE_ENERGY_MOVE);
 }
@@ -1725,6 +1730,8 @@ void command_tunnel(cmd_arg args)
         p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
 
+     p_ptr->player_previous_command_update(CMD_TUNNEL, args);
+
     /* Monster */
     if (dungeon_info[y][x].monster_idx > 0)
     {
@@ -1871,6 +1878,8 @@ void command_close(cmd_arg args)
         x = p_ptr->px + ddx[dir];
     }
 
+     p_ptr->player_previous_command_update(CMD_CLOSE, args);
+
     /* Monster */
     if (dungeon_info[y][x].has_monster())
     {
@@ -1955,6 +1964,8 @@ void command_alter(cmd_arg args)
 
     /* Must have knowledge to know feature XXX XXX */
     if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) feat = FEAT_NONE;
+
+     p_ptr->player_previous_command_update(CMD_ALTER, args);
 
     /*Is there a monster on the space?*/
     if (dungeon_info[y][x].monster_idx > 0)
@@ -2104,6 +2115,8 @@ void command_spike(cmd_arg args)
         x = p_ptr->px + ddx[dir];
     }
 
+     p_ptr->player_previous_command_update(CMD_SPIKE, args);
+
     /* Monster */
     if (dungeon_info[y][x].monster_idx > 0)
     {
@@ -2177,7 +2190,20 @@ void do_cmd_spike(void)
 // Just burn some energy
 void command_rest(cmd_arg args)
 {
-    (void) args;
+    p_ptr->player_previous_command_update(CMD_RESTING, args);
+
+    /* Cancel searching */
+    p_ptr->searching = FALSE;
+
+    /* Recalculate bonuses */
+    p_ptr->update |= (PU_BONUS);
+
+    /* Redraw the state */
+    p_ptr->redraw |= (PR_STATE);
+
+    /* Handle stuff */
+    handle_stuff();
+
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
@@ -2197,17 +2223,7 @@ void do_cmd_rest(void)
     p_ptr->command_current = CMD_RESTING;
     p_ptr->player_args.choice = choice;
 
-    /* Cancel searching */
-    p_ptr->searching = FALSE;
 
-    /* Recalculate bonuses */
-    p_ptr->update |= (PU_BONUS);
-
-    /* Redraw the state */
-    p_ptr->redraw |= (PR_STATE);
-
-    /* Handle stuff */
-    handle_stuff();
 
     command_rest(p_ptr->player_args);
 }
@@ -2382,6 +2398,8 @@ void command_walk(cmd_arg args)
         /* Verify legality */
         if (!do_cmd_walk_test(y, x)) return;
     }
+
+    p_ptr->player_previous_command_update(CMD_WALK, args);
 
     /* Move the player, record energy used */
     int energy = move_player(dir, jumping);
@@ -2655,6 +2673,8 @@ void command_bash(cmd_arg args)
         p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
 
+    p_ptr->player_previous_command_update(CMD_BASH, args);
+
     /* Apply confusion */
     if (confuse_dir(&dir))
     {
@@ -2698,14 +2718,8 @@ void do_cmd_bash(void)
     command_bash(args);
 }
 
-/*
- * Stay still.  Search.  Enter stores.
- * Pick up treasure if "pickup" is true.
- */
-void do_cmd_hold()
+void command_hold(cmd_arg args)
 {
-    if (!character_dungeon) return;
-
     /* Take a turn */
     int energy = BASE_ENERGY_MOVE;
 
@@ -2742,5 +2756,22 @@ void do_cmd_hold()
         energy = 0;
     }
 
+    p_ptr->player_previous_command_update(CMD_HOLD, args);
+
     if (energy > 0) process_player_energy(energy);
+}
+
+/*
+ * Stay still.  Search.  Enter stores.
+ * Pick up treasure if "pickup" is true.
+ */
+void do_cmd_hold()
+{
+    if (!character_dungeon) return;
+
+    cmd_arg args;
+    args.wipe();
+
+    command_hold(args);
+
 }

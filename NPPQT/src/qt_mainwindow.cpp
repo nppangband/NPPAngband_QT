@@ -2124,7 +2124,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_D:
         {
             if (alt_key)            do_cmd_destroy();
-            else if (shift_key)          do_cmd_disarm();
+            else if (shift_key)     do_cmd_disarm();
             else                    do_cmd_drop();
             return;
         }
@@ -2169,7 +2169,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_R:
         {
-            if (shift_key)  do_cmd_refuel();
+            if (alt_key)    do_cmd_repeat();
+            else if (shift_key)  do_cmd_refuel();
             else            do_cmd_rest();
             return;
         }

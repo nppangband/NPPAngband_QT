@@ -32,12 +32,23 @@ enum
     CMD_NONE = 0,
     CMD_RESTING,
     CMD_RUNNING,
+    CMD_WALK,
     CMD_OPEN,
     CMD_CLOSE,
+    CMD_SPIKE,
     CMD_DISARM,
     CMD_BASH,
     CMD_TUNNEL,
     CMD_ALTER,
+    CMD_SEARCH,
+    CMD_MAKE_TRAP,
+    CMD_HOLD,
+    CMD_REFUEL,
+    CMD_ITEM_USE,
+    CMD_ACTIVATE,
+    CMD_CAST,
+    CMD_FIRE,
+    CMD_THROW,
     CMD_MAX
 };
 

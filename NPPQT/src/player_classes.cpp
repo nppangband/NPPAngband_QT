@@ -100,6 +100,20 @@ void player_type::player_command_wipe()
     player_args.wipe();
 }
 
+void player_type::player_previous_command_wipe()
+{
+    command_previous = CMD_NONE;
+    command_previous_args.wipe();
+}
+
+void player_type::player_previous_command_update(s16b command, cmd_arg args)
+{
+    player_previous_command_wipe();
+    command_previous = command;
+    command_previous_args = args;
+}
+
+
 bool player_type::is_running()
 {
     if (p_ptr->command_current == CMD_RUNNING) return (TRUE);
@@ -195,6 +209,7 @@ void player_type::player_type_wipe()
     run_cur_dir = run_old_dir = 0;
     run_unused = run_open_area = run_break_right = run_break_left = FALSE;
     player_command_wipe();
+    player_previous_command_wipe();
     new_spells = 0;
     notice = update = redraw = window = 0;
     p_native = p_native_known = 0;

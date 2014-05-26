@@ -660,6 +660,6 @@ void flavor_type::flavor_wipe()
 
 void cmd_arg::wipe()
 {
-    repeats = choice = item = number = direction = slot = 0;
+    repeats = choice = item = number = direction = slot = k_idx = 0;
     verify = FALSE;
 } ;

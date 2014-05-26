@@ -456,7 +456,8 @@ public:
     s16b command_current;	/* Gives identity of current command */
     cmd_arg player_args;    /* All information about the current player command */
 
-
+    s16b command_previous;          // Remembers the previous command
+    cmd_arg command_previous_args;  // Remembers the previous command args
 
     s16b command_see;	/**< See "cmd1.c" */
 
@@ -496,6 +497,8 @@ public:
     u16b dungeon_type;	/* One of the DUNGEON_TYPE_* constants */
 
     void player_command_wipe();
+    void player_previous_command_wipe();
+    void player_previous_command_update(s16b command, cmd_arg args);
     void player_type_wipe();
 
     bool can_cast();

@@ -16,7 +16,7 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "src/npp.h"
+#include "src/player_command.h"
 
 
 
@@ -972,6 +972,8 @@ void command_refuel(cmd_arg args)
     else if (j_ptr->sval == SV_LIGHT_TORCH)
         refuel_torch(j_ptr, o_ptr, item);
 
+    p_ptr->player_previous_command_update(CMD_REFUEL, args);
+    p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
 
     process_player_energy(BASE_ENERGY_MOVE / 2);
 }

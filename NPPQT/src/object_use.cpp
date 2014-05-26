@@ -17,7 +17,7 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "src/npp.h"
+#include "src/player_command.h"
 
 
 /*
@@ -3255,6 +3255,9 @@ void command_use(cmd_arg args)
 
         /* Clear the item mark */
         o_ptr->obj_in_use = FALSE;
+
+        p_ptr->player_previous_command_update(CMD_ITEM_USE, args);
+        p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
 
         /* Quit if the item wasn't used and no knowledge was gained */
         if (!used && (was_aware || !ident)) return;

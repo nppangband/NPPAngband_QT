@@ -17,7 +17,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
+#include <src/player_command.h>
 #include <src/cmd_spell.h>\
 
 // Receives the number of the button pressed.
@@ -385,6 +385,49 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     }
 }
 
+static int get_spell_index(const object_type *o_ptr, int index)
+{
+    return get_spell_from_list(o_ptr->sval,index);
+}
+
+/*
+ * Check if the given spell is in the given book.
+ */
+static bool spell_in_book(int spell, int book)
+{
+    int i;
+    object_type *o_ptr = object_from_item_idx(book);
+
+    for (i = 0; i < SPELLS_PER_BOOK; i++)
+    {
+        if (spell == get_spell_index(o_ptr, i)) return TRUE;
+    }
+
+    return FALSE;
+}
+
+// Make sure the player has access to a spellbook to actually cast the spell.
+static bool spell_is_available(int spell)
+{
+    int max_books = BOOKS_PER_REALM_ANGBAND;
+    if (game_mode == GAME_NPPMORIA) max_books = BOOKS_PER_REALM_MORIA;
+
+    // Go through all the books to find the spell
+    for (int i = 0; i < max_books; i++)
+    {
+        int k_idx = lookup_kind(cp_ptr->spell_book, i);
+
+        // Make sure we have the spell and book
+        if (!spell_in_book(spell, k_idx)) continue;
+        if (!object_kind_is_available(k_idx, USE_INVEN | USE_FLOOR)) continue;
+
+        // Success
+        return (TRUE);
+    }
+
+    return (FALSE);
+}
+
 
 /*
  * Determine if a spell is "okay" for the player to cast or study
@@ -630,31 +673,30 @@ int spell_chance(int spell)
     return (chance);
 }
 
-// Cast a spell
-void do_cmd_cast(void)
+void command_cast(cmd_arg args)
 {
-    int spell;
-    int dir = DIR_UNKNOWN;
+    if (!p_ptr->can_cast()) return;
+
+    int spell = args.number;
+    int dir = args.direction;
     QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
     QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
+    bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
 
-    QString prompt = (QString("Please select a %1 to %2.") .arg(noun) .arg(verb));
+    // Verify we have access to the spell book;
 
-    int mode = BOOK_CAST;
-    bool success;
-    bool cancelled;
-    SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
-
-    // Handle not having a spell to learn
-    if ((!success) || (cancelled))
+    if (!spell_okay(spell, TRUE) || !spell_is_available(spell))
     {
-        if (!success && !cancelled) message(QString("You have no %1s that you can %3 right now.") .arg(noun) .arg(verb));
+        pop_up_message_box(QString("You cannot %1 this %2.") .arg(verb) .arg(noun));
         return;
     }
 
-    bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
-
-    if (spell_needs_aim(cp_ptr->spell_book, spell) && !get_aim_dir(&dir, trap_spell)) return;
+    // Check for direction if necessary
+    if (dir == DIR_UNKNOWN)
+    {
+        if (spell_needs_aim(cp_ptr->spell_book, spell) && !get_aim_dir(&dir, trap_spell)) return;
+        args.direction = dir;
+    }
 
     /* Get the spell */
     const magic_type *s_ptr;s_ptr = &mp_ptr->info[spell];
@@ -671,6 +713,8 @@ void do_cmd_cast(void)
 
     /* Spell failure chance */
     int chance = spell_chance(spell);
+
+    p_ptr->player_previous_command_update(CMD_CAST, args);
 
     /* Failed spell */
     if (rand_int(100) < chance)
@@ -739,6 +783,45 @@ void do_cmd_cast(void)
     p_ptr->redraw |= (PR_MANA);
 
     process_player_energy(BASE_ENERGY_MOVE);
+
+}
+
+// Cast a spell
+void do_cmd_cast(void)
+{
+    if (!character_dungeon) return;
+    if (!p_ptr->can_cast()) return;
+
+    int spell;
+    int dir = DIR_UNKNOWN;
+    QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
+    QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
+
+    QString prompt = (QString("Please select a %1 to %2.") .arg(noun) .arg(verb));
+
+    int mode = BOOK_CAST;
+    bool success;
+    bool cancelled;
+    SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
+
+    // Handle not having a spell to learn
+    if ((!success) || (cancelled))
+    {
+        if (!success && !cancelled) message(QString("You have no %1s that you can %3 right now.") .arg(noun) .arg(verb));
+        return;
+    }
+
+    bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
+
+    if (spell_needs_aim(cp_ptr->spell_book, spell) && !get_aim_dir(&dir, trap_spell)) return;
+
+    cmd_arg args;
+    args.wipe();
+
+    args.direction = dir;
+    args.number = spell;
+
+    command_cast(args);
 }
 
 // Learn a spell

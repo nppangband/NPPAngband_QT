@@ -16,7 +16,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "src/npp.h"
+#include "src/player_command.h"
 #include <QFile>
 
 
@@ -147,4 +147,29 @@ void delete_notes_file(void)
     }
 }
 
+// Repeat the previous command
+// Assumes the command and args were properly saved
+void do_cmd_repeat(void)
+{
+    if (!character_dungeon) return;
+    if (!p_ptr->command_previous) return;
 
+    // repeat the previous command
+    command_type *command_ptr = &command_info[p_ptr->command_previous];
+
+    // Make sure we are dealing with the same item
+    if (command_ptr->cmd_needs & (ARG_ITEM))
+    {
+        object_type *o_ptr = object_from_item_idx(p_ptr->command_previous_args.item);
+
+        if (o_ptr->k_idx != p_ptr->command_previous_args.k_idx)
+        {
+            pop_up_message_box("Unable to repeat command.<br>Item has been moved or changed.");
+            p_ptr->player_previous_command_wipe();
+            return;
+        }
+    }
+
+    command_ptr->command_function(p_ptr->command_previous_args);
+
+}
