@@ -124,7 +124,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/package.h \
             src/tilebag.h \
             src/wizard_mode.h \
-    src/player_death.h
+            src/player_death.h \
+            src/dun_traps.h
 
 
 RESOURCES += \
