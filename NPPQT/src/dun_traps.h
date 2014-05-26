@@ -2,7 +2,7 @@
 #define DUN_TRAPS_H
 
 #include <QtWidgets>
-#include "src/npp.h"
+
 
 
 
@@ -13,8 +13,7 @@ class TrapSelectDialog : public QDialog
 public:
     explicit TrapSelectDialog(void);
 
-public:
-    int return_trap_choice(void);
+    int trap_choice;
 
 private slots:
     void on_dialog_buttons_pressed(QAbstractButton *);
@@ -38,9 +37,10 @@ private:
 
     QDialogButtonBox *buttons;
 
-    int trap_choice;
+
 
 };
 
+extern int return_trap_choice(void);
 
 #endif // DUN_TRAPS_H

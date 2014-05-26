@@ -16,6 +16,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
+#include "src/npp.h"
 #include "src/dun_traps.h"
 
 
@@ -75,7 +76,7 @@ TrapSelectDialog::TrapSelectDialog(void)
         // Add the "Confusion Trap" button
         QPushButton *cofusion_button = new QPushButton("&Confusion Trap");
         cofusion_button->setToolTip(apply_monster_trap(FEAT_MTRAP_CONFUSION, 0, 0, MODE_DESCRIBE));
-        connect(cofusion_button, SIGNAL(clicked()), this, SLOT(trap_choice_cofusion()));
+        connect(cofusion_button, SIGNAL(clicked()), this, SLOT(trap_choice_confusion()));
         vlay->addWidget(cofusion_button);
     }
 
@@ -147,10 +148,10 @@ TrapSelectDialog::TrapSelectDialog(void)
     this->exec();
 }
 
-int TrapSelectDialog::return_trap_choice(void)
+int return_trap_choice(void)
 {
-    TrapSelectDialog();
-    return (trap_choice);
+    TrapSelectDialog dlg;
+    return (dlg.trap_choice);
 }
 
 /*
