@@ -2234,7 +2234,16 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             do_cmd_go_up();
             return;
         }
-
+        case Qt::Key_Period:
+        {
+            do_cmd_run(DIR_UNKNOWN);
+            return;
+        }
+        case Qt::Key_Plus:
+        {
+            do_cmd_alter(DIR_UNKNOWN);
+            return;
+        }
         default:
         {
             break;

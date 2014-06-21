@@ -1789,8 +1789,6 @@ void do_cmd_tunnel(void)
         if (!get_rep_dir(&dir)) return;
     }
 
-    if (!get_rep_dir(&dir)) return;
-
     cmd_arg args;
     args.wipe();
     args.direction = dir;
@@ -2049,6 +2047,11 @@ void command_alter(cmd_arg args)
 void do_cmd_alter(int dir)
 {
     if (!character_dungeon) return;
+
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     cmd_arg args;
     args.wipe();
@@ -2309,6 +2312,11 @@ void do_cmd_run(int dir)
     {
         message("You are too confused!");
         return;
+    }
+
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
     }
 
     /* Get location */
