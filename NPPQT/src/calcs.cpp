@@ -1045,11 +1045,19 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     old_heavy_wield = new_state->heavy_wield;
     old_icky_wield = new_state->icky_wield;
 
+    // Hack - these are handled by calc_mana;
+    bool old_cumber_glove = new_state->cumber_glove;
+    bool old_cumber_armor = new_state->cumber_armor;
+
     /*** Reset ***/
 
     /* Reset player speed */
 
     new_state->player_state_wipe();
+
+    //  Hack - part 2 reinstante the old cumber_glove and armor settings.
+    new_state->cumber_glove = old_cumber_glove;
+    new_state->cumber_armor = old_cumber_armor;
 
     if (game_mode == GAME_NPPMORIA) new_state->p_speed = NPPMORIA_NORMAL_SPEED;
     else new_state->p_speed = 110;

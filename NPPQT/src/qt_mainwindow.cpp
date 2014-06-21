@@ -1965,10 +1965,10 @@ static void process_mov_key(QKeyEvent* event, int dir, bool shift_key, bool alt_
     if (!character_dungeon) return;
 
     // Flip pickup
-    if (shift_key && alt_key) do_cmd_walk(dir, TRUE);
-    else if (shift_key) do_cmd_run(dir);
+    if (ctrl_key && alt_key) do_cmd_walk(dir, TRUE);
+    else if (ctrl_key) do_cmd_run(dir);
     else if (alt_key) do_cmd_alter(dir);
-    else if (ctrl_key) ui_change_panel(dir);
+    else if (shift_key) ui_change_panel(dir);
     else do_cmd_walk(dir, FALSE);
 }
 
@@ -2011,6 +2011,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     bool ctrl_key = modifiers.testFlag(Qt::ControlModifier);
     bool alt_key = modifiers.testFlag(Qt::AltModifier);
     bool meta_key = modifiers.testFlag(Qt::MetaModifier);
+
+    if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))    shift_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::ControlModifier))  ctrl_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::AltModifier))      alt_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     meta_key = TRUE;
 
     // Normal mode
     switch (which_key->key())

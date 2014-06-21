@@ -371,6 +371,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
     /* The player's hypothetical state, were they to wield this item */
     player_state object_state;
     object_type object_inven[ALL_INVEN_TOTAL];
+    object_state.player_state_wipe();
 
     /* First check if we need this function */
     if (!o_ptr->is_weapon()) return (output);
@@ -590,6 +591,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
     /* The player's hypothetical state, were they to wield this item */
     player_state object_state;
     object_type object_inven[ALL_INVEN_TOTAL];
+    object_state.player_state_wipe();
 
     /* First check if we need this function */
     if (!o_ptr->is_bow()) return (output);
@@ -687,6 +689,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
     /* The player's hypothetical state, were they to wield this item */
     player_state object_state;
     object_type object_inven[ALL_INVEN_TOTAL];
+    object_state.player_state_wipe();
 
     /* First check if we need this function */
     if (!o_ptr->is_ammo()) return (output);
@@ -869,6 +872,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
     /* The player's hypothetical state, were they to throw this item */
     player_state object_state;
     object_type object_inven[ALL_INVEN_TOTAL];
+    object_state.player_state_wipe();
 
     /* First check if we need this function */
     if (!is_throwing_weapon(o_ptr)) return (output);

@@ -977,10 +977,14 @@ void do_cmd_open(void)
 
     int dir = DIR_UNKNOWN;
 
+    int y, x;
+
+    // Nothing to open
+    if (!count_feats(&y, &x, FS_OPEN)) return;
+
     /* Easy Open */
     if (easy_open)
     {
-        int y, x;
         int num_doors, num_chests;
 
         /* Count closed doors */
@@ -1762,11 +1766,14 @@ void do_cmd_tunnel(void)
 
     int dir = DIR_UNKNOWN;
 
+    int y, x;
+
+    // Nothing to tunnel
+    if (!count_feats(&y, &x, FS_TUNNEL)) return;
+
     /* Easy Close */
     if (easy_open)
     {
-        int y, x;
-
         /* Handle a single open door */
         if (count_feats(&y, &x, FS_TUNNEL) == 1)
         {
@@ -1913,11 +1920,14 @@ void do_cmd_close(void)
 
     int dir;
 
+    int y, x;
+
+    // Nothing to close
+    if (!count_feats(&y, &x, FS_CLOSE)) return;
+
     /* Easy Close */
     if (easy_open)
     {
-        int y, x;
-
         /* Count open doors */
         if (count_feats(&y, &x, FS_CLOSE) == 1)
         {
