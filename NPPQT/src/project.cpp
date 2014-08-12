@@ -4638,10 +4638,10 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
              * other incorporeals are due to the light not just hitting them
              * but engulfing them. -AR
              */
-            if ((r_ptr->flags3 & (RF2_PASS_WALL)) & !(r_ptr->flags4 & (RF4_BRTH_LIGHT)))
+            if ((r_ptr->flags2 & (RF2_PASS_WALL)) & !(r_ptr->flags4 & (RF4_BRTH_LIGHT)))
             {
                 /* As a perk, hard light reveals incorporeality*/
-                if (seen) l_ptr->r_l_flags3 |= (RF2_PASS_WALL);
+                if (seen) l_ptr->r_l_flags2 |= (RF2_PASS_WALL);
                 multiplier++;
             }
 
