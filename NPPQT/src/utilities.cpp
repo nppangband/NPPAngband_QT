@@ -237,14 +237,16 @@ QColor add_preset_color(int which_color)
 }
 
 /*
- *  Add a message - assume the color of white
- *This should be the only function to add to the message list, to make sure
- *it never gets larger than 250 messages
+ * Add a message - assume the color of white
+ * This should be the only function to add to the message list, to make sure
+ * it never gets larger than 200 messages, and the last message type is tracked.
  */
 static void add_message_to_vector(QString msg, QColor which_color)
 {
     message_type message_body;
     message_type *msg_ptr = &message_body;
+
+    bool add_message = TRUE;
 
     // First make sure the message list gets no greater than 200
     while (message_list.size() >= 200)
@@ -252,15 +254,32 @@ static void add_message_to_vector(QString msg, QColor which_color)
         message_list.removeLast();
     }
 
-    // Default is a while message
-    msg_ptr->msg_color = which_color;
+    // Without this check, the game will crash when adding the first message
+    if (!message_list.empty())
+    {
+        // Point to the last message
+        message_type *msg_one = &message_list[0];
 
-    msg_ptr->message = msg;
-    msg_ptr->message_turn = turn;
+        // Check if the message is identical to the previous one.
+        if (operator==(msg_one->message, msg) && (msg_one->msg_color == which_color))
+        {
+            msg_one->repeats++;
+            add_message = FALSE;
+        }
+    }
 
-    // Add the message at the beginning of the list
-    message_list.prepend(message_body);
+    if (add_message)
+    {
+        // Default is a while message
+        msg_ptr->msg_color = which_color;
 
+        msg_ptr->message = msg;
+        msg_ptr->message_turn = turn;
+        msg_ptr->repeats = 1;
+
+        // Add the message at the beginning of the list
+        message_list.prepend(message_body);
+    }
     ui_show_message(0);
 }
 

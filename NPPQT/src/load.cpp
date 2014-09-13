@@ -1526,6 +1526,7 @@ static void rd_messages(void)
     {
         QString buf;
         byte red, green, blue;
+        u16b repeats;
         s32b msg_turn;
         message_type message_body;
         message_type *msg_ptr = &message_body;
@@ -1542,7 +1543,9 @@ static void rd_messages(void)
 
         msg_ptr->msg_color.setRgb(red, green, blue, 255);
 
+        rd_u16b(&repeats);
         rd_s32b(&msg_turn);
+        msg_ptr->repeats = repeats;
         msg_ptr->message_turn = msg_turn;
 
         /* Save the message, backward  */

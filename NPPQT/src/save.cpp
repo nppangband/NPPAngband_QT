@@ -999,6 +999,7 @@ static bool wr_savefile(void)
         wr_byte(message_list[i].msg_color.red());
         wr_byte(message_list[i].msg_color.green());
         wr_byte(message_list[i].msg_color.blue());
+        wr_u16b(message_list[i].repeats);
         wr_s32b(message_list[i].message_turn);
     }
 

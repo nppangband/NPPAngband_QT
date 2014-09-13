@@ -1883,11 +1883,19 @@ void MainWindow::save_character_as()
 void MainWindow::load_messages()
 {
     message_area->clear();
-    for (int i = message_list.size() - 1; i >= 0; i--) {
+    for (int i = message_list.size() - 1; i >= 0; i--)
+    {
+        QString message_output = message_list[i].message;
+
+        if (message_list[i].repeats > 1)
+        {
+            message_output.append(QString(" (x%1)") .arg(message_list[i].repeats));
+        }
+
         message_area->setTextColor(message_list[i].msg_color);
         message_area->insertPlainText(QString("%1: %2\n")
                                       .arg(message_list[i].message_turn)
-                                      .arg(message_list[i].message));
+                                      .arg(message_output));
     }
     message_area->moveCursor(QTextCursor::End);
 }
@@ -1895,17 +1903,40 @@ void MainWindow::load_messages()
 void ui_show_message(int idx)
 {
     // Clear contents if too many lines
-    if (main_window->message_area->document()->blockCount() > 1000) {
+    if (main_window->message_area->document()->blockCount() > 1000)
+    {
         main_window->load_messages();
+        return;
     }
-    else if (idx >= 0 && idx < message_list.size()) {
-        main_window->message_area->moveCursor(QTextCursor::End);
-        main_window->message_area->setTextColor(message_list[idx].msg_color);
-        main_window->message_area->insertPlainText(QString("%1: %2\n")
-                                      .arg(message_list[idx].message_turn)
-                                      .arg(message_list[idx].message));
-        main_window->message_area->moveCursor(QTextCursor::End);
+
+    //Paranoia
+    if (idx < 0) return;
+    if (idx >= message_list.size()) return;
+
+    QString message_output = message_list[idx].message;
+
+    // Delete last line if necessary (to reprint a repeated message)
+    if (message_list[idx].repeats > 1)
+    {
+        // First delete the '/n' from the last line.
+        main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
+        main_window->message_area->textCursor().deletePreviousChar();
+
+        // After that, delete the last line
+        main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
+        main_window->message_area->moveCursor( QTextCursor::StartOfLine, QTextCursor::MoveAnchor );
+        main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::KeepAnchor );
+        main_window->message_area->textCursor().removeSelectedText();
+
+        message_output.append(QString(" (x%1)") .arg(message_list[idx].repeats));
     }
+
+    main_window->message_area->moveCursor(QTextCursor::End);
+    main_window->message_area->setTextColor(message_list[idx].msg_color);
+    main_window->message_area->insertPlainText(QString("%1: %2\n")
+                                  .arg(message_list[idx].message_turn)
+                                  .arg(message_output));
+    main_window->message_area->moveCursor(QTextCursor::End);
 }
 
 void MainWindow::close_game_death()

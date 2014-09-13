@@ -16,7 +16,9 @@ struct message_type
 {
     QColor msg_color;
     QString message;
+    u16b repeats;
     s32b message_turn;
+
 };
 
 extern QVector<message_type> message_list;
