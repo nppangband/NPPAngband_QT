@@ -18,6 +18,7 @@ struct message_type
     QString message;
     u16b repeats;
     s32b message_turn;
+    bool append;
 
 };
 

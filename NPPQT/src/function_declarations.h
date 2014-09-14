@@ -948,7 +948,7 @@ extern QColor add_preset_color(int which_color);
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);
 extern QString color_string(QString msg, byte which_color);
-extern QString color_string2(QString msg, QColor which_color);
+extern QString color_string_16bit(QString msg, QColor which_color);
 extern void custom_color_message(QString msg, byte red, byte green, byte blue);
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);

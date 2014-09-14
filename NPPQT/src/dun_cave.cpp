@@ -5128,9 +5128,6 @@ void disturb(int stop_search, int unused_flag)
         p_ptr->redraw |= (PR_STATE);
     }
 
-    /* Cancel noun-verb menu */
-    p_ptr->noun_verb = FALSE;
-
     light_spot(p_ptr->py, p_ptr->px);
 }
 

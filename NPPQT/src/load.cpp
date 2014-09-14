@@ -1525,7 +1525,7 @@ static void rd_messages(void)
     for (int i = 0; i < num; i++)
     {
         QString buf;
-        byte red, green, blue;
+        byte red, green, blue, append;
         u16b repeats;
         s32b msg_turn;
         message_type message_body;
@@ -1547,6 +1547,9 @@ static void rd_messages(void)
         rd_s32b(&msg_turn);
         msg_ptr->repeats = repeats;
         msg_ptr->message_turn = msg_turn;
+
+        rd_byte(&append);
+        msg_ptr->append = append;
 
         /* Save the message, backward  */
         // Add the message at the beginning of the list

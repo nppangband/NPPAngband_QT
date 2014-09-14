@@ -1718,8 +1718,7 @@ void change_player_level(void)
     /* Combine / Reorder the pack */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
-    /* Noun-verb menu by command only */
-    p_ptr->noun_verb = FALSE;
+    p_ptr->message_append_stop();
 
     /* Notice stuff */
     notice_stuff();
@@ -1770,6 +1769,7 @@ void change_player_level(void)
 // Process game turns until it is the player's turn to move again, or the player is dead.
 static void process_game_turns(void)
 {
+
     /* Main loop */
     while (TRUE)
     {
@@ -1860,6 +1860,7 @@ static void redraw_hallucination()
  */
 void process_player_energy_aux(byte energy_used)
 {
+
     static int depth_counter = 0;
 
     if (depth_counter > 0) {
@@ -2028,6 +2029,8 @@ void process_player_energy_aux(byte energy_used)
  */
 void process_player_energy(byte energy_used)
 {
+    p_ptr->message_append_stop();
+
     process_player_energy_aux(energy_used);
 
     //Handle repeated commands

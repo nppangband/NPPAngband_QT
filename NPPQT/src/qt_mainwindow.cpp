@@ -1757,6 +1757,7 @@ MainWindow::MainWindow()
     message_area->setReadOnly(true);
     message_area->setMaximumHeight(80);
     message_area->setStyleSheet("background-color: black;");
+
     lay1->addWidget(message_area);
 
     QSplitter *splitter = new QSplitter;
@@ -1892,10 +1893,20 @@ void MainWindow::load_messages()
             message_output.append(QString(" (x%1)") .arg(message_list[i].repeats));
         }
 
-        message_area->setTextColor(message_list[i].msg_color);
-        message_area->insertPlainText(QString("%1: %2\n")
-                                      .arg(message_list[i].message_turn)
-                                      .arg(message_output));
+        if (message_list[i].append)
+        {
+            main_window->message_area->textCursor().deletePreviousChar();
+            main_window->message_area->moveCursor(QTextCursor::End);
+            message_area->setTextColor(message_list[i].msg_color);
+            main_window->message_area->insertPlainText(QString("  %1\n") .arg(message_output));
+        }
+        else
+        {
+            main_window->message_area->moveCursor(QTextCursor::End);
+            message_area->setTextColor(message_list[i].msg_color);
+            main_window->message_area->insertPlainText(QString("%1: %2\n")
+                .arg(message_list[i].message_turn)  .arg(message_output));
+        }
     }
     message_area->moveCursor(QTextCursor::End);
 }
@@ -1915,27 +1926,50 @@ void ui_show_message(int idx)
 
     QString message_output = message_list[idx].message;
 
-    // Delete last line if necessary (to reprint a repeated message)
+    // For a repeated message, add a counter onto the end rather than repeat the message
     if (message_list[idx].repeats > 1)
     {
         // First delete the '/n' from the last line.
         main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
         main_window->message_area->textCursor().deletePreviousChar();
 
-        // After that, delete the last line
-        main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
-        main_window->message_area->moveCursor( QTextCursor::StartOfLine, QTextCursor::MoveAnchor );
-        main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::KeepAnchor );
-        main_window->message_area->textCursor().removeSelectedText();
+        QString repeat_add_on = (QString(" (x%1)\n") .arg(message_list[idx].repeats));
 
-        message_output.append(QString(" (x%1)") .arg(message_list[idx].repeats));
+        // Delete the previous counter (if necessary
+        if (message_list[idx].repeats != 1)
+        {
+            QString fake_add_on = (QString(" (x%1)") .arg(message_list[idx].repeats - 1));
+            u16b length = fake_add_on.size();
+            for (u16b i = 0; i < length; i++)
+            {
+               main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
+               main_window->message_area->textCursor().deletePreviousChar();
+               main_window->message_area->moveCursor(QTextCursor::End);
+            }
+        }
+
+        // Add on the counter
+        main_window->message_area->moveCursor(QTextCursor::End);
+        main_window->message_area->setTextColor(message_list[idx].msg_color);
+        main_window->message_area->insertPlainText(repeat_add_on);
+        main_window->message_area->moveCursor(QTextCursor::End);
+        return;
     }
 
     main_window->message_area->moveCursor(QTextCursor::End);
-    main_window->message_area->setTextColor(message_list[idx].msg_color);
-    main_window->message_area->insertPlainText(QString("%1: %2\n")
-                                  .arg(message_list[idx].message_turn)
-                                  .arg(message_output));
+    if (message_list[idx].append)
+    {
+        main_window->message_area->textCursor().deletePreviousChar();
+        main_window->message_area->moveCursor(QTextCursor::End);
+        main_window->message_area->setTextColor(message_list[idx].msg_color);
+        main_window->message_area->insertPlainText(QString("  %1\n") .arg(message_output));
+    }
+    else
+    {
+        main_window->message_area->setTextColor(message_list[idx].msg_color);
+        main_window->message_area->insertPlainText(QString("%1: %2\n")
+            .arg(message_list[idx].message_turn)  .arg(message_output));
+    }
     main_window->message_area->moveCursor(QTextCursor::End);
 }
 

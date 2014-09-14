@@ -412,19 +412,19 @@ static int critical_shot_check(object_type *o_ptr, int *dd, int *plus, bool thro
 
         if (k < 400)
         {
-            message(QString("It was a good hit!"));
+            color_message(QString("It was a good hit!"), TERM_YELLOW);
             *dd *= 2;
             *plus += 5;
         }
         else if (k < 1000)
         {
-            message(QString("It was a great hit!"));
+            color_message(QString("It was a great hit!"), TERM_ORANGE);
             *dd *= 2;
             *plus += 10;
         }
         else
         {
-            message(QString("It was a superb hit!"));
+            color_message(QString("It was a superb hit!"), TERM_L_RED);
             *dd *= 3;
             *plus += 15;
         }
@@ -520,32 +520,35 @@ int critical_hit_check(const object_type *o_ptr, int *dd, int *plus)
         if (k < 400)
         {
             sound(MSG_HIT_GOOD);
-            message(QString("It was a good hit!"));
+            color_message(QString("It was a good hit!"), TERM_YELLOW);
             *dd *= 2;
             *plus += 5;
+        }
+        else if (k < 700)
+        {
             sound(MSG_HIT_GREAT);
-            message(QString("It was a great hit!"));
+            color_message(QString("It was a great hit!"), TERM_ORANGE);
             *dd *= 2;
             *plus += 10;
         }
         else if (k < 900)
         {
             sound(MSG_HIT_SUPERB);
-            message(QString("It was a superb hit!"));
+            color_message(QString("It was a superb hit!"), TERM_L_RED);
             *dd *= 3;
             *plus += 15;
         }
         else if (k < 1300)
         {
             sound(MSG_HIT_HI_GREAT);
-            message(QString("It was a *GREAT* hit!"));
+            color_message(QString("It was a *GREAT* hit!"), TERM_RED);
             *dd *= 3;
             *plus += 20;
         }
         else
         {
             sound(MSG_HIT_HI_SUPERB);
-            message(QString("It was a *SUPERB* hit!"));
+            color_message(QString("It was a *SUPERB* hit!"), TERM_RED_LAVA);
             *dd *= 7;
             *dd /= 2;
             *plus += 25;
@@ -686,6 +689,9 @@ void py_attack(int y, int x)
 
     /*Mark the monster as attacked*/
     m_ptr->mflag |= (MFLAG_HIT_BY_MELEE);
+
+    // Stop returning after every message
+    p_ptr->message_append_start();
 
     /* Attack once for each legal blow */
     while (num++ < p_ptr->state.num_blow)

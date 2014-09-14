@@ -176,6 +176,23 @@ bool player_type::should_stop_resting()
     return TRUE;
 }
 
+/* Start appending messages
+ */
+void player_type::message_append_start()
+{
+    message_append = TRUE;
+    message_first_append = TRUE;
+}
+
+/* Stop appending messages
+ */
+void player_type::message_append_stop()
+{
+    message_append = FALSE;
+    message_first_append = FALSE;
+    if (!message_list.empty()) message_list[0].append = FALSE;
+}
+
 void player_type::player_type_wipe()
 {
     int i;
@@ -200,7 +217,7 @@ void player_type::player_type_wipe()
     history.clear();
     total_winner = panic_save = 0;
     is_dead = player_turn = is_wizard = FALSE;
-    playing = noun_verb = leaving_level = autosave = FALSE;
+    playing =  message_append = message_first_append = leaving_level = autosave = FALSE;
     create_stair = cur_map_hgt = cur_map_wid = FALSE;
     total_weight = inven_cnt = equip_cnt = pack_size_reduce = quiver_remainder = quiver_slots = 0;
     target_set = target_who = target_row = target_col = health_who = monster_race_idx = 0;

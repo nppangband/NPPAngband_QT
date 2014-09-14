@@ -1568,7 +1568,7 @@ QString screen_out_head(object_type *o_ptr)
         d_char = flavor_info[k_ptr->flavor].d_char;
         d_color = flavor_info[k_ptr->flavor].d_color;
     }
-    QString obj_symbol = color_string2(d_char, d_color);
+    QString obj_symbol = color_string_16bit(d_char, d_color);
 
     /* Print, in colour */
     output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(obj_symbol) .arg(o_name));

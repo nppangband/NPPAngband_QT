@@ -409,7 +409,8 @@ public:
 
     bool playing;			/* True if player is playing */
 
-    bool noun_verb;			/* Player is using the object verb-noun menu */
+    bool message_append;    /* Messages should be appended to the main menu */
+    bool message_first_append;  // Tracks whether the first appended message has been appended.
 
     bool leaving_level;		/* True if player is leaving the current level*/
 
@@ -507,6 +508,8 @@ public:
     bool is_running();
     bool is_resting();
     bool should_stop_resting();
+    void message_append_start();
+    void message_append_stop();
 
 };
 
