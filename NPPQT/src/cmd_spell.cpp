@@ -727,6 +727,8 @@ void command_cast(cmd_arg args)
     //Actually cast the spell.
     sound(MSG_SPELL);
 
+    p_ptr->message_append_start();
+
     if (cast_spell(MODE_SPELL_CAST, cp_ptr->spell_book, spell, dir) == NULL) return;
 
     /* The spell was cast */
@@ -845,6 +847,8 @@ void do_cmd_study(void)
         if (!success && !cancelled) message(QString("You have no %1s that you can study right now.") .arg(noun));
         return;
     }
+
+    p_ptr->message_append_start();
 
     //Actually learn the spell.
     if (p_ptr->chooses_spells()) spell_learn(spell);

@@ -552,6 +552,8 @@ bool command_takeoff(cmd_arg args)
         return (FALSE);
     }
 
+    p_ptr->message_append_start();
+
     (void)inven_takeoff(args.item, 255);
     pack_overflow();
     process_player_energy(BASE_ENERGY_MOVE / 2);
@@ -648,6 +650,8 @@ bool command_wield(cmd_arg args)
         if (!get_check(QString("Really take off %1? ") .arg(o_name))) return(FALSE);
     }
 
+    p_ptr->message_append_start();
+
     wield_item(o_ptr, args.item, args.slot);
     process_player_energy(BASE_ENERGY_MOVE);
     return (TRUE);
@@ -669,6 +673,7 @@ void do_cmd_wield()
 
 bool command_drop(cmd_arg args)
 {
+
     int item = args.item;
     object_type *o_ptr = object_from_item_idx(item);
     int amt = args.number;
@@ -698,6 +703,8 @@ bool command_drop(cmd_arg args)
         /* Nope */
         return(FALSE);
     }
+
+    p_ptr->message_append_start();
 
     inven_drop(item, amt);
     process_player_energy(BASE_ENERGY_MOVE / 2);
@@ -945,6 +952,8 @@ void command_refuel(cmd_arg args)
     int item = args.item;
     object_type *o_ptr = object_from_item_idx(item);
 
+
+
     if (!item_is_available(item, NULL, USE_INVEN | USE_FLOOR))
     {
         pop_up_message_box("You do not have that item to refill with it.");
@@ -961,16 +970,22 @@ void command_refuel(cmd_arg args)
     /* It's a lamp */
     else if (j_ptr->sval == SV_LIGHT_LANTERN)
     {
+
+
         /* First we check if the lamp can be filled from the oil on the floor */
         if (!do_cmd_refill_lamp_from_terrain())
         {
+            p_ptr->message_append_start();
             refill_lamp(j_ptr, o_ptr, item);
         }
     }
 
     /* It's a torch */
     else if (j_ptr->sval == SV_LIGHT_TORCH)
+    {
+        p_ptr->message_append_start();
         refuel_torch(j_ptr, o_ptr, item);
+    }
 
     p_ptr->player_previous_command_update(CMD_REFUEL, args);
     p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
@@ -1089,6 +1104,8 @@ static void wield_swap_weapon(void)
 
         /* Look for '@x' */
         if(!o_ptr->inscription.contains("@x")) continue;
+
+        p_ptr->message_append_start();
 
         /* Wield it */
         wield_item(o_ptr, i, INVEN_MAIN_WEAPON);
@@ -1234,6 +1251,8 @@ void command_destroy(cmd_arg args)
         /* Done */
         return;
     }
+
+    p_ptr->message_append_start();
 
     /* Message */
     message(QString("You destroy %1.") .arg(o_name));

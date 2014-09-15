@@ -3230,6 +3230,8 @@ void command_use(cmd_arg args)
     if (obj_needs_aim(o_ptr))
         dir = args.direction;
 
+    p_ptr->message_append_start();
+
     /* Check for use if necessary, and execute the effect */
     if ((use != USE_CHARGE && use != USE_TIMEOUT) ||
         check_devices(o_ptr))
@@ -3260,7 +3262,11 @@ void command_use(cmd_arg args)
         p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
 
         /* Quit if the item wasn't used and no knowledge was gained */
-        if (!used && (was_aware || !ident)) return;
+        if (!used && (was_aware || !ident))
+        {
+            p_ptr->message_append_stop();
+            return;
+        }
 
     }
 
@@ -3289,7 +3295,12 @@ void command_use(cmd_arg args)
     }
 
     /* If the item is a null pointer or has been wiped, be done now */
-    if (!o_ptr || o_ptr->k_idx <= 1) return;
+    if (!o_ptr || o_ptr->k_idx <= 1)
+    {
+        /* Take a turn */
+        process_player_energy(BASE_ENERGY_MOVE);
+        return;
+    }
 
     /* Mark as tried and redisplay */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);

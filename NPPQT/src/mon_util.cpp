@@ -3584,7 +3584,7 @@ static bool summon_specific_okay(int r_idx)
  * Attempt to summon creatures who are already on the level.
  *
  */
-static bool summon_from_level(int y1, int x1, int lev, int type)
+static bool summon_from_level(int y1, int x1, int type)
 {
     int i, x, y;
     u16b *monster_list;
@@ -3689,7 +3689,7 @@ bool summon_specific(int y1, int x1, int lev, int type, byte mp_flags)
      */
     if ((*dun_cap->limited_level_summoning)())
     {
-        if (!(mp_flags & (MPLACE_OVERRIDE))) return (summon_from_level(y1, x1, lev, type));
+        if (!(mp_flags & (MPLACE_OVERRIDE))) return (summon_from_level(y1, x1, type));
     }
 
     /* Allow the monster to be placed */
@@ -3739,7 +3739,7 @@ bool summon_specific(int y1, int x1, int lev, int type, byte mp_flags)
     if (!r_idx)
     {
         /* First try to call other creatures on the same level */
-        return (summon_from_level(y1, x1, lev, type));
+        return (summon_from_level(y1, x1, type));
     }
 
     /* Attempt to place the monster (awake, allow groups) */
@@ -4430,7 +4430,7 @@ void flush_monster_messages(void)
         if (count < 1) continue;
 
         /* Start with an empty string */
-        buf[0] = '\0';
+        buf.clear();
 
         /* Cache the race index */
         r_idx = mon_msg[i].mon_race;
@@ -4530,9 +4530,7 @@ void flush_monster_messages(void)
         buf.append(action);
 
         /* Capitalize the message */
-        QChar first = buf[0];
-        first.toUpper();
-        buf[0] = first;
+        buf = capitalize_first(buf);
 
         /* Show the message */
         message(buf);

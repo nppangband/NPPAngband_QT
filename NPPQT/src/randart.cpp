@@ -112,8 +112,7 @@ startover:
         c_cur = c_next;
     }
 
-    QChar chr = word_buf.at(0).toUpper();
-    word_buf.replace(0, 1, chr);
+    word_buf = capitalize_first(word_buf);
 
     return (word_buf);
 }
@@ -3679,11 +3678,6 @@ bool make_one_randart(object_type *o_ptr, int art_power, bool tailored)
         /*randomize the name*/
         QString buf = make_random_name(5, 11);
 
-        /*Capitalize the name*/
-        QChar first = buf[0];
-        first.toUpper();
-        buf[0] = first;
-
         if (!one_in_(3))
         {
             tmp = (QString("'%1'") .arg(capitalize_first(buf)));
@@ -3868,10 +3862,7 @@ void make_quest_artifact(int lev)
     buf = make_random_name(5, 11);
 
     /*Capitalize the name*/
-    /*Capitalize the name*/
-    QChar first = buf[0];
-    first.toUpper();
-    buf[0] = first;
+    buf = capitalize_first(buf);
 
     if (!one_in_(3)) a_ptr->a_name = (QString("'%1'") .arg(capitalize_first(buf)));
     else a_ptr->a_name = (QString("of %1") .arg(capitalize_first(buf)));

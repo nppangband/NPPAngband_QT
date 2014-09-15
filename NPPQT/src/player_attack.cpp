@@ -943,21 +943,6 @@ void command_fire(cmd_arg args)
         i_ptr->ident |= (IDENT_QUIVER);
     }
 
-    /* Reduce and describe inventory */
-    if (item >= 0)
-    {
-        inven_item_increase(item, -1);
-        inven_item_describe(item);
-        inven_item_optimize(item);
-    }
-
-    /* Reduce and describe floor item */
-    else
-    {
-        floor_item_increase(0 - item, -1);
-        floor_item_optimize(0 - item);
-    }
-
     /* Sound */
     sound(MSG_SHOOT);
 
@@ -975,8 +960,23 @@ void command_fire(cmd_arg args)
 
         /* Hurt the player */
         project_p(SOURCE_OTHER, p_ptr->py, p_ptr->px, dam, GF_NETHER, "firing a cursed projectile");
-
+        process_player_energy(BASE_ENERGY_MOVE);
         return;
+    }
+
+    /* Reduce and describe inventory */
+    if (item >= 0)
+    {
+        inven_item_increase(item, -1);
+        inven_item_describe(item);
+        inven_item_optimize(item);
+    }
+
+    /* Reduce and describe floor item */
+    else
+    {
+        floor_item_increase(0 - item, -1);
+        floor_item_optimize(0 - item);
     }
 
     /* Use the proper number of shots */
@@ -1012,6 +1012,8 @@ void command_fire(cmd_arg args)
 
     /* Hack -- Handle stuff */
     handle_stuff();
+
+    p_ptr->message_append_start();
 
     /* Project along the path */
     for (i = 0; i < path_n; ++i)
@@ -1857,6 +1859,8 @@ void command_throw(cmd_arg args)
         return;
     }
 
+    p_ptr->message_append_start();
+
     /* Examine the item */
     object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
@@ -1882,21 +1886,6 @@ void command_throw(cmd_arg args)
         i_ptr->ident |= (IDENT_QUIVER);
     }
 
-    /* Reduce and describe inventory */
-    if (item >= 0)
-    {
-        inven_item_increase(item, -1);
-        inven_item_describe(item);
-        inven_item_optimize(item);
-    }
-
-    /* Reduce and describe floor item */
-    else
-    {
-        floor_item_increase(0 - item, -1);
-        floor_item_optimize(0 - item);
-    }
-
     /* Description */
     o_name = object_desc(i_ptr, ODESC_FULL);
 
@@ -1911,7 +1900,24 @@ void command_throw(cmd_arg args)
 
         /* Hurt the player */
         project_p(SOURCE_OTHER, p_ptr->py, p_ptr->px, dam, GF_NETHER, "throwing a cursed weapon");
+        process_player_energy(BASE_ENERGY_MOVE);
+        return;
     }    
+
+    /* Reduce and describe inventory */
+    if (item >= 0)
+    {
+        inven_item_increase(item, -1);
+        inven_item_describe(item);
+        inven_item_optimize(item);
+    }
+
+    /* Reduce and describe floor item */
+    else
+    {
+        floor_item_increase(0 - item, -1);
+        floor_item_optimize(0 - item);
+    }
 
     /* Extract a "distance multiplier" */
     mul = 10;

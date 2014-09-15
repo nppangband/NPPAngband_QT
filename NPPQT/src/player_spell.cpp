@@ -1543,7 +1543,7 @@ QString do_mage_spell(int mode, int spell, int dir)
 
 
 /*
- * Cast a spell, or output spell info, description.
+ * Cast a druid incantation, or output incantation info, description.
  */
 QString do_druid_incantation(int mode, int spell, int dir)
 {

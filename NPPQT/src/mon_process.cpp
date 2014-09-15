@@ -1196,7 +1196,9 @@ void process_entities(void)
         if (m_ptr->m_energy < ENERGY_TO_MOVE) continue;
 
         /* Handle temporary monster attributes and regeneration */
+        p_ptr->message_append_start();
         recover_monster(m_ptr);
+        p_ptr->message_append_stop();
 
         /* Insert monster into the movement moment table */
         mon_moment_info[move_moment_num].m_idx = i;
@@ -1251,7 +1253,9 @@ void process_entities(void)
             if (m_ptr->m_energy >= ENERGY_TO_MOVE)
             {
                 /* Monster takes a turn */
+                p_ptr->message_append_start();
                 m_ptr->m_energy -= process_monster(m_ptr);
+                p_ptr->message_append_stop();
             }
 
         }

@@ -1734,7 +1734,9 @@ void command_tunnel(cmd_arg args)
         p_ptr->player_args.repeats = command_ptr->repeat_num;
     }
 
-     p_ptr->player_previous_command_update(CMD_TUNNEL, args);
+    p_ptr->player_previous_command_update(CMD_TUNNEL, args);
+
+    p_ptr->message_append_start();
 
     /* Monster */
     if (dungeon_info[y][x].monster_idx > 0)
@@ -1882,6 +1884,8 @@ void command_close(cmd_arg args)
         y = p_ptr->py + ddy[dir];
         x = p_ptr->px + ddx[dir];
     }
+
+    p_ptr->message_append_start();
 
      p_ptr->player_previous_command_update(CMD_CLOSE, args);
 
@@ -2169,6 +2173,8 @@ void command_spike(cmd_arg args)
         message(QString("The %1 is already jammed.") .arg(feature_desc(feat, FALSE, TRUE)));
         return;
     }
+
+    p_ptr->message_append_start();
 
     /* Successful jamming */
     message(QString("You jam the %1 with a spike.") .arg(feature_desc(feat, FALSE, TRUE)));
@@ -2693,6 +2699,8 @@ void command_bash(cmd_arg args)
 
     p_ptr->player_previous_command_update(CMD_BASH, args);
 
+    p_ptr->message_append_start();
+
     /* Apply confusion */
     if (confuse_dir(&dir))
     {
@@ -2700,6 +2708,8 @@ void command_bash(cmd_arg args)
         y = p_ptr->py + ddy[dir];
         x = p_ptr->px + ddx[dir];
     }
+
+    p_ptr->message_append_start();
 
     /* Monster */
     if (m_idx > 0)
