@@ -36,7 +36,6 @@ s16b image_count;  		/* Grids until next random image    */
                         /* Optimizes the hallucination code */
 
 QString current_savefile;
-QFile notes_file;
 
 
 /*
@@ -498,3 +497,5 @@ dungeon_capabilities_type *dun_cap = NULL;
 
 // Holds all of the messages.
 QVector<message_type> message_list;
+//Holds all of the notes.
+QVector<notes_type>  notes_log;

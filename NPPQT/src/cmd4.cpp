@@ -114,38 +114,6 @@ void do_cmd_feeling(void)
 
 
 
-/*
- * Create and return an empty file in writing mode to append notes.
- * It returns a copy of the file name in "path".
- * "max" must be the maximum size in bytes of "path".
- * Returns NULL on failure
- */
-void create_notes_file(void)
-{
-    QString file_name = ("notes.txt");
-
-    /* Build the filename */
-    notes_file.setFileName(QString("%1%2" ) .arg(NPP_DIR_USER) .arg(file_name));
-
-    notes_file.open(QIODevice::WriteOnly);
-
-    QDataStream out_notes(&notes_file);
-
-    return;
-}
-
-/*
- * Close and destroy the notes file. notes_file and notes_fname variables are cleared
- */
-void delete_notes_file(void)
-{
-    notes_file.close();
-    /* Close the notes file */
-    if (notes_file.exists())
-    {
-        notes_file.remove();
-    }
-}
 
 // Repeat the previous command
 // Assumes the command and args were properly saved

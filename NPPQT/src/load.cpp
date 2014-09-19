@@ -1381,42 +1381,37 @@ static int rd_randarts(void)
 static bool rd_notes(void)
 {
     int alive = (!p_ptr->is_dead || p_ptr->is_wizard);
-    QString tmpstr;
 
-    QDataStream out_notes(&notes_file);
+    u16b num;
 
-    if (alive && adult_take_notes)
+    rd_u16b(&num);
+
+    /*
+     * Either read the notes or strip them from the
+     * savefile, depending on whether the character
+     * is alive or dead.
+     */
+    for (int i = 0; i < num; i++)
     {
-        /* Create the tempfile (notes_file & notes_fname are global) */
-        create_notes_file();
+        QString tmpstr;
+        byte tmp_level;
+        s16b tmp_depth;
+        s32b tmp_turn;
+        notes_type notes_body;
+        notes_type *notes_ptr = &notes_body;
 
-        if (!notes_file.exists())
-        {
-            pop_up_message_box("Can't create a temporary file for notes");
-            return (TRUE);
-        }
+        rd_byte(&tmp_level);
+        rd_s16b(&tmp_depth);
+        rd_s32b(&tmp_turn);
+        rd_string(&tmpstr);
 
-        /* Append the notes in the savefile to the tempfile*/
-        while (TRUE)
-        {
+        notes_ptr->player_level = tmp_level;
+        notes_ptr->dun_depth = tmp_depth;
+        notes_ptr->game_turn = tmp_turn;
+        notes_ptr->recorded_note = tmpstr;
 
-            rd_string(&tmpstr);
-            /* Found the end? */
-            if (tmpstr.contains(NOTES_MARK)) break;
-            out_notes << tmpstr;
-        }
-    }
-    /* Ignore the notes */
-    else
-    {
-        while (TRUE)
-        {
-
-            rd_string(&tmpstr);
-
-            /* Found the end? */
-            if (tmpstr.contains(NOTES_MARK)) break;
-        }
+        // Only keep notes for living character.
+        if (alive) notes_log.append(notes_body);
     }
 
     return (FALSE);
@@ -1517,9 +1512,9 @@ static int rd_inventory(void)
  */
 static void rd_messages(void)
 {
-    s16b num;
+    u16b num;
 
-    rd_s16b(&num);
+    rd_u16b(&num);
 
     /* Read the messages */
     for (int i = 0; i < num; i++)

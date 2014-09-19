@@ -540,7 +540,7 @@ void check_experience(void)
             p_ptr->max_lev = p_ptr->lev;
 
             /* If auto-note taking enabled, write a note to the file every 5th level. */
-            if ((adult_take_notes) && ((p_ptr->lev % 5) == 0))
+            if ((p_ptr->lev % 5) == 0)
 
             {
 
@@ -1022,7 +1022,7 @@ void monster_death(int m_idx, int who)
 
     /* If the player kills a Unique, and the notes option is on, write a note.
      * If the unique is a guild questor, the note was already written */
-    if ((r_ptr->flags1 & (RF1_UNIQUE)) && (adult_take_notes) && (writenote))
+    if ((r_ptr->flags1 & (RF1_UNIQUE)) && (writenote))
     {
 
         QString note2;
@@ -1120,25 +1120,23 @@ void monster_death(int m_idx, int who)
         message(QString("You have won the game!"));
         message(QString("You may retire (commit suicide) when you are ready."));
 
-        /* Write a note, if that option is on */
-        if (adult_take_notes)
-        {
-            QDate today = QDate::currentDate();
-            QTime right_now = QTime::currentTime();
-            QString buf;
-            QString long_day;
+        /* Write a note */
+        QDate today = QDate::currentDate();
+        QTime right_now = QTime::currentTime();
+        QString buf;
+        QString long_day;
 
-            /* Get time */
-            long_day = QString("%1 at %2") .arg(today.toString() .arg(right_now.toString()));
+        /* Get time */
+        long_day = QString("%1 at %2") .arg(today.toString() .arg(right_now.toString()));
 
-            /* Write message */
-            write_note(buf,  p_ptr->depth);
+        /* Write message */
+        write_note(buf,  p_ptr->depth);
 
-            if (game_mode == GAME_NPPMORIA) write_note(QString("%1 slew The Balrog of Moria on %2.") .arg(op_ptr->full_name) .arg(long_day), p_ptr->depth);
-            else write_note(QString("%1 slew Morgoth on %2.") .arg(op_ptr->full_name)  .arg(long_day), p_ptr->depth);
-            write_note(QString("Long live %1!!!!!!") .arg(op_ptr->full_name) , p_ptr->depth);
-            write_note(QString("Long live %1!!!!!!") .arg(op_ptr->full_name) , p_ptr->depth);
-        }
+        if (game_mode == GAME_NPPMORIA) write_note(QString("%1 slew The Balrog of Moria on %2.") .arg(op_ptr->full_name) .arg(long_day), p_ptr->depth);
+        else write_note(QString("%1 slew Morgoth on %2.") .arg(op_ptr->full_name)  .arg(long_day), p_ptr->depth);
+        write_note(QString("Long live %1!!!!!!") .arg(op_ptr->full_name) , p_ptr->depth);
+        write_note(QString("Long live %1!!!!!!") .arg(op_ptr->full_name) , p_ptr->depth);
+
     }
 }
 

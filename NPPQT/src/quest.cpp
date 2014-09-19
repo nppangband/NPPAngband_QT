@@ -2658,8 +2658,6 @@ void write_quest_note(bool success)
 
     QString note;
 
-    if (!adult_take_notes) return;
-
     if (q_ptr->q_type == QUEST_VAULT)
     {
         object_type *i_ptr;

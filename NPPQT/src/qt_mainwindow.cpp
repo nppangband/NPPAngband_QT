@@ -2264,7 +2264,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_W:
         {
-            do_cmd_wield();
+            if (shift_key) record_note();
+            else do_cmd_wield();
             return;
         }
         case Qt::Key_X:

@@ -252,7 +252,7 @@ static void add_message_to_vector(QString msg, QColor which_color)
     bool add_message = TRUE;
 
     // First make sure the message list gets no greater than 200
-    while (message_list.size() >= 200)
+    while (message_list.size() >= 400)
     {
         message_list.removeLast();
     }
@@ -441,13 +441,6 @@ void ang_sort(void *u, void *v, int n)
 }
 
 
-// Write a note to the notes file
-void write_note(QString note, s16b depth)
-{
-    (void)note;
-    (void)depth;
-    // TODO write note
-}
 
 QString get_player_title(void)
 {
@@ -866,7 +859,7 @@ void extract_tiles(bool save)
     for (i = 0; i < z_info->r_max; i++)\
     {
         monster_race *r_ptr = &r_info[i];
-        if (r_ptr->r_name_full.isEmpty()) continue;        
+        if (r_ptr->r_name_full.isEmpty()) continue;
         QString race_name = monster_desc_race(i);
         if (r_ptr->flags1 & (RF1_FRIEND | RF1_FRIENDS)) race_name = plural_aux(race_name);
         race_name = tile_mon_name_convert(race_name);
@@ -884,7 +877,7 @@ void extract_tiles(bool save)
     for (i = 0; i < z_info->k_max; i++)\
     {
         object_kind *k_ptr = &k_info[i];
-        if (k_ptr->k_name.isEmpty()) continue;        
+        if (k_ptr->k_name.isEmpty()) continue;
         object_type object_type_body;
         object_type *o_ptr = &object_type_body;
         /* Check for known artifacts, display them as artifacts */
@@ -934,7 +927,7 @@ void extract_tiles(bool save)
     for (i = 0; i < z_info->f_max; i++)
     {
         feature_type *f_ptr = &f_info[i];
-        if (f_ptr->f_name.isEmpty()) continue;        
+        if (f_ptr->f_name.isEmpty()) continue;
         QString feat_name = feature_desc(i, FALSE, FALSE);
         feat_name = tile_feat_name_convert(feat_name);
         if (save) {
@@ -951,7 +944,7 @@ void extract_tiles(bool save)
     for (i = 0; i < z_info->flavor_max; i++)
     {
         flavor_type *flavor_ptr = &flavor_info[i];
-        if (flavor_ptr->text.isEmpty() && flavor_ptr->tval != TV_SCROLL) continue;        
+        if (flavor_ptr->text.isEmpty() && flavor_ptr->tval != TV_SCROLL) continue;
         QString flavor_name = flavor_ptr->text;
         flavor_name = tile_flav_name_convert(flavor_name, flavor_ptr->tval);
         if (save) {
@@ -964,7 +957,7 @@ void extract_tiles(bool save)
         else {
             flavor_ptr->tile_id = flavor_name;
         }
-    }    
+    }
     if (save) {
         for (i = 0; i < z_info->p_max; i++)
         {
@@ -1109,4 +1102,27 @@ QString cnv_stat(int val)
     }
 
     return str;
+}
+
+
+// Write a note to the notes file
+void write_note(QString note, s16b depth)
+{
+    notes_type note_body;
+    notes_type *notes_ptr = &note_body;
+
+    notes_ptr->game_turn = turn;
+    notes_ptr->dun_depth = depth;
+    notes_ptr->player_level = p_ptr->lev;
+    notes_ptr->recorded_note = note;
+
+    notes_log.append(note_body);
+}
+
+//Allow the player to manually record a note
+void record_note(void)
+{
+    QString note = get_string("Please enter note you wish to record.", "Enter Note", NULL);
+
+    write_note(note, p_ptr->depth);
 }

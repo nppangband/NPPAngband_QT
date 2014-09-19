@@ -5,6 +5,7 @@
 
 typedef struct letters_and_numbers letters_and_numbers;
 typedef struct message_type message_type;
+typedef struct notes_type notes_type;
 
 struct letters_and_numbers
 {
@@ -22,7 +23,16 @@ struct message_type
 
 };
 
+struct notes_type
+{
+    byte player_level;
+    s16b dun_depth;
+    s32b game_turn;
+    QString recorded_note;
+};
+
 extern QVector<message_type> message_list;
+extern QVector<notes_type>  notes_log;
 
 static letters_and_numbers lowercase_and_numbers[26] =
 {
@@ -59,6 +69,7 @@ static letters_and_numbers lowercase_and_numbers[26] =
 extern QString likert(int x, int y, byte *attr);
 extern QString _num(int n);
 extern void popup1(QString message, int id = 0);
+
 
 
 #endif // UTILITIES_H

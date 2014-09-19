@@ -97,8 +97,6 @@ extern void do_cmd_make_trap(void);
 
 // cmd4.cpp
 extern void do_cmd_feeling(void);
-extern void create_notes_file(void);
-extern void delete_notes_file(void);
 extern void do_cmd_repeat(void);
 
 //cmd_objects
@@ -953,7 +951,6 @@ extern void custom_color_message(QString msg, byte red, byte green, byte blue);
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);
 extern QString format_object_weight(object_type *o_ptr);
-extern void write_note(QString note, s16b depth);
 extern QString get_player_title(void);
 extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);
@@ -961,6 +958,8 @@ extern void extract_tiles(bool save = true);
 extern void display_info_window(byte mode, int index, QString info, object_type *o_ptr = 0);
 extern QString to_ascii(QString src);
 extern QString cnv_stat(int val);
+extern void write_note(QString note, s16b depth);
+extern void record_note(void);
 
 // widard_mode.cpp
 extern bool make_fake_artifact(object_type *o_ptr, byte art_num);

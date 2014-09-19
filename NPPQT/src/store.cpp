@@ -3719,28 +3719,25 @@ void do_cmd_reward(int code, cmd_arg args[])
         a_info[o_ptr->art_num].a_cur_num = 1;
 
         /* If the item was an artifact, and if the auto-note is selected, write a message. */
-        if (adult_take_notes)
-        {
-            int artifact_depth;
-            QString note;
-            QString shorter_desc;
+        int artifact_depth;
+        QString note;
+        QString shorter_desc;
 
-            /* Get a shorter description to fit the notes file */
-            shorter_desc = object_desc(o_ptr, ODESC_BASE);
+        /* Get a shorter description to fit the notes file */
+        shorter_desc = object_desc(o_ptr, ODESC_BASE);
 
-            /* Build note and write */
-            note = (QString("Quest Reward: %1") .arg(shorter_desc));
+        /* Build note and write */
+        note = (QString("Quest Reward: %1") .arg(shorter_desc));
 
-            /*record the depth where the artifact was created */
-            artifact_depth = o_ptr->xtra1;
+        /*record the depth where the artifact was created */
+        artifact_depth = o_ptr->xtra1;
 
-            write_note(note, artifact_depth);
+        write_note(note, artifact_depth);
 
-            /*mark item creation depth as 0, which will indicate the artifact
-             *has been previously identified.  This prevents an artifact from showing
-             *up on the notes list twice if it has been previously identified.  JG */
-            o_ptr->xtra1 = 0;
-        }
+        /*mark item creation depth as 0, which will indicate the artifact
+         *has been previously identified.  This prevents an artifact from showing
+         *up on the notes list twice if it has been previously identified.  JG */
+        o_ptr->xtra1 = 0;
 
         /* Process artifact lore */
         if (ARTIFACT_EASY_MENTAL(o_ptr))

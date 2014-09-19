@@ -44,7 +44,6 @@ extern u32b level_flag;
 extern bool good_item_flag;
 
 extern QString current_savefile;
-extern QFile notes_file;
 
 
 extern s16b add_wakeup_chance;

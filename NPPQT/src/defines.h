@@ -727,7 +727,7 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define OPT_birth_no_artifacts		(OPT_BIRTH+6)
 #define OPT_birth_rand_artifacts	(OPT_BIRTH+7)
 #define OPT_birth_no_stacking		(OPT_BIRTH+8)
-#define OPT_birth_take_notes		(OPT_BIRTH+9)
+// Was take_notes
 #define OPT_birth_force_small_lev	(OPT_BIRTH+10)
 #define OPT_birth_connected_stairs	(OPT_BIRTH+11)
 #define OPT_birth_no_quests			(OPT_BIRTH+12)
@@ -755,7 +755,7 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define OPT_adult_no_artifacts		(OPT_ADULT+6)
 #define OPT_adult_rand_artifacts	(OPT_ADULT+7)
 #define OPT_adult_no_stacking		(OPT_ADULT+8)
-#define OPT_adult_take_notes		(OPT_ADULT+9)
+// Was take_notes
 #define OPT_adult_force_small_lev	(OPT_ADULT+10)
 #define OPT_adult_connected_stairs	(OPT_ADULT+11)
 #define OPT_adult_no_quests			(OPT_ADULT+12)
@@ -862,7 +862,7 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define birth_no_artifacts		op_ptr->opt[OPT_birth_no_artifacts]
 #define birth_rand_artifacts	op_ptr->opt[OPT_birth_rand_artifacts]
 #define birth_no_stacking		op_ptr->opt[OPT_birth_no_stacking]
-#define birth_take_notes		op_ptr->opt[OPT_birth_take_notes]
+// was birth_take_notes
 #define	birth_force_small_lev	op_ptr->opt[OPT_birth_force_small_lev]
 #define	birth_connected_stairs	op_ptr->opt[OPT_birth_connected_stairs]
 #define birth_no_quests			op_ptr->opt[OPT_birth_no_quests]
@@ -890,7 +890,7 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define adult_no_artifacts		op_ptr->opt[OPT_adult_no_artifacts]
 #define adult_rand_artifacts	op_ptr->opt[OPT_adult_rand_artifacts]
 #define adult_no_stacking		op_ptr->opt[OPT_adult_no_stacking]
-#define adult_take_notes		op_ptr->opt[OPT_adult_take_notes]
+// Was adult_take_notes
 #define	adult_force_small_lev	op_ptr->opt[OPT_adult_force_small_lev]
 #define	adult_connected_stairs	op_ptr->opt[OPT_adult_connected_stairs]
 #define adult_no_quests			op_ptr->opt[OPT_adult_no_quests]
@@ -1012,10 +1012,7 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define PIT_WIDTH			19
 #define PIT_HEIGHT			5
 
-/*
- * Special note used to mark the end of the notes section in the savefile
- */
-#define NOTES_MARK "@@@@@@@ No more notes @@@@@@@"
+
 
 
 //Needs to correspond with the colors table list in tables.c

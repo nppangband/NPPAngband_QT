@@ -926,23 +926,21 @@ void finish_birth()
         e_info[i].squelch = false;
     }
 
-    /* Write a note, if that option is on */
-    if (adult_take_notes)
-    {
-        QDate today = QDate::currentDate();
-        QTime right_now = QTime::currentTime();
-        QString long_day;
-        QString final_monster = "Morgoth, Lord of Darkness";
+    /* Write a note */
+    QDate today = QDate::currentDate();
+    QTime right_now = QTime::currentTime();
+    QString long_day;
+    QString final_monster = "Morgoth, Lord of Darkness";
 
-        if (game_mode == GAME_NPPMORIA) final_monster = "The Balrog of Moria";
+    if (game_mode == GAME_NPPMORIA) final_monster = "The Balrog of Moria";
 
-        /* Get time */
-        long_day = QString("%1 at %2") .arg(today.toString() .arg(right_now.toString()));
+    /* Get time */
+    long_day = QString("%1 at %2") .arg(today.toString() .arg(right_now.toString()));
 
-        write_note(QString("%1 the %2 %3 began the quest to kill %4 on %5.")
-                   .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
-                   .arg(final_monster) .arg(long_day), p_ptr->depth);
-    }
+    write_note(QString("%1 the %2 %3 began the quest to kill %4 on %5.")
+               .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
+               .arg(final_monster) .arg(long_day), p_ptr->depth);
+
 
     /* Hack -- outfit the player */
     if (!birth_money) player_outfit();

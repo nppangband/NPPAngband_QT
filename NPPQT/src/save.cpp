@@ -745,31 +745,18 @@ static void wr_randarts(void)
  */
 static void wr_notes(void)
 {
-    /* Paranoia */
-    if (adult_take_notes && notes_file.exists())
+    //record the size of the array
+    u16b tmp16u = notes_log.size();
+    wr_u16b(tmp16u);
+
+    /* Write the notes */
+    for (int i = 0; i <tmp16u; i++)
     {
-        /* Re-open for reading */
-        notes_file.close();
-        notes_file.open(QIODevice::ReadOnly);
-
-        QTextStream reading(&notes_file);
-
-        /* Write line by line */
-        while (!reading.atEnd())
-        {
-            QString file_line = reading.readLine();
-
-            /* Write it into the savefile */
-            wr_string(file_line);
-        }
-
-        /* Re-open for appending */
-        notes_file.close();
-        notes_file.open(QIODevice::Append);
+        wr_byte(notes_log[i].player_level);
+        wr_s16b(notes_log[i].dun_depth);
+        wr_s32b(notes_log[i].game_turn);
+        wr_string(notes_log[i].recorded_note);
     }
-
-    /* Always write NOTES_MARK */
-    wr_string(NOTES_MARK);
 }
 
 
@@ -989,7 +976,7 @@ static bool wr_savefile(void)
 
     /* Dump the number of "messages" */
     tmp16u = message_list.size();
-    if (tmp16u > 80) tmp16u = 80;
+    if (tmp16u > 80) tmp16u = 160;
     wr_u16b(tmp16u);
 
     /* Dump the messages (newest first!) */

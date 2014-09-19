@@ -1291,8 +1291,6 @@ void cleanup_npp_games(void)
 {
     int i;
 
-    delete_notes_file();
-
     //clear_graphics();
 
     /* Free the allocation tables */

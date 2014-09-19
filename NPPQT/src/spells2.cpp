@@ -2189,7 +2189,7 @@ int do_ident_item(int item, object_type *o_ptr)
      * If the item was an artifact, and if the auto-note is selected,
      * write a message.
      */
-        if ((adult_take_notes) && o_ptr->is_artifact() && (o_ptr->xtra1 >= 1))
+    if (o_ptr->is_artifact() && (o_ptr->xtra1 >= 1))
     {
         int artifact_depth;
         QString note;

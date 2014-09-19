@@ -227,12 +227,9 @@ void process_player(void)
     {
         message(QString("You have entered the %1") .arg(g_vault_name));
 
-        if (adult_take_notes)
-        {
-            QString note = (QString("Entered the %1.") .arg(g_vault_name));
+        QString note = (QString("Entered the %1.") .arg(g_vault_name));
 
-            write_note(note, p_ptr->depth);
-        }
+        write_note(note, p_ptr->depth);
 
         g_vault_name.clear();
         p_ptr->redraw |= (PR_QUEST_ST);

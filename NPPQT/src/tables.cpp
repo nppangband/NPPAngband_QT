@@ -2189,7 +2189,7 @@ option_entry options[OPT_MAX] =
     {"birth_no_artifacts",		"Birth: Restrict creation of artifacts",		FALSE},	/* OPT_birth_no_artifacts */
     {"birth_rand_artifacts",	"Birth: Randomize some of the artifacts",		FALSE},	/* OPT_birth_rand_artifacts */
     {"birth_no_stacking",		"Birth: Never stack objects on the floor",		FALSE},	/* OPT_birth_no_stacking */
-    {"birth_take_notes",		"Birth: Have notes written to a file",			TRUE},	/* OPT_birth_auto_notes */
+    {NULL,NULL,FALSE},/* xxx */
     {"birth_force_small_lev",	"Birth: All levels will be generated as small",	FALSE},	/* OPT_birth_force_small_lev */
     {"birth_connected_stairs",  "Birth: Generate connected stairs",       		TRUE},	/* OPT_birth_connected_stairs */
     {"birth_no_quests",			"Birth: Disable quests",						FALSE},	/* OPT_birth_no_quests*/
@@ -2253,7 +2253,7 @@ option_entry options[OPT_MAX] =
     {"adult_no_artifacts",		"Adult: Restrict creation of artifacts",		FALSE},	/* OPT_adult_no_artifacts */
     {"adult_rand_artifacts",	"Adult: Randomize some of the artifacts",		FALSE},	/* OPT_adult_rand_artifacts */
     {"adult_no_stacking",		"Adult: Never stack objects on the floor",		FALSE},	/* OPT_adult_no_stacking */
-    {"adult_take_notes",		"Adult: Have notes to written to a file",		TRUE},	/* OPT_adult_auto_notes */
+    {NULL,NULL,FALSE},/* xxx */
     {"adult_force_small_lev",	"Adult: All levels generated small",			FALSE},	/* OPT_adult_force_small_lev*/
     {"adult_conected_stairs",   "Adult: Generate connected stairs",       		TRUE},	/* OPT_adult_connected_stairs */
     {"adult_no_quests",			"Adult: Disable quests",						FALSE},	/* OPT_adult_no_quests*/
@@ -2396,7 +2396,6 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_birth_maximize,
         OPT_birth_rand_artifacts,
         OPT_birth_money,
-        OPT_birth_take_notes,
         OPT_birth_force_small_lev,
         OPT_birth_ironman,
         OPT_birth_no_stores,
@@ -2410,6 +2409,7 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_birth_no_xtra_artifacts,
         OPT_birth_no_selling,
         OPT_birth_simple_dungeons,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE
@@ -2525,11 +2525,11 @@ const byte option_page_nppmoria[OPT_PAGE_MAX][OPT_PAGE_PER] =
 
     {
         OPT_birth_money,
-        OPT_birth_take_notes,
         OPT_birth_ironman,
         OPT_birth_no_stores,
         OPT_birth_no_stacking,
         OPT_birth_no_selling,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,

@@ -32,15 +32,12 @@ void dungeon_change_level(int dlev)
     /* Handle lost greater vaults */
     if (!g_vault_name.isEmpty())
     {
-        if (adult_take_notes)
-        {
-            QString note = "Left the level without entering the ";
-            note.append(g_vault_name);
+        QString note = "Left the level without entering the ";
+        note.append(g_vault_name);
 
-            write_note(note, p_ptr->depth);
+        write_note(note, p_ptr->depth);
 
-            g_vault_name.clear();
-        }
+        g_vault_name.clear();
     }
 
     /* New depth */
