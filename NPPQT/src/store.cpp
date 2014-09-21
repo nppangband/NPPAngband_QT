@@ -19,7 +19,38 @@
 
 #include "src/npp.h"
 #include "src/store.h"
+#include "src/storedialog.h"
 
+
+service_info services_info[] =
+{
+    {STORE_ARMOR,   125,    "Enchant armor [price varies]"},       //SERVICE_ENCHANT_ARMOR
+    {STORE_WEAPON,  125,    "Enchant weapon to-hit [price varies]"},       //SERVICE_ENCHANT_TO_HIT
+    {STORE_WEAPON,  125,    "Enchant weapon to-dam [price varies]"},       //SERVICE_ENCHANT_TO_DAM
+    {STORE_WEAPON,  35000,  "Elemental Brand a weapon [price varies]"},       //SERVICE_ELEM_BRAND_WEAP
+    {STORE_WEAPON,  17500,  "Elemental brand some ammunition[price varies]"},       //SERVICE_ELEM_BRAND_AMMO
+    {STORE_MAGIC,   175,    "Recharge item [price varies]"},       //SERVICE_RECHARGING
+    {STORE_MAGIC,   75,     "Identify item"},           //SERVICE_IDENTIFY
+    {STORE_MAGIC,   4500,   "*Identify* item"},         //SERVICE_IDENTIFY_FULLY
+    {STORE_TEMPLE,  75,     "Cure Critical Wounds"},    //SERVICE_CURE_CRITICAL
+    {STORE_TEMPLE,  1000,   "Restore Life Levels"},        //SERVICE_RESTORE_LIFE_LEVELS
+    {STORE_TEMPLE,  300,    "Remove curse"},            //SERVICE_REMOVE_CURSE
+    {STORE_TEMPLE,  15000,  "Remove *curse*"},          //SERVICE_REMOVE_HEAVY_CURSE
+    {STORE_ALCHEMY, 700,    "Restore stat"},            //SERVICE_RESTORE_STAT
+    {STORE_ALCHEMY, 37500,  "Increase stat"},           //SERVICE_INCREASE_STAT
+    {STORE_GUILD,   750000, "Create Artifact[price varies]"},       //SERVICE_CREATE_RANDART
+    {STORE_GUILD,   150,    "Probe a Quest Monster[price varies]"},  //SERVICE_PROBE_QUEST_MON
+    {STORE_TEMPLE,  20000,  "Purchase Potion of Healing"},       //SERVICE_BUY_HEALING_POTION
+    {STORE_TEMPLE,  125000, "Purchase Potion of Life"},       //SERVICE_BUY_LIFE_POTION
+    {STORE_MAGIC,   125000, "Purchase Scroll of Mass Banishment"},  //SERVICE_BUY_SCROLL_BANISHMENT
+    {STORE_BOOKSHOP, 100000,"Make Spell Book Fireproof[price varies]"},       //SERVICE_FIREPROOF_BOOK
+    {STORE_GUILD,   0,      "Defer Quest Reward"},       //SERVICE_QUEST_DEFER_REWARD
+    {STORE_GUILD,   0,      "Abandon Your Quest"},      //SERVICE_ABANDON_QUEST
+    {STORE_GUILD,   0,      "Create Artifact Quest Reward"},       //SERVICE_QUEST_REWARD_RANDART
+    {STORE_GUILD,   0,      "Permanent Hit Point Increase Reward"},       //SERVICE_QUEST_REWARD_INC_HP
+    {STORE_GUILD,   0,      "Permanent Stat Increase Reward"},       //SERVICE_QUEST_REWARD_INC_STAT
+    {STORE_GUILD,   0,      "Permanent Stats Augmentation Reward"},       //SERVICE_QUEST_REWARD_AUGMENTATION
+};
 
 /*** Constants and definitions ***/
 
@@ -74,142 +105,9 @@ static int quests_max;
 
 
 
-/*List of various store services allowed*/
-/*
- * Timed effects
- */
-enum
-{
-    SERVICE_ENCHANT_ARMOR	= 0,
-    SERVICE_ENCHANT_TO_HIT,
-    SERVICE_ENCHANT_TO_DAM,
-    SERVICE_ELEM_BRAND_WEAP,
-    SERVICE_ELEM_BRAND_AMMO,
-    SERVICE_RECHARGING,
-    SERVICE_IDENTIFY,
-    SERVICE_IDENTIFY_FULLY,
-    SERVICE_CURE_CRITICAL,
-    SERVICE_RESTORE_LIFE_LEVELS,
-    SERVICE_REMOVE_CURSE,
-    SERVICE_REMOVE_HEAVY_CURSE,
-    SERVICE_RESTORE_STAT,
-    SERVICE_INCREASE_STAT,
-    SERVICE_CREATE_RANDART,
-    SERVICE_PROBE_QUEST_MON,
-    SERVICE_BUY_HEALING_POTION,
-    SERVICE_BUY_LIFE_POTION,
-    SERVICE_BUY_SCROLL_BANISHMENT,
-    SERVICE_FIREPROOF_BOOK,
-    SERVICE_QUEST_DEFER_REWARD,
-    SERVICE_ABANDON_QUEST,
-    SERVICE_QUEST_REWARD_RANDART,
-    SERVICE_QUEST_REWARD_INC_HP,
-    SERVICE_QUEST_REWARD_INC_STAT,
-    SERVICE_QUEST_REWARD_AUGMENTATION,
-
-
-    STORE_SERVICE_MAX
-};
-
 #define QUEST_REWARD_HEAD	SERVICE_QUEST_DEFER_REWARD
 #define QUEST_REWARD_TAIL	SERVICE_QUEST_REWARD_AUGMENTATION
 
-/* Indicates which store offers the service*/
-static byte service_store[STORE_SERVICE_MAX] =
-{
-    STORE_ARMOR,		/*  SERVICE_ENCHANT_ARMOR   	*/
-    STORE_WEAPON,		/*  SERVICE_ENCHANT_TO_HIT   	*/
-    STORE_WEAPON,		/*  SERVICE_ENCHANT_TO_DAM   	*/
-    STORE_WEAPON,		/*  SERVICE_ELEM_BRAND_WEAP   	*/
-    STORE_WEAPON,		/*  SERVICE_ELEM_BRAND_AMMO   	*/
-    STORE_MAGIC, 		/*  SERVICE_RECHARGING   		*/
-    STORE_MAGIC, 		/*  SERVICE_IDENTIFY   			*/
-    STORE_MAGIC, 		/*  SERVICE_IDENTIFY_FULLY		*/
-    STORE_TEMPLE, 		/*  SERVICE_CURE_CRITICAL  		*/
-    STORE_TEMPLE, 		/*  SERVICE_RESTORE_LIFE_LEVELS	*/
-    STORE_TEMPLE, 		/*  SERVICE_REMOVE_CURSE   		*/
-    STORE_TEMPLE, 		/*  SERVICE_REMOVE_HEAVY_CURSE	*/
-    STORE_ALCHEMY, 		/*  SERVICE_RESTORE_STAT   		*/
-    STORE_ALCHEMY, 		/*  SERVICE_INCREASE_STAT   	*/
-    STORE_GUILD,		/*  SERVICE_CREATE_RANDART   	*/
-    STORE_GUILD,		/*	SERVICE_PROBE_QUEST_MON		*/
-    STORE_TEMPLE,		/*	SERVICE_BUY_HEALING_POTION	*/
-    STORE_TEMPLE,		/*	SERVICE_BUY_LIFE_POTION		*/
-    STORE_MAGIC,		/*	SERVICE_BUY_SCROLL_BANISHMENT	*/
-    STORE_BOOKSHOP,		/*	SERVICE_FIREPROOF_BOOK		*/
-    STORE_GUILD,		/*	SERVICE_QUEST_DEFER_REWARD	*/
-    STORE_GUILD,		/*	SERVICE_ABANDON_QUEST		*/
-    STORE_GUILD,		/*	SERVICE_QUEST_REWARD_RANDART	*/
-    STORE_GUILD,		/*	SERVICE_QUEST_REWARD_INC_HP		*/
-    STORE_GUILD,		/*	SERVICE_QUEST_REWARD_INC_STAT	*/
-    STORE_GUILD			/*	SERVICE_QUEST_REWARD_AUGMENTATION	*/
-
-};
-
-/* Indicates the base price of the service*/
-static u32b service_price[STORE_SERVICE_MAX] =
-{
-    125,				/*  SERVICE_ENCHANT_ARMOR   	*/
-    125,				/*  SERVICE_ENCHANT_TO_HIT   	*/
-    125,				/*  SERVICE_ENCHANT_TO_DAM   	*/
-    35000,				/*  SERVICE_ELEM_BRAND_WEAP   	*/
-    17500,				/*  SERVICE_ELEM_BRAND_AMMO   	*/
-    175, 				/*  SERVICE_RECHARGING   		*/
-    75, 				/*  SERVICE_IDENTIFY   			*/
-    4500,		 		/*  SERVICE_IDENTIFY_FULLY		*/
-    75, 				/*  SERVICE_CURE_CRITICAL  		*/
-    1000, 				/*  SERVICE_RESTORE_LIFE_LEVELS	*/
-    300, 				/*  SERVICE_REMOVE_CURSE   		*/
-    15000, 				/*  SERVICE_REMOVE_HEAVY_CURSE	*/
-    700, 				/*  SERVICE_RESTORE_STAT   		*/
-    37500L, 			/*  SERVICE_INCREASE_STAT   	*/
-    750000L,			/*  SERVICE_CREATE_RANDART   	*/
-    150,				/*	SERVICE_PROBE_QUEST_MON		*/
-    20000L,				/*	SERVICE_BUY_HEALING_POTION	*/
-    125000L,			/*	SERVICE_BUY_LIFE_POTION		*/
-    125000L,			/*	SERVICE_BUY_SCROLL_BANISHMENT	*/
-    100000L,			/*  SERVICE_FIREPROOF_BOOK 		*/
-    0,					/*	SERVICE_QUEST_DEFER_REWARD	*/
-    0,					/*  SERVICE_ABANDON_QUEST 		*/
-    0,					/*	SERVICE_QUEST_REWARD_RANDART	*/
-    0,					/*	SERVICE_QUEST_REWARD_INC_HP		*/
-    0,					/*	SERVICE_QUEST_REWARD_INC_STAT	*/
-    0					/*	SERVICE_QUEST_REWARD_AUGMENTATION	*/
-
-};
-
-/*
- * Indicates the base price of the service.  [v] means the price varies depending on the item
- */
-static QString service_names[STORE_SERVICE_MAX] =
-{
-    "Enchant armor [price varies]",				/*  SERVICE_ENCHANT_ARMOR   	*/
-    "Enchant weapon to-hit [price varies]",			/*  SERVICE_ENCHANT_TO_HIT   	*/
-    "Enchant weapon to-dam [price varies]",			/*  SERVICE_ENCHANT_TO_DAM   	*/
-    "Elemental Brand a weapon [price varies]",	/*  SERVICE_ELEM_BRAND_WEAP   	*/
-    "Elemental brand some ammunition[price varies]",	/*  SERVICE_ELEM_BRAND_AMMO */
-    "Recharge item [price varies]",				/*  SERVICE_RECHARGING   		*/
-    "Identify item",							/*  SERVICE_IDENTIFY   			*/
-    "*Identify* item",							/*  SERVICE_IDENTIFY_FULLY		*/
-    "Cure Critical Wounds",	 					/*  SERVICE_CURE_CRITICAL  		*/
-    "Restore Life Levels",						/*  SERVICE_RESTORE_LIFE_LEVELS	*/
-    "Remove curse", 							/*  SERVICE_REMOVE_CURSE   		*/
-    "Remove *curse*", 							/*  SERVICE_REMOVE_HEAVY_CURSE	*/
-    "Restore stat", 							/*  SERVICE_RESTORE_STAT   		*/
-    "Increase stat", 							/*  SERVICE_INCREASE_STAT   	*/
-    "Create Artifact[price varies]",			/*  SERVICE_CREATE_RANDART   	*/
-    "Probe a Quest Monster[price varies]",		/*	SERVICE_PROBE_QUEST_MON		*/
-    "Purchase Potion of Healing",				/*	SERVICE_BUY_HEALING_POTION	*/
-    "Purchase Potion of Life",					/*	SERVICE_BUY_LIFE_POTION		*/
-    "Purchase Scroll of Mass Banishment",		/*	SERVICE_BUY_SCROLL_BANISHMENT	*/
-    "Make Spell Book Fireproof[price varies]",	/*  SERVICE_FIREPROOF_BOOK */
-    "Defer Quest Reward",						/*	SERVICE_QUEST_DEFER_REWARD	*/
-    "Abandon Your Quest",						/*  SERVICE_ABANDON_QUEST 		*/
-    "Create Artifact Quest Reward",				/*	SERVICE_QUEST_REWARD_RANDART	*/
-    "Permanent Hit Point Increase Reward",		/*	SERVICE_QUEST_REWARD_INC_HP		*/
-    "Permanent Stat Increase Reward",			/*	SERVICE_QUEST_REWARD_INC_STAT	*/
-    "Permanent Stats Augmentation Reward"		/*	SERVICE_QUEST_REWARD_AUGMENTATION	*/
-};
 
 
 static byte services_offered[STORE_SERVICE_MAX];
@@ -491,12 +389,13 @@ static void init_services_and_quests(int store_num)
     /* Get the store services for the current store*/
     for (i = 0; i < STORE_SERVICE_MAX; i++)
     {
+        service_info *service_ptr = &services_info[i];
 
         /* Check if the services option is disabled */
         if (adult_no_store_services) break;
 
         /* Services are store-specific */
-        if (service_store[i] != store_num) continue;
+        if (service_ptr->service_store != store_num) continue;
 
         /*
          * The guild only offers certain services
@@ -608,8 +507,10 @@ static void init_services_and_quests(int store_num)
 static u32b price_services(int store_num, int choice)
 {
 
+    service_info *service_ptr = &services_info[choice];
+
     /* get the service price*/
-    u32b price = service_price[choice];
+    u32b price = service_ptr->service_price;
 
     /*adjust price, but not for the guild*/
     if (store_num != STORE_GUILD)
@@ -3146,11 +3047,13 @@ static void store_display_entry(int oid, bool cursor, int row, int col, int widt
 
     entry_num = find_entry_type(&entry_type, oid);
 
+    service_info *service_ptr = &services_info[entry_num];
+
     /* Display the entry name and, if object, weight*/
     if (entry_type == ENTRY_SERVICE)
     {
         colour = TERM_L_GREEN;
-        i_name = (QString(service_names[services_offered[entry_num]]));
+        i_name = (service_ptr->service_names);
     }
     else if (entry_type == ENTRY_QUEST)
     {

@@ -33,6 +33,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 {
     store_idx = _store;
     home = (store_idx == STORE_HOME);
+    guild = (store_idx == STORE_GUILD);
 
     central = new QWidget;
     QVBoxLayout *lay1 = new QVBoxLayout;
@@ -46,7 +47,12 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     area1->setLayout(lay3);
     lay3->setContentsMargins(0, 0, 0, 0);
 
-    if (!home) {
+    if (guild)
+    {
+        lay3->addWidget(new QLabel("<b>The Adventurer's Guild</b>"));
+    }
+    else if (!home)
+    {
         owner_type *ot_ptr = &b_info[(store_idx * z_info->b_max) + store[store_idx].owner];
         int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
         QString shop_name = f_info[feat].f_name;
@@ -55,7 +61,8 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
         QLabel *store_info = new QLabel(msg);
         lay3->addWidget(store_info);
     }
-    else {
+    else
+    {
         lay3->addWidget(new QLabel("<b>Your home</b>"));
     }
 
@@ -181,6 +188,135 @@ void StoreDialog::buy_click()
     set_mode(SMODE_BUY);
 }
 
+bool StoreDialog::should_offer_service(byte service_num)
+{
+    service_info *service_ptr = &services_info[service_num];
+    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+
+    /* Services are store-specific */
+    if (service_ptr->service_store != store_idx) return (FALSE);
+
+    /*
+     * The guild only offers certain services
+     * depending on the active quest.
+     */
+
+    /* Offer this service only if there is a quest to abandon. */
+    if (service_num == SERVICE_ABANDON_QUEST)
+    {
+        /*We finished the quest, why abandon it?*/
+        if (guild_quest_complete()) return (FALSE);
+
+        /* No current guild quest */
+        if (!q_ptr->q_type) return (FALSE);
+
+        if (!guild_quest_level()) return (FALSE);
+
+        return (TRUE);
+    }
+
+    if ((service_num >= QUEST_REWARD_HEAD) &&
+             (service_num <= QUEST_REWARD_TAIL))
+    {
+        /* Not currently offering a reward */
+        if (!guild_quest_complete()) return (FALSE);
+
+        // Certain services only if these rewards are offered.
+        if (service_num == SERVICE_QUEST_REWARD_INC_HP)
+        {
+            if (!(q_ptr->q_reward & (REWARD_INC_HP))) return (FALSE);
+        }
+        else if (service_num == SERVICE_QUEST_REWARD_RANDART)
+        {
+            if (!(q_ptr->q_reward & (REWARD_RANDART))) return (FALSE);
+        }
+        else if (service_num == SERVICE_QUEST_REWARD_INC_STAT)
+        {
+            if (!(q_ptr->q_reward & (REWARD_INC_STAT))) return (FALSE);
+        }
+        else if (service_num == SERVICE_QUEST_REWARD_AUGMENTATION)
+        {
+            if (!(q_ptr->q_reward & (REWARD_AUGMENTATION))) return (FALSE);
+        }
+
+        return (TRUE);
+    }
+
+    /* Filter out quest-specific services when appropriate. */
+    if (service_num == SERVICE_PROBE_QUEST_MON)
+    {
+        if (!guild_quest_level()) return (FALSE);
+        if (guild_quest_complete()) return (FALSE);
+
+        if (q_ptr->q_type == QUEST_VAULT) return (FALSE);
+        if (q_ptr->q_type == QUEST_GREATER_VAULT) return (FALSE);
+        if (quest_type_collection(q_ptr)) return (FALSE);
+        if (quest_multiple_r_idx(q_ptr)) return (FALSE);
+    }
+
+    return (TRUE);
+}
+
+/* Percent decrease or increase in price of goods		 */
+s16b StoreDialog::moria_chr_adj()
+{
+    int charisma  = p_ptr->state.stat_use[A_CHR];
+
+    if (charisma > 117) 		return(90);
+    else if (charisma > 107) 	return(92);
+    else if (charisma > 87)		return(94);
+    else if (charisma > 67)		return(96);
+    else if (charisma > 18)		return(98);
+    else switch(charisma)
+    {
+        case 18:	return(100);
+        case 17:	return(101);
+        case 16:	return(102);
+        case 15:	return(103);
+        case 14:	return(104);
+        case 13:	return(106);
+        case 12:	return(108);
+        case 11:	return(110);
+        case 10:	return(112);
+        case 9:  return(114);
+        case 8:  return(116);
+        case 7:  return(118);
+        case 6:  return(120);
+        case 5:  return(122);
+        case 4:  return(125);
+        case 3:  return(130);
+        default: return(100);
+    }
+}
+
+s32b StoreDialog::price_services(int service_idx)
+{
+    service_info *service_ptr = &services_info[service_idx];
+
+    /* get the service price*/
+    u32b price = service_ptr->service_price;
+
+    /*adjust price, but not for the guild*/
+    if (store_idx != STORE_GUILD)
+    {
+        /* Extract the "minimum" price */
+        if (game_mode == GAME_NPPMORIA)
+        {
+            price = ((price * moria_chr_adj()) / 100L);
+        }
+        else price = ((price * adj_chr_gold[p_ptr->state.stat_ind[A_CHR]]) / 100L);
+    }
+
+    /*Guild price factoring*/
+    else
+    {
+        if (p_ptr->q_fame < 1000) price += price * (1000 - p_ptr->q_fame) / 1000;
+    }
+
+    return(price);
+}
+
+
 void StoreDialog::reset_store()
 {
     QGridLayout *lay = dynamic_cast<QGridLayout *>(store_area->layout());
@@ -195,16 +331,63 @@ void StoreDialog::reset_store()
     if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
     store_type *st = &store[store_idx];
     int i;
-    for (i = 0; i < st->stock_num; i++) {
+    int k = 0;
+
+    // Display the services
+    for (i = 0; i < STORE_SERVICE_MAX; i++)
+    {
+
+        /* Check if the services option is disabled */
+        if (adult_no_store_services) break;
+
+        /* Services are store-specific */
+        if (!should_offer_service(i)) continue;
+
+        service_info *service_ptr = &services_info[i];
+
+        int col = 0;
+
+        // Make an id for the item
+        QString id = QString("s%1").arg(k);
+
+        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(k++)));
+        lb->setProperty("item_id", QVariant(id));
+        lay->addWidget(lb, row, col++);
+
+        QString desc = service_ptr->service_names;
+        s32b price = price_services(i);
+        QColor service_color = make_color_readable(defined_colors[TERM_GREEN]);
+        QString s = QString("color: %1;") .arg(service_color.name());
+        QString style = "text-align: left; font-weight: bold;";
+        style += s;
+
+        QLabel *lb2 = new QLabel(desc);
+        lb2->setStyleSheet(style);
+        lay->addWidget(lb2, row, col++);
+
+        QLabel *l = new QLabel(_num(price));
+        lay->addWidget(l, row, col++);
+
+        QPushButton *help_button = new QPushButton;
+        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+        help_button->setObjectName(id);
+        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
+        lay->addWidget(help_button, row, col++);
+
+        ++row;
+    }
+
+    for (i = 0; i < st->stock_num; i++)
+    {
         object_type *o_ptr = &st->stock[i];
         if (o_ptr->k_idx == 0) continue;
 
         int col = 0;
 
         // Make an id for the item
-        QString id = QString("s%1").arg(i);
+        QString id = QString("s%1").arg(k);
 
-        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(i)));
+        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(k++)));
         lb->setProperty("item_id", QVariant(id));
         lay->addWidget(lb, row, col++);
 
@@ -223,13 +406,15 @@ void StoreDialog::reset_store()
             connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
             lay->addWidget(btn, row, col++);
         }
-        else {
+        else
+        {
             QLabel *lb2 = new QLabel(desc);
             lb2->setStyleSheet(style);
             lay->addWidget(lb2, row, col++);
         }
 
-        if (!home) {
+        if (!home)
+        {
             QLabel *l = new QLabel(_num(price));
             lay->addWidget(l, row, col++);
         }
@@ -251,12 +436,11 @@ void StoreDialog::help_click()
     QString id = QObject::sender()->objectName();
     int o_idx = id.mid(1).toInt();
     object_type *o_ptr;
-    if (id.at(0) == 's') {
+    if (id.at(0) == 's')
+    {
         o_ptr = &(store[store_idx].stock[o_idx]);
     }
-    else {
-        o_ptr = &(inventory[o_idx]);
-    }
+    else o_ptr = &(inventory[o_idx]);
     object_info_screen(o_ptr);
 }
 

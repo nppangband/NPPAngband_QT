@@ -4,14 +4,62 @@
 #include <QWidget>
 #include <QTabWidget>
 #include <QLabel>
-#include "nppdialog.h"
+#include "src/nppdialog.h"
+#include "src/npp.h"
 
-enum {
+enum
+{
     SMODE_DEFAULT = 0,
     SMODE_BUY,
     SMODE_SELL,
     SMODE_EXAMINE
 };
+
+enum
+{
+    SERVICE_ENCHANT_ARMOR	= 0,
+    SERVICE_ENCHANT_TO_HIT,
+    SERVICE_ENCHANT_TO_DAM,
+    SERVICE_ELEM_BRAND_WEAP,
+    SERVICE_ELEM_BRAND_AMMO,
+    SERVICE_RECHARGING,
+    SERVICE_IDENTIFY,
+    SERVICE_IDENTIFY_FULLY,
+    SERVICE_CURE_CRITICAL,
+    SERVICE_RESTORE_LIFE_LEVELS,
+    SERVICE_REMOVE_CURSE,
+    SERVICE_REMOVE_HEAVY_CURSE,
+    SERVICE_RESTORE_STAT,
+    SERVICE_INCREASE_STAT,
+    SERVICE_CREATE_RANDART,
+    SERVICE_PROBE_QUEST_MON,
+    SERVICE_BUY_HEALING_POTION,
+    SERVICE_BUY_LIFE_POTION,
+    SERVICE_BUY_SCROLL_BANISHMENT,
+    SERVICE_FIREPROOF_BOOK,
+    SERVICE_QUEST_DEFER_REWARD,
+    SERVICE_ABANDON_QUEST,
+    SERVICE_QUEST_REWARD_RANDART,
+    SERVICE_QUEST_REWARD_INC_HP,
+    SERVICE_QUEST_REWARD_INC_STAT,
+    SERVICE_QUEST_REWARD_AUGMENTATION,
+
+    STORE_SERVICE_MAX
+};
+
+#define QUEST_REWARD_HEAD	SERVICE_QUEST_DEFER_REWARD
+#define QUEST_REWARD_TAIL	SERVICE_QUEST_REWARD_AUGMENTATION
+
+class service_info
+{
+public:
+
+    byte service_store;
+    u32b service_price;
+    QString service_names;
+};
+
+extern service_info services_info[STORE_SERVICE_MAX];
 
 class object_type;
 
@@ -27,10 +75,16 @@ public:
     QWidget *equip_tab;
     QWidget *store_area;
     bool home;
+    bool guild;
 
     QLabel *mode_label;
 
     StoreDialog(int _store, QWidget *parent = 0);
+
+    s16b moria_chr_adj(void);
+    s32b price_services(int service_idx);
+    bool should_offer_service(byte service_num);
+
 
     void reset_store();
     void reset_inventory();
