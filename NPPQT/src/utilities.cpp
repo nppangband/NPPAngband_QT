@@ -246,9 +246,6 @@ static void add_message_to_vector(QString msg, QColor which_color)
     message_type message_body;
     message_type *msg_ptr = &message_body;
 
-    // Point to the last message
-    message_type *msg_one = &message_list[0];
-
     bool add_message = TRUE;
 
     // First make sure the message list gets no greater than 200
@@ -260,7 +257,8 @@ static void add_message_to_vector(QString msg, QColor which_color)
     // Without this check, the game will crash when adding the first message
     if (!message_list.empty())
     {
-
+        // Point to the last message
+        message_type *msg_one = &message_list[0];
 
         if (operator==(msg_one->message, msg) && (msg_one->msg_color == which_color) &&
             (msg_one->message_turn == turn) && !p_ptr->message_append)
