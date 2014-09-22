@@ -320,18 +320,19 @@ s32b StoreDialog::price_services(int service_idx)
 void StoreDialog::reset_store()
 {
     QGridLayout *lay = dynamic_cast<QGridLayout *>(store_area->layout());
-    if (lay == 0) {
+    if (lay == 0)
+    {
         lay = new QGridLayout;
         lay->setColumnStretch(1, 1);
         store_area->setLayout(lay);
     }
+
     // Remove previous items
     clear_grid(lay);
     int row = 0;
     if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
     store_type *st = &store[store_idx];
     int i;
-    int k = 0;
 
     // Display the services
     for (i = 0; i < STORE_SERVICE_MAX; i++)
@@ -348,9 +349,9 @@ void StoreDialog::reset_store()
         int col = 0;
 
         // Make an id for the item
-        QString id = QString("s%1").arg(k);
+        QString id = QString("s%1").arg(i);
 
-        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(k++)));
+        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(i)));
         lb->setProperty("item_id", QVariant(id));
         lay->addWidget(lb, row, col++);
 
@@ -385,9 +386,9 @@ void StoreDialog::reset_store()
         int col = 0;
 
         // Make an id for the item
-        QString id = QString("s%1").arg(k);
+        QString id = QString("p%1").arg(i);
 
-        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(k++)));
+        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(i)));
         lb->setProperty("item_id", QVariant(id));
         lay->addWidget(lb, row, col++);
 
@@ -397,7 +398,8 @@ void StoreDialog::reset_store()
         QString style = "text-align: left; font-weight: bold;";
         style += s;
 
-        if (home || price <= p_ptr->au) {
+        if (home || price <= p_ptr->au)
+        {
             QPushButton *btn = new QPushButton(desc);
             btn->setProperty("item_id", QVariant(id));
 
@@ -436,12 +438,27 @@ void StoreDialog::help_click()
     QString id = QObject::sender()->objectName();
     int o_idx = id.mid(1).toInt();
     object_type *o_ptr;
-    if (id.at(0) == 's')
+
+    // TODO handle services
+    if (id.at(0) == 'q')
+    {
+
+    }
+    else if (id.at(0) == 's')
+    {
+
+    }
+    else if (id.at(0) == 'p')
     {
         o_ptr = &(store[store_idx].stock[o_idx]);
+        object_info_screen(o_ptr);
     }
-    else o_ptr = &(inventory[o_idx]);
-    object_info_screen(o_ptr);
+    else
+    {
+        o_ptr = &(inventory[o_idx]);
+        object_info_screen(o_ptr);
+    }
+
 }
 
 void StoreDialog::set_mode(int _mode)
@@ -470,7 +487,8 @@ void StoreDialog::reset_inventory()
     int row = 0;
     if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
     int i;
-    for (i = 0; i < INVEN_WIELD - 1; i++) {
+    for (i = 0; i < INVEN_WIELD - 1; i++)
+    {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;        
 
@@ -495,7 +513,8 @@ void StoreDialog::reset_inventory()
             connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
             lay->addWidget(btn, row, 1);
         }
-        else {
+        else
+        {
             QLabel *lb2 = new QLabel(desc);
             lb2->setStyleSheet(style);
             lay->addWidget(lb2, row, 1);
@@ -534,12 +553,14 @@ void StoreDialog::reset_equip()
     int i;
     int row = 0;
     if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
-    for (i = INVEN_WIELD; i < QUIVER_END; i++) {
+    for (i = INVEN_WIELD; i < QUIVER_END; i++)
+    {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;
 
         QString use;
-        if (i < QUIVER_START) {
+        if (i < QUIVER_START)
+        {
             use = QString("%1: ").arg(mention_use(i));
         }
 
@@ -617,23 +638,27 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
         break;
     default:
         if (event->text().length() > 0
-                && event->text().at(0).isLetter()) {
+                && event->text().at(0).isLetter())
+        {
             QString letter = event->text().at(0);
             letter.append(")");
             QWidget *container = char_tabs->currentWidget();
-            if (letter.at(0).isLower()) {
+            if (letter.at(0).isLower())
+            {
                 container = store_area;
             }
             QList<QLabel *> lst = container->findChildren<QLabel *>();
-            for (int i = 0; i < lst.size(); i++) {
+            for (int i = 0; i < lst.size(); i++)
+            {
                 QString text = lst.at(i)->text();
-                if (text.startsWith(letter)) {
+                if (text.startsWith(letter))
+                {
                     QString item_id = lst.at(i)->property("item_id").toString();
                     process_item(item_id);
                     break;
                 }
             }
-            return;
+        return;
         }
         NPPDialog::keyPressEvent(event);
     }
@@ -642,37 +667,54 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
 void StoreDialog::process_item(QString id)
 {
     int aux_mode = mode;
-    if (aux_mode != SMODE_EXAMINE) {
+    if (aux_mode != SMODE_EXAMINE)
+    {
         if (id.startsWith("e") || id.startsWith("i")) aux_mode = SMODE_SELL;
         else aux_mode = SMODE_BUY;
     }
 
     set_mode(aux_mode);
 
-    if (aux_mode == SMODE_SELL && id.startsWith("s")) return;
-    if (aux_mode == SMODE_BUY && !id.startsWith("s")) return;
+    if (aux_mode == SMODE_SELL && !(id.startsWith("e") || id.startsWith("i"))) return;
+    if (aux_mode == SMODE_BUY &&  !(id.startsWith("p") || id.startsWith("s") || id.startsWith("q"))) return;
 
     object_type *o_ptr;
     int item = id.mid(1).toInt();  // Get item index
-    if (id.startsWith("s")) {
+
+    // Quests
+    if (id.startsWith("q"))
+    {
+
+    }
+    //services
+    else if (id.startsWith("s"))
+    {
+
+    }
+    else if (id.startsWith("p"))
+    {
         o_ptr = &(store[store_idx].stock[item]);
     }
-    else {
+    else
+    {
         o_ptr = inventory + item;
     }
 
     int price = price_item(o_ptr, false);
 
-    switch (aux_mode) {
+    switch (aux_mode)
+    {
     case SMODE_BUY:
-        if (!home && price > p_ptr->au) {
+        if (!home && price > p_ptr->au)
+        {
             pop_up_message_box("It's too expensive", QMessageBox::Critical);
             return;
         }
         do_buy(o_ptr, item);
         break;
     case SMODE_SELL:
-        if (!home && !store_will_buy(store_idx, o_ptr)) {
+        if (!home && !store_will_buy(store_idx, o_ptr))
+        {
             pop_up_message_box("I don't buy that kind of items", QMessageBox::Critical);
             return;
         }
