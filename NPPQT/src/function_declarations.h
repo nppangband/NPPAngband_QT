@@ -818,21 +818,23 @@ extern bool squelch_item_ok(object_type *o_ptr);
 extern void do_squelch_pile(int y, int x);
 
 /*store.c*/
-extern s32b price_item(object_type *o_ptr, bool store_buying);
+extern s16b moria_chr_adj(void);
+extern s32b price_item(int this_store, object_type *o_ptr, bool store_buying);
 extern void store_item_increase(int st, int item, int num);
 extern void store_item_optimize(int st, int item);
 extern bool keep_in_stock(const object_type *o_ptr, int which);
 extern void store_delete_index(int st, int what);
 extern void store_shuffle(int which);
-extern void do_cmd_buy(cmd_arg args);
-extern void do_cmd_reward(int command, cmd_arg args[]);
-extern void do_cmd_retrieve(cmd_arg args);
-extern void do_cmd_sell(cmd_arg args);
-extern void do_cmd_stash(cmd_arg args);
-extern void do_cmd_store(int command, cmd_arg args[]);
+extern void do_cmd_buy(int this_store, cmd_arg args);
+extern void do_cmd_retrieve(int this_store, cmd_arg args);
+extern void do_cmd_sell(int this_store, cmd_arg args);
+extern void do_cmd_stash(int this_store, cmd_arg args);
 extern void store_maint(int which);
 extern void store_init(int which);
 extern bool store_will_buy(int store_num, object_type *o_ptr);
+extern bool store_overflow(int this_store);
+
+
 
 // sound.cpp
 extern void sound(int val);

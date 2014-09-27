@@ -188,6 +188,7 @@ void StoreDialog::buy_click()
     set_mode(SMODE_BUY);
 }
 
+//  Determine if a store should offer a certain service or not.
 bool StoreDialog::should_offer_service(byte service_num)
 {
     service_info *service_ptr = &services_info[service_num];
@@ -257,37 +258,6 @@ bool StoreDialog::should_offer_service(byte service_num)
     return (TRUE);
 }
 
-/* Percent decrease or increase in price of goods		 */
-s16b StoreDialog::moria_chr_adj()
-{
-    int charisma  = p_ptr->state.stat_use[A_CHR];
-
-    if (charisma > 117) 		return(90);
-    else if (charisma > 107) 	return(92);
-    else if (charisma > 87)		return(94);
-    else if (charisma > 67)		return(96);
-    else if (charisma > 18)		return(98);
-    else switch(charisma)
-    {
-        case 18:	return(100);
-        case 17:	return(101);
-        case 16:	return(102);
-        case 15:	return(103);
-        case 14:	return(104);
-        case 13:	return(106);
-        case 12:	return(108);
-        case 11:	return(110);
-        case 10:	return(112);
-        case 9:  return(114);
-        case 8:  return(116);
-        case 7:  return(118);
-        case 6:  return(120);
-        case 5:  return(122);
-        case 4:  return(125);
-        case 3:  return(130);
-        default: return(100);
-    }
-}
 
 s32b StoreDialog::price_services(int service_idx)
 {
@@ -362,9 +332,22 @@ void StoreDialog::reset_store()
         QString style = "text-align: left; font-weight: bold;";
         style += s;
 
-        QLabel *lb2 = new QLabel(desc);
-        lb2->setStyleSheet(style);
-        lay->addWidget(lb2, row, col++);
+        if (price <= p_ptr->au)
+        {
+            QPushButton *btn = new QPushButton(desc);
+            btn->setProperty("item_id", QVariant(id));
+
+            btn->setStyleSheet(style);
+            btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            connect(btn, SIGNAL(clicked()), this, SLOT(service_click()));
+            lay->addWidget(btn, row, col++);
+        }
+        else
+        {
+            QLabel *lb2 = new QLabel(desc);
+            lb2->setStyleSheet(style);
+            lay->addWidget(lb2, row, col++);
+        }
 
         QLabel *l = new QLabel(_num(price));
         lay->addWidget(l, row, col++);
@@ -393,7 +376,7 @@ void StoreDialog::reset_store()
         lay->addWidget(lb, row, col++);
 
         QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-        s32b price = price_item(o_ptr, false);
+        s32b price = price_item(store_idx, o_ptr, false);
         QString s = QString("color: %1;").arg(get_object_color(o_ptr).name());
         QString style = "text-align: left; font-weight: bold;";
         style += s;
@@ -521,7 +504,7 @@ void StoreDialog::reset_inventory()
         }
 
         if (!home && store_will_buy(store_idx, o_ptr)) {
-            s32b price = price_item(o_ptr, true);
+            s32b price = price_item(store_idx, o_ptr, true);
             QLabel *l = new QLabel(_num(price));
             lay->addWidget(l, row, 2);
         }
@@ -593,7 +576,7 @@ void StoreDialog::reset_equip()
         }
 
         if (!home && store_will_buy(store_idx, o_ptr)) {
-            s32b price = price_item(o_ptr, true);
+            s32b price = price_item(store_idx, o_ptr, true);
             QLabel *l = new QLabel(_num(price));
             lay->addWidget(l, row, 2);
         }
@@ -675,23 +658,13 @@ void StoreDialog::process_item(QString id)
 
     set_mode(aux_mode);
 
-    if (aux_mode == SMODE_SELL && !(id.startsWith("e") || id.startsWith("i"))) return;
-    if (aux_mode == SMODE_BUY &&  !(id.startsWith("p") || id.startsWith("s") || id.startsWith("q"))) return;
+    if (aux_mode == SMODE_SELL && id.startsWith("p")) return;
+    if (aux_mode == SMODE_BUY && !id.startsWith("p")) return;
 
     object_type *o_ptr;
     int item = id.mid(1).toInt();  // Get item index
 
-    // Quests
-    if (id.startsWith("q"))
-    {
-
-    }
-    //services
-    else if (id.startsWith("s"))
-    {
-
-    }
-    else if (id.startsWith("p"))
+    if (id.startsWith("p"))
     {
         o_ptr = &(store[store_idx].stock[item]);
     }
@@ -700,7 +673,7 @@ void StoreDialog::process_item(QString id)
         o_ptr = inventory + item;
     }
 
-    int price = price_item(o_ptr, false);
+    int price = price_item(store_idx, o_ptr, false);
 
     switch (aux_mode)
     {
@@ -728,12 +701,50 @@ void StoreDialog::process_item(QString id)
     set_mode(SMODE_DEFAULT);
 }
 
+void StoreDialog::process_service(QString id)
+{
+    // Make sure we are buying a service.
+    set_mode(SMODE_BUY);
+    if (!id.startsWith("s")) return;
+
+    // Get quest index
+    int service = id.mid(1).toInt();
+
+    u32b serv_price = price_services(service);
+
+    if (!services_info[service].service_function(service, serv_price)) return;
+
+    reset_all();
+}
+
+void StoreDialog::process_quest(QString id)
+{
+
+    set_mode(SMODE_BUY);
+}
+
 void StoreDialog::item_click()
 {
     QObject *obj = QObject::sender();
 
     QString id = obj->property("item_id").toString();
     process_item(id);
+}
+
+void StoreDialog::service_click()
+{
+    QObject *service = QObject::sender();
+
+    QString id = service->property("item_id").toString();
+    process_service(id);
+}
+
+void StoreDialog::quest_click()
+{
+    QObject *quest = QObject::sender();
+
+    QString id = quest->property("item_id").toString();
+    process_quest(id);
 }
 
 void StoreDialog::sell_click()
@@ -751,8 +762,8 @@ bool StoreDialog::do_buy(object_type *o_ptr, int item)
     args.item = item;
     args.number = amt;
 
-    if (home)   do_cmd_retrieve(args);
-    else        do_cmd_buy(args);
+    if (home)   do_cmd_retrieve(store_idx, args);
+    else        do_cmd_buy(store_idx, args);
 
     reset_all();
 
@@ -791,8 +802,8 @@ bool StoreDialog::do_sell(object_type *o_ptr, int item)
     args.item = item;
     args.number = amt;
 
-    if (home)   do_cmd_stash(args);
-    else        do_cmd_sell(args);
+    if (home)   do_cmd_stash(store_idx, args);
+    else        do_cmd_sell(store_idx, args);
 
     reset_all();
 
@@ -813,7 +824,9 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
 
     amt = 0;
 
-    price = price_item(o_ptr, !buy);
+    int store_idx = f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].f_power;
+
+    price = price_item(store_idx, o_ptr, !buy);
 
     if (buying) {
         int money = p_ptr->au;
@@ -883,7 +896,7 @@ int StoreDialog::request_amt(object_type *o_ptr, bool buying)
     }
 
     int amt = o_ptr->number;
-    int price = price_item(o_ptr, !buying);
+    int price = price_item(store_idx, o_ptr, !buying);
     QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
     QString verb = tr("sell");
     if (buying) verb = tr("buy");
@@ -901,4 +914,185 @@ int StoreDialog::request_amt(object_type *o_ptr, bool buying)
     delete dlg;
 
     return amt;
+}
+
+bool StatDialog::init_stats_table(int service)
+{
+    int i;
+    bool good_stat = FALSE;
+
+    // Clear the table
+    for (i = 0; i < A_MAX; i++) stats[i] = FALSE;
+
+    /* Count up the stats that require the service */
+    for (i = 0; i < A_MAX; i++)
+    {
+        /* Add the stat that need to be restored */
+        if ((service == SERVICE_RESTORE_STAT) &&
+            (p_ptr->stat_cur[i] == p_ptr->stat_max[i])) continue;
+
+        if ((service == SERVICE_INCREASE_STAT) &&
+            (p_ptr->stat_max[i] == 18+100))  continue;
+
+        if ((service == SERVICE_QUEST_REWARD_INC_STAT) &&
+            (p_ptr->stat_quest_add[i] >= 3)) continue;
+
+        //this stat is a valid choice
+        stats[i] = TRUE;
+        good_stat = TRUE;
+    }
+
+    return (good_stat);
+}
+
+// The first character is the number of the stat collected.
+void StatDialog::select_str(void){selected_stat = 0; this->accept();}
+void StatDialog::select_int(void){selected_stat = 1; this->accept();}
+void StatDialog::select_wis(void){selected_stat = 2; this->accept();}
+void StatDialog::select_dex(void){selected_stat = 3; this->accept();}
+void StatDialog::select_con(void){selected_stat = 4; this->accept();}
+void StatDialog::select_chr(void){selected_stat = 5; this->accept();}
+
+/*
+ * Stat selected of A_MAX means no eligible stat.
+ * A_Max+1 is cancel.
+ */
+StatDialog::StatDialog(int service, byte *stat_selected)
+{
+    if (!init_stats_table(service))
+    {
+        *stat_selected = A_MAX;
+        return;
+    }
+
+    QString prompt;
+
+    if (service == SERVICE_RESTORE_STAT)
+    {
+        prompt = QString("<b><big>Please select a stat to restore.</big></b><br>");
+    }
+    else if (service == SERVICE_INCREASE_STAT)
+    {
+        prompt = QString("<b><big>Please select a stat to increase.</big></b><br>");
+    }
+    /* must be SERVICE_QUEST_REWARD_INC_STAT*/
+    else
+    {
+        prompt = QString("<b><big>Please select a stat to permanently increase.</big></b><br>");
+    }
+
+    main_prompt = new QLabel(prompt);
+    main_prompt->setAlignment(Qt::AlignCenter);
+
+    QVBoxLayout *vlay = new QVBoxLayout;
+
+    vlay->addWidget(main_prompt);
+
+    // Add the stats
+    QGridLayout *stat_layout = new QGridLayout;
+
+    // add the headers
+    byte row = 0;
+    byte col = 0;
+    QLabel *stat_header = new QLabel("Stat");
+    QLabel *self_header = new QLabel("Self");
+    QLabel *race_adj_header = new QLabel("Race Adj.");
+    QLabel *class_adj_header = new QLabel("Class Adj");
+    QLabel *equip_adj_header = new QLabel("Equip Adj");
+    QLabel *total_stat_header = new QLabel("Total Stat");
+    stat_header->setAlignment(Qt::AlignLeft);
+    self_header->setAlignment(Qt::AlignLeft);
+    race_adj_header->setAlignment(Qt::AlignCenter);
+    class_adj_header->setAlignment(Qt::AlignCenter);
+    equip_adj_header->setAlignment(Qt::AlignCenter);
+    total_stat_header->setAlignment(Qt::AlignLeft);
+    stat_layout->addWidget(stat_header, row, col++);
+    stat_layout->addWidget(self_header, row, col++);
+    if (adult_maximize) stat_layout->addWidget(race_adj_header, row, col++);
+    if (adult_maximize) stat_layout->addWidget(class_adj_header, row, col++);
+    stat_layout->addWidget(equip_adj_header, row, col++);
+    stat_layout->addWidget(total_stat_header, row, col++);
+
+    for (int i = 0; i < A_MAX; i++)
+    {
+        col = 0;
+        row++;
+
+        // Do a button if we can select this stat
+        if (stats[i])
+        {
+            QPushButton *stat_name_button = new QPushButton(stat_names[i]);
+            stat_layout->addWidget(stat_name_button, row, col++);
+            if (i == 0)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_str()));
+            else if (i == 1)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_int()));
+            else if (i == 2)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_wis()));
+            else if (i == 3)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_dex()));
+            else if (i == 4)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_con()));
+            else if (i == 5)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_chr()));
+        }
+        // or make a label
+        else
+        {
+            QLabel *self_label = new QLabel(stat_names[stats[i]]);
+            stat_layout->addWidget(self_label, row, col++);
+        }
+
+        QLabel *stat_player = new QLabel(cnv_stat(p_ptr->stat_max[i]));
+        stat_player->setAlignment(Qt::AlignCenter);
+        stat_layout->addWidget(stat_player, row, col++);
+
+        if (adult_maximize)
+        {
+            QLabel *race_adj = new QLabel(QString("%1") .arg(rp_ptr->r_adj[i] + p_ptr->stat_quest_add[i]));
+            race_adj->setAlignment(Qt::AlignCenter);
+            stat_layout->addWidget(race_adj, row, col++);
+
+            QLabel *class_adj = new QLabel(QString("%1") .arg(cp_ptr->c_adj[i]));
+            class_adj->setAlignment(Qt::AlignCenter);
+            stat_layout->addWidget(class_adj, row, col++);
+        }
+
+        QLabel *equip_adj = new QLabel(QString("%1") .arg(p_ptr->state.stat_add[i]));
+        equip_adj->setAlignment(Qt::AlignCenter);
+        stat_layout->addWidget(equip_adj, row, col++);
+
+        QLabel *stat_total = new QLabel(cnv_stat(p_ptr->state.stat_top[i]));
+        stat_total->setAlignment(Qt::AlignLeft);
+        stat_layout->addWidget(stat_total, row, col++);
+
+        //Display reduced stat if necessary
+        if (p_ptr->state.stat_use[i] < p_ptr->state.stat_top[i])
+        {
+            QString lower_stat = cnv_stat(p_ptr->state.stat_use[i]);
+            lower_stat = color_string(lower_stat, TERM_YELLOW);
+            QLabel *stat_reduce = new QLabel(lower_stat);
+            stat_reduce->setAlignment(Qt::AlignLeft);
+            stat_layout->addWidget(stat_reduce, row, col++);
+        }
+    }
+
+    buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+
+    vlay->addLayout(stat_layout);
+    vlay->addWidget(buttons);
+    setLayout(vlay);
+    setWindowTitle(tr("Stat Selection Menu"));
+
+    if (!this->exec())
+    {
+        *stat_selected = (A_MAX + 1);
+    }
+    else
+    {
+        *stat_selected = selected_stat;
+    }
+}
+
+int launch_stat_dialog(int choice)
+{
+    byte selection;
+
+    StatDialog(choice, &selection);
+    return selection;
 }

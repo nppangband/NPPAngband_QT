@@ -24,94 +24,61 @@
 
 service_info services_info[] =
 {
-    {STORE_ARMOR,   125,    "Enchant armor [price varies]"},       //SERVICE_ENCHANT_ARMOR
-    {STORE_WEAPON,  125,    "Enchant weapon to-hit [price varies]"},       //SERVICE_ENCHANT_TO_HIT
-    {STORE_WEAPON,  125,    "Enchant weapon to-dam [price varies]"},       //SERVICE_ENCHANT_TO_DAM
-    {STORE_WEAPON,  35000,  "Elemental Brand a weapon [price varies]"},       //SERVICE_ELEM_BRAND_WEAP
-    {STORE_WEAPON,  17500,  "Elemental brand some ammunition[price varies]"},       //SERVICE_ELEM_BRAND_AMMO
-    {STORE_MAGIC,   175,    "Recharge item [price varies]"},       //SERVICE_RECHARGING
-    {STORE_MAGIC,   75,     "Identify item"},           //SERVICE_IDENTIFY
-    {STORE_MAGIC,   4500,   "*Identify* item"},         //SERVICE_IDENTIFY_FULLY
-    {STORE_TEMPLE,  75,     "Cure Critical Wounds"},    //SERVICE_CURE_CRITICAL
-    {STORE_TEMPLE,  1000,   "Restore Life Levels"},        //SERVICE_RESTORE_LIFE_LEVELS
-    {STORE_TEMPLE,  300,    "Remove curse"},            //SERVICE_REMOVE_CURSE
-    {STORE_TEMPLE,  15000,  "Remove *curse*"},          //SERVICE_REMOVE_HEAVY_CURSE
-    {STORE_ALCHEMY, 700,    "Restore stat"},            //SERVICE_RESTORE_STAT
-    {STORE_ALCHEMY, 37500,  "Increase stat"},           //SERVICE_INCREASE_STAT
-    {STORE_GUILD,   750000, "Create Artifact[price varies]"},       //SERVICE_CREATE_RANDART
-    {STORE_GUILD,   150,    "Probe a Quest Monster[price varies]"},  //SERVICE_PROBE_QUEST_MON
-    {STORE_TEMPLE,  20000,  "Purchase Potion of Healing"},       //SERVICE_BUY_HEALING_POTION
-    {STORE_TEMPLE,  125000, "Purchase Potion of Life"},       //SERVICE_BUY_LIFE_POTION
-    {STORE_MAGIC,   125000, "Purchase Scroll of Mass Banishment"},  //SERVICE_BUY_SCROLL_BANISHMENT
-    {STORE_BOOKSHOP, 100000,"Make Spell Book Fireproof[price varies]"},       //SERVICE_FIREPROOF_BOOK
-    {STORE_GUILD,   0,      "Defer Quest Reward"},       //SERVICE_QUEST_DEFER_REWARD
-    {STORE_GUILD,   0,      "Abandon Your Quest"},      //SERVICE_ABANDON_QUEST
-    {STORE_GUILD,   0,      "Create Artifact Quest Reward"},       //SERVICE_QUEST_REWARD_RANDART
-    {STORE_GUILD,   0,      "Permanent Hit Point Increase Reward"},       //SERVICE_QUEST_REWARD_INC_HP
-    {STORE_GUILD,   0,      "Permanent Stat Increase Reward"},       //SERVICE_QUEST_REWARD_INC_STAT
-    {STORE_GUILD,   0,      "Permanent Stats Augmentation Reward"},       //SERVICE_QUEST_REWARD_AUGMENTATION
+    //SERVICE_ENCHANT_ARMOR
+    {STORE_ARMOR,   125,    do_service_enchant,     "Enchant armor [price varies]"},
+    //SERVICE_ENCHANT_TO_HIT
+    {STORE_WEAPON,  125,    do_service_enchant,     "Enchant weapon to-hit [price varies]"},
+    //SERVICE_ENCHANT_TO_DAM
+    {STORE_WEAPON,  125,    do_service_enchant,     "Enchant weapon to-dam [price varies]"},
+    //SERVICE_ELEM_BRAND_WEAP
+    {STORE_WEAPON,  35000,  do_service_brand,       "Elemental Brand a weapon [price varies]"},
+    //SERVICE_ELEM_BRAND_AMMO
+    {STORE_WEAPON,  17500,  do_service_brand,       "Elemental brand some ammunition[price varies]"},
+    //SERVICE_RECHARGING
+    {STORE_MAGIC,   175,    do_service_recharge,    "Recharge item [price varies]"},
+    //SERVICE_IDENTIFY
+    {STORE_MAGIC,   75,     do_service_identify,    "Identify item"},
+    //SERVICE_IDENTIFY_FULLY
+    {STORE_MAGIC,   4500,   do_service_identify,    "*Identify* item"},
+    //SERVICE_CURE_CRITICAL
+    {STORE_TEMPLE,  75,     do_service_cure_critical,"Cure Critical Wounds"},
+    //SERVICE_RESTORE_LIFE_LEVELS
+    {STORE_TEMPLE,  1000,   do_service_restore_life,"Restore Life Levels"},
+    //SERVICE_REMOVE_CURSE
+    {STORE_TEMPLE,  300,    do_service_remove_curse,"Remove curse"},
+    //SERVICE_REMOVE_HEAVY_CURSE
+    {STORE_TEMPLE,  15000,  do_service_remove_curse,"Remove *curse*"},
+    //SERVICE_RESTORE_STAT
+    {STORE_ALCHEMY, 700,    do_service_stat,        "Restore stat"},
+    //SERVICE_INCREASE_STAT
+    {STORE_ALCHEMY, 37500,  do_service_stat,        "Increase stat"},
+    //SERVICE_CREATE_RANDART
+    {STORE_GUILD,   750000, do_service_make_randart,"Create Artifact[price varies]"},
+    //SERVICE_PROBE_QUEST_MON
+    {STORE_GUILD,   150,    do_service_probing,     "Probe a Quest Monster[price varies]"},
+    //SERVICE_BUY_HEALING_POTION
+    {STORE_TEMPLE,  20000,  do_service_buy_object,  "Purchase Potion of Healing"},
+    //SERVICE_BUY_LIFE_POTION
+    {STORE_TEMPLE,  125000, do_service_buy_object,  "Purchase Potion of Life"},
+    //SERVICE_BUY_SCROLL_BANISHMENT
+    {STORE_MAGIC,   125000, do_service_buy_object,  "Purchase Scroll of Mass Banishment"},
+    //SERVICE_FIREPROOF_BOOK
+    {STORE_BOOKSHOP, 100000,do_service_fireproof,   "Make Spell Book Fireproof[price varies]"},
+    //SERVICE_QUEST_DEFER_REWARD
+    {STORE_GUILD,   0,      do_service_defer_reward,"Defer Quest Reward"},
+    //SERVICE_ABANDON_QUEST
+    {STORE_GUILD,   0,      do_service_abandon_quest,"Abandon Your Quest"},
+    //SERVICE_QUEST_REWARD_RANDART
+    {STORE_GUILD,   0,      do_service_quest_art_reward,"Create Artifact Quest Reward"},
+    //SERVICE_QUEST_REWARD_INC_HP
+    {STORE_GUILD,   0,      do_service_hp_inc,      "Permanent Hit Point Increase Reward"},
+    //SERVICE_QUEST_REWARD_INC_STAT
+    {STORE_GUILD,   0,      do_service_stat,        "Permanent Stat Increase Reward"},
+    //SERVICE_QUEST_REWARD_AUGMENTATION
+    {STORE_GUILD,   0,      do_service_augment,     "Permanent Stats Augmentation Reward"},
 };
 
-/*** Constants and definitions ***/
 
-/* Easy names for the elements of the 'scr_places' arrays. */
-enum
-{
-    LOC_PRICE = 0,
-    LOC_OWNER,
-    LOC_HEADER,
-    LOC_ITEMS_START,
-    LOC_ITEMS_END,
-    LOC_MORE,
-    LOC_HELP_CLEAR,
-    LOC_HELP_PROMPT,
-    LOC_AU,
-    LOC_WEIGHT,
-    LOC_CUR_QUEST1,
-    LOC_CUR_QUEST2,
-    LOC_GUILD_REP,
-
-    LOC_MAX
-};
-
-/* Places for the various things displayed onscreen */
-static unsigned int scr_places_x[LOC_MAX];
-static unsigned int scr_places_y[LOC_MAX];
-
-
-/* State flags */
-#define STORE_GOLD_CHANGE      0x01
-#define STORE_FRAME_CHANGE     0x02
-
-#define STORE_SHOW_HELP        0x04
-
-#define STORE_MAX_ITEM			99
-
-
-/* Compound flag for the initial display of a store */
-#define STORE_INIT_CHANGE		(STORE_FRAME_CHANGE | STORE_GOLD_CHANGE)
-
-
-/** Variables to maintain state ***/
-
-/* Flags for the display */
-static u16b store_flags;
-
-static int services_min;
-static int services_max;
-static int quests_min;
-static int quests_max;
-
-
-
-
-#define QUEST_REWARD_HEAD	SERVICE_QUEST_DEFER_REWARD
-#define QUEST_REWARD_TAIL	SERVICE_QUEST_REWARD_AUGMENTATION
-
-
-
-static byte services_offered[STORE_SERVICE_MAX];
-static byte quests_offered[QUEST_SLOT_MAX];
 
 /* Quest Titles*/
 static QString quest_title[QUEST_SLOT_MAX] =
@@ -131,14 +98,6 @@ static QString quest_title[QUEST_SLOT_MAX] =
 
 /*** Utilities ***/
 
-/*
- * Return the owner struct for the given store.
- */
-static owner_type *store_owner(int st)
-{
-    store_type *st_ptr = &store[st];
-    return &b_info[(st * z_info->b_max) + st_ptr->owner];
-}
 
 
 /* Randomly select one of the entries in an array */
@@ -254,26 +213,6 @@ static void prt_welcome(const owner_type *ot_ptr)
 }
 
 /*
- * Marks everything to re-draw, update, and notice when an item
- * or service is bought or sold in a store.  Note you can sell
- * directly from your equipment, so everything needs to be updated.
- */
-static void store_updates(void)
-{
-    /* Combine / Reorder the pack */
-    p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
-
-    /* Recalculate bonuses */
-    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
-
-    /* Redraw stuff */
-    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_INVEN | PR_EQUIP | PR_MESSAGE);
-
-    p_ptr->window |= (PW_INVEN | PW_EQUIP | PW_ITEMLIST);
-
-}
-
-/*
  * Let a shop-keeper React to a purchase
  *
  * We paid "price", it was worth "value", and we thought it was worth "guess"
@@ -308,20 +247,6 @@ static store_type *st_ptr = NULL;
  */
 static owner_type *ot_ptr = NULL;
 
-#define STORE_NONE -1
-
-/* Get the current store number, or STORE_NONE if not in a store */
-static int current_store(void)
-{
-    if (cave_shop_bold(p_ptr->py,p_ptr->px))
-
-        return (f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].f_power);
-
-    return STORE_NONE;
-}
-
-
-/*  Store Services */
 
 /*return false if the player doesn't have enough gold*/
 static bool check_gold(s32b price)
@@ -336,8 +261,924 @@ static bool check_gold(s32b price)
     return (TRUE);
 }
 
+
+static void init_services_and_quests(int store_num)
+{
+    int i;
+
+    /*Nothing in the store*/
+    if (store_num == STORE_HOME) return;
+
+    /*
+     * Now, initialize the quests,
+     * but only if the player is in the guild are active.
+     */
+    if (store_num != STORE_GUILD) return;
+
+    /* No quest options if they currently have an active one. */
+    if (guild_quest_level()) return;
+
+    /*Honor the no quests option*/
+    if (!can_quest_at_level()) return;
+
+    /* Check if the no_quests option is on */
+    if (adult_no_quests) return;
+
+    /*get a list of allowable quests*/
+    for (i = 0;i < QUEST_SLOT_MAX; i++)
+    {
+        if (quest_allowed(i))
+        {
+            /*Allow*/
+            //quests_max++;
+        }
+    }
+}
+
+bool do_service_enchant(byte choice, u32b price)
+{
+    s16b add_to;
+    s16b counter = 1;
+    int item;
+    u32b f1, f2, f3, fn;
+    object_type *o_ptr;
+    object_kind *k_ptr;
+    QString o_name;
+
+    /* Enchant armor if requested */
+    if (choice == SERVICE_ENCHANT_ARMOR)
+    {
+        item_tester_hook = item_tester_hook_ided_armour;
+    }
+    else item_tester_hook = item_tester_hook_ided_weapon;
+
+    /* Get an item */
+    QString q = "Enchant which item? ";
+    QString s = "You have nothing to enchant.";
+    if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN | USE_QUIVER))) return (FALSE);
+
+    /*Got the item*/
+    o_ptr = &inventory[item];
+    k_ptr = &k_info[o_ptr->k_idx];
+
+    /* Extract the flags */
+    object_flags(o_ptr, &f1, &f2, &f3, &fn);
+
+    if (choice == SERVICE_ENCHANT_ARMOR) add_to = o_ptr->to_a;
+    else if (choice == SERVICE_ENCHANT_TO_HIT) add_to = o_ptr->to_h;
+    /* to-damage*/
+    else add_to = o_ptr->to_d;
+
+    /* Description, shorten it for artifacts */
+    if (o_ptr->is_artifact()) o_name = object_desc(o_ptr, ODESC_BASE);
+    else o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+
+    /*
+     * We will eventually run into the u32 variable max number, so
+     * cut off the + allowed
+     */
+    if (add_to >= 15)
+    {
+        message(QString("%1 %2 cannot be enchanted any further") .arg(((item >= 0) ? "Your" : "The")) .arg(o_name));
+
+        return (FALSE);
+    }
+
+    /* Missiles are easier to enchant */
+    if ((o_ptr->tval == TV_BOLT) ||
+        (o_ptr->tval == TV_ARROW) ||
+        (o_ptr->tval == TV_SHOT))
+    {
+        price = price / 20;
+    }
+
+    /* Greater to-hit and to-dam makes things more expensive*/
+    while (add_to >= counter)
+    {
+        price += (price * 8) / 10;
+
+        counter ++;
+    }
+
+    /*multiply for quantity*/
+    price *= o_ptr->number;
+
+    /*artifacts are double*/
+    if (o_ptr->art_num) choice *= 2;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    QString prompt = (QString("Spend %1 gold to enchant %2? ") .arg(price) .arg(o_name));
+    if (!get_check(prompt)) return (FALSE);
+
+    /*reduce the gold*/
+    p_ptr->au -= price;
+
+    /* Description */
+    o_name = object_desc(o_ptr, ODESC_FULL);
+
+    /* Describe */
+    message(QString("%1 %2 glow%3 brightly!") .arg((item >= 0) ? "Your" : "The") .arg(o_name) .arg((o_ptr->number > 1) ? "" : "s"));
+
+    if (choice == SERVICE_ENCHANT_ARMOR) o_ptr->to_a ++;
+    else if (choice == SERVICE_ENCHANT_TO_HIT) o_ptr->to_h ++;
+    /* to-damage*/
+    else o_ptr->to_d++;
+
+    /* Break curse */
+    if (o_ptr->is_cursed() &&
+        (!(k_ptr->k_flags3 & (TR3_PERMA_CURSE))) &&
+         (add_to >= 0) && (rand_int(100) < 25))
+    {
+        message(QString("The curse is broken!"));
+
+        /* Uncurse the object */
+        o_ptr->uncurse();
+
+    }
+
+    return (TRUE);
+}
+
+bool do_service_brand(byte choice, u32b price)
+{
+    byte brand_type;
+    object_type *o_ptr;
+    QString o_name;
+    int item;
+
+    /* Enchant weapon if requested */
+    if (choice == SERVICE_ELEM_BRAND_WEAP)
+    {
+        item_tester_hook = item_tester_hook_wieldable_ided_weapon;
+    }
+    /*Ammo*/
+    else item_tester_hook = item_tester_hook_ided_ammo;
+
+    /* Get an item */
+    QString q = "Brand which item? ";
+    QString s = "You have nothing to Brand.";
+    if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN | USE_QUIVER))) return (FALSE);
+
+    /*Got the item*/
+    o_ptr = &inventory[item];
+
+    /* Description, shorten it for artifacts */
+    if (o_ptr->art_num) o_name = object_desc(o_ptr, ODESC_BASE);
+    else o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+
+    /*If artifact, or ego item, don't bother*/
+    if ((o_ptr->art_num) || (o_ptr->ego_num))
+    {
+        message(QString("%1 cannot be branded!") .arg(capitalize_first(o_name)));
+
+        return (FALSE);
+    }
+
+    /* Missiles are easier to enchant */
+    if ((o_ptr->tval == TV_BOLT) ||
+        (o_ptr->tval == TV_ARROW) ||
+        (o_ptr->tval == TV_SHOT))
+    {
+        price = price / 20;
+    }
+
+    /*multiply for quantity*/
+    price *= o_ptr->number;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    QString prompt = (QString("Spend %1 gold to brand %2? ") .arg(price) .arg(o_name));
+    if (!get_check(prompt)) return (FALSE);
+
+    if (choice == SERVICE_ELEM_BRAND_WEAP)
+    {
+        if (one_in_(2)) brand_type = BRAND_OFFSET_FLAME;
+        else brand_type = BRAND_OFFSET_FROST;
+
+    }
+    /*ammo*/
+    else
+    {
+        /* Select the brand */
+        if (one_in_(3))
+            brand_type = EGO_AMMO_FLAME;
+        else if (one_in_(2))
+            brand_type = EGO_AMMO_FROST;
+        else brand_type = EGO_AMMO_VENOM;
+    }
+
+    /*Brand*/
+    if (brand_object(o_ptr, brand_type, FALSE))
+    {
+        p_ptr->au -= price;
+        return (TRUE);
+    }
+    message(QString("Branding failed."));
+    return (FALSE);
+}
+
+bool do_service_recharge(byte choice, u32b price)
+{
+    (void)choice;
+    object_type *o_ptr;
+    QString o_name;
+    int item;
+
+    /* Only accept legal items, which are wands and staffs */
+    item_tester_hook = item_tester_hook_recharge;
+
+    /* Get an item */
+    QString q = "Recharge which item? ";
+    QString s = "You have nothing to recharge.";
+    if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN))) return (FALSE);
+
+    /*Got the item*/
+    o_ptr = &inventory[item];
+
+    /* Description */
+    o_name = object_desc(o_ptr, ODESC_FULL);
+
+    /* Extract the object "level" */
+    byte lev = k_info[o_ptr->k_idx].k_level;
+
+    /*base price on level*/
+    price += price * (lev / 2);
+
+    /*get the price for rods*/
+    if (o_ptr->tval == TV_ROD)
+    {
+        if (!o_ptr->timeout)
+        {
+            /* Describe */
+            message(QString("The %1 %2 not require re-charging!") .arg(o_name) .arg((o_ptr->number > 1 ? "do" : "does")));
+
+            return (FALSE);
+        }
+        else
+        {
+            price += (price * o_ptr->timeout) / 20;
+        }
+    }
+
+    /*Wands, and Staffs*/
+    else
+    {
+        price += o_ptr->pval * price;
+
+        /*Bigger charage for a stack of staffs or wands*/
+        if (o_ptr->number > 1) price += (o_ptr->number - 1) * price;
+    }
+
+    /*Too expensive*/
+    if (!check_gold(price)) return(FALSE);
+
+    QString prompt = (QString("Spend %1 gold to recharge %2?") .arg(price) .arg(o_name));
+
+    if (!get_check(prompt)) return(FALSE);
+
+    /*re-charge the rods*/
+    if (o_ptr->tval == TV_ROD)
+    {
+        o_ptr->timeout = 0;
+    }
+    /*Wands and staffs*/
+    else
+    {
+        recharge_staff_wand(o_ptr, 75);
+    }
+
+    /*We re-charged an item*/
+    p_ptr->au -= price;
+
+    return (TRUE);
+}
+
+
+bool do_service_identify(byte choice, u32b price)
+{
+   bool success;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    /*We identified an item*/
+    if (choice == SERVICE_IDENTIFY) success = ident_spell();
+    // choice == SERVICE_IDENTIFY_FULLY
+    else success = identify_fully();
+
+    if (!success) return (FALSE);
+
+    // We ID'ed an item
+    p_ptr->au -= price;
+    return (TRUE);
+}
+
+bool do_service_cure_critical(byte choice, u32b price)
+{
+    (void)choice;
+
+    bool healed = FALSE;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    QString prompt = (QString("Spend %1 gold to cure critical wounds? ") .arg(price));
+    if (!get_check(prompt)) return (FALSE);
+
+    /*Heal the player, note if they actually need healing*/
+    if (hp_player(damroll(8, 10))) healed = TRUE;
+    if (clear_timed(TMD_BLIND, TRUE)) healed = TRUE;
+    if (clear_timed(TMD_CONFUSED, TRUE)) healed = TRUE;
+    if (clear_timed(TMD_POISONED, TRUE)) healed = TRUE;
+    if (set_stun(0)) healed = TRUE;
+    if (set_cut(0)) healed = TRUE;
+
+    /*We identified an item*/
+    if (healed)
+    {
+        p_ptr->au -= price;
+        return (TRUE);
+    }
+    pop_up_message_box(QString("You do not require any healing services."));
+
+    return (FALSE);
+}
+
+bool do_service_restore_life(byte choice, u32b price)
+{
+    (void)choice;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    QString prompt = (QString("Spend %1 gold to restore life levels? ") .arg(price));
+    if (!get_check(prompt)) return (FALSE);
+
+    /*We restored the player*/
+    if (restore_level())
+    {
+        p_ptr->au -= price;
+        return (TRUE);
+    }
+    /* Not needed*/
+    pop_up_message_box(QString("Your life levels do not require restoring."));
+    return (FALSE);
+}
+
+bool do_service_remove_curse(byte choice, u32b price)
+{
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    /*We removed a curse an item, charge the player*/
+    // FALSE is SERVICE_REMOVE_CURSE
+    if (remove_curse(choice == SERVICE_REMOVE_HEAVY_CURSE ? TRUE : FALSE))
+    {
+        p_ptr->au -= price;
+        return (TRUE);
+    }
+
+    else pop_up_message_box(QString("No items had a curse removed."));
+    return (FALSE);
+}
+
+bool do_service_stat(byte choice, u32b price)
+{
+
+    int result;
+    QString title = get_title();
+
+    /*Too expensive*/
+    if (choice != SERVICE_QUEST_REWARD_INC_STAT)
+    {
+        if (!check_gold(price)) return (FALSE);
+    }
+    else
+    {
+        /* Ask confirmation */
+        if (!get_check(QString("Choose a stat to permanently increase, %1?") .arg(title))) return (FALSE);
+    }
+
+    result = launch_stat_dialog(choice);
+
+    //Player cancelled
+    if (result == A_MAX+1) return (FALSE);
+
+    // No eligible stats
+    if (result == A_MAX)
+    {
+
+        if (choice == SERVICE_RESTORE_STAT)
+        {
+            pop_up_message_box(QString("None of your stats need restoring."));
+        }
+        else if (choice == SERVICE_INCREASE_STAT)
+        {
+            pop_up_message_box(QString("Your stats cannot be increased any further."));
+        }
+        /* must be SERVICE_QUEST_REWARD_INC_STAT*/
+        else
+        {
+            pop_up_message_box(QString("Your stats cannot be permanently increased any further."));
+        }
+        return (FALSE);
+    }
+
+    /*restore the stat*/
+    if (choice == SERVICE_RESTORE_STAT)
+    {
+        /*charge it*/
+        if (do_res_stat(result)) p_ptr->au -= price;
+        else pop_up_message_box(QString("Your %1 does not need restoring.") .arg(stat_names_full[result]));
+
+    }
+    else if (choice == SERVICE_INCREASE_STAT)
+    {
+        if (do_inc_stat(result)) p_ptr->au -= price;
+        else pop_up_message_box(QString("Your %1 cannot be increased any further.") .arg(stat_names_full[result]));
+    }
+    /* must be SERVICE_QUEST_REWARD_INC_STAT*/
+    else
+    {
+        do_perm_stat_boost(result);
+        guild_quest_wipe(TRUE);
+    }
+    return (TRUE);
+}
+
+bool do_service_make_randart(byte choice, u32b price)
+{
+    (void)choice;
+    object_type *o_ptr;
+    object_kind *k_ptr;
+    QString o_name;
+    int item;
+    s32b o_value;
+    QString title = get_title();
+
+    if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
+    {
+        message(QString("Nothing happens."));
+        return (FALSE);
+    }
+
+    /* Only accept legal items */
+    item_tester_hook = item_tester_hook_randart;
+
+    /* Get an item */
+    QString q = (QString("Choose an item to be made into an artifact, %1.") .arg(title));
+    QString s = (QString("You have no eligible item, %1.") .arg(title));
+    if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN))) return (FALSE);
+
+    /*Got the item*/
+    o_ptr = &inventory[item];
+
+    /*Got the object kind*/
+    k_ptr = &k_info[o_ptr->k_idx];
+
+    /* Description */
+    o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+
+    /* Get the "value" of the item */
+    o_value = k_ptr->cost * 50;
+
+    /*Get the price for the item*/
+    price = price + o_value;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    QString prompt = (QString("Spend %1 gold to make %2 into an artifact? ") .arg(price) .arg(o_name));
+    if (!get_check(prompt)) return (FALSE);
+
+    /*extra power bonus for expensive items and high player fame*/
+    s32b art_value = p_ptr->q_fame / 20 + MAX((k_ptr->cost / 2000), p_ptr->q_fame / 50);
+
+    /*Hack - add in any to-hit and to-value, since they will be erased*/
+    art_value += (o_ptr->to_h + o_ptr->to_d + o_ptr->to_a) / 2;
+
+    /*actually create the Randart, or handle failure*/
+    if (make_one_randart(o_ptr, art_value, TRUE))
+    {
+        p_ptr->au -= price;
+
+        /* Identify it fully */
+        object_aware(o_ptr);
+        object_known(o_ptr);
+
+        /* Mark the history */
+        o_ptr->origin_nature = ORIGIN_ACQUIRE;
+        o_ptr->origin_r_idx = 0;
+        o_ptr->origin_dlvl = 0;
+
+        /* Mark the item as fully known */
+        o_ptr->ident |= (IDENT_MENTAL);
+
+        /*Let the player know what they just got*/
+        object_info_screen(o_ptr);
+
+        return (TRUE);
+    }
+
+    message(QString("The attempt at making an artifact has failed"));
+    return (FALSE);
+}
+
+bool do_service_probing(byte choice, u32b price)
+{
+    (void)choice;
+    QString race_name;
+    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+    monster_race *r_ptr = &r_info[q_ptr->mon_idx];
+    monster_lore *l_ptr = &l_list[q_ptr->mon_idx];
+
+    if ((!quest_single_r_idx(q_ptr)) || (q_ptr->mon_idx == 0))
+    {
+        message(QString("You are not currently questing for a specific creature."));
+        return (FALSE);
+    }
+
+    /* Not a vault quest, so get the monster race name (singular)*/
+    race_name = monster_desc_race(q_ptr->mon_idx);
+
+    /* Make it plural if necessary*/
+    if (q_ptr->q_max_num > 1) race_name = plural_aux(race_name);
+
+    price += r_ptr->level * 100;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    /*confirm*/
+    QString prompt = (QString("Spend %1 gold to probe %2? ") .arg(price) .arg(race_name));
+    if (!get_check(prompt)) return (FALSE);
+
+    /*charge the player*/
+    p_ptr->au -= price;
+
+    /*learn something about the monster*/
+    lore_probe_monster_aux(q_ptr->mon_idx);
+
+    /* Hack -- Increse the sightings, and ranged attacks around 50% of the time */
+    l_ptr->sights = MAX_SHORT;
+    l_ptr->ranged = MAX_UCHAR;
+
+    /* Know "race" flags */
+    l_ptr->r_l_flags3 |= (r_ptr->flags3 & RF3_RACE_MASK);
+    /* Know "forced" flags */
+    l_ptr->r_l_flags1 |= (r_ptr->flags1 & (RF1_FORCE_DEPTH | RF1_FORCE_MAXHP));
+
+    /* Output to the screen */
+    describe_monster(q_ptr->mon_idx, false, "");
+
+    return (TRUE);
+}
+
+bool do_service_buy_object(byte choice, u32b price)
+{
+    QString o_name;
+    int k_idx;
+    object_type *i_ptr;
+    object_type object_type_body;
+
+    i_ptr = &object_type_body;
+
+    QString obj_type = "Potion";
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    /*get the healing potion index*/
+    if (choice == SERVICE_BUY_HEALING_POTION)
+    {
+        k_idx = lookup_kind(TV_POTION, SV_POTION_HEALING);
+    }
+    /*get the potion of life index*/
+    else if (choice == SERVICE_BUY_LIFE_POTION)
+    {
+        k_idx = lookup_kind(TV_POTION, SV_POTION_LIFE);
+    }
+
+    /* SERVICE_BUY_SCROLL_BANISHMENT */
+    else
+    {
+        k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_MASS_BANISHMENT);
+        obj_type = "Scroll";
+    }
+
+    /*get the object kind*/
+    object_kind *k_ptr = &k_info[k_idx];
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    QString prompt = (QString("Spend %1 gold to purchase a %3 of %2? ") .arg(price) .arg(k_ptr->k_name) .arg(obj_type));
+    if (!get_check(prompt)) return (FALSE);
+
+    /*charge the player*/
+    p_ptr->au -= price;
+
+    /* Make the potion */
+    object_prep(i_ptr, k_idx);
+
+    /* Identify it */
+    k_ptr->aware = TRUE;
+
+    /* Describe the result */
+    o_name = object_desc(i_ptr, ODESC_FULL);
+
+    /* Remember history */
+    object_history(i_ptr, ORIGIN_STORE, 0);
+
+    /* Note that the pack is too full */
+    if (!inven_carry_okay(i_ptr))
+    {
+        message(QString("You have no room in your backpack."));
+
+        /* Drop the object */
+        drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
+
+        /* Inform the player */
+        message(QString("Your %1 is waiting outside!") .arg(o_name));
+
+    }
+
+    /* Give it to the player */
+    else
+    {
+        int item_new;
+
+        /* Give it to the player */
+        item_new = inven_carry(i_ptr);
+
+        /* Describe just the result */
+        o_name = object_desc(&inventory[item_new], ODESC_PREFIX | ODESC_FULL);
+
+        /* Message */
+        message(QString("You have (%1) %2.") .arg(index_to_label(item_new)) .arg(o_name));
+    }
+
+    return (TRUE);
+}
+
+bool do_service_fireproof(byte choice, u32b price)
+{
+    int i;
+    (void)choice;
+    object_type *o_ptr;
+    object_kind *k_ptr;
+    QString o_name;
+    int item;
+    QString s, q;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    /* Restrict choices to spell books */
+    item_tester_tval = cp_ptr->spell_book;
+
+    /* Only accept legal items, which are burnable books */
+    item_tester_hook = item_tester_hook_flammable_book;
+
+    /* Get an item */
+    q = "Fireproof which book? ";
+    if (cp_ptr->spell_book == TV_PRAYER_BOOK) s = "You have no flammable prayer books!";
+    else s = "You have no flammable spell books!";
+    if (!get_item(&item, q, s, (USE_INVEN | USE_FLOOR))) return (FALSE);
+
+    /*Got the item*/
+    o_ptr = &inventory[item];
+    k_ptr = &k_info[o_ptr->k_idx];
+
+    /*Adjust the price for the book and the number of books*/
+    price += (k_ptr->cost * 6);
+    price *= o_ptr->number;
+
+    /*Too expensive*/
+    if (!check_gold(price)) return (FALSE);
+
+    /* Description */
+    o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+
+    /*confirm*/
+    QString prompt = (QString("Spend %1 gold to fireproof %2? ") .arg(price) .arg(o_name));
+    if (!get_check(prompt)) return (FALSE);
+
+    /*find the ego-item*/
+    for (i = 0; i < z_info->e_max; i++)
+    {
+        ego_item_type *e_ptr = &e_info[i];
+
+        if (e_ptr->e_name.contains("Fireproof"))
+        {
+            int j;
+            bool right_type = FALSE;
+
+            /*Confirm the right tval*/
+            for (j = 0; j < EGO_TVALS_MAX; j++)
+            {
+                if (e_ptr->tval[j] == cp_ptr->spell_book) right_type = TRUE;
+            }
+
+            /*We found it*/
+            if (right_type)
+            {
+                /*charge the player*/
+                p_ptr->au -= price;
+
+                o_ptr->ego_num = i;
+
+                /* Description */
+                o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+
+                /*Confirm it worked*/
+                message(QString("You have %1") .arg(o_name));
+
+                return (TRUE);
+            }
+        }
+    }
+
+    return (FALSE);
+}
+
+bool do_service_defer_reward(byte choice, u32b price)
+{
+    (void)choice;
+    (void)price;
+    QString title = get_title();
+    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+
+    /* Check for current quest */
+    if (!guild_quest_level())
+    {
+        message(QString("You don't have a current quest, %1.") .arg(title));
+        return (FALSE);
+    }
+
+    /* Ask confirmation */
+    if (!get_check(QString("Really defer your reward, %1?").arg(title))) return (FALSE);
+
+    p_ptr->deferred_rewards += (q_ptr->q_fame_inc * 3) / 2;
+
+    guild_quest_wipe(FALSE);
+
+    return (TRUE);
+}
+
+bool do_service_abandon_quest(byte choice, u32b price)
+{
+    (void)choice;
+    (void)price;
+
+    QString title = get_title();
+
+    /* Check for current quest */
+    if (!guild_quest_level())
+    {
+        message(QString("You don't have a current quest, %1.") .arg(title));
+        return (FALSE);
+    }
+
+    /* Ask confirmation */
+    if (!get_check(QString("Abandon your quest, %1?") .arg(title))) return (FALSE);
+
+    /* Remove the current quest */
+    quest_fail();
+
+    /*Get the new title, and give a message*/
+    message(QString("The guild is disappointed in you, %1.") .arg(get_title()));
+
+    return (TRUE);
+}
+
+bool do_service_quest_art_reward(byte choice, u32b price)
+{
+    (void)choice;
+    (void)price;
+    int rand_power;
+    object_type *o_ptr;
+    object_kind *k_ptr;
+    QString o_name;
+    int item;
+    QString title = get_title();
+    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+
+    /* Paranoia - should never happen */
+    if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
+    {
+        message(QString("Nothing happens."));
+        return (FALSE);
+    }
+
+    /* Only accept legal items */
+    item_tester_hook = item_tester_hook_randart;
+
+    /* Get an item */
+    QString q = (QString("Choose an item to be made into an artifact, %1. ") .arg(title));
+    QString s = (QString("You have no eligible item, %1. ") .arg(title));
+    if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN))) return (FALSE);
+
+    /*Got the item*/
+    o_ptr = &inventory[item];
+
+    /*Got the object kind*/
+    k_ptr = &k_info[o_ptr->k_idx];
+
+    /* Description */
+    o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+
+    QString prompt = (QString("Make %1 into an artifact? ") .arg(o_name));
+
+    if (!get_check(prompt)) return (FALSE);
+
+    /* extra power bonus for expensive items and high player fame*/
+    rand_power = (p_ptr->q_fame + p_ptr->deferred_rewards) / 20 + MAX((k_ptr->cost / 2000), p_ptr->q_fame / 50);
+
+    /*Hack - add in any to-hit and to-value, since they will be erased*/
+    rand_power += (o_ptr->to_h + o_ptr->to_d + o_ptr->to_a) / 2;
+
+    /*actually create the Randart, or handle failure*/
+    if (make_one_randart(o_ptr, rand_power, TRUE))
+    {
+        /* Identify it fully */
+        object_aware(o_ptr);
+        object_known(o_ptr);
+
+        /* Mark the history */
+        o_ptr->origin_nature = ORIGIN_REWARD;
+        o_ptr->origin_r_idx = 0;
+        o_ptr->origin_dlvl = q_ptr->base_level;
+
+        /* Mark the item as fully known */
+        o_ptr->ident |= (IDENT_MENTAL);
+
+        /*Let the player know what they just got*/
+        // TODO object_info_screen(o_ptr);
+
+        guild_quest_wipe(TRUE);
+
+        return (TRUE);
+    }
+    message(QString("The attempt at making an artifact has failed"));
+    return (FALSE);
+}
+bool do_service_hp_inc(byte choice, u32b price)
+{
+    (void)choice;
+    (void)price;
+    QString title = get_title();
+
+    /* Check for current quest */
+    if (!guild_quest_level())
+    {
+        message(QString("You don't have a current quest, %1.") .arg(title));
+        return (FALSE);
+    }
+
+    /* Ask confirmation */
+    if (!get_check(QString("Do you wish to permanently increase your hit points, %1?") .arg(title))) return (FALSE);
+
+    grant_reward_hp();
+
+    /* Inform the player */
+    message(QString("You now have an increased vitality, %1!") .arg(title));
+
+    guild_quest_wipe(TRUE);
+
+    return (TRUE);
+}
+bool do_service_augment(byte choice, u32b price)
+{
+    int i;
+    (void)choice;
+    (void)price;
+    QString title = get_title();
+
+    /* Check for current quest */
+    if (!guild_quest_level())
+    {
+        message(QString("You don't have a current quest, %1.") .arg(title));
+        return (FALSE);
+    }
+
+    /* Ask confirmation */
+    if (!get_check(QString("Do you wish to permanently increase your stats, %1?").arg(title))) return (FALSE);
+
+    /* Boost all six stats */
+    for (i = 0; i < A_MAX; i++) do_perm_stat_boost(i);
+
+    /* The quest is over */
+    guild_quest_wipe(TRUE);
+    return (TRUE);
+}
+
+
 /* Percent decrease or increase in price of goods		 */
-int moria_chr_adj()
+s16b moria_chr_adj(void)
 {
     int charisma  = p_ptr->state.stat_use[A_CHR];
 
@@ -368,1059 +1209,6 @@ int moria_chr_adj()
     }
 }
 
-
-static void init_services_and_quests(int store_num)
-{
-    int i;
-    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-
-    /* Wipe all the old information. */
-    services_min = 0;
-    services_max = 0;
-    quests_min = 0;
-    quests_max = 0;
-    for (i = 0; i < STORE_SERVICE_MAX; i++) services_offered[i] = -1;
-    for (i = 0; i < QUEST_SLOT_MAX; i++) quests_offered[i] = -1;
-
-    /*Nothing in the store*/
-    if (store_num == STORE_HOME) return;
-
-    /*First, initialize the services*/
-    /* Get the store services for the current store*/
-    for (i = 0; i < STORE_SERVICE_MAX; i++)
-    {
-        service_info *service_ptr = &services_info[i];
-
-        /* Check if the services option is disabled */
-        if (adult_no_store_services) break;
-
-        /* Services are store-specific */
-        if (service_ptr->service_store != store_num) continue;
-
-        /*
-         * The guild only offers certain services
-         * depending on the active quest.
-         */
-
-        /* Offer this service only if there is a quest to abandon. */
-        if (i == SERVICE_ABANDON_QUEST)
-        {
-            /*We finished the quest, why abandon it?*/
-            if (guild_quest_complete()) continue;
-
-            /* No current guild quest */
-            if (!q_ptr->q_type) continue;
-
-            if (!guild_quest_level()) continue;
-        }
-
-        else if ((i >= QUEST_REWARD_HEAD) &&
-                 (i <= QUEST_REWARD_TAIL))
-        {
-            /* Not currently offering a reward */
-            if (!guild_quest_complete()) continue;
-
-            if (i == SERVICE_QUEST_REWARD_INC_HP)
-            {
-                if (!(q_ptr->q_reward & (REWARD_INC_HP)))
-                {
-                    /* This service should not be offered */
-                    continue;
-                }
-            }
-            if (i == SERVICE_QUEST_REWARD_RANDART)
-            {
-                if (!(q_ptr->q_reward & (REWARD_RANDART)))
-                {
-                    /* This service should not be offered */
-                    continue;
-                }
-            }
-            else if (i == SERVICE_QUEST_REWARD_INC_STAT)
-            {
-                if (!(q_ptr->q_reward & (REWARD_INC_STAT)))
-                {
-                    /* This service should not be offered */
-                    continue;
-                }
-            }
-            else if (i == SERVICE_QUEST_REWARD_AUGMENTATION)
-            {
-                if (!(q_ptr->q_reward & (REWARD_AUGMENTATION)))
-                {
-                    /* This service should not be offered */
-                    continue;
-                }
-            }
-        }
-
-        /* Filter out quest-specific services when appropriate. */
-        else if (i == SERVICE_PROBE_QUEST_MON)
-        {
-            if (!guild_quest_level()) continue;
-            if (guild_quest_complete()) continue;
-
-            if (q_ptr->q_type == QUEST_VAULT) continue;
-            if (q_ptr->q_type == QUEST_GREATER_VAULT) continue;
-            if (quest_type_collection(q_ptr)) continue;
-            if (quest_multiple_r_idx(q_ptr)) continue;
-        }
-
-        /* Offer this service. */
-        services_offered[services_max++] = i;
-    }
-
-    quests_min = services_max;
-    quests_max = quests_min;
-
-    /*
-     * Now, initialize the quests,
-     * but only if the player is in the guild are active.
-     */
-    if (store_num != STORE_GUILD) return;
-
-    /* No quest options if they currently have an active one. */
-    if (guild_quest_level()) return;
-
-    /*Honor the no quests option*/
-    if (!can_quest_at_level()) return;
-
-    /* Check if the no_quests option is on */
-    if (adult_no_quests) return;
-
-    /*get a list of allowable quests*/
-    for (i = 0;i < QUEST_SLOT_MAX; i++)
-    {
-        if (quest_allowed(i))
-        {
-            /*Allow*/
-            quests_offered[quests_max - quests_min] = i;
-            quests_max++;
-        }
-    }
-}
-
-/*
- * Calculate the service price.  The guild has no race preferences, so we
- * use the player fame instead.
- */
-static u32b price_services(int store_num, int choice)
-{
-
-    service_info *service_ptr = &services_info[choice];
-
-    /* get the service price*/
-    u32b price = service_ptr->service_price;
-
-    /*adjust price, but not for the guild*/
-    if (store_num != STORE_GUILD)
-    {
-        /* Extract the "minimum" price */
-        if (game_mode == GAME_NPPMORIA)
-        {
-            price = ((price * moria_chr_adj()) / 100L);
-        }
-        else price = ((price * adj_chr_gold[p_ptr->state.stat_ind[A_CHR]]) / 100L);
-    }
-
-    /*Guild price factoring*/
-    else
-    {
-        if (p_ptr->q_fame < 1000) price += price * (1000 - p_ptr->q_fame) / 1000;
-    }
-
-    return(price);
-}
-
-
-/*
- * Process the chosen service from a store
- */
-static bool store_service_aux(int store_num, s16b choice)
-{
-    object_type *o_ptr;
-    object_kind *k_ptr;
-    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-    QString o_name;
-    QString title;
-
-    byte lev;
-
-    QString q, s;
-
-    int item;
-
-    QString prompt;
-
-    u32b price = price_services(store_num, choice);
-    title = get_title();
-
-    switch (choice)
-    {
-        case SERVICE_ENCHANT_ARMOR:
-        case SERVICE_ENCHANT_TO_HIT:
-        case SERVICE_ENCHANT_TO_DAM:
-        {
-            s16b add_to;
-            s16b counter = 1;
-
-            u32b f1, f2, f3, fn;
-
-            /* Enchant armor if requested */
-            if (choice == SERVICE_ENCHANT_ARMOR)
-            {
-                item_tester_hook = item_tester_hook_ided_armour;
-            }
-            else item_tester_hook = item_tester_hook_ided_weapon;
-
-            /* Get an item */
-            q = "Enchant which item? ";
-            s = "You have nothing to enchant.";
-            if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN | USE_QUIVER))) return (FALSE);
-
-            /*Got the item*/
-            o_ptr = &inventory[item];
-            k_ptr = &k_info[o_ptr->k_idx];
-
-            /* Extract the flags */
-            object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-            if (choice == SERVICE_ENCHANT_ARMOR) add_to = o_ptr->to_a;
-            else if (choice == SERVICE_ENCHANT_TO_HIT) add_to = o_ptr->to_h;
-            /* to-damage*/
-            else add_to = o_ptr->to_d;
-
-            /* Description, shorten it for artifacts */
-            if (o_ptr->is_artifact()) o_name = object_desc(o_ptr, ODESC_BASE);
-            else o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-            /*
-             * We will eventually run into the u32 variable max number, so
-             * cut off the + allowed
-             */
-            if (add_to >= 15)
-            {
-                message(QString("%1 %2 cannot be enchanted any further") .arg(((item >= 0) ? "Your" : "The")) .arg(o_name));
-
-                return (FALSE);
-            }
-
-            /* Missiles are easier to enchant */
-            if ((o_ptr->tval == TV_BOLT) ||
-                (o_ptr->tval == TV_ARROW) ||
-                (o_ptr->tval == TV_SHOT))
-            {
-                price = price / 20;
-            }
-
-            /* Greater to-hit and to-dam makes things more expensive*/
-            while (add_to >= counter)
-            {
-                price += (price * 8) / 10;
-
-                counter ++;
-            }
-
-            /*multiply for quantity*/
-            price *= o_ptr->number;
-
-            /*artifacts are double*/
-            if (o_ptr->art_num) price *= 2;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            prompt = (QString("Spend %1 gold to enchant %2? ") .arg(price) .arg(o_name));
-            if (!get_check(prompt)) return (FALSE);
-
-            /*reduce the gold*/
-            p_ptr->au -= price;
-
-            /* Description */
-            o_name = object_desc(o_ptr, ODESC_FULL);
-
-            /* Describe */
-            message(QString("%1 %2 glow%3 brightly!") .arg((item >= 0) ? "Your" : "The") .arg(o_name) .arg((o_ptr->number > 1) ? "" : "s"));
-
-            if (choice == SERVICE_ENCHANT_ARMOR) o_ptr->to_a ++;
-            else if (choice == SERVICE_ENCHANT_TO_HIT) o_ptr->to_h ++;
-            /* to-damage*/
-            else o_ptr->to_d++;
-
-            /* Break curse */
-            if (o_ptr->is_cursed() &&
-                (!(k_ptr->k_flags3 & (TR3_PERMA_CURSE))) &&
-                 (add_to >= 0) && (rand_int(100) < 25))
-            {
-                message(QString("The curse is broken!"));
-
-                /* Uncurse the object */
-                o_ptr->uncurse();
-
-            }
-
-            return (TRUE);
-        }
-
-        case SERVICE_ELEM_BRAND_WEAP:
-        case SERVICE_ELEM_BRAND_AMMO:
-        {
-            byte brand_type;
-
-            /* Enchant weapon if requested */
-            if (choice == SERVICE_ELEM_BRAND_WEAP)
-            {
-                item_tester_hook = item_tester_hook_wieldable_ided_weapon;
-            }
-            /*Ammo*/
-            else item_tester_hook = item_tester_hook_ided_ammo;
-
-            /* Get an item */
-            q = "Brand which item? ";
-            s = "You have nothing to Brand.";
-            if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN | USE_QUIVER))) return (FALSE);
-
-            /*Got the item*/
-            o_ptr = &inventory[item];
-
-            /* Description, shorten it for artifacts */
-            if (o_ptr->art_num) o_name = object_desc(o_ptr, ODESC_BASE);
-            else o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-            /*If artifact, or ego item, don't bother*/
-            if ((o_ptr->art_num) || (o_ptr->ego_num))
-            {
-                message(QString("%1 cannot be branded!") .arg(capitalize_first(o_name)));
-
-                return (FALSE);
-            }
-
-            /* Missiles are easier to enchant */
-            if ((o_ptr->tval == TV_BOLT) ||
-                (o_ptr->tval == TV_ARROW) ||
-                (o_ptr->tval == TV_SHOT))
-            {
-                price = price / 20;
-            }
-
-            /*multiply for quantity*/
-            price *= o_ptr->number;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            prompt = (QString("Spend %1 gold to brand %2? ") .arg(price) .arg(o_name));
-            if (!get_check(prompt)) return (FALSE);
-
-            if (choice == SERVICE_ELEM_BRAND_WEAP)
-            {
-                if (one_in_(2)) brand_type = BRAND_OFFSET_FLAME;
-                else brand_type = BRAND_OFFSET_FROST;
-
-            }
-            /*ammo*/
-            else
-            {
-                /* Select the brand */
-                if (one_in_(3))
-                    brand_type = EGO_AMMO_FLAME;
-                else if (one_in_(2))
-                    brand_type = EGO_AMMO_FROST;
-                else brand_type = EGO_AMMO_VENOM;
-            }
-
-            /*Brand*/
-            if (brand_object(o_ptr, brand_type, FALSE))
-            {
-                p_ptr->au -= price;
-                return (TRUE);
-            }
-            message(QString("Branding failed."));
-            return (FALSE);
-        }
-
-        case SERVICE_RECHARGING:
-        {
-
-            /* Only accept legal items, which are wands and staffs */
-            item_tester_hook = item_tester_hook_recharge;
-
-            /* Get an item */
-            q = "Recharge which item? ";
-            s = "You have nothing to recharge.";
-            if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN))) return (FALSE);
-
-            /*Got the item*/
-            o_ptr = &inventory[item];
-
-            /* Description */
-            o_name = object_desc(o_ptr, ODESC_FULL);
-
-            /* Extract the object "level" */
-            lev = k_info[o_ptr->k_idx].k_level;
-
-            /*base price on level*/
-            price += price * (lev / 2);
-
-            /*get the price for rods*/
-            if (o_ptr->tval == TV_ROD)
-            {
-                if (!o_ptr->timeout)
-                {
-                    /* Describe */
-                    message(QString("The %1 %2 not require re-charging!") .arg(o_name) .arg((o_ptr->number > 1 ? "do" : "does")));
-
-                    return (FALSE);
-                }
-                else
-                {
-                    price += (price * o_ptr->timeout) / 20;
-                }
-            }
-
-            /*Wands, and Staffs*/
-            else
-            {
-                price += o_ptr->pval * price;
-
-                /*Bigger charage for a stack of staffs or wands*/
-                if (o_ptr->number > 1) price += (o_ptr->number - 1) * price;
-            }
-
-            /*Too expensive*/
-            if (!check_gold(price)) return(FALSE);
-
-            prompt = (QString("Spend %1 gold to recharge %2?") .arg(price) .arg(o_name));
-
-            if (!get_check(prompt)) return(FALSE);
-
-            /*re-charge the rods*/
-            if (o_ptr->tval == TV_ROD)
-            {
-                o_ptr->timeout = 0;
-            }
-            /*Wands and staffs*/
-            else
-            {
-                recharge_staff_wand(o_ptr, 75);
-            }
-
-            /*We re-charged an item*/
-            p_ptr->au -= price;
-
-            return (TRUE);
-        }
-        case SERVICE_IDENTIFY:
-        {
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            /*We identified an item*/
-            if (ident_spell())
-            {
-                p_ptr->au -= price;
-                return (TRUE);
-            }
-            return (FALSE);
-        }
-        case SERVICE_IDENTIFY_FULLY:
-        {
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            /*We identified an item*/
-            if (identify_fully())
-            {
-                p_ptr->au -= price;
-                return (TRUE);
-            }
-            return (FALSE);
-        }
-        case SERVICE_CURE_CRITICAL:
-        {
-            bool healed = FALSE;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            prompt = (QString("Spend %1 gold to cure critical wounds? ") .arg(price));
-            if (!get_check(prompt)) return (FALSE);
-
-            /*Heal the player, note if they actually need healing*/
-            if (hp_player(damroll(8, 10))) healed = TRUE;
-            if (clear_timed(TMD_BLIND, TRUE)) healed = TRUE;
-            if (clear_timed(TMD_CONFUSED, TRUE)) healed = TRUE;
-            if (clear_timed(TMD_POISONED, TRUE)) healed = TRUE;
-            if (set_stun(0)) healed = TRUE;
-            if (set_cut(0)) healed = TRUE;
-
-            /*We identified an item*/
-            if (healed)
-            {
-                p_ptr->au -= price;
-                return (TRUE);
-            }
-            message(QString("You do not require any healing services."));
-
-            return (FALSE);
-        }
-        case SERVICE_RESTORE_LIFE_LEVELS:
-        {
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            prompt = (QString("Spend %1 gold to restore life levels? ") .arg(price));
-            if (!get_check(prompt)) return (FALSE);
-
-            /*We restored the player*/
-            if (restore_level())
-            {
-                p_ptr->au -= price;
-                return (TRUE);
-            }
-            /* Not needed*/
-            message(QString("Your life levels do not require restoring."));
-            return (FALSE);
-        }
-        case SERVICE_REMOVE_CURSE:
-        case SERVICE_REMOVE_HEAVY_CURSE:
-        {
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            /*We removed a curse an item, charge the player*/
-            if (remove_curse(choice == SERVICE_REMOVE_HEAVY_CURSE ? TRUE : FALSE))
-            {
-                p_ptr->au -= price;
-                return (TRUE);
-            }
-
-            else message(QString("No items had a curse removed."));
-            return (FALSE);
-
-        }
-        case SERVICE_RESTORE_STAT:
-        case SERVICE_INCREASE_STAT:
-        case SERVICE_QUEST_REWARD_INC_STAT:
-        {
-
-            int result;
-
-            /*Too expensive*/
-            if (choice != SERVICE_QUEST_REWARD_INC_STAT)
-            {
-                if (!check_gold(price)) return (FALSE);
-            }
-            else
-            {
-                /* Ask confirmation */
-                if (!get_check(QString("Choose a stat to permanently increase, %1?") .arg(title))) return (FALSE);
-            }
-
-            /* returning false??*/
-            // TODO result = stats_menu(choice);
-
-            if (result == 0) // TODO work on "escape" choiceSTAT_NO_CHOICE)
-            {
-
-                if (choice == SERVICE_RESTORE_STAT)
-                {
-                    message(QString("None of your stats need restoring."));
-                }
-                else if (choice == SERVICE_INCREASE_STAT)
-                {
-                    message(QString("Your stats cannot be increased any further."));
-                }
-                /* must be SERVICE_QUEST_REWARD_INC_STAT*/
-                else
-                {
-                    message(QString("Your stats cannot be permanently increased any further."));
-                }
-                return (FALSE);
-            }
-
-            /*player chose escape - do nothing */
-            if (result == 0) // DOTO figure out STAT_ESCAPE)
-            {
-                return (FALSE);
-            }
-
-            /*restore the stat*/
-            if (choice == SERVICE_RESTORE_STAT)
-            {
-                /*charge it*/
-                if (do_res_stat(result)) p_ptr->au -= price;
-                else message(QString("Your %1 does not need restoring.") .arg(stat_names_full[result]));
-
-            }
-            else if (choice == SERVICE_INCREASE_STAT)
-            {
-                if (do_inc_stat(result)) p_ptr->au -= price;
-                else message(QString("Your %1 cannot be increased any further.") .arg(stat_names_full[result]));
-            }
-            /* must be SERVICE_QUEST_REWARD_INC_STAT*/
-            else
-            {
-                do_perm_stat_boost(result);
-                guild_quest_wipe(TRUE);
-            }
-            return (TRUE);
-        }
-
-        case SERVICE_CREATE_RANDART:
-        {
-            s32b o_value;
-
-            if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
-            {
-                message(QString("Nothing happens."));
-                return (FALSE);
-            }
-
-            /* Only accept legal items */
-            item_tester_hook = item_tester_hook_randart;
-
-            /* Get an item */
-            q = (QString("Choose an item to be made into an artifact, %1.") .arg(title));
-            s = (QString("You have no eligible item, %1.") .arg(title));
-            if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN))) return (FALSE);
-
-            /*Got the item*/
-            o_ptr = &inventory[item];
-
-            /*Got the object kind*/
-            k_ptr = &k_info[o_ptr->k_idx];
-
-            /* Description */
-            o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-            /* Get the "value" of the item */
-            o_value = k_ptr->cost * 50;
-
-            /*Get the price for the item*/
-            price = price + o_value;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            prompt = (QString("Spend %1 gold to make %2 into an artifact? ") .arg(price) .arg(o_name));
-            // TODO if (!get_check(prompt)) return (FALSE);
-
-            /*re-use the o_value variable for a completely different purpose*/
-            /*extra power bonus for expensive items and high player fame*/
-            o_value = p_ptr->q_fame / 20 + MAX((k_ptr->cost / 2000), p_ptr->q_fame / 50);
-
-            /*Hack - add in any to-hit and to-value, since they will be erased*/
-            o_value += (o_ptr->to_h + o_ptr->to_d + o_ptr->to_a) / 2;
-
-            /*actually create the Randart, or handle failure*/
-            if (make_one_randart(o_ptr, o_value, TRUE))
-            {
-                p_ptr->au -= price;
-
-                /* Identify it fully */
-                object_aware(o_ptr);
-                object_known(o_ptr);
-
-                /* Mark the history */
-                o_ptr->origin_nature = ORIGIN_ACQUIRE;
-                o_ptr->origin_r_idx = 0;
-                o_ptr->origin_dlvl = 0;
-
-
-
-                /* Mark the item as fully known */
-                o_ptr->ident |= (IDENT_MENTAL);
-
-                /*Let the player know what they just got*/
-                // TODO object_info_screen(o_ptr);
-
-                return (TRUE);
-            }
-
-            message(QString("The attempt at making an artifact has failed"));
-            return (FALSE);
-        }
-
-        case SERVICE_QUEST_REWARD_RANDART:
-        {
-            int rand_power;
-
-            /* Paranoia - should never happen */
-            if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
-            {
-                message(QString("Nothing happens."));
-                return (FALSE);
-            }
-
-            /* Only accept legal items */
-            item_tester_hook = item_tester_hook_randart;
-
-            /* Get an item */
-            q = (QString("Choose an item to be made into an artifact, %1. ") .arg(title));
-            s = (QString("You have no eligible item, %1. ") .arg(title));
-            if (!get_item(&item, q, s, (USE_EQUIP | USE_INVEN))) return (FALSE);
-
-            /*Got the item*/
-            o_ptr = &inventory[item];
-
-            /*Got the object kind*/
-            k_ptr = &k_info[o_ptr->k_idx];
-
-            /* Description */
-            o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-            prompt = (QString("Make %1 into an artifact? ") .arg(o_name));
-
-            if (!get_check(prompt)) return (FALSE);
-
-            /* extra power bonus for expensive items and high player fame*/
-            rand_power = (p_ptr->q_fame + p_ptr->deferred_rewards) / 20 + MAX((k_ptr->cost / 2000), p_ptr->q_fame / 50);
-
-            /*Hack - add in any to-hit and to-value, since they will be erased*/
-            rand_power += (o_ptr->to_h + o_ptr->to_d + o_ptr->to_a) / 2;
-
-            /*actually create the Randart, or handle failure*/
-            if (make_one_randart(o_ptr, rand_power, TRUE))
-            {
-                /* Identify it fully */
-                object_aware(o_ptr);
-                object_known(o_ptr);
-
-                /* Mark the history */
-                o_ptr->origin_nature = ORIGIN_REWARD;
-                o_ptr->origin_r_idx = 0;
-                o_ptr->origin_dlvl = q_ptr->base_level;
-
-                /* Mark the item as fully known */
-                o_ptr->ident |= (IDENT_MENTAL);
-
-                /*Let the player know what they just got*/
-                // TODO object_info_screen(o_ptr);
-
-                guild_quest_wipe(TRUE);
-
-                return (TRUE);
-            }
-            message(QString("The attempt at making an artifact has failed"));
-            return (FALSE);
-        }
-
-        case SERVICE_PROBE_QUEST_MON:
-        {
-            QString race_name;
-
-            monster_race *r_ptr = &r_info[q_ptr->mon_idx];
-            monster_lore *l_ptr = &l_list[q_ptr->mon_idx];
-
-            if ((!quest_single_r_idx(q_ptr)) || (q_ptr->mon_idx == 0))
-            {
-                message(QString("You are not currently questing for a specific creature."));
-                return (FALSE);
-            }
-
-            /* Not a vault quest, so get the monster race name (singular)*/
-            race_name = monster_desc_race(q_ptr->mon_idx);
-
-            /* Make it plural if necessary*/
-            if (q_ptr->q_max_num > 1) race_name = plural_aux(race_name);
-
-            price += r_ptr->level * 100;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            /*confirm*/
-            prompt = (QString("Spend %1 gold to probe %2? ") .arg(price) .arg(race_name));
-            if (!get_check(prompt)) return (FALSE);
-
-            /*charge the player*/
-            p_ptr->au -= price;
-
-            /*learn something about the monster*/
-            lore_probe_monster_aux(q_ptr->mon_idx);
-
-            /* Hack -- Increse the sightings, and ranged attacks around 50% of the time */
-            l_ptr->sights = MAX_SHORT;
-            l_ptr->ranged = MAX_UCHAR;
-
-            /* Know "race" flags */
-            l_ptr->r_l_flags3 |= (r_ptr->flags3 & RF3_RACE_MASK);
-            /* Know "forced" flags */
-            l_ptr->r_l_flags1 |= (r_ptr->flags1 & (RF1_FORCE_DEPTH | RF1_FORCE_MAXHP));
-
-            /* Output to the screen */
-            //TODO - print out the monster information or display a dialog
-            return (TRUE);
-        }
-        case SERVICE_BUY_HEALING_POTION:
-        case SERVICE_BUY_LIFE_POTION:
-        case SERVICE_BUY_SCROLL_BANISHMENT:
-        {
-            QString o_name;
-            int k_idx;
-
-            object_type *i_ptr;
-            object_type object_type_body;
-
-            i_ptr = &object_type_body;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            /*get the healing potion index*/
-            if (choice == SERVICE_BUY_HEALING_POTION)
-            {
-                k_idx = lookup_kind(TV_POTION, SV_POTION_HEALING);
-            }
-            /*get the potion of life index*/
-            else if (choice == SERVICE_BUY_LIFE_POTION)
-            {
-                k_idx = lookup_kind(TV_POTION, SV_POTION_LIFE);
-            }
-
-            /* SERVICE_BUY_SCROLL_BANISHMENT */
-            else k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_MASS_BANISHMENT);
-
-            /*get the book kind*/
-            k_ptr = &k_info[k_idx];
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            prompt = (QString("Spend %1 gold to purchase a potion of %2? ") .arg(price) .arg(k_ptr->k_name));
-            if (!get_check(prompt)) return (FALSE);
-
-            /*charge the player*/
-            p_ptr->au -= price;
-
-            /* Make the potion */
-            object_prep(i_ptr, k_idx);
-
-            /* Identify it */
-            k_info[k_idx].aware = TRUE;
-
-            /* Describe the result */
-            o_name = object_desc(i_ptr, ODESC_FULL);
-
-            /* Remember history */
-            object_history(i_ptr, ORIGIN_STORE, 0);
-
-            /* Note that the pack is too full */
-            if (!inven_carry_okay(i_ptr))
-            {
-                message(QString("You have no room in your backpack."));
-
-                /* Drop the object */
-                drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
-
-                /* Inform the player */
-                message(QString("Your %1 is waiting outside!") .arg(o_name));
-
-            }
-
-            /* Give it to the player */
-            else
-            {
-                int item_new;
-
-                /* Give it to the player */
-                item_new = inven_carry(i_ptr);
-
-                /* Describe just the result */
-                o_name = object_desc(&inventory[item_new], ODESC_PREFIX | ODESC_FULL);
-
-                /* Message */
-                message(QString("You have (%1) %2.") .arg(index_to_label(item_new)) .arg(o_name));
-            }
-
-            return (TRUE);
-        }
-        case SERVICE_ABANDON_QUEST:
-        {
-            /* Check for current quest */
-            if (!guild_quest_level())
-            {
-                message(QString("You don't have a current quest, %1.") .arg(title));
-                return (FALSE);
-            }
-
-            /* Ask confirmation */
-            if (!get_check(QString("Abandon your quest, %1?") .arg(title))) return (FALSE);
-
-            /* Remove the current quest */
-            quest_fail();
-
-            /*Get the new title, and give a message*/
-            title = get_title();
-            message(QString("The guild is disappointed in you, %1.") .arg(title));
-
-            return (TRUE);
-        }
-        case SERVICE_FIREPROOF_BOOK:
-        {
-
-            int i;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            /* Restrict choices to spell books */
-            item_tester_tval = cp_ptr->spell_book;
-
-            /* Only accept legal items, which are burnable books */
-            item_tester_hook = item_tester_hook_flammable_book;
-
-            /* Get an item */
-            q = "Fireproof which book? ";
-            if (cp_ptr->spell_book == TV_PRAYER_BOOK) s = "You have no flammable prayer books!";
-            else s = "You have no flammable spell books!";
-            if (!get_item(&item, q, s, (USE_INVEN | USE_FLOOR))) return (FALSE);
-
-            /*Got the item*/
-            o_ptr = &inventory[item];
-            k_ptr = &k_info[o_ptr->k_idx];
-
-            /*Adjust the price for the book and the number of books*/
-            price += (k_ptr->cost * 6);
-            price *= o_ptr->number;
-
-            /*Too expensive*/
-            if (!check_gold(price)) return (FALSE);
-
-            /* Description */
-            o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-            /*confirm*/
-            prompt = (QString("Spend %1 gold to fireproof %2? ") .arg(price) .arg(o_name));
-            if (!get_check(prompt)) return (FALSE);
-
-            /*find the ego-item*/
-            for (i = 0; i < z_info->e_max; i++)
-            {
-                ego_item_type *e_ptr = &e_info[i];
-
-                if (e_ptr->e_name.contains("Fireproof"))
-                {
-                    int j;
-                    bool right_type = FALSE;
-
-                    /*Confirm the right tval*/
-                    for (j = 0; j < EGO_TVALS_MAX; j++)
-                    {
-                        if (e_ptr->tval[j] == cp_ptr->spell_book) right_type = TRUE;
-                    }
-
-                    /*We found it*/
-                    if (right_type)
-                    {
-                        /*charge the player*/
-                        p_ptr->au -= price;
-
-                        o_ptr->ego_num = i;
-
-                        /* Description */
-                        o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-                        /*Confirm it worked*/
-                        message(QString("You have %1") .arg(o_name));
-
-                        return (TRUE);
-                    }
-                }
-            }
-
-            return (FALSE);
-        }
-        case SERVICE_QUEST_DEFER_REWARD:
-        {
-            /* Check for current quest */
-            if (!guild_quest_level())
-            {
-                message(QString("You don't have a current quest, %1.") .arg(title));
-                return (FALSE);
-            }
-
-            /* Ask confirmation */
-            if (!get_check(QString("Really defer your reward, %1?").arg(title))) return (FALSE);
-
-            p_ptr->deferred_rewards += (q_ptr->q_fame_inc * 3) / 2;
-
-            guild_quest_wipe(FALSE);
-
-            return (TRUE);
-
-        }
-        case SERVICE_QUEST_REWARD_INC_HP:
-        {
-            /* Check for current quest */
-            if (!guild_quest_level())
-            {
-                message(QString("You don't have a current quest, %1.") .arg(title));
-                return (FALSE);
-            }
-
-            /* Ask confirmation */
-            if (!get_check(QString("Do you wish to permanently increase your hit points, %1?") .arg(title))) return (FALSE);
-
-            grant_reward_hp();
-
-            /* Inform the player */
-            message(QString("You now have an increased vitality, %1!") .arg(title));
-
-            guild_quest_wipe(TRUE);
-
-            return (TRUE);
-        }
-        case SERVICE_QUEST_REWARD_AUGMENTATION:
-        {
-            int i;
-
-            /* Check for current quest */
-            if (!guild_quest_level())
-            {
-                message(QString("You don't have a current quest, %1.") .arg(title));
-                return (FALSE);
-            }
-
-            /* Ask confirmation */
-            if (!get_check(QString("Do you wish to permanently increase your stats, %1?").arg(title))) return (FALSE);
-
-            /* Boost all six stats */
-            for (i = 0; i < A_MAX; i++) do_perm_stat_boost(i);
-
-            /* The quest is over */
-            guild_quest_wipe(TRUE);
-            return (TRUE);
-        }
-    }
-
-    return (FALSE);
-}
-
-/*
- * Buy a service from a store
- */
-static bool service_purchase(int this_store, int choice)
-{
-
-    /*player chose excape*/
-    if ((choice == -1) || (choice >= STORE_SERVICE_MAX)) return(FALSE);
-
-    /*give the player the service*/
-    if (!store_service_aux(this_store, choice))
-    {
-        return (FALSE);
-    }
-
-    store_updates();
-
-    /* Done */
-    return (TRUE);
-}
-
-
-
 /*
  * Determine the price of an object (qty one) in a store.
  *  store_buying == TRUE  means the shop is buying, player selling
@@ -1435,16 +1223,15 @@ static bool service_purchase(int this_store, int choice)
  * Hack -- the black market always charges twice as much as it should.
  *
  */
-s32b price_item(object_type *o_ptr, bool store_buying)
+s32b price_item(int this_store, object_type *o_ptr, bool store_buying)
 {
     int adjust;
-    int this_store = current_store();
     s32b price;
     owner_type *ot_ptr;
 
-    if (this_store == STORE_NONE) return 0L;
+    store_type *st_ptr = &store[this_store];
 
-    ot_ptr = store_owner(this_store);
+    ot_ptr = &b_info[(this_store * z_info->b_max) + st_ptr->owner];
 
     /* Get the value of one of the items */
     price = object_value(o_ptr);
@@ -2856,546 +2643,10 @@ void store_shuffle(int which)
 
 
 
-/*** Display code ***/
-
-
-/*
- * This function sets up screen locations based on the current term size.
- *
- * Current screen layout:
- *  line 0: reserved for messages
- *  line 1: shopkeeper and their purse / item buying price
- *  line 2: empty
- *  line 3: table headers
- *
- *  line 4: Start of items
- *
- * If help is turned off, then the rest of the display goes as:
- *
- *  line (height - 4): end of items
- *  line (height - 3): "more" prompt
- *  line (height - 2): empty
- *  line (height - 1): Help prompt and remaining gold
- *
- * If help is turned on, then the rest of the display goes as:
- *
- *  line (height - 7): end of items
- *  line (height - 6): "more" prompt
- *  line (height - 4): gold remaining
- *  line (height - 3): command help
- *
- *  Notice there is a slightly different layout for the guild.
- */
-static void store_display_recalc(int this_store)
-{
-    int wid, hgt;
-    int hgt_max;
-
-    store_type *st_ptr = &store[this_store];
-
-    //TODO Term_get_size(&wid, &hgt);
-
-    /* Clip the width at a maximum of 104 (enough room for an 80-char item name) */
-    if (wid > 104) wid = 104;
-
-    /* Clip the text_out function at two smaller than the screen width */
-    // TODO  text_out_wrap = wid - 2;
-
-    /* Put a reasonable limit on height for extremely large screens. */
-    if ((this_store == STORE_GUILD) && !guild_quest_complete()) hgt_max = quests_max + 20;
-    else hgt_max = st_ptr->stock_num + quests_max + 20;
-    if (hgt > hgt_max) hgt = hgt_max;
-
-    /* X co-ords first */
-    scr_places_x[LOC_PRICE] = wid - 14;
-    scr_places_x[LOC_AU] = wid - 26;
-    scr_places_x[LOC_OWNER] = wid - 2;
-    scr_places_x[LOC_WEIGHT] = wid - 14;
-
-    /* Add space for for prices */
-    if (current_store() != STORE_HOME)
-        scr_places_x[LOC_WEIGHT] -= 10;
-
-    /* Then Y */
-    scr_places_y[LOC_OWNER] = 1;
-    scr_places_y[LOC_HEADER] = 3;
-    scr_places_y[LOC_ITEMS_START] = 4;
-
-    /* If we are displaying help, make the height smaller */
-    if (store_flags & (STORE_SHOW_HELP))
-        hgt -= 3;
-
-    scr_places_y[LOC_ITEMS_END] = hgt - 4;
-    scr_places_y[LOC_MORE] = hgt - 3;
-    scr_places_y[LOC_AU] = hgt - 2;
-
-    /*Some guild-specific layout items*/
-    if (this_store == STORE_GUILD)
-    {
-            scr_places_y[LOC_ITEMS_END] = hgt - 11;
-            scr_places_y[LOC_MORE] = hgt - 10;
-            scr_places_y[LOC_CUR_QUEST1] = hgt - 5;
-            scr_places_y[LOC_CUR_QUEST2] = hgt - 4;
-            scr_places_y[LOC_GUILD_REP] = hgt - 8;
-    }
-
-
-    /* If we're displaying the help, then put it with a line of padding */
-    if (!(store_flags & (STORE_SHOW_HELP)))
-    {
-        hgt -= 2;
-    }
-
-    scr_places_y[LOC_HELP_CLEAR] = hgt - 1;
-    scr_places_y[LOC_HELP_PROMPT] = hgt;
-}
-
-/* for entry_type */
-#define ENTRY_SERVICE	0
-#define ENTRY_QUEST		1
-#define ENTRY_OBJECT	2
-
-
-/*Gets the type of entry as well as the number*/
-static int find_entry_type(int *entry_type, int oid)
-{
-    int entry_num;
-
-    /* Find out what type of entry this is and get the entry_num. */
-    if ((oid >= services_min) && (oid < services_max))
-    {
-        *entry_type = ENTRY_SERVICE;
-        entry_num = oid;
-    }
-    else if ((oid >= quests_min) && (oid < quests_max))
-    {
-        *entry_type = ENTRY_QUEST;
-        entry_num = oid - quests_min;
-    }
-    else  /*object*/
-    {
-        *entry_type = ENTRY_OBJECT;
-        entry_num = oid - quests_max;
-    }
-
-    return (entry_num);
-}
-
-
-/*
- * Helper function for store_display_entry.
- * Returns TRUE if the identify status of the store object
- * has changed as a result of the item being displayed.
- */
-static bool object_ident_changed(object_type *o_ptr)
-{
-    bool ident_changed = FALSE;
-
-    /* Object will now be id'ed instead of sensed, and
-     * wands/staves/rods will be re-charged.
-     */
-    o_ptr->ident &= ~(IDENT_SENSE | IDENT_EMPTY);
-
-    /*
-     * Player is now aware of this object kind, including flavors.
-     * All objects *identified*.
-     */
-
-    if (!k_info[o_ptr->k_idx].everseen)
-    {
-        ident_changed = TRUE;
-        k_info[o_ptr->k_idx].everseen = TRUE;
-    }
-    if (!k_info[o_ptr->k_idx].aware)
-    {
-        ident_changed = TRUE;
-        k_info[o_ptr->k_idx].aware = TRUE;
-    }
-    if (!(o_ptr->ident & (IDENT_KNOWN)))
-    {
-        ident_changed = TRUE;
-        o_ptr->ident |= (IDENT_KNOWN);
-    }
-    if ((!(o_ptr->ident & (IDENT_MENTAL))) &&
-        ((o_ptr->ego_num) || (o_ptr->art_num)))
-    {
-        ident_changed = TRUE;
-        o_ptr->ident |= (IDENT_MENTAL);
-    }
-
-    return (ident_changed);
-}
-
-/*
- * Redisplay a single store entry
- */
-static void store_display_entry(int oid, bool cursor, int row, int col, int width)
-{
-    s32b x;
-    byte desc = ODESC_PREFIX;
-    int entry_type;
-    int entry_num;
-
-    QString i_name;
-    QString out_val;
-    byte colour = TERM_WHITE;
-
-    int this_store = current_store();
-    store_type *st_ptr = &store[this_store];
-    (void)cursor;
-    (void)width;
-
-    entry_num = find_entry_type(&entry_type, oid);
-
-    service_info *service_ptr = &services_info[entry_num];
-
-    /* Display the entry name and, if object, weight*/
-    if (entry_type == ENTRY_SERVICE)
-    {
-        colour = TERM_L_GREEN;
-        i_name = (service_ptr->service_names);
-    }
-    else if (entry_type == ENTRY_QUEST)
-    {
-        i_name = quest_title[quests_offered[entry_num]];
-    }
-    else /*object*/
-    {
-
-        /* Get the object */
-        object_type *o_ptr = &st_ptr->stock[entry_num];
-
-        colour = o_ptr->object_color();
-
-        /* Don't display the quest reward inventory until the quest is complete */
-        if (this_store == STORE_GUILD)
-        {
-            if (!guild_quest_complete()) return;
-        }
-
-        if (this_store !=STORE_HOME)
-        {
-            if (object_ident_changed(o_ptr)) store_updates();
-        }
-
-        /* Describe the object - preserving insriptions in the home */
-        if ((this_store == STORE_HOME) || (this_store == STORE_GUILD)) desc = ODESC_FULL;
-        else desc = ODESC_FULL | ODESC_STORE;
-        i_name = object_desc(o_ptr, ODESC_PREFIX | desc);
-    }
-
-
-    /* Show weights for objects */
-    if (entry_type == ENTRY_OBJECT)
-    {
-        /* Redundant, but it avoids compiler warnings */
-        object_type *o_ptr = &st_ptr->stock[entry_num];
-
-        // TODO show weights
-    }
-
-    /* Get the price if appropriate*/
-    if (this_store == STORE_HOME) return;
-    /* No prices for quest rewards */
-    if (this_store == STORE_GUILD)
-    {
-        if (guild_quest_complete()) return;
-    }
-
-    /* Display the entry price */
-    if (entry_type == ENTRY_SERVICE)
-    {
-        x = price_services(this_store, services_offered[entry_num]);
-
-        if (x) out_val = (QString("%1") .arg(x));
-        else out_val = ("     Free");
-    }
-    else if (entry_type == ENTRY_QUEST)
-    {
-        /* No prices for quests*/
-        return;
-
-    }
-    else /*object*/
-    {
-        /* Redundant, but it avoids compiler warnings */
-        object_type *o_ptr = &st_ptr->stock[entry_num];
-
-        /* Extract the "minimum" price */
-        x = price_item(o_ptr, FALSE);
-
-        // TODO if (((o_ptr->tval == TV_WAND) || (o_ptr->tval == TV_STAFF)) && (o_ptr->number > 1)) strnfmt(out_val, sizeof out_val, "%9ld avg", (long)x);
-        // TODO  else strnfmt(out_val, sizeof out_val, "%9ld    ", (long)x);
-    }
-
-    /* Make sure the player can afford it */
-    // TODO if ((int) p_ptr->au < (int) x)
-    {
-        // TODO colour = curs_attrs[CURS_UNKNOWN][(int)cursor];
-    }
-
-
-    /* Actually draw the price */
-    // TODO display onscreen
-
-}
-
-/*
- * Display store (after clearing screen)
- */
-static void store_display_frame(void)
-{
-    char buf[80];
-    int this_store = current_store();
-
-    owner_type *ot_ptr = store_owner(this_store);
-
-
-    /* The "Home" is special */
-    if (this_store == STORE_HOME)
-    {
-        /* Put the owner name */
-        //TODO put_str("Your Home", scr_places_y[LOC_OWNER], 1);
-
-        /* Label the object descriptions */
-        //TODO put_str("Home Inventory", scr_places_y[LOC_HEADER], 1);
-
-        /* Show weight header */
-        //TODO put_str("Weight", 5, scr_places_x[LOC_WEIGHT] + 2);
-    }
-
-    /*The Guild is also special*/
-    else if (this_store == STORE_GUILD)
-    {
-        /* Put the owner name */
-        //TODO put_str("The Adventurer's Guild", scr_places_y[LOC_OWNER], 1);
-
-        /* Label the object descriptions */
-        if (guild_quest_complete())
-        {
-            //TODO put_str("Guild Services and Quest Rewards",	scr_places_y[LOC_HEADER], 1);
-        }
-        else if (guild_quest_level())
-        {
-            //TODO char q_out[120];
-
-            //TODO put_str("Guild Services", scr_places_y[LOC_HEADER], 1);
-
-            /* Print out the quest on 2 different lines. */
-            //TODO c_put_str(TERM_BLUE, "Your current quest:", scr_places_y[LOC_CUR_QUEST1]-1, 1);
-            //TODO describe_quest(q_out, sizeof(q_out), guild_quest_level(), QMODE_HALF_1);
-            //TODO put_str(q_out, scr_places_y[LOC_CUR_QUEST1], 1);
-
-            /* Put the monster symbol at the end if necessary */
-            //TODO show_quest_mon(scr_places_y[LOC_CUR_QUEST1], 1 + strlen(q_out));
-            //TODO describe_quest(q_out, sizeof(q_out), guild_quest_level(), QMODE_HALF_2);
-            //TODO put_str(q_out, scr_places_y[LOC_CUR_QUEST2], 1);
-        }
-        else
-        {
-            //TODO put_str("Guild Services and Available Quests",
-        }
-
-        /* Print the standard greeting and reputation. */
-        //TODO prt_rep_guild(scr_places_y[LOC_GUILD_REP], 3);
-    }
-
-    /* Normal stores */
-    else
-    {
-        QString store_name = (f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].f_name);
-        QString owner_name = ot_ptr->owner_name;
-
-        /* Put the owner name */
-        // TODO put_str(owner_name, scr_places_y[LOC_OWNER], 1);
-
-        /* Show the max price in the store (above prices) */
-        //TODO strnfmt(buf, sizeof(buf), "%s (%ld)", store_name, (long)(ot_ptr->max_cost));
-        // TODO prt(buf, scr_places_y[LOC_OWNER], scr_places_x[LOC_OWNER] - strlen(buf));
-
-
-        /* Label the object descriptions */
-        // TODO
-
-        /* Showing weight label */
-        // TODO
-
-        /* Label the asking price (in stores) */
-        // TODO
-    }
-}
-
-
-
-
-
-
-
-
-
-
-/*
- * Return the quantity of a given item in the pack (include quiver).
- */
-static int find_inven(object_type *o_ptr)
-{
-    int j;
-    int num = 0;
-
-    u32b f1, f2, f3, fn;
-
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-    /* Similar slot? */
-    for (j = 0; j < QUIVER_END; j++)
-    {
-        object_type *j_ptr = &inventory[j];
-
-        u32b j1, j2, j3, jn;
-
-        /* Check only the inventory and the quiver */
-        if (j >= INVEN_WIELD && j < QUIVER_START) continue;
-
-        /* Require identical object types */
-        if (!j_ptr->k_idx || o_ptr->k_idx != j_ptr->k_idx) continue;
-
-        /* Extract the flags */
-        object_flags(j_ptr, &j1, &j2, &j3, &jn);
-
-
-        /* Different flags */
-        if (f1 != j1 ||
-            f2 != j2 ||
-            f3 != j3 ||
-            fn != jn)
-            continue;
-
-        /* Analyze the items */
-        switch (o_ptr->tval)
-        {
-            /* Chests */
-            case TV_CHEST:
-            {
-                /* Never okay */
-                return 0;
-            }
-
-            /* Food and Potions and Scrolls */
-            case TV_FOOD:
-            case TV_POTION:
-            case TV_SCROLL:
-            {
-                /* Assume okay */
-                break;
-            }
-
-            /* Staves and Wands */
-            case TV_STAFF:
-            case TV_WAND:
-            {
-                /* Assume okay */
-                break;
-            }
-
-            /* Rods */
-            case TV_ROD:
-            {
-                /* Assume okay */
-                break;
-            }
-
-            /* Weapons and Armor */
-            case TV_BOW:
-            case TV_DIGGING:
-            case TV_HAFTED:
-            case TV_POLEARM:
-            case TV_SWORD:
-            case TV_BOOTS:
-            case TV_GLOVES:
-            case TV_HELM:
-            case TV_CROWN:
-            case TV_SHIELD:
-            case TV_CLOAK:
-            case TV_SOFT_ARMOR:
-            case TV_HARD_ARMOR:
-            case TV_DRAG_ARMOR:
-            {
-                /* Fall through */
-            }
-
-            /* Rings, Amulets, Lights */
-            case TV_RING:
-            case TV_AMULET:
-            case TV_LIGHT:
-            {
-                /* Require both items to be known */
-                if (!o_ptr->is_known() || !j_ptr->is_known()) continue;
-
-                /* Fall through */
-            }
-
-            /* Missiles */
-            case TV_BOLT:
-            case TV_ARROW:
-            case TV_SHOT:
-            {
-                /* Require identical knowledge of both items */
-                if (!o_ptr->is_known() != !j_ptr->is_known()) continue;
-
-                /* Require identical "bonuses" */
-                if (o_ptr->to_h != j_ptr->to_h) continue;
-                if (o_ptr->to_d != j_ptr->to_d) continue;
-                if (o_ptr->to_a != j_ptr->to_a) continue;
-
-                /* Require identical "pval" code */
-                if (o_ptr->pval != j_ptr->pval) continue;
-
-                /* Require identical "artifact" names */
-                if (o_ptr->art_num != j_ptr->art_num) continue;
-
-                /* Require identical "ego-item" names */
-                if (o_ptr->ego_num != j_ptr->ego_num) continue;
-
-                /* Lights must have same amount of fuel */
-                else if (o_ptr->timeout != j_ptr->timeout && o_ptr->tval == TV_LIGHT)
-                    continue;
-
-                /* Require identical "values" */
-                if (o_ptr->ac != j_ptr->ac) continue;
-                if (o_ptr->dd != j_ptr->dd) continue;
-                if (o_ptr->ds != j_ptr->ds) continue;
-
-                /* Probably okay */
-                break;
-            }
-
-            /* Various */
-            default:
-            {
-                /* Require knowledge */
-                if (!o_ptr->is_known() || !j_ptr->is_known()) continue;
-
-                /* Probably okay */
-                break;
-            }
-        }
-
-        /* Different flags */
-        if ((f1 != j1) || (f2 != j2) || \
-            (f3 != j3) || (fn != jn)) continue;
-
-        /* They match, so add up */
-        num += j_ptr->number;
-    }
-
-    return num;
-}
-
 /*
  * Buy the item with the given index from the current store's inventory.
  */
-void do_cmd_buy(cmd_arg args)
+void do_cmd_buy(int this_store, cmd_arg args)
 {
     int item = args.item;
     int amt = args.number;
@@ -3408,13 +2659,6 @@ void do_cmd_buy(cmd_arg args)
     int price, item_new;
 
     store_type *st_ptr;
-    int this_store = current_store();
-
-    if (this_store == STORE_NONE)
-    {
-        message(QString("You cannot purchase items when not in a store."));
-        return;
-    }
 
     st_ptr = &store[this_store];
 
@@ -3435,7 +2679,7 @@ void do_cmd_buy(cmd_arg args)
     o_name = object_desc(i_ptr, ODESC_PREFIX | ODESC_FULL);
 
     /* Extract the price for the entire stack */
-    price = price_item(i_ptr, FALSE) * i_ptr->number;
+    price = price_item(this_store, i_ptr, FALSE) * i_ptr->number;
 
     if (price > p_ptr->au)
     {
@@ -3445,9 +2689,6 @@ void do_cmd_buy(cmd_arg args)
 
     /* Spend the money */
     p_ptr->au -= price;
-
-    /* Update the display */
-    store_flags |= (STORE_GOLD_CHANGE | STORE_FRAME_CHANGE);
 
     /* ID objects on buy */
     identify_object(i_ptr, TRUE);
@@ -3500,7 +2741,6 @@ void do_cmd_buy(cmd_arg args)
             /* Shuffle the store */
             store_shuffle(this_store);
             store_maint(this_store);
-            store_flags |= STORE_FRAME_CHANGE;
         }
 
         /* Maintain */
@@ -3522,156 +2762,7 @@ void do_cmd_buy(cmd_arg args)
 /*
  * Retrieve the item with the given index from the home's inventory.
  */
-void do_cmd_reward(int code, cmd_arg args[])
-{
-    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-    int item = args[0].item;
-    int amt = args[1].number;
-    QString title;
-    object_type *o_ptr;
-    object_kind *k_ptr;
-    object_type picked_item;
-    QString o_name;
-    int item_new;
-
-    store_type *st_ptr;
-
-    /*Get the current title*/
-    title = get_title();
-
-    /* Paranoia */
-    if (current_store() != STORE_GUILD)
-    {
-        message(QString("You are not currently in the guild, %1.") .arg(title));
-        return;
-    }
-    if (!guild_quest_complete())
-    {
-        message(QString("You are not currently eligible for a quest reward, %1.") .arg(title));
-        return;
-    }
-
-    st_ptr = &store[STORE_GUILD];
-
-    /* Get the actual object */
-    o_ptr = &st_ptr->stock[item];
-    k_ptr = &k_info[o_ptr->k_idx];
-
-    /* Mark the history */
-    o_ptr->origin_nature = ORIGIN_REWARD;
-    o_ptr->origin_r_idx = 0;
-    o_ptr->origin_dlvl = q_ptr->base_level;
-
-    /* Get desired object */
-    object_copy_amt(&picked_item, o_ptr, amt);
-
-    /* Ensure we have room */
-    if ((!inven_carry_okay(&picked_item)) && (o_ptr->tval != TV_GOLD))
-    {
-        message(QString("You cannot carry that many items, %1.") .arg(title));
-        return;
-    }
-
-    /* Give it to the player, with gold handled differently than objects */
-    if (o_ptr->tval == TV_GOLD)
-    {
-        o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-        p_ptr->au += o_ptr->pval;
-        message(QString("You have been rewarded with %1, %2.") .arg(o_name) .arg(title));
-    }
-    else
-    {
-        item_new = inven_carry(&picked_item);
-
-        /* Describe just the result */
-        o_name = object_desc(&inventory[item_new], ODESC_PREFIX | ODESC_FULL);
-
-        /* Message */
-        message(QString("You have been rewarded with %1 (%2), %3.") .arg(o_name) .arg(index_to_label(item_new)) .arg(title));
-    }
-
-    /*It's an ironman spellbook, so make the spells available. */
-    if ((k_ptr->k_flags3 & (TR3_IRONMAN_ONLY)) && (cp_ptr->spell_book == k_ptr->tval))
-    {
-        byte j;
-
-        /* Extract spells */
-        for (j = 0; j < SPELLS_PER_BOOK; j++)
-        {
-            s16b spell = get_spell_from_list(k_ptr->sval, j);
-
-            /*skip blank spell slots*/
-            if (spell == -1) continue;
-
-            /* Remove the Ironman Restriction. */
-            p_ptr->spell_flags[spell] &= ~(PY_SPELL_IRONMAN);
-        }
-
-        /* Update the spells. */
-        p_ptr->update |= PU_SPELLS;
-    }
-
-    /* Handle Artifacts */
-    if (o_ptr->art_num)
-    {
-        /*
-         * Artifact might not yet be marked as created (if it was chosen from tailored
-         * rewards), so now it's the right time to mark it.
-         */
-        a_info[o_ptr->art_num].a_cur_num = 1;
-
-        /* If the item was an artifact, and if the auto-note is selected, write a message. */
-        int artifact_depth;
-        QString note;
-        QString shorter_desc;
-
-        /* Get a shorter description to fit the notes file */
-        shorter_desc = object_desc(o_ptr, ODESC_BASE);
-
-        /* Build note and write */
-        note = (QString("Quest Reward: %1") .arg(shorter_desc));
-
-        /*record the depth where the artifact was created */
-        artifact_depth = o_ptr->xtra1;
-
-        write_note(note, artifact_depth);
-
-        /*mark item creation depth as 0, which will indicate the artifact
-         *has been previously identified.  This prevents an artifact from showing
-         *up on the notes list twice if it has been previously identified.  JG */
-        o_ptr->xtra1 = 0;
-
-        /* Process artifact lore */
-        if (ARTIFACT_EASY_MENTAL(o_ptr))
-        {
-            /* Get the lore entry */
-            artifact_lore *a_l_ptr = &a_l_list[o_ptr->art_num];
-
-            /* Remember this artifact from now on */
-            a_l_ptr->was_fully_identified = TRUE;
-        }
-    }
-
-    /* Handle stuff */
-    // TO DO handle_stuff();
-
-    /* Remove the item from the guild before we wipe everything */
-    store_item_increase(STORE_GUILD, item, -amt);
-    store_item_optimize(STORE_GUILD, item);
-
-    /* The quest is over */
-    guild_quest_wipe(TRUE);
-    init_services_and_quests(STORE_GUILD);
-    p_ptr->redraw |= (PR_QUEST_ST);
-    store_flags |= (STORE_FRAME_CHANGE | STORE_GOLD_CHANGE);
-}
-
-
-/*
- * Retrieve the item with the given index from the home's inventory.
- */
-void do_cmd_retrieve(cmd_arg args)
+void do_cmd_retrieve(int this_store, cmd_arg args)
 {
     int item = args.item;
     int amt = args.number;
@@ -3683,7 +2774,7 @@ void do_cmd_retrieve(cmd_arg args)
 
     store_type *st_ptr;
 
-    if (current_store() != STORE_HOME)
+    if (this_store != STORE_HOME)
     {
         message(QString("You are not currently at home."));
         return;
@@ -3727,209 +2818,10 @@ void do_cmd_retrieve(cmd_arg args)
 
 
 
-
-
-
-#define DISPLAY_STAT_ROW		8
-#define DISPLAY_STAT_COL		10
-
-/*
- * Buy an object or service from a store, or get a quest from the guild.
- */
-static bool store_purchase(int oid)
-{
-    int max_amount, amount_purchased, num, entry_num, entry_type;
-
-    object_type *o_ptr;
-
-    object_type object_type_body;
-    object_type *i_ptr = &object_type_body;
-
-    QString o_name;
-
-    s32b price;
-
-    int this_store = current_store();
-
-    store_type *st_ptr;
-
-    if (this_store == STORE_NONE)
-    {
-        message(QString("You cannot purchase items when not in a store."));
-        return FALSE;
-    }
-
-    st_ptr = &store[this_store];
-
-    entry_num = find_entry_type(&entry_type, oid);
-
-    /* Handle services and quests differently. */
-    if (entry_type == ENTRY_SERVICE)
-    {
-        bool success = service_purchase(this_store, services_offered[entry_num]);
-
-        if ((services_offered[entry_num] >= QUEST_REWARD_HEAD) &&
-            (services_offered[entry_num] <= QUEST_REWARD_TAIL))
-        {
-            if (success)
-            {
-                init_services_and_quests(this_store);
-
-            }
-        }
-
-        p_ptr->redraw |= (PR_QUEST_ST);
-
-        store_flags |= (STORE_FRAME_CHANGE | STORE_GOLD_CHANGE);
-
-        return (success);
-    }
-    else if (entry_type == ENTRY_QUEST)
-    {
-        bool success = guild_purchase(quests_offered[entry_num]);
-
-        /*
-         * We must now re-do the entry list and store layout
-         * since the number of entries has changed
-         */
-        if (success)
-        {
-            init_services_and_quests(this_store);
-        }
-
-        p_ptr->redraw |= (PR_QUEST_ST);
-
-        store_flags |= (STORE_FRAME_CHANGE | STORE_GOLD_CHANGE);
-
-        return (success);
-
-    }
-    /* else an object */
-
-    /* Get the actual object */
-    o_ptr = &st_ptr->stock[entry_num];
-    if (entry_num < 0) return FALSE;
-
-    if ((this_store == STORE_HOME) || (this_store == STORE_GUILD))
-    {
-        max_amount = o_ptr->number;
-    }
-    else
-    {
-        /* Price of one */
-        price = price_item(o_ptr, FALSE);
-
-        /* Check if the player can afford any at all */
-        if ((u32b)p_ptr->au < (u32b)price)
-        {
-            /* Tell the user */
-            message(QString("You do not have enough gold for this item."));
-
-            /* Abort now */
-            return FALSE;
-        }
-
-        /* Work out how many the player can afford */
-        max_amount = p_ptr->au / price;
-        if (max_amount > o_ptr->number) max_amount = o_ptr->number;
-    }
-
-    /* Find the number of this item in the inventory */
-    if (!o_ptr->is_flavor_known())
-        num = 0;
-    else
-        num = find_inven(o_ptr);
-
-    if (this_store == STORE_GUILD)
-    {
-        amount_purchased = o_ptr->number;
-    }
-    else
-    {
-        o_name = (QString("%1 how many%2? (max %3) ") .arg((this_store == STORE_HOME) ? "Take" : "Buy")
-                  .arg(num ? (QString(" (you have %1)") .arg(num)) : "")  .arg(max_amount));
-
-        /* Get a quantity */
-        // TODO get quantity dialog box amount_purchased = get_quantity(o_name, max_amount);
-    }
-
-    /* Allow user abort */
-    if (amount_purchased <= 0) return FALSE;
-
-    /* Get desired object */
-    object_copy_amt(i_ptr, o_ptr, amount_purchased);
-
-    /* Ensure we have room */
-    if ((!inven_carry_okay(i_ptr)) && (i_ptr->tval != TV_GOLD))
-    {
-        message(QString("You cannot carry that many items."));
-        return FALSE;
-    }
-
-    /* Attempt to buy it */
-    /* Home is much easier */
-    if (this_store == STORE_HOME)
-    {
-        // TODO cmd_insert(CMD_RETRIEVE, entry_num, amount_purchased);
-    }
-    else if (this_store == STORE_GUILD)
-    {
-        // TODO cmd_insert(CMD_REWARD, entry_num, amount_purchased);
-    }
-    else
-    {
-        u32b price;
-        bool response;
-
-        /* Extract the price for the entire stack */
-        price = price_item(i_ptr, FALSE) * i_ptr->number;
-
-
-        /* Describe the object (fully) */
-        o_name = object_desc(i_ptr, ODESC_PREFIX | ODESC_FULL);
-
-        /* Show price */
-        // TODO show price
-
-        /* Confirm purchase */
-        response = get_check(QString("Buy %1? (y/n)") .arg(o_name));
-
-        /* Negative response, so give up */
-        if (!response)
-        {
-            /*re-distribute charges*/
-            o_ptr->timeout += i_ptr->timeout;
-
-            return FALSE;
-        }
-
-        // TODO cmd_insert(CMD_BUY, entry_num, amount_purchased);
-    }
-
-    store_updates();
-
-
-    return TRUE;
-}
-
-
-
-/*
- * Determine if the current store will purchase the given object
- */
-static bool store_will_buy_tester(object_type *o_ptr)
-{
-    int this_store = current_store();
-
-    if (this_store == STORE_NONE) return FALSE;
-
-    return store_will_buy(this_store, o_ptr);
-}
-
 /*
  * Sell an item to the current store.
  */
-void do_cmd_sell(cmd_arg args)
+void do_cmd_sell(int this_store, cmd_arg args)
 {
     int item = args.item;
     int amt = args.number;
@@ -3947,15 +2839,8 @@ void do_cmd_sell(cmd_arg args)
         return;
     }
 
-    /* Check we are somewhere we can sell the items. */
-    if (current_store() == STORE_NONE)
-    {
-        message(QString("You cannot sell items when not in a store."));
-        return;
-    }
-
     /* Check the store wants the items being sold */
-    if (!store_will_buy(current_store(), o_ptr))
+    if (!store_will_buy(this_store, o_ptr))
     {
         message(QString("I do not wish to purchase this item."));
         return;
@@ -3966,19 +2851,16 @@ void do_cmd_sell(cmd_arg args)
 
 
     /* Check if the store has space for the items */
-    if (!store_check_num(current_store(), &sold_item))
+    if (!store_check_num(this_store, &sold_item))
     {
         message(QString("I have not the room in my store to keep it."));
         return;
     }
 
-    price = price_item(&sold_item, TRUE) * amt;
+    price = price_item(this_store, &sold_item, TRUE) * amt;
 
     /* Get some money */
     p_ptr->au += price;
-
-    /* Update the display */
-    store_flags |= (STORE_GOLD_CHANGE | STORE_FRAME_CHANGE);
 
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -4028,14 +2910,14 @@ void do_cmd_sell(cmd_arg args)
     handle_stuff();
 
     /* The store gets that (known) object */
-    store_carry(current_store(), &sold_item);
+    store_carry(this_store, &sold_item);
 
 }
 
 /*
  * Stash an item in the home.
  */
-void do_cmd_stash(cmd_arg args)
+void do_cmd_stash(int this_store, cmd_arg args)
 {
     int item = args.item;
     int amt = args.number;
@@ -4044,7 +2926,7 @@ void do_cmd_stash(cmd_arg args)
     QString o_name;
 
     /* Check we are somewhere we can stash items. */
-    if (current_store() != STORE_HOME)
+    if (this_store != STORE_HOME)
     {
         message(QString("You are not in your home."));
         return;
@@ -4088,185 +2970,9 @@ void do_cmd_stash(cmd_arg args)
 }
 
 /*
- * Sell an object, or drop if it we're in the home.
- */
-static bool store_sell(void)
-{
-    int amt;
-    int item;
-    int get_mode = (USE_EQUIP | USE_INVEN | USE_FLOOR  | USE_QUIVER);
-
-    object_type *o_ptr;
-    object_type object_type_body;
-    object_type *i_ptr = &object_type_body;
-
-    QString o_name;
-
-
-    const char *reject = "You have nothing that I want. ";
-    const char *prompt = "Sell which item? ";
-
-    int this_store = current_store();
-
-    if (this_store == STORE_NONE)
-    {
-        message(QString("You cannot sell items when not in a store."));
-        return (FALSE);
-    }
-
-    if (this_store == STORE_GUILD)
-    {
-        message(QString("The Guild does not purchase items."));
-        return (FALSE);
-    }
-
-    if (this_store == STORE_HOME)
-        prompt = "Drop which item? ";
-    else
-    {
-        item_tester_hook = store_will_buy_tester;
-    }
-
-    /* Get an item */
-    if (!get_item(&item, prompt, reject, get_mode))
-    {
-        return (FALSE);
-    }
-
-    /* Get the item */
-    o_ptr = object_from_item_idx(item);
-
-    /* Hack -- Cannot remove cursed objects */
-    if ((item >= INVEN_WIELD) && o_ptr->is_cursed())
-    {
-        /* Oops */
-        message(QString("Hmmm, it seems to be cursed."));
-
-        /* Nope */
-        return (FALSE);
-    }
-
-    /* Get a quantity */
-    amt = 0; // TODO get_quantity(NULL, o_ptr->number);
-
-    /* Allow user abort */
-    if (amt <= 0) return (FALSE);
-
-    /* Get a copy of the object representing the number being sold */
-    object_copy_amt(i_ptr, object_from_item_idx(item), amt);
-
-    if (!store_check_num(this_store, i_ptr))
-    {
-
-        if (this_store == STORE_HOME)
-            message(QString("Your home is full."));
-
-        else
-            message(QString("I have not the room in my store to keep it."));
-
-        return (FALSE);
-    }
-
-    /* Get a full description */
-    o_name = object_desc(i_ptr, ODESC_PREFIX | ODESC_FULL);
-
-    /* Real store */
-    if (this_store != STORE_HOME)
-    {
-        /* Extract the value of the items */
-        u32b price = price_item(i_ptr, TRUE) * amt;
-
-        /* Show price */
-        // TODO prt(format("Price: %1", price), 1, 0);
-
-        /* Confirm sale */
-        if (!get_check(QString("Sell %1? (y/n)") .arg(o_name)))
-        {
-            return (FALSE);
-        }
-
-        // TODO cmd_insert(CMD_SELL, item, amt);
-
-    }
-
-    /* Player is at home */
-    else
-    {
-        // TODO cmd_insert(CMD_STASH, item, amt);
-    }
-
-    store_updates();
-
-    return (TRUE);
-
-}
-
-/*
- * Examine an item in a store
- */
-static void store_examine(int oid)
-{
-    store_type *st_ptr = &store[current_store()];
-    object_type *o_ptr;
-    char file_name[80];
-    char service_name[120];
-
-    int entry_num, entry_type;
-
-    if (oid < 0) return;
-
-    entry_num = find_entry_type(&entry_type, oid);
-
-    /* Display the entry name and, if object, weight*/
-    if (entry_type == ENTRY_SERVICE)
-    {
-        // TODO display store service info
-        //strnfmt(file_name, sizeof(file_name), "town.txt");
-        //strnfmt(service_name, sizeof(service_name), service_names[services_offered[entry_num]]);
-        //show_file(format("%s#%s", file_name, service_name), NULL,  0, 0);
-        return;
-    }
-    else if (entry_type == ENTRY_QUEST)
-    {
-        // TODO display quest info
-        //strnfmt(file_name, sizeof(file_name), "quests.txt");
-        //strnfmt(service_name, sizeof(service_name), quest_title[quests_offered[entry_num]]);
-        //show_file(format("%s#%s", file_name, service_name), NULL,  0, 0);
-        return;
-    }
-
-    /* else (entry type == ENTRY_OBJECT) */
-
-    /* Get the actual object */
-    o_ptr = &st_ptr->stock[entry_num];
-
-    /* Show full info in most stores, but normal info in player home */
-    // TODO display object info object_info_screen(o_ptr);
-
-    /* Process artifact lore */
-    if (ARTIFACT_EASY_MENTAL(o_ptr))
-    {
-        /* Get the lore entry */
-        artifact_lore *a_l_ptr = &a_l_list[o_ptr->art_num];
-
-        /* Remember this artifact from now on */
-        a_l_ptr->was_fully_identified = TRUE;
-    }
-
-    /* Hack -- Browse book, then prompt for a command */
-    if (o_ptr->tval == cp_ptr->spell_book)
-    {
-        /* Call the aux function */
-        // TODO display the spells get_spell_menu(o_ptr, BOOK_BROWSE);
-    }
-}
-
-
-
-/*
  * Flee the store when it overflows.
  */
-static bool store_overflow(void)
+bool store_overflow(int this_store)
 {
     int item = INVEN_PACK;
 
@@ -4275,7 +2981,7 @@ static bool store_overflow(void)
     p_ptr->redraw |= (PR_ITEMLIST);
 
     /* Flee from the store */
-    if (current_store() != STORE_HOME)
+    if (this_store != STORE_HOME)
     {
         /* Leave */
         message(QString("Your pack is so full that you flee the store..."));
@@ -4283,7 +2989,7 @@ static bool store_overflow(void)
     }
 
     /* Flee from the home */
-    else if (!store_check_num(current_store(), o_ptr))
+    else if (!store_check_num(this_store, o_ptr))
     {
         /* Leave */
         message(QString("Your pack is so full that you flee your home..."));
@@ -4329,101 +3035,3 @@ static bool store_overflow(void)
     return FALSE;
 }
 
-
-
-/*
- * Enter a store, and interact with it.
- */
-void do_cmd_store(int code, cmd_arg args[])
-{
-    bool leave = FALSE;
-
-    /* Check for outstanding rewards */
-    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-
-    /* Take note of the store number from the terrain feature */
-    int this_store = current_store();
-
-    /* Verify that there is a store */
-    if (this_store == STORE_NONE)
-    {
-        message(QString("You see no store here."));
-        return;
-    }
-
-    /* Check if we can enter the store */
-    if (adult_no_stores)
-    {
-        message(QString("The doors are locked."));
-        return;
-    }
-
-    /* See if we are holding a quest item */
-    if (this_store == STORE_GUILD)
-    {
-
-
-        if ((q_ptr->q_type == QUEST_VAULT) && (!guild_quest_complete()))
-        {
-            /* The artifact has been returned, the quest is a success */
-            if (quest_item_slot() > -1) quest_finished(q_ptr);
-        }
-
-        if ((quest_type_collection(q_ptr)) && (!guild_quest_complete()))
-        {
-            if (quest_item_count() >= quest_collection_num(q_ptr)) quest_finished(q_ptr);
-        }
-    }
-
-    /*
-     * Quests and services are re-counted
-     * each time a person enters the store
-     * and worked into the store's inventory
-     */
-    init_services_and_quests(this_store);
-
-    /* Forget the view */
-    forget_view();
-
-    /* Reset the command variables */
-    p_ptr->player_command_wipe();
-
-    /*** Display ***/
-    /* Say a friendly hello. */
-    if (this_store != STORE_HOME)
-    {
-        if (this_store == STORE_GUILD)
-        {
-            prt_welcome_guild();
-        }
-        else prt_welcome(store_owner(this_store));
-    }
-
-    /* Loop */
-    while (!leave)
-    {
-        // TODO dialog box
-
-            /* XXX Pack Overflow */
-            if (inventory[INVEN_MAX_PACK].k_idx)
-                leave = store_overflow();
-    }
-
-
-
-
-    /* Hack -- Cancel automatic command */
-    p_ptr->command_new = 0;
-
-    /* Update the visuals */
-    p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
-
-    /* Redraw entire screen */
-    p_ptr->redraw |= (PR_BASIC | PR_EXTRA);
-
-    /* Redraw map */
-    p_ptr->redraw |= (PR_MAP);
-
-    process_player_energy(BASE_ENERGY_MOVE);
-
-}

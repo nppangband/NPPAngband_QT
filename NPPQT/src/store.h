@@ -13,6 +13,9 @@
 
 #define MAX_STORES_MORIA	6
 
+// Max number of items per inventory slot
+#define STORE_MAX_ITEM			99
+
 /*
  * Total number of stores (see "store.c", etc)
  */
@@ -63,5 +66,56 @@ struct store_type
 
 
 
+enum
+{
+    SERVICE_ENCHANT_ARMOR	= 0,
+    SERVICE_ENCHANT_TO_HIT,
+    SERVICE_ENCHANT_TO_DAM,
+    SERVICE_ELEM_BRAND_WEAP,
+    SERVICE_ELEM_BRAND_AMMO,
+    SERVICE_RECHARGING,
+    SERVICE_IDENTIFY,
+    SERVICE_IDENTIFY_FULLY,
+    SERVICE_CURE_CRITICAL,
+    SERVICE_RESTORE_LIFE_LEVELS,
+    SERVICE_REMOVE_CURSE,
+    SERVICE_REMOVE_HEAVY_CURSE,
+    SERVICE_RESTORE_STAT,
+    SERVICE_INCREASE_STAT,
+    SERVICE_CREATE_RANDART,
+    SERVICE_PROBE_QUEST_MON,
+    SERVICE_BUY_HEALING_POTION,
+    SERVICE_BUY_LIFE_POTION,
+    SERVICE_BUY_SCROLL_BANISHMENT,
+    SERVICE_FIREPROOF_BOOK,
+    SERVICE_QUEST_DEFER_REWARD,
+    SERVICE_ABANDON_QUEST,
+    SERVICE_QUEST_REWARD_RANDART,
+    SERVICE_QUEST_REWARD_INC_HP,
+    SERVICE_QUEST_REWARD_INC_STAT,
+    SERVICE_QUEST_REWARD_AUGMENTATION,
+
+    STORE_SERVICE_MAX
+};
+
+
+// Various service processing functions.
+extern bool do_service_enchant(byte choice, u32b price);
+extern bool do_service_brand(byte choice, u32b price);
+extern bool do_service_recharge(byte choice, u32b price);
+extern bool do_service_identify(byte choice, u32b price);
+extern bool do_service_cure_critical(byte choice, u32b price);
+extern bool do_service_restore_life(byte choice, u32b price);
+extern bool do_service_remove_curse(byte choice, u32b price);
+extern bool do_service_stat(byte choice, u32b price);
+extern bool do_service_make_randart(byte choice, u32b price);
+extern bool do_service_probing(byte choice, u32b price);
+extern bool do_service_buy_object(byte choice, u32b price);
+extern bool do_service_fireproof(byte choice, u32b price);
+extern bool do_service_defer_reward(byte choice, u32b price);
+extern bool do_service_abandon_quest(byte choice, u32b price);
+extern bool do_service_quest_art_reward(byte choice, u32b price);
+extern bool do_service_hp_inc(byte choice, u32b price);
+extern bool do_service_augment(byte choice, u32b service_price);
 
 #endif // STORE_H
