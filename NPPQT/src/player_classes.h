@@ -408,7 +408,7 @@ public:
     /*** Temporary fields ***/
 
     bool playing;			/* True if player is playing */
-
+    bool in_store;          // Player is inside a store
     bool message_append;    /* Messages should be appended to the main menu */
     bool message_first_append;  // Tracks whether the first appended message has been appended.
 

@@ -822,10 +822,12 @@ enum
 #define REWARD_AUGMENTATION	0x0080
 
 /*Quest description Modes*/
-#define QMODE_HALF_1 1
-#define QMODE_HALF_2 2
-#define QMODE_SHORT  3
-#define QMODE_FULL   4
+enum
+{
+    QMODE_HALF_1 = 1,
+    QMODE_HALF_2,
+    QMODE_FULL,
+};
 
 /*artifact slot reserved for vault quest artifact*/
 #define QUEST_ART_SLOT	z_info->art_norm_max

@@ -2780,7 +2780,7 @@ void command_hold(cmd_arg args)
         int store_idx = f_info[feat].f_power;
         launch_store(store_idx);
 
-        /* Free turn XXX XXX XXX */
+        /* Energy already burned */
         energy = 0;
     }
 

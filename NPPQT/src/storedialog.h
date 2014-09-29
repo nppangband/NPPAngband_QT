@@ -49,6 +49,10 @@ public:
     QWidget *inven_tab;
     QWidget *equip_tab;
     QWidget *store_area;
+    QWidget *quest_area;
+    QLabel  *quest_status;
+    QLabel  *quest_picture;
+
     bool home;
     bool guild;
 
@@ -64,7 +68,7 @@ public:
     void reset_store();
     void reset_inventory();
     void reset_equip();
-
+    void reset_quest_status();
     void reset_all();
 
     void reset_gold();

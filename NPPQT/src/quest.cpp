@@ -21,22 +21,23 @@
 QString quests_info[] =
 {
     /* QUEST_MONSTER*/
-    {"Monster or Unique Quest"},
+    "Monster or Unique Quest",
     /* QUEST_GUARDIAN */
-    {"Guardian Quest"},
+    "Guardian Quest",
     /* QUEST_PIT*/
-    {"Pit or Nest Quest"},
+    "Pit or Nest Quest",
     /* QUEST_WILDERNESS */
-    {"Wilderness Quest"},
+    "Wilderness Quest",
     /* QUEST_THEMED_LEVEL*/
-    {"Level Quest"},
+    "Level Quest",
     /* QUEST_ARENA_LEVEL */
-    {"Arena Quest"},
+    "Arena Quest",
     /* QUEST_LABYRINTH_LEVEL */
-    {"Labyrinth Quest"},
+    "Labyrinth Quest",
     /* QUEST_SLOT_GREATER_VAULT */
-    {"Greater Vault Quest"},
+    "Greater Vault Quest",
 };
+
 
 /*
  * Return the next guild quest level.
@@ -179,6 +180,9 @@ int quest_collection_num(quest_type *q_ptr)
 
 /*
  * Provide a description of the quest
+ * QMODE_HALF - describes quest
+ * QMODE_HALF_2 - describes depth of quest
+ * QMODE_FULL - describes both quest and depth
  */
 QString describe_quest(s16b level, int mode)
 {
@@ -227,8 +231,7 @@ QString describe_quest(s16b level, int mode)
         /* The location of the quest */
         where = (QString("at a depth of %1 feet and return to the Guild.") .arg(level * 50));
 
-        if (mode == QMODE_SHORT)        buf = (QString("%1.") .arg(intro));
-        else if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
+        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
         else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
         else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
 
@@ -254,8 +257,7 @@ QString describe_quest(s16b level, int mode)
         /* The location of the quest */
         where = (QString("at a depth of %1 feet.") .arg(level * 50));
 
-        if (mode == QMODE_SHORT)        buf = (QString("%1.") .arg(intro));
-        else if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
+        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
         else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
         else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
 
@@ -304,8 +306,7 @@ QString describe_quest(s16b level, int mode)
             where = (QString("at a depth of %1 feet and return to the Guild.") .arg(level * 50));
         }
 
-        if (mode == QMODE_SHORT)        buf = (QString("%1.") .arg(intro));
-        else if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
+        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
         else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
         else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
 
@@ -370,8 +371,7 @@ QString describe_quest(s16b level, int mode)
         /* The location of the quest */
         where = (QString("at a depth of %1 feet.") .arg(level * 50));
 
-        if (mode == QMODE_SHORT)        buf = (QString("%1.") .arg(intro));
-        else if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
+        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
         else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
         else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
 
@@ -422,9 +422,9 @@ QString describe_quest(s16b level, int mode)
         intro = "To complete your ";
         if (q_ptr->q_type == QUEST_GUARDIAN)
         {
-            intro = "guardian ";
+            intro.append("guardian ");
         }
-        intro = "quest,";
+        intro.append("quest,");
     }
 
     /* The location of the quest */
@@ -434,8 +434,7 @@ QString describe_quest(s16b level, int mode)
 
 
     /* Output */
-    if (mode == QMODE_SHORT)        buf = (QString("%1 %2 %3.") .arg(intro) .arg(what) .arg(targets));
-    else if (mode == QMODE_FULL)    buf = (QString("%1 %2 %3 %4") .arg(intro) .arg(what) .arg(targets) .arg(where));
+    if (mode == QMODE_FULL)    buf = (QString("%1 %2 %3 %4") .arg(intro) .arg(what) .arg(targets) .arg(where));
     else if (mode == QMODE_HALF_1)  buf = (QString("%1 %2 %3") .arg(intro) .arg(what) .arg(targets));
     else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
 
@@ -840,6 +839,11 @@ QString get_welcome_guild(void)
 {
     /*Get the current title*/
     QString title = get_title();
+
+    if (guild_quest_complete())
+    {
+        return(QString("Collect your reward, %1.") .arg(title));
+    }
 
     /* Introduction */
     return(QString("Welcome to the Adventurer's Guild, %1.") .arg(title));

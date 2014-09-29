@@ -953,6 +953,7 @@ int move_player(int dir, int jumping)
             int feat_idx = dungeon_info[y][x].feat;
             int store_idx = f_info[feat_idx].f_power;
             launch_store(store_idx);
+            return (0);
 		}
 
 		/* Hit a trap */

@@ -1480,6 +1480,8 @@ static bool store_check_num(int st, object_type *o_ptr)
 
     store_type *st_ptr = &store[st];
 
+    if (st == STORE_GUILD) return (FALSE);
+
     /* Free space is always usable */
     if (st_ptr->stock_num < st_ptr->stock_size) return TRUE;
 
@@ -2698,6 +2700,149 @@ void do_cmd_buy(int this_store, cmd_arg args)
         }
     }
 }
+
+/*
+ * Handle a quest reward selection from the Guild inventory.
+ */
+void do_cmd_reward(int this_store, cmd_arg args)
+{
+    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+    int item = args.item;
+    int amt = args.number;
+    QString title = get_title();
+    object_type *o_ptr;
+    object_kind *k_ptr;
+    object_type picked_item;
+    QString o_name;
+    int item_new;
+
+    store_type *st_ptr;
+
+    /* Paranoia */
+    if (this_store != STORE_GUILD)
+    {
+        message(QString("You are not currently in the guild, %1.") .arg(title));
+        return;
+    }
+    if (!guild_quest_complete())
+    {
+        message(QString("You are not currently eligible for a quest reward, %1.") .arg(title));
+        return;
+    }
+
+    st_ptr = &store[STORE_GUILD];
+
+    /* Get the actual object */
+    o_ptr = &st_ptr->stock[item];
+    k_ptr = &k_info[o_ptr->k_idx];
+
+    /* Mark the history */
+    o_ptr->origin_nature = ORIGIN_REWARD;
+    o_ptr->origin_r_idx = 0;
+    o_ptr->origin_dlvl = q_ptr->base_level;
+
+    /* Get desired object */
+    object_copy_amt(&picked_item, o_ptr, amt);
+
+    /* Ensure we have room */
+    if ((!inven_carry_okay(&picked_item)) && (o_ptr->tval != TV_GOLD))
+    {
+        message(QString("You cannot carry that many items, %1.") .arg(title));
+        return;
+    }
+
+    /* Give it to the player, with gold handled differently than objects */
+    if (o_ptr->tval == TV_GOLD)
+    {
+        o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+
+        p_ptr->au += o_ptr->pval;
+        message(QString("You have been rewarded with %1, %2.") .arg(o_name) .arg(title));
+    }
+    else
+    {
+        item_new = inven_carry(&picked_item);
+
+        /* Describe just the result */
+        o_name = object_desc(&inventory[item_new], ODESC_PREFIX | ODESC_FULL);
+
+        /* Message */
+        message(QString("You have been rewarded with %1 (%2), %3.") .arg(o_name)  .arg(index_to_label(item_new)) .arg(title));
+    }
+
+    /*It's an ironman spellbook, so make the spells available. */
+    if ((k_ptr->k_flags3 & (TR3_IRONMAN_ONLY)) && (cp_ptr->spell_book == k_ptr->tval))
+    {
+        byte j;
+
+        /* Extract spells */
+        for (j = 0; j < SPELLS_PER_BOOK; j++)
+        {
+            s16b spell = get_spell_from_list(k_ptr->sval, j);
+
+            /*skip blank spell slots*/
+            if (spell == -1) continue;
+
+            /* Remove the Ironman Restriction. */
+            p_ptr->spell_flags[spell] &= ~(PY_SPELL_IRONMAN);
+        }
+
+        /* Update the spells. */
+        p_ptr->update |= PU_SPELLS;
+    }
+
+    /* Handle Artifacts */
+    if (o_ptr->art_num)
+    {
+        /*
+         * Artifact might not yet be marked as created (if it was chosen from tailored
+         * rewards), so now it's the right time to mark it.
+         */
+        a_info[o_ptr->art_num].a_cur_num = 1;
+
+        int artifact_depth;
+        QString note;
+        QString shorter_desc;
+
+        /* Get a shorter description to fit the notes file */
+        shorter_desc = object_desc(o_ptr, ODESC_BASE);
+
+        /* Build note and write */
+        note = (QString("Quest Reward: %1") .arg(shorter_desc));
+
+        /*record the depth where the artifact was created */
+        artifact_depth = o_ptr->xtra1;
+
+        write_note(note, artifact_depth);
+
+        /*mark item creation depth as 0, which will indicate the artifact
+         *has been previously identified.  This prevents an artifact from showing
+         *up on the notes list twice if it has been previously identified.  JG */
+        o_ptr->xtra1 = 0;
+
+        /* Process artifact lore */
+        if (ARTIFACT_EASY_MENTAL(o_ptr))
+        {
+            /* Get the lore entry */
+            artifact_lore *a_l_ptr = &a_l_list[o_ptr->art_num];
+
+            /* Remember this artifact from now on */
+            a_l_ptr->was_fully_identified = TRUE;
+        }
+    }
+
+    /* Handle stuff */
+    handle_stuff();
+
+    /* Remove the item from the guild before we wipe everything */
+    store_item_increase(STORE_GUILD, item, -amt);
+    store_item_optimize(STORE_GUILD, item);
+
+    /* The quest is over */
+    guild_quest_wipe(TRUE);
+    p_ptr->redraw |= (PR_QUEST_ST);
+}
+
 
 /*
  * Retrieve the item with the given index from the home's inventory.

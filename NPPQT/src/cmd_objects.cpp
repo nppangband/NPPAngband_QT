@@ -619,7 +619,7 @@ bool command_wield(cmd_arg args)
     if (!equip_o_ptr->k_idx)
     {
         wield_item(o_ptr, args.item, args.slot);
-        process_player_energy(BASE_ENERGY_MOVE);
+        if (!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE);
         return (TRUE);
     }
 
@@ -628,7 +628,7 @@ bool command_wield(cmd_arg args)
                           && object_similar(equip_o_ptr, o_ptr))
     {
         wield_item(o_ptr, args.item, args.slot);
-        process_player_energy(BASE_ENERGY_MOVE);
+        if (!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE);
         return (TRUE);
     }
 
@@ -653,7 +653,7 @@ bool command_wield(cmd_arg args)
     p_ptr->message_append_start();
 
     wield_item(o_ptr, args.item, args.slot);
-    process_player_energy(BASE_ENERGY_MOVE);
+    if (!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE);
     return (TRUE);
 }
 
@@ -990,7 +990,7 @@ void command_refuel(cmd_arg args)
     p_ptr->player_previous_command_update(CMD_REFUEL, args);
     p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
 
-    process_player_energy(BASE_ENERGY_MOVE / 2);
+    if (!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE / 2);
 }
 
 

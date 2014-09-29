@@ -827,6 +827,7 @@ extern bool keep_in_stock(const object_type *o_ptr, int which);
 extern void store_delete_index(int st, int what);
 extern void store_shuffle(int which);
 extern void do_cmd_buy(int this_store, cmd_arg args);
+extern void do_cmd_reward(int this_store, cmd_arg args);
 extern void do_cmd_retrieve(int this_store, cmd_arg args);
 extern void do_cmd_sell(int this_store, cmd_arg args);
 extern void do_cmd_stash(int this_store, cmd_arg args);

@@ -9,6 +9,7 @@
 #include <QCoreApplication>
 #include <QScrollArea>
 #include <QLabel>
+#include <QPixmap>
 #include "npp.h"
 #include "store.h"
 
@@ -77,9 +78,12 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     lay3->addWidget(btn_buy);
     connect(btn_buy, SIGNAL(clicked()), this, SLOT(buy_click()));
 
-    QPushButton *btn_sell = new QPushButton(home ? "Stash (F3)": "Sell (F3)");
-    lay3->addWidget(btn_sell);
-    connect(btn_sell, SIGNAL(clicked()), this, SLOT(sell_click()));
+    if (!guild)
+    {
+        QPushButton *btn_sell = new QPushButton(home ? "Stash (F3)": "Sell (F3)");
+        lay3->addWidget(btn_sell);
+        connect(btn_sell, SIGNAL(clicked()), this, SLOT(sell_click()));
+    }
 
     QPushButton *btn_toggle = new QPushButton("Toggle inven/equip (F4)");
     lay3->addWidget(btn_toggle);
@@ -167,6 +171,25 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     this->reset_inventory();
     this->reset_equip();
 
+    // Do a quest status for the guild.
+    quest_area = new QWidget;
+    QGridLayout *quest_layout = new QGridLayout;
+    quest_area->setLayout(quest_layout);
+    quest_layout->setContentsMargins(0, 0, 0, 0);
+    lay1->addWidget(quest_area);
+    QLabel *quest_header = new QLabel("<b><big>Your Current Quest:</b></big>");
+    quest_header->setAlignment(Qt::AlignLeft);
+    quest_status = new QLabel("Quest Desc");
+    quest_picture = new QLabel("Quest Picture");
+    quest_layout->addWidget(quest_header, 0, 1);
+    quest_layout->addWidget(quest_status, 1, 1);
+    quest_layout->addWidget(quest_picture, 1, 0);
+
+    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    quest_layout->addItem(spacer, 1, 2);
+
+    this->reset_quest_status();
+
     QWidget *area3 = new QWidget;
     QHBoxLayout *lay5 = new QHBoxLayout;
     area3->setLayout(lay5);
@@ -199,6 +222,47 @@ void StoreDialog::reset_gold()
 {
     QLabel *label = this->findChild<QLabel *>("gold_label");
     label->setText(QString("Gold: %1").arg(number_to_formatted_string(p_ptr->au)));
+}
+
+void StoreDialog::reset_quest_status()
+{
+    if ((!guild) || (!guild_quest_level()))
+    {
+        quest_area->hide();
+        return;
+    }
+    // First take care of the quest status label
+    quest_area->show();
+    quest_status->setText(QString("<big>%1</big>")
+                 .arg(describe_quest(guild_quest_level(), QMODE_FULL)));
+
+    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+
+    //Now add the picture if necessary
+    if (!quest_single_r_idx(q_ptr))
+    {
+        quest_picture->hide();
+        return;
+    }
+
+    quest_picture->show();
+
+    monster_race *r_ptr = &r_info[q_info[GUILD_QUEST_SLOT].mon_idx];
+    if (use_graphics)
+    {
+        QPixmap pix = ui_get_tile(r_ptr->tile_id);
+        pix = pix.scaled(24, 24);
+        quest_picture->setPixmap(pix);
+    }
+    else
+    {
+        quest_picture->setText(QString("<b><big>'%1'</b></big>") .arg(r_ptr->d_char));
+        quest_picture->setStyleSheet(QString("color: %1;").arg(r_ptr->d_color.name()));
+    }
+
+    quest_picture->adjustSize();
+    quest_status->adjustSize();
+
 }
 
 void StoreDialog::exam_click()
@@ -343,6 +407,7 @@ s32b StoreDialog::price_services(int service_idx)
 
 void StoreDialog::reset_store()
 {
+
     QGridLayout *lay = dynamic_cast<QGridLayout *>(store_area->layout());
     if (lay == 0)
     {
@@ -500,7 +565,7 @@ void StoreDialog::reset_store()
         QString style = "text-align: left; font-weight: bold;";
         style += s;
 
-        if (home || price <= p_ptr->au)
+        if (home || (guild) || price <= p_ptr->au)
         {
             QPushButton *btn = new QPushButton(desc);
             btn->setProperty("item_id", QVariant(id));
@@ -729,7 +794,8 @@ void StoreDialog::reset_equip()
         QString style = "text-align: left; font-weight: bold;";
         style += s;
 
-        if (home || store_will_buy(store_idx, o_ptr)) {
+        if (home || store_will_buy(store_idx, o_ptr))
+        {
             QPushButton *btn = new QPushButton(desc);
             btn->setProperty("item_id", QVariant(id));
 
@@ -738,7 +804,8 @@ void StoreDialog::reset_equip()
             connect(btn, SIGNAL(clicked()), this, SLOT(item_click()));
             lay->addWidget(btn, row, 1);
         }
-        else {
+        else
+        {
             QLabel *lb2 = new QLabel(desc);
             lb2->setStyleSheet(style);
             lay->addWidget(lb2, row, 1);
@@ -789,7 +856,7 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
         this->buy_click();
         break;
     case Qt::Key_F3:
-        this->sell_click();
+        if(!guild) this->sell_click();
         break;
     case Qt::Key_F4:
         this->toggle_inven();
@@ -868,7 +935,7 @@ void StoreDialog::process_item(QString id)
     switch (aux_mode)
     {
     case SMODE_BUY:
-        if (!home && price > p_ptr->au)
+        if (!home && !guild && price > p_ptr->au)
         {
             pop_up_message_box("It's too expensive", QMessageBox::Critical);
             return;
@@ -885,8 +952,10 @@ void StoreDialog::process_item(QString id)
         do_sell(o_ptr, item);
         break;
     case SMODE_EXAMINE:
+    {
         object_info_screen(o_ptr);
         break;
+        }
     }
 
     set_mode(SMODE_DEFAULT);
@@ -895,6 +964,14 @@ void StoreDialog::process_item(QString id)
 void StoreDialog::process_service(QString id)
 {
     // Make sure we are buying a service.
+
+    int aux_mode = mode;
+    if (aux_mode == SMODE_EXAMINE)
+    {
+        pop_up_message_box("service help TBD");
+        return;
+    }
+
     set_mode(SMODE_BUY);
     if (!id.startsWith("s")) return;
 
@@ -910,6 +987,12 @@ void StoreDialog::process_service(QString id)
 
 void StoreDialog::process_quest(QString id)
 {
+    int aux_mode = mode;
+    if (aux_mode == SMODE_EXAMINE)
+    {
+        pop_up_message_box("quest help TBD");
+        return;
+    }
 
     set_mode(SMODE_BUY);
     if (!id.startsWith("q")) return;
@@ -962,8 +1045,9 @@ bool StoreDialog::do_buy(object_type *o_ptr, int item)
     args.item = item;
     args.number = amt;
 
-    if (home)   do_cmd_retrieve(store_idx, args);
-    else        do_cmd_buy(store_idx, args);
+    if (home)       do_cmd_retrieve(store_idx, args);
+    else if (guild) do_cmd_reward(store_idx, args);
+    else            do_cmd_buy(store_idx, args);
 
     reset_all();
 
@@ -972,15 +1056,25 @@ bool StoreDialog::do_buy(object_type *o_ptr, int item)
 
 void StoreDialog::reset_all()
 {
+    // First, check for pack overflow
+    if (inventory[INVEN_MAX_PACK].k_idx)
+    {
+        if (store_overflow(store_idx))
+        {
+            this->reject();
+        }
+    }
+
     reset_store();
     reset_inventory();
     reset_equip();
-
+    reset_quest_status();
     reset_gold();
 
     ui_request_size_update(inven_tab);
     ui_request_size_update(equip_tab);
     ui_request_size_update(store_area);
+    ui_request_size_update(quest_area);
     QCoreApplication::processEvents();   // IMPORTANT: THE SIZE_HINT UPDATE IS ASYNC, SO WAIT FOR IT
     inven_tab->setMinimumSize(inven_tab->sizeHint());
     equip_tab->setMinimumSize(equip_tab->sizeHint());
@@ -994,6 +1088,7 @@ void StoreDialog::reset_all()
 
 bool StoreDialog::do_sell(object_type *o_ptr, int item)
 {
+
     int amt = request_amt(o_ptr, false);
 
     if (amt == 0) return false;
@@ -1091,7 +1186,8 @@ void QuantityDialog::update_totals(int value)
 
 int StoreDialog::request_amt(object_type *o_ptr, bool buying)
 {
-    if (home) {
+    if (home  || guild)
+    {
         return o_ptr->number;
     }
 

@@ -1,8 +1,24 @@
-#include <QtWidgets>
+//#include <QtWidgets>
 #include <QHash>
 #include <QTextStream>
 #include <QGraphicsItem>
 #include <QGraphicsRectItem>
+#include <QTableWidget>
+#include <QGridLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QGraphicsScale>
+#include <QFileDialog>
+#include <QToolButton>
+#include <QPushButton>
+#include <QGraphicsSceneMouseEvent>
+#include <QSplitter>
+#include <QApplication>
+#include <QFontDialog>
+#include <QMenuBar>
+#include <QToolBar>
+#include <QStatusBar>
+#include <QScrollBar>
 
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
@@ -1307,12 +1323,14 @@ static void display_mon(QTableWidget *sidebar, int row, int m_idx)
     wid = sidebar->cellWidget(row, 0);
     QLabel *lb = wid->findChild<QLabel *>("tile");
 
-    if (use_graphics && !main_window->do_pseudo_ascii) {
+    if (use_graphics && !main_window->do_pseudo_ascii)
+    {
         QPixmap pix = current_tiles->get_tile(r_ptr->tile_id);
         pix = pix.scaled(24, 24);
         lb->setPixmap(pix);
     }
-    else {
+    else
+    {
         lb->setText(r_ptr->d_char);
         lb->setStyleSheet(QString("color: %1;").arg(r_ptr->d_color.name()));
     }

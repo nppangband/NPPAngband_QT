@@ -3,6 +3,9 @@
 
 #include <QList>
 #include <QMainWindow>
+#include <QTextEdit>
+#include <QGraphicsView>
+#include <QGraphicsScene>
 #include <QDir>
 #include <QPainter>
 #include <QImage>
@@ -10,6 +13,8 @@
 #include <QKeyEvent>
 #include <QActionGroup>
 #include <QEventLoop>
+#include <QLineEdit>
+#include <QTextEdit>
 #include "defines.h"
 #include "structures.h"
 #include "nppdialog.h"
