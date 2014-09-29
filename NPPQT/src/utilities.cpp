@@ -106,17 +106,47 @@ int letter_to_number (QChar let)
 // There is probably a better way with QChar, but I can't find it.
 QChar number_to_letter (int num)
 {
+    if (num >=26) return ('a');
+
     for (int i = 0; i < 26; i++)
     {
         letters_and_numbers *ln_ptr =& lowercase_and_numbers[i];
         if (ln_ptr->num == num) return (ln_ptr->let);
     }
 
-    /* all else - just return zero*/
-    return 0;
-
     /* all else - Paranoia*/
     return ('a');
+}
+
+//Convert a long number to string number formatted with commas
+QString number_to_formatted_string(s32b number)
+{
+    bool is_negative = TRUE;
+    if (number > 0) is_negative = FALSE;
+
+    QString formatted_num;
+    formatted_num.clear();
+
+    //preserve the original number
+    s32b working_num = number;
+    if (working_num < 0) working_num = working_num * -1;
+
+    while (working_num >=1000)
+    {
+        s32b remainder = (working_num % 1000);
+        QString temp_string = (QString("%1") .arg(remainder));
+        if (remainder < 100) temp_string.prepend('0');
+        if (remainder < 10)  temp_string.prepend('0');
+        temp_string.prepend(",");
+        working_num = working_num / 1000;
+
+        formatted_num.prepend(temp_string);
+    }
+
+    formatted_num.prepend(QString("%1") .arg(working_num));
+    if (is_negative) formatted_num.prepend('-');
+
+    return(formatted_num);
 }
 
 bool is_a_vowel(QChar single_letter)

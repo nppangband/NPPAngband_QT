@@ -605,8 +605,8 @@ extern QString describe_quest(s16b level, int mode);
 extern void show_quest_mon(int y, int x);
 extern void add_reward_gold(void);
 extern QString get_title(void);
-extern void prt_rep_guild(int rep_y, int rep_x);
-extern void prt_welcome_guild(void);
+extern QString get_rep_guild(void);
+extern QString get_welcome_guild(void);
 extern void grant_reward_hp(void);
 extern bool quest_allowed(byte j);
 extern bool can_quest_at_level(void);
@@ -818,6 +818,7 @@ extern bool squelch_item_ok(object_type *o_ptr);
 extern void do_squelch_pile(int y, int x);
 
 /*store.c*/
+extern QString store_welcome(int store_idx);
 extern s16b moria_chr_adj(void);
 extern s32b price_item(int this_store, object_type *o_ptr, bool store_buying);
 extern void store_item_increase(int st, int item, int num);
@@ -937,6 +938,7 @@ extern bool set_food(int v);
 extern void debug_rarities();
 extern int letter_to_number (QChar let);
 extern QChar number_to_letter (int num);
+extern QString number_to_formatted_string(s32b number);
 extern bool is_a_vowel(QChar single_letter);
 extern bool begins_with_vowel(QString line);
 extern QString capitalize_first(QString line);

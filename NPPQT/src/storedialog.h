@@ -1,7 +1,8 @@
 #ifndef STOREDIALOG_H
 #define STOREDIALOG_H
 
-#include <QtWidgets>
+#include <qtabwidget.h>
+#include <qdialogbuttonbox.h>
 #include "src/nppdialog.h"
 #include "src/npp.h"
 #include "store.h"
@@ -31,6 +32,10 @@ public:
 
 extern service_info services_info[STORE_SERVICE_MAX];
 
+
+
+extern  QString quests_info[QUEST_SLOT_MAX];
+
 class object_type;
 
 class StoreDialog : public NPPDialog
@@ -51,9 +56,10 @@ public:
 
     StoreDialog(int _store, QWidget *parent = 0);
 
-    s32b price_services(int service_idx);
+    bool should_show_inventory(void);
+    bool should_offer_quests(void);
     bool should_offer_service(byte service_num);
-
+    s32b price_services(int service_idx);
 
     void reset_store();
     void reset_inventory();

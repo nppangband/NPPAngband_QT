@@ -753,31 +753,38 @@ enum
 
 /*slots for the following tables*/
 /*The code assumes QUEST_SLOT_MONSTER is first and always available to the player*/
-#define QUEST_SLOT_MONSTER			0
-#define QUEST_SLOT_GUARDIAN			1
-#define QUEST_SLOT_PIT_NEST			2
-#define QUEST_SLOT_WILDERNESS		3
-#define QUEST_SLOT_LEVEL			4
-#define QUEST_SLOT_VAULT			5
-#define QUEST_SLOT_ARENA			6
-#define QUEST_SLOT_LABYRINTH		7
-#define QUEST_SLOT_GREATER_VAULT	8
-#define QUEST_SLOT_MAX				9
+enum
+{
+    QUEST_SLOT_MONSTER = 0,
+    QUEST_SLOT_GUARDIAN,
+    QUEST_SLOT_PIT_NEST,
+    QUEST_SLOT_WILDERNESS,
+    QUEST_SLOT_LEVEL,
+    QUEST_SLOT_VAULT,
+    QUEST_SLOT_ARENA,
+    QUEST_SLOT_LABYRINTH,
+    QUEST_SLOT_GREATER_VAULT,
+    QUEST_SLOT_MAX,
+};
 
 /*
  * Quest types
  */
-#define QUEST_PERMANENT			1	/* A fixed quest from quest.txt for specific monster race or unique */
-#define QUEST_MONSTER			2	/* Kill a specific monster race or unique*/
-#define QUEST_GUARDIAN			3  	/* A fixed monster quest from the guild */
-#define QUEST_PIT				4	/* clear out an entire monster pit*/
-#define QUEST_NEST				5	/* clear out a monster next*/
-#define QUEST_THEMED_LEVEL		6	/* clear out an entire level of creatures*/
-#define QUEST_WILDERNESS		7	/* Clear out an entire wilderness level */
-#define QUEST_VAULT				8	/* retrieve a artifact from a vault and return it to the guild*/
-#define QUEST_ARENA_LEVEL		9	/* Kill a given # of creatures in a closed arena  */
-#define QUEST_LABYRINTH   		10   /* Clear out an entire labrynth level */
-#define QUEST_GREATER_VAULT	    11   /* Go into a greater vault for a set amoutn of time */
+ enum
+ {
+    QUEST_PERMANENT = 1,    /* A fixed quest from quest.txt for specific monster race or unique */
+    QUEST_MONSTER,          /* Kill a specific monster race or unique*/
+    QUEST_GUARDIAN,         /* A fixed monster quest from the guild */
+    QUEST_PIT,              /* clear out an entire monster pit*/
+    QUEST_NEST,             /* clear out a monster next*/
+    QUEST_THEMED_LEVEL,     /* clear out an entire level of creatures*/
+    QUEST_WILDERNESS,       /* Clear out an entire wilderness level */
+    QUEST_VAULT,            /* retrieve a artifact from a vault and return it to the guild*/
+    QUEST_ARENA_LEVEL,      /* Kill a given # of creatures in a closed arena  */
+    QUEST_LABYRINTH,        /* Clear out an entire labrynth level */
+    QUEST_GREATER_VAULT,    /* Go into a greater vault for a set amount of time */
+ };
+
 
 #define MON_RARE_FREQ	15
 #define MON_LESS_FREQ	50

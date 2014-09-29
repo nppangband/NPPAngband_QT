@@ -80,21 +80,6 @@ service_info services_info[] =
 
 
 
-/* Quest Titles*/
-static QString quest_title[QUEST_SLOT_MAX] =
-{
-    "Monster or Unique Quest",	/* QUEST_MONSTER*/
-    "Guardian Quest",			/* QUEST_GUARDIAN */
-    "Pit or Nest Quest",		/* QUEST_PIT*/
-    "Wilderness Quest",			/* QUEST_WILDERNESS */
-    "Level Quest",				/* QUEST_THEMED_LEVEL*/
-    "Vault Quest",				/* QUEST_VAULT*/
-    "Arena Quest",				/* QUEST_ARENA_LEVEL */
-    "Labyrinth Quest",			/* QUEST_LABYRINTH_LEVEL */
-    "Greater Vault Quest"		/* QUEST_SLOT_GREATER_VAULT */
-};
-
-
 
 /*** Utilities ***/
 
@@ -107,20 +92,21 @@ static QString quest_title[QUEST_SLOT_MAX] =
 /*
  * Shopkeeper welcome messages.
  *
- * The shopkeeper's name must come first, then the character's name.
+ * The shopkeeper's is automatically added first first
+ * The character's name is added if indicated by ZZZ.
  */
 static QString comment_welcome[] =
 {
-    "",
-    "%s nods to you.",
-    "%s says hello.",
-    "%s: \"See anything you like, adventurer?\"",
-    "%s: \"How may I help you, %s?\"",
-    "%s: \"Welcome back, %s.\"",
-    "%s: \"A pleasure to see you again, %s.\"",
-    "%s: \"How may I be of assistance, good %s?\"",
-    "%s: \"You do honour to my humble store, noble %s.\"",
-    "%s: \"I and my family are entirely at your service, glorious %s.\""
+    " glances only briefly in your direction.",
+    " nods to you.",
+    " says hello.",
+    ": \"See anything you like, adventurer?\"",
+    ": \"How may I help you, ZZZ?\"",
+    ": \"Welcome back, ZZZ.\"",
+    ": \"A pleasure to see you again, ZZZ.\"",
+    ": \"How may I be of assistance, good ZZZ?\"",
+    ": \"You do honour to my humble store, noble ZZZ.\"",
+    ": \"I and my family are entirely at your service, glorious ZZZ.\""
 };
 
 /*
@@ -179,37 +165,39 @@ static QString comment_great[] =
  *
  * Taken and modified from Sangband 1.0.
  */
-static void prt_welcome(const owner_type *ot_ptr)
+QString store_welcome(int store_idx)
 {
-    QString short_name;
     QString player_name;
+
+    store_type *st_ptr = &store[store_idx];
+
+    owner_type *ot_ptr = &b_info[(store_idx * z_info->b_max) + st_ptr->owner];
+
     QString owner_name = ot_ptr->owner_name;
 
     /* We go from level 1 - 50  */
-    size_t i = ((unsigned)p_ptr->lev - 1) / 5;
+    byte i = ((unsigned)p_ptr->lev - 1) / 5;
 
     /* Sanity check in case we increase the max level carelessly */
     i = MIN(i, N_ELEMENTS(comment_welcome) - 1);
 
-    /* Only show the message one in four times to stop it being irritating. */
-    if (!one_in_(4)) return;
+    QString welcome = comment_welcome[i];
 
-    /* Welcome the character */
-    if (i)
-    {
-        /* Extract the first name of the store owner (stop before the first space) */
-        QString short_name = owner_name;
-        int j = short_name.indexOf(' ');
-        short_name.truncate(j);
+    /* Extract the first name of the store owner (stop before the first space) */
+    QString short_name = owner_name;
+    int j = short_name.indexOf(' ');
+    short_name.truncate(j);
 
-        /* Get a title for the character */
-        if ((i % 2) && randint0(2)) player_name = get_player_title();
-        else if (randint0(2))       player_name = op_ptr->full_name;
-        else                        player_name = (p_ptr->psex == SEX_MALE ? "sir" : "lady");
+    welcome.prepend(short_name);
 
-        /* Balthazar says "Welcome" */
-        //TODO print onscreen prt(format(comment_welcome[i], short_name, player_name), 0, 0);
-    }
+    /* Get a title for the character */
+    if ((i % 2) && randint0(2)) player_name = get_player_title();
+    else if (randint0(2))       player_name = op_ptr->full_name;
+    else                        player_name = (p_ptr->psex == SEX_MALE ? "sir" : "lady");
+
+    welcome.replace("ZZZ", player_name);
+
+    return (welcome);
 }
 
 /*
@@ -237,15 +225,7 @@ static void purchase_analyze(s32b price, s32b value, s32b guess)
 }
 
 
-/*
- * We store the current "store pointer" here so everyone can access it
- */
-static store_type *st_ptr = NULL;
 
-/*
- * We store the current "owner type" here so everyone can access it
- */
-static owner_type *ot_ptr = NULL;
 
 
 /*return false if the player doesn't have enough gold*/
@@ -261,39 +241,6 @@ static bool check_gold(s32b price)
     return (TRUE);
 }
 
-
-static void init_services_and_quests(int store_num)
-{
-    int i;
-
-    /*Nothing in the store*/
-    if (store_num == STORE_HOME) return;
-
-    /*
-     * Now, initialize the quests,
-     * but only if the player is in the guild are active.
-     */
-    if (store_num != STORE_GUILD) return;
-
-    /* No quest options if they currently have an active one. */
-    if (guild_quest_level()) return;
-
-    /*Honor the no quests option*/
-    if (!can_quest_at_level()) return;
-
-    /* Check if the no_quests option is on */
-    if (adult_no_quests) return;
-
-    /*get a list of allowable quests*/
-    for (i = 0;i < QUEST_SLOT_MAX; i++)
-    {
-        if (quest_allowed(i))
-        {
-            /*Allow*/
-            //quests_max++;
-        }
-    }
-}
 
 bool do_service_enchant(byte choice, u32b price)
 {
@@ -1299,7 +1246,7 @@ s32b price_item(int this_store, object_type *o_ptr, bool store_buying)
  *
  * Standard percentage discounts include 10, 25, 50, 75, and 90.
  */
-static void mass_produce(object_type *o_ptr, int store)
+static void mass_produce(object_type *o_ptr)
 {
     int size = 1;
 
@@ -2397,7 +2344,7 @@ static void store_create_random(int which)
 
 
         /* Mass produce and/or Apply discount */
-        mass_produce(i_ptr, which);
+        mass_produce(i_ptr);
 
         /* Attempt to carry the (known) object */
         (void)store_carry(which, i_ptr);
@@ -2423,16 +2370,11 @@ void store_maint(int which)
 
     int old_rating = rating;
 
-    store_type *st_ptr;
-
     /* Ignore home and guild */
     if ((which == STORE_HOME) || (which == STORE_GUILD)) return;
 
     /* Activate that store */
-    st_ptr = &store[which];
-
-    /* Activate the owner */
-    ot_ptr = &b_info[(which * z_info->b_max) + st_ptr->owner];
+    store_type *st_ptr = &store[which];
 
     /* XXX Prune the black market */
     if (which == STORE_B_MARKET)
@@ -2575,6 +2517,7 @@ void store_maint(int which)
 }
 
 
+
 /*
  * Initialize the stores
  */
@@ -2583,13 +2526,10 @@ void store_init(int which)
     int k;
 
     /* Activate that store */
-    st_ptr = &store[which];
+    store_type *st_ptr = &store[which];
 
     /* Pick an owner */
     st_ptr->owner = (byte)rand_int(z_info->b_max);
-
-    /* Activate the new owner */
-    ot_ptr = &b_info[(which * z_info->b_max) + st_ptr->owner];
 
     /* Nothing in stock */
     st_ptr->stock_num = 0;

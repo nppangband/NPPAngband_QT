@@ -40,7 +40,7 @@ N:3
 S:15000:Ludwig the Humble (Human)
 S:20000:Gunnar the Paladin (Human)
 S:25000:Delilah the Pure (Elf)
-S:30000:Brother Steadfast (Dwarf)
+S:30000:Steadfast the Pious (Dwarf)
 
 
 # Alchemist

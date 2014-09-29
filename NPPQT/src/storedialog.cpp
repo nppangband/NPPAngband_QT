@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include <QCoreApplication>
 #include <QScrollArea>
+#include <QLabel>
 #include "npp.h"
 #include "store.h"
 
@@ -49,7 +50,10 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 
     if (guild)
     {
-        lay3->addWidget(new QLabel("<b>The Adventurer's Guild</b>"));
+        QString title = QString("<b>The Adventurer's Guild</b>   - ");
+        title.append(get_rep_guild());
+        QLabel *guild_intro = new QLabel(title);
+        lay3->addWidget(guild_intro);
     }
     else if (!home)
     {
@@ -114,13 +118,32 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     lay6->addWidget(btn_takeoff);
     connect(btn_takeoff, SIGNAL(clicked()), this, SLOT(takeoff_click()));
 
+    if (guild || (!home && one_in_(3)))
+    {
+        QWidget *area_greeting = new QWidget;
+        QHBoxLayout *lay_greeting = new QHBoxLayout;
+        area_greeting->setLayout(lay_greeting);
+        lay_greeting->setContentsMargins(0, 0, 0, 0);
+        lay1->addWidget(area_greeting);
+
+        QString greeting;
+        if (guild) greeting = get_welcome_guild();
+        else greeting = store_welcome(store_idx);
+
+        QString msg = (QString("<big>%1</big>").arg(greeting));
+        QLabel *store_greeting = new QLabel(msg);
+        lay_greeting->addWidget(store_greeting);
+    }
+
     QWidget *area2 = new QWidget;
     QHBoxLayout *lay2 = new QHBoxLayout;
     area2->setLayout(lay2);
     lay2->setContentsMargins(0, 0, 0, 0);
     lay1->addWidget(area2);
 
-    QGroupBox *box1 = new QGroupBox(home ? "Home items": "Store items");
+    QGroupBox *box1 = new QGroupBox(home ? "Home items":
+            (guild ? "Guild Services and Available Quests" : "Store Inventory and Services"));
+    box1->setStyleSheet("font-weight: bold;");
     lay2->addWidget(box1);
     QVBoxLayout *lay4 = new QVBoxLayout;
     box1->setLayout(lay4);
@@ -175,7 +198,7 @@ void StoreDialog::takeoff_click()
 void StoreDialog::reset_gold()
 {
     QLabel *label = this->findChild<QLabel *>("gold_label");
-    label->setText(QString("Gold: %1").arg(p_ptr->au));
+    label->setText(QString("Gold: %1").arg(number_to_formatted_string(p_ptr->au)));
 }
 
 void StoreDialog::exam_click()
@@ -186,6 +209,37 @@ void StoreDialog::exam_click()
 void StoreDialog::buy_click()
 {
     set_mode(SMODE_BUY);
+}
+
+
+// Don't display quest reward inventory until the quest is complete.
+bool StoreDialog::should_show_inventory(void)
+{
+    if (store_idx != STORE_GUILD) return (TRUE);
+
+    if (guild_quest_complete()) return (TRUE);
+
+    return (FALSE);
+}
+
+//  Determine if a store should offer quests or not.
+bool StoreDialog::should_offer_quests(void)
+{
+    // Only in the guild
+    if (store_idx != STORE_GUILD) return (FALSE);
+
+    /* No quest options if they currently have an active one. */
+    if (guild_quest_level()) return (FALSE);
+
+    /*
+     * Checks the no quests option, as
+     * well as the potential quest level
+     */
+    if (!can_quest_at_level()) return (FALSE);
+
+    return (TRUE);
+
+
 }
 
 //  Determine if a store should offer a certain service or not.
@@ -300,9 +354,26 @@ void StoreDialog::reset_store()
     // Remove previous items
     clear_grid(lay);
     int row = 0;
-    if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
+    int col = 2;
+
+    // Add weight label
+    QLabel *weight_label = new QLabel("Weight");
+    weight_label->setText("Weight");
+    weight_label->setAlignment(Qt::AlignRight);
+    lay->addWidget(weight_label, row, col++);
+
+    //Add price label
+    if (!home)
+    {
+        QLabel *price_label = new QLabel("Price");
+        price_label->setText("Price");
+        price_label->setAlignment(Qt::AlignRight);
+        lay->addWidget(price_label, row++, col);
+    }
+
     store_type *st = &store[store_idx];
     int i;
+    int k = 1;
 
     // Display the services
     for (i = 0; i < STORE_SERVICE_MAX; i++)
@@ -316,12 +387,12 @@ void StoreDialog::reset_store()
 
         service_info *service_ptr = &services_info[i];
 
-        int col = 0;
+        col = 0;
 
-        // Make an id for the item
+        // Make an id for the service
         QString id = QString("s%1").arg(i);
 
-        QLabel *lb = new QLabel(QString("%1)").arg(number_to_letter(i)));
+        QLabel *lb = new QLabel(QString("%1)").arg(k++));
         lb->setProperty("item_id", QVariant(id));
         lay->addWidget(lb, row, col++);
 
@@ -349,7 +420,15 @@ void StoreDialog::reset_store()
             lay->addWidget(lb2, row, col++);
         }
 
-        QLabel *l = new QLabel(_num(price));
+        // Skip the "weight" column.
+        col++;
+
+        QString price_text = number_to_formatted_string(price);
+        price_text = price_text.rightJustified(15, ' ');
+
+        QLabel *l = new QLabel("price");
+        l->setText(price_text);
+        l->setAlignment(Qt::AlignRight);
         lay->addWidget(l, row, col++);
 
         QPushButton *help_button = new QPushButton;
@@ -361,12 +440,52 @@ void StoreDialog::reset_store()
         ++row;
     }
 
-    for (i = 0; i < st->stock_num; i++)
+    /*get a list of allowable quests*/
+    if (should_offer_quests()) for (i = 0;i < QUEST_SLOT_MAX; i++)
+    {
+        if (!quest_allowed(i)) continue;
+
+        col = 0;
+
+        // Make an id for the quest
+        QString id = QString("q%1").arg(i);
+
+        QLabel *lb = new QLabel(QString("%1)").arg(k++));
+        lb->setProperty("item_id", QVariant(id));
+        lay->addWidget(lb, row, col++);
+
+        QString desc = quests_info[i];
+        QColor quest_color = make_color_readable(defined_colors[TERM_GREEN]);
+        QString s = QString("color: %1;").arg(quest_color.name());
+        QString style = "text-align: left; font-weight: bold;";
+        style += s;
+
+        QPushButton *btn = new QPushButton(desc);
+        btn->setProperty("item_id", QVariant(id));
+
+        btn->setStyleSheet(style);
+        btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        connect(btn, SIGNAL(clicked()), this, SLOT(quest_click()));
+        lay->addWidget(btn, row, col++);
+
+        // Skip over the price and weight column.
+        col+=2;
+
+        QPushButton *help_button = new QPushButton;
+        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+        help_button->setObjectName(id);
+        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
+        lay->addWidget(help_button, row, col++);
+
+        row++;
+    }
+
+    if (should_show_inventory()) for (i = 0; i < st->stock_num; i++)
     {
         object_type *o_ptr = &st->stock[i];
         if (o_ptr->k_idx == 0) continue;
 
-        int col = 0;
+        col = 0;
 
         // Make an id for the item
         QString id = QString("p%1").arg(i);
@@ -398,11 +517,31 @@ void StoreDialog::reset_store()
             lay->addWidget(lb2, row, col++);
         }
 
-        if (!home)
+        // Add the weight
+        int orig_weight = o_ptr->weight * o_ptr->number;
+        int weight1 = orig_weight/10;
+        int weight2 = orig_weight%10;
+
+        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
+        weight_printout = weight_printout.rightJustified(8, ' ');
+        QLabel *weight = new QLabel(weight_printout);
+        weight->setAlignment(Qt::AlignRight);
+        weight->setAlignment(Qt::AlignBottom);
+        lay->addWidget(weight, row, col++);
+
+        // Provice a price, if necessary.
+        if (!home && !guild)
         {
-            QLabel *l = new QLabel(_num(price));
-            lay->addWidget(l, row, col++);
+            s32b price = price_item(store_idx, o_ptr, FALSE);
+            QString price_text = number_to_formatted_string(price);
+            price_text = price_text.rightJustified(16, ' ');
+            QLabel *price_out = new QLabel("Price");
+            price_out->setText(price_text);
+            price_out->setAlignment(Qt::AlignRight);
+            price_out->setAlignment(Qt::AlignBottom);
+            lay->addWidget(price_out, row, col);
         }
+        col++;
 
         QPushButton *help_button = new QPushButton;
         help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
@@ -422,14 +561,14 @@ void StoreDialog::help_click()
     int o_idx = id.mid(1).toInt();
     object_type *o_ptr;
 
-    // TODO handle services
+    // TODO handle services and quests
     if (id.at(0) == 'q')
     {
-
+        pop_up_message_box(QString("Help files not done yet"));
     }
     else if (id.at(0) == 's')
     {
-
+        pop_up_message_box(QString("Help files not done yet"));
     }
     else if (id.at(0) == 'p')
     {
@@ -468,7 +607,14 @@ void StoreDialog::reset_inventory()
     // Remove previous items
     clear_grid(lay);
     int row = 0;
-    if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
+    lay->addWidget(new QLabel("Weight"), row, 2);
+    if (!home)
+    {
+        QLabel *price_label = new QLabel("Price");
+        price_label->setText("price");
+        price_label->setAlignment(Qt::AlignRight);
+        lay->addWidget(price_label, row++, 3);
+    }
     int i;
     for (i = 0; i < INVEN_WIELD - 1; i++)
     {
@@ -487,7 +633,8 @@ void StoreDialog::reset_inventory()
         QString style = "text-align: left; font-weight: bold;";
         style += s;
 
-        if (home || store_will_buy(store_idx, o_ptr)) {
+        if (home || store_will_buy(store_idx, o_ptr))
+        {
             QPushButton *btn = new QPushButton(desc);
             btn->setProperty("item_id", QVariant(id));
 
@@ -503,17 +650,32 @@ void StoreDialog::reset_inventory()
             lay->addWidget(lb2, row, 1);
         }
 
-        if (!home && store_will_buy(store_idx, o_ptr)) {
+        // Add the weight
+        int orig_weight = o_ptr->weight * o_ptr->number;
+        int weight1 = orig_weight/10;
+        int weight2 = orig_weight%10;
+        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
+        weight_printout = weight_printout.rightJustified(8, ' ');
+        QLabel *weight = new QLabel(weight_printout);
+        weight->setAlignment(Qt::AlignRight);
+        lay->addWidget(weight, row, 2);
+
+        if (!home && store_will_buy(store_idx, o_ptr))
+        {
             s32b price = price_item(store_idx, o_ptr, true);
-            QLabel *l = new QLabel(_num(price));
-            lay->addWidget(l, row, 2);
+            QString price_text = number_to_formatted_string(price);
+            price_text = price_text.rightJustified(16, ' ');
+            QLabel *price_out = new QLabel("Price");
+            price_out->setText(price_text);
+            price_out->setAlignment(Qt::AlignRight);
+            lay->addWidget(price_out, row, 3);
         }
 
         QPushButton *help_button = new QPushButton;
         help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
         help_button->setObjectName(id);
         connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
-        lay->addWidget(help_button, row, 3);
+        lay->addWidget(help_button, row, 4);
 
         ++row;
     }
@@ -535,7 +697,14 @@ void StoreDialog::reset_equip()
     int n = 0;
     int i;
     int row = 0;
-    if (!home) lay->addWidget(new QLabel("Price"), row++, 2);
+    lay->addWidget(new QLabel("Weight"), row, 2);
+    if (!home)
+    {
+        QLabel *price_label = new QLabel("Price");
+        price_label->setText("price");
+        price_label->setAlignment(Qt::AlignRight);
+        lay->addWidget(price_label, row++, 3);
+    }
     for (i = INVEN_WIELD; i < QUIVER_END; i++)
     {
         object_type *o_ptr = inventory + i;
@@ -575,17 +744,32 @@ void StoreDialog::reset_equip()
             lay->addWidget(lb2, row, 1);
         }
 
-        if (!home && store_will_buy(store_idx, o_ptr)) {
+        // Add the weight
+        int orig_weight = o_ptr->weight * o_ptr->number;
+        int weight1 = orig_weight/10;
+        int weight2 = orig_weight%10;
+        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
+        weight_printout = weight_printout.rightJustified(8, ' ');
+        QLabel *weight = new QLabel(weight_printout);
+        weight->setAlignment(Qt::AlignRight);
+        lay->addWidget(weight, row, 2);
+
+        if (!home && store_will_buy(store_idx, o_ptr))
+        {
             s32b price = price_item(store_idx, o_ptr, true);
-            QLabel *l = new QLabel(_num(price));
-            lay->addWidget(l, row, 2);
+            QString price_text = number_to_formatted_string(price);
+            price_text = price_text.rightJustified(16, ' ');
+            QLabel *price_out = new QLabel("Price");
+            price_out->setText(price_text);
+            price_out->setAlignment(Qt::AlignRight);
+            lay->addWidget(price_out, row, 3);
         }
 
         QPushButton *help_button = new QPushButton;
         help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
         help_button->setObjectName(id);
         connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
-        lay->addWidget(help_button, row, 3);
+        lay->addWidget(help_button, row, 4);
 
         row++;
     }
@@ -621,12 +805,13 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
         break;
     default:
         if (event->text().length() > 0
-                && event->text().at(0).isLetter())
+                && (event->text().at(0).isLetterOrNumber()))
         {
             QString letter = event->text().at(0);
+
             letter.append(")");
             QWidget *container = char_tabs->currentWidget();
-            if (letter.at(0).isLower())
+            if (letter.at(0).isLower() || letter.at(0).isDigit())
             {
                 container = store_area;
             }
@@ -634,10 +819,15 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
             for (int i = 0; i < lst.size(); i++)
             {
                 QString text = lst.at(i)->text();
+
                 if (text.startsWith(letter))
                 {
+
                     QString item_id = lst.at(i)->property("item_id").toString();
-                    process_item(item_id);
+
+                    if (item_id.startsWith('p')) process_item(item_id);
+                    else if (item_id.startsWith('s')) process_service(item_id);
+                    else if (item_id.startsWith('q')) process_quest(item_id);
                     break;
                 }
             }
@@ -688,7 +878,8 @@ void StoreDialog::process_item(QString id)
     case SMODE_SELL:
         if (!home && !store_will_buy(store_idx, o_ptr))
         {
-            pop_up_message_box("I don't buy that kind of items", QMessageBox::Critical);
+            if (o_ptr->number == 1) pop_up_message_box("I don't buy that kind of item.", QMessageBox::Critical);
+            pop_up_message_box("I don't buy those kind of items.", QMessageBox::Critical);
             return;
         }
         do_sell(o_ptr, item);
@@ -721,6 +912,15 @@ void StoreDialog::process_quest(QString id)
 {
 
     set_mode(SMODE_BUY);
+    if (!id.startsWith("q")) return;
+
+    // Get quest index
+    int quest_idx = id.mid(1).toInt();
+
+    if (!guild_purchase(quest_idx)) return;
+
+    reset_all();
+
 }
 
 void StoreDialog::item_click()

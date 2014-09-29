@@ -13,11 +13,30 @@
 
 #include "src/npp.h"
 #include "src/store.h"
+#include "src/storedialog.h"
 
 /*Monsters only appear so deep*/
 #define MAX_MIN_DEPTH			76
 
-
+QString quests_info[] =
+{
+    /* QUEST_MONSTER*/
+    {"Monster or Unique Quest"},
+    /* QUEST_GUARDIAN */
+    {"Guardian Quest"},
+    /* QUEST_PIT*/
+    {"Pit or Nest Quest"},
+    /* QUEST_WILDERNESS */
+    {"Wilderness Quest"},
+    /* QUEST_THEMED_LEVEL*/
+    {"Level Quest"},
+    /* QUEST_ARENA_LEVEL */
+    {"Arena Quest"},
+    /* QUEST_LABYRINTH_LEVEL */
+    {"Labyrinth Quest"},
+    /* QUEST_SLOT_GREATER_VAULT */
+    {"Greater Vault Quest"},
+};
 
 /*
  * Return the next guild quest level.
@@ -729,16 +748,13 @@ QString get_title(void)
 
 
 
-void prt_rep_guild(int rep_y, int rep_x)
+QString get_rep_guild(void)
 {
     byte attr;
 
-    QString message;
     QString title;
 
-    message =  "You might be interested to know that your current reputation is ";
-
-    // TODO print it put_str(message, rep_y, rep_x);
+    QString rep =  QString("Your guild reputation is ");
 
     /* Player's reputation */
     switch (p_ptr->q_fame / 100)
@@ -795,7 +811,7 @@ void prt_rep_guild(int rep_y, int rep_x)
         case 14:
         case 15:
         {
-            attr = TERM_L_GREEN;
+            attr = TERM_GREEN;
             title = "superb";
             break;
         }
@@ -803,31 +819,30 @@ void prt_rep_guild(int rep_y, int rep_x)
         case 16:
         case 17:
         {
-            attr = TERM_L_GREEN;
+            attr = TERM_BLUE;
             title = "heroic";
             break;
         }
         default:
         {
-            attr = TERM_L_GREEN;
+            attr = TERM_BLUE;
             title = "legendary";
             break;
         }
     }
 
-    /* Quest count */
-    // TODO print it c_put_str(attr, title, rep_y, rep_x);
+    rep.append(color_string(title, attr));
+
+    return (rep);
 }
 
-void prt_welcome_guild(void)
+QString get_welcome_guild(void)
 {
-    QString title;
-
     /*Get the current title*/
-    title = get_title();
+    QString title = get_title();
 
     /* Introduction */
-    // TODO print welcome put_str(format("Welcome to the Adventurer's Guild, %s.", title), 0, 0);
+    return(QString("Welcome to the Adventurer's Guild, %1.") .arg(title));
 
 }
 
