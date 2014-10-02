@@ -2,8 +2,13 @@
 #define CMD_SPELL_H
 
 
-#include <QtWidgets>
+
 #include "src/npp.h"
+#include <QDialogButtonBox>
+#include <QSignalMapper>
+#include <QKeyEvent>
+#include <QTabWidget>
+#include <QLabel>
 
 enum
 {

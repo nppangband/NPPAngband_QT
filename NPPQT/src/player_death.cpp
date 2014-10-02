@@ -17,7 +17,9 @@
  */
 
 #include "src/player_death.h"
-
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 
 
 void PlayerDeathDialog::death_info(void)

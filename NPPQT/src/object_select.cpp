@@ -20,6 +20,10 @@
 
 
 #include "src/object_select.h"
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QLabel>
 
 // Receives the number of the button pressed.
 void ObjectSelectDialog::button_press(QString num_string)

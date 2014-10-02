@@ -1,8 +1,9 @@
 #ifndef DUN_TRAPS_H
 #define DUN_TRAPS_H
 
-#include <QtWidgets>
-
+#include <QSignalMapper>
+#include <QDialogButtonBox>
+#include <QDialog>
 
 
 

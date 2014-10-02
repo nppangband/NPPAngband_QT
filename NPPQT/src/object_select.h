@@ -1,8 +1,12 @@
 #ifndef OBJECT_SELECT_H
 #define OBJECT_SELECT_H
 
-#include <QtWidgets>
 #include "src/npp.h"
+#include <QTabWidget>
+#include <QDialogButtonBox>
+#include <QSignalMapper>
+#include <QKeyEvent>
+
 
 // The numbered order of the tabs
 enum

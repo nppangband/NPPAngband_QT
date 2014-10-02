@@ -20,6 +20,9 @@
 #include <src/player_command.h>
 #include <src/cmd_spell.h>\
 
+#include <QPushButton>
+#include <QVBoxLayout>
+
 // Receives the number of the button pressed.
 void SpellSelectDialog::button_press(QString num_string)
 {

@@ -1,7 +1,8 @@
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
 #include "tilebag.h"
-#include <QtWidgets>
+#include <QInputDialog>
+#include <QLineEdit>
 
 
 QString _num(int n)

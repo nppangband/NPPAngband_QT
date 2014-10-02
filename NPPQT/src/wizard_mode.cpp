@@ -17,6 +17,12 @@
  */
 
 #include "src/wizard_mode.h"
+#include <QBoxLayout>
+#include <QGridLayout>
+#include <QLabel>
+#include <QSpinBox>
+#include <QPushButton>
+
 
 static bool wiz_alloc_artifact(object_type *o_ptr, int art_num)
 {

@@ -995,6 +995,8 @@ void init_birth()
     if (game_mode == GAME_NPPMORIA) set_moria_options();
 
     character_loaded = character_dungeon = character_generated = false;
+
+    message_list.clear();
 }
 
 /*

@@ -3,7 +3,6 @@
 
 #include <QTime>
 #include <QDate>
-#include <QtWidgets>
 #include "src/npp.h"
 #include "src/store.h"
 

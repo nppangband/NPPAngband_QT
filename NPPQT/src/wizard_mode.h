@@ -1,7 +1,9 @@
 #ifndef WIZARD_MODE_H
 #define WIZARD_MODE_H
 
-#include <QtWidgets>
+#include <QComboBox>
+#include <QDialogButtonBox>
+
 #include "src/npp.h"
 
 class EditObjectDialog : public QDialog

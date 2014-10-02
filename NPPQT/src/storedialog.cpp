@@ -15,16 +15,20 @@
 
 void launch_store(int store_idx)
 {
+    p_ptr->in_store = TRUE;
     StoreDialog *dlg = new StoreDialog(store_idx);
     dlg->exec();
     delete dlg;
+    p_ptr->in_store = FALSE;
+    p_ptr->message_append_stop();
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
 static void clear_grid(QGridLayout *lay)
 {
     QLayoutItem *item;
-    while ((item = lay->takeAt(0)) != 0) {
+    while ((item = lay->takeAt(0)) != 0)
+    {
         QWidget *wid = item->widget();
         if (wid) delete wid;
         delete item;
@@ -37,11 +41,28 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     home = (store_idx == STORE_HOME);
     guild = (store_idx == STORE_GUILD);
 
+    // Remember the last message printed on the main screen
+    last_message = message_list[0];
+
     central = new QWidget;
     QVBoxLayout *lay1 = new QVBoxLayout;
     central->setLayout(lay1);
     lay1->setSpacing(10);
     this->setClient(central);  // IMPORTANT: it must be called AFTER setting the layout
+
+    message_area = new QWidget;
+    lay1->addWidget(message_area);
+    QVBoxLayout *lay_message = new QVBoxLayout;
+    message_area->setLayout(lay_message);
+    lay_message->setContentsMargins(0, 0, 0, 0);
+    message_one = new QLabel("msg_one");
+    message_two = new QLabel("msg_two");
+    message_three = new QLabel("msg_three");
+    lay_message->addWidget(message_one);
+    lay_message->addWidget(message_two);
+    lay_message->addWidget(message_three);
+
+    this->reset_messages();
 
     QWidget *area1 = new QWidget;
     lay1->addWidget(area1);
@@ -216,6 +237,61 @@ void StoreDialog::takeoff_click()
 {
     do_cmd_takeoff();
     reset_all();
+}
+
+void StoreDialog::reset_messages()
+{
+
+    int which_message = 1;
+
+    /* Show the messages if they exist.
+     * Check carefully to avoid crashes from
+     * pointers larger than message list size.
+     * We only want messages generated while in
+     * the store->
+     */
+
+    message_one->setText(" ");
+    message_two->setText(" ");
+    message_three->setText(" ");
+
+    int msg_size = message_list.size();
+
+    for (int i = 0; i < msg_size; i++)
+    {
+
+        if (which_message > 3) break;
+        bool next_line = FALSE;
+
+        // Point to the last message
+        message_type *current_message = &message_list[i];
+
+        /* Stop when we hit messages that were posted
+         * before the player went into the store.
+         */
+        if (operator==(current_message->message, last_message.message)) break;
+
+
+        if (which_message == 1)
+        {
+            message_one->setText(QString("%1 %2") .arg(message_one->text()) .arg(current_message->message));
+            if (message_one->text().length() > 120) next_line = TRUE;
+        }
+        else if (which_message == 2)
+        {
+            message_two->setText(QString("%1 %2") .arg(message_two->text()) .arg(current_message->message));
+            if (message_two->text().length() > 120) next_line = TRUE;
+        }
+        else if (which_message == 3)
+        {
+            message_three->setText(QString("%1 %2") .arg(message_three->text()) .arg(current_message->message));
+            if (message_three->text().length() > 120) next_line = TRUE;
+        }
+
+        // Skip down to the next line if necessary.
+        if (!current_message->append || next_line) which_message++;
+    }
+
 }
 
 void StoreDialog::reset_gold()
@@ -959,6 +1035,7 @@ void StoreDialog::process_item(QString id)
     }
 
     set_mode(SMODE_DEFAULT);
+
 }
 
 void StoreDialog::process_service(QString id)
@@ -980,6 +1057,8 @@ void StoreDialog::process_service(QString id)
 
     u32b serv_price = price_services(service);
 
+    p_ptr->message_append_start();
+
     if (!services_info[service].service_function(service, serv_price)) return;
 
     reset_all();
@@ -999,6 +1078,8 @@ void StoreDialog::process_quest(QString id)
 
     // Get quest index
     int quest_idx = id.mid(1).toInt();
+
+    p_ptr->message_append_start();
 
     if (!guild_purchase(quest_idx)) return;
 
@@ -1037,6 +1118,8 @@ void StoreDialog::sell_click()
 
 bool StoreDialog::do_buy(object_type *o_ptr, int item)
 {
+    p_ptr->message_append_start();
+
     int amt = request_amt(o_ptr, true);
 
     if (amt == 0) return false;
@@ -1056,6 +1139,8 @@ bool StoreDialog::do_buy(object_type *o_ptr, int item)
 
 void StoreDialog::reset_all()
 {
+    p_ptr->message_append_stop();
+
     // First, check for pack overflow
     if (inventory[INVEN_MAX_PACK].k_idx)
     {
@@ -1070,11 +1155,13 @@ void StoreDialog::reset_all()
     reset_equip();
     reset_quest_status();
     reset_gold();
+    reset_messages();
 
     ui_request_size_update(inven_tab);
     ui_request_size_update(equip_tab);
     ui_request_size_update(store_area);
     ui_request_size_update(quest_area);
+    ui_request_size_update(message_area);
     QCoreApplication::processEvents();   // IMPORTANT: THE SIZE_HINT UPDATE IS ASYNC, SO WAIT FOR IT
     inven_tab->setMinimumSize(inven_tab->sizeHint());
     equip_tab->setMinimumSize(equip_tab->sizeHint());
@@ -1088,6 +1175,7 @@ void StoreDialog::reset_all()
 
 bool StoreDialog::do_sell(object_type *o_ptr, int item)
 {
+    p_ptr->message_append_start();
 
     int amt = request_amt(o_ptr, false);
 

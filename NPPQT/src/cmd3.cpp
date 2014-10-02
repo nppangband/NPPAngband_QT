@@ -18,7 +18,9 @@
 
 #include "src/player_command.h"
 #include "src/dun_traps.h"
-
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QPushButton>
 
 
 void TrapSelectDialog::trap_choice_sturdy(void)     {trap_choice = FEAT_MTRAP_STURDY;       this->accept();}

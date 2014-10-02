@@ -48,13 +48,20 @@ public:
     QTabWidget *char_tabs;
     QWidget *inven_tab;
     QWidget *equip_tab;
+    QWidget *message_area;
     QWidget *store_area;
     QWidget *quest_area;
     QLabel  *quest_status;
     QLabel  *quest_picture;
+    QLabel  *message_one;
+    QLabel  *message_two;
+    QLabel  *message_three;
+
 
     bool home;
     bool guild;
+
+    message_type last_message;
 
     QLabel *mode_label;
 
@@ -66,6 +73,7 @@ public:
     s32b price_services(int service_idx);
 
     void reset_store();
+    void reset_messages();
     void reset_inventory();
     void reset_equip();
     void reset_quest_status();

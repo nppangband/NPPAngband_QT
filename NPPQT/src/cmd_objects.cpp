@@ -556,7 +556,7 @@ bool command_takeoff(cmd_arg args)
 
     (void)inven_takeoff(args.item, 255);
     pack_overflow();
-    process_player_energy(BASE_ENERGY_MOVE / 2);
+    if(!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE / 2);
     return (TRUE);
 }
 
