@@ -4907,7 +4907,7 @@ bool item_is_available(int item, bool (*tester)(object_type *), int mode)
 
 /*
  * Confirm that the player has "access" to an item to use it.
- * TODO add "USE_STORE for book browsing
+ *  "USE_STORE is intended only for book browsing
  */
 bool object_kind_is_available(int k_idx, int mode)
 {
@@ -4917,6 +4917,10 @@ bool object_kind_is_available(int k_idx, int mode)
     bool use_equip = ((mode & USE_EQUIP) ? TRUE : FALSE);
     bool use_floor = ((mode & USE_FLOOR) ? TRUE : FALSE);
     bool use_quiver = ((mode & USE_QUIVER) ? TRUE : FALSE);
+    bool use_store = ((mode & USE_STORE) ? TRUE : FALSE);
+
+    // Paranoia
+    if (!p_ptr->in_store || !cave_shop_bold(p_ptr->py, p_ptr->px)) use_store = FALSE;
 
     if (use_inven)
     {
@@ -4960,6 +4964,20 @@ bool object_kind_is_available(int k_idx, int mode)
 
             if (o_ptr->k_idx == k_idx) return TRUE;
         }
+    }
+
+    if (use_store)
+    {
+        int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+        int store_idx = f_info[feat].f_power;
+        store_type *st_ptr = &store[store_idx];
+
+        for (i = 0; i < st_ptr->stock_num; i++)
+        {
+            object_type *o_ptr = &st_ptr->stock[i];
+            if (o_ptr->k_idx == k_idx) return TRUE;
+        }
+
     }
 
     return (FALSE);

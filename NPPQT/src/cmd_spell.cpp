@@ -87,7 +87,7 @@ void SpellSelectDialog::count_spells(int mode)
     for (int i = 0; i < max_spellbooks; i++)
     {
         int idx = lookup_kind(cp_ptr->spell_book, i);
-        if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN)) continue;
+        if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN | USE_STORE)) continue;
 
         num_available_spellbooks++;
 

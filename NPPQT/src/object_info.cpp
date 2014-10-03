@@ -1626,61 +1626,59 @@ void object_info_screen(object_type *o_ptr)
         output.append("<br>   This item does not seem to possess any special abilities.");
     }
 
-    if (o_ptr->tval != cp_ptr->spell_book)
-    {
-        QString buf;
-        int price;
-
-        buf.clear();
-
-        /* Show object history if possible */
-        buf.append(format_object_history(o_ptr));
-
-        if (!buf.isEmpty())
-        {
-            buf.append("<br>   ");
-
-            buf = capitalize_first(buf);
-
-            output.append(color_string(buf, TERM_BLUE));
-        }
-
-        if (o_ptr->number > 1)
-        {
-            output.append(QString("<br>   They weigh %1.<br>") .arg(format_object_weight(o_ptr)));
-        }
-        else output.append(QString("<br>   It weighs %1.<br>") .arg(format_object_weight(o_ptr)));
-
-        /* Print resale value */
-        output.append("<br>  ");
-        price = object_value(o_ptr);
-        if (price > 0)
-        {
-            if (o_ptr->number > 1)
-            {
-                output.append(QString("They would fetch %1 gold apiece in an average shop.<br>") .arg(price));
-            }
-            else
-            {
-                output.append(QString("It would fetch %1 gold in an average shop.<br>") .arg(price));
-            }
-        }
-        else
-        {
-            if (o_ptr->number > 1)	output.append(QString("They have no value.<br>"));
-            else 					output.append(QString("It has no value.<br>"));
-        }
-
-        /* Finally, display it */
-        display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
-    }
-
-    /* Hack -- Browse book, then prompt for a command */
+    /* Hack -- Browse book */
     if (o_ptr->tval == cp_ptr->spell_book)
     {
         /* Call the aux function */
         do_cmd_browse();
+        return;
     }
+
+    QString buf;
+    int price;
+
+    buf.clear();
+
+    /* Show object history if possible */
+    buf.append(format_object_history(o_ptr));
+
+    if (!buf.isEmpty())
+    {
+        buf.append("<br>   ");
+
+        buf = capitalize_first(buf);
+
+        output.append(color_string(buf, TERM_BLUE));
+    }
+
+    if (o_ptr->number > 1)
+    {
+        output.append(QString("<br>   They weigh %1.<br>") .arg(format_object_weight(o_ptr)));
+    }
+    else output.append(QString("<br>   It weighs %1.<br>") .arg(format_object_weight(o_ptr)));
+
+    /* Print resale value */
+    output.append("<br>  ");
+    price = object_value(o_ptr);
+    if (price > 0)
+    {
+        if (o_ptr->number > 1)
+        {
+            output.append(QString("They would fetch %1 gold apiece in an average shop.<br>") .arg(price));
+        }
+        else
+        {
+            output.append(QString("It would fetch %1 gold in an average shop.<br>") .arg(price));
+        }
+    }
+    else
+    {
+        if (o_ptr->number > 1)	output.append(QString("They have no value.<br>"));
+        else 					output.append(QString("It has no value.<br>"));
+    }
+
+    /* Finally, display it */
+    display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
 
     return;
 }
