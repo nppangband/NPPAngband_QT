@@ -421,8 +421,7 @@ public:
     byte cur_map_hgt;		/* Current dungeon level hight */
     byte cur_map_wid;		/* Current dungeon level width */
 
-    s32b total_weight;		/* Total weight being carried */
-
+    u32b total_weight;		/* Total weight being carried */
     s16b inven_cnt;			/* Number of items in inventory */
     s16b equip_cnt;			/* Number of items in equipment */
     s16b pack_size_reduce;	/*

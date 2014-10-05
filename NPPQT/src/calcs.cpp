@@ -705,7 +705,7 @@ static void calc_nativity(void)
 
 
 /*
- * Computes current weight limit.
+ * Computes current weight limit in ounces.
  */
 static int weight_limit(void)
 {

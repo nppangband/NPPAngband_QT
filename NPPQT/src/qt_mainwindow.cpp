@@ -2218,7 +2218,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_E:
         {
-            do_cmd_use_item();
+            if (shift_key)          do_cmd_inventory();
+            else do_cmd_use_item();
             return;
         }
         case Qt::Key_F:

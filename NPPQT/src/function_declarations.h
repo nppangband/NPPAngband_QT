@@ -515,6 +515,9 @@ extern void add_player_ghost_entry(void);
 extern void load_player_ghost_file(void);
 extern void save_player_ghost_file(void);
 
+// player_inventory.cpp
+extern void do_cmd_inventory(void);
+
 // player_process
 extern void process_player_terrain_damage(void);
 extern void process_player(void);
@@ -956,6 +959,7 @@ extern void custom_color_message(QString msg, byte red, byte green, byte blue);
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);
 extern QString format_object_weight(object_type *o_ptr);
+extern QString formatted_weight_string(s32b weight);
 extern QString get_player_title(void);
 extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);

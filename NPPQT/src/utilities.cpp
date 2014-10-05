@@ -406,6 +406,11 @@ QString format_object_weight(object_type *o_ptr)
     return (formatted_weight);
 }
 
+QString formatted_weight_string(s32b weight)
+{
+    return (QString("%1.%2") .arg(weight / 10) .arg(weight % 10));
+}
+
 /*
  * Angband sorting algorithm -- quick sort in place
  *

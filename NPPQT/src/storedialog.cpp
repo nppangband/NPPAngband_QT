@@ -659,11 +659,7 @@ void StoreDialog::reset_store()
         }
 
         // Add the weight
-        int orig_weight = o_ptr->weight * o_ptr->number;
-        int weight1 = orig_weight/10;
-        int weight2 = orig_weight%10;
-
-        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
+        QString weight_printout = (formatted_weight_string(o_ptr->weight * o_ptr->number));
         weight_printout = weight_printout.rightJustified(8, ' ');
         QLabel *weight = new QLabel(weight_printout);
         weight->setAlignment(Qt::AlignRight);
@@ -792,10 +788,7 @@ void StoreDialog::reset_inventory()
         }
 
         // Add the weight
-        int orig_weight = o_ptr->weight * o_ptr->number;
-        int weight1 = orig_weight/10;
-        int weight2 = orig_weight%10;
-        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
+        QString weight_printout = (formatted_weight_string(o_ptr->weight * o_ptr->number));
         weight_printout = weight_printout.rightJustified(8, ' ');
         QLabel *weight = new QLabel(weight_printout);
         weight->setAlignment(Qt::AlignRight);
@@ -888,10 +881,7 @@ void StoreDialog::reset_equip()
         }
 
         // Add the weight
-        int orig_weight = o_ptr->weight * o_ptr->number;
-        int weight1 = orig_weight/10;
-        int weight2 = orig_weight%10;
-        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
+        QString weight_printout = (formatted_weight_string(o_ptr->weight * o_ptr->number));
         weight_printout = weight_printout.rightJustified(8, ' ');
         QLabel *weight = new QLabel(weight_printout);
         weight->setAlignment(Qt::AlignRight);
