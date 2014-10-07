@@ -3,8 +3,10 @@
 
 #include <qtabwidget.h>
 #include <qdialogbuttonbox.h>
+#include <QGridLayout>
 #include "src/nppdialog.h"
 #include "src/npp.h"
+#include "src/utilities.h"
 #include "store.h"
 
 enum
@@ -41,6 +43,10 @@ class object_type;
 class StoreDialog : public NPPDialog
 {
     Q_OBJECT
+private:
+    void add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col);
+    void add_help_label(QGridLayout *lay, QString id, int row, int col);
+
 public:
     int store_idx;
     int mode;

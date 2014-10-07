@@ -1,6 +1,6 @@
 
 #include "src/npp.h"
-
+#include "src/utilities.h"
 
 // It is important to make sure that all global variables are wiped in between games,
 // and all arrays freed.

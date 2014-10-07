@@ -517,6 +517,7 @@ extern void save_player_ghost_file(void);
 
 // player_inventory.cpp
 extern void do_cmd_inventory(void);
+extern void do_cmd_equipment(void);
 
 // player_process
 extern void process_player_terrain_damage(void);

@@ -18,6 +18,7 @@
 
 #include "src/npp.h"
 #include "src/player_command.h"
+#include "src/utilities.h"
 
 player_class::player_class()
 {

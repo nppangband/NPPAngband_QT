@@ -18,7 +18,7 @@
  */
 
 #include "src/npp.h"
-
+#include "src/utilities.h"
 
 QString sign(int value) {
     QString s;

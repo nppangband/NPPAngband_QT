@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "src/utilities.h"
 #include "src/init.h"
 #include "tilebag.h"
 

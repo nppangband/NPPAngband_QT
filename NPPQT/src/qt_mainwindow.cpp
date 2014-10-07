@@ -25,6 +25,7 @@
 #include "src/init.h"
 #include "src/optionsdialog.h"
 #include "src/birthdialog.h"
+#include "src/utilities.h"
 #include "emitter.h"
 #include "griddialog.h"
 #include "package.h"
@@ -2068,7 +2069,7 @@ bool MainWindow::check_disturb()
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
     if (!character_dungeon) return;
-
+    if (p_ptr->in_store) return;
     if (anim_depth > 0) return;
 
     if (check_disturb()) return;

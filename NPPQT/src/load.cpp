@@ -18,6 +18,7 @@
 
 #include "src/npp.h"
 #include "src/loadsave.h"
+#include "src/utilities.h"
 #include "src/init.h"
 #include <QLabel>
 

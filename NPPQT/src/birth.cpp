@@ -18,7 +18,7 @@
 
 #include "npp.h"
 #include "store.h"
-
+#include "src/utilities.h"
 #include <QTime>
 #include <QDate>
 

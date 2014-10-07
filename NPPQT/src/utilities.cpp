@@ -1,5 +1,6 @@
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
+#include "src/utilities.h"
 #include "tilebag.h"
 #include <QInputDialog>
 #include <QLineEdit>

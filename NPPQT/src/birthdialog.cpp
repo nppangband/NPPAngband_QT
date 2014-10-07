@@ -7,6 +7,7 @@
 #include <QButtonGroup>
 #include <QHBoxLayout>
 #include <QToolButton>
+#include "src/utilities.h"
 
 static QString format_stat(s16b value)
 {
