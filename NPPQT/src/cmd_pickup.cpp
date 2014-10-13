@@ -358,6 +358,26 @@ void do_cmd_pickup_from_pile(bool pickup, bool msg)
 	handle_stuff();
 }
 
+void command_pickup(cmd_arg args)
+{
+    // Paranoia
+    if (args.item >= 0) return;
+
+    // Floor items are numbered negatively
+    s16b item = -args.item;
+
+    object_type *o_ptr = &o_list[item];
+
+    /* Pick up the object */
+    if (put_object_in_inventory(o_ptr))
+    {
+        /* Delete the object */
+        delete_object_idx(item);
+        process_player_energy(BASE_ENERGY_MOVE);
+    }
+
+}
+
 
 void py_pickup_gold(void)
 {

@@ -596,9 +596,6 @@ QString mention_use(int slot)
         case QUIVER_START + 9: return "In quiver [f9]";
     }
 
-    /*if (slot >= QUIVER_START && slot < QUIVER_END)
-        return "In quiver";*/
-
     return "In pack";
 }
 

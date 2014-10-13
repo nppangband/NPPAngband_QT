@@ -44,7 +44,7 @@ void PlayerDeathDialog::death_scores(void)
 
 void PlayerDeathDialog::death_examine(void)
 {
-    do_cmd_observe();
+    do_cmd_examine();
 }
 
 void PlayerDeathDialog::death_notes(void)

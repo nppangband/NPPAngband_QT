@@ -127,6 +127,7 @@ class object_type
     bool is_known_artifact();
     bool is_ego_item();
     bool is_cursed();
+    bool is_known_cursed();
     bool is_broken();
     bool was_sensed();
     bool is_spellbook();
@@ -139,6 +140,9 @@ class object_type
     bool is_scroll();
     bool is_parchment();
     bool is_food();
+    bool is_mushroom();
+    bool is_wine();
+    bool is_ale();
     bool is_light();
     bool is_usable_item();
     bool is_ring();
@@ -149,10 +153,12 @@ class object_type
     bool is_ammo();
     bool is_weapon();
     bool can_zap();
+    bool could_be_zapped();
     bool can_browse();
     bool can_takeoff();
     bool has_inscription();
     bool has_charges();
+    bool could_have_charges();
     void uncurse();
     byte object_color();
 

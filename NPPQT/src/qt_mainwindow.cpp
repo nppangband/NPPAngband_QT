@@ -2243,7 +2243,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_O:
         {
-            if (shift_key) do_cmd_observe();
+            if (shift_key) do_cmd_examine();
             do_cmd_open();
             return;
         }
@@ -2295,8 +2295,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_Z:
         {
-            if (alt_key)    do_cmd_observe();
-            else if (shift_key) do_cmd_bash();
+            if (shift_key) do_cmd_bash();
             else do_cmd_browse();
             return;
         }

@@ -301,14 +301,14 @@ bool object_type::is_artifact()
 }
 
 
-/**
- * \returns whether the object is known to be an artifact
+/*
+ * Returns whether the object is known to be an artifact
  */
 bool object_type::is_known_artifact()
 {
 
     if (is_artifact() && was_sensed()) return (TRUE);
-    if (discount == IDENT_INDESTRUCT) return (TRUE);
+    if (discount == INSCRIP_INDESTRUCTIBLE) return (TRUE);
     if (discount == INSCRIP_TERRIBLE) return (TRUE);
     if (discount == INSCRIP_SPECIAL) return (TRUE);
     return (FALSE);
@@ -330,6 +330,14 @@ bool object_type::is_cursed()
 {
     if (ident & (IDENT_CURSED)) return (TRUE);
     return (FALSE);
+}
+
+bool object_type::is_known_cursed()
+{
+    if (!is_cursed()) return (FALSE);
+    if (is_known()) return (TRUE);
+    if (!was_sensed()) return (FALSE);
+    return (TRUE);
 }
 
 /*
@@ -373,6 +381,30 @@ bool object_type::is_scroll()       { return tval == TV_SCROLL; }
 bool object_type::is_parchment()    { return tval == TV_PARCHMENT; }
 bool object_type::is_food()         { return tval == TV_FOOD; }
 bool object_type::is_light()        { return tval == TV_LIGHT; }
+
+//  Return an object that an be used
+bool object_type::is_mushroom()
+{
+    if (!is_food())     return (FALSE);
+    if (sval <= SV_FOOD_MAJOR_CURES) return (TRUE);
+    return (FALSE);
+}
+
+//  Return an object that an be used
+bool object_type::is_wine()
+{
+    if (!is_food())     return (FALSE);
+    if (sval == SV_FOOD_FINE_WINE) return (TRUE);
+    return (FALSE);
+}
+
+//  Return an object that an be used
+bool object_type::is_ale()
+{
+    if (!is_food())     return (FALSE);
+    if (sval == SV_FOOD_FINE_ALE) return (TRUE);
+    return (FALSE);
+}
 
 //  Return an object that an be used
 bool object_type::is_usable_item()
@@ -444,9 +476,20 @@ bool object_type::can_zap()
     object_kind *k_ptr = &k_info[k_idx];
 
     if (!is_rod()) return FALSE;
+    if (!timeout) return (TRUE);
+    if (number == 1) return (FALSE);
 
     if (timeout > (pval - k_ptr->pval)) return (FALSE);
 
+    return (TRUE);
+}
+
+/*
+ * Determine if an object has charges
+ */
+bool object_type::could_be_zapped()
+{
+    if (!can_zap() && is_known()) return (FALSE);
     return (TRUE);
 }
 
@@ -478,8 +521,6 @@ bool object_type::has_inscription()
     return (!inscription.isEmpty());
 }
 
-
-
 /*
  * Determine if an object has charges
  */
@@ -489,6 +530,14 @@ bool object_type::has_charges()
 
     if (pval <= 0) return (FALSE);
 
+    return (TRUE);
+}
+
+bool object_type::could_have_charges()
+{
+    if (!has_charges()) return (FALSE);
+    if (is_known()) return (TRUE);
+    if (ident & (IDENT_EMPTY)) return (FALSE);
     return (TRUE);
 }
 

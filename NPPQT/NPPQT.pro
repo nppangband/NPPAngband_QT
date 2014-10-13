@@ -85,7 +85,7 @@ SOURCES +=  src/qt_main.cpp\
             src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-            src/wizard_mode.cpp \
+            src/wizard_mode.cpp
 
 
 
@@ -126,7 +126,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/wizard_mode.h \
             src/player_death.h \
-            src/dun_traps.h \
+            src/dun_traps.h
 
 
 

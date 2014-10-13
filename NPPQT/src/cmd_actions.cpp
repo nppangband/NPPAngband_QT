@@ -1561,7 +1561,7 @@ void do_cmd_toggle_search(void)
 
 void command_search(cmd_arg args)
 {
-     p_ptr->player_previous_command_update(CMD_SEARCH, args);
+    p_ptr->player_previous_command_update(CMD_SEARCH, args);
 
     do_search();
     process_player_energy(BASE_ENERGY_MOVE);

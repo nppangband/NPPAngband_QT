@@ -9,5 +9,21 @@
         <file>lib/icons/save_as.png</file>
         <file>lib/icons/options.png</file>
         <file>lib/icons/help.png</file>
+        <file>lib/icons/wield.png</file>
+        <file>lib/icons/takeoff.png</file>
+        <file>lib/icons/look.png</file>
+        <file>lib/icons/swap.png</file>
+        <file>lib/icons/beer.png</file>
+        <file>lib/icons/food.png</file>
+        <file>lib/icons/mushroom.png</file>
+        <file>lib/icons/potion.png</file>
+        <file>lib/icons/rod.png</file>
+        <file>lib/icons/scroll.png</file>
+        <file>lib/icons/staff.png</file>
+        <file>lib/icons/wand.png</file>
+        <file>lib/icons/wine.png</file>
+        <file>lib/icons/refill.png</file>
+        <file>lib/icons/fire.png</file>
+        <file>lib/icons/fire_near.png</file>
     </qresource>
 </RCC>

@@ -829,6 +829,43 @@ void do_cmd_cast(void)
     command_cast(args);
 }
 
+/*
+ * See if we can cast or study from a book
+ */
+bool player_can_use_book(const object_type *o_ptr, bool known)
+{
+    int i;
+
+    /* Check the player can study at all, and the book is the right type */
+    if (!cp_ptr->spell_book) return FALSE;
+    if (p_ptr->timed[TMD_BLIND] || no_light()) return FALSE;
+    if (p_ptr->timed[TMD_CONFUSED]) return FALSE;
+    if (o_ptr->tval != cp_ptr->spell_book) return (FALSE);
+
+    /* Extract spells */
+    for (i = 0; i < SPELLS_PER_BOOK; i++)
+    {
+        int s = get_spell_index(o_ptr, i);
+
+        /* Skip non-OK spells */
+        if (s == -1) continue;
+        if (!spell_okay(s, known)) continue;
+
+        /* We found a spell to study/cast */
+        return (TRUE);
+    }
+
+    /* No suitable spells */
+    return (FALSE);
+}
+
+// Placeholder for use in the player_command menu
+void command_study(cmd_arg arg)
+{
+    (void)arg;
+    do_cmd_study();
+}
+
 // Learn a spell
 void do_cmd_study(void)
 {
@@ -857,6 +894,13 @@ void do_cmd_study(void)
     if (p_ptr->chooses_spells()) spell_learn(spell);
     else study_book(spell);
     process_player_energy(BASE_ENERGY_MOVE);
+}
+
+// Placeholder for use in the player_command menu
+void command_browse(cmd_arg arg)
+{
+    (void)arg;
+    do_cmd_browse();
 }
 
 // Browse the available spellbooks

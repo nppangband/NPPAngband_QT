@@ -443,30 +443,6 @@ QString describe_quest(s16b level, int mode)
 }
 
 
-
-void show_quest_mon(int y, int x)
-{
-
-    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-
-
-    /*display the monster character if applicable*/
-    if ((quest_fixed(q_ptr)) || (quest_single_r_idx(q_ptr)))
-    {
-        monster_race *r_ptr = &r_info[q_ptr->mon_idx];
-
-        /* Get the char */
-        QColor a1 = r_ptr->d_color;
-
-        /* Get the attr */
-        QChar c1 = r_ptr->d_char;
-
-        /* Append the "standard" attr/char info */
-        //TODO print it out
-    }
-
-}
-
 /*
  * A simplified version of object_similar, for guild quest rewards.
  * Just figure out if the objects are the same type.

@@ -90,6 +90,24 @@ bool target_able(int m_idx)
     return (TRUE);
 }
 
+// See if there is a single targetable monster
+bool monster_target_exists()
+{
+    /* Scan the monster list */
+    for (int i = 1; i < mon_max; i++)
+    {
+        monster_type *m_ptr = &mon_list[i];
+        monster_race *r_ptr = &r_info[m_ptr->r_idx];
+
+        /* Don't bother with empty slots */
+        if (!m_ptr->r_idx) continue;
+
+        if (target_able(i)) return (TRUE);
+    }
+
+    return (FALSE);
+}
+
 /*
  * Sorting hook -- comp function -- by "distance to player"
  *

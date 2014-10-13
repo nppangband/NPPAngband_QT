@@ -1237,6 +1237,20 @@ void do_cmd_fire(void)
     command_fire(args);
 }
 
+//  A placeholder for cmd_fire_at nearest for the command_type structure
+void command_fire_nearest(cmd_arg args)
+{
+    if (args.item < 0)
+    {
+        do_cmd_fire_at_nearest();
+        return;
+    }
+
+    if (!target_set_closest(TARGET_KILL | TARGET_QUIET))
+        return;
+    command_fire(args);
+}
+
 void do_cmd_fire_at_nearest(void)
 {
     object_type *j_ptr = &inventory[INVEN_BOW];
