@@ -2196,6 +2196,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_J:
         {
             do_cmd_hold();
+            return;
         }
         case Qt::Key_A:
         {
