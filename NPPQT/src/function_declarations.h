@@ -101,6 +101,7 @@ extern void do_cmd_repeat(void);
 
 //cmd_objects
 extern cmd_arg obj_uninscribe(object_type *o_ptr, cmd_arg args);
+extern bool trap_related_object(object_type *o_ptr);
 extern void command_uninscribe(cmd_arg args);
 extern void do_cmd_uninscribe(void);
 extern void command_inscribe(cmd_arg args);
@@ -465,7 +466,7 @@ extern s16b lookup_ego(s16b tval, s16b sval, QString ego_title);
 extern void display_object_idx_recall(s16b o_idx);
 extern void display_object_kind_recall(s16b k_idx);
 extern bool obj_can_refill(object_type *o_ptr);
-extern bool obj_is_openable_chest(object_type *o_ptr);
+extern bool obj_is_chest(object_type *o_ptr);
 extern bool chest_requires_disarming(object_type *o_ptr);
 extern bool ammo_can_fire(object_type *o_ptr, int item);
 extern bool has_correct_ammo(void);

@@ -26,6 +26,39 @@ bool command_type::repeated_command_completed(void)
     return (FALSE);
 }
 
+// Check if we have a completed command
+bool command_type::needs_direction()
+{
+    if(cmd_needs & (ARG_DIRECTION)) return (TRUE);
+    return (FALSE);
+}
+
+// Check if we have a completed command
+bool command_type::needs_item()
+{
+    if(cmd_needs & (ARG_DIRECTION)) return (TRUE);
+    return (FALSE);
+}
+
+// Check if we have a completed command
+bool command_type::needs_quantity()
+{
+    if (!needs_item()) return (FALSE);
+    if(cmd_needs & (ARG_NUMBER)) return (TRUE);
+    return (FALSE);
+}
+
+QString command_type::prompt(int command)
+{
+    QString return_string = QString("Please enter an amount");
+    if (command == CMD_DROP) return_string.append("to drop.");
+    else if (command == CMD_DESTROY) return_string.append("to destroy.");
+    else return_string.append(".");
+
+    return(return_string);
+}
+
+
 command_type command_info[] =
 {   // CMD_NONE
     {0L,            NULL, FALSE, 0},
@@ -58,7 +91,7 @@ command_type command_info[] =
     // CMD_TAKEOFF
     {ARG_ITEM,      command_takeoff, FALSE, 0},
     // CMD_WIELD
-    {ARG_ITEM,      command_wield, FALSE, 0},
+    {ARG_ITEM | ARG_SLOT, command_wield, FALSE, 0},
     // CMD_SWAP
     {0L,            command_swap, FALSE, 0},
     // CMD_ITEM_USE
@@ -72,12 +105,12 @@ command_type command_info[] =
     // CMD_DROP
     {ARG_ITEM | ARG_NUMBER,  command_drop,   FALSE, 0},
     // CMD_PICKUP
-    {ARG_ITEM | ARG_NUMBER,  command_pickup,   FALSE, 0},
+    {ARG_ITEM,  command_pickup,   FALSE, 0},
     // CMD_BROWSE
     {ARG_ITEM,      command_browse,   FALSE, 0},
     // CMD_STUDY
     {ARG_ITEM,      command_study,   FALSE, 0},
-    // CMD_CAST
+    // CMD_CAST  Direction handled by cast command
     {ARG_ITEM | ARG_DIRECTION, command_cast,   FALSE, 0},
     // CMD_DESTROY
     {ARG_ITEM | ARG_NUMBER, command_destroy,   FALSE, 0},
@@ -92,3 +125,43 @@ command_type command_info[] =
     // CMD_THROW
     {ARG_ITEM | ARG_DIRECTION,command_throw,FALSE, 0},
 };
+
+// Prepare a command for processing.
+void process_command(int item, s16b command)
+{
+    // Now that we have a match, process the command.
+    command_type *command_ptr = &command_info[command];
+    cmd_arg args;
+    args.wipe();
+    object_type *o_ptr;
+
+    /*
+     * Note if the command doesn't call for an item,
+     * this will point to the first item on the floor.
+     */
+    o_ptr = object_from_item_idx(item);
+    args.item = item;
+
+    // Get the direction, if necessary
+    if (command_ptr->needs_direction())
+    {
+        // For objects
+        if (command_ptr->needs_item())
+        {
+            if (obj_needs_aim(o_ptr))
+            {
+                bool trap_related = trap_related_object(o_ptr);
+                if (!get_aim_dir(&args.direction, trap_related)) return;
+            }
+        }
+        // For player related directional commands
+        else if (!get_rep_dir(&args.direction)) return;
+    }
+
+    // Only for objects
+    if(command_ptr->needs_quantity())
+    {
+        args.number = get_quantity(command_ptr->prompt(command), o_ptr->number);
+    }
+
+}

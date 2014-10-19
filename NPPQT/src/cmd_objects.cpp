@@ -46,26 +46,6 @@ cmd_arg obj_examine(object_type *o_ptr, cmd_arg args)
     return (args);
 }
 
-/*
- * Helper function to help spells that target traps (disarming, etc...)
- */
-static bool is_trap_spell(byte spell_book, int spell)
-{
-    if (spell_book == TV_MAGIC_BOOK)
-    {
-        if (spell == SPELL_TRAP_DOOR_DESTRUCTION) return (TRUE);
-    }
-    else if (spell_book == TV_PRAYER_BOOK)
-    {
-        if (spell == PRAYER_UNBARRING_WAYS) return (TRUE);
-    }
-    else if (spell_book == TV_DRUID_BOOK)
-    {
-        if (spell == DRUID_TRAP_DOOR_DESTRUCTION) return (TRUE);
-
-    }
-    return (FALSE);
-}
 
 cmd_arg obj_drop(object_type *o_ptr, cmd_arg args)
 {
@@ -273,7 +253,7 @@ typedef enum
     ACTION_USE_ITEM
 } item_act;
 
-static bool trap_related_object(object_type *o_ptr)
+bool trap_related_object(object_type *o_ptr)
 {
     if (o_ptr->is_wand() && o_ptr->is_aware())
     {
@@ -607,7 +587,7 @@ void command_wield(cmd_arg args)
     }
 
     /*Hack - don't allow quest items to be worn*/
-    if(o_ptr->ident & (IDENT_QUEST))
+    if(o_ptr->is_quest_artifact())
     {
         pop_up_message_box("You cannot wield quest items.");
         return;

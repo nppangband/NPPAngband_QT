@@ -3586,7 +3586,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
             case GF_KILL_DOOR:
             {
                 /* Chests are noticed only if trapped or locked, and not special ches items */
-                if ((o_ptr->tval == TV_CHEST) && !(o_ptr->ident & (IDENT_QUEST)))
+                if ((o_ptr->tval == TV_CHEST) && !o_ptr->is_quest_artifact())
                 {
                     /* Disarm/Unlock traps */
                     if (o_ptr->pval > 0)

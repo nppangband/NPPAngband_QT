@@ -420,9 +420,6 @@ static QString obj_desc_chest(object_type *o_ptr, QString buf)
     if (o_ptr->tval != TV_CHEST) return (buf);
     if (!known) return (buf);
 
-    /* Special label for quest chests */
-    if (o_ptr->ident & (IDENT_QUEST)) buf.append(" (special)");
-
     /* May be "empty" */
     else if (!o_ptr->pval) buf.append(" (empty)");
 

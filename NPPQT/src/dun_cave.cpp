@@ -943,7 +943,7 @@ static void map_objects (s16b y, s16b x)
             (k_info[o_ptr->k_idx].squelch == SQUELCH_ALWAYS) && (k_info[o_ptr->k_idx].aware));
 
         /*hack - never allow quest items to appear as dot*/
-        if ((!sq_flag) || (o_ptr->ident & IDENT_QUEST))
+        if ((!sq_flag) || o_ptr->is_quest_artifact())
         {
             /* Normal attr */
             if (use_flavor_glyph(o_ptr)) {

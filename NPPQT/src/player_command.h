@@ -8,9 +8,10 @@
 #define ARG_NUMBER          0x02
 #define ARG_ITEM            0x04
 #define ARG_DIRECTION		0x08
-#define ARG_TARGET  		0x10
+#define XX_UNUSED           0x10
 #define ARG_POINT   		0x20
 #define ARG_SPECIAL   		0x40 // needs a special dialog
+#define ARG_SLOT            0x80
 
 
 
@@ -67,17 +68,23 @@ enum
 
 class command_type
 {
+
 public:
     byte cmd_needs;                         // which arguments does the function need?
     void (*command_function)(cmd_arg args);  //What function should be called for this command?
     bool repeat_allowed;                    // Is repeating allowed?
-    u16b repeat_num;                       // Should repeating be done automatically?
+    u16b repeat_num;                       // Automatic number of repeats.
 
     bool repeated_command_completed(void);
+    bool needs_direction(void);
+    bool needs_item(void);
+    bool needs_quantity(void);
+    QString prompt(int command);
+
 };
 
 extern command_type command_info[CMD_MAX];
 
-
+extern void process_command(int item, s16b command);
 
 #endif // PLAYER_COMMAND_H

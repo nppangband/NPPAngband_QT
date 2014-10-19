@@ -174,7 +174,7 @@ bool put_object_in_inventory(object_type *o_ptr)
 	if (slot < 0) return (FALSE);
 
 	/* Update the quest counter */
-	if (o_ptr->ident & (IDENT_QUEST))
+    if (o_ptr->is_quest_artifact())
 	{
 		p_ptr->notice |= (PN_QUEST_REMAIN);
 		p_ptr->redraw |= (PR_QUEST_ST);

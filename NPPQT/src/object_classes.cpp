@@ -315,6 +315,16 @@ bool object_type::is_known_artifact()
 }
 
 /*
+ * Artifacts use the "art_num" field
+ */
+bool object_type::is_quest_artifact()
+{
+    if (!is_artifact()) return (FALSE);
+    if(ident & (IDENT_QUEST)) return (TRUE);
+    return (FALSE);
+}
+
+/*
  * Artifacts use the "ego_num" field
  */
 bool object_type::is_ego_item()

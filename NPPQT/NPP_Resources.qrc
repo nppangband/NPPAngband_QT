@@ -25,5 +25,8 @@
         <file>lib/icons/refill.png</file>
         <file>lib/icons/fire.png</file>
         <file>lib/icons/fire_near.png</file>
+        <file>lib/icons/destroy.png</file>
+        <file>lib/icons/inscribe.png</file>
+        <file>lib/icons/uninscribe.png</file>
     </qresource>
 </RCC>

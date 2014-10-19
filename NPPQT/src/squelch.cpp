@@ -412,7 +412,7 @@ int squelch_itemp(object_type *o_ptr, byte feelings, bool fullid)
     result = SQUELCH_NO;
 
     /* Never squelch quest items */
-    if (o_ptr->ident & IDENT_QUEST) return result;
+    if (o_ptr->is_quest_artifact()) return result;
 
     /* Squelch some ego items if known */
     if (fullid && (o_ptr->is_ego_item()) && (e_info[o_ptr->ego_num].squelch))
@@ -579,7 +579,7 @@ int do_squelch_item(int squelch, int item, object_type *o_ptr)
     if (squelch != SQUELCH_YES) return 0;
 
     /*hack - never squelch quest items*/
-    if (o_ptr->ident & IDENT_QUEST) return 0;
+    if (o_ptr->is_quest_artifact()) return 0;
 
     if (item >= 0)
     {
@@ -604,7 +604,7 @@ bool squelch_item_ok(object_type *o_ptr)
     if (!o_ptr->k_idx) return (TRUE);
 
     /* Ignore inscribed objects, artifacts , mimics or quest objects */
-    if ((!o_ptr->inscription.isEmpty()) || (o_ptr->is_artifact()) || (o_ptr->ident & (IDENT_QUEST)) ||
+    if ((!o_ptr->inscription.isEmpty()) || (o_ptr->is_artifact()) || (o_ptr->is_quest_artifact()) ||
         (o_ptr->mimic_r_idx))
     {
         return (FALSE);

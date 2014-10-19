@@ -2202,7 +2202,7 @@ static void remove_quest_objects(void)
     {
         o_ptr = &inventory[j];
 
-        if (o_ptr->ident & (IDENT_QUEST))
+        if (o_ptr->is_quest_artifact())
         {
             /* Destroy the quest items in the pack */
             inven_item_increase(j, -o_ptr->number);
@@ -2524,7 +2524,7 @@ int quest_item_slot(void)
     {
         o_ptr = &inventory[i];
 
-        if (o_ptr->ident & IDENT_QUEST) return (i);
+        if (o_ptr->is_quest_artifact()) return (i);
     }
 
     /* No quest item */
@@ -2544,7 +2544,7 @@ int quest_item_count(void)
     {
         o_ptr = &inventory[i];
 
-        if (o_ptr->ident & (IDENT_QUEST))
+        if (o_ptr->is_quest_artifact())
         {
             item_count += o_ptr->number;
         }

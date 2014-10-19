@@ -342,7 +342,7 @@ s16b wield_slot_ammo(object_type *o_ptr)
 s16b wield_slot(object_type *o_ptr)
 {
     /*Hack - don't allow quest items to be worn*/
-    if(o_ptr->ident & (IDENT_QUEST)) return (-1);
+    if(o_ptr->is_quest_artifact()) return (-1);
 
     /* Hack - Don't wield mimic objects */
     if (o_ptr->mimic_r_idx) return (-1);
@@ -1820,9 +1820,6 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
         /* Chests */
         case TV_CHEST:
         {
-            /* Quest chests are okay to stack */
-            if ((o_ptr->ident & (IDENT_QUEST)) && (j_ptr->ident & (IDENT_QUEST))) return (TRUE);
-
             /* Otherwise, never okay */
             return (FALSE);
         }
@@ -4539,24 +4536,8 @@ bool obj_is_scroll(object_type *o_ptr) { return o_ptr->tval == TV_SCROLL; }
 bool obj_is_parchment(object_type *o_ptr) { return o_ptr->tval == TV_PARCHMENT; }
 bool obj_is_food(object_type *o_ptr)   { return o_ptr->tval == TV_FOOD; }
 bool obj_is_light(object_type *o_ptr)   { return o_ptr->tval == TV_LIGHT; }
-bool obj_is_ring(object_type *o_ptr)   { return o_ptr->tval == TV_RING; }
+static bool obj_is_ring(object_type *o_ptr)   { return o_ptr->tval == TV_RING; }
 bool obj_is_chest(object_type *o_ptr)   { return o_ptr->tval == TV_CHEST; }
-
-
-/**
- * Determine whether an object is a chest
- *
- * \param o_ptr is the object to check
- */
-bool obj_is_openable_chest(object_type *o_ptr)
-{
-    if (!obj_is_chest(o_ptr)) return FALSE;
-
-    /* Don't open special quest items */
-    if (o_ptr->ident & (IDENT_QUEST)) return FALSE;
-
-    return (TRUE);
-}
 
 
 /**
@@ -4570,9 +4551,6 @@ bool chest_requires_disarming(object_type *o_ptr)
 
     /* We don't know if it is trapped or not */
     if (!object_known_p(o_ptr)) return FALSE;
-
-    /* Don't count special quest items */
-    if (o_ptr->ident & (IDENT_QUEST)) return FALSE;
 
     /* Already disarmed. */
     if (o_ptr->pval <= 0) return FALSE;

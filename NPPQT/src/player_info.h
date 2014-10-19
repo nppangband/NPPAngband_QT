@@ -105,6 +105,16 @@ public:
     void add_refill(QGridLayout *lay, s16b item_slot, int row, int col);
     void add_fire(QGridLayout *lay, s16b item_slot, int row, int col);
     void add_fire_near(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_drop(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_pickup(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_browse(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_study(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_cast(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_destroy(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_inscribe(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_uninscribe(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_activate(QGridLayout *lay, s16b item_slot, int row, int col);
+    void add_throw(QGridLayout *lay, s16b item_slot, int row, int col);
 
     s16b idx_from_click(QString id);
 

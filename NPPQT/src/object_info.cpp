@@ -377,7 +377,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
     if (!o_ptr->is_weapon()) return (output);
 
     /* No descriptions of quest items */
-    if (o_ptr->ident & IDENT_QUEST) return (output);
+    if (o_ptr->is_quest_artifact()) return (output);
 
     for (i = 0; i < ALL_INVEN_TOTAL; i++)
     {
@@ -595,7 +595,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
 
     /* First check if we need this function */
     if (!o_ptr->is_bow()) return (output);
-    if (o_ptr->ident & IDENT_QUEST) return (output);
+    if (o_ptr->is_quest_artifact()) return (output);
 
     /* No descriptions of quest items */
 
@@ -695,7 +695,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
     if (!o_ptr->is_ammo()) return (output);
 
     /* No descriptions of quest items */
-    if (o_ptr->ident & IDENT_QUEST) return (output);
+    if (o_ptr->is_quest_artifact()) return (output);
 
     for (i = 0; i < ALL_INVEN_TOTAL; i++)
     {
@@ -878,7 +878,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
     if (!is_throwing_weapon(o_ptr)) return (output);
 
     /* No descriptions of quest items */
-    if (o_ptr->ident & IDENT_QUEST) return (output);
+    if (o_ptr->is_quest_artifact()) return (output);
 
     for (i = 0; i < ALL_INVEN_TOTAL; i++)
     {

@@ -676,7 +676,7 @@ int spell_chance(int spell)
     return (chance);
 }
 
-void command_cast(cmd_arg args)
+static void cast_spell(cmd_arg args)
 {
     if (!p_ptr->can_cast()) return;
 
@@ -788,7 +788,13 @@ void command_cast(cmd_arg args)
     p_ptr->redraw |= (PR_MANA);
 
     process_player_energy(BASE_ENERGY_MOVE);
+}
 
+// Placeholder for use in the player_command menu
+void command_cast(cmd_arg arg)
+{
+    (void)arg;
+    do_cmd_cast();
 }
 
 // Cast a spell
@@ -826,7 +832,7 @@ void do_cmd_cast(void)
     args.direction = dir;
     args.number = spell;
 
-    command_cast(args);
+    cast_spell(args);
 }
 
 /*

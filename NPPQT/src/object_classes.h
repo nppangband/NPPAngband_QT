@@ -125,6 +125,7 @@ class object_type
     bool can_be_pseudo_ided();
     bool is_artifact();
     bool is_known_artifact();
+    bool is_quest_artifact();
     bool is_ego_item();
     bool is_cursed();
     bool is_known_cursed();
