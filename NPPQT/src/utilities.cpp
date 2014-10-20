@@ -230,6 +230,7 @@ QString get_string(QString question, QString description, QString answer)
  */
 s16b get_quantity(QString prompt, int max, int amt)
 {
+    if (!amt) amt = 1;
     if (max > 1)
     {
         bool ok;

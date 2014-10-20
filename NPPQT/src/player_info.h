@@ -126,7 +126,7 @@ public:
     QLabel  *message_three;
     message_type last_message;
 
-public slots:
+    public slots:
     void object_click();
     void button_click();
 };
@@ -144,8 +144,6 @@ public:
     explicit InvenDialog(bool buttons);
     void inventory_update();
 
-signals:
-
 };
 
 class EquipDialog : public ObjectDialog
@@ -162,7 +160,6 @@ public:
     explicit EquipDialog(bool buttons);
     void equipment_update();
 
-signals:
 
 };
 

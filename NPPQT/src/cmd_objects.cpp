@@ -9,7 +9,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -49,7 +49,7 @@ cmd_arg obj_examine(object_type *o_ptr, cmd_arg args)
 
 cmd_arg obj_drop(object_type *o_ptr, cmd_arg args)
 {
-    int amt = get_quantity("Please enter an amount to drop.", o_ptr->number);
+    int amt = get_quantity("Please enter an amount to drop.", o_ptr->number, 1);
     if (amt <= 0)
     {
         args.verify = FALSE;
@@ -64,7 +64,7 @@ cmd_arg obj_drop(object_type *o_ptr, cmd_arg args)
 
 cmd_arg obj_destroy(object_type *o_ptr, cmd_arg args)
 {
-    int amt = get_quantity("Please enter an amount to destroy.", o_ptr->number);
+    int amt = get_quantity("Please enter an amount to destroy.", o_ptr->number, 1);
     if (amt <= 0)
     {
         args.verify = FALSE;

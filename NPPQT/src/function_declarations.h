@@ -100,6 +100,7 @@ extern void do_cmd_feeling(void);
 extern void do_cmd_repeat(void);
 
 //cmd_objects
+extern cmd_arg obj_wield(object_type *o_ptr, cmd_arg args);
 extern cmd_arg obj_uninscribe(object_type *o_ptr, cmd_arg args);
 extern bool trap_related_object(object_type *o_ptr);
 extern void command_uninscribe(cmd_arg args);
@@ -958,7 +959,7 @@ extern QString capitalize_first(QString line);
 extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMessageBox::Information);
 extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
-extern s16b get_quantity(QString prompt, int max, int amt = 1);
+extern s16b get_quantity(QString prompt, int max, int amt);
 extern QColor add_preset_color(int which_color);
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);

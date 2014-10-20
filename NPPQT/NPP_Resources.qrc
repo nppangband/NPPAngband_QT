@@ -28,5 +28,11 @@
         <file>lib/icons/destroy.png</file>
         <file>lib/icons/inscribe.png</file>
         <file>lib/icons/uninscribe.png</file>
+        <file>lib/icons/browse.png</file>
+        <file>lib/icons/cast.png</file>
+        <file>lib/icons/study.png</file>
+        <file>lib/icons/activate.png</file>
+        <file>lib/icons/drop.png</file>
+        <file>lib/icons/throw.png</file>
     </qresource>
 </RCC>

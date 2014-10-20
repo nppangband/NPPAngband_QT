@@ -96,10 +96,8 @@ bool ObjectDialog::should_add_use(object_type *o_ptr, s16b item_slot)
 {
     (void)item_slot;
 
-    if (!o_ptr->is_usable_item())
-    {
-        if (!obj_can_refill(o_ptr)) return (FALSE);
-    }
+    if (!o_ptr->is_usable_item()) return (FALSE);
+
 
     // Make sure the wands/rods/staffs can be used.
     if (o_ptr->is_wand() || o_ptr->is_staff())
@@ -126,7 +124,7 @@ bool ObjectDialog::should_add_fire(object_type *o_ptr, s16b item_slot)
 
 bool ObjectDialog::should_add_refill(object_type *o_ptr, s16b item_slot)
 {
-    (void)item_slot;
+    if (!item_is_available(item_slot, NULL, USE_INVEN | USE_FLOOR)) return (FALSE);
     return (obj_can_refill(o_ptr));
 }
 
@@ -207,9 +205,11 @@ bool ObjectDialog::should_add_activate(object_type *o_ptr, s16b item_slot)
 
 bool ObjectDialog::should_add_throw(object_type *o_ptr, s16b item_slot)
 {
-    if (o_ptr->is_known_cursed())
+    // On the floor
+    if (!item_is_available(item_slot, NULL, USE_FLOOR | USE_INVEN | USE_QUIVER)) return (FALSE);
+    if (IS_QUIVER_SLOT(item_slot) && p_ptr->state.cursed_quiver && !o_ptr->is_cursed())
     {
-        if (item_slot >= INVEN_WIELD) return FALSE;
+        return FALSE;
     }
     return (TRUE);
 }
@@ -239,10 +239,10 @@ void ObjectDialog::add_takeoff(QGridLayout *lay, s16b item_slot, int row, int co
 
 void ObjectDialog::add_wield(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_SWAP].action_char) .arg(item_slot));
+    QString id = (QString("%1%2") .arg(item_command_info[ITEM_WIELD].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/wield.png"));
-    new_button->setStatusTip("Swap");
+    new_button->setStatusTip("Wield");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -532,14 +532,19 @@ void ObjectDialog::button_click()
 
     QChar index = id[0];
 
-    // Search or the matching command
+    // Search for the matching command
     for (int i = 0; i < ITEM_MAX; i++)
     {
-        if (operator==(item_command_info[i].action_char, index)) continue;
+        QChar check = item_command_info[i].action_char;
+        if (operator!=(check, index)) continue;
 
-        process_command(o_idx, i);
+        process_command(o_idx, item_command_info[i].object_command);
         break;
     }
+
+    // TODO Either leave or update the menu
+    //if (p_ptr->in_menu == FALSE) emit close_dialog();
+    //else emit update_dialog();
 }
 
 void ObjectDialog::add_plain_label(QGridLayout *lay, QString label, int row, int col)
@@ -764,8 +769,10 @@ void InvenDialog::inventory_update()
 
 void do_cmd_inventory(void)
 {
+    p_ptr->in_menu = TRUE;
     InvenDialog(TRUE);
     do_cmd_equipment();
+    p_ptr->in_menu = FALSE;
 }
 
 /*
@@ -815,7 +822,6 @@ void EquipDialog::update_equip_header()
 void EquipDialog::update_equip_list(bool buttons)
 {
     int row = 0;
-
 
     clear_grid_layout(equip_list);
 
@@ -881,6 +887,7 @@ EquipDialog::EquipDialog(bool buttons)
 
 void EquipDialog::equipment_update()
 {
+    pop_up_message_box("update entered");
     update_equip_header();
     update_equip_list(TRUE);
     reset_messages();
@@ -888,5 +895,8 @@ void EquipDialog::equipment_update()
 
 void do_cmd_equipment(void)
 {
+    p_ptr->in_menu = TRUE;
     EquipDialog(TRUE);
+    p_ptr->in_menu = FALSE;
+
 }
