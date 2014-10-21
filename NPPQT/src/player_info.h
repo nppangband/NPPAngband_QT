@@ -129,6 +129,9 @@ public:
     public slots:
     void object_click();
     void button_click();
+
+    virtual void update_dialog() {};
+    virtual void close_dialog() {};
 };
 
 class InvenDialog : public ObjectDialog
@@ -142,7 +145,9 @@ private:
 
 public:
     explicit InvenDialog(bool buttons);
-    void inventory_update();
+    void update_dialog();
+    void close_dialog();
+
 
 };
 
@@ -158,7 +163,8 @@ private:
 
 public:
     explicit EquipDialog(bool buttons);
-    void equipment_update();
+    void update_dialog();
+    void close_dialog();
 
 
 };

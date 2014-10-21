@@ -541,11 +541,12 @@ void ObjectDialog::button_click()
         process_command(o_idx, item_command_info[i].object_command);
         break;
     }
-
-    // TODO Either leave or update the menu
-    //if (p_ptr->in_menu == FALSE) emit close_dialog();
-    //else emit update_dialog();
+    // Do we need to update or delete the dialog?
+    if (p_ptr->in_menu)update_dialog();
+    else close_dialog();
 }
+
+
 
 void ObjectDialog::add_plain_label(QGridLayout *lay, QString label, int row, int col)
 {
@@ -659,6 +660,8 @@ void ObjectDialog::reset_messages()
 }
 
 
+
+
 /*
  *
  *
@@ -760,7 +763,14 @@ InvenDialog::InvenDialog(bool buttons)
     this->exec();
 }
 
-void InvenDialog::inventory_update()
+
+
+void InvenDialog::close_dialog()
+{
+    this->reject();
+}
+
+void InvenDialog::update_dialog()
 {
     update_inven_header();
     update_inven_list(TRUE);
@@ -885,13 +895,7 @@ EquipDialog::EquipDialog(bool buttons)
     this->exec();
 }
 
-void EquipDialog::equipment_update()
-{
-    pop_up_message_box("update entered");
-    update_equip_header();
-    update_equip_list(TRUE);
-    reset_messages();
-}
+
 
 void do_cmd_equipment(void)
 {
@@ -899,4 +903,16 @@ void do_cmd_equipment(void)
     EquipDialog(TRUE);
     p_ptr->in_menu = FALSE;
 
+}
+
+void EquipDialog::update_dialog()
+{
+    update_equip_header();
+    update_equip_list(TRUE);
+    reset_messages();
+}
+
+void EquipDialog::close_dialog()
+{
+    this->reject();
 }

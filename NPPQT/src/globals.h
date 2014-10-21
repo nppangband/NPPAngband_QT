@@ -29,7 +29,6 @@ extern monster_type *summoner;
 extern s32b turn;
 extern int use_graphics;
 extern s16b image_count;
-extern bool use_bigtile;
 
 extern s16b o_max;
 extern s16b o_cnt;

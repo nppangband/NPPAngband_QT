@@ -30,7 +30,6 @@ monster_type *summoner; 	/*Track the current summoner*/
 s32b turn;				/* Current game turn */
 
 int use_graphics;		/* The "graphics" mode is enabled */
-bool use_bigtile = FALSE;
 
 s16b image_count;  		/* Grids until next random image    */
                         /* Optimizes the hallucination code */
