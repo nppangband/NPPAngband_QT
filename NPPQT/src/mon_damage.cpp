@@ -1105,6 +1105,8 @@ void monster_death(int m_idx, int who)
     /* Nothing left, game over... */
     else
     {
+        // Show some fireworks
+        ui_animate_victory(m_ptr->fy, m_ptr->fx);
 
         /* Total winner */
         p_ptr->total_winner = TRUE;
