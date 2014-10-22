@@ -130,8 +130,27 @@ public:
     void object_click();
     void button_click();
 
+    //  These should be replaced by real functions
+    // in the child class.
     virtual void update_dialog() {};
     virtual void close_dialog() {};
+};
+
+class FloorDialog : public ObjectDialog
+{
+    Q_OBJECT
+private:
+    QGridLayout *floor_list;
+    QLabel *header_floor;
+    void update_floor_header();
+    void update_floor_list(bool buttons);
+
+public:
+    explicit FloorDialog(bool buttons);
+    void update_dialog();
+    void close_dialog();
+
+
 };
 
 class InvenDialog : public ObjectDialog
@@ -148,8 +167,9 @@ public:
     void update_dialog();
     void close_dialog();
 
-
 };
+
+
 
 class EquipDialog : public ObjectDialog
 {
@@ -157,9 +177,12 @@ class EquipDialog : public ObjectDialog
 
 private:
     QGridLayout *equip_list;
+    QGridLayout *quiver_list;
     QLabel *header_equip;
+    QLabel *header_quiver;
     void update_equip_header();
     void update_equip_list(bool buttons);
+    void update_quiver_list(bool buttons);
 
 public:
     explicit EquipDialog(bool buttons);

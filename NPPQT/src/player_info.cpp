@@ -141,7 +141,7 @@ bool ObjectDialog::should_add_drop(object_type *o_ptr, s16b item_slot)
     if (!item_is_available(item_slot, NULL, USE_INVEN | USE_EQUIP | USE_QUIVER)) return (FALSE);
 
     // In the backpack
-    if (item_slot < INVEN_WIELD) return (TRUE);
+    if ((item_slot < INVEN_WIELD) && (item_slot >=0)) return (TRUE);
 
     if (IS_QUIVER_SLOT(item_slot) && p_ptr->state.cursed_quiver) return (FALSE);
 
@@ -660,6 +660,129 @@ void ObjectDialog::reset_messages()
 }
 
 
+/*
+ *
+ *
+ * FLOOR DIALOG
+ *
+ *
+ */
+
+void FloorDialog::update_floor_header()
+{
+    //max capactity in ounces
+    u16b max_capacity;
+
+    if (game_mode == GAME_NPPMORIA)
+    {
+        max_capacity = adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *5;
+    }
+    else //game_mode == GAME_NPPANGBAND
+    {
+        // Slowing starts at 60% of max_weight
+        // and increases by 1 every extra 10%
+        max_capacity = 60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]];
+    }
+
+    u32b weight_percent = p_ptr->total_weight * 100 / max_capacity;
+
+    QString label_text = (QString("<b><h1>(Floor Items)</h1><br><b><big>Burden: %1 lbs (%2% capacity)</big></b>")
+                             .arg(formatted_weight_string(p_ptr->total_weight)) .arg(weight_percent));
+    if (p_ptr->total_weight > max_capacity)
+    {
+        int overweight = p_ptr->total_weight - max_capacity;
+        label_text.append(QString("<br>(%1 lbs overweight)")
+                        .arg((formatted_weight_string(overweight))));
+    }
+    else if (p_ptr->total_weight < max_capacity)
+    {
+        int underweight = max_capacity - p_ptr->total_weight;
+        label_text.append(QString("<br>(%1 lbs underweight)")
+                        .arg(formatted_weight_string(underweight)));
+    }
+    header_floor->setText(label_text);
+    header_floor->setAlignment(Qt::AlignCenter);
+}
+
+void FloorDialog::update_floor_list(bool buttons)
+{
+    int row = 0;
+
+    clear_grid_layout(floor_list);
+
+    s16b this_o_idx, next_o_idx = 0;
+
+    for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
+    {
+        object_type *o_ptr = &o_list[this_o_idx];
+        if (!o_ptr->k_idx) continue;
+
+        int col = 0;
+
+        add_letter_label(floor_list, QChar('i'), this_o_idx, row, col++);
+        add_object_button(floor_list, o_ptr, QChar('i'), this_o_idx, row, col++);
+        add_weight_label(floor_list, o_ptr, row, col++);
+        if (buttons) do_buttons(floor_list, o_ptr, -this_o_idx, row, col++);
+
+        ++row;
+    }
+}
+
+FloorDialog::FloorDialog(bool buttons)
+{
+    main_layout = new QVBoxLayout;
+
+    //Build the header
+    header_floor = new QLabel("Floor Items");
+    update_floor_header();
+    main_layout->addWidget(header_floor);
+
+    // add the messages
+    message_area = new QWidget;
+    main_layout->addWidget(message_area);
+    add_message_area();
+    reset_messages();
+
+    this->reset_messages();
+
+    // Add the list of inventory
+    floor_list = new QGridLayout;
+    update_floor_list(buttons);
+    main_layout->addLayout(floor_list);
+
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    main_layout->addItem(spacer);
+
+    QPushButton *btn_close = new QPushButton("Close");
+    main_layout->addWidget(btn_close);
+    connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Floor Item Menu"));
+
+    this->exec();
+}
+
+
+
+void FloorDialog::close_dialog()
+{
+    this->reject();
+}
+
+void FloorDialog::update_dialog()
+{
+    update_floor_header();
+    update_floor_list(TRUE);
+    reset_messages();
+}
+
+void do_cmd_floor(void)
+{
+    p_ptr->in_menu = TRUE;
+    FloorDialog(TRUE);
+    p_ptr->in_menu = FALSE;
+}
 
 
 /*
@@ -782,6 +905,7 @@ void do_cmd_inventory(void)
     p_ptr->in_menu = TRUE;
     InvenDialog(TRUE);
     do_cmd_equipment();
+    do_cmd_floor();
     p_ptr->in_menu = FALSE;
 }
 
@@ -829,6 +953,9 @@ void EquipDialog::update_equip_header()
     header_equip->setAlignment(Qt::AlignCenter);
 }
 
+
+
+
 void EquipDialog::update_equip_list(bool buttons)
 {
     int row = 0;
@@ -862,6 +989,41 @@ void EquipDialog::update_equip_list(bool buttons)
     }
 }
 
+
+void EquipDialog::update_quiver_list(bool buttons)
+{
+    int row = 0;
+
+    clear_grid_layout(quiver_list);
+
+    for (int i = QUIVER_START; i < QUIVER_END; i++)
+    {
+        object_type *o_ptr = &inventory[i];
+
+        // Make an id for the item
+        QString id = QString("i%1").arg(i);
+
+        int col = 0;
+
+        add_letter_label(quiver_list, QChar('e'), i, row, col++);
+        add_plain_label(quiver_list, mention_use(i), row, col++);
+        if (o_ptr->k_idx)
+        {
+
+            add_object_button(quiver_list, o_ptr, QChar('e'), i, row, col++);
+            add_weight_label(quiver_list, o_ptr, row, col++);
+            if (buttons) do_buttons(quiver_list, o_ptr, i, row, col++);
+        }
+        else
+        {
+            if (i == QUIVER_START)add_plain_label(quiver_list, QString("(nothing)"), row, col++);
+            break;
+        }
+
+        ++row;
+    }
+}
+
 EquipDialog::EquipDialog(bool buttons)
 {
     main_layout = new QVBoxLayout;
@@ -877,13 +1039,22 @@ EquipDialog::EquipDialog(bool buttons)
     add_message_area();
     reset_messages();
 
-    // Add the list of inventory
+    // Add the equipment
     equip_list = new QGridLayout;
     update_equip_list(buttons);
     main_layout->addLayout(equip_list);
 
     QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
     main_layout->addItem(spacer);
+
+    header_quiver = new QLabel(QString("<b><h1>Quiver</b></h1>"));
+    header_quiver->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(header_quiver);
+
+    // Add the quiver
+    quiver_list = new QGridLayout;
+    update_quiver_list(buttons);
+    main_layout->addLayout(quiver_list);
 
     QPushButton *btn_close = new QPushButton("Close");
     main_layout->addWidget(btn_close);
@@ -909,6 +1080,7 @@ void EquipDialog::update_dialog()
 {
     update_equip_header();
     update_equip_list(TRUE);
+    update_quiver_list(TRUE);
     reset_messages();
 }
 

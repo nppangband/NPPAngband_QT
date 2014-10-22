@@ -525,6 +525,7 @@ extern void load_player_ghost_file(void);
 extern void save_player_ghost_file(void);
 
 // player_inventory.cpp
+extern void do_cmd_floor(void);
 extern void do_cmd_inventory(void);
 extern void do_cmd_equipment(void);
 
