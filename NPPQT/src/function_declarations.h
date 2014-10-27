@@ -524,10 +524,8 @@ extern void add_player_ghost_entry(void);
 extern void load_player_ghost_file(void);
 extern void save_player_ghost_file(void);
 
-// player_inventory.cpp
-extern void do_cmd_floor(void);
-extern void do_cmd_inventory(void);
-extern void do_cmd_equipment(void);
+// player_info.cpp
+extern void do_cmd_all_objects(void);
 
 // player_process
 extern void process_player_terrain_damage(void);

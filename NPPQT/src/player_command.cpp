@@ -202,7 +202,13 @@ void process_command(int item, s16b command)
         if (command == CMD_RESTING) RestDialog(&args.choice);
         //no choice made
         if (!args.choice) return;
+        if (args.choice == REST_TURNCOUNT)
+        {
+            args.repeats = get_quantity(QString("Enter rest turncount"), 9999, 0);
+        }
     }
+
+    else if (command_ptr->repeat_allowed) args.repeats = command_ptr->repeat_num;
 
     args.verify = command_ptr->default_verify;
 

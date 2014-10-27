@@ -220,7 +220,7 @@ void ObjectDialog::add_examine(QGridLayout *lay, s16b item_slot, int row, int co
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/look.png"));
     new_button->setObjectName(id);
-    new_button->setStatusTip("Examine");
+    new_button->setToolTip("Examine");
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
@@ -231,7 +231,7 @@ void ObjectDialog::add_takeoff(QGridLayout *lay, s16b item_slot, int row, int co
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/takeoff.png"));
     new_button->setObjectName(id);
-    new_button->setStatusTip("Take Off");
+    new_button->setToolTip("Take Off");
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
@@ -242,7 +242,7 @@ void ObjectDialog::add_wield(QGridLayout *lay, s16b item_slot, int row, int col)
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_WIELD].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/wield.png"));
-    new_button->setStatusTip("Wield");
+    new_button->setToolTip("Wield");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -257,47 +257,47 @@ void ObjectDialog::add_use(QGridLayout *lay, s16b item_slot, int row, int col)
     if (o_ptr->tval == TV_SCROLL)
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/scroll.png"));
-        new_button->setStatusTip("Read Scroll");
+        new_button->setToolTip("Read Scroll");
     }
     else if (o_ptr->tval == TV_POTION)
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/potion.png"));
-        new_button->setStatusTip("Quaff Potion");
+        new_button->setToolTip("Quaff Potion");
     }
     else if (o_ptr->tval == TV_WAND)
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/wand.png"));
-        new_button->setStatusTip("Aim Wand");
+        new_button->setToolTip("Aim Wand");
     }
     else if (o_ptr->tval == TV_STAFF)
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/staff.png"));
-        new_button->setStatusTip("Use Staff");
+        new_button->setToolTip("Use Staff");
     }
     else if (o_ptr->tval == TV_ROD)
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/rod.png"));
-        new_button->setStatusTip("Zap Rod");
+        new_button->setToolTip("Zap Rod");
     } //TV_FOOD
     else if (o_ptr->is_mushroom())
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/mushroom.png"));
-        new_button->setStatusTip("Eat Mushroom");
+        new_button->setToolTip("Eat Mushroom");
     }
     else if (o_ptr->is_wine())
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/wine.png"));
-        new_button->setStatusTip("Drink Wine");
+        new_button->setToolTip("Drink Wine");
     }
     else if (o_ptr->is_ale())
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/ale.png"));
-        new_button->setStatusTip("Drink Ale");
+        new_button->setToolTip("Drink Ale");
     }
     else
     {
         new_button->setIcon(QIcon(":/icons/lib/icons/food.png"));
-        new_button->setStatusTip("Eat Food");
+        new_button->setToolTip("Eat Food");
     }
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
@@ -310,7 +310,7 @@ void ObjectDialog::add_swap(QGridLayout *lay, s16b item_slot, int row, int col)
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_SWAP].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/swap.png"));
-    new_button->setStatusTip("Swap");
+    new_button->setToolTip("Swap");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -321,7 +321,7 @@ void ObjectDialog::add_refill(QGridLayout *lay, s16b item_slot, int row, int col
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_REFILL].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/refill.png"));
-    new_button->setStatusTip("Refill");
+    new_button->setToolTip("Refill");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -332,7 +332,7 @@ void ObjectDialog::add_fire(QGridLayout *lay, s16b item_slot, int row, int col)
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_FIRE].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/fire.png"));
-    new_button->setStatusTip("Fire");
+    new_button->setToolTip("Fire");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -343,7 +343,7 @@ void ObjectDialog::add_fire_near(QGridLayout *lay, s16b item_slot, int row, int 
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_FIRE_NEAR].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/fire_near.png"));
-    new_button->setStatusTip("Fire At Closest Target");
+    new_button->setToolTip("Fire At Closest Target");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -354,7 +354,7 @@ void ObjectDialog::add_drop(QGridLayout *lay, s16b item_slot, int row, int col)
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_DROP].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/drop.png"));
-    new_button->setStatusTip("Drop");
+    new_button->setToolTip("Drop");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -365,7 +365,7 @@ void ObjectDialog::add_pickup(QGridLayout *lay, s16b item_slot, int row, int col
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_PICKUP].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/pickup.png"));
-    new_button->setStatusTip("Pick Up");
+    new_button->setToolTip("Pick Up");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -376,7 +376,7 @@ void ObjectDialog::add_browse(QGridLayout *lay, s16b item_slot, int row, int col
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_BROWSE].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/browse.png"));
-    new_button->setStatusTip("Browse");
+    new_button->setToolTip("Browse");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -387,7 +387,7 @@ void ObjectDialog::add_study(QGridLayout *lay, s16b item_slot, int row, int col)
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_STUDY].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/study.png"));
-    new_button->setStatusTip("Study");
+    new_button->setToolTip("Study");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -400,7 +400,7 @@ void ObjectDialog::add_cast(QGridLayout *lay, s16b item_slot, int row, int col)
     new_button->setIcon(QIcon(":/icons/lib/icons/cast.png"));
     QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
     QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
-    new_button->setStatusTip(QString("%1 a %2") .arg(verb) .arg(capitalize_first(noun)));
+    new_button->setToolTip(QString("%1 a %2") .arg(verb) .arg(capitalize_first(noun)));
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -411,7 +411,7 @@ void ObjectDialog::add_destroy(QGridLayout *lay, s16b item_slot, int row, int co
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_DESTROY].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/destroy.png"));
-    new_button->setStatusTip("Destroy");
+    new_button->setToolTip("Destroy");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -422,7 +422,7 @@ void ObjectDialog::add_inscribe(QGridLayout *lay, s16b item_slot, int row, int c
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_INSCRIBE].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/inscribe.png"));
-    new_button->setStatusTip("Inscribe");
+    new_button->setToolTip("Inscribe");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -433,7 +433,7 @@ void ObjectDialog::add_uninscribe(QGridLayout *lay, s16b item_slot, int row, int
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_UNINSCRIBE].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/uninscribe.png"));
-    new_button->setStatusTip("Uninscribe");
+    new_button->setToolTip("Uninscribe");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -444,7 +444,7 @@ void ObjectDialog::add_activate(QGridLayout *lay, s16b item_slot, int row, int c
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_ACTIVATE].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/activate.png"));
-    new_button->setStatusTip("Activate");
+    new_button->setToolTip("Activate");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -455,7 +455,7 @@ void ObjectDialog::add_throw(QGridLayout *lay, s16b item_slot, int row, int col)
     QString id = (QString("%1%2") .arg(item_command_info[ITEM_THROW].action_char) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/throw.png"));
-    new_button->setStatusTip("Throw");
+    new_button->setToolTip("Throw");
     new_button->setObjectName(id);
     connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
@@ -590,24 +590,8 @@ void ObjectDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int ro
     lay->addWidget(weight, row, col);
 }
 
-
-
-void ObjectDialog::add_message_area()
+void ObjectDialog::reset_messages(message_type last_message, QLabel *message_one, QLabel *message_two, QLabel *message_three)
 {
-    last_message = message_list[0];
-    lay_message = new QVBoxLayout;
-    message_area->setLayout(lay_message);
-    message_one = new QLabel("msg_one");
-    message_two = new QLabel("msg_two");
-    message_three = new QLabel("msg_three");
-    lay_message->addWidget(message_one);
-    lay_message->addWidget(message_two);
-    lay_message->addWidget(message_three);
-}
-
-void ObjectDialog::reset_messages()
-{
-
     int which_message = 1;
 
     /* Show the messages if they exist.
@@ -659,56 +643,18 @@ void ObjectDialog::reset_messages()
     }
 }
 
-
 /*
  *
- *
- * FLOOR DIALOG
- *
+ * Floor Layout
  *
  */
-
-void FloorDialog::update_floor_header()
-{
-    //max capactity in ounces
-    u16b max_capacity;
-
-    if (game_mode == GAME_NPPMORIA)
-    {
-        max_capacity = adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *5;
-    }
-    else //game_mode == GAME_NPPANGBAND
-    {
-        // Slowing starts at 60% of max_weight
-        // and increases by 1 every extra 10%
-        max_capacity = 60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]];
-    }
-
-    u32b weight_percent = p_ptr->total_weight * 100 / max_capacity;
-
-    QString label_text = (QString("<b><h1>(Floor Items)</h1><br><b><big>Burden: %1 lbs (%2% capacity)</big></b>")
-                             .arg(formatted_weight_string(p_ptr->total_weight)) .arg(weight_percent));
-    if (p_ptr->total_weight > max_capacity)
-    {
-        int overweight = p_ptr->total_weight - max_capacity;
-        label_text.append(QString("<br>(%1 lbs overweight)")
-                        .arg((formatted_weight_string(overweight))));
-    }
-    else if (p_ptr->total_weight < max_capacity)
-    {
-        int underweight = max_capacity - p_ptr->total_weight;
-        label_text.append(QString("<br>(%1 lbs underweight)")
-                        .arg(formatted_weight_string(underweight)));
-    }
-    header_floor->setText(label_text);
-    header_floor->setAlignment(Qt::AlignCenter);
-}
-
-void FloorDialog::update_floor_list(bool buttons)
+void ObjectDialog::update_floor_list(QGridLayout *lay, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(floor_list);
+    bool floor_items = FALSE;
+
+    clear_grid_layout(lay);
 
     s16b this_o_idx, next_o_idx = 0;
 
@@ -719,121 +665,36 @@ void FloorDialog::update_floor_list(bool buttons)
 
         int col = 0;
 
-        add_letter_label(floor_list, QChar('i'), this_o_idx, row, col++);
-        add_object_button(floor_list, o_ptr, QChar('i'), this_o_idx, row, col++);
-        add_weight_label(floor_list, o_ptr, row, col++);
-        if (buttons) do_buttons(floor_list, o_ptr, -this_o_idx, row, col++);
+        add_letter_label(lay, QChar('f'), this_o_idx, row, col++);
+        add_object_button(lay, o_ptr, QChar('f'), this_o_idx, row, col++);
+        add_weight_label(lay, o_ptr, row, col++);
+        if (buttons) do_buttons(lay, o_ptr, -this_o_idx, row, col++);
+
+        floor_items = TRUE;
 
         ++row;
     }
+
+    if (!floor_items)
+    {
+        QLabel *no_floor = new QLabel("<b><big>No Floor Items</b></big>");
+        no_floor->setAlignment(Qt::AlignCenter);
+        lay->addWidget(no_floor, 0, 0);
+    }
 }
-
-FloorDialog::FloorDialog(bool buttons)
-{
-    main_layout = new QVBoxLayout;
-
-    //Build the header
-    header_floor = new QLabel("Floor Items");
-    update_floor_header();
-    main_layout->addWidget(header_floor);
-
-    // add the messages
-    message_area = new QWidget;
-    main_layout->addWidget(message_area);
-    add_message_area();
-    reset_messages();
-
-    this->reset_messages();
-
-    // Add the list of inventory
-    floor_list = new QGridLayout;
-    update_floor_list(buttons);
-    main_layout->addLayout(floor_list);
-
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    main_layout->addItem(spacer);
-
-    QPushButton *btn_close = new QPushButton("Close");
-    main_layout->addWidget(btn_close);
-    connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
-
-    setLayout(main_layout);
-    setWindowTitle(tr("Floor Item Menu"));
-
-    this->exec();
-}
-
-
-
-void FloorDialog::close_dialog()
-{
-    this->reject();
-}
-
-void FloorDialog::update_dialog()
-{
-    update_floor_header();
-    update_floor_list(TRUE);
-    reset_messages();
-}
-
-void do_cmd_floor(void)
-{
-    p_ptr->in_menu = TRUE;
-    FloorDialog(TRUE);
-    p_ptr->in_menu = FALSE;
-}
-
 
 /*
  *
- *
- * INVENTORY DIALOG
- *
+ * INVENTORY TAB
  *
  */
-
-void InvenDialog::update_inven_header()
-{
-    //max capactity in ounces
-    u16b max_capacity;
-
-    if (game_mode == GAME_NPPMORIA)
-    {
-        max_capacity = adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *5;
-    }
-    else //game_mode == GAME_NPPANGBAND
-    {
-        // Slowing starts at 60% of max_weight
-        // and increases by 1 every extra 10%
-        max_capacity = 60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]];
-    }
-
-    u32b weight_percent = p_ptr->total_weight * 100 / max_capacity;
-
-    QString label_text = (QString("<b><h1>(Player Inventory)</h1><br><b><big>Burden: %1 lbs (%2% capacity)</big></b>")
-                             .arg(formatted_weight_string(p_ptr->total_weight)) .arg(weight_percent));
-    if (p_ptr->total_weight > max_capacity)
-    {
-        int overweight = p_ptr->total_weight - max_capacity;
-        label_text.append(QString("<br>(%1 lbs overweight)")
-                        .arg((formatted_weight_string(overweight))));
-    }
-    else if (p_ptr->total_weight < max_capacity)
-    {
-        int underweight = max_capacity - p_ptr->total_weight;
-        label_text.append(QString("<br>(%1 lbs underweight)")
-                        .arg(formatted_weight_string(underweight)));
-    }
-    header_inven->setText(label_text);
-    header_inven->setAlignment(Qt::AlignCenter);
-}
-
-void InvenDialog::update_inven_list(bool buttons)
+void ObjectDialog::update_inven_list(QGridLayout *lay, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(inven_list);
+    bool inven_items = FALSE;
+
+    clear_grid_layout(lay);
 
     for (int i = 0; i < INVEN_MAX_PACK; i++)
     {
@@ -842,125 +703,34 @@ void InvenDialog::update_inven_list(bool buttons)
 
         int col = 0;
 
-        add_letter_label(inven_list, QChar('i'), i, row, col++);
-        add_object_button(inven_list, o_ptr, QChar('i'), i, row, col++);
-        add_weight_label(inven_list, o_ptr, row, col++);
-        if (buttons) do_buttons(inven_list, o_ptr, i, row, col++);
+        add_letter_label(lay, QChar('i'), i, row, col++);
+        add_object_button(lay, o_ptr, QChar('i'), i, row, col++);
+        add_weight_label(lay, o_ptr, row, col++);
+        if (buttons) do_buttons(lay, o_ptr, i, row, col++);
+
+        inven_items = TRUE;
 
         ++row;
     }
-}
 
-InvenDialog::InvenDialog(bool buttons)
-{
-    main_layout = new QVBoxLayout;
-
-    //Build the header
-    header_inven = new QLabel("Header");
-    update_inven_header();
-    main_layout->addWidget(header_inven);
-
-    // add the messages
-    message_area = new QWidget;
-    main_layout->addWidget(message_area);
-    add_message_area();
-    reset_messages();
-
-    this->reset_messages();
-
-    // Add the list of inventory
-    inven_list = new QGridLayout;
-    update_inven_list(buttons);
-    main_layout->addLayout(inven_list);
-
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    main_layout->addItem(spacer);
-
-    QPushButton *btn_close = new QPushButton("Close");
-    main_layout->addWidget(btn_close);
-    connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
-
-    setLayout(main_layout);
-    setWindowTitle(tr("Inventory Menu"));
-
-    this->exec();
-}
-
-
-
-void InvenDialog::close_dialog()
-{
-    this->reject();
-}
-
-void InvenDialog::update_dialog()
-{
-    update_inven_header();
-    update_inven_list(TRUE);
-    reset_messages();
-}
-
-void do_cmd_inventory(void)
-{
-    p_ptr->in_menu = TRUE;
-    InvenDialog(TRUE);
-    do_cmd_equipment();
-    do_cmd_floor();
-    p_ptr->in_menu = FALSE;
+    if (!inven_items)
+    {
+        QLabel *no_inven = new QLabel("<b><big>Empty Backpack</b></big>");
+        no_inven->setAlignment(Qt::AlignCenter);
+        lay->addWidget(no_inven, 0, 0);
+    }
 }
 
 /*
  *
- *
- * EQUIPMENT DIALOG
- *
+ * EQUIPMENT TAB
  *
  */
-
-void EquipDialog::update_equip_header()
-{
-    //max capactity in ounces
-    u16b max_capacity;
-
-    if (game_mode == GAME_NPPMORIA)
-    {
-        max_capacity = adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *5;
-    }
-    else //game_mode == GAME_NPPANGBAND
-    {
-        // Slowing starts at 60% of max_weight
-        // and increases by 1 every extra 10%
-        max_capacity = 60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]];
-    }
-
-    u32b weight_percent = p_ptr->total_weight * 100 / max_capacity;
-
-    QString label_text = (QString("<b><h1>(Player Equipment)</h1><br><b><big>Burden: %1 lbs (%2% capacity)</big></b>")
-                             .arg(formatted_weight_string(p_ptr->total_weight)) .arg(weight_percent));
-    if (p_ptr->total_weight > max_capacity)
-    {
-        int overweight = p_ptr->total_weight - max_capacity;
-        label_text.append(QString("<br>(%1 lbs overweight)")
-                        .arg((formatted_weight_string(overweight))));
-    }
-    else if (p_ptr->total_weight < max_capacity)
-    {
-        int underweight = max_capacity - p_ptr->total_weight;
-        label_text.append(QString("<br>(%1 lbs underweight)")
-                        .arg(formatted_weight_string(underweight)));
-    }
-    header_equip->setText(label_text);
-    header_equip->setAlignment(Qt::AlignCenter);
-}
-
-
-
-
-void EquipDialog::update_equip_list(bool buttons)
+void ObjectDialog::update_equip_list(QGridLayout *lay, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(equip_list);
+    clear_grid_layout(lay);
 
     for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
     {
@@ -971,120 +741,302 @@ void EquipDialog::update_equip_list(bool buttons)
 
         int col = 0;
 
-        add_letter_label(equip_list, QChar('e'), i, row, col++);
-        add_plain_label(equip_list, mention_use(i), row, col++);
+        add_letter_label(lay, QChar('e'), i, row, col++);
+        add_plain_label(lay, mention_use(i), row, col++);
         if (o_ptr->k_idx)
         {
 
-            add_object_button(equip_list, o_ptr, QChar('e'), i, row, col++);
-            add_weight_label(equip_list, o_ptr, row, col++);
-            if (buttons) do_buttons(equip_list, o_ptr, i, row, col++);
+            add_object_button(lay, o_ptr, QChar('e'), i, row, col++);
+            add_weight_label(lay, o_ptr, row, col++);
+            if (buttons) do_buttons(lay, o_ptr, i, row, col++);
         }
         else
         {
-            add_plain_label(equip_list, QString("(nothing)"), row, col++);
+            add_plain_label(lay, QString("(nothing)"), row, col++);
         }
 
         ++row;
     }
+
+
 }
 
 
-void EquipDialog::update_quiver_list(bool buttons)
+void ObjectDialog::update_quiver_list(QGridLayout *lay, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(quiver_list);
+    clear_grid_layout(lay);
+    bool quiver_items = FALSE;
 
     for (int i = QUIVER_START; i < QUIVER_END; i++)
     {
         object_type *o_ptr = &inventory[i];
+
+        if (!o_ptr->k_idx) continue;
 
         // Make an id for the item
         QString id = QString("i%1").arg(i);
 
         int col = 0;
 
-        add_letter_label(quiver_list, QChar('e'), i, row, col++);
-        add_plain_label(quiver_list, mention_use(i), row, col++);
-        if (o_ptr->k_idx)
-        {
+        add_letter_label(lay, QChar('e'), i, row, col++);
+        add_plain_label(lay, mention_use(i), row, col++);
 
-            add_object_button(quiver_list, o_ptr, QChar('e'), i, row, col++);
-            add_weight_label(quiver_list, o_ptr, row, col++);
-            if (buttons) do_buttons(quiver_list, o_ptr, i, row, col++);
-        }
-        else
-        {
-            if (i == QUIVER_START)add_plain_label(quiver_list, QString("(nothing)"), row, col++);
-            break;
-        }
+        add_object_button(lay, o_ptr, QChar('e'), i, row, col++);
+        add_weight_label(lay, o_ptr, row, col++);
+        if (buttons) do_buttons(lay, o_ptr, i, row, col++);
+
+        quiver_items = TRUE;
 
         ++row;
     }
+
+    if (!quiver_items)
+    {
+        QLabel *no_quiver = new QLabel("<b><big>Empty Quiver</b></big>");
+        no_quiver->setAlignment(Qt::AlignCenter);
+        lay->addWidget(no_quiver, 0, 0);
+    }
+
 }
 
-EquipDialog::EquipDialog(bool buttons)
+
+/*
+ *
+ *
+ * OBJECTS DIALOG
+ *
+ *
+ */
+
+void AllObjectsDialog::update_header()
 {
+    //max capactity in ounces
+    u16b max_capacity;
+
+    if (game_mode == GAME_NPPMORIA)
+    {
+        max_capacity = adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *5;
+    }
+    else //game_mode == GAME_NPPANGBAND
+    {
+        // Slowing starts at 60% of max_weight
+        // and increases by 1 every extra 10%
+        max_capacity = 60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]];
+    }
+
+    u32b weight_percent = p_ptr->total_weight * 100 / max_capacity;
+
+    header_weight1->setText((QString("<b><big>Burden: %1 lbs (%2% capacity)</big></b>")
+                             .arg(formatted_weight_string(p_ptr->total_weight)) .arg(weight_percent)));
+    if (p_ptr->total_weight > max_capacity)
+    {
+        int overweight = p_ptr->total_weight - max_capacity;
+        header_weight2->setText(QString("(%1 lbs overweight)")
+                        .arg((formatted_weight_string(overweight))));
+    }
+    else if (p_ptr->total_weight < max_capacity)
+    {
+        int underweight = max_capacity - p_ptr->total_weight;
+        header_weight2->setText(QString("(%1 lbs underweight)")
+                        .arg(formatted_weight_string(underweight)));
+    }
+}
+
+void AllObjectsDialog::add_message_area()
+{
+    last_message = message_list[0];
+    lay_message = new QVBoxLayout;
+    message_area->setLayout(lay_message);
+    message_one = new QLabel("msg_one");
+    message_two = new QLabel("msg_two");
+    message_three = new QLabel("msg_three");
+    lay_message->addWidget(message_one);
+    lay_message->addWidget(message_two);
+    lay_message->addWidget(message_three);
+}
+
+// Confirm which tabs should be displayed.
+void AllObjectsDialog::confirm_tabs()
+{
+    allow_floor = FALSE;
+    allow_inven = FALSE;
+    allow_equip = FALSE;
+    allow_quiver = FALSE;
+
+    // Confirm there is a floor item
+    if (dungeon_info[p_ptr->py][p_ptr->px].has_object()) allow_floor = TRUE;
+
+    /* Confirm there are objects in the inventory */
+    for (int i = 0; i < (INVEN_WIELD - 1); i++)
+    {
+        /* Get the object */
+        object_type *o_ptr = &inventory[i];
+
+        /* Skip empty slots */
+        if (!o_ptr->k_idx) continue;
+
+        allow_inven = TRUE;
+        break;
+    }
+
+    /* Confirm the player is wielding equipment */
+    for (int i = INVEN_WIELD; i < QUIVER_START; i++)
+    {
+        /* Get the object */
+        object_type *o_ptr = &inventory[i];
+
+        /* Skip empty slots */
+        if (!o_ptr->k_idx) continue;
+
+        allow_equip = TRUE;
+        break;
+    }
+
+    /* Scan all objects in the quiver */
+    for (int i = QUIVER_START; i < QUIVER_END; i++)
+    {
+        /* Get the object */
+        object_type *o_ptr = &inventory[i];
+
+        /* Skip empty slots */
+        if (!o_ptr->k_idx) continue;
+
+        allow_quiver = TRUE;
+        break;
+    }
+}
+
+
+void AllObjectsDialog::close_dialog()
+{
+    this->reject();
+}
+
+void AllObjectsDialog::update_dialog()
+{
+    update_header();
+    update_floor_list(floor_list, TRUE);
+    update_inven_list(inven_list, TRUE);
+    update_equip_list(equip_list, TRUE);
+    update_quiver_list(quiver_list, TRUE);
+    reset_messages(last_message, message_one, message_two, message_three);
+}
+
+
+AllObjectsDialog::AllObjectsDialog(bool buttons)
+{
+
+
+    confirm_tabs();
+
+    // Handle no available objects.
+    if (!allow_floor && !allow_inven && !allow_equip && !allow_quiver)
+    {
+        pop_up_message_box("You have no objects to manage");
+    }
+
+    // Set up the main layout
     main_layout = new QVBoxLayout;
 
     //Build the header
-    header_equip = new QLabel("Header");
-    update_equip_header();
-    main_layout->addWidget(header_equip);
+    header_main = new QLabel("<b><h2>Object Menu</b></h2>");
+    header_weight1 = new QLabel("Weight 1");
+    header_weight2 = new QLabel("Weight 2");
+    main_layout->addWidget(header_main);
+    main_layout->addWidget(header_weight1);
+    main_layout->addWidget(header_weight2);
+    update_header();
 
-    // add the messages
+    // add the message area
     message_area = new QWidget;
     main_layout->addWidget(message_area);
     add_message_area();
-    reset_messages();
+    reset_messages(last_message, message_one, message_two, message_three);
+
+    // Add the tabs
+    object_tabs = new QTabWidget;
+    main_layout->addWidget(object_tabs);
+    floor_tab = new QWidget;
+    inven_tab = new QWidget;
+    equip_tab = new QWidget;
+    object_tabs->addTab(floor_tab, "&Floor Items");
+    object_tabs->addTab(inven_tab, "&Inventory");
+    object_tabs->addTab(equip_tab, "&Equipment");
+
+    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    // Add the list of floor items
+    QVBoxLayout *floor_vlay = new QVBoxLayout;
+    floor_tab->setLayout(floor_vlay);
+    header_floor = new QLabel(QString("<b><h1>Floor Items</b></h1>"));
+    header_floor->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    floor_vlay->addWidget(header_floor);
+    floor_list = new QGridLayout;
+    update_floor_list(floor_list, buttons);
+    floor_vlay->addLayout(floor_list);
+    floor_vlay->addSpacerItem(vspacer);
+
+
+    // Add the list of inventory
+    QVBoxLayout *inven_vlay = new QVBoxLayout;
+    inven_tab->setLayout(inven_vlay);
+    header_inven = new QLabel(QString("<b><h1>Inventory</b></h1>"));
+    header_inven->setAlignment(Qt::AlignCenter | Qt::AlignTop);
+    inven_vlay->addWidget(header_inven);
+    inven_list = new QGridLayout;
+    update_inven_list(inven_list, buttons);
+    inven_vlay->addLayout(inven_list);
+    inven_vlay->addSpacerItem(vspacer);
 
     // Add the equipment
+    QVBoxLayout *equip_and_quiver_vlay = new QVBoxLayout;
+    QVBoxLayout *equip_vlay = new QVBoxLayout;
+    equip_tab->setLayout(equip_and_quiver_vlay);
+    equip_and_quiver_vlay->addLayout(equip_vlay);
+    header_equip = new QLabel(QString("<b><h1>Equipment</b></h1>"));
+    header_equip->setAlignment(Qt::AlignCenter | Qt::AlignTop);
+    equip_vlay->addWidget(header_equip);
     equip_list = new QGridLayout;
-    update_equip_list(buttons);
-    main_layout->addLayout(equip_list);
+    update_equip_list(equip_list, buttons);
+    equip_vlay->addLayout(equip_list);
 
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    main_layout->addItem(spacer);
-
-    header_quiver = new QLabel(QString("<b><h1>Quiver</b></h1>"));
-    header_quiver->setAlignment(Qt::AlignCenter);
-    main_layout->addWidget(header_quiver);
+    // Add a space
+    QLabel *empty_space = new QLabel("empty");
+    empty_space->setText(" ");
+    equip_and_quiver_vlay->addWidget(empty_space);
 
     // Add the quiver
+    QVBoxLayout *quiver_vlay = new QVBoxLayout;
+    equip_and_quiver_vlay->addLayout(quiver_vlay);
+    header_quiver = new QLabel(QString("<b><h1>Quiver</b></h1>"));
+    header_quiver->setAlignment(Qt::AlignCenter | Qt::AlignTop);
+    quiver_vlay->addWidget(header_quiver);
     quiver_list = new QGridLayout;
-    update_quiver_list(buttons);
-    main_layout->addLayout(quiver_list);
+    update_quiver_list(quiver_list, buttons);
+    quiver_vlay->addLayout(quiver_list);
+    equip_and_quiver_vlay->addSpacerItem(vspacer);
+
+    main_layout->addSpacerItem(vspacer);
 
     QPushButton *btn_close = new QPushButton("Close");
     main_layout->addWidget(btn_close);
     connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
 
     setLayout(main_layout);
-    setWindowTitle(tr("Equipment Menu"));
+    setWindowTitle(tr("Object Menu"));
 
     this->exec();
 }
 
 
-
-void do_cmd_equipment(void)
+void do_cmd_all_objects(void)
 {
     p_ptr->in_menu = TRUE;
-    EquipDialog(TRUE);
+    AllObjectsDialog(TRUE);
     p_ptr->in_menu = FALSE;
-
 }
 
-void EquipDialog::update_dialog()
-{
-    update_equip_header();
-    update_equip_list(TRUE);
-    update_quiver_list(TRUE);
-    reset_messages();
-}
 
-void EquipDialog::close_dialog()
-{
-    this->reject();
-}
+

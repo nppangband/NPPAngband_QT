@@ -6,14 +6,11 @@
 
 #include <src/player_command.h> //includes npp.h
 #include "src/utilities.h"
-#include <QDialog>
 #include <QVBoxLayout>
-#include <QGridLayout>
 #include <QLabel>
 #include <QVariant>
 #include <QPushButton>
-#include <QString>
-
+#include <QTabWidget>
 
 
 /*
@@ -73,11 +70,7 @@ public:
     void add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col);
 
 
-    void add_message_area();
-    void reset_messages();
-
-
-     // Functions to determine which buttons to add for each item.
+    // Functions to determine which buttons to add for each item.
     bool should_add_takeoff(object_type *o_ptr, s16b item_slot);
     bool should_add_wield(object_type *o_ptr, s16b item_slot);
     bool should_add_swap(object_type *o_ptr, s16b item_slot);
@@ -95,7 +88,7 @@ public:
     bool should_add_activate(object_type *o_ptr, s16b item_slot);
     bool should_add_throw(object_type *o_ptr, s16b item_slot);
 
-    // Add the buttons
+    // Functions to add the buttons
     void do_buttons(QGridLayout *lay, object_type *o_ptr, s16b item_slot, s16b row, s16b col);
     void add_examine(QGridLayout *lay, s16b item_slot, int row, int col);
     void add_takeoff(QGridLayout *lay, s16b item_slot, int row, int col);
@@ -118,13 +111,12 @@ public:
 
     s16b idx_from_click(QString id);
 
-    // Add message area
-    QWidget *message_area;
-    QVBoxLayout *lay_message;
-    QLabel  *message_one;
-    QLabel  *message_two;
-    QLabel  *message_three;
-    message_type last_message;
+    void reset_messages(message_type last_message, QLabel *message_one, QLabel *message_two, QLabel *message_three);
+
+    void update_floor_list(QGridLayout *lay, bool buttons);
+    void update_inven_list(QGridLayout *lay, bool buttons);
+    void update_equip_list(QGridLayout *lay, bool buttons);
+    void update_quiver_list(QGridLayout *lay, bool buttons);
 
     public slots:
     void object_click();
@@ -136,60 +128,67 @@ public:
     virtual void close_dialog() {};
 };
 
-class FloorDialog : public ObjectDialog
+class AllObjectsDialog : public ObjectDialog
 {
     Q_OBJECT
 private:
+
+    void update_header();
+    void update_all();
+
+    // Header area
+    QLabel *header_main;
+    QLabel *header_weight1;
+    QLabel *header_weight2;
+
+    // Message area
+    QWidget *message_area;
+    QVBoxLayout *lay_message;
+    QLabel  *message_one;
+    QLabel  *message_two;
+    QLabel  *message_three;
+    message_type last_message;
+
+    void add_message_area();
+    void confirm_tabs();
+
+    QTabWidget *object_tabs;
+    QWidget *floor_tab;
+    QWidget *inven_tab;
+    QWidget *equip_tab;
+
+    bool allow_floor;
+    bool allow_inven;
+    bool allow_equip;
+    bool allow_quiver;
+
+    // Layouts and labels
+    QVBoxLayout *floor_vlay;
+    QVBoxLayout *inven_vlay;
+    QVBoxLayout *equip_and_quiver_vlay;
+    QVBoxLayout *equip_vlay;
+    QVBoxLayout *quiver_vlay;
+
     QGridLayout *floor_list;
-    QLabel *header_floor;
-    void update_floor_header();
-    void update_floor_list(bool buttons);
-
-public:
-    explicit FloorDialog(bool buttons);
-    void update_dialog();
-    void close_dialog();
-
-
-};
-
-class InvenDialog : public ObjectDialog
-{
-    Q_OBJECT
-private:
     QGridLayout *inven_list;
-    QLabel *header_inven;
-    void update_inven_header();
-    void update_inven_list(bool buttons);
-
-public:
-    explicit InvenDialog(bool buttons);
-    void update_dialog();
-    void close_dialog();
-
-};
-
-
-
-class EquipDialog : public ObjectDialog
-{
-    Q_OBJECT
-
-private:
     QGridLayout *equip_list;
     QGridLayout *quiver_list;
+
+    QLabel *header_floor;
+    QLabel *header_inven;
     QLabel *header_equip;
     QLabel *header_quiver;
-    void update_equip_header();
-    void update_equip_list(bool buttons);
-    void update_quiver_list(bool buttons);
+
+
+
 
 public:
-    explicit EquipDialog(bool buttons);
+    explicit AllObjectsDialog(bool buttons);
     void update_dialog();
     void close_dialog();
 
 
 };
+
 
 #endif // PLAYER_EQUIPMENT_H

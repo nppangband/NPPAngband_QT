@@ -795,9 +795,6 @@ static bool get_item_allow(int item, bool is_harmless)
  * when this function is first called, when it is equal to zero, which will
  * cause it to be set to USE_INVEN.
  *
- * This function has been largely rewritten for FAangband 0.3.2 using
- * Pete Mack's menu code.
- *
  * Assumes the item is on the player square
  */
 bool get_item(int *cp, QString pmt, QString str, int mode)

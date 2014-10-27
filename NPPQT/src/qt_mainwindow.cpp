@@ -2220,7 +2220,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_E:
         {
-            if (shift_key)          do_cmd_inventory();
+            if (shift_key)          do_cmd_all_objects();
             else do_cmd_use_item();
             return;
         }
