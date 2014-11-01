@@ -128,6 +128,15 @@ public:
     virtual void close_dialog() {};
 };
 
+// The tab order
+enum
+{
+    TAB_FLOOR = 0,
+    TAB_INVEN,
+    TAB_EQUIP,
+    TABS_MAX
+};
+
 class AllObjectsDialog : public ObjectDialog
 {
     Q_OBJECT
@@ -135,6 +144,7 @@ private:
 
     void update_header();
     void update_all();
+
 
     // Header area
     QLabel *header_main;
@@ -150,7 +160,7 @@ private:
     message_type last_message;
 
     void add_message_area();
-    void confirm_tabs();
+
 
     QTabWidget *object_tabs;
     QWidget *floor_tab;
@@ -161,6 +171,16 @@ private:
     bool allow_inven;
     bool allow_equip;
     bool allow_quiver;
+
+    int floor_tab_idx;
+    int inven_tab_idx;
+    int equip_tab_idx;
+
+    void confirm_tabs();
+    void hide_or_show_tabs();
+    void update_active_tabs();
+
+    bool no_objects();
 
     // Layouts and labels
     QVBoxLayout *floor_vlay;
@@ -178,6 +198,9 @@ private:
     QLabel *header_inven;
     QLabel *header_equip;
     QLabel *header_quiver;
+    QLabel *empty_space;
+
+
 
 
 

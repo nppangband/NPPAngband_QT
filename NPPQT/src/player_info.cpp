@@ -186,7 +186,7 @@ bool ObjectDialog::should_add_cast(object_type *o_ptr, s16b item_slot)
 
 bool ObjectDialog::should_add_destroy(object_type *o_ptr, s16b item_slot)
 {
-    (void)item_slot;
+    if (!item_is_available(item_slot, NULL, USE_FLOOR | USE_INVEN)) return (FALSE);
     return (!o_ptr->is_known_artifact());
 }
 
@@ -652,8 +652,6 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool buttons)
 {
     int row = 0;
 
-    bool floor_items = FALSE;
-
     clear_grid_layout(lay);
 
     s16b this_o_idx, next_o_idx = 0;
@@ -670,16 +668,7 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool buttons)
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, -this_o_idx, row, col++);
 
-        floor_items = TRUE;
-
         ++row;
-    }
-
-    if (!floor_items)
-    {
-        QLabel *no_floor = new QLabel("<b><big>No Floor Items</b></big>");
-        no_floor->setAlignment(Qt::AlignCenter);
-        lay->addWidget(no_floor, 0, 0);
     }
 }
 
@@ -691,8 +680,6 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool buttons)
 void ObjectDialog::update_inven_list(QGridLayout *lay, bool buttons)
 {
     int row = 0;
-
-    bool inven_items = FALSE;
 
     clear_grid_layout(lay);
 
@@ -708,16 +695,7 @@ void ObjectDialog::update_inven_list(QGridLayout *lay, bool buttons)
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, i, row, col++);
 
-        inven_items = TRUE;
-
         ++row;
-    }
-
-    if (!inven_items)
-    {
-        QLabel *no_inven = new QLabel("<b><big>Empty Backpack</b></big>");
-        no_inven->setAlignment(Qt::AlignCenter);
-        lay->addWidget(no_inven, 0, 0);
     }
 }
 
@@ -767,7 +745,6 @@ void ObjectDialog::update_quiver_list(QGridLayout *lay, bool buttons)
     int row = 0;
 
     clear_grid_layout(lay);
-    bool quiver_items = FALSE;
 
     for (int i = QUIVER_START; i < QUIVER_END; i++)
     {
@@ -787,18 +764,8 @@ void ObjectDialog::update_quiver_list(QGridLayout *lay, bool buttons)
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, i, row, col++);
 
-        quiver_items = TRUE;
-
         ++row;
     }
-
-    if (!quiver_items)
-    {
-        QLabel *no_quiver = new QLabel("<b><big>Empty Quiver</b></big>");
-        no_quiver->setAlignment(Qt::AlignCenter);
-        lay->addWidget(no_quiver, 0, 0);
-    }
-
 }
 
 
@@ -909,6 +876,17 @@ void AllObjectsDialog::confirm_tabs()
 }
 
 
+
+bool AllObjectsDialog::no_objects()
+{
+    if (allow_floor) return (FALSE);
+    if (allow_inven) return (FALSE);
+    if (allow_equip) return (FALSE);
+    if (allow_quiver) return (FALSE);
+    return (TRUE);
+}
+
+
 void AllObjectsDialog::close_dialog()
 {
     this->reject();
@@ -917,24 +895,96 @@ void AllObjectsDialog::close_dialog()
 void AllObjectsDialog::update_dialog()
 {
     update_header();
+    confirm_tabs();
+
+    if (no_objects())
+    {
+        close_dialog();
+        return;
+    }
+
     update_floor_list(floor_list, TRUE);
     update_inven_list(inven_list, TRUE);
     update_equip_list(equip_list, TRUE);
     update_quiver_list(quiver_list, TRUE);
     reset_messages(last_message, message_one, message_two, message_three);
+    hide_or_show_tabs();
+}
+
+void AllObjectsDialog::update_active_tabs()
+{
+    floor_tab_idx = object_tabs->indexOf(floor_tab);
+    inven_tab_idx = object_tabs->indexOf(inven_tab);
+    equip_tab_idx = object_tabs->indexOf(equip_tab);
+}
+
+/*
+ * Figure out which tabs to show or hide.  Try to keep
+ * the current activated tab activated.
+ * */
+void AllObjectsDialog::hide_or_show_tabs()
+{
+    confirm_tabs();
+    if (no_objects())
+    {
+        //Paranoia
+        close_dialog();
+        return;
+    }
+
+    int active_tab = object_tabs->currentIndex();
+
+    update_active_tabs();
+
+    int current_tab = TABS_MAX;
+
+    // Fine the current active tab.
+    if (active_tab < 0) current_tab = TAB_INVEN;
+    else if (floor_tab_idx == active_tab) current_tab = TAB_FLOOR;
+    else if (inven_tab_idx == active_tab) current_tab = TAB_INVEN;
+    else if (equip_tab_idx == active_tab) current_tab = TAB_EQUIP;
+    else
+    {
+        //extreme paranoia
+        close_dialog();
+        return;
+    }
+
+    object_tabs->clear();
+
+    if (allow_floor) object_tabs->addTab(floor_tab, "&Floor Items");
+    if (allow_inven) object_tabs->addTab(inven_tab, "&Inventory");
+    if (allow_equip || allow_quiver)
+    {
+        object_tabs->addTab(equip_tab, "&Equipment");
+        if (allow_equip) header_equip->show();
+        else header_equip->hide();
+        if (allow_quiver) header_quiver->show();
+        else header_quiver->hide();
+        if (allow_equip && allow_quiver) empty_space->show();
+        else empty_space->hide();
+    }
+
+    update_active_tabs();
+    if (current_tab == TAB_FLOOR && allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
+    else if (current_tab == TAB_INVEN && allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
+    else if (current_tab == TAB_EQUIP && allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
+    else if (allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
+    else if (allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
+    else if (allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
+    else object_tabs->setCurrentIndex(0);
 }
 
 
 AllObjectsDialog::AllObjectsDialog(bool buttons)
 {
-
-
     confirm_tabs();
 
     // Handle no available objects.
-    if (!allow_floor && !allow_inven && !allow_equip && !allow_quiver)
+    if (no_objects())
     {
         pop_up_message_box("You have no objects to manage");
+        return;
     }
 
     // Set up the main layout
@@ -955,15 +1005,12 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     add_message_area();
     reset_messages(last_message, message_one, message_two, message_three);
 
-    // Add the tabs
+    // Set up the tabs
     object_tabs = new QTabWidget;
     main_layout->addWidget(object_tabs);
     floor_tab = new QWidget;
     inven_tab = new QWidget;
     equip_tab = new QWidget;
-    object_tabs->addTab(floor_tab, "&Floor Items");
-    object_tabs->addTab(inven_tab, "&Inventory");
-    object_tabs->addTab(equip_tab, "&Equipment");
 
     QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -1003,7 +1050,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     equip_vlay->addLayout(equip_list);
 
     // Add a space
-    QLabel *empty_space = new QLabel("empty");
+    empty_space = new QLabel("empty");
     empty_space->setText(" ");
     equip_and_quiver_vlay->addWidget(empty_space);
 
@@ -1023,6 +1070,8 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     QPushButton *btn_close = new QPushButton("Close");
     main_layout->addWidget(btn_close);
     connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
+
+    hide_or_show_tabs();
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Menu"));
