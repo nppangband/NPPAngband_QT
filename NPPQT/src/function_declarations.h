@@ -341,6 +341,9 @@ extern bool race_breathes_element(monster_race *r_ptr, int gf_type);
 extern bool race_similar_breaths(monster_race *r_ptr, monster_race *r2_ptr);
 extern bool race_similar_monsters(int m_idx, int m2y, int m2x);
 
+// object_all_menu.cpp
+extern void do_cmd_all_objects(void);
+
 /* object_desc.c */
 extern QString strip_name(int k_idx);
 extern QString object_desc(object_type *o_ptr, byte mode);
@@ -525,7 +528,7 @@ extern void load_player_ghost_file(void);
 extern void save_player_ghost_file(void);
 
 // player_info.cpp
-extern void do_cmd_all_objects(void);
+
 
 // player_process
 extern void process_player_terrain_damage(void);

@@ -48,6 +48,7 @@ SOURCES +=  src/qt_main.cpp\
             src/mon_ranged_attacks.cpp \
             src/mon_util.cpp \
             src/nppdialog.cpp \
+            src/object_all_menu.cpp \
             src/object_classes.cpp \
             src/object_desc.cpp \
             src/object_dialog.cpp \
@@ -91,6 +92,7 @@ SOURCES +=  src/qt_main.cpp\
 
 
 
+
 HEADERS  += src/qt_mainwindow.h\
             src/npp.h\
             src/defines.h\
@@ -129,7 +131,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/wizard_mode.h \
             src/player_death.h \
             src/dun_traps.h \
-            src/object_dialog.h
+            src/object_dialog.h \
+            src/object_all_menu.h
 
 
 
