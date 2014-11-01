@@ -66,23 +66,7 @@ void ObjectSelectDialog::keyPressEvent(QKeyEvent* which_key)
     }
 }
 
-// Receives the number of the button pressed.
-void ObjectSelectDialog::help_press(QString num_string)
-{
-    int help_obj_value = num_string.toInt();
 
-    int object_num = get_selected_object(help_obj_value);
-
-    object_type *o_ptr;
-
-    /* Inventory or floor */
-    if (object_num >= 0)
-        o_ptr = &inventory[object_num];
-    else
-        o_ptr = &o_list[0 - object_num];
-
-    object_info_screen(o_ptr);
-}
 
 // Format the "equipment description", ex. "about body"
 QString ObjectSelectDialog::add_equip_use(int slot)
@@ -95,19 +79,6 @@ QString ObjectSelectDialog::add_equip_use(int slot)
     return (equip_add);
 }
 
-void ObjectSelectDialog::track_longest_object_name(object_type *o_ptr, byte which_tab, int slot)
-{
-    QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-    //Add description for equipment.
-    if (which_tab == TAB_EQUIP)
-    {
-        o_name.prepend(add_equip_use(slot));
-    }
-
-    if (o_name.length() <= max_object_desc_length) return;
-    max_object_desc_length = o_name.length();
-}
 
 QString ObjectSelectDialog::format_button_name(QChar char_index, object_type *o_ptr, byte which_tab, int slot)
 {
@@ -119,8 +90,6 @@ QString ObjectSelectDialog::format_button_name(QChar char_index, object_type *o_
         o_name.prepend(add_equip_use(slot));
     }
 
-
-    while (o_name.length() < max_object_desc_length)o_name.append(" ");
     QString final_name = (QString("%1) %2") .arg(char_index) .arg(o_name));
 
     return (final_name);
@@ -154,8 +123,6 @@ void ObjectSelectDialog::floor_items_count(int mode, int sq_y, int sq_x)
         /* Accept this item */
         floor_items.append(this_o_idx);
         allow_floor = TRUE;
-
-        track_longest_object_name(o_ptr, TAB_FLOOR, this_o_idx);
     }
 }
 
@@ -208,21 +175,13 @@ void ObjectSelectDialog::build_floor_tab()
         button_values->setMapping(button, text_num);
 
         // Add a weight button
-        QLabel *weight_label = new QLabel(format_object_weight(o_ptr));
-        weight_label->setAlignment(Qt::AlignRight);
+        add_weight_label(object_layout, o_ptr, (i+1), 1);
 
         // Add a help button to put up a description of the object.
-        QPushButton *help_button = new QPushButton(text_num);
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setText(QString(""));
-        connect(help_button, SIGNAL(clicked()), help_values, SLOT(map()));
-        help_values->setMapping(help_button, text_num);
+        add_examine(object_layout, -floor_items[i], (i+1), 2);
 
         // Add both buttons to the appropriate layout.
         object_layout->addWidget(button, (i+1), 0);
-        object_layout->addWidget(weight_label, (i+1), 1);
-        weight_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        object_layout->addWidget(help_button, (i+1), 2);
 
         // Keep track of the number of buttons.
         num_buttons++;
@@ -251,11 +210,6 @@ void ObjectSelectDialog::inven_items_count(int mode)
         /* Accept this item */
         inven_items.append(i);
         allow_inven = TRUE;
-
-        /* Get the object */
-        object_type *o_ptr = &inventory[i];
-
-        track_longest_object_name(o_ptr, TAB_INVEN, i);
     }
 }
 
@@ -304,21 +258,13 @@ void ObjectSelectDialog::build_inven_tab()
         button_values->setMapping(button, text_num);
 
         // Add a weight button
-        QLabel *weight_label = new QLabel(format_object_weight(o_ptr));
-        weight_label->setAlignment(Qt::AlignRight);
+        add_weight_label(object_layout, o_ptr, (i+1), 1);
 
         // Add a help button to put up a description of the object.
-        QPushButton *help_button = new QPushButton(text_num);
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setText(QString(""));
-        connect(help_button, SIGNAL(clicked()), help_values, SLOT(map()));
-        help_values->setMapping(help_button, text_num);
+        add_examine(object_layout, inven_items[i], (i+1), 2);
 
         // Add both buttons to the appropriate layout.
         object_layout->addWidget(button, (i+1), 0);
-        object_layout->addWidget(weight_label, (i+1), 1);
-        weight_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        object_layout->addWidget(help_button, (i+1), 2);
 
         // Keep track of the number of buttons.
         num_buttons++;
@@ -346,11 +292,6 @@ void ObjectSelectDialog::equip_items_count(int mode)
         /* Accept this item */
         equip_items.append(i);
         allow_equip = TRUE;
-
-        /* Get the object */
-        object_type *o_ptr = &inventory[i];
-
-        track_longest_object_name(o_ptr, TAB_EQUIP, i);
     }
 }
 
@@ -399,21 +340,13 @@ void ObjectSelectDialog::build_equip_tab()
         button_values->setMapping(button, text_num);
 
         // Add a weight button
-        QLabel *weight_label = new QLabel(format_object_weight(o_ptr));
-        weight_label->setAlignment(Qt::AlignRight);
+        add_weight_label(object_layout, o_ptr, (i+1), 1);
 
         // Add a help button to put up a description of the object.
-        QPushButton *help_button = new QPushButton(text_num);
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setText(QString(""));
-        connect(help_button, SIGNAL(clicked()), help_values, SLOT(map()));
-        help_values->setMapping(help_button, text_num);
+        add_examine(object_layout, equip_items[i], (i+1), 2);
 
         // Add both buttons to the appropriate layout.
         object_layout->addWidget(button, (i+1), 0);
-        object_layout->addWidget(weight_label, (i+1), 1);
-        weight_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        object_layout->addWidget(help_button, (i+1), 2);
 
         // Keep track of the number of buttons.
         num_buttons++;
@@ -442,11 +375,6 @@ void ObjectSelectDialog::quiver_items_count(int mode)
         /* Accept this item */
         quiver_items.append(i);
         allow_quiver = TRUE;
-
-        /* Get the object */
-        object_type *o_ptr = &inventory[i];
-
-        track_longest_object_name(o_ptr, TAB_QUIVER, i);
     }
 
     return;
@@ -497,21 +425,13 @@ void ObjectSelectDialog::build_quiver_tab()
         button_values->setMapping(button, text_num);
 
         // Add a weight button
-        QLabel *weight_label = new QLabel(format_object_weight(o_ptr));
-        weight_label->setAlignment(Qt::AlignRight);
+        add_weight_label(object_layout, o_ptr, (i+1), 1);
 
         // Add a help button to put up a description of the object.
-        QPushButton *help_button = new QPushButton(text_num);
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setText(QString(""));
-        connect(help_button, SIGNAL(clicked()), help_values, SLOT(map()));
-        help_values->setMapping(help_button, text_num);
+        add_examine(object_layout, quiver_items[i], (i+1), 2);
 
         // Add both buttons to the appropriate layout.
         object_layout->addWidget(button, (i+1), 0);
-        object_layout->addWidget(weight_label, (i+1), 1);
-        weight_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        object_layout->addWidget(help_button, (i+1), 2);
 
         // Keep track of the number of buttons.
         num_buttons++;
@@ -633,14 +553,11 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     main_prompt->setAlignment(Qt::AlignCenter);
 
     button_values = new QSignalMapper(this);
-    help_values = new QSignalMapper(this);
     connect(button_values, SIGNAL(mapped(QString)), this, SLOT(button_press(QString)));
-    connect(help_values, SIGNAL(mapped(QString)), this, SLOT(help_press(QString)));
 
     // Start with a clean slate
     tab_order.clear();
     num_buttons = 0;
-    max_object_desc_length = 0;
 
     // First, find the eligible objects
     floor_items_count(mode, sq_y, sq_x);
@@ -660,9 +577,6 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
         /* Done here */
         return;
     }
-
-    // formatting detail
-    max_object_desc_length += 2;
 
     // Build, then add the tabs as necessary
     if (allow_floor)

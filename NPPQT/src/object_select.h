@@ -1,7 +1,7 @@
 #ifndef OBJECT_SELECT_H
 #define OBJECT_SELECT_H
 
-#include "src/npp.h"
+#include "src/object_dialog.h" // includes npp.h
 #include <QTabWidget>
 #include <QDialogButtonBox>
 #include <QSignalMapper>
@@ -21,7 +21,7 @@ class QTabWidget;
 
 
 
-class ObjectSelectDialog : public QDialog
+class ObjectSelectDialog : public ObjectDialog
 {
     Q_OBJECT
 
@@ -35,7 +35,6 @@ protected:
 private slots:
     // Receives the number of the button pressed.
     void button_press(QString num_string);
-    void help_press(QString num_string);
     void on_dialog_buttons_pressed(QAbstractButton *);
 
 private:
@@ -51,7 +50,6 @@ private:
     // Keeps track of which button goes with which object.
     // Is sent by a signal to the button_press function
     QSignalMapper* button_values;
-    QSignalMapper* help_values;
 
     // Functions to build the actual tabs
     void build_floor_tab();
@@ -91,7 +89,6 @@ private:
     int selected_button;
     int num_buttons;
     bool object_found;
-    int max_object_desc_length;
 
 };
 
