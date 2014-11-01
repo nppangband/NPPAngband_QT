@@ -153,10 +153,10 @@ void AllObjectsDialog::update_dialog()
         return;
     }
 
-    update_floor_list(floor_list, TRUE);
-    update_inven_list(inven_list, TRUE);
-    update_equip_list(equip_list, TRUE);
-    update_quiver_list(quiver_list, TRUE);
+    update_floor_list(floor_list, FALSE, TRUE);
+    update_inven_list(inven_list, FALSE, TRUE);
+    update_equip_list(equip_list, FALSE, TRUE);
+    update_quiver_list(quiver_list, FALSE, TRUE);
     reset_messages(last_message, message_one, message_two, message_three);
     hide_or_show_tabs();
 }
@@ -271,7 +271,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_floor->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     floor_vlay->addWidget(header_floor);
     floor_list = new QGridLayout;
-    update_floor_list(floor_list, buttons);
+    update_floor_list(floor_list, FALSE, buttons);
     floor_vlay->addLayout(floor_list);
     floor_vlay->addSpacerItem(vspacer);
 
@@ -283,7 +283,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_inven->setAlignment(Qt::AlignCenter | Qt::AlignTop);
     inven_vlay->addWidget(header_inven);
     inven_list = new QGridLayout;
-    update_inven_list(inven_list, buttons);
+    update_inven_list(inven_list, FALSE, buttons);
     inven_vlay->addLayout(inven_list);
     inven_vlay->addSpacerItem(vspacer);
 
@@ -296,7 +296,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_equip->setAlignment(Qt::AlignCenter | Qt::AlignTop);
     equip_vlay->addWidget(header_equip);
     equip_list = new QGridLayout;
-    update_equip_list(equip_list, buttons);
+    update_equip_list(equip_list, FALSE, buttons);
     equip_vlay->addLayout(equip_list);
 
     // Add a space
@@ -311,7 +311,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_quiver->setAlignment(Qt::AlignCenter | Qt::AlignTop);
     quiver_vlay->addWidget(header_quiver);
     quiver_list = new QGridLayout;
-    update_quiver_list(quiver_list, buttons);
+    update_quiver_list(quiver_list, FALSE, buttons);
     quiver_vlay->addLayout(quiver_list);
     equip_and_quiver_vlay->addSpacerItem(vspacer);
 

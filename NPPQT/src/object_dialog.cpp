@@ -648,7 +648,7 @@ void ObjectDialog::reset_messages(message_type last_message, QLabel *message_one
  * Floor Layout
  *
  */
-void ObjectDialog::update_floor_list(QGridLayout *lay, bool buttons)
+void ObjectDialog::update_floor_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
@@ -663,7 +663,7 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool buttons)
 
         int col = 0;
 
-        add_letter_label(lay, QChar('f'), this_o_idx, row, col++);
+        if (label) add_letter_label(lay, QChar('f'), this_o_idx, row, col++);
         add_object_button(lay, o_ptr, QChar('f'), this_o_idx, row, col++);
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, -this_o_idx, row, col++);
@@ -677,7 +677,7 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool buttons)
  * INVENTORY TAB
  *
  */
-void ObjectDialog::update_inven_list(QGridLayout *lay, bool buttons)
+void ObjectDialog::update_inven_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
@@ -690,7 +690,7 @@ void ObjectDialog::update_inven_list(QGridLayout *lay, bool buttons)
 
         int col = 0;
 
-        add_letter_label(lay, QChar('i'), i, row, col++);
+        if (label) add_letter_label(lay, QChar('i'), i, row, col++);
         add_object_button(lay, o_ptr, QChar('i'), i, row, col++);
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, i, row, col++);
@@ -704,7 +704,7 @@ void ObjectDialog::update_inven_list(QGridLayout *lay, bool buttons)
  * EQUIPMENT TAB
  *
  */
-void ObjectDialog::update_equip_list(QGridLayout *lay, bool buttons)
+void ObjectDialog::update_equip_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
@@ -719,7 +719,7 @@ void ObjectDialog::update_equip_list(QGridLayout *lay, bool buttons)
 
         int col = 0;
 
-        add_letter_label(lay, QChar('e'), i, row, col++);
+        if (label) add_letter_label(lay, QChar('e'), i, row, col++);
         add_plain_label(lay, mention_use(i), row, col++);
         if (o_ptr->k_idx)
         {
@@ -740,7 +740,7 @@ void ObjectDialog::update_equip_list(QGridLayout *lay, bool buttons)
 }
 
 
-void ObjectDialog::update_quiver_list(QGridLayout *lay, bool buttons)
+void ObjectDialog::update_quiver_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
@@ -757,7 +757,7 @@ void ObjectDialog::update_quiver_list(QGridLayout *lay, bool buttons)
 
         int col = 0;
 
-        add_letter_label(lay, QChar('e'), i, row, col++);
+        if (label) add_letter_label(lay, QChar('e'), i, row, col++);
         add_plain_label(lay, mention_use(i), row, col++);
 
         add_object_button(lay, o_ptr, QChar('e'), i, row, col++);

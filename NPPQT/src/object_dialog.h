@@ -109,10 +109,10 @@ public:
 
     void reset_messages(message_type last_message, QLabel *message_one, QLabel *message_two, QLabel *message_three);
 
-    void update_floor_list(QGridLayout *lay, bool buttons);
-    void update_inven_list(QGridLayout *lay, bool buttons);
-    void update_equip_list(QGridLayout *lay, bool buttons);
-    void update_quiver_list(QGridLayout *lay, bool buttons);
+    void update_floor_list(QGridLayout *lay, bool label, bool buttons);
+    void update_inven_list(QGridLayout *lay, bool label, bool buttons);
+    void update_equip_list(QGridLayout *lay, bool label, bool buttons);
+    void update_quiver_list(QGridLayout *lay, bool label, bool buttons);
 
     public slots:
     void object_click();
