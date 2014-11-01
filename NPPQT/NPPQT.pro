@@ -50,6 +50,7 @@ SOURCES +=  src/qt_main.cpp\
             src/nppdialog.cpp \
             src/object_classes.cpp \
             src/object_desc.cpp \
+            src/object_dialog.cpp \
             src/object_hooks.cpp \
             src/object_info.cpp \
             src/object_make.cpp \
@@ -86,6 +87,7 @@ SOURCES +=  src/qt_main.cpp\
             src/timed.cpp \
             src/utilities.cpp \
             src/wizard_mode.cpp
+
 
 
 
@@ -126,7 +128,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/wizard_mode.h \
             src/player_death.h \
-            src/dun_traps.h
+            src/dun_traps.h \
+            src/object_dialog.h
 
 
 
