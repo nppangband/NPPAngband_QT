@@ -168,6 +168,9 @@ static void death_knowledge(void)
 
         /* Fully known */
         o_ptr->ident |= (IDENT_MENTAL);
+
+        /* Extract the flags */
+        o_ptr->update_object_flags();
     }
 
     /* Hack -- Recalculate bonuses */

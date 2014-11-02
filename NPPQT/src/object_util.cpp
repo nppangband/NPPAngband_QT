@@ -26,239 +26,6 @@
 
 
 
-/*Helper function for add extra flags. Adds the flags from xtra2*/
-static u32b add_xtra2_flags(u32b xtra_flags, byte xtra_size, u32b xtra_base)
-{
-    byte i;
-
-    u32b flag_check = 0x00000001L;
-
-    u32b return_flag = 0;
-
-    for (i = 0; i < xtra_size; i++)
-    {
-        /*Do we have this flag?*/
-        if (xtra_flags & flag_check)
-        {
-            /*mark it*/
-            return_flag |= xtra_base;
-        }
-
-        /*shift everything for the next check*/
-        flag_check  = flag_check << 1;
-        xtra_base  = xtra_base << 1;
-
-    }
-
-    return (return_flag);
-}
-
-
-/*
- * Obtain the "flags" for an item
- */
-static void object_flags_aux(int mode, object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native)
-{
-    object_kind *k_ptr;
-
-    if (mode == OBJECT_FLAGS_KNOWN)
-    {
-        /* Clear */
-        (*f1) = (*f2) = (*f3) = (*native) = 0L;
-
-        /* Must be identified */
-        if (!object_known_p(o_ptr)) return;
-    }
-
-    k_ptr = &k_info[o_ptr->k_idx];
-
-    /* Base object */
-    (*f1) = k_ptr->k_flags1;
-    (*f2) = k_ptr->k_flags2;
-    (*f3) = k_ptr->k_flags3;
-    (*native) = k_ptr->k_native;
-
-    if (mode == OBJECT_FLAGS_FULL)
-    {
-        /* Artifact */
-        if (o_ptr->art_num)
-        {
-            artifact_type *a_ptr = &a_info[o_ptr->art_num];
-
-            (*f1) = a_ptr->a_flags1;
-            (*f2) = a_ptr->a_flags2;
-            (*f3) = a_ptr->a_flags3;
-            (*native) = a_ptr->a_native;
-        }
-    }
-
-    /* Ego-item */
-    if (o_ptr->ego_num)
-    {
-        ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
-
-        (*f1) |= e_ptr->e_flags1;
-        (*f2) |= e_ptr->e_flags2;
-        (*f3) |= e_ptr->e_flags3;
-        (*native) |= e_ptr->e_native;
-    }
-
-    if (mode == OBJECT_FLAGS_KNOWN)
-    {
-        /* Obvious artifact flags */
-        if (o_ptr->art_num)
-        {
-            artifact_type *a_ptr = &a_info[o_ptr->art_num];
-
-            /* Obvious flags (pval) */
-            (*f1) = (a_ptr->a_flags1 & (TR1_PVAL_MASK));
-            (*f3) = (a_ptr->a_flags3 & (TR3_IGNORE_MASK));
-        }
-    }
-
-    if (mode == OBJECT_FLAGS_KNOWN)
-    {
-        bool spoil = FALSE;
-
-        /* Artifact, *ID'ed or spoiled */
-        if ((o_ptr->art_num) && (spoil || (o_ptr->ident & IDENT_MENTAL)))
-        {
-            artifact_type *a_ptr = &a_info[o_ptr->art_num];
-
-            (*f1) = a_ptr->a_flags1;
-            (*f2) = a_ptr->a_flags2;
-            (*f3) = a_ptr->a_flags3;
-            (*native) = a_ptr->a_native;
-
-        }
-
-        /* Full knowledge for *identified* objects */
-        if ((!(o_ptr->ident & IDENT_MENTAL)) &&
-            o_ptr->has_hidden_powers())	return;
-
-    }
-
-    /*hack - chests use xtra1 to store the theme, don't give additional powers to chests*/
-    if (o_ptr->tval == TV_CHEST) return;
-
-    /* Extra powers */
-    switch (o_ptr->xtra1)
-    {
-
-        case OBJECT_XTRA_STAT_SUSTAIN:
-        {
-            /* Flag 2 */
-            (*f2) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_SUSTAIN,
-                                        OBJECT_XTRA_BASE_SUSTAIN);
-            break;
-        }
-
-        case OBJECT_XTRA_TYPE_HIGH_RESIST:
-        {
-            /* Flag 2 */
-            (*f2) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_HIGH_RESIST,
-                                        OBJECT_XTRA_BASE_HIGH_RESIST);
-            break;
-        }
-
-        case OBJECT_XTRA_TYPE_POWER:
-        {
-            /* Flag 3 */
-            (*f3) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_POWER,
-                                        OBJECT_XTRA_BASE_POWER);
-            break;
-        }
-        case OBJECT_XTRA_TYPE_IMMUNITY:
-        {
-            /* Flag 2 */
-            (*f2) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_IMMUNITY,
-                                        OBJECT_XTRA_BASE_IMMUNITY);
-            break;
-        }
-        case OBJECT_XTRA_TYPE_STAT_ADD:
-        {
-            /* Flag 1 */
-            (*f1) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_STAT_ADD,
-                                        OBJECT_XTRA_BASE_STAT_ADD);
-            /*Stat add Also sustains*/
-            (*f2) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_SUSTAIN,
-                                        OBJECT_XTRA_BASE_SUSTAIN);
-            break;
-        }
-        case OBJECT_XTRA_TYPE_SLAY:
-        {
-            /* Flag 1 */
-            (*f1) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_SLAY,
-                                        OBJECT_XTRA_BASE_SLAY);
-            break;
-        }
-        case OBJECT_XTRA_TYPE_KILL:
-        {
-            /* Flag 1 */
-            (*f1) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_KILL,
-                                        OBJECT_XTRA_BASE_KILL);
-            break;
-        }
-        case OBJECT_XTRA_TYPE_BRAND:
-        {
-            /* Flag 1 */
-            (*f1) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_BRAND,
-                                        OBJECT_XTRA_BASE_BRAND);
-            /*
-             * elemental brands also provide the appropriate resist
-             * Note that the OBJECT_XTRA_SIZE_LOW_RESIST is not used.  There
-             * are only 4 base resists, but 5 base brands (+poison).  Hence the
-             * OBJECT_XTRA_SIZE_BRAND used here is deliberate and not a bug.
-             */
-            (*f2) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_BRAND,
-                                        OBJECT_XTRA_BASE_LOW_RESIST);
-
-            break;
-        }
-        case OBJECT_XTRA_TYPE_LOW_RESIST:
-        {
-            /* Flag 2 */
-            (*f2) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_LOW_RESIST,
-                                        OBJECT_XTRA_BASE_LOW_RESIST);
-            break;
-        }
-        case OBJECT_XTRA_TYPE_NATIVE:
-        {
-            /* Flag native */
-            (*native) |= add_xtra2_flags(o_ptr->xtra2, OBJECT_XTRA_SIZE_NATIVE,
-                                        OBJECT_XTRA_BASE_NATIVE);
-            break;
-        }
-    }
-
-    /*Now add the ignores for any xtra above*/
-    if ((*f2) & (TR2_RES_ACID))	(*f3) |= TR3_IGNORE_ACID;
-    if ((*f2) & (TR2_RES_ELEC))	(*f3) |= TR3_IGNORE_ELEC;
-    if ((*f2) & (TR2_RES_FIRE))	(*f3) |= TR3_IGNORE_FIRE;
-    if ((*f2) & (TR2_RES_COLD))	(*f3) |= TR3_IGNORE_COLD;
-    if ((*native) & (TN1_NATIVE_LAVA | TN1_NATIVE_FIRE)) (*f3) |= TR3_IGNORE_FIRE;
-    if ((*native) & (TN1_NATIVE_ICE)) (*f3) |= TR3_IGNORE_COLD;
-    if ((*native) & (TN1_NATIVE_ACID)) (*f3) |= TR3_IGNORE_ACID;
-}
-
-
-
-/*
- * Obtain the "flags" for an item
- */
-void object_flags(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native)
-{
-    object_flags_aux(OBJECT_FLAGS_FULL, o_ptr, f1, f2, f3, native);
-}
-
-/*
- * Obtain the "flags" for an item which are known to the player
- */
-void object_flags_known(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native)
-{
-    object_flags_aux(OBJECT_FLAGS_KNOWN, o_ptr, f1, f2, f3, native);
-}
-
 
 
 /*
@@ -1425,13 +1192,10 @@ int get_obj_num_prep(void)
  */
 bool is_blessed(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
-
-    /* Get the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Is the object blessed? */
-    return ((f3 & TR3_BLESSED) ? TRUE : FALSE);
+    if (o_ptr->obj_flags_3 & (TR3_BLESSED)) return (TRUE);
+    return (FALSE);
+
 }
 
 
@@ -1503,8 +1267,6 @@ static s32b object_value_real(object_type *o_ptr)
 {
     s32b value;
 
-    u32b f1, f2, f3, fn;
-
     object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
     /* Hack -- "worthless" items */
@@ -1512,9 +1274,6 @@ static s32b object_value_real(object_type *o_ptr)
 
     /* Base cost */
     value = k_ptr->cost;
-
-    /* Extract some flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
     /* Artifact */
     if (o_ptr->art_num)
@@ -1573,29 +1332,29 @@ static s32b object_value_real(object_type *o_ptr)
             if (!o_ptr->pval) break;
 
             /* Give credit for stat bonuses */
-            if (f1 & (TR1_STR)) value += (o_ptr->pval * 200L);
-            if (f1 & (TR1_INT)) value += (o_ptr->pval * 200L);
-            if (f1 & (TR1_WIS)) value += (o_ptr->pval * 200L);
-            if (f1 & (TR1_DEX)) value += (o_ptr->pval * 200L);
-            if (f1 & (TR1_CON)) value += (o_ptr->pval * 200L);
-            if (f1 & (TR1_CHR)) value += (o_ptr->pval * 200L);
+            if (o_ptr->obj_flags_1 & (TR1_STR)) value += (o_ptr->pval * 200L);
+            if (o_ptr->obj_flags_1 & (TR1_INT)) value += (o_ptr->pval * 200L);
+            if (o_ptr->obj_flags_1 & (TR1_WIS)) value += (o_ptr->pval * 200L);
+            if (o_ptr->obj_flags_1 & (TR1_DEX)) value += (o_ptr->pval * 200L);
+            if (o_ptr->obj_flags_1 & (TR1_CON)) value += (o_ptr->pval * 200L);
+            if (o_ptr->obj_flags_1 & (TR1_CHR)) value += (o_ptr->pval * 200L);
 
             /* Give credit for stealth and searching */
-            if (f1 & (TR1_STEALTH)) value += (o_ptr->pval * 100L);
-            if (f1 & (TR1_SEARCH)) value += (o_ptr->pval * 100L);
+            if (o_ptr->obj_flags_1 & (TR1_STEALTH)) value += (o_ptr->pval * 100L);
+            if (o_ptr->obj_flags_1 & (TR1_SEARCH)) value += (o_ptr->pval * 100L);
 
             /* Give credit for infra-vision and tunneling */
-            if (f1 & (TR1_INFRA)) value += (o_ptr->pval * 50L);
-            if (f1 & (TR1_TUNNEL)) value += (o_ptr->pval * 50L);
+            if (o_ptr->obj_flags_1 & (TR1_INFRA)) value += (o_ptr->pval * 50L);
+            if (o_ptr->obj_flags_1 & (TR1_TUNNEL)) value += (o_ptr->pval * 50L);
 
             /* Give credit for perfect balance. */
             if (o_ptr->ident & IDENT_PERFECT_BALANCE) value += o_ptr->dd * 200L;
 
             /* Give credit for extra attacks */
-            if (f1 & (TR1_BLOWS)) value += (o_ptr->pval * 2000L);
+            if (o_ptr->obj_flags_1 & (TR1_BLOWS)) value += (o_ptr->pval * 2000L);
 
             /* Give credit for speed bonus */
-            if (f1 & (TR1_SPEED)) value += (o_ptr->pval * 30000L);
+            if (o_ptr->obj_flags_1 & (TR1_SPEED)) value += (o_ptr->pval * 30000L);
 
             break;
         }
@@ -1787,6 +1546,10 @@ s32b object_value(object_type *o_ptr)
  */
 bool object_similar(object_type *o_ptr, object_type *j_ptr)
 {
+    /* Extract the flags */
+    o_ptr->update_object_flags();
+    j_ptr->update_object_flags();
+
     int total = o_ptr->number + j_ptr->number;
 
     /* Special case: gold */
@@ -4453,8 +4216,6 @@ static int compare_items(object_type *o1, object_type *o2)
  */
 void display_object_idx_recall(s16b item)
 {
-    object_info_out_flags = object_flags_known;
-
     object_type *o_ptr = object_from_item_idx(item);
 
     object_info_screen(o_ptr);
@@ -4488,10 +4249,6 @@ void display_object_kind_recall(s16b k_idx)
 bool obj_can_refill(object_type *o_ptr)
 {
     const object_type *j_ptr = &inventory[INVEN_LIGHT];
-
-    u32b f1, f2, f3, fn;
-
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
     if (j_ptr->sval == SV_LIGHT_LANTERN)
     {
@@ -4739,13 +4496,8 @@ bool obj_needs_aim(object_type *o_ptr)
  */
 bool obj_is_activatable(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
-
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Check for Activation */
-    if (!(f3 & TR3_ACTIVATE)) return (FALSE);
+    if (!(o_ptr->obj_flags_3 & TR3_ACTIVATE)) return (FALSE);
 
     return (TRUE);
 }
@@ -4961,11 +4713,8 @@ bool object_kind_is_available(int k_idx, int mode)
 
 bool is_throwing_weapon(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
 
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-    if (f3 & (TR3_THROWING)) return (TRUE);
+    if (o_ptr->obj_flags_3 & (TR3_THROWING)) return (TRUE);
 
     return (FALSE);
 }

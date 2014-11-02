@@ -3629,8 +3629,6 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
              (r_ptr->flags2 & (RF2_KILL_ITEM))) &&
             (f_info[dungeon_info[ny][nx].feat].f_flags1 & (FF1_DROP)))
         {
-            u32b f1, f2, f3, fn;
-
             u32b flg3 = 0L;
 
             QString m_name;
@@ -3657,23 +3655,20 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     continue;
                 }
 
-                /* Extract some flags */
-                object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
                 /* React to objects that hurt the monster */
-                if (f1 & (TR1_SLAY_DRAGON))  flg3 |= (RF3_DRAGON);
-                if (f1 & (TR1_KILL_DRAGON))  flg3 |= (RF3_DRAGON);
-                if (f1 & (TR1_SLAY_TROLL))   flg3 |= (RF3_TROLL);
-                if (f1 & (TR1_SLAY_GIANT))   flg3 |= (RF3_GIANT);
-                if (f1 & (TR1_SLAY_ORC))     flg3 |= (RF3_ORC);
-                if (f1 & (TR1_SLAY_DEMON))   flg3 |= (RF3_DEMON);
-                if (f1 & (TR1_SLAY_UNDEAD))  flg3 |= (RF3_UNDEAD);
-                if (f1 & (TR1_SLAY_ANIMAL))  flg3 |= (RF3_ANIMAL);
-                if (f1 & (TR1_SLAY_EVIL))    flg3 |= (RF3_EVIL);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_DRAGON))  flg3 |= (RF3_DRAGON);
+                if (o_ptr->obj_flags_1 & (TR1_KILL_DRAGON))  flg3 |= (RF3_DRAGON);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_TROLL))   flg3 |= (RF3_TROLL);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_GIANT))   flg3 |= (RF3_GIANT);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_ORC))     flg3 |= (RF3_ORC);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_DEMON))   flg3 |= (RF3_DEMON);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_UNDEAD))  flg3 |= (RF3_UNDEAD);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_ANIMAL))  flg3 |= (RF3_ANIMAL);
+                if (o_ptr->obj_flags_1 & (TR1_SLAY_EVIL))    flg3 |= (RF3_EVIL);
 
                 /* The object (or quest related mimic) cannot be picked up by the monster */
                 if (o_ptr->is_artifact() || (r_ptr->flags3 & flg3) ||
-                   (f3 & (TR3_NEVER_PICKUP)))
+                   (o_ptr->obj_flags_3 & (TR3_NEVER_PICKUP)))
                 {
                     /* Only give a message for "take_item" */
                     if (r_ptr->flags2 & (RF2_TAKE_ITEM))

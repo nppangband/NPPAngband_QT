@@ -87,6 +87,17 @@ class object_type
 
     s16b ac;			/* Normal AC */
 
+    // Current Object flags, both known and unknown
+    u32b obj_flags_1;
+    u32b obj_flags_2;
+    u32b obj_flags_3;
+    u32b obj_flags_native;
+
+    u32b known_obj_flags_1;
+    u32b known_obj_flags_2;
+    u32b known_obj_flags_3;
+    u32b known_obj_flags_native;
+
     byte dd, ds;		/* Damage dice/sides */
 
     s16b timeout;		/* Timeout Counter */
@@ -162,6 +173,7 @@ class object_type
     bool could_have_charges();
     void uncurse();
     byte object_color();
+    void update_object_flags();
 
 
     // return pseudo-id

@@ -511,6 +511,8 @@ static bool guild_carry(object_type *o_ptr)
     u32b o_value = object_value(o_ptr);
     u32b j_value;
 
+    o_ptr->update_object_flags();
+
     /* First see if we already have one of these in stock */
     slot = guild_redundant_item(o_ptr);
     if (slot > -1)
@@ -1151,15 +1153,13 @@ static void create_reward_objects(quest_type *q_ptr, byte reward_type)
             }
         }
 
+        o_ptr->update_object_flags();
+
         /* Make sure gloves won't ruin spellcasting */
         if ((o_ptr->tval == TV_GLOVES) && (cp_ptr->flags & (CF_CUMBER_GLOVE)))
         {
-            u32b f1, f2, f3, fn;
-
-            object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
             /* Limit to legal glove types */
-            if (!((f3 & (TR3_FREE_ACT)) || (f1 & (TR1_DEX))))
+            if (!((o_ptr->obj_flags_3 & (TR3_FREE_ACT)) || (o_ptr->obj_flags_1 & (TR1_DEX))))
             {
                 continue;
             }
@@ -1188,6 +1188,8 @@ static void create_reward_objects(quest_type *q_ptr, byte reward_type)
 
         /* Mark the item as fully known */
         o_ptr->ident |= (IDENT_MENTAL);
+
+        o_ptr->update_object_flags();
 
         /* Give it to the guild */
         if (!guild_carry(o_ptr)) continue;

@@ -65,6 +65,8 @@ void object_type::object_wipe()
     obj_in_use = FALSE;
     inscription.clear();
     origin_m_name.clear();
+    obj_flags_1 = obj_flags_2 = obj_flags_3 = obj_flags_native = 0;
+    known_obj_flags_1 = known_obj_flags_2 = known_obj_flags_3 = known_obj_flags_native = 0;
 }
 
 // Copy object safely without using memset.
@@ -647,6 +649,190 @@ byte object_type::object_color()
 }
 
 
+
+/*Helper function for add extra flags. Adds the flags from xtra2*/
+static u32b add_xtra2_flags(u32b xtra_flags, byte xtra_size, u32b xtra_base)
+{
+    byte i;
+
+    u32b flag_check = 0x00000001L;
+
+    u32b return_flag = 0;
+
+    for (i = 0; i < xtra_size; i++)
+    {
+        /*Do we have this flag?*/
+        if (xtra_flags & flag_check)
+        {
+            /*mark it*/
+            return_flag |= xtra_base;
+        }
+
+        /*shift everything for the next check*/
+        flag_check  = flag_check << 1;
+        xtra_base  = xtra_base << 1;
+
+    }
+
+    return (return_flag);
+}
+
+
+void object_type::update_object_flags()
+{
+    obj_flags_1 = obj_flags_2 = obj_flags_3 = obj_flags_native = 0L;
+    known_obj_flags_1 = known_obj_flags_2 = known_obj_flags_3 = known_obj_flags_native = 0L;
+
+    object_kind *k_ptr = &k_info[k_idx];
+
+    /* Base object */
+    obj_flags_1 = known_obj_flags_1 = k_ptr->k_flags1;
+    obj_flags_2 = known_obj_flags_2 = k_ptr->k_flags2;
+    obj_flags_3 = known_obj_flags_3 = k_ptr->k_flags3;
+    obj_flags_native = known_obj_flags_native = k_ptr->k_native;
+
+    /* Artifact */
+    if (art_num)
+    {
+        artifact_type *a_ptr = &a_info[art_num];
+
+        obj_flags_1 |= a_ptr->a_flags1;
+        obj_flags_2 |= a_ptr->a_flags2;
+        obj_flags_3 |= a_ptr->a_flags3;
+        obj_flags_native |= a_ptr->a_native;
+
+        known_obj_flags_1 = (a_ptr->a_flags1 & (TR1_PVAL_MASK));
+        known_obj_flags_3 = (a_ptr->a_flags3 & (TR3_IGNORE_MASK));
+    }
+
+    /* Ego-item */
+    if (ego_num)
+    {
+        ego_item_type *e_ptr = &e_info[ego_num];
+
+        obj_flags_1 |= e_ptr->e_flags1;
+        obj_flags_2 |= e_ptr->e_flags2;
+        obj_flags_3 |= e_ptr->e_flags3;
+        obj_flags_native |= e_ptr->e_native;
+
+        known_obj_flags_1 = (e_ptr->e_flags1 & (TR1_PVAL_MASK));
+        known_obj_flags_3 = (e_ptr->e_flags3 & (TR3_IGNORE_MASK));
+    }
+
+    /*hack - chests use xtra1 to store the theme, don't give additional powers to chests*/
+    /* Extra powers */
+    if (!is_chest())
+    {
+        switch (xtra1)
+        {
+
+            case OBJECT_XTRA_STAT_SUSTAIN:
+            {
+                /* Flag 2 */
+                obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_SUSTAIN,
+                                            OBJECT_XTRA_BASE_SUSTAIN);
+                break;
+            }
+
+            case OBJECT_XTRA_TYPE_HIGH_RESIST:
+            {
+                /* Flag 2 */
+                obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_HIGH_RESIST,
+                                            OBJECT_XTRA_BASE_HIGH_RESIST);
+                break;
+            }
+
+            case OBJECT_XTRA_TYPE_POWER:
+            {
+                /* Flag 3 */
+                obj_flags_3 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_POWER,
+                                            OBJECT_XTRA_BASE_POWER);
+                break;
+            }
+            case OBJECT_XTRA_TYPE_IMMUNITY:
+            {
+                /* Flag 2 */
+                obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_IMMUNITY,
+                                            OBJECT_XTRA_BASE_IMMUNITY);
+                break;
+            }
+            case OBJECT_XTRA_TYPE_STAT_ADD:
+            {
+                /* Flag 1 */
+                obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_STAT_ADD,
+                                            OBJECT_XTRA_BASE_STAT_ADD);
+                /*Stat add Also sustains*/
+                obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_SUSTAIN,
+                                            OBJECT_XTRA_BASE_SUSTAIN);
+                break;
+            }
+            case OBJECT_XTRA_TYPE_SLAY:
+            {
+                /* Flag 1 */
+                obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_SLAY,
+                                            OBJECT_XTRA_BASE_SLAY);
+                break;
+            }
+            case OBJECT_XTRA_TYPE_KILL:
+            {
+                /* Flag 1 */
+                obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_KILL,
+                                            OBJECT_XTRA_BASE_KILL);
+                break;
+            }
+            case OBJECT_XTRA_TYPE_BRAND:
+            {
+                /* Flag 1 */
+                obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_BRAND,
+                                            OBJECT_XTRA_BASE_BRAND);
+                /*
+                 * elemental brands also provide the appropriate resist
+                 * Note that the OBJECT_XTRA_SIZE_LOW_RESIST is not used.  There
+                 * are only 4 base resists, but 5 base brands (+poison).  Hence the
+                 * OBJECT_XTRA_SIZE_BRAND used here is deliberate and not a bug.
+                 */
+                obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_BRAND,
+                                            OBJECT_XTRA_BASE_LOW_RESIST);
+
+                break;
+            }
+            case OBJECT_XTRA_TYPE_LOW_RESIST:
+            {
+                /* Flag 2 */
+                obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_LOW_RESIST,
+                                            OBJECT_XTRA_BASE_LOW_RESIST);
+                break;
+            }
+            case OBJECT_XTRA_TYPE_NATIVE:
+            {
+                /* Flag native */
+               obj_flags_native |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_NATIVE,
+                                            OBJECT_XTRA_BASE_NATIVE);
+                break;
+            }
+        }
+
+
+        /*Now add the ignores for any xtra above*/
+        if (obj_flags_2 & (TR2_RES_ACID))	obj_flags_3 |= TR3_IGNORE_ACID;
+        if (obj_flags_2 & (TR2_RES_ELEC))	obj_flags_3 |= TR3_IGNORE_ELEC;
+        if (obj_flags_2 & (TR2_RES_FIRE))	obj_flags_3 |= TR3_IGNORE_FIRE;
+        if (obj_flags_2 & (TR2_RES_COLD))	obj_flags_3 |= TR3_IGNORE_COLD;
+        if (obj_flags_native & (TN1_NATIVE_LAVA | TN1_NATIVE_FIRE)) obj_flags_3 |= TR3_IGNORE_FIRE;
+        if (obj_flags_native & (TN1_NATIVE_ICE)) obj_flags_3 |= TR3_IGNORE_COLD;
+        if (obj_flags_native & (TN1_NATIVE_ACID)) obj_flags_3 |= TR3_IGNORE_ACID;
+    }
+
+    // for *IDed items, the player knows everything
+    if (ident & (IDENT_MENTAL))
+    {
+        known_obj_flags_1 = obj_flags_1;
+        known_obj_flags_2 = obj_flags_2;
+        known_obj_flags_3 = obj_flags_3;
+        known_obj_flags_native = obj_flags_native;
+    }
+}
+
 object_kind::object_kind()
 {
     object_kind_wipe();
@@ -721,4 +907,6 @@ void cmd_arg::wipe()
 {
     repeats = choice = item = number = direction = slot = k_idx = 0;
     verify = FALSE;
-} ;
+};
+
+

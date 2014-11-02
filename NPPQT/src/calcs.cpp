@@ -371,8 +371,6 @@ static void calc_mana(void)
     /* Process gloves for those disturbed by them */
     if (cp_ptr->flags & CF_CUMBER_GLOVE)
     {
-        u32b f1, f2, f3, native;
-
         /* Assume player is not encumbered by gloves */
         p_ptr->state.cumber_glove = FALSE;
 
@@ -380,12 +378,12 @@ static void calc_mana(void)
         o_ptr = &inventory[INVEN_HANDS];
 
         /* Examine the gloves */
-        object_flags(o_ptr, &f1, &f2, &f3, &native);
+        o_ptr->update_object_flags();
 
         /* Normal gloves hurt mage-type spells */
         if (o_ptr->k_idx &&
-            !(f3 & (TR3_FREE_ACT)) &&
-            !((f1 & (TR1_DEX)) && (o_ptr->pval > 0)))
+            !(o_ptr->obj_flags_3 & (TR3_FREE_ACT)) &&
+            !((o_ptr->obj_flags_1 & (TR1_DEX)) && (o_ptr->pval > 0)))
         {
             /* Encumbered */
             p_ptr->state.cumber_glove = TRUE;
@@ -543,7 +541,6 @@ static void calc_torch(void)
 {
     int i;
     object_type *o_ptr;
-    u32b f1, f2, f3, native;
 
     /* Assume no light */
     p_ptr->state.cur_light = 0;
@@ -572,16 +569,14 @@ static void calc_torch(void)
             /* Lanterns (with fuel) provide more lite */
             if ((o_ptr->sval == SV_LIGHT_LANTERN) && (o_ptr->timeout > 0))
             {
-                object_flags(o_ptr, &f1, &f2, &f3, &native);
-
                 /* Resist Dark means light radius of 3 */
-                if ((f2 & TR2_RES_DARK) && (o_ptr->pval >= 0))
+                if ((o_ptr->obj_flags_2 & TR2_RES_DARK) && (o_ptr->pval >= 0))
                 {
                   p_ptr->state.cur_light += 3;
                 }
                 /* Resist Light means light radius of 1 */
                 /* The same with cursed lanterns */
-                else if ((f2 & TR2_RES_LIGHT) || (o_ptr->pval < 0))
+                else if ((o_ptr->obj_flags_2 & TR2_RES_LIGHT) || (o_ptr->pval < 0))
                 {
                   p_ptr->state.cur_light += 1;
                 }
@@ -602,11 +597,8 @@ static void calc_torch(void)
         }
         else
         {
-            /* Extract the flags */
-            object_flags(o_ptr, &f1, &f2, &f3, &native);
-
             /* does this item glow? */
-            if (f3 & TR3_LIGHT) p_ptr->state.cur_light++;
+            if (o_ptr->obj_flags_3 & TR3_LIGHT) p_ptr->state.cur_light++;
         }
     }
 
@@ -655,18 +647,12 @@ static void calc_nativity(void)
         /* Don't count the swap weapon */
         if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
-        /* Extract the flags */
-        object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-        p_ptr->p_native |= fn;
+        p_ptr->p_native |= o_ptr->obj_flags_native;
 
         /* Don't know all the flags */
         if (!object_known_p(o_ptr)) continue;
 
-        /* Extract the flags */
-        object_flags_known(o_ptr, &f1, &f2, &f3, &fn);
-
-        p_ptr->p_native_known |= fn;
+        p_ptr->p_native_known |= o_ptr->known_obj_flags_native;
     }
 
     /*Manually add the temporary native flags.  Assume known*/
@@ -740,8 +726,6 @@ void calc_stealth(void)
     /* Scan the equipment */
     for (i = INVEN_WIELD; i < INVEN_TOTAL; i++)
     {
-        u32b f1, f2, f3, native;
-
         object_type *o_ptr = &inventory[i];
 
         /* Skip non-objects */
@@ -751,10 +735,10 @@ void calc_stealth(void)
         if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /* Extract the item flags */
-        object_flags(o_ptr, &f1, &f2, &f3, &native);
+        o_ptr->update_object_flags();
 
         /* Affect stealth */
-        if (f1 & (TR1_STEALTH)) p_ptr->state.skills[SKILL_STEALTH] += o_ptr->pval;
+        if (o_ptr->obj_flags_1 & (TR1_STEALTH)) p_ptr->state.skills[SKILL_STEALTH] += o_ptr->pval;
     }
 
     /* Affect Skill -- stealth (bonus one) */
@@ -1171,8 +1155,21 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /* Extract the item flags */
-        if (id_only) 	object_flags_known(o_ptr, &f1, &f2, &f3, &fn);
-        else 			object_flags(o_ptr, &f1, &f2, &f3, &fn);
+        object_known(o_ptr);
+        if (id_only)
+        {
+            f1 = o_ptr->obj_flags_1;
+            f2 = o_ptr->obj_flags_2;
+            f3 = o_ptr->obj_flags_3;
+            fn = o_ptr->obj_flags_native;
+        }
+        else
+        {
+            f1 = o_ptr->known_obj_flags_1;
+            f2 = o_ptr->known_obj_flags_2;
+            f3 = o_ptr->known_obj_flags_3;
+            fn = o_ptr->known_obj_flags_native;
+        }
 
         /* Affect stats */
         if (f1 & (TR1_STR)) 		new_state->stat_add[A_STR] += o_ptr->pval;

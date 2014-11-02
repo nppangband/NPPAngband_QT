@@ -3905,6 +3905,9 @@ void create_quest_artifact(object_type *o_ptr)
     /* Mark the item as fully known, and as a quest item */
     o_ptr->ident |= (IDENT_MENTAL | IDENT_QUEST);
 
+    /* Extract the flags */
+    o_ptr->update_object_flags();
+
     /* Set the good item flag */
     good_item_flag = TRUE;
 

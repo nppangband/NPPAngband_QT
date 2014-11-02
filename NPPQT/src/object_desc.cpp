@@ -359,10 +359,7 @@ static QString obj_desc_name(object_type *o_ptr, bool prefix, byte mode, bool sp
  */
 static bool obj_desc_show_weapon(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-    if (f3 & TR3_SHOW_MODS) return TRUE;
+    if (o_ptr->obj_flags_3 & TR3_SHOW_MODS) return TRUE;
     if (o_ptr->to_h && o_ptr->to_d) return TRUE;
 
     /* You need to list both to_h and to_d for things like unaware rings of accuracy and damage e.g. to differentiate (+8) */
@@ -476,10 +473,6 @@ static QString obj_desc_chest(object_type *o_ptr, QString buf)
 static QString obj_desc_combat(object_type *o_ptr,  QString buf, bool spoil)
 {
     object_kind *k_ptr = &k_info[o_ptr->k_idx];
-    u32b f1, f2, f3, fn, knownf1, knownf2, knownf3, knownfn;
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-    object_flags_known(o_ptr, &knownf1, &knownf2, &knownf3, &knownfn);
 
     /* Dump base weapon info */
     switch (o_ptr->tval)
@@ -504,7 +497,7 @@ static QString obj_desc_combat(object_type *o_ptr,  QString buf, bool spoil)
         case TV_BOW:
         {
             /* Display shooting power as part of the multiplier */
-            if ((f1 & TR1_MIGHT) && (spoil || (knownf1 & TR1_MIGHT)))
+            if ((o_ptr->obj_flags_1 & TR1_MIGHT) && (spoil || (o_ptr->known_obj_flags_1 & TR1_MIGHT)))
                 buf.append(QString(" (x%1)") .arg((o_ptr->sval % 10) + o_ptr->pval));
             else
                 buf.append(QString(" (x%1)") .arg(o_ptr->sval % 10));
@@ -559,24 +552,21 @@ static QString obj_desc_light(object_type *o_ptr, QString buf)
 
 static QString obj_desc_pval(object_type *o_ptr, QString buf)
 {
-    u32b f1, f2, f3, fn;
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
-    if (!(f1 & TR1_PVAL_MASK)) return (buf);
+    if (!(o_ptr->obj_flags_1 & TR1_PVAL_MASK)) return (buf);
 
     buf.append(QString(" (%1").arg(sign(o_ptr->pval)));
 
-    if (!(f3 & TR3_HIDE_TYPE))
+    if (!(o_ptr->obj_flags_3 & TR3_HIDE_TYPE))
     {
-        if (f1 & TR1_STEALTH)
+        if (o_ptr->obj_flags_1 & TR1_STEALTH)
             buf.append(" stealth");
-        else if (f1 & TR1_SEARCH)
+        else if (o_ptr->obj_flags_1 & TR1_SEARCH)
             buf.append(" searching");
-        else if (f1 & TR1_INFRA)
+        else if (o_ptr->obj_flags_1 & TR1_INFRA)
             buf.append(" infravision");
-        else if (f1 & TR1_SPEED)
+        else if (o_ptr->obj_flags_1 & TR1_SPEED)
             buf.append(" speed");
-        else if (f1 & TR1_BLOWS)
+        else if (o_ptr->obj_flags_1 & TR1_BLOWS)
         {
             buf.append(QString(" attack%1") .arg(o_ptr->pval));
             if (o_ptr->pval > 1) buf.append("s");
@@ -665,9 +655,6 @@ static QString obj_desc_inscrip(object_type *o_ptr, QString buf)
     bool known = o_ptr->is_known();
     bool aware = o_ptr->is_aware();
 
-    u32b f1, f2, f3, fn;
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Get inscription, pdeudo-id, or store discount */
     if (!o_ptr->inscription.isEmpty()) u[n++] = o_ptr->inscription;
     if (o_ptr->discount >= INSCRIP_NULL)
@@ -744,12 +731,10 @@ QString object_desc(object_type *o_ptr, byte mode)
     bool aware;
     bool known;
 
-    u32b f1, f2, f3, fn;
-
     object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
-    /* Extract some flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
+    /* Make sure the flags are up to date */
+    o_ptr->update_object_flags();
 
     /* See if the object is "aware" */
     aware = o_ptr->is_aware();

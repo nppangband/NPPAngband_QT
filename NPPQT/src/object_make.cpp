@@ -1503,10 +1503,9 @@ void object_into_artifact(object_type *o_ptr, artifact_type *a_ptr)
 void apply_ego_item_magic(object_type *o_ptr, int lev)
 {
     ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
-    u32b f1, f2, f3, fn;
 
     /* Examine the item */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
+    o_ptr->update_object_flags();
 
     /* Extra powers */
     if (e_ptr->xtra)
@@ -1526,7 +1525,7 @@ void apply_ego_item_magic(object_type *o_ptr, int lev)
             {
                 size = OBJECT_XTRA_SIZE_SUSTAIN;
                 base = OBJECT_XTRA_BASE_SUSTAIN;
-                flag_cur = f2;
+                flag_cur = o_ptr->obj_flags_2;
                 break;
             }
 
@@ -1534,7 +1533,7 @@ void apply_ego_item_magic(object_type *o_ptr, int lev)
             {
                 size = OBJECT_XTRA_SIZE_HIGH_RESIST;
                 base = OBJECT_XTRA_BASE_HIGH_RESIST;
-                flag_cur = f2;
+                flag_cur = o_ptr->obj_flags_2;
                 break;
             }
 
@@ -1542,21 +1541,21 @@ void apply_ego_item_magic(object_type *o_ptr, int lev)
             {
                 size = OBJECT_XTRA_SIZE_POWER;
                 base = OBJECT_XTRA_BASE_POWER;
-                flag_cur = f3;
+                flag_cur = o_ptr->obj_flags_3;
                 break;
             }
             case OBJECT_XTRA_TYPE_IMMUNITY:
             {
                 size = OBJECT_XTRA_SIZE_IMMUNITY;
                 base = OBJECT_XTRA_BASE_IMMUNITY;
-                flag_cur = f2;
+                flag_cur = o_ptr->obj_flags_2;
                 break;
             }
             case OBJECT_XTRA_TYPE_STAT_ADD:
             {
                 size = OBJECT_XTRA_SIZE_STAT_ADD;
                 base = OBJECT_XTRA_BASE_STAT_ADD;
-                flag_cur = f1;
+                flag_cur = o_ptr->obj_flags_1;
 
                 /* Calculate Stat bonus */
                 o_ptr->pval = 1 + m_bonus(5 + (lev / 35), lev);
@@ -1569,35 +1568,35 @@ void apply_ego_item_magic(object_type *o_ptr, int lev)
             {
                 size = OBJECT_XTRA_SIZE_SLAY;
                 base = OBJECT_XTRA_BASE_SLAY;
-                flag_cur = f1;
+                flag_cur = o_ptr->obj_flags_1;
                 break;
             }
             case OBJECT_XTRA_TYPE_KILL:
             {
                 size = OBJECT_XTRA_SIZE_KILL;
                 base = OBJECT_XTRA_BASE_KILL;
-                flag_cur = f1;
+                flag_cur = o_ptr->obj_flags_1;
                 break;
             }
             case OBJECT_XTRA_TYPE_BRAND:
             {
                 size = OBJECT_XTRA_SIZE_BRAND;
                 base = OBJECT_XTRA_BASE_BRAND;
-                flag_cur = f1;
+                flag_cur = o_ptr->obj_flags_1;
                 break;
             }
             case OBJECT_XTRA_TYPE_LOW_RESIST:
             {
                 size = OBJECT_XTRA_SIZE_LOW_RESIST;
                 base = OBJECT_XTRA_BASE_LOW_RESIST;
-                flag_cur = f2;
+                flag_cur = o_ptr->obj_flags_2;
                 break;
             }
             case OBJECT_XTRA_TYPE_NATIVE:
             {
                 size = OBJECT_XTRA_SIZE_NATIVE;
                 base = OBJECT_XTRA_BASE_NATIVE;
-                flag_cur = fn;
+                flag_cur = o_ptr->obj_flags_native;
                 break;
             }
         }
@@ -1653,12 +1652,12 @@ void apply_ego_item_magic(object_type *o_ptr, int lev)
     /* Ego-item throwing weapons may sometimes be perfectly
      * balanced.
      */
-    if ((f3 & (TR3_THROWING)) && (randint(3) == 1))
+    if ((o_ptr->obj_flags_3 & (TR3_THROWING)) && (randint(3) == 1))
     {
         (o_ptr->ident |= IDENT_PERFECT_BALANCE);
     }
 
-    if (f3 & (TR3_PERFECT_BALANCE))
+    if (o_ptr->obj_flags_3 & (TR3_PERFECT_BALANCE))
     {
         (o_ptr->ident |= IDENT_PERFECT_BALANCE);
     }
@@ -1848,6 +1847,9 @@ void apply_magic(object_type *o_ptr, int lev, bool okay, bool good, bool great, 
         /* Cheat -- peek at the item */
         if (cheat_peek) object_mention(o_ptr);
 
+        // Make sure all flags are up-to-date
+        o_ptr->update_object_flags();
+
         /* Done */
         return;
     }
@@ -1963,6 +1965,9 @@ void apply_magic(object_type *o_ptr, int lev, bool okay, bool good, bool great, 
     {
         apply_ego_item_magic(o_ptr, lev);
 
+        // Make sure all flags are up-to-date
+        o_ptr->update_object_flags();
+
         /* Done */
         return;
     }
@@ -1980,6 +1985,9 @@ void apply_magic(object_type *o_ptr, int lev, bool okay, bool good, bool great, 
         if (k_ptr->k_flags3 & (TR3_HEAVY_CURSE)) o_ptr->ident |= (IDENT_CURSED);
         if (k_ptr->k_flags3 & (TR3_PERMA_CURSE)) o_ptr->ident |= (IDENT_CURSED);
     }
+
+    // Make sure all flags are up-to-date
+    o_ptr->update_object_flags();
 }
 
 /*
@@ -3492,6 +3500,9 @@ bool make_object(object_type *j_ptr, bool good, bool great, int objecttype, bool
         if (cheat_peek) object_mention(j_ptr);
     }
 
+    // Make sure all flags are up-to-date
+    j_ptr->update_object_flags();
+
     /* Success */
     return (TRUE);
 }
@@ -3747,6 +3758,9 @@ bool make_gold(object_type *j_ptr)
     if (value > MAX_SHORT)	value = MAX_SHORT;
 
     j_ptr->pval = value;
+
+    // Make sure all flags are up-to-date
+    j_ptr->update_object_flags();
 
     /* Success */
     return (TRUE);

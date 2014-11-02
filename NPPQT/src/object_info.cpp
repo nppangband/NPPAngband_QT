@@ -1232,15 +1232,10 @@ static QString describe_item_activation(object_type *o_ptr)
     QString output;
     output.clear();
 
-    u32b f1, f2, f3, fn;
-
     u16b value;
 
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Require activation ability */
-    if (!(f3 & TR3_ACTIVATE)) return(output);
+    if (!(o_ptr->obj_flags_3 & TR3_ACTIVATE)) return(output);
 
     /* Artifact activations */
     if ((o_ptr->art_num) && (o_ptr->art_num < z_info->art_norm_max))
@@ -1512,27 +1507,25 @@ QString object_info_out(object_type *o_ptr,  bool extra_info)
     QString output;
     output.clear();
 
-    u32b f1, f2, f3, fn;
-
-    /* Grab the object flags */
-    object_flags_known(o_ptr, &f1, &f2, &f3, &fn);
+    // Make sure the flags are up-to-date
+    o_ptr->update_object_flags();
 
     /* Describe the object */
-    output.append(describe_stats(o_ptr, f1));
-    output.append(describe_secondary(o_ptr, f1));
-    output.append(describe_slay(o_ptr, f1));
-    output.append(describe_brand(o_ptr, f1));
-    output.append(describe_immune(o_ptr, f2));
-    output.append(describe_resist(o_ptr, f2, f3));
-    output.append(describe_sustains(o_ptr, f2));
-    output.append(describe_misc_magic(o_ptr, f3));
-    output.append(describe_nativity(o_ptr, fn));
-    output.append(describe_activation(o_ptr, f3));
-    output.append(describe_ignores(o_ptr, f3));
-    output.append(describe_weapon(o_ptr, f1, extra_info));
-    output.append(describe_bow_slot(o_ptr, f3, extra_info));
-    output.append(describe_ammo(o_ptr, f1, f3, extra_info));
-    output.append(describe_throwing_weapon(o_ptr, f1, f3, extra_info));
+    output.append(describe_stats(o_ptr, o_ptr->known_obj_flags_1));
+    output.append(describe_secondary(o_ptr, o_ptr->known_obj_flags_1));
+    output.append(describe_slay(o_ptr, o_ptr->known_obj_flags_1));
+    output.append(describe_brand(o_ptr, o_ptr->known_obj_flags_1));
+    output.append(describe_immune(o_ptr, o_ptr->known_obj_flags_2));
+    output.append(describe_resist(o_ptr, o_ptr->known_obj_flags_2, o_ptr->known_obj_flags_3));
+    output.append(describe_sustains(o_ptr, o_ptr->known_obj_flags_2));
+    output.append(describe_misc_magic(o_ptr, o_ptr->known_obj_flags_3));
+    output.append(describe_nativity(o_ptr, o_ptr->known_obj_flags_native));
+    output.append(describe_activation(o_ptr, o_ptr->known_obj_flags_3));
+    output.append(describe_ignores(o_ptr, o_ptr->known_obj_flags_3));
+    output.append(describe_weapon(o_ptr, o_ptr->known_obj_flags_1, extra_info));
+    output.append(describe_bow_slot(o_ptr, o_ptr->known_obj_flags_3, extra_info));
+    output.append(describe_ammo(o_ptr, o_ptr->known_obj_flags_1, o_ptr->known_obj_flags_3, extra_info));
+    output.append(describe_throwing_weapon(o_ptr, o_ptr->known_obj_flags_1, o_ptr->known_obj_flags_3, extra_info));
 
     /* Unknown extra powers (artifact) */
     if (object_known_p(o_ptr) && (!(o_ptr->ident & IDENT_MENTAL)) &&
@@ -1611,8 +1604,6 @@ void object_info_screen(object_type *o_ptr)
 {
     QString output = screen_out_head(o_ptr);
     QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
-
-    object_info_out_flags = object_flags_known;
 
     /* Dump the info */
     output.append(object_info_out(o_ptr, TRUE));

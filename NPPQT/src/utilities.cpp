@@ -928,6 +928,7 @@ void extract_tiles(bool save)
             object_aware(o_ptr);
             object_known(o_ptr);
             o_ptr->ident |= (IDENT_MENTAL);
+            o_ptr->update_object_flags();
         }
         else
         {
@@ -941,6 +942,7 @@ void extract_tiles(bool save)
                 o_ptr->ident |= (IDENT_MENTAL | IDENT_STORE);
                 object_aware(o_ptr);
                 object_known(o_ptr);
+                o_ptr->update_object_flags();
             }
         }
 

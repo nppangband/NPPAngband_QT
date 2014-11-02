@@ -255,19 +255,15 @@ bool item_tester_hook_randart(object_type *o_ptr)
  */
 bool item_tester_hook_flammable_book(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
 
     if 	((o_ptr->tval != TV_PRAYER_BOOK) && (o_ptr->tval != TV_DRUID_BOOK) &&
          (o_ptr->tval != TV_MAGIC_BOOK)) return (FALSE);
 
-    /* Get the "known" flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /*already flammable*/
-    if (f3 & TR3_IGNORE_FIRE) return (FALSE);
+    if (o_ptr->obj_flags_3 & TR3_IGNORE_FIRE) return (FALSE);
 
     /* Immune to lava, so they should resist fire. */
-    if (fn & ELEMENT_LAVA) return (FALSE);
+    if (o_ptr->obj_flags_native & ELEMENT_LAVA) return (FALSE);
 
     /* Flammable spellbook */
     return (TRUE);
@@ -279,16 +275,12 @@ bool item_tester_hook_flammable_book(object_type *o_ptr)
  */
 bool item_tester_hook_activate(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
 
     /* Not known */
     if (!o_ptr->is_known()) return (FALSE);
 
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Check activation flag */
-    if (f3 & (TR3_ACTIVATE)) return (TRUE);
+    if (o_ptr->obj_flags_3 & (TR3_ACTIVATE)) return (TRUE);
 
     /* Assume not */
     return (FALSE);

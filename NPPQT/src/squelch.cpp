@@ -120,7 +120,7 @@ QString format_object_flags(object_type *o_ptr, bool only_random_powers)
     };
 
     /* Get the known flags */
-    object_flags_known(o_ptr, &f1, &f2, &f3, &native);
+    o_ptr->update_object_flags();
 
     /* Remove all the fixed flags if requested */
     if (only_random_powers)

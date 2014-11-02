@@ -1513,11 +1513,6 @@ typedef enum
     USE_SINGLE
 } use_type;
 
-/*
- * Modes of object_flags_aux()
- */
-#define OBJECT_FLAGS_FULL   1 /* Full info */
-#define OBJECT_FLAGS_KNOWN  2 /* Only flags known to the player */
 
 /*** Constants ***/
 

@@ -406,8 +406,6 @@ extern bool find_object_in_use(int *item);
 extern void command_use(cmd_arg args);
 
 //obj_util.cpp
-extern void object_flags(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native);
-extern void object_flags_known(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native);
 extern QChar index_to_label(int i);
 extern s16b wield_slot_ammo(object_type *o_ptr);
 extern s16b wield_slot(object_type *o_ptr);

@@ -174,8 +174,6 @@ static int rd_item(object_type *o_ptr)
     byte old_dd;
     byte old_ds;
 
-    u32b f1, f2, f3, fn;
-
     object_kind *k_ptr;
 
     QString buf;
@@ -309,9 +307,9 @@ static int rd_item(object_type *o_ptr)
     }
 
     /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
+    o_ptr->update_object_flags();
 
-    /* Paranoia */
+       /* Paranoia */
     if (o_ptr->art_num)
     {
         artifact_type *a_ptr;
