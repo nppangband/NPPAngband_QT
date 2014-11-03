@@ -87,6 +87,17 @@ class object_type
 
     s16b ac;			/* Normal AC */
 
+    // Current Object flags, both known and unknown
+    u32b obj_flags_1;
+    u32b obj_flags_2;
+    u32b obj_flags_3;
+    u32b obj_flags_native;
+
+    u32b known_obj_flags_1;
+    u32b known_obj_flags_2;
+    u32b known_obj_flags_3;
+    u32b known_obj_flags_native;
+
     byte dd, ds;		/* Damage dice/sides */
 
     s16b timeout;		/* Timeout Counter */
@@ -125,8 +136,10 @@ class object_type
     bool can_be_pseudo_ided();
     bool is_artifact();
     bool is_known_artifact();
+    bool is_quest_artifact();
     bool is_ego_item();
     bool is_cursed();
+    bool is_known_cursed();
     bool is_broken();
     bool was_sensed();
     bool is_spellbook();
@@ -139,6 +152,9 @@ class object_type
     bool is_scroll();
     bool is_parchment();
     bool is_food();
+    bool is_mushroom();
+    bool is_wine();
+    bool is_ale();
     bool is_light();
     bool is_usable_item();
     bool is_ring();
@@ -149,12 +165,15 @@ class object_type
     bool is_ammo();
     bool is_weapon();
     bool can_zap();
+    bool could_be_zapped();
     bool can_browse();
     bool can_takeoff();
     bool has_inscription();
     bool has_charges();
+    bool could_have_charges();
     void uncurse();
     byte object_color();
+    void update_object_flags();
 
 
     // return pseudo-id

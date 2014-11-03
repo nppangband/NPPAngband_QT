@@ -44,7 +44,7 @@ void PlayerDeathDialog::death_scores(void)
 
 void PlayerDeathDialog::death_examine(void)
 {
-    do_cmd_observe();
+    do_cmd_examine();
 }
 
 void PlayerDeathDialog::death_notes(void)
@@ -168,6 +168,9 @@ static void death_knowledge(void)
 
         /* Fully known */
         o_ptr->ident |= (IDENT_MENTAL);
+
+        /* Extract the flags */
+        o_ptr->update_object_flags();
     }
 
     /* Hack -- Recalculate bonuses */

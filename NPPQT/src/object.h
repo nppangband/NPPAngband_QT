@@ -806,7 +806,7 @@
 #define NOUN_VERB		0x10	/* We are choosing the item first, then the command */
 #define IS_HARMLESS   	0x20	/* Ignore generic warning inscriptions */
 #define QUIVER_FIRST 	0x40	/* Show item prices in item lists */
-//#define UNUSED       	0x80 	/*  */
+#define USE_STORE       0x80    /* For browsing books while in the store.  Allow them to browse all books in inventory as well. */
 
 
 
@@ -841,7 +841,7 @@
 #define IDENT_HIDE_CARRY		0x00000400	/* Don't reveal the object is being carried by a creature*/
 #define IDENT_EFFECT 			0x00000800	/* Know item activation/effect */
 #define IDENT_FIRED			    0x00001000	/* Has been used as a missile */
-#define IDENT_INDESTRUCT	    0x00002000	/* Tried to destroy it and failed */
+#define IDENT_UNUSED_XXX1XXXX   0x00002000
 #define IDENT_NAME			    0x00004000	/* Know the name of ego or artifact if there is one */
 #define IDENT_NOTART		    0x00008000	/* Item is known not to be an artifact */
 #define IDENT_QUIVER		    0x00010000	/* Ammo goes in quiver */
@@ -1513,11 +1513,6 @@ typedef enum
     USE_SINGLE
 } use_type;
 
-/*
- * Modes of object_flags_aux()
- */
-#define OBJECT_FLAGS_FULL   1 /* Full info */
-#define OBJECT_FLAGS_KNOWN  2 /* Only flags known to the player */
 
 /*** Constants ***/
 

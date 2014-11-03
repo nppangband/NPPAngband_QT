@@ -4,13 +4,12 @@
 #include "src/npp.h"
 
 
-#define ARG_CHOICE          0x01
-#define ARG_NUMBER          0x02
-#define ARG_ITEM            0x04
-#define ARG_DIRECTION		0x08
-#define ARG_TARGET  		0x10
-#define ARG_POINT   		0x20
-#define ARG_SPECIAL   		0x40 // needs a special dialog
+#define ARG_NUMBER          0x01
+#define ARG_ITEM            0x02
+#define ARG_DIRECTION       0x04
+#define ARG_SLOT    		0x08
+#define ARG_SPECIAL         0x10 // Needs a special dialog
+
 
 
 
@@ -33,6 +32,7 @@ enum
     CMD_RESTING,
     CMD_RUNNING,
     CMD_WALK,
+    CMD_JUMP,
     CMD_OPEN,
     CMD_CLOSE,
     CMD_SPIKE,
@@ -43,11 +43,23 @@ enum
     CMD_SEARCH,
     CMD_MAKE_TRAP,
     CMD_HOLD,
-    CMD_REFUEL,
+    CMD_TAKEOFF,
+    CMD_WIELD,
+    CMD_SWAP,
     CMD_ITEM_USE,
-    CMD_ACTIVATE,
-    CMD_CAST,
+    CMD_REFUEL,
     CMD_FIRE,
+    CMD_FIRE_NEAR,
+    CMD_DROP,
+    CMD_PICKUP,
+    CMD_BROWSE,
+    CMD_STUDY,
+    CMD_CAST,
+    CMD_DESTROY,
+    CMD_EXAMINE,
+    CMD_INSCRIBE,
+    CMD_UNINSCRIBE,
+    CMD_ACTIVATE,
     CMD_THROW,
     CMD_MAX
 };
@@ -55,17 +67,27 @@ enum
 
 class command_type
 {
+
 public:
     byte cmd_needs;                         // which arguments does the function need?
     void (*command_function)(cmd_arg args);  //What function should be called for this command?
+    bool default_verify;                // What should be default verify be to process the command correctly.
     bool repeat_allowed;                    // Is repeating allowed?
-    u16b repeat_num;                       // Should repeating be done automatically?
+    u16b repeat_num;                       // Automatic number of repeats.
 
     bool repeated_command_completed(void);
+    bool needs_direction(int command);
+    bool needs_item(void);
+    bool needs_quantity(void);
+    bool needs_slot(void);
+    bool is_special(void);
+    QString prompt(int command);
+    cmd_arg find_slot(object_type *o_ptr, cmd_arg args, int command);
+
 };
 
 extern command_type command_info[CMD_MAX];
 
-
+extern void process_command(int item, s16b command);
 
 #endif // PLAYER_COMMAND_H

@@ -1,5 +1,6 @@
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
+#include "src/utilities.h"
 #include "tilebag.h"
 #include <QInputDialog>
 #include <QLineEdit>
@@ -229,6 +230,7 @@ QString get_string(QString question, QString description, QString answer)
  */
 s16b get_quantity(QString prompt, int max, int amt)
 {
+    if (!amt) amt = 1;
     if (max > 1)
     {
         bool ok;
@@ -404,6 +406,11 @@ QString format_object_weight(object_type *o_ptr)
     else formatted_weight.append(" lbs");
 
     return (formatted_weight);
+}
+
+QString formatted_weight_string(s32b weight)
+{
+    return (QString("%1.%2") .arg(weight / 10) .arg(weight % 10));
 }
 
 /*
@@ -921,6 +928,7 @@ void extract_tiles(bool save)
             object_aware(o_ptr);
             object_known(o_ptr);
             o_ptr->ident |= (IDENT_MENTAL);
+            o_ptr->update_object_flags();
         }
         else
         {
@@ -934,6 +942,7 @@ void extract_tiles(bool save)
                 o_ptr->ident |= (IDENT_MENTAL | IDENT_STORE);
                 object_aware(o_ptr);
                 object_known(o_ptr);
+                o_ptr->update_object_flags();
             }
         }
 

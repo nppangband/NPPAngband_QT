@@ -1,6 +1,6 @@
 
 #include "src/npp.h"
-
+#include "src/utilities.h"
 
 // It is important to make sure that all global variables are wiped in between games,
 // and all arrays freed.
@@ -30,7 +30,6 @@ monster_type *summoner; 	/*Track the current summoner*/
 s32b turn;				/* Current game turn */
 
 int use_graphics;		/* The "graphics" mode is enabled */
-bool use_bigtile = FALSE;
 
 s16b image_count;  		/* Grids until next random image    */
                         /* Optimizes the hallucination code */
@@ -364,8 +363,6 @@ bool (*get_obj_num_hook)(int k_idx);
  * Hack -- function hook to restrict "get_feat_num_prep()" function
  */
 bool (*get_feat_num_hook)(int f_idx);
-
-void (*object_info_out_flags)(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native);
 
 /*
  * Current "comp" function for ang_sort()

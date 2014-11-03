@@ -87,7 +87,7 @@ void SpellSelectDialog::count_spells(int mode)
     for (int i = 0; i < max_spellbooks; i++)
     {
         int idx = lookup_kind(cp_ptr->spell_book, i);
-        if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN)) continue;
+        if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN | USE_STORE)) continue;
 
         num_available_spellbooks++;
 
@@ -676,7 +676,7 @@ int spell_chance(int spell)
     return (chance);
 }
 
-void command_cast(cmd_arg args)
+static void cast_spell(cmd_arg args)
 {
     if (!p_ptr->can_cast()) return;
 
@@ -788,7 +788,13 @@ void command_cast(cmd_arg args)
     p_ptr->redraw |= (PR_MANA);
 
     process_player_energy(BASE_ENERGY_MOVE);
+}
 
+// Placeholder for use in the player_command menu
+void command_cast(cmd_arg arg)
+{
+    (void)arg;
+    do_cmd_cast();
 }
 
 // Cast a spell
@@ -826,7 +832,44 @@ void do_cmd_cast(void)
     args.direction = dir;
     args.number = spell;
 
-    command_cast(args);
+    cast_spell(args);
+}
+
+/*
+ * See if we can cast or study from a book
+ */
+bool player_can_use_book(const object_type *o_ptr, bool known)
+{
+    int i;
+
+    /* Check the player can study at all, and the book is the right type */
+    if (!cp_ptr->spell_book) return FALSE;
+    if (p_ptr->timed[TMD_BLIND] || no_light()) return FALSE;
+    if (p_ptr->timed[TMD_CONFUSED]) return FALSE;
+    if (o_ptr->tval != cp_ptr->spell_book) return (FALSE);
+
+    /* Extract spells */
+    for (i = 0; i < SPELLS_PER_BOOK; i++)
+    {
+        int s = get_spell_index(o_ptr, i);
+
+        /* Skip non-OK spells */
+        if (s == -1) continue;
+        if (!spell_okay(s, known)) continue;
+
+        /* We found a spell to study/cast */
+        return (TRUE);
+    }
+
+    /* No suitable spells */
+    return (FALSE);
+}
+
+// Placeholder for use in the player_command menu
+void command_study(cmd_arg arg)
+{
+    (void)arg;
+    do_cmd_study();
 }
 
 // Learn a spell
@@ -857,6 +900,13 @@ void do_cmd_study(void)
     if (p_ptr->chooses_spells()) spell_learn(spell);
     else study_book(spell);
     process_player_energy(BASE_ENERGY_MOVE);
+}
+
+// Placeholder for use in the player_command menu
+void command_browse(cmd_arg arg)
+{
+    (void)arg;
+    do_cmd_browse();
 }
 
 // Browse the available spellbooks

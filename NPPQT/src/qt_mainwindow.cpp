@@ -25,6 +25,7 @@
 #include "src/init.h"
 #include "src/optionsdialog.h"
 #include "src/birthdialog.h"
+#include "src/utilities.h"
 #include "emitter.h"
 #include "griddialog.h"
 #include "package.h"
@@ -2068,7 +2069,7 @@ bool MainWindow::check_disturb()
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
     if (!character_dungeon) return;
-
+    if (p_ptr->in_store) return;
     if (anim_depth > 0) return;
 
     if (check_disturb()) return;
@@ -2234,7 +2235,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_E:
         {
-            do_cmd_use_item();
+            if (shift_key)          do_cmd_all_objects();
+            else do_cmd_use_item();
             return;
         }
         case Qt::Key_F:
@@ -2257,7 +2259,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_O:
         {
-            if (shift_key) do_cmd_observe();
+            if (shift_key) do_cmd_examine();
             do_cmd_open();
             return;
         }
@@ -2309,8 +2311,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_Z:
         {
-            if (alt_key)    do_cmd_observe();
-            else if (shift_key) do_cmd_bash();
+            if (shift_key) do_cmd_bash();
             else do_cmd_browse();
             return;
         }

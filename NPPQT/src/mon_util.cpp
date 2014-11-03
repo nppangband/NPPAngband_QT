@@ -3012,7 +3012,7 @@ void reveal_mimic(int o_idx, bool message)
     /* Get the object */
     object_type *o_ptr = &o_list[o_idx];
 
-    bool questor = ((o_ptr->ident & (IDENT_QUEST)) ? TRUE : FALSE);
+    bool questor = o_ptr->is_quest_artifact();
 
     /* Paranoia */
     if (!o_ptr->mimic_r_idx) return;

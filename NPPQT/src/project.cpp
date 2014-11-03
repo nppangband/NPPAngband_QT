@@ -1547,13 +1547,9 @@ static bool hates_boiling_water(const object_type *o_ptr)
  */
 static bool hates_lava(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
-
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
     /* Ignore elements that resist fire damage */
-    if (f3 & (TR3_IGNORE_FIRE)) return (FALSE);
+    if (o_ptr->obj_flags_3 & (TR3_IGNORE_FIRE)) return (FALSE);
 
     /*Most everything*/
     switch (o_ptr->tval)
@@ -1600,41 +1596,36 @@ bool object_hates_feature(int feat, object_type *o_ptr)
     /* Get the element flags of the location */
     u32b terrain_native = feat_ff3_match(feat, TERRAIN_MASK);
 
-    u32b f1, f2, f3, fn;
-
-    /* Get object flags (we'll check object resistance) */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /*Artifacts are comfortable anywhere*/
     if (o_ptr->is_artifact()) return (FALSE);
 
     /*Check if object is native*/
-    if (fn)
+    if (o_ptr->obj_flags_native)
     {
         u32b filtered_native = terrain_native;
 
         /*Strip out unneeded ones*/
-        filtered_native &= fn;
+        filtered_native &= o_ptr->obj_flags_native;
 
         /*if we have a match, the object is comfortable at the location*/
-        if (fn == filtered_native) return (FALSE);
+        if (o_ptr->obj_flags_native == filtered_native) return (FALSE);
     }
 
     /* Check fire and lava */
     if ((terrain_native & (ELEMENT_FIRE | ELEMENT_LAVA)) &&
-        !(f3 & (TR3_IGNORE_FIRE)) && hates_fire(o_ptr))
+        !(o_ptr->obj_flags_3 & (TR3_IGNORE_FIRE)) && hates_fire(o_ptr))
     {
         return (TRUE);
     }
     /* Check acid */
     else if ((terrain_native & (ELEMENT_ACID)) &&
-        !(f3 & (TR3_IGNORE_ACID)) && hates_acid(o_ptr))
+        !(o_ptr->obj_flags_3 & (TR3_IGNORE_ACID)) && hates_acid(o_ptr))
     {
         return (TRUE);
     }
     /* Check ice */
     else if ((terrain_native & (ELEMENT_ICE)) &&
-        !(f3 & (TR3_IGNORE_COLD)) && hates_cold(o_ptr))
+        !(o_ptr->obj_flags_3 & (TR3_IGNORE_COLD)) && hates_cold(o_ptr))
     {
         return (TRUE);
     }
@@ -1707,11 +1698,9 @@ static void holy_orb_destroy(int damage)
  */
 static int set_acid_destroy(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
     if (!hates_acid(o_ptr)) return (FALSE);
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    if (f3 & (TR3_IGNORE_ACID)) return (FALSE);
-    if (fn & (ELEMENT_ACID)) return (FALSE);
+    if (o_ptr->obj_flags_3 & (TR3_IGNORE_ACID)) return (FALSE);
+    if (o_ptr->obj_flags_native & (ELEMENT_ACID)) return (FALSE);
     return (TRUE);
 }
 
@@ -1721,10 +1710,8 @@ static int set_acid_destroy(object_type *o_ptr)
  */
 static int set_elec_destroy(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
     if (!hates_elec(o_ptr)) return (FALSE);
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    if (f3 & (TR3_IGNORE_ELEC)) return (FALSE);
+    if (o_ptr->obj_flags_3 & (TR3_IGNORE_ELEC)) return (FALSE);
     return (TRUE);
 }
 
@@ -1734,11 +1721,9 @@ static int set_elec_destroy(object_type *o_ptr)
  */
 static int set_fire_destroy(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
     if (!hates_fire(o_ptr)) return (FALSE);
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    if (f3 & (TR3_IGNORE_FIRE)) return (FALSE);
-    if (fn & (ELEMENT_LAVA)) return (FALSE);
+    if (o_ptr->obj_flags_3 & (TR3_IGNORE_FIRE)) return (FALSE);
+    if (o_ptr->obj_flags_native & (ELEMENT_LAVA)) return (FALSE);
     return (TRUE);
 }
 
@@ -1748,11 +1733,9 @@ static int set_fire_destroy(object_type *o_ptr)
  */
 static int set_cold_destroy(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
     if (!hates_cold(o_ptr)) return (FALSE);
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    if (f3 & (TR3_IGNORE_COLD)) return (FALSE);
-    if (fn & (ELEMENT_ICE)) return (FALSE);
+    if (o_ptr->obj_flags_3 & (TR3_IGNORE_COLD)) return (FALSE);
+    if (o_ptr->obj_flags_native & (ELEMENT_ICE)) return (FALSE);
     return (TRUE);
 }
 
@@ -1761,10 +1744,8 @@ static int set_cold_destroy(object_type *o_ptr)
  */
 static int set_lava_destroy(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
     if (!hates_lava(o_ptr)) return (FALSE);
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    if (fn & (ELEMENT_LAVA)) return (FALSE);
+    if (o_ptr->obj_flags_native & (ELEMENT_LAVA)) return (FALSE);
     return (TRUE);
 }
 
@@ -1773,10 +1754,8 @@ static int set_lava_destroy(object_type *o_ptr)
  */
 static int set_boiling_water_destroy(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
     if (!hates_boiling_water(o_ptr)) return (FALSE);
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    if ((fn & (ELEMENT_BWATER)) == ELEMENT_BWATER) return (FALSE);
+    if ((o_ptr->obj_flags_native & (ELEMENT_BWATER)) == ELEMENT_BWATER) return (FALSE);
     return (TRUE);
 }
 
@@ -1785,10 +1764,8 @@ static int set_boiling_water_destroy(object_type *o_ptr)
  */
 static int set_boiling_mud_destroy(object_type *o_ptr)
 {
-    u32b f1, f2, f3, fn;
     if (!hates_boiling_mud(o_ptr)) return (FALSE);
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    if ((fn & (ELEMENT_BMUD)) == ELEMENT_BMUD) return (FALSE);
+    if ((o_ptr->obj_flags_native & (ELEMENT_BMUD)) == ELEMENT_BMUD) return (FALSE);
     return (TRUE);
 }
 
@@ -2076,8 +2053,6 @@ static int minus_ac(void)
 {
     object_type *o_ptr = NULL;
 
-    u32b f1, f2, f3, fn;
-
     QString o_name;;
 
 
@@ -2102,11 +2077,8 @@ static int minus_ac(void)
     /* Describe */
     o_name = object_desc(o_ptr, ODESC_FULL);
 
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Object resists */
-    if (f3 & (TR3_IGNORE_ACID))
+    if (o_ptr->obj_flags_3 & (TR3_IGNORE_ACID))
     {
         message(QString("Your %1 is unaffected!") .arg(o_name));
 
@@ -3382,8 +3354,6 @@ static bool project_o(int who, int y, int x, int dam, int typ)
 
     bool obvious = FALSE;
 
-    u32b f1, f2, f3, fn;
-
     QString o_name;
 
     /* Glaciers and other unpassable effects protect objects */
@@ -3416,8 +3386,8 @@ static bool project_o(int who, int y, int x, int dam, int typ)
         /* Get the next object */
         next_o_idx = o_ptr->next_o_idx;
 
-        /* Extract the flags */
-        object_flags(o_ptr, &f1, &f2, &f3, &fn);
+        // Make sure the flags are up to date
+        o_ptr->update_object_flags();
 
         /* Get the "plural"-ness */
         if (o_ptr->number > 1) plural = TRUE;
@@ -3436,8 +3406,8 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 {
                     do_kill = TRUE;
                     note_kill = (plural ? " melt!" : " melts!");
-                    if (f3 & (TR3_IGNORE_ACID)) ignore = TRUE;
-                    if (fn & (ELEMENT_ACID)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_ACID)) ignore = TRUE;
+                    if (o_ptr->obj_flags_native & (ELEMENT_ACID)) ignore = TRUE;
                 }
                 break;
             }
@@ -3450,7 +3420,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 {
                     do_kill = TRUE;
                     note_kill = (plural ? " are destroyed!" : " is destroyed!");
-                    if (f3 & (TR3_IGNORE_ELEC)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_ELEC)) ignore = TRUE;
                 }
                 break;
             }
@@ -3463,8 +3433,8 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 {
                     do_kill = TRUE;
                     note_kill = (plural ? " burn up!" : " burns up!");
-                    if (f3 & (TR3_IGNORE_FIRE)) ignore = TRUE;
-                    if (fn & (ELEMENT_LAVA | ELEMENT_FIRE)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_FIRE)) ignore = TRUE;
+                    if (o_ptr->obj_flags_native & (ELEMENT_LAVA | ELEMENT_FIRE)) ignore = TRUE;
                 }
                 break;
             }
@@ -3477,8 +3447,8 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 {
                     note_kill = (plural ? " shatter!" : " shatters!");
                     do_kill = TRUE;
-                    if (f3 & (TR3_IGNORE_COLD)) ignore = TRUE;
-                    if (fn & (ELEMENT_ICE)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_COLD)) ignore = TRUE;
+                    if (o_ptr->obj_flags_native & (ELEMENT_ICE)) ignore = TRUE;
                 }
                 break;
             }
@@ -3490,15 +3460,15 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 {
                     do_kill = TRUE;
                     note_kill = (plural ? " burn up!" : " burns up!");
-                    if (f3 & (TR3_IGNORE_FIRE)) ignore = TRUE;
-                    if (fn & (ELEMENT_LAVA)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_FIRE)) ignore = TRUE;
+                    if (o_ptr->obj_flags_native & (ELEMENT_LAVA)) ignore = TRUE;
                 }
                 if (hates_elec(o_ptr))
                 {
                     ignore = FALSE;
                     do_kill = TRUE;
                     note_kill = (plural ? " are destroyed!" : " is destroyed!");
-                    if (f3 & (TR3_IGNORE_ELEC)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_ELEC)) ignore = TRUE;
                 }
                 break;
             }
@@ -3510,15 +3480,15 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 {
                     do_kill = TRUE;
                     note_kill = (plural ? " burn up!" : " burns up!");
-                    if (f3 & (TR3_IGNORE_FIRE)) ignore = TRUE;
-                    if (fn & (ELEMENT_LAVA)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_FIRE)) ignore = TRUE;
+                    if (o_ptr->obj_flags_native & (ELEMENT_LAVA)) ignore = TRUE;
                 }
                 if (hates_cold(o_ptr))
                 {
                     ignore = FALSE;
                     do_kill = TRUE;
                     note_kill = (plural ? " shatter!" : " shatters!");
-                    if (f3 & (TR3_IGNORE_COLD)) ignore = TRUE;
+                    if (o_ptr->obj_flags_3 & (TR3_IGNORE_COLD)) ignore = TRUE;
                 }
                 break;
             }
@@ -3586,7 +3556,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
             case GF_KILL_DOOR:
             {
                 /* Chests are noticed only if trapped or locked, and not special ches items */
-                if ((o_ptr->tval == TV_CHEST) && !(o_ptr->ident & (IDENT_QUEST)))
+                if ((o_ptr->tval == TV_CHEST) && !o_ptr->is_quest_artifact())
                 {
                     /* Disarm/Unlock traps */
                     if (o_ptr->pval > 0)

@@ -7,11 +7,13 @@ NPP Angband is free software; you can redistribute it and/or modify it under the
 modified, and used only under the terms of the Creative Commons Attribution 3.0 licence: http://creativecommons.org/licenses/by/3.0/
 
 
-
- * the font files are under the licences noted in lib/xtra/font/copying.txt,
-   all of which are OSI-compliant.
-
 Icons downloaded from http://openiconlibrarysourceforge.net and http://www.iconarchive.com/ under various LGPL licenses.  Restrictions specified at sites apply.
+
+Icons used from C:\Users\Jeff\Documents\NPPAngbandSource\lib\user\Free Icons\golden-items-rip-upgrade-pack.htm   by "Ravenmore".  Website:  http://dycha.net
+
+Icons used from http://opengameart.org/content/flare-item-variation-60x60-only made by "Mumu", aka Robert C.  (Public domain license).
+
+Some icons drawn by Jeff Greene, and may be used only under the terms of the Creative Commons Attribution 3.0 licence.
 
 This project utilizes QT, which comes with its own licensing restrictions. Usage restrictions at http://qt-project.org/ apply.
 

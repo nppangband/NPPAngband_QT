@@ -9,7 +9,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -46,30 +46,10 @@ cmd_arg obj_examine(object_type *o_ptr, cmd_arg args)
     return (args);
 }
 
-/*
- * Helper function to help spells that target traps (disarming, etc...)
- */
-static bool is_trap_spell(byte spell_book, int spell)
-{
-    if (spell_book == TV_MAGIC_BOOK)
-    {
-        if (spell == SPELL_TRAP_DOOR_DESTRUCTION) return (TRUE);
-    }
-    else if (spell_book == TV_PRAYER_BOOK)
-    {
-        if (spell == PRAYER_UNBARRING_WAYS) return (TRUE);
-    }
-    else if (spell_book == TV_DRUID_BOOK)
-    {
-        if (spell == DRUID_TRAP_DOOR_DESTRUCTION) return (TRUE);
-
-    }
-    return (FALSE);
-}
 
 cmd_arg obj_drop(object_type *o_ptr, cmd_arg args)
 {
-    int amt = get_quantity("Please enter an amount to drop.", o_ptr->number);
+    int amt = get_quantity("Please enter an amount to drop.", o_ptr->number, 1);
     if (amt <= 0)
     {
         args.verify = FALSE;
@@ -84,7 +64,7 @@ cmd_arg obj_drop(object_type *o_ptr, cmd_arg args)
 
 cmd_arg obj_destroy(object_type *o_ptr, cmd_arg args)
 {
-    int amt = get_quantity("Please enter an amount to destroy.", o_ptr->number);
+    int amt = get_quantity("Please enter an amount to destroy.", o_ptr->number, 1);
     if (amt <= 0)
     {
         args.verify = FALSE;
@@ -273,7 +253,7 @@ typedef enum
     ACTION_USE_ITEM
 } item_act;
 
-static bool trap_related_object(object_type *o_ptr)
+bool trap_related_object(object_type *o_ptr)
 {
     if (o_ptr->is_wand() && o_ptr->is_aware())
     {
@@ -521,9 +501,16 @@ void do_cmd_inscribe(void)
     command_inscribe(args);
 }
 
+void command_examine(cmd_arg args)
+{
+    object_type *o_ptr = object_from_item_idx(args.item);
+
+    obj_examine(o_ptr, args);
+}
+
 
 //Inspect an item
-void do_cmd_observe(void)
+void do_cmd_examine(void)
 {
     // Paranoia
     if (!p_ptr->playing) return;
@@ -535,21 +522,21 @@ void do_cmd_observe(void)
 
 //Actually take off the item.
 
-bool command_takeoff(cmd_arg args)
+void command_takeoff(cmd_arg args)
 {
     // Command cancelled
-    if(!args.verify) return (FALSE);
+    if(!args.verify) return;
 
     if (!item_is_available(args.item, NULL, USE_EQUIP | USE_QUIVER))
     {
         pop_up_message_box("You are not wielding that item.");
-        return (FALSE);
+        return;
     }
 
     if (!obj_can_takeoff(object_from_item_idx(args.item)))
     {
         message(QString("You cannot take off that item."));
-        return (FALSE);
+        return;
     }
 
     p_ptr->message_append_start();
@@ -557,7 +544,7 @@ bool command_takeoff(cmd_arg args)
     (void)inven_takeoff(args.item, 255);
     pack_overflow();
     if(!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE / 2);
-    return (TRUE);
+    return;
 }
 
 /*
@@ -574,20 +561,20 @@ void do_cmd_takeoff(void)
 }
 
 // Handle wielding the item.
-bool command_wield(cmd_arg args)
+void command_wield(cmd_arg args)
 {
     object_type *equip_o_ptr;
     QString o_name;
 
     // Command cancelled
-    if(!args.verify) return (FALSE);
+    if(!args.verify) return;
 
     object_type *o_ptr = object_from_item_idx(args.item);
 
     if (!item_is_available(args.item, NULL, USE_INVEN | USE_FLOOR))
     {
         pop_up_message_box("You do not have that item to wield.");
-        return (FALSE);
+        return;
     }
 
     /* Check the slot */
@@ -596,14 +583,14 @@ bool command_wield(cmd_arg args)
         o_name = object_desc(o_ptr,  ODESC_PREFIX | ODESC_FULL);
 
         pop_up_message_box("You cannot wield that item there.");
-        return (FALSE);
+        return;
     }
 
     /*Hack - don't allow quest items to be worn*/
-    if(o_ptr->ident & (IDENT_QUEST))
+    if(o_ptr->is_quest_artifact())
     {
         pop_up_message_box("You cannot wield quest items.");
-        return (FALSE);
+        return;
     }
 
     /* Hack - Throwing weapons can be wielded in the quiver too. */
@@ -620,7 +607,7 @@ bool command_wield(cmd_arg args)
     {
         wield_item(o_ptr, args.item, args.slot);
         if (!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE);
-        return (TRUE);
+        return;
     }
 
     /* If the slot is in the quiver and objects can be combined */
@@ -629,7 +616,7 @@ bool command_wield(cmd_arg args)
     {
         wield_item(o_ptr, args.item, args.slot);
         if (!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE);
-        return (TRUE);
+        return;
     }
 
     /* Prevent wielding into a cursed slot */
@@ -637,7 +624,7 @@ bool command_wield(cmd_arg args)
     {
         o_name = object_desc(equip_o_ptr,  ODESC_BASE);
         pop_up_message_box(QString("The %1 you are %2 appears to be cursed.") .arg(o_name) .arg(describe_use(args.slot)));
-        return(FALSE);
+        return;
     }
 
     /* "!t" checks for taking off */
@@ -647,14 +634,14 @@ bool command_wield(cmd_arg args)
         o_name = object_desc(equip_o_ptr,  ODESC_PREFIX | ODESC_FULL);
 
         /* Forget it */
-        if (!get_check(QString("Really take off %1? ") .arg(o_name))) return(FALSE);
+        if (!get_check(QString("Really take off %1? ") .arg(o_name))) return;
     }
 
     p_ptr->message_append_start();
 
     wield_item(o_ptr, args.item, args.slot);
     if (!p_ptr->in_store) process_player_energy(BASE_ENERGY_MOVE);
-    return (TRUE);
+    return;
 }
 
 
@@ -671,7 +658,7 @@ void do_cmd_wield()
     (void)command_wield(args);
 }
 
-bool command_drop(cmd_arg args)
+void command_drop(cmd_arg args)
 {
 
     int item = args.item;
@@ -679,19 +666,19 @@ bool command_drop(cmd_arg args)
     int amt = args.number;
 
     // Command cancelled
-    if(!args.verify) return (FALSE);
+    if(!args.verify) return;
 
     if (!item_is_available(item, NULL, USE_INVEN | USE_EQUIP | USE_QUIVER))
     {
         message(QString("You do not have that item to drop."));
-        return (FALSE);
+        return;
     }
 
     /* Hack -- Cannot remove cursed items */
     if ((item >= INVEN_WIELD) && o_ptr->is_cursed())
     {
         pop_up_message_box("Hmmm, it seems to be cursed.");
-        return (FALSE);
+        return;
     }
 
     /* Cursed quiver */
@@ -701,7 +688,7 @@ bool command_drop(cmd_arg args)
         pop_up_message_box("Your quiver is cursed!");
 
         /* Nope */
-        return(FALSE);
+        return;
     }
 
     p_ptr->message_append_start();
@@ -709,7 +696,7 @@ bool command_drop(cmd_arg args)
     inven_drop(item, amt);
     process_player_energy(BASE_ENERGY_MOVE / 2);
 
-    return (TRUE);
+    return;
 }
 
 /*
@@ -722,7 +709,7 @@ void do_cmd_drop(void)
 
     cmd_arg args = select_item(ACTION_DROP);
 
-    (void) command_drop(args);
+    command_drop(args);
 }
 
 static void refill_lamp(object_type *j_ptr, object_type *o_ptr, int item)
@@ -1127,13 +1114,26 @@ static void wield_swap_weapon(void)
  * Depending on game options, either swap weapons between the main weapon
  * slot and the swap weapon slot, or search for weapon with the @x inscription and wield it
  */
-void do_cmd_swap_weapon()
+void command_swap(cmd_arg args)
 {
     // Paranoia
     if (!p_ptr->playing) return;
 
+    (void)args;
+
     if (adult_swap_weapons) swap_weapons();
     else wield_swap_weapon();
+}
+
+/*
+ * Depending on game options, either swap weapons between the main weapon
+ * slot and the swap weapon slot, or search for weapon with the @x inscription and wield it
+ */
+void do_cmd_swap_weapon()
+{
+    cmd_arg args;
+    args.wipe();
+    command_swap(args);
 }
 
 /*

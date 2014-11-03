@@ -443,30 +443,6 @@ QString describe_quest(s16b level, int mode)
 }
 
 
-
-void show_quest_mon(int y, int x)
-{
-
-    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-
-
-    /*display the monster character if applicable*/
-    if ((quest_fixed(q_ptr)) || (quest_single_r_idx(q_ptr)))
-    {
-        monster_race *r_ptr = &r_info[q_ptr->mon_idx];
-
-        /* Get the char */
-        QColor a1 = r_ptr->d_color;
-
-        /* Get the attr */
-        QChar c1 = r_ptr->d_char;
-
-        /* Append the "standard" attr/char info */
-        //TODO print it out
-    }
-
-}
-
 /*
  * A simplified version of object_similar, for guild quest rewards.
  * Just figure out if the objects are the same type.
@@ -534,6 +510,8 @@ static bool guild_carry(object_type *o_ptr)
     object_type *j_ptr;
     u32b o_value = object_value(o_ptr);
     u32b j_value;
+
+    o_ptr->update_object_flags();
 
     /* First see if we already have one of these in stock */
     slot = guild_redundant_item(o_ptr);
@@ -1175,15 +1153,13 @@ static void create_reward_objects(quest_type *q_ptr, byte reward_type)
             }
         }
 
+        o_ptr->update_object_flags();
+
         /* Make sure gloves won't ruin spellcasting */
         if ((o_ptr->tval == TV_GLOVES) && (cp_ptr->flags & (CF_CUMBER_GLOVE)))
         {
-            u32b f1, f2, f3, fn;
-
-            object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
             /* Limit to legal glove types */
-            if (!((f3 & (TR3_FREE_ACT)) || (f1 & (TR1_DEX))))
+            if (!((o_ptr->obj_flags_3 & (TR3_FREE_ACT)) || (o_ptr->obj_flags_1 & (TR1_DEX))))
             {
                 continue;
             }
@@ -1212,6 +1188,8 @@ static void create_reward_objects(quest_type *q_ptr, byte reward_type)
 
         /* Mark the item as fully known */
         o_ptr->ident |= (IDENT_MENTAL);
+
+        o_ptr->update_object_flags();
 
         /* Give it to the guild */
         if (!guild_carry(o_ptr)) continue;
@@ -2226,7 +2204,7 @@ static void remove_quest_objects(void)
     {
         o_ptr = &inventory[j];
 
-        if (o_ptr->ident & (IDENT_QUEST))
+        if (o_ptr->is_quest_artifact())
         {
             /* Destroy the quest items in the pack */
             inven_item_increase(j, -o_ptr->number);
@@ -2548,7 +2526,7 @@ int quest_item_slot(void)
     {
         o_ptr = &inventory[i];
 
-        if (o_ptr->ident & IDENT_QUEST) return (i);
+        if (o_ptr->is_quest_artifact()) return (i);
     }
 
     /* No quest item */
@@ -2568,7 +2546,7 @@ int quest_item_count(void)
     {
         o_ptr = &inventory[i];
 
-        if (o_ptr->ident & (IDENT_QUEST))
+        if (o_ptr->is_quest_artifact())
         {
             item_count += o_ptr->number;
         }

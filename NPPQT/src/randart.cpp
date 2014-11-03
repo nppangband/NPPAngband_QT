@@ -904,19 +904,20 @@ static bool init_mon_power(void)
  * Not intended for special artifacts!!!
  * Not currently used, but too useful to delete
  */
+/*
 static byte get_art_theme(const artifact_type *a_ptr)
 {
     switch (a_ptr->tval)
     {
-        case TV_HARD_ARMOR: /*fall through*/
+        case TV_HARD_ARMOR:
         case TV_SOFT_ARMOR: return (ART_THEME_ARMOR);
-        case TV_DRAG_ARMOR:	/*fall through*/
+        case TV_DRAG_ARMOR:
         case TV_DRAG_SHIELD:return (ART_THEME_DRAG_ARMOR);
         case TV_SHIELD:		return (ART_THEME_SHIELD);
         case TV_CLOAK:		return (ART_THEME_CLOAK);
         case TV_BOOTS:		return (ART_THEME_BOOTS);
         case TV_GLOVES:		return (ART_THEME_GLOVES);
-        case TV_HELM:		/*fall through*/
+        case TV_HELM:
         case TV_CROWN:		return (ART_THEME_HELM);
         case TV_BOW:		return (ART_THEME_BOW);
         case TV_SWORD:		return (ART_THEME_EDGED);
@@ -924,15 +925,15 @@ static byte get_art_theme(const artifact_type *a_ptr)
         case TV_POLEARM:	return (ART_THEME_POLEARM);
         case TV_DIGGING:	return (ART_THEME_SHOVEL);
 
-        /*notice returning this would crash the game if it was looked
-         * up in a table, but I have to return something. -JG
-         */
+        notice returning this would crash the game if it was looked
+          up in a table, but I have to return something. -JG
+
         default:			return (ART_THEME_MAX);
     }
 
 
 }
-
+*/
 
 /*
  * Calculate the rating for calculating a weapon base damage potential
@@ -3903,6 +3904,9 @@ void create_quest_artifact(object_type *o_ptr)
 
     /* Mark the item as fully known, and as a quest item */
     o_ptr->ident |= (IDENT_MENTAL | IDENT_QUEST);
+
+    /* Extract the flags */
+    o_ptr->update_object_flags();
 
     /* Set the good item flag */
     good_item_flag = TRUE;

@@ -8,7 +8,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -174,7 +174,7 @@ bool put_object_in_inventory(object_type *o_ptr)
 	if (slot < 0) return (FALSE);
 
 	/* Update the quest counter */
-	if (o_ptr->ident & (IDENT_QUEST))
+    if (o_ptr->is_quest_artifact())
 	{
 		p_ptr->notice |= (PN_QUEST_REMAIN);
 		p_ptr->redraw |= (PR_QUEST_ST);
@@ -356,6 +356,26 @@ void do_cmd_pickup_from_pile(bool pickup, bool msg)
 	/* Just be sure all inventory management is done. */
 	notice_stuff();
 	handle_stuff();
+}
+
+void command_pickup(cmd_arg args)
+{
+    // Paranoia
+    if (args.item >= 0) return;
+
+    // Floor items are numbered negatively
+    s16b item = -args.item;
+
+    object_type *o_ptr = &o_list[item];
+
+    /* Pick up the object */
+    if (put_object_in_inventory(o_ptr))
+    {
+        /* Delete the object */
+        delete_object_idx(item);
+        process_player_energy(BASE_ENERGY_MOVE);
+    }
+
 }
 
 

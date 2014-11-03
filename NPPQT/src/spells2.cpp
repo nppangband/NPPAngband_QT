@@ -2015,8 +2015,6 @@ static int remove_curse_aux(bool heavy)
     /* Attempt to uncurse items being worn */
     for (i = INVEN_WIELD; i < ALL_INVEN_TOTAL; i++)
     {
-        u32b f1, f2, f3, fn;
-
         object_type *o_ptr = &inventory[i];
         QString o_name;
 
@@ -2026,14 +2024,11 @@ static int remove_curse_aux(bool heavy)
         /* Uncursed already */
         if (!o_ptr->is_cursed()) continue;
 
-        /* Extract the flags */
-        object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
         /* Heavily Cursed Items need a special spell */
-        if (!heavy && (f3 & (TR3_HEAVY_CURSE))) continue;
+        if (!heavy && (o_ptr->obj_flags_3 & (TR3_HEAVY_CURSE))) continue;
 
         /* Perma-Cursed Items can NEVER be uncursed */
-        if (f3 & (TR3_PERMA_CURSE)) continue;
+        if (o_ptr->obj_flags_3 & (TR3_PERMA_CURSE)) continue;
 
         /* Uncurse the object */
         uncurse_object(o_ptr);
@@ -2041,6 +2036,8 @@ static int remove_curse_aux(bool heavy)
         o_name = object_desc(o_ptr, ODESC_BASE);
 
         message(QString("The curse on your %1 is broken!") .arg(o_name));
+
+        o_ptr->update_object_flags();
 
         /* Recalculate the bonuses */
         p_ptr->update |= (PU_BONUS);
@@ -2122,6 +2119,9 @@ void identify_object(object_type *o_ptr, bool star_ident)
         o_ptr->ident |= (IDENT_MENTAL);
     }
 
+    /* Extract the flags */
+    o_ptr->update_object_flags();
+
     p_ptr->redraw |= (PR_ITEMLIST);
 }
 
@@ -2147,6 +2147,8 @@ int do_ident_item(int item, object_type *o_ptr)
     /* Identify it */
     object_aware(o_ptr);
     object_known(o_ptr);
+
+    o_ptr->update_object_flags();
 
     /* Apply an autoinscription, if necessary */
     apply_autoinscription(o_ptr);
@@ -2334,6 +2336,8 @@ bool identify_fully(void)
 
     /* Mark the item as fully known */
     o_ptr->ident |= (IDENT_MENTAL);
+
+     o_ptr->update_object_flags();
 
     /* Identify the object and get the squelch setting */
     squelch = do_ident_item(item, o_ptr);
@@ -2699,11 +2703,6 @@ bool enchant(object_type *o_ptr, int n, int eflag)
 
     bool a = o_ptr->is_artifact();
 
-    u32b f1, f2, f3, fn;
-
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Large piles resist enchantment */
     prob = o_ptr->number * 100;
 
@@ -2738,7 +2737,7 @@ bool enchant(object_type *o_ptr, int n, int eflag)
 
                 /* Break curse */
                 if (o_ptr->is_cursed() &&
-                    (!(f3 & (TR3_PERMA_CURSE))) &&
+                    (!(o_ptr->obj_flags_3 & (TR3_PERMA_CURSE))) &&
                     (o_ptr->to_h >= 0) && (rand_int(100) < 25))
                 {
                     message(QString("The curse is broken!"));
@@ -2766,7 +2765,7 @@ bool enchant(object_type *o_ptr, int n, int eflag)
 
                 /* Break curse */
                 if (o_ptr->is_cursed() &&
-                    (!(f3 & (TR3_PERMA_CURSE))) &&
+                    (!(o_ptr->obj_flags_3 & (TR3_PERMA_CURSE))) &&
                     (o_ptr->to_d >= 0) && (rand_int(100) < 25))
                 {
                     message(QString("The curse is broken!"));
@@ -2794,7 +2793,7 @@ bool enchant(object_type *o_ptr, int n, int eflag)
 
                 /* Break curse */
                 if (o_ptr->is_cursed() &&
-                    (!(f3 & (TR3_PERMA_CURSE))) &&
+                    (!(o_ptr->obj_flags_3 & (TR3_PERMA_CURSE))) &&
                     (o_ptr->to_a >= 0) && (rand_int(100) < 25))
                 {
                     message(QString("The curse is broken!"));
@@ -2805,6 +2804,8 @@ bool enchant(object_type *o_ptr, int n, int eflag)
             }
         }
     }
+
+     o_ptr->update_object_flags();
 
     /* Failure */
     if (!res) return (FALSE);
@@ -2923,14 +2924,13 @@ void self_knowledge(void)
 
         if ((adult_swap_weapons) && (k == INVEN_SWAP_WEAPON)) continue;
 
-        /* Extract the flags */
-        object_flags(o_ptr, &t1, &t2, &t3, &tn);
+        o_ptr->update_object_flags();
 
         /* Extract flags */
-        f1 |= t1;
-        f2 |= t2;
-        f3 |= t3;
-        fn |= tn;
+        f1 |= o_ptr->obj_flags_1;
+        f2 |= o_ptr->obj_flags_2;
+        f3 |= o_ptr->obj_flags_3;
+        fn |= o_ptr->obj_flags_native;
     }
 
     if (cp_ptr->flags & CF_BLESS_WEAPON)

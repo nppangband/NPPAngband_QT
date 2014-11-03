@@ -29,7 +29,6 @@ extern monster_type *summoner;
 extern s32b turn;
 extern int use_graphics;
 extern s16b image_count;
-extern bool use_bigtile;
 
 extern s16b o_max;
 extern s16b o_cnt;
@@ -119,7 +118,6 @@ extern bool (*item_tester_hook)(object_type*);
 extern bool (*get_mon_num_hook)(int r_idx);
 extern bool (*get_obj_num_hook)(int k_idx);
 extern bool (*get_feat_num_hook)(int k_idx);
-extern void (*object_info_out_flags)(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native);
 
 /* Sorting functions */
 extern bool (*ang_sort_comp)(const void *u, const void *v, int a, int b);

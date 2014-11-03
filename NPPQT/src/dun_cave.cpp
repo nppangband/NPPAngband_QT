@@ -8,7 +8,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "src/utilities.h"
 #include "src/init.h"
 #include "tilebag.h"
 
@@ -942,7 +943,7 @@ static void map_objects (s16b y, s16b x)
             (k_info[o_ptr->k_idx].squelch == SQUELCH_ALWAYS) && (k_info[o_ptr->k_idx].aware));
 
         /*hack - never allow quest items to appear as dot*/
-        if ((!sq_flag) || (o_ptr->ident & IDENT_QUEST))
+        if ((!sq_flag) || o_ptr->is_quest_artifact())
         {
             /* Normal attr */
             if (use_flavor_glyph(o_ptr)) {
@@ -5114,6 +5115,9 @@ void disturb(int stop_search, int unused_flag)
 
     /* Cancel repeated commands */
     p_ptr->player_command_wipe();
+
+    // Signal to terminate menu
+    p_ptr->in_menu = FALSE;
 
     /* Cancel searching if requested */
     if (stop_search && p_ptr->searching)

@@ -100,21 +100,25 @@ extern void do_cmd_feeling(void);
 extern void do_cmd_repeat(void);
 
 //cmd_objects
+extern cmd_arg obj_wield(object_type *o_ptr, cmd_arg args);
 extern cmd_arg obj_uninscribe(object_type *o_ptr, cmd_arg args);
+extern bool trap_related_object(object_type *o_ptr);
 extern void command_uninscribe(cmd_arg args);
 extern void do_cmd_uninscribe(void);
 extern void command_inscribe(cmd_arg args);
 extern void do_cmd_inscribe(void);
 extern cmd_arg obj_examine(object_type *o_ptr, cmd_arg args);
-extern void do_cmd_observe(void);
-extern bool command_takeoff(cmd_arg args);
+extern void command_examine(cmd_arg args);
+extern void do_cmd_examine(void);
+extern void command_takeoff(cmd_arg args);
 extern void do_cmd_takeoff(void);
-extern bool command_wield(cmd_arg args);
+extern void command_wield(cmd_arg args);
 extern void do_cmd_wield(void);
-extern bool command_drop(cmd_arg args);
+extern void command_drop(cmd_arg args);
 extern void do_cmd_drop(void);
 extern void command_refuel(cmd_arg args);
 extern void do_cmd_refuel(void);
+extern void command_swap(cmd_arg args);
 extern void do_cmd_swap_weapon(void);
 extern void command_destroy(cmd_arg args);
 extern void do_cmd_destroy(void);
@@ -125,6 +129,7 @@ extern void do_cmd_use_item(void);
 extern bool put_object_in_inventory(object_type *o_ptr);
 extern void do_cmd_pickup_from_pile(bool pickup, bool message);
 extern void py_pickup_gold(void);
+extern void command_pickup(cmd_arg args);
 extern void py_pickup(bool pickup);
 extern void do_cmd_pickup(void);
 extern int move_player(int dir, int jumping);
@@ -132,7 +137,10 @@ extern int move_player(int dir, int jumping);
 // cmd_spell.cpp
 extern int spell_chance(int spell);
 extern bool spell_okay(int spell, bool known);
+extern void command_browse(cmd_arg arg);
 extern void do_cmd_browse(void);
+extern bool player_can_use_book(const object_type *o_ptr, bool known);
+extern void command_study(cmd_arg args);
 extern void do_cmd_study(void);
 extern void command_cast(cmd_arg args);
 extern void do_cmd_cast(void);
@@ -333,6 +341,9 @@ extern bool race_breathes_element(monster_race *r_ptr, int gf_type);
 extern bool race_similar_breaths(monster_race *r_ptr, monster_race *r2_ptr);
 extern bool race_similar_monsters(int m_idx, int m2y, int m2x);
 
+// object_all_menu.cpp
+extern void do_cmd_all_objects(void);
+
 /* object_desc.c */
 extern QString strip_name(int k_idx);
 extern QString object_desc(object_type *o_ptr, byte mode);
@@ -395,8 +406,6 @@ extern bool find_object_in_use(int *item);
 extern void command_use(cmd_arg args);
 
 //obj_util.cpp
-extern void object_flags(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native);
-extern void object_flags_known(object_type *o_ptr, u32b *f1, u32b *f2, u32b *f3, u32b *native);
 extern QChar index_to_label(int i);
 extern s16b wield_slot_ammo(object_type *o_ptr);
 extern s16b wield_slot(object_type *o_ptr);
@@ -459,7 +468,7 @@ extern s16b lookup_ego(s16b tval, s16b sval, QString ego_title);
 extern void display_object_idx_recall(s16b o_idx);
 extern void display_object_kind_recall(s16b k_idx);
 extern bool obj_can_refill(object_type *o_ptr);
-extern bool obj_is_openable_chest(object_type *o_ptr);
+extern bool obj_is_chest(object_type *o_ptr);
 extern bool chest_requires_disarming(object_type *o_ptr);
 extern bool ammo_can_fire(object_type *o_ptr, int item);
 extern bool has_correct_ammo(void);
@@ -497,6 +506,7 @@ extern int critical_shot_chance(object_type *o_ptr, player_state a_state, bool i
 extern void py_attack(int y, int x);
 extern void do_cmd_fire();
 extern void command_fire(cmd_arg args);
+extern void command_fire_nearest(cmd_arg args);
 extern void do_cmd_fire_at_nearest(void);
 extern int weapon_throw_adjust(const object_type *o_ptr, u32b f3, int *plus, bool id_only);
 extern void command_throw(cmd_arg args);
@@ -514,6 +524,9 @@ extern void delete_player_ghost_entry(void);
 extern void add_player_ghost_entry(void);
 extern void load_player_ghost_file(void);
 extern void save_player_ghost_file(void);
+
+// player_info.cpp
+
 
 // player_process
 extern void process_player_terrain_damage(void);
@@ -602,7 +615,6 @@ extern bool beam_chain(int gf_type, int dam, int max_hits, int decrement);
 extern QString plural_aux(QString name);
 extern int quest_collection_num(quest_type *q_ptr);
 extern QString describe_quest(s16b level, int mode);
-extern void show_quest_mon(int y, int x);
 extern void add_reward_gold(void);
 extern QString get_title(void);
 extern QString get_rep_guild(void);
@@ -912,6 +924,7 @@ extern const colors_preset preset_colors[MAX_COLORS];
 
 /* target.cpp */
 extern bool target_able(int m_idx);
+extern bool monster_target_exists(void);
 extern bool target_okay(void);
 extern bool target_set_interactive(int mode, int x, int y);
 extern void target_set_monster(int m_idx);
@@ -946,7 +959,7 @@ extern QString capitalize_first(QString line);
 extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMessageBox::Information);
 extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
-extern s16b get_quantity(QString prompt, int max, int amt = 1);
+extern s16b get_quantity(QString prompt, int max, int amt);
 extern QColor add_preset_color(int which_color);
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);
@@ -956,6 +969,7 @@ extern void custom_color_message(QString msg, byte red, byte green, byte blue);
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);
 extern QString format_object_weight(object_type *o_ptr);
+extern QString formatted_weight_string(s32b weight);
 extern QString get_player_title(void);
 extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);

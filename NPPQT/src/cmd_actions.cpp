@@ -8,7 +8,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -466,7 +466,7 @@ static s16b chest_check(int y, int x, bool check_locked)
         if (o_ptr->tval != TV_CHEST) continue;
 
         /* Don't count special quest items */
-        if (o_ptr->ident & (IDENT_QUEST)) continue;
+        if (o_ptr->is_quest_artifact()) continue;
 
         /* Handle the option to check if it is locked*/
         if (check_locked)
@@ -513,7 +513,7 @@ int count_chests(int *y, int *x, bool trapped)
         if (o_ptr->mimic_r_idx) continue;
 
         /* Don't count special quest items */
-        if (o_ptr->ident & (IDENT_QUEST)) continue;
+        if (o_ptr->is_quest_artifact()) continue;
 
         /* No (known) traps here */
         if (trapped &&
@@ -787,7 +787,7 @@ static bool do_cmd_open_chest(int y, int x, s16b o_idx)
         return (FALSE);
     }
 
-    if (o_ptr->ident & (IDENT_QUEST))
+    if (o_ptr->is_quest_artifact())
     {
         message("This chest cannot be opened!");
         return (FALSE);
@@ -942,7 +942,7 @@ void command_open(cmd_arg args)
                 s = "There are no chests in that direction!";
 
                 /*clear the restriction*/
-                item_tester_hook = obj_is_openable_chest;
+                item_tester_hook = obj_is_chest;
 
                 /*player chose escape*/
                 if (!get_item_beside(&o_idx, q, s, cy, cx)) more = 0;
@@ -1506,7 +1506,7 @@ void do_search(void)
                     /* Skip non-trapped chests */
                     if (!chest_traps[o_ptr->pval]) continue;
 
-                    if (o_ptr->ident & (IDENT_QUEST)) continue;
+                    if (o_ptr->is_quest_artifact()) continue;
 
                     /* Identify once */
                     if (!object_known_p(o_ptr))
@@ -1561,7 +1561,7 @@ void do_cmd_toggle_search(void)
 
 void command_search(cmd_arg args)
 {
-     p_ptr->player_previous_command_update(CMD_SEARCH, args);
+    p_ptr->player_previous_command_update(CMD_SEARCH, args);
 
     do_search();
     process_player_energy(BASE_ENERGY_MOVE);

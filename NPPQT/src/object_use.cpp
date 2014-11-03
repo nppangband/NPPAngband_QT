@@ -1347,6 +1347,9 @@ static bool read_scroll(object_type *o_ptr, bool *ident)
 
                 object_history(o_ptr, ORIGIN_ACQUIRE, 0);
 
+                /* Update the flags */
+                o_ptr->update_object_flags();
+
                 /* Let the player know what they just got */
                 object_info_screen(o_ptr);
 

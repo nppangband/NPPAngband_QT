@@ -1072,7 +1072,6 @@ bool make_attack_normal(monster_type *m_ptr)
                 /* Hit to drain light */
                 case RBE_EAT_LIGHT:
                 {
-                    u32b f1, f2, f3, fn;
 
                     /* Player armour reduces total damage */
                     ac_dam(&dam, ac);
@@ -1082,9 +1081,6 @@ bool make_attack_normal(monster_type *m_ptr)
 
                     /* Get the light source */
                     o_ptr = &inventory[INVEN_LIGHT];
-
-                    /* Get object flags */
-                    object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
                     /* Drain fuel */
                     if ((o_ptr->timeout > 0) && !o_ptr->is_artifact())

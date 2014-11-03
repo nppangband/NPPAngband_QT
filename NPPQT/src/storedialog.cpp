@@ -1,6 +1,6 @@
 #include "storedialog.h"
 #include <QKeyEvent>
-#include <QVBoxLayout>
+
 #include <QTabWidget>
 #include <QPushButton>
 #include <QSpacerItem>
@@ -33,6 +33,25 @@ static void clear_grid(QGridLayout *lay)
         if (wid) delete wid;
         delete item;
     }
+}
+
+void StoreDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col)
+{
+    // Add the weight
+    QString weight_printout = (formatted_weight_string(o_ptr->weight * o_ptr->number));
+    weight_printout.append(" lbs");
+    QLabel *weight = new QLabel(weight_printout);
+    weight->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    lay->addWidget(weight, row, col);
+}
+
+void StoreDialog::add_help_label(QGridLayout *lay, QString id, int row, int col)
+{
+    QPushButton *help_button = new QPushButton;
+    help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+    help_button->setObjectName(id);
+    connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
+    lay->addWidget(help_button, row, col);
 }
 
 StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
@@ -327,7 +346,7 @@ void StoreDialog::reset_quest_status()
     if (use_graphics)
     {
         QPixmap pix = ui_get_tile(r_ptr->tile_id);
-        pix = pix.scaled(24, 24);
+        pix = pix.scaled(32, 32);
         quest_picture->setPixmap(pix);
     }
     else
@@ -500,7 +519,7 @@ void StoreDialog::reset_store()
     // Add weight label
     QLabel *weight_label = new QLabel("Weight");
     weight_label->setText("Weight");
-    weight_label->setAlignment(Qt::AlignRight);
+    weight_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     lay->addWidget(weight_label, row, col++);
 
     //Add price label
@@ -508,7 +527,7 @@ void StoreDialog::reset_store()
     {
         QLabel *price_label = new QLabel("Price");
         price_label->setText("Price");
-        price_label->setAlignment(Qt::AlignRight);
+        price_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         lay->addWidget(price_label, row++, col);
     }
 
@@ -572,11 +591,7 @@ void StoreDialog::reset_store()
         l->setAlignment(Qt::AlignRight);
         lay->addWidget(l, row, col++);
 
-        QPushButton *help_button = new QPushButton;
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setObjectName(id);
-        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
-        lay->addWidget(help_button, row, col++);
+        add_help_label(lay, id, row, col++);
 
         ++row;
     }
@@ -612,11 +627,7 @@ void StoreDialog::reset_store()
         // Skip over the price and weight column.
         col+=2;
 
-        QPushButton *help_button = new QPushButton;
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setObjectName(id);
-        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
-        lay->addWidget(help_button, row, col++);
+        add_help_label(lay, id, row, col++);
 
         row++;
     }
@@ -659,16 +670,7 @@ void StoreDialog::reset_store()
         }
 
         // Add the weight
-        int orig_weight = o_ptr->weight * o_ptr->number;
-        int weight1 = orig_weight/10;
-        int weight2 = orig_weight%10;
-
-        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
-        weight_printout = weight_printout.rightJustified(8, ' ');
-        QLabel *weight = new QLabel(weight_printout);
-        weight->setAlignment(Qt::AlignRight);
-        weight->setAlignment(Qt::AlignBottom);
-        lay->addWidget(weight, row, col++);
+        add_weight_label(lay, o_ptr, row, col++);
 
         // Provice a price, if necessary.
         if (!home && !guild)
@@ -678,17 +680,12 @@ void StoreDialog::reset_store()
             price_text = price_text.rightJustified(16, ' ');
             QLabel *price_out = new QLabel("Price");
             price_out->setText(price_text);
-            price_out->setAlignment(Qt::AlignRight);
-            price_out->setAlignment(Qt::AlignBottom);
+            price_out->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
             lay->addWidget(price_out, row, col);
         }
         col++;
 
-        QPushButton *help_button = new QPushButton;
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setObjectName(id);
-        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
-        lay->addWidget(help_button, row, col++);
+        add_help_label(lay, id, row, col++);
 
         ++row;
     }
@@ -792,14 +789,7 @@ void StoreDialog::reset_inventory()
         }
 
         // Add the weight
-        int orig_weight = o_ptr->weight * o_ptr->number;
-        int weight1 = orig_weight/10;
-        int weight2 = orig_weight%10;
-        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
-        weight_printout = weight_printout.rightJustified(8, ' ');
-        QLabel *weight = new QLabel(weight_printout);
-        weight->setAlignment(Qt::AlignRight);
-        lay->addWidget(weight, row, 2);
+        add_weight_label(lay, o_ptr, row, 2);
 
         if (!home && store_will_buy(store_idx, o_ptr))
         {
@@ -808,15 +798,11 @@ void StoreDialog::reset_inventory()
             price_text = price_text.rightJustified(16, ' ');
             QLabel *price_out = new QLabel("Price");
             price_out->setText(price_text);
-            price_out->setAlignment(Qt::AlignRight);
+            price_out->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
             lay->addWidget(price_out, row, 3);
         }
 
-        QPushButton *help_button = new QPushButton;
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setObjectName(id);
-        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
-        lay->addWidget(help_button, row, 4);
+        add_help_label(lay, id, row, 4);
 
         ++row;
     }
@@ -843,7 +829,7 @@ void StoreDialog::reset_equip()
     {
         QLabel *price_label = new QLabel("Price");
         price_label->setText("price");
-        price_label->setAlignment(Qt::AlignRight);
+        price_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         lay->addWidget(price_label, row++, 3);
     }
     for (i = INVEN_WIELD; i < QUIVER_END; i++)
@@ -888,14 +874,7 @@ void StoreDialog::reset_equip()
         }
 
         // Add the weight
-        int orig_weight = o_ptr->weight * o_ptr->number;
-        int weight1 = orig_weight/10;
-        int weight2 = orig_weight%10;
-        QString weight_printout = (QString("%1.%2") .arg(weight1) .arg(weight2));
-        weight_printout = weight_printout.rightJustified(8, ' ');
-        QLabel *weight = new QLabel(weight_printout);
-        weight->setAlignment(Qt::AlignRight);
-        lay->addWidget(weight, row, 2);
+        add_weight_label(lay, o_ptr, row, 2);
 
         if (!home && store_will_buy(store_idx, o_ptr))
         {
@@ -904,15 +883,11 @@ void StoreDialog::reset_equip()
             price_text = price_text.rightJustified(16, ' ');
             QLabel *price_out = new QLabel("Price");
             price_out->setText(price_text);
-            price_out->setAlignment(Qt::AlignRight);
+            price_out->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
             lay->addWidget(price_out, row, 3);
         }
 
-        QPushButton *help_button = new QPushButton;
-        help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        help_button->setObjectName(id);
-        connect(help_button, SIGNAL(clicked()), this, SLOT(help_click()));
-        lay->addWidget(help_button, row, 4);
+        add_help_label(lay, id, row, 4);
 
         row++;
     }

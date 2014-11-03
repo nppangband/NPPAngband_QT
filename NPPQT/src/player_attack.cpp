@@ -305,8 +305,6 @@ static void dam_dice_aux(object_type *o_ptr, int *dd, const monster_type *m_ptr,
     monster_race *r_ptr = &r_info[m_ptr->r_idx];
     monster_lore *l_ptr = &l_list[m_ptr->r_idx];
 
-    u32b f1, f2, f3, fn;
-
     /* Get the feature */
     u32b element = cave_ff3_match(y, x, TERRAIN_MASK);
 
@@ -317,17 +315,14 @@ static void dam_dice_aux(object_type *o_ptr, int *dd, const monster_type *m_ptr,
     /* Find out if monster is flying over terrain */
     bool is_flying = (m_ptr->mflag & (MFLAG_FLYING)) != 0;
 
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-
     /* Mod damage dice for slays */
-    mod_dd_slays(f1, r_ptr->flags3, &l_ptr->r_l_flags3, &mult, m_ptr->ml);
+    mod_dd_slays(o_ptr->obj_flags_1, r_ptr->flags3, &l_ptr->r_l_flags3, &mult, m_ptr->ml);
 
     /* Modify damage dice for branding */
-    terrain_flag = mod_dd_brands(f1, r_ptr->flags3, &l_ptr->r_l_flags3,
+    terrain_flag = mod_dd_brands(o_ptr->obj_flags_1, r_ptr->flags3, &l_ptr->r_l_flags3,
                                  &divider, deep, &mult, m_ptr->ml, is_native, is_flying, element);
 
-    extra_dam = mod_dd_succept(f1, r_ptr->flags3, &l_ptr->r_l_flags3, m_ptr->ml);
+    extra_dam = mod_dd_succept(o_ptr->obj_flags_1, r_ptr->flags3, &l_ptr->r_l_flags3, m_ptr->ml);
 
     mod_dd_elem_brand(r_ptr->flags3, &l_ptr->r_l_flags3, &mult, m_ptr->ml, is_weapon);
 
@@ -855,7 +850,6 @@ void command_fire(cmd_arg args)
     int i, j, y, x, ty, tx;
     int tmul, tdis, thits;
     int bonus, chance;
-    u32b f1, f2, f3, fn;
 
     object_type *o_ptr;
     object_type *j_ptr;
@@ -906,9 +900,6 @@ void command_fire(cmd_arg args)
 
     /* Get the object for the ammo */
     o_ptr = object_from_item_idx(item);
-
-    /* Examine the item */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
     /* A cursed quiver disables the use of non-cursed ammo */
     if (IS_QUIVER_SLOT(item) && p_ptr->state.cursed_quiver && !o_ptr->is_cursed())
@@ -1137,7 +1128,7 @@ void command_fire(cmd_arg args)
             ds = i_ptr->ds;
 
             /* Apply special damage XXX XXX XXX */
-            tries = critical_shot_check(i_ptr, &dd, &plus, FALSE, f3);
+            tries = critical_shot_check(i_ptr, &dd, &plus, FALSE, o_ptr->obj_flags_3);
 
             /* Possibly increase the damage dice due to brands, slays, etc */
             dam_dice_aux(i_ptr, &dd, m_ptr, FALSE);
@@ -1234,6 +1225,20 @@ void do_cmd_fire(void)
     args.item = item;
     args.direction = dir;
 
+    command_fire(args);
+}
+
+//  A placeholder for cmd_fire_at nearest for the command_type structure
+void command_fire_nearest(cmd_arg args)
+{
+    if (args.item < 0)
+    {
+        do_cmd_fire_at_nearest();
+        return;
+    }
+
+    if (!target_set_closest(TARGET_KILL | TARGET_QUIET))
+        return;
     command_fire(args);
 }
 
@@ -1816,7 +1821,6 @@ void command_throw(cmd_arg args)
     int i, j, y, x, ty, tx;
     int chance, tdis;
     int mul, divider;
-    u32b f1, f2, f3, fn;
 
     object_type *o_ptr;
 
@@ -1860,9 +1864,6 @@ void command_throw(cmd_arg args)
     }
 
     p_ptr->message_append_start();
-
-    /* Examine the item */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
     /* Get local object */
     i_ptr = &object_type_body;
@@ -1932,7 +1933,7 @@ void command_throw(cmd_arg args)
     if (tdis > 10) tdis = 10;
 
     /* Chance of hitting */
-    if (f3 & (TR3_THROWING))
+    if (o_ptr->obj_flags_3 & (TR3_THROWING))
     {
         chance = p_ptr->state.skills[SKILL_TO_HIT_THROW] + BTH_PLUS_ADJ * (p_ptr->state.to_h + i_ptr->to_h);
     }
@@ -2016,7 +2017,7 @@ void command_throw(cmd_arg args)
         /* Rogues Get extra to-hit from throwing weapons*/
 
         if ((cp_ptr->flags & CF_ROGUE_COMBAT)
-            && (m_ptr->ml) && (f3 & (TR3_THROWING)))
+            && (m_ptr->ml) && (o_ptr->obj_flags_3 & (TR3_THROWING)))
         {
             sleeping_bonus = 30 + p_ptr->lev / 2;
         }
@@ -2076,7 +2077,7 @@ void command_throw(cmd_arg args)
                 /* Get "the monster" or "it" */
                 QString m_name = monster_desc(m_ptr, 0);
 
-                if (f3 & (TR3_THROWING))
+                if (o_ptr->obj_flags_3 & (TR3_THROWING))
                 {
                     /* Message */
                     message(QString("The %1 hits %2 with great accuracy!.") .arg(o_name) .arg(m_name));
@@ -2117,10 +2118,10 @@ void command_throw(cmd_arg args)
             if (!potion_effect) dam_dice_aux(i_ptr, &dd, m_ptr, FALSE);
 
             /* Object is a throwing weapon. */
-            weapon_throw_adjust(o_ptr, f3, &plus, FALSE);
+            weapon_throw_adjust(o_ptr, o_ptr->obj_flags_3, &plus, FALSE);
 
             /* Critical hits may add damage dice. */
-            tries = critical_shot_check(i_ptr, &dd, &plus, TRUE, f3);
+            tries = critical_shot_check(i_ptr, &dd, &plus, TRUE, o_ptr->obj_flags_3);
 
             /* Base damage from thrown object plus bonuses */
             tdam = max_damroll(dd, ds, tries) + plus;
@@ -2160,7 +2161,7 @@ void command_throw(cmd_arg args)
     else j = (hit_body ? breakage_chance(i_ptr) : 0);
 
     /*hack - throwing weapons have a lesser chance*/
-    if (f3 & (TR3_THROWING)) j /= 2;
+    if (o_ptr->obj_flags_3 & (TR3_THROWING)) j /= 2;
 
     /* Drop (or break) near that location */
     drop_near(i_ptr, j, y, x);

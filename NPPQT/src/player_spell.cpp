@@ -2088,7 +2088,7 @@ QString do_druid_incantation(int mode, int spell, int dir)
             rad = 2;
 
             if (name) return ("Fire Ball");
-            if (desc) return (QString("Fires a radius %1 ball of fire for %1+1d%2 hp damage.") .arg(rad) .arg(dam) .arg(dam1));
+            if (desc) return (QString("Fires a radius %1 ball of fire for %2+1d%3 hp damage.") .arg(rad) .arg(dam) .arg(dam1));
             if (desc_short) return (QString("rad %1 dam %2") .arg(rad) .arg(dam1));
             if (cast)
             {

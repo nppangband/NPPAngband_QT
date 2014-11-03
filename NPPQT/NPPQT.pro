@@ -48,8 +48,10 @@ SOURCES +=  src/qt_main.cpp\
             src/mon_ranged_attacks.cpp \
             src/mon_util.cpp \
             src/nppdialog.cpp \
+            src/object_all_menu.cpp \
             src/object_classes.cpp \
             src/object_desc.cpp \
+            src/object_dialog.cpp \
             src/object_hooks.cpp \
             src/object_info.cpp \
             src/object_make.cpp \
@@ -63,6 +65,7 @@ SOURCES +=  src/qt_main.cpp\
             src/player_death.cpp \
             src/player_classes.cpp \
             src/player_command.cpp \
+            src/player_info.cpp \
             src/player_process.cpp \
             src/player_spell.cpp \
             src/player_util.cpp \          
@@ -85,6 +88,7 @@ SOURCES +=  src/qt_main.cpp\
             src/timed.cpp \
             src/utilities.cpp \
             src/wizard_mode.cpp
+
 
 
 
@@ -114,6 +118,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/mon_classes.h \
             src/player_classes.h \
             src/player_command.h \
+            src/player_info.h \
             src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \
@@ -125,7 +130,10 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/wizard_mode.h \
             src/player_death.h \
-            src/dun_traps.h
+            src/dun_traps.h \
+            src/object_dialog.h \
+            src/object_all_menu.h
+
 
 
 RESOURCES += \

@@ -247,7 +247,6 @@ bool do_service_enchant(byte choice, u32b price)
     s16b add_to;
     s16b counter = 1;
     int item;
-    u32b f1, f2, f3, fn;
     object_type *o_ptr;
     object_kind *k_ptr;
     QString o_name;
@@ -267,9 +266,6 @@ bool do_service_enchant(byte choice, u32b price)
     /*Got the item*/
     o_ptr = &inventory[item];
     k_ptr = &k_info[o_ptr->k_idx];
-
-    /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
 
     if (choice == SERVICE_ENCHANT_ARMOR) add_to = o_ptr->to_a;
     else if (choice == SERVICE_ENCHANT_TO_HIT) add_to = o_ptr->to_h;
@@ -724,6 +720,9 @@ bool do_service_make_randart(byte choice, u32b price)
         /* Mark the item as fully known */
         o_ptr->ident |= (IDENT_MENTAL);
 
+        /* Extract the flags */
+        o_ptr->update_object_flags();
+
         /*Let the player know what they just got*/
         object_info_screen(o_ptr);
 
@@ -1063,8 +1062,11 @@ bool do_service_quest_art_reward(byte choice, u32b price)
         /* Mark the item as fully known */
         o_ptr->ident |= (IDENT_MENTAL);
 
+        /* Extract the flags */
+        o_ptr->update_object_flags();
+
         /*Let the player know what they just got*/
-        // TODO object_info_screen(o_ptr);
+        object_info_screen(o_ptr);
 
         guild_quest_wipe(TRUE);
 
@@ -1368,15 +1370,9 @@ static void mass_produce(object_type *o_ptr)
  */
 static bool store_object_similar(object_type *o_ptr, object_type *j_ptr)
 {
-    u32b f1, f2, f3, fn;
-    u32b j1, j2, j3, jn;
-
     /* Extract the flags */
-    object_flags(o_ptr, &f1, &f2, &f3, &fn);
-    object_flags(j_ptr, &j1, &j2, &j3, &jn);
-
-    /* Hack -- Identical items cannot be stacked */
-    if (o_ptr == j_ptr) return (0);
+    o_ptr->update_object_flags();
+    j_ptr->update_object_flags();
 
     /* Different objects cannot be stacked */
     if (o_ptr->k_idx != j_ptr->k_idx) return (0);
@@ -1427,8 +1423,8 @@ static bool store_object_similar(object_type *o_ptr, object_type *j_ptr)
         (o_ptr->ident & IDENT_PERFECT_BALANCE)) return (FALSE);
 
     /* Different flags */
-    if ((f1 != j1) || (f2 != j2) || \
-        (f3 != j3) || (fn != jn)) return(FALSE);
+    if ((o_ptr->obj_flags_1 != j_ptr->obj_flags_1) || (o_ptr->obj_flags_2 != j_ptr->obj_flags_2) || \
+        (o_ptr->obj_flags_3 != j_ptr->obj_flags_3) || (o_ptr->obj_flags_native != j_ptr->obj_flags_native)) return(FALSE);
 
     /* They match, so they must be similar */
     return (TRUE);
@@ -2336,6 +2332,9 @@ static void store_create_random(int which)
 
         /* Remember history */
         object_history(i_ptr, ORIGIN_STORE, 0);
+
+        /* Extract the flags */
+        i_ptr->update_object_flags();
 
         /* Black markets have expensive tastes */
         if ((which == STORE_B_MARKET) && !black_market_ok(i_ptr))
