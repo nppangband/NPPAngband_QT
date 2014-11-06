@@ -1,4 +1,4 @@
-/* File: player_classes.cpp */
+/* File: player_command.cpp */
 
 /*
  * Copyright (c) 2014 Jeff Greene, Diego Gonzalez
@@ -16,6 +16,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
+#include <src/npp.h>
 #include "player_command.h"
 #include "nppdialog.h"
 
@@ -28,7 +29,7 @@ bool command_type::repeated_command_completed(void)
 }
 
 // Check if we have a completed command
-bool command_type::needs_direction(int command)
+bool command_type::needs_direction(void)
 {
     if(cmd_needs & (ARG_DIRECTION)) return (TRUE);
     return (FALSE);
@@ -173,7 +174,7 @@ void process_command(int item, s16b command)
     args.item = item;
 
     // Get the direction, if necessary
-    if (command_ptr->needs_direction(command))
+    if (command_ptr->needs_direction())
     {
         // For objects
         if (command_ptr->needs_item())

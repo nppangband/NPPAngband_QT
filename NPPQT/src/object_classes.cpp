@@ -67,6 +67,7 @@ void object_type::object_wipe()
     origin_m_name.clear();
     obj_flags_1 = obj_flags_2 = obj_flags_3 = obj_flags_native = 0;
     known_obj_flags_1 = known_obj_flags_2 = known_obj_flags_3 = known_obj_flags_native = 0;
+    C_WIPE(use_verify, VERIFY_MAX, byte);
 }
 
 // Copy object safely without using memset.
@@ -91,6 +92,15 @@ void object_type::object_copy(object_type *j_ptr)
     ac = j_ptr->ac;
     dd = j_ptr->dd;
     ds = j_ptr->ds;
+    obj_flags_1 = j_ptr->obj_flags_1;
+    obj_flags_2 = j_ptr->obj_flags_2;
+    obj_flags_3 = j_ptr->obj_flags_3;
+    obj_flags_native = j_ptr->obj_flags_native;
+    known_obj_flags_1 = j_ptr->known_obj_flags_1;
+    known_obj_flags_2 = j_ptr->known_obj_flags_2;
+    known_obj_flags_3 = j_ptr->known_obj_flags_3;
+    known_obj_flags_native = j_ptr->known_obj_flags_native;
+    for (int i = 0; i < VERIFY_MAX; i++) use_verify[i] = j_ptr->use_verify[i];
     timeout = j_ptr->timeout;
     discount = j_ptr->discount;
     ident = j_ptr->ident;
@@ -859,6 +869,7 @@ void object_kind::object_kind_wipe()
     aware = tried = everseen = 0;
     tile_32x32_y = tile_32x32_x = tile_8x8_y = tile_8x8_x = 0;
     tile_id.clear();
+    C_WIPE(use_verify, VERIFY_MAX, byte);
 
 }
 

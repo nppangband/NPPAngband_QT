@@ -1,6 +1,7 @@
 #ifndef PLAYER_CLASSES_H
 #define PLAYER_CLASSES_H
 
+#include <src/player.h>
 
 class magic_type
 {

@@ -268,15 +268,20 @@ static void wr_xtra(int k_idx)
 
     if (k_ptr->aware) tmp8u |= 0x01;
     if (k_ptr->tried) tmp8u |= 0x02;
-
     if (k_ptr->everseen) tmp8u |= 0x08;
-
     wr_byte(tmp8u);
 
     /*write the squelch settings*/
     tmp8u = k_ptr->squelch;
-
     wr_byte(tmp8u);
+
+    // Write the object kind verify bool array
+    for (int i = 0; i < VERIFY_MAX; i++)
+    {
+        tmp8u = k_ptr->use_verify[i];
+        wr_byte(tmp8u);
+    }
+
 }
 
 

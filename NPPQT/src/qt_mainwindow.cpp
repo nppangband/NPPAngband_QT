@@ -2897,6 +2897,10 @@ void MainWindow::launch_birth(bool quick_start)
         current_savefile.clear();
     }
     delete dlg;
+
+    // The main purpose of this greeting is to avoid crashes
+    // due to the message vector being empty.
+    message(QString("Welcome %1") .arg(op_ptr->full_name));
 }
 
 void MainWindow::save_file(const QString &file_name)

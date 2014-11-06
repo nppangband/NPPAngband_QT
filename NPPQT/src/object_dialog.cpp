@@ -14,8 +14,11 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
+#include <src/npp.h>
 #include <src/object_dialog.h>
+#include <src/player_command.h>
+#include <src/object_select.h>
+#include <src/object_settings.h>
 
 
 item_command item_command_info[ITEM_MAX] =
@@ -517,12 +520,10 @@ s16b ObjectDialog::idx_from_click(QString id)
 
 void ObjectDialog::object_click()
 {
-    QString id = QObject::sender()->objectName();
+    QString id = QObject::sender()->property("item_id").toString();
     int o_idx = idx_from_click(id);
 
-    object_type *o_ptr = object_from_item_idx(o_idx);
-
-    // TODO create menu for item, similar to knowledge screens;
+    object_settings(o_idx);
 }
 
 void ObjectDialog::button_click()
@@ -531,6 +532,8 @@ void ObjectDialog::button_click()
     int o_idx = idx_from_click(id);
 
     QChar index = id[0];
+
+    p_ptr->message_append_start();
 
     // Search for the matching command
     for (int i = 0; i < ITEM_MAX; i++)
@@ -541,6 +544,8 @@ void ObjectDialog::button_click()
         process_command(o_idx, item_command_info[i].object_command);
         break;
     }
+
+    p_ptr->message_append_stop();
     // Do we need to update or delete the dialog?
     if (p_ptr->in_menu)update_dialog();
     else close_dialog();
@@ -565,13 +570,13 @@ void ObjectDialog::add_letter_label(QGridLayout *lay, QChar location, int label_
     lay->addWidget(lb, row, col);
 }
 
-void ObjectDialog::add_object_button(QGridLayout *lay, object_type *o_ptr, QChar location, int label_num, int row, int col)
+void ObjectDialog::add_object_button(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col)
 {
     QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
     QString style = QString("color: %1;").arg(get_object_color(o_ptr).name());
     style.append(QString("text-align: left; font-weight: bold;"));
 
-    QString id = (QString("%1%2") .arg(location) .arg(label_num));
+    QString id = (QString("%1%2") .arg(location) .arg(item_slot));
     QPushButton *object_button = new QPushButton(desc);
     object_button->setProperty("item_id", QVariant(id));
     object_button->setStyleSheet(style);
@@ -619,23 +624,24 @@ void ObjectDialog::reset_messages(message_type last_message, QLabel *message_one
         /* Stop when we hit messages that were posted
          * before the player went into the store.
          */
-        if (operator==(current_message->message, last_message.message)) break;
+        if ((operator==(current_message->message, last_message.message)) &&
+            (operator==(current_message->message_turn, last_message.message_turn))) break;
 
 
         if (which_message == 1)
         {
             message_one->setText(QString("%1 %2") .arg(message_one->text()) .arg(current_message->message));
-            if (message_one->text().length() > 120) next_line = TRUE;
+            if (message_one->text().length() > 200) next_line = TRUE;
         }
         else if (which_message == 2)
         {
             message_two->setText(QString("%1 %2") .arg(message_two->text()) .arg(current_message->message));
-            if (message_two->text().length() > 120) next_line = TRUE;
+            if (message_two->text().length() > 200) next_line = TRUE;
         }
         else if (which_message == 3)
         {
             message_three->setText(QString("%1 %2") .arg(message_three->text()) .arg(current_message->message));
-            if (message_three->text().length() > 120) next_line = TRUE;
+            if (message_three->text().length() > 200) next_line = TRUE;
         }
 
         // Skip down to the next line if necessary.
@@ -664,7 +670,7 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool label, bool buttons)
         int col = 0;
 
         if (label) add_letter_label(lay, QChar('f'), this_o_idx, row, col++);
-        add_object_button(lay, o_ptr, QChar('f'), this_o_idx, row, col++);
+        add_object_button(lay, o_ptr, QChar('f'), -this_o_idx, row, col++);
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, -this_o_idx, row, col++);
 

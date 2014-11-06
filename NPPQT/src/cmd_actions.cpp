@@ -1576,7 +1576,6 @@ void do_cmd_search(void)
 
     cmd_arg args;
     args.wipe();
-    // TODO solve this
 
     /* Search */
     command_search(args);

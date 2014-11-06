@@ -1,6 +1,10 @@
 #ifndef FUNCTION_DECLARATIONS_H
 #define FUNCTION_DECLARATIONS_H
 
+#include <src/object_classes.h>
+#include <src/player_classes.h>
+#include <src/mon_classes.h>
+#include <src/dun_classes.h>
 #include "src/structures.h"
 #include <QString>
 #include <QFile>
@@ -399,6 +403,7 @@ extern void create_food(void);
 // object_select.cpp
 extern bool get_item(int *cp, QString pmt, QString str, int mode);
 extern bool get_item_beside(int *cp, QString pmt, QString str, int sq_y, int sq_x);
+
 
 // object_use.cpp
 extern bool player_can_read(void);

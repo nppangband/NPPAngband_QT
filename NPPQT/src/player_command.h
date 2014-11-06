@@ -1,7 +1,9 @@
 #ifndef PLAYER_COMMAND_H
 #define PLAYER_COMMAND_H
 
-#include "src/npp.h"
+
+#include <src/defines.h>
+#include <src/object_classes.h>
 
 
 #define ARG_NUMBER          0x01
@@ -76,7 +78,7 @@ public:
     u16b repeat_num;                       // Automatic number of repeats.
 
     bool repeated_command_completed(void);
-    bool needs_direction(int command);
+    bool needs_direction(void);
     bool needs_item(void);
     bool needs_quantity(void);
     bool needs_slot(void);
