@@ -1,7 +1,7 @@
 #ifndef OBJECT_SELECT_H
 #define OBJECT_SELECT_H
 
-#include "src/object_dialog.h" // includes npp.h
+#include "src/object_dialog.h"
 #include <QTabWidget>
 #include <QDialogButtonBox>
 #include <QSignalMapper>

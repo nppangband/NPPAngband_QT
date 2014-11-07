@@ -1,8 +1,8 @@
 #ifndef OBJECT_DIALOG_H
 #define OBJECT_DIALOG_H
 
-#include <src/player_command.h> //includes npp.h
 #include "src/utilities.h"
+#include <src/function_declarations.h>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QVariant>
@@ -62,7 +62,7 @@ public:
     void clear_grid_layout(QGridLayout *lay);
     void add_plain_label(QGridLayout *lay, QString label, int row, int col);
     void add_letter_label(QGridLayout *lay, QChar location, int label_num, int row, int col);
-    void add_object_button(QGridLayout *lay, object_type *o_ptr, QChar location, int label_num, int row, int col);
+    void add_object_button(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col);
     void add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col);
 
 

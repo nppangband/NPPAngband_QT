@@ -288,23 +288,24 @@ void StoreDialog::reset_messages()
         /* Stop when we hit messages that were posted
          * before the player went into the store.
          */
-        if (operator==(current_message->message, last_message.message)) break;
+        if ((operator==(current_message->message, last_message.message)) &&
+            (operator==(current_message->message_turn, last_message.message_turn))) break;
 
 
         if (which_message == 1)
         {
             message_one->setText(QString("%1 %2") .arg(message_one->text()) .arg(current_message->message));
-            if (message_one->text().length() > 120) next_line = TRUE;
+            if (message_one->text().length() > 200) next_line = TRUE;
         }
         else if (which_message == 2)
         {
             message_two->setText(QString("%1 %2") .arg(message_two->text()) .arg(current_message->message));
-            if (message_two->text().length() > 120) next_line = TRUE;
+            if (message_two->text().length() > 200) next_line = TRUE;
         }
         else if (which_message == 3)
         {
             message_three->setText(QString("%1 %2") .arg(message_three->text()) .arg(current_message->message));
-            if (message_three->text().length() > 120) next_line = TRUE;
+            if (message_three->text().length() > 200) next_line = TRUE;
         }
 
         // Skip down to the next line if necessary.

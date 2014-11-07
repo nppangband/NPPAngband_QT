@@ -17,6 +17,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 #include <src/object.h>
+#include <src/defines.h>
 #include <QString>
 #include <QColor>
 
@@ -87,6 +88,8 @@ class object_type
 
     s16b ac;			/* Normal AC */
 
+    byte dd, ds;		/* Damage dice/sides */
+
     // Current Object flags, both known and unknown
     u32b obj_flags_1;
     u32b obj_flags_2;
@@ -98,7 +101,7 @@ class object_type
     u32b known_obj_flags_3;
     u32b known_obj_flags_native;
 
-    byte dd, ds;		/* Damage dice/sides */
+    bool use_verify[VERIFY_MAX]; //Verify use of objects
 
     s16b timeout;		/* Timeout Counter */
 
@@ -246,6 +249,8 @@ public:
     bool aware;			/* The player is "aware" of the item's effects */
 
     bool tried;			/* The player has "tried" one of the items */
+
+    bool use_verify[VERIFY_MAX]; //Verify use of objects
 
     byte squelch;		/* Squelch setting for the particular item */
 

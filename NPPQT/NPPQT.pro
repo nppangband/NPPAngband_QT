@@ -56,6 +56,7 @@ SOURCES +=  src/qt_main.cpp\
             src/object_info.cpp \
             src/object_make.cpp \
             src/object_select.cpp \
+            src/object_settings.cpp \
             src/object_use.cpp \
             src/object_util.cpp \
             src/optionsdialog.cpp \
@@ -87,7 +88,7 @@ SOURCES +=  src/qt_main.cpp\
             src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-            src/wizard_mode.cpp
+            src/wizard_mode.cpp \
 
 
 
@@ -132,7 +133,11 @@ HEADERS  += src/qt_mainwindow.h\
             src/player_death.h \
             src/dun_traps.h \
             src/object_dialog.h \
-            src/object_all_menu.h
+            src/object_all_menu.h \
+            src/object_settings.h
+
+
+
 
 
 

@@ -2,6 +2,9 @@
 #define UTILITIES_H
 
 #include <QVector>
+#include <src/defines.h>
+#include <QString>
+#include <QColor>
 
 typedef struct letters_and_numbers letters_and_numbers;
 typedef struct message_type message_type;

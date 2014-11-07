@@ -4,6 +4,7 @@
 #include <QDataStream>
 #include <QFile>
 #include <QTextStream>
+#include <QBitArray>
 
 extern byte sf_major;
 extern byte sf_minor;

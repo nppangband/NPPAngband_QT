@@ -2017,6 +2017,14 @@ static int rd_savefile(void)
 
         rd_byte(&k_ptr->squelch);
 
+        // Read the object kind verify bool array
+        for (int i = 0; i < VERIFY_MAX; i++)
+        {
+
+            rd_byte(&tmp8u);
+            k_ptr->use_verify[i] = tmp8u;
+        }
+
         /* Hack - Repair the savefile */
         if (!k_ptr->everseen) k_ptr->squelch = SQUELCH_NEVER;
 

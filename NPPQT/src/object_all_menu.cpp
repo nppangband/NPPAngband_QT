@@ -15,7 +15,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
+#include <src/npp.h>
 #include <src/object_all_menu.h>
 
 
@@ -139,7 +139,9 @@ bool AllObjectsDialog::no_objects()
 
 void AllObjectsDialog::close_dialog()
 {
+    p_ptr->message_append_stop();
     this->reject();
+
 }
 
 void AllObjectsDialog::update_dialog()
@@ -152,6 +154,8 @@ void AllObjectsDialog::update_dialog()
         close_dialog();
         return;
     }
+
+    p_ptr->message_append_stop();
 
     update_floor_list(floor_list, FALSE, TRUE);
     update_inven_list(inven_list, FALSE, TRUE);
@@ -242,6 +246,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
 
     //Build the header
     header_main = new QLabel("<b><h2>Object Menu</b></h2>");
+    header_main->setAlignment(Qt::AlignCenter);
     header_weight1 = new QLabel("Weight 1");
     header_weight2 = new QLabel("Weight 2");
     main_layout->addWidget(header_main);
@@ -335,6 +340,7 @@ void do_cmd_all_objects(void)
     p_ptr->in_menu = TRUE;
     AllObjectsDialog(TRUE);
     p_ptr->in_menu = FALSE;
+    p_ptr->message_append_stop();
 }
 
 

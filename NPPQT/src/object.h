@@ -788,7 +788,26 @@
 /*number of bytes used in squelch sub-quality array*/
 #define SQUELCH_BYTES    24
 
-
+//Different types of verify commands.
+enum
+{
+    VERIFY_DESTROY = 0,
+    VERIFY_TAKEOFF,
+    VERIFY_WIELD,
+    VERIFY_ACTIVATE,
+    VERIFY_THROW,
+    VERIFY_DROP,
+    VERIFY_PICKUP,
+    VERIFY_FIRE,
+    VERIFY_FIRE_NEAR,
+    VERIFY_USE,
+    VERIFY_REFILL,
+    VERIFY_STUDY,
+    VERIFY_CAST,
+    VERIFY_SWAP,
+    VERIFY_ALL,
+    VERIFY_MAX,
+};
 
 
 /*

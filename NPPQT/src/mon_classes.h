@@ -1,7 +1,7 @@
 #ifndef MON_CLASSES_H
 #define MON_CLASSES_H
 
-
+#include <src/monster.h>
 
 
 

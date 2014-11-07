@@ -2109,7 +2109,7 @@ void redraw_stuff(void)
     if (p_ptr->redraw & (PR_MONLIST))
     {
         p_ptr->redraw |= PR_HEALTH;
-        // TODO update_mon_sidebar_list();
+        ui_flush_graphics();
     }
 
     /* For each listed flag, send the appropriate signal to the UI */
@@ -2131,12 +2131,6 @@ void redraw_stuff(void)
     }
 
     p_ptr->redraw = 0;
-
-    /*
-     * Do any plotting, etc. delayed from earlier - this set of updates
-     * is over.
-     */
-    // TODO event_signal(EVENT_END);
 }
 
 
