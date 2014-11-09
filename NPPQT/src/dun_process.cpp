@@ -30,7 +30,7 @@ static void sense_inventory(void)
 
     int plev = p_ptr->lev;
 
-    bool heavy = ((cp_ptr->flags & CF_PSEUDO_ID_HEAVY) ? TRUE : FALSE);
+    bool heavy = (cp_ptr->pseudo_id_heavy());
 
     int feel;
 

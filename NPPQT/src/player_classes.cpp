@@ -45,6 +45,12 @@ void player_class::player_class_wipe()
     }
 }
 
+bool player_class::pseudo_id_heavy()
+{
+    if (flags & (CF_PSEUDO_ID_HEAVY)) return (TRUE);
+    return (FALSE);
+}
+
 
 
 /*

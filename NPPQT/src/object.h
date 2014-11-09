@@ -758,13 +758,22 @@
 
 /*Squelch Modes for k_info->squelch*/
 
+enum
+{
+    // allow pickup, but defer to OPT_always_pickup
+    SQUELCH_NEVER = 0,
 
-#define SQUELCH_NEVER   			0 /*allow pickup, but defer to OPT_always_pickup*/
-#define NO_SQUELCH_NEVER_PICKUP		1 /*never pickup, override OPT_always_pickup*/
-#define NO_SQUELCH_ALWAYS_PICKUP 	2/*always pickup, override pickup and floor query options*/
-#define SQUELCH_ALWAYS  			3 /*destroy when player walks over*/
-#define SQUELCH_OPT_MAX				4
+    //never pickup, override OPT_always_pickup
+    NO_SQUELCH_NEVER_PICKUP,
 
+    //always pickup, override pickup and floor query options
+    NO_SQUELCH_ALWAYS_PICKUP,
+
+    //destroy when player walks over
+    SQUELCH_ALWAYS,
+
+    SQUELCH_OPT_MAX,
+};
 
 /*
  * These are the various levels of quality squelching supported by the game.
@@ -777,13 +786,16 @@
  * 5 ---> squelch open chests
  */
 
-#define SQUELCH_NONE     		0
-#define SQUELCH_CURSED   		1
-#define SQUELCH_AVERAGE  		2
-#define SQUELCH_GOOD_STRONG     3
-#define SQUELCH_GOOD_WEAK		4
-#define SQUELCH_ALL      		5
-#define SQUELCH_MAX				6
+enum
+{
+    SQUELCH_NONE = 0,
+    SQUELCH_CURSED,
+    SQUELCH_AVERAGE,
+    SQUELCH_GOOD_STRONG,
+    SQUELCH_GOOD_WEAK,
+    SQUELCH_ALL,
+    SQUELCH_MAX,
+};
 
 /*number of bytes used in squelch sub-quality array*/
 #define SQUELCH_BYTES    24

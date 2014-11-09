@@ -280,14 +280,6 @@ struct dungeon_capabilities_type
     int (*get_extra_object_count)(void);
 };
 
-/*
- * A structure to hold a tval and its description
- */
-typedef struct
-{
-    int tval;
-    const char *desc;
-} tval_desc;
 
 
 /* Currently assumes all flags are in TR1 (object) and RF1 (monster flags) */

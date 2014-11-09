@@ -158,6 +158,7 @@ public:
     start_item start_items[MAX_START_ITEMS];/* The starting inventory */
 
     player_magic spells; /* Magic spells */
+    bool pseudo_id_heavy();
 
 };
 

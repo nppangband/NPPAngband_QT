@@ -25,6 +25,124 @@
 /* The amount of flag fields plus 1 */
 #define MAX_GROUPS 5
 
+// QUALITY_MAPPING_MAX needsd to be updated when this list is changed
+quality_squelch_struct quality_mapping[QUALITY_MAPPING_MAX] =
+{
+    { PS_TYPE_EQUIP_RARE,		TV_SWORD,	SV_BLADE_OF_CHAOS,	SV_BLADE_OF_CHAOS },
+    { PS_TYPE_WEAPON_SHARP,	TV_SWORD,	0,		SV_UNKNOWN },
+    { PS_TYPE_EQUIP_RARE,		TV_POLEARM,	SV_SCYTHE_OF_SLICING,	SV_SCYTHE_OF_SLICING },
+    { PS_TYPE_WEAPON_SHARP,	TV_POLEARM,	0,		SV_UNKNOWN },
+    { PS_TYPE_EQUIP_RARE,		TV_HAFTED,	SV_MACE_OF_DISRUPTION,	SV_GROND },
+    { PS_TYPE_WEAPON_BLUNT,	TV_HAFTED,	0,		SV_UNKNOWN },
+    { PS_TYPE_BOW,				TV_BOW,		0,		SV_UNKNOWN },
+    { PS_TYPE_MISSILE_SLING,	TV_SHOT,	0,		SV_UNKNOWN },
+    { PS_TYPE_MISSILE_BOW,		TV_ARROW,	0,		SV_UNKNOWN },
+    { PS_TYPE_MISSILE_XBOW,	TV_BOLT,	0,		SV_UNKNOWN },
+    { PS_TYPE_ARMOR_ROBE,		TV_SOFT_ARMOR,	SV_ROBE,	SV_ROBE },
+    { PS_TYPE_ARMOR_BODY,		TV_SOFT_ARMOR,	0,		SV_UNKNOWN },
+    { PS_TYPE_EQUIP_RARE,		TV_HARD_ARMOR,	SV_MITHRIL_CHAIN_MAIL,	SV_ADAMANTITE_PLATE_MAIL },
+    { PS_TYPE_ARMOR_BODY,		TV_HARD_ARMOR,	0,		SV_UNKNOWN },
+    { PS_TYPE_ARMOR_DRAGON,	TV_DRAG_ARMOR,	0, 	SV_UNKNOWN},
+    { PS_TYPE_ARMOR_DRAGON,	TV_DRAG_SHIELD,	0, 	SV_UNKNOWN},
+    { PS_TYPE_EQUIP_RARE,		TV_CLOAK,	SV_SHADOW_CLOAK, 	SV_SHADOW_CLOAK },
+    { PS_TYPE_CLOAK,			TV_CLOAK,	0, 		SV_UNKNOWN },
+    { PS_TYPE_EQUIP_RARE,		TV_SHIELD,	SV_SHIELD_OF_DEFLECTION, 	SV_SHIELD_OF_DEFLECTION },
+    { PS_TYPE_SHIELD,			TV_SHIELD,	0,		SV_UNKNOWN },
+    { PS_TYPE_HELMS,			TV_HELM,	0,		SV_UNKNOWN },
+    { PS_TYPE_CROWNS,			TV_CROWN,	0,		SV_UNKNOWN },
+    { PS_TYPE_GLOVES,			TV_GLOVES,	0,		SV_UNKNOWN },
+    { PS_TYPE_BOOTS,			TV_BOOTS,	0,		SV_UNKNOWN },
+    { PS_TYPE_DIGGER,			TV_DIGGING,	0,		SV_UNKNOWN },
+    { PS_TYPE_RING,			TV_RING,	0,		SV_UNKNOWN },
+    { PS_TYPE_AMULET,			TV_AMULET,	0,		SV_UNKNOWN },
+    { PS_TYPE_LIGHT, 			TV_LIGHT, 	SV_LIGHT_LANTERN,		SV_UNKNOWN },
+};
+
+/*
+ * SVAL Ranges for the quality squelch.
+ * Note "Rare" items now have their own category.
+ * As long as they come first in the list, before the
+ * "0 to SV_UNKNOWN" category, they will be grouped
+ * with the rare items.
+ */
+quality_name_struct quality_choices[PS_TYPE_MAX] =
+{
+    { PS_TYPE_WEAPON_SHARP,	"Sharp Melee Weapons" },
+    { PS_TYPE_WEAPON_BLUNT,	"Blunt Melee Weapons" },
+    { PS_TYPE_EQUIP_RARE,		"Rare Equipment" },
+    { PS_TYPE_BOW,				"Missile launchers" },
+    { PS_TYPE_MISSILE_SLING,	"Shots and Pebbles" },
+    { PS_TYPE_MISSILE_BOW,		"Arrows" },
+    { PS_TYPE_MISSILE_XBOW,	"Bolts" },
+    { PS_TYPE_ARMOR_ROBE,		"Robes" },
+    { PS_TYPE_ARMOR_BODY,		"Body Armor" },
+    { PS_TYPE_ARMOR_DRAGON,	"Dragon Armor/Shields" },
+    { PS_TYPE_CLOAK,			"Cloaks" },
+    { PS_TYPE_SHIELD,			"Shields" },
+    { PS_TYPE_HELMS,			"Helms" },
+    { PS_TYPE_CROWNS,			"Crowns" },
+    { PS_TYPE_GLOVES,			"Gloves" },
+    { PS_TYPE_BOOTS,			"Boots" },
+    { PS_TYPE_DIGGER,			"Diggers" },
+    { PS_TYPE_RING,			"Rings" },
+    { PS_TYPE_AMULET,			"Amulets" },
+    { PS_TYPE_LIGHT, 			"Lights" },
+};
+
+/*
+ * The names for the various kinds of qualities
+ */
+quality_name_struct quality_values[SQUELCH_MAX] =
+{
+    { SQUELCH_NONE,		"None" },
+    { SQUELCH_CURSED,	"Squelch cursed" },
+    { SQUELCH_AVERAGE,	"Squelch cursed and average" },
+    { SQUELCH_GOOD_STRONG,	"Squelch good, average, and cursed" },
+    { SQUELCH_GOOD_WEAK,	"Squelch good pseudo-id, average, and cursed" },
+    { SQUELCH_ALL,	"Squelch all but artifacts" },
+};
+
+tval_desc raw_tvals[RAW_TVALS_MAX] =
+{
+    {TV_SKELETON, "Skeletons"},
+    {TV_BOTTLE, "Bottles"},
+    {TV_JUNK, "Junk"},
+    {TV_SPIKE, "Spikes"},
+    {TV_CHEST, "Chests"},
+    {TV_SHOT, "Shots"},
+    {TV_ARROW, "Arrows"},
+    {TV_BOLT, "Bolts"},
+    {TV_BOW, "Launchers"},
+    {TV_DIGGING, "Diggers"},
+    {TV_HAFTED, "Maces"},
+    {TV_POLEARM, "Polearms"},
+    {TV_SWORD, "Swords"},
+    {TV_BOOTS, "Boots"},
+    {TV_GLOVES, "Gloves"},
+    {TV_HELM, "Helmets"},
+    {TV_CROWN, "Crowns"},
+    {TV_SHIELD, "Shields"},
+    {TV_CLOAK, "Cloaks"},
+    {TV_SOFT_ARMOR, "Soft Armor"},
+    {TV_HARD_ARMOR, "Hard Armor"},
+    {TV_DRAG_ARMOR, "DSMails"},
+    {TV_LIGHT, "Lights"},
+    {TV_AMULET, "Amulets"},
+    {TV_DRAG_SHIELD, "DSShields"},
+    {TV_RING, "Rings"},
+    {TV_STAFF, "Staves"},
+    {TV_WAND, "Wands"},
+    {TV_ROD, "Rods"},
+    {TV_SCROLL, "Scrolls"},
+    {TV_POTION, "Potions"},
+    {TV_FLASK, "Flaskes"},
+    {TV_FOOD, "Food"},
+    {TV_MAGIC_BOOK, "Magic Books"},
+    {TV_PRAYER_BOOK, "Prayer Books"},
+    {TV_DRUID_BOOK, "Druid Books"}
+};
+
+
 /*
  * Create a string describing (some of) the known flags of the given object
  * If only_random_powers is TRUE the string will hold only a representation
@@ -365,9 +483,9 @@ void autoinscribe_pack(void)
 /*
  * Find the squelch type of the object, or TYPE_MAX if none
  */
-static squelch_type_t squelch_type_of(object_type *o_ptr)
+byte squelch_type_of(object_type *o_ptr)
 {
-    size_t i;
+    u16b i;
 
     /* Find the appropriate squelch group */
     for (i = 0; i < N_ELEMENTS(quality_mapping); i++)
@@ -379,6 +497,80 @@ static squelch_type_t squelch_type_of(object_type *o_ptr)
     }
 
     return PS_TYPE_MAX;
+}
+
+QString quality_squelch_type_label(object_type *o_ptr)
+{
+    byte quality_type = squelch_type_of(o_ptr);
+    if (quality_type == PS_TYPE_MAX) return("(none)");
+
+    for (u16b i = 0; i < N_ELEMENTS(quality_choices); i++)
+    {
+        if (quality_type != quality_choices[i].enum_val) continue;
+        return (quality_choices[i].name);
+    }
+
+    // Shouldn't get this far
+    return("(oops)");
+}
+
+QString get_ego_name(object_type *o_ptr)
+{
+    // Paranoia
+    if (!o_ptr->ego_num) return (QString("(None"));
+    int i;
+    ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
+    QVector<byte> tval_table;
+    QString ego_name;
+    ego_name.clear();
+    QVector<QString> ego_types;
+
+    for (i = 0; i < EGO_TVALS_MAX; i++)
+    {
+        /* Ignore "empty" entries */
+        if (e_ptr->tval[i] < 1) continue;
+
+        /* Append valid tvals */
+        tval_table.append(e_ptr->tval[i]);
+    }
+
+    // More paranoia
+    if (!tval_table.size()) return (QString("(None"));
+
+    //Sort
+    qStableSort(tval_table.begin(), tval_table.end(), qLess<byte>());
+
+    // Collect the types
+    for (i = 0; i < RAW_TVALS_MAX; i++)
+    {
+        tval_desc *td_ptr = &raw_tvals[i];
+
+        for (int x = 0; x < tval_table.size(); x++)
+        {
+            if (td_ptr->tval != tval_table[x]) continue;
+            ego_types.append(td_ptr->desc);
+        }
+    }
+
+    // More paranoia
+    if (!ego_types.size()) return (QString("(None"));
+
+    //output the names
+    for (i = 0; i < ego_types.size(); i++)
+    {
+        ego_name.append(ego_types[i]);
+
+        if ((i+2) < ego_types.size()) ego_name.append(", ");
+        else if ((i+2) == ego_types.size()) ego_name.append(", and ");
+    }
+
+    ego_name.append(" ");
+    ego_name.append(e_ptr->e_name);
+
+    ego_name = capitalize_first(ego_name);
+
+    return (ego_name);
+
 }
 
 /* Convert the values returned by squelch_itemp to string */
