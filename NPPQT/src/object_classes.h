@@ -164,6 +164,7 @@ class object_type
     bool is_amulet();
     bool is_jewlery();
     bool is_chest();
+    bool is_fuel();
     bool is_fuelable_lite();
     bool is_ammo();
     bool is_weapon();

@@ -9,7 +9,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -1105,8 +1105,6 @@ void monster_death(int m_idx, int who)
     /* Nothing left, game over... */
     else
     {
-        // Show some fireworks
-        ui_animate_victory(m_ptr->fy, m_ptr->fx);
 
         /* Total winner */
         p_ptr->total_winner = TRUE;

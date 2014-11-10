@@ -17,6 +17,110 @@
 #include <src/npp.h>
 #include <src/object_settings.h>
 #include <src/squelch.h>
+#include <QCheckBox>
+
+
+verify_data verification_data[] =
+{
+    //  VERIFY_DESTROY
+    {"Confirm Destroy", "Require confirmation before destroying this item."},
+    // VERIFY_USE
+    {"Confirm Use", "Require confirmation before using this item."},
+    // VERIFY_TAKEOFF
+    {"Confirm Take Off", "Require confirmation before removing when this item is worn."},
+    // VERIFY_WIELD
+    {"Confirm Wield", "Require confirmation before wielding this item."},
+    // VERIFY_THROW
+    {"Confirm Throw", "Require confirmation before throwing this item"},
+    // VERIFY_DROP
+    {"Confirm Drop", "Require confirmation before dropping this item"},
+    // VERIFY_PICKUP
+    {"Confirm Pick Up", "Require confirmation before picking up this item"},
+    // VERIFY_ACTIVATE
+    {"Confirm Activate", "Require confirmation before activating this item."},
+    // VERIFY_FIRE
+    {"Confirm Fire", "Require confirmation before firing this ammunition"},
+    // VERIFY_FIRE_NEAR
+    {"Confirm Fire Near", "Require confirmation before firing this ammunition at the nearest target."},
+    // VERIFY_REFILL
+    {"Confirm Refill", "Require confirmation before using this item to refill your light source."},
+    // VERIFY_STUDY
+    {"Confirm Study", "Require confirmation before learning a spell from this book."},
+    // VERIFY_CAST
+    {"Confirm Cast", "Require confirmation before casting a spell from this book."},
+    // VERIFY_SWAP
+    {"Use as Swap Weapon", "Set up this weapon to be wielded with the swap command."},
+    // VERIFY_WIELD_QUIVER
+    {"Put in Quiver", "Choose to  put throwing weapon in quiver rather than wield.  Automatically put ammunition in the quiver."},
+     // VERIFY_ALL
+    {"Confirm All", "Confirm before doing any command with this item."},
+     // VERIFY_UNUSED_1
+    {"Unused", "Unused"},
+     // VERIFY_UNUSED_2
+    {"Unused", "Unused"},
+};
+
+void ObjectSettingsDialog::update_object_type_settings(int id, bool checked)
+{
+    o_ptr->use_verify[id] = checked;
+}
+
+void ObjectSettingsDialog::add_checkbox(QVBoxLayout *vlay, byte which_ver)
+{
+    verify_data *v_ptr = &verification_data[which_ver];
+
+    QCheckBox *this_checkbox = new QCheckBox(v_ptr->box_label);
+    this_checkbox->setToolTip(v_ptr->box_tooltip);
+    object_type_group->addButton(this_checkbox);
+    if (o_ptr->use_verify[which_ver]) this_checkbox->setChecked(TRUE);
+    else this_checkbox->setChecked(FALSE);
+    object_type_group->addButton(this_checkbox, which_ver);
+    vlay->addWidget(this_checkbox);
+}
+
+void ObjectSettingsDialog::add_object_verifications()
+{
+    object_type_group = new QButtonGroup();
+    object_type_group->setExclusive(FALSE);
+    QLabel *object_type_label = new QLabel(QString("<b><h2>Object Settings</b></h2>"));
+    object_type_label->setAlignment(Qt::AlignCenter);
+    object_type_label->setToolTip("Check boxes below to enable these options for this object.");
+    QLabel *object_type_name = new QLabel(QString("<b>%1</b>") .arg(object_desc(o_ptr, ODESC_BASE| ODESC_SINGULAR)));
+    object_type_name->setAlignment(Qt::AlignCenter);
+    object_type_ver->addWidget(object_type_name);
+    if (!o_ptr->is_artifact()) add_checkbox(object_type_ver, VERIFY_DESTROY);
+    if (o_ptr->is_usable_item()) add_checkbox(object_type_ver, VERIFY_USE);
+    if (o_ptr->is_wearable())
+    {
+        add_checkbox(object_type_ver, VERIFY_TAKEOFF);
+        add_checkbox(object_type_ver, VERIFY_WIELD);
+    }
+    add_checkbox(object_type_ver, VERIFY_THROW);
+    add_checkbox(object_type_ver, VERIFY_DROP);
+    add_checkbox(object_type_ver, VERIFY_PICKUP);
+    if (obj_is_activatable(o_ptr)) add_checkbox(object_type_ver, VERIFY_ACTIVATE);
+    if (o_ptr->is_ammo())
+    {
+        add_checkbox(object_type_ver, VERIFY_FIRE);
+        add_checkbox(object_type_ver, VERIFY_FIRE_NEAR);
+    }
+    if (o_ptr->is_fuel()) add_checkbox(object_type_ver, VERIFY_REFILL);
+    if (o_ptr->is_spellbook())
+    {
+        add_checkbox(object_type_ver, VERIFY_STUDY);
+        add_checkbox(object_type_ver, VERIFY_CAST);
+    }
+    if (o_ptr->is_weapon()) add_checkbox(object_type_ver, VERIFY_SWAP);
+    if (o_ptr->is_ammo() || is_throwing_weapon(o_ptr))
+    {
+        add_checkbox(object_type_ver, VERIFY_WIELD_QUIVER);
+    }
+    add_checkbox(object_type_ver, VERIFY_WIELD_QUIVER);
+
+    connect(object_type_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_type_settings(int, bool)));
+
+    object_type_ver->addSpacerItem(vspacer);
+}
 
 void ObjectSettingsDialog::update_ego_setting(int id)
 {
@@ -32,6 +136,7 @@ void ObjectSettingsDialog::add_ego_buttons()
     ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
 
     ego_group = new QButtonGroup();
+
     QLabel *ego_label = new QLabel(QString("<b><big>Ego Item Settings</b></big>"));
     ego_label->setAlignment(Qt::AlignCenter);
     ego_label->setToolTip("The settings below allow the player to specify if this type of ego-item should be automatically destroyed upon identification.");
@@ -50,7 +155,6 @@ void ObjectSettingsDialog::add_ego_buttons()
 
     ego_group->addButton(ego_no, FALSE);
     ego_group->addButton(ego_yes, TRUE);
-
     ego_buttons->addWidget(ego_no);
     ego_buttons->addWidget(ego_yes);
     ego_buttons->addSpacerItem(vspacer);
@@ -74,7 +178,6 @@ void ObjectSettingsDialog::add_quality_buttons()
     bool limited_types = FALSE;
     if (squelch_type == PS_TYPE_AMULET) limited_types = TRUE;
     else if (squelch_type == PS_TYPE_RING) limited_types = TRUE;
-
     quality_group = new QButtonGroup();
     QLabel *quality_label = new QLabel(QString("<b><big>Quality Squelch Settings</b></big>"));
     quality_label->setAlignment(Qt::AlignCenter);
@@ -180,6 +283,8 @@ ObjectSettingsDialog::ObjectSettingsDialog(int o_idx)
     main_layout = new QVBoxLayout;
     main_across = new QHBoxLayout;
     squelch_vlay = new QVBoxLayout;
+    object_type_ver = new QVBoxLayout;
+    object_kind_ver = new QVBoxLayout;
     vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     QLabel *header_main = new QLabel("<b><h2>Object Settings Menu</b></h2>");
@@ -189,7 +294,11 @@ ObjectSettingsDialog::ObjectSettingsDialog(int o_idx)
     main_layout->addWidget(header_main);
     main_layout->addWidget(object_name);
     main_layout->addLayout(main_across);
+    main_across->addLayout(object_type_ver);
+    main_across->addLayout(object_kind_ver);
     main_across->addLayout(squelch_vlay);
+
+    add_object_verifications();
 
     // Add squelch settings, except for the instant artifacts
     if (!(k_ptr->k_flags3 & TR3_INSTA_ART))

@@ -8,7 +8,15 @@
 #include <QDialog>
 #include <QLabel>
 #include <src/object_classes.h>
-#include <src/object_dialog.h>
+
+class verify_data
+{
+public:
+    QString box_label;
+    QString box_tooltip;
+};
+
+extern verify_data verification_data[VERIFY_MAX];
 
 
 /*
@@ -32,17 +40,23 @@ private:
 
     QVBoxLayout *main_layout;
     QHBoxLayout *main_across;
-    QVBoxLayout *squelch_vlay;
 
-    QVBoxLayout *squelch_buttons;
+    QVBoxLayout *object_type_ver;
+    QButtonGroup *object_type_group;
+
+    QVBoxLayout *object_kind_ver;
+
+    QVBoxLayout  *squelch_vlay;
+
+    QVBoxLayout  *squelch_buttons;
     QButtonGroup *squelch_group;
     QRadioButton *squelch_never;
     QRadioButton *squelch_pickup_no;
     QRadioButton *squelch_pickup_yes;
     QRadioButton *squelch_always;
 
-    QVBoxLayout *quality_buttons;
-    QButtonGroup   *quality_group;
+    QVBoxLayout  *quality_buttons;
+    QButtonGroup *quality_group;
     QRadioButton *quality_none;
     QRadioButton *quality_cursed;
     QRadioButton *quality_average;
@@ -57,6 +71,8 @@ private:
 
     QDialogButtonBox *buttons;
 
+    void add_checkbox(QVBoxLayout *vlay, byte which_ver);
+    void add_object_verifications();
     void add_squelch_buttons();
     void add_quality_buttons();
     void add_ego_buttons();
@@ -65,9 +81,12 @@ private slots:
     void update_squelch_setting(int id);
     void update_quality_setting(int id);
     void update_ego_setting(int id);
+    void update_object_type_settings(int id, bool checked);
 };
 
 // object_settings
 extern void object_settings(int i);
+
+
 
 #endif // OBJECT_SETTINGS_H

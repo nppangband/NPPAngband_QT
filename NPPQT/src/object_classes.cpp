@@ -451,8 +451,19 @@ bool object_type::is_jewlery()
 }
 bool object_type::is_chest()        { return tval == TV_CHEST; }
 
-/**
- * \returns whether the object can be filled with oil
+/*
+ * Returns whether the object can be used as fuel
+ */
+bool object_type::is_fuel()
+{
+    if (tval == TV_FLASK)   return (TRUE);
+    if (tval != TV_LIGHT)   return (FALSE);
+    if (sval == SV_LIGHT_TORCH) return (TRUE);
+    return (FALSE);
+}
+
+/*
+ * Returns whether the object can be filled with oil
  */
 bool object_type::is_fuelable_lite()
 {

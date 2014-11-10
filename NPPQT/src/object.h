@@ -804,20 +804,23 @@ enum
 enum
 {
     VERIFY_DESTROY = 0,
+    VERIFY_USE,
     VERIFY_TAKEOFF,
     VERIFY_WIELD,
-    VERIFY_ACTIVATE,
     VERIFY_THROW,
     VERIFY_DROP,
     VERIFY_PICKUP,
+    VERIFY_ACTIVATE,
     VERIFY_FIRE,
     VERIFY_FIRE_NEAR,
-    VERIFY_USE,
     VERIFY_REFILL,
     VERIFY_STUDY,
     VERIFY_CAST,
     VERIFY_SWAP,
+    VERIFY_WIELD_QUIVER,
     VERIFY_ALL,
+    VERIFY_UNUSED_1,  //Just to make it easier to keep savefile compatibility
+    VERIFY_UNUSED_2,
     VERIFY_MAX,
 };
 

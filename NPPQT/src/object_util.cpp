@@ -4244,7 +4244,7 @@ void display_object_kind_recall(s16b k_idx)
 
 
 /*
- * An "item_tester_hook" for refilling lanterns
+ * An "item_tester_hook" for refilling lanterns and torches
  */
 bool obj_can_refill(object_type *o_ptr)
 {
