@@ -91,7 +91,7 @@ bool ObjectDialog::should_add_swap(object_type *o_ptr, s16b item_slot)
         if ((item_slot == ITEM_WIELD) || (item_slot == ITEM_SWAP)) return TRUE;
         return (FALSE);
     }
-    if (!o_ptr->inscription.contains("@x")) return FALSE;
+    if (!o_ptr->use_verify[AUTO_SWAP]) return FALSE;
     return TRUE;
 }
 
@@ -101,6 +101,8 @@ bool ObjectDialog::should_add_use(object_type *o_ptr, s16b item_slot)
 
     if (!o_ptr->is_usable_item()) return (FALSE);
 
+    // Activation is handled elsewhere.
+    else if (obj_can_activate(o_ptr)) return (FALSE);
 
     // Make sure the wands/rods/staffs can be used.
     if (o_ptr->is_wand() || o_ptr->is_staff())
@@ -580,6 +582,7 @@ void ObjectDialog::add_object_button(QGridLayout *lay, object_type *o_ptr, QChar
     QPushButton *object_button = new QPushButton(desc);
     object_button->setProperty("item_id", QVariant(id));
     object_button->setStyleSheet(style);
+    object_button->setToolTip("Modify Object Settings");
     object_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     connect(object_button, SIGNAL(clicked()), this, SLOT(object_click()));
     lay->addWidget(object_button, row, col);

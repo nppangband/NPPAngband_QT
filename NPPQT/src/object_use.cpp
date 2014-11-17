@@ -20,7 +20,7 @@
 
 #include <src/npp.h>
 #include "src/player_command.h"
-
+#include "src/object_settings.h"
 
 /*
  * Determine if the player can read scrolls.
@@ -3250,6 +3250,12 @@ void command_use(cmd_arg args)
 
         /* mark the item (the place in the inventory might shift) */
         o_ptr->obj_in_use = TRUE;
+
+        if (obj_is_activatable(o_ptr))
+        {
+            if (!get_item_allow(item, VERIFY_ACTIVATE)) return;
+        }
+        else if (!get_item_allow(item, VERIFY_USE)) return;
 
         /* Do effect */
         used = use_object(o_ptr, &ident, dir);

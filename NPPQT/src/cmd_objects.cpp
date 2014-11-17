@@ -19,7 +19,7 @@
 
 #include <src/npp.h>
 #include "src/player_command.h"
-
+#include "src/object_settings.h"
 
 
 
@@ -541,6 +541,8 @@ void command_takeoff(cmd_arg args)
         return;
     }
 
+    if (!get_item_allow(args.item, VERIFY_TAKEOFF)) return;
+
     p_ptr->message_append_start();
 
     (void)inven_takeoff(args.item, 255);
@@ -595,11 +597,12 @@ void command_wield(cmd_arg args)
         return;
     }
 
+    if (!get_item_allow(args.item, VERIFY_WIELD)) return;
+
     /* Hack - Throwing weapons can be wielded in the quiver too. */
-    /* Analyze object's inscription and verify the presence of "@v" */
-    if (is_throwing_weapon(o_ptr) && !IS_QUIVER_SLOT(args.slot) && !o_ptr->inscription.isEmpty())
+    if (is_throwing_weapon(o_ptr) && !IS_QUIVER_SLOT(args.slot))
     {
-        if (o_ptr->inscription.contains("@v")) args.slot = QUIVER_START;
+        if (o_ptr->use_verify[AUTO_WIELD_QUIVER]) args.slot = QUIVER_START;
     }
 
     equip_o_ptr = &inventory[args.slot];
@@ -629,15 +632,8 @@ void command_wield(cmd_arg args)
         return;
     }
 
-    /* "!t" checks for taking off */
-    if(equip_o_ptr->inscription.contains("!t"))
-    {
-        /* Prompt */
-        o_name = object_desc(equip_o_ptr,  ODESC_PREFIX | ODESC_FULL);
-
-        /* Forget it */
-        if (!get_check(QString("Really take off %1? ") .arg(o_name))) return;
-    }
+    /* checks for taking off old equipment*/
+    if (get_item_allow(args.slot, VERIFY_TAKEOFF)) return;
 
     p_ptr->message_append_start();
 
@@ -692,6 +688,8 @@ void command_drop(cmd_arg args)
         /* Nope */
         return;
     }
+
+    if (!get_item_allow(args.item, VERIFY_DROP)) return;
 
     p_ptr->message_append_start();
 
@@ -941,13 +939,13 @@ void command_refuel(cmd_arg args)
     int item = args.item;
     object_type *o_ptr = object_from_item_idx(item);
 
-
-
     if (!item_is_available(item, NULL, USE_INVEN | USE_FLOOR))
     {
         pop_up_message_box("You do not have that item to refill with it.");
         return;
     }
+
+    if (get_item_allow(item, VERIFY_REFILL)) return;
 
     /* It is nothing */
     if (j_ptr->tval != TV_LIGHT)
@@ -1021,7 +1019,7 @@ static void swap_weapons(void)
         return;
     }
 
-    /* Give the player a message for teh item they are taking off */
+    /* Give the player a message for the item they are taking off */
     if (o_ptr->k_idx)
     {
         /* The player took off a bow */
@@ -1091,8 +1089,7 @@ static void wield_swap_weapon(void)
 
         if(!o_ptr->is_weapon()) continue;
 
-        /* Look for '@x' */
-        if(!o_ptr->inscription.contains("@x")) continue;
+        if (!o_ptr->use_verify[AUTO_SWAP]) continue;
 
         p_ptr->message_append_start();
 
@@ -1217,6 +1214,7 @@ void command_destroy(cmd_arg args)
         // TODO special dialog box for squelching ego-items and object kinds
     }
 
+    if (!get_item_allow(item, VERIFY_DESTROY)) return;
 
     /* Artifacts cannot be destroyed */
     if (o_ptr->is_artifact())

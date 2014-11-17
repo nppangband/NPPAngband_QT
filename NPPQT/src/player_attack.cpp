@@ -19,6 +19,7 @@
 
 #include <src/npp.h>
 #include "src/player_command.h"
+#include "src/object_settings.h"
 
 /*
  * Determine if the player "hits" a monster.
@@ -916,6 +917,8 @@ void command_fire(cmd_arg args)
         message(QString("That ammo cannot be fired by your current weapon."));
         return;
     }
+
+    if (!get_item_allow(item, VERIFY_FIRE)) return;
 
     p_ptr->player_previous_command_update(CMD_FIRE, args);
     p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
@@ -1864,6 +1867,8 @@ void command_throw(cmd_arg args)
         message(QString("That item is not within your reach."));
         return;
     }
+
+    if (!get_item_allow(item, VERIFY_THROW)) return;
 
     p_ptr->message_append_start();
 

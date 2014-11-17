@@ -18,6 +18,7 @@
 
 #include "npp.h"
 #include "storedialog.h"
+#include "src/object_settings.h"
 
 
 
@@ -67,17 +68,6 @@ static int count_possible_pickups(void)
 	return (max_pickups);
 }
 
-
-/*
- * Determine if the object should be picked up -- "=g" or autopickup is set
- */
-static bool auto_pickup_inscrip(const object_type *o_ptr)
-{
-    if (o_ptr->inscription.contains("=g")) return TRUE;
-
-	/* Don't auto pickup */
-	return (FALSE);
-}
 
 
 /*
@@ -309,6 +299,8 @@ void do_cmd_pickup_from_pile(bool pickup, bool msg)
 
 			o_ptr = &o_list[item];
 
+            if (!get_item_allow(-item, VERIFY_PICKUP)) return;
+
 			/* Pick up the object */
 			if (put_object_in_inventory(o_ptr))
 			{
@@ -334,6 +326,8 @@ void do_cmd_pickup_from_pile(bool pickup, bool msg)
 		item = -item;
 
 		o_ptr = &o_list[item];
+
+        if (!get_item_allow(-item, VERIFY_PICKUP)) return;
 
 		/* Pick up the object */
 		if (put_object_in_inventory(o_ptr))
@@ -367,6 +361,8 @@ void command_pickup(cmd_arg args)
     s16b item = -args.item;
 
     object_type *o_ptr = &o_list[item];
+
+    if (!get_item_allow(-item, VERIFY_PICKUP)) return;
 
     /* Pick up the object */
     if (put_object_in_inventory(o_ptr))
@@ -514,12 +510,8 @@ void py_pickup(bool pickup)
 		if (o_ptr->mimic_r_idx) continue;
 
 		/* Possibly pickup throwing weapons */
-		if (weapon_inscribed_for_quiver(o_ptr)) do_continue = FALSE;
-
-		/* Only quiver objects */
-		else if (ammo_inscribed_for_quiver(o_ptr)) do_continue = FALSE;
-
-		else if (quiver_stack_okay(o_ptr)) do_continue = FALSE;
+        if (o_ptr->use_verify[AUTO_WIELD_QUIVER]) do_continue = FALSE;
+        else if (quiver_stack_okay(o_ptr)) do_continue = FALSE;
 
 		if (do_continue) continue;
 
@@ -583,8 +575,8 @@ void py_pickup(bool pickup)
 		if ((k_info[o_ptr->k_idx].squelch == NO_SQUELCH_ALWAYS_PICKUP)  &&
 			(k_info[o_ptr->k_idx].aware)) do_continue = FALSE;
 
-		/* Item is marked for auto-pickup with =g */
-		if (auto_pickup_inscrip(o_ptr)) do_continue = FALSE;
+        /* Player doesn't want to pickup item  */
+        if (get_item_allow(-this_o_idx, VERIFY_PICKUP)) do_continue = FALSE;
 
 		if (do_continue) continue;
 
@@ -625,6 +617,9 @@ void py_pickup(bool pickup)
 
 			/* Hack - Don't pick up mimic objects */
 			if (o_ptr->mimic_r_idx) continue;
+
+            /* Player doesn't want to pickup item  */
+            if (!get_item_allow(-this_o_idx, VERIFY_PICKUP)) continue;
 
 			/* Put it in the quiver */
 			if (put_object_in_inventory(o_ptr))

@@ -800,7 +800,12 @@ enum
 /*number of bytes used in squelch sub-quality array*/
 #define SQUELCH_BYTES    24
 
-//Different types of verify commands.
+/* Different types of verify commands.
+ * When a verify command is added here,
+ * the corresponding command_{foo} command
+ * needs to call get_item_allow to ensure
+ * proper verification before use.
+ */
 enum
 {
     VERIFY_DESTROY = 0,
@@ -816,11 +821,11 @@ enum
     VERIFY_REFILL,
     VERIFY_STUDY,
     VERIFY_CAST,
-    VERIFY_SWAP,
-    VERIFY_WIELD_QUIVER,
+    AUTO_SWAP,
+    AUTO_WIELD_QUIVER,
     VERIFY_ALL,
-    VERIFY_UNUSED_1,  //Just to make it easier to keep savefile compatibility
-    VERIFY_UNUSED_2,
+    RECHARGE_NOTIFY,
+    VERIFY_UNUSED_2,//Just to make it easier to keep savefile compatibility
     VERIFY_MAX,
 };
 

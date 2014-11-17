@@ -16,6 +16,7 @@
 
 #include <src/npp.h>
 #include <src/object_settings.h>
+#include <src/player_command.h>
 #include <src/squelch.h>
 #include <QCheckBox>
 
@@ -23,41 +24,41 @@
 verify_data verification_data[] =
 {
     //  VERIFY_DESTROY
-    {"Confirm Destroy", "Require confirmation before destroying this item."},
+    {CMD_DESTROY, "Confirm Destroy", "Require confirmation before destroying this item."},
     // VERIFY_USE
-    {"Confirm Use", "Require confirmation before using this item."},
+    {CMD_ITEM_USE, "Confirm Use", "Require confirmation before using this item."},
     // VERIFY_TAKEOFF
-    {"Confirm Take Off", "Require confirmation before removing when this item is worn."},
+    {CMD_TAKEOFF, "Confirm Take Off", "Require confirmation before removing when this item is worn."},
     // VERIFY_WIELD
-    {"Confirm Wield", "Require confirmation before wielding this item."},
+    {CMD_WIELD, "Confirm Wield", "Require confirmation before wielding this item."},
     // VERIFY_THROW
-    {"Confirm Throw", "Require confirmation before throwing this item"},
+    {CMD_THROW, "Confirm Throw", "Require confirmation before throwing this item"},
     // VERIFY_DROP
-    {"Confirm Drop", "Require confirmation before dropping this item"},
+    {CMD_DROP, "Confirm Drop", "Require confirmation before dropping this item"},
     // VERIFY_PICKUP
-    {"Confirm Pick Up", "Require confirmation before picking up this item"},
+    {CMD_PICKUP, "Confirm Pick Up", "Require confirmation before picking up this item"},
     // VERIFY_ACTIVATE
-    {"Confirm Activate", "Require confirmation before activating this item."},
+    {CMD_ACTIVATE, "Confirm Activate", "Require confirmation before activating this item."},
     // VERIFY_FIRE
-    {"Confirm Fire", "Require confirmation before firing this ammunition"},
+    {CMD_FIRE, "Confirm Fire", "Require confirmation before firing this ammunition"},
     // VERIFY_FIRE_NEAR
-    {"Confirm Fire Near", "Require confirmation before firing this ammunition at the nearest target."},
+    {CMD_FIRE_NEAR, "Confirm Fire Near", "Require confirmation before firing this ammunition at the nearest target."},
     // VERIFY_REFILL
-    {"Confirm Refill", "Require confirmation before using this item to refill your light source."},
+    {CMD_REFUEL, "Confirm Refill", "Require confirmation before using this item to refill your light source."},
     // VERIFY_STUDY
-    {"Confirm Study", "Require confirmation before learning a spell from this book."},
+    {CMD_STUDY, "Confirm Study", "Require confirmation before learning a spell from this book."},
     // VERIFY_CAST
-    {"Confirm Cast", "Require confirmation before casting a spell from this book."},
+    {CMD_CAST, "Confirm Cast", "Require confirmation before casting a spell from this book."},
     // VERIFY_SWAP
-    {"Use as Swap Weapon", "Set up this weapon to be wielded with the swap command."},
+    {CMD_SWAP, "Use as Swap Weapon", "Set up this weapon to be wielded with the swap command."},
     // VERIFY_WIELD_QUIVER
-    {"Put in Quiver", "Choose to  put throwing weapon in quiver rather than wield.  Automatically put ammunition in the quiver."},
+    {CMD_MAX, "Put in Quiver", "Choose to put throwing weapon in quiver rather than wield.  Automatically put ammunition in the quiver."},
      // VERIFY_ALL
-    {"Confirm All", "Confirm before doing any command with this item."},
-     // VERIFY_UNUSED_1
-    {"Unused", "Unused"},
+    {CMD_MAX, "Confirm All", "Confirm before all commands using this item."},
+     // RECHARGE_NOTIFY
+    {CMD_MAX, "Notify when recharged", "Notify the player when the item is recharged"},
      // VERIFY_UNUSED_2
-    {"Unused", "Unused"},
+    {CMD_MAX, "Unused", "Unused"},
 };
 
 void ObjectSettingsDialog::update_object_type_settings(int id, bool checked)
@@ -65,61 +66,124 @@ void ObjectSettingsDialog::update_object_type_settings(int id, bool checked)
     o_ptr->use_verify[id] = checked;
 }
 
-void ObjectSettingsDialog::add_checkbox(QVBoxLayout *vlay, byte which_ver)
+void ObjectSettingsDialog::update_object_kind_settings(int id, bool checked)
+{
+    k_ptr->use_verify[id] = checked;
+}
+
+void ObjectSettingsDialog::add_kind_checkbox(byte which_ver)
 {
     verify_data *v_ptr = &verification_data[which_ver];
 
     QCheckBox *this_checkbox = new QCheckBox(v_ptr->box_label);
     this_checkbox->setToolTip(v_ptr->box_tooltip);
-    object_type_group->addButton(this_checkbox);
+    if (k_ptr->use_verify[which_ver]) this_checkbox->setChecked(TRUE);
+    else this_checkbox->setChecked(FALSE);
+    object_kind_group->addButton(this_checkbox, which_ver);
+    object_kind_ver->addWidget(this_checkbox);
+}
+
+void ObjectSettingsDialog::add_type_checkbox(byte which_ver)
+{
+    verify_data *v_ptr = &verification_data[which_ver];
+
+    QCheckBox *this_checkbox = new QCheckBox(v_ptr->box_label);
+    this_checkbox->setToolTip(v_ptr->box_tooltip);
     if (o_ptr->use_verify[which_ver]) this_checkbox->setChecked(TRUE);
     else this_checkbox->setChecked(FALSE);
     object_type_group->addButton(this_checkbox, which_ver);
-    vlay->addWidget(this_checkbox);
+    object_type_ver->addWidget(this_checkbox);
+
+    add_kind_checkbox(which_ver);
 }
 
 void ObjectSettingsDialog::add_object_verifications()
 {
     object_type_group = new QButtonGroup();
     object_type_group->setExclusive(FALSE);
-    QLabel *object_type_label = new QLabel(QString("<b><h2>Object Settings</b></h2>"));
+    QLabel *object_type_label = new QLabel(QString("<b><big>   Object Settings   </b></big>"));
     object_type_label->setAlignment(Qt::AlignCenter);
-    object_type_label->setToolTip("Check boxes below to enable these options for this object.");
-    QLabel *object_type_name = new QLabel(QString("<b>%1</b>") .arg(object_desc(o_ptr, ODESC_BASE| ODESC_SINGULAR)));
-    object_type_name->setAlignment(Qt::AlignCenter);
-    object_type_ver->addWidget(object_type_name);
-    if (!o_ptr->is_artifact()) add_checkbox(object_type_ver, VERIFY_DESTROY);
-    if (o_ptr->is_usable_item()) add_checkbox(object_type_ver, VERIFY_USE);
+    object_type_label->setToolTip("Check boxes below to enable these options for this patticular object.");
+    object_type_ver->addWidget(object_type_label);
+
+    object_kind_group = new QButtonGroup();
+    object_kind_group->setExclusive(FALSE);
+    QLabel *object_kind_label = new QLabel(QString("<b><big>   Object Template Settings   </b></big>"));
+    object_kind_label->setAlignment(Qt::AlignCenter);
+    object_kind_label->setToolTip("Check boxes below to enable these options for ALL objects of this type.");
+    object_kind_ver->addWidget(object_kind_label);
+
+
+    if (!o_ptr->is_artifact())
+    {
+        add_type_checkbox(VERIFY_DESTROY);
+        add_kind_checkbox(VERIFY_DESTROY);
+    }
+    if (o_ptr->is_usable_item())
+    {
+        add_type_checkbox(VERIFY_USE);
+        add_kind_checkbox(VERIFY_USE);
+    }
+
     if (o_ptr->is_wearable())
     {
-        add_checkbox(object_type_ver, VERIFY_TAKEOFF);
-        add_checkbox(object_type_ver, VERIFY_WIELD);
+        add_type_checkbox(VERIFY_TAKEOFF);
+        add_type_checkbox(VERIFY_WIELD);
+        add_kind_checkbox(VERIFY_TAKEOFF);
+        add_kind_checkbox(VERIFY_WIELD);
     }
-    add_checkbox(object_type_ver, VERIFY_THROW);
-    add_checkbox(object_type_ver, VERIFY_DROP);
-    add_checkbox(object_type_ver, VERIFY_PICKUP);
-    if (obj_is_activatable(o_ptr)) add_checkbox(object_type_ver, VERIFY_ACTIVATE);
+    add_type_checkbox(VERIFY_THROW);
+    add_type_checkbox(VERIFY_DROP);
+    add_type_checkbox(VERIFY_PICKUP);
+    add_kind_checkbox(VERIFY_THROW);
+    add_kind_checkbox(VERIFY_DROP);
+    add_kind_checkbox(VERIFY_PICKUP);
+    if (obj_is_activatable(o_ptr))
+    {
+        add_type_checkbox(VERIFY_ACTIVATE);
+        add_kind_checkbox(VERIFY_ACTIVATE);
+    }
     if (o_ptr->is_ammo())
     {
-        add_checkbox(object_type_ver, VERIFY_FIRE);
-        add_checkbox(object_type_ver, VERIFY_FIRE_NEAR);
+        add_type_checkbox(VERIFY_FIRE);
+        add_type_checkbox(VERIFY_FIRE_NEAR);
+        add_kind_checkbox(VERIFY_FIRE);
+        add_kind_checkbox(VERIFY_FIRE_NEAR);
     }
-    if (o_ptr->is_fuel()) add_checkbox(object_type_ver, VERIFY_REFILL);
+    if (o_ptr->is_fuel())
+    {
+        add_type_checkbox(VERIFY_REFILL);
+        add_kind_checkbox(VERIFY_REFILL);
+    }
     if (o_ptr->is_spellbook())
     {
-        add_checkbox(object_type_ver, VERIFY_STUDY);
-        add_checkbox(object_type_ver, VERIFY_CAST);
+        add_type_checkbox(VERIFY_STUDY);
+        add_type_checkbox(VERIFY_CAST);
     }
-    if (o_ptr->is_weapon()) add_checkbox(object_type_ver, VERIFY_SWAP);
+    if (o_ptr->is_weapon())
+    {
+        add_type_checkbox(AUTO_SWAP);
+        add_kind_checkbox(AUTO_SWAP);
+    }
+
     if (o_ptr->is_ammo() || is_throwing_weapon(o_ptr))
     {
-        add_checkbox(object_type_ver, VERIFY_WIELD_QUIVER);
+        add_type_checkbox(AUTO_WIELD_QUIVER);
+        add_kind_checkbox(AUTO_WIELD_QUIVER);
     }
-    add_checkbox(object_type_ver, VERIFY_WIELD_QUIVER);
+    if (o_ptr->is_rod() || obj_is_activatable(o_ptr))
+    {
+        add_type_checkbox(RECHARGE_NOTIFY);
+        add_kind_checkbox(RECHARGE_NOTIFY);
+    }
+    add_type_checkbox(VERIFY_ALL);
+    add_kind_checkbox(VERIFY_ALL);
 
     connect(object_type_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_type_settings(int, bool)));
+    connect(object_kind_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_kind_settings(int, bool)));
 
     object_type_ver->addSpacerItem(vspacer);
+    object_kind_ver->addSpacerItem(vspacer);
 }
 
 void ObjectSettingsDialog::update_ego_setting(int id)
@@ -137,7 +201,7 @@ void ObjectSettingsDialog::add_ego_buttons()
 
     ego_group = new QButtonGroup();
 
-    QLabel *ego_label = new QLabel(QString("<b><big>Ego Item Settings</b></big>"));
+    QLabel *ego_label = new QLabel(QString("<b><big>   Ego Item Settings   </b></big>"));
     ego_label->setAlignment(Qt::AlignCenter);
     ego_label->setToolTip("The settings below allow the player to specify if this type of ego-item should be automatically destroyed upon identification.");
     QLabel *ego_name = new QLabel(QString("<b>%1</b>") .arg(get_ego_name(o_ptr)));
@@ -179,7 +243,7 @@ void ObjectSettingsDialog::add_quality_buttons()
     if (squelch_type == PS_TYPE_AMULET) limited_types = TRUE;
     else if (squelch_type == PS_TYPE_RING) limited_types = TRUE;
     quality_group = new QButtonGroup();
-    QLabel *quality_label = new QLabel(QString("<b><big>Quality Squelch Settings</b></big>"));
+    QLabel *quality_label = new QLabel(QString("<b><big>   Quality Squelch Settings   </b></big>"));
     quality_label->setAlignment(Qt::AlignCenter);
     quality_label->setToolTip("The settings below allow the player to automatically destroy an item on identification, or pseudo-id, based on the quality of that item.");
     QLabel *quality_name = new QLabel(QString("<b>%1</b>") .arg(quality_squelch_type_label(o_ptr)));
@@ -234,7 +298,7 @@ void ObjectSettingsDialog::update_squelch_setting(int id)
 void ObjectSettingsDialog::add_squelch_buttons()
 {
     squelch_group = new QButtonGroup();
-    QLabel *squelch_label = new QLabel(QString("<b><big>Object Squelch Settings</b></big>"));
+    QLabel *squelch_label = new QLabel(QString("<b><big>   Object Squelch Settings   </b></big>"));
     squelch_label->setAlignment(Qt::AlignCenter);
     squelch_label->setToolTip("The settings below allow the player to specify if they want to automatically destroy, pickup, or ignore an item when the player walks over it.");
     squelch_buttons->addWidget(squelch_label);
@@ -330,4 +394,127 @@ void object_settings(int o_idx)
     ObjectSettingsDialog *dlg = new ObjectSettingsDialog(o_idx);
     dlg->exec();
     delete dlg;
+}
+
+/*
+ * Verify the choice of an item.
+ *
+ * The item can be negative to mean "item on floor".
+ */
+static bool verify_item(int item, int command)
+{
+
+    QString prompt;
+
+    object_type *o_ptr = object_from_item_idx(item);
+    bool do_plural = FALSE;
+
+    QString o_name;
+
+    if (command == VERIFY_USE)
+    {
+        if (o_ptr->tval == TV_WAND) prompt = "Really aim ";
+        else if (o_ptr->tval == TV_FOOD) prompt = "Really eat ";
+        else if (o_ptr->tval == TV_POTION) prompt = "Really quaff ";
+        else if (o_ptr->tval == TV_ROD) prompt = "Really zap ";
+        else if (o_ptr->tval == TV_SCROLL) {prompt = "Really read ";}
+        else /* TV_STAFF) */prompt = "Really use ";
+    }
+
+    /* Get the possible command prompts */
+    else switch (command)
+    {
+
+        case VERIFY_ACTIVATE:	{prompt = "Really activate ";break;}
+        case VERIFY_DROP:	{prompt = "Really drop "; do_plural = TRUE;	break;}
+        case VERIFY_FIRE_NEAR:
+        case VERIFY_FIRE:	{prompt = "Really fire ";	break;}
+        case VERIFY_REFILL:	{prompt = "Really fuel ";	break;}
+        case VERIFY_DESTROY:	{prompt = "Really destroy "; do_plural = TRUE;	break;}
+        case VERIFY_TAKEOFF:	{prompt = "Really take off ";break;}
+        case VERIFY_THROW:	{prompt = "Really throw ";	break;}
+        case VERIFY_PICKUP:  {prompt = "Really pick up "; do_plural = TRUE;	break;}
+        case VERIFY_STUDY:  {prompt = "Really study from ";	break;}
+        case VERIFY_CAST:
+        {
+            QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
+            QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
+            prompt = (QString("Really %1 a %2 from ") .arg(verb) .arg(noun));	break;
+        }
+        case VERIFY_WIELD:
+        {
+            int slot = wield_slot(o_ptr);
+
+            /* Where would the item go? INVEN_MAIN_WEAPON */
+            if (slot == INVEN_WIELD)
+            {
+                if (o_ptr->is_bow()) prompt = "Really shoot with ";
+                else prompt = "Really wield ";
+            }
+            else if (slot == INVEN_BOW) 	prompt = "Really shoot with ";
+            else if ((slot == INVEN_LIGHT)	|| (slot == INVEN_ARM))
+            {
+                prompt = "Really hold ";
+            }
+            else if ((slot == INVEN_LEFT) || (slot == INVEN_RIGHT) || (slot == INVEN_NECK))
+            {
+                prompt = "Really put on ";
+            }
+            else if (slot >= QUIVER_START)
+            {
+                do_plural = TRUE;
+                prompt = "Really place in quiver ";
+            }
+            else prompt = "Really wear ";
+
+            break;
+
+        }
+        default: 	{prompt = "Really try "; 	break;}
+    }
+
+    if (do_plural) o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+    else o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL | ODESC_SINGULAR);
+
+    // Add the object name
+    prompt.append(o_name);
+    prompt.append("?");
+
+    /* Query */
+    return (get_check(prompt));
+}
+
+/*
+ * allow user to "verify" certain choices.
+ *
+ * The item can be negative to mean "item on floor".
+ */
+bool get_item_allow(int item, int verify_command)
+{
+    object_type *o_ptr = object_from_item_idx(item);
+
+    int last_command = VERIFY_ALL;
+
+    /* Check for a verify command */
+    for (int i = 0; i < VERIFY_MAX; i++)
+    {
+        verify_data *verify_ptr = &verification_data[i];
+
+        // Find matching command
+        if (verify_command != verify_ptr->matching_command) continue;
+
+        if (!o_ptr->use_verify[i]) continue;
+
+        if (!verify_item(item, verify_command)) return (FALSE);
+
+        last_command = i;
+    }
+
+    if (o_ptr->use_verify[VERIFY_ALL])
+    {
+        if (!verify_item(item, last_command)) return (FALSE);
+    }
+
+    /* Allow it */
+    return (TRUE);
 }

@@ -124,7 +124,7 @@ s16b wield_slot(object_type *o_ptr)
         {
 
             /* See if the throwing weapon can go into the quiver first */
-            if ((is_throwing_weapon(o_ptr)) && (weapon_inscribed_for_quiver(o_ptr)))
+            if ((is_throwing_weapon(o_ptr)) && (o_ptr->use_verify[AUTO_WIELD_QUIVER]))
             {
                 s16b x = (wield_slot_ammo(o_ptr));
 
@@ -208,85 +208,6 @@ s16b wield_slot(object_type *o_ptr)
 
 
 /*
- * Hack -- determine if an item is inscribed for the quiver =g.
- */
-bool ammo_inscribed_for_quiver(object_type *o_ptr)
-{
-    int searches = 0;
-
-    /* Well Balanced weapons only */
-    if (!o_ptr->is_ammo()) return (FALSE);
-
-    /* Marked to go right back into the quiver */
-    if (o_ptr->ident & (IDENT_QUIVER)) return (TRUE);
-
-    /* No inscription */
-    if (o_ptr->inscription.isEmpty()) return (FALSE);
-
-    while (TRUE)
-    {
-        /* Search the '@' character in the inscription */
-        int slot = o_ptr->inscription.indexOf('=', searches);
-
-        /* We reached the end of the inscription */
-        if (slot < 0) return (FALSE);
-
-        /* We found the "=g" inscription */
-        if (o_ptr->inscription[slot+1] == 'g')
-        {
-            /* Success */
-            return (TRUE);
-        }
-
-        /* Keep looking */
-        searches++;
-    }
-
-    /* Not there */
-    return (FALSE);
-}
-
-/*
- * Hack -- determine if an item is inscribed for the quiver - @v.
- */
-bool weapon_inscribed_for_quiver(object_type *o_ptr)
-{
-    int searches = 0;
-
-    /* Well Balanced weapons only */
-    if (!is_throwing_weapon(o_ptr)) return (FALSE);
-
-    /* Marked to go right back into the quiver */
-    if (o_ptr->ident & (IDENT_QUIVER)) return (TRUE);
-
-    /* No inscription */
-    if (o_ptr->inscription.isEmpty()) return (FALSE);
-
-    while (TRUE)
-    {
-        /* Search the '@' character in the inscription */
-        int slot = o_ptr->inscription.indexOf('@', searches);
-
-        /* We reached the end of the inscription */
-        if (slot < 0) return (FALSE);
-
-        /* We found the "=g" inscription */
-        if (o_ptr->inscription[slot+1] == 'v')
-        {
-            /* Success */
-            return (TRUE);
-        }
-
-        /* Keep looking */
-        searches++;
-    }
-
-    /* Not there */
-    return (FALSE);
-}
-
-
-/*
  * Returns whether item o_ptr will fit in slot 'slot'
  */
 bool slot_can_wield_item(int slot, object_type *o_ptr)
@@ -299,7 +220,7 @@ bool slot_can_wield_item(int slot, object_type *o_ptr)
     {
         return (slot >= QUIVER_START && slot < QUIVER_END) ? TRUE : FALSE;
     }
-    else if ((is_throwing_weapon(o_ptr)) && (weapon_inscribed_for_quiver(o_ptr)))
+    else if ((is_throwing_weapon(o_ptr)) && (o_ptr->use_verify[AUTO_WIELD_QUIVER]))
     {
         return (slot >= QUIVER_START && slot < QUIVER_END) ? TRUE : FALSE;
     }
@@ -4069,20 +3990,6 @@ void reduce_charges(object_type *o_ptr, int amt)
 }
 
 
-/*
- * Looks if "inscrip" is present on the given object.
- */
-unsigned check_for_inscrip(const object_type *o_ptr, QString inscrip)
-{
-
-
-    if (o_ptr->inscription.isNull()) return 0;
-    if (!o_ptr->inscription.contains(inscrip)) return (0);
-
-    return (o_ptr->inscription.indexOf(inscrip));
-}
-
-
 /*** Object kind lookup functions ***/
 
 
@@ -4281,20 +4188,8 @@ bool obj_is_spellbook(object_type *o_ptr)
     return (FALSE);
 }
 
+bool obj_is_chest(object_type *o_ptr) {return o_ptr->is_chest();}
 
-/* Basic tval testers */
-bool obj_is_shovel(object_type *o_ptr)   { return o_ptr->tval == TV_DIGGING;}
-bool obj_is_bow(object_type *o_ptr)   { return o_ptr->tval == TV_BOW; }
-bool obj_is_staff( object_type *o_ptr)  { return o_ptr->tval == TV_STAFF; }
-bool obj_is_wand(object_type *o_ptr)   { return o_ptr->tval == TV_WAND; }
-bool obj_is_rod(object_type *o_ptr)    { return o_ptr->tval == TV_ROD; }
-bool obj_is_potion(object_type *o_ptr) { return o_ptr->tval == TV_POTION; }
-bool obj_is_scroll(object_type *o_ptr) { return o_ptr->tval == TV_SCROLL; }
-bool obj_is_parchment(object_type *o_ptr) { return o_ptr->tval == TV_PARCHMENT; }
-bool obj_is_food(object_type *o_ptr)   { return o_ptr->tval == TV_FOOD; }
-bool obj_is_light(object_type *o_ptr)   { return o_ptr->tval == TV_LIGHT; }
-static bool obj_is_ring(object_type *o_ptr)   { return o_ptr->tval == TV_RING; }
-bool obj_is_chest(object_type *o_ptr)   { return o_ptr->tval == TV_CHEST; }
 
 
 /**
@@ -4304,7 +4199,7 @@ bool obj_is_chest(object_type *o_ptr)   { return o_ptr->tval == TV_CHEST; }
  */
 bool chest_requires_disarming(object_type *o_ptr)
 {
-    if (!obj_is_chest(o_ptr)) return FALSE;
+    if (!o_ptr->is_chest()) return FALSE;
 
     /* We don't know if it is trapped or not */
     if (!object_known_p(o_ptr)) return FALSE;
@@ -4330,7 +4225,7 @@ bool ammo_can_fire(object_type *o_ptr, int item)
     if (adult_swap_weapons)
     {
         j_ptr = &inventory[INVEN_MAIN_WEAPON];
-        if (!obj_is_bow(j_ptr)) return (FALSE);
+        if (!j_ptr->is_bow()) return (FALSE);
     }
 
     /* No ammo */

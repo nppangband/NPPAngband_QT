@@ -12,8 +12,10 @@
 class verify_data
 {
 public:
+    int matching_command;
     QString box_label;
     QString box_tooltip;
+
 };
 
 extern verify_data verification_data[VERIFY_MAX];
@@ -45,6 +47,7 @@ private:
     QButtonGroup *object_type_group;
 
     QVBoxLayout *object_kind_ver;
+    QButtonGroup *object_kind_group;
 
     QVBoxLayout  *squelch_vlay;
 
@@ -71,7 +74,8 @@ private:
 
     QDialogButtonBox *buttons;
 
-    void add_checkbox(QVBoxLayout *vlay, byte which_ver);
+    void add_type_checkbox(byte which_ver);
+    void add_kind_checkbox(byte which_ver);
     void add_object_verifications();
     void add_squelch_buttons();
     void add_quality_buttons();
@@ -82,10 +86,12 @@ private slots:
     void update_quality_setting(int id);
     void update_ego_setting(int id);
     void update_object_type_settings(int id, bool checked);
+    void update_object_kind_settings(int id, bool checked);
 };
 
 // object_settings
 extern void object_settings(int i);
+extern bool get_item_allow(int item, int verify_command);
 
 
 

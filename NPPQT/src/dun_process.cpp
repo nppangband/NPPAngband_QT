@@ -381,8 +381,6 @@ static void regen_monsters(void)
 }
 
 /*
- * If player has inscribed the object with "!!", let him know when it's
- * recharged. -LM-
  * "all" must be FALSE when only one object of a stack is recharged.
  */
 static void recharged_notice(object_type *o_ptr, bool all)
@@ -393,8 +391,8 @@ static void recharged_notice(object_type *o_ptr, bool all)
 
     if (!notify_recharge) return;
 
-    /* Not the right  inscription */
-    if (!o_ptr->inscription.contains("!!")) return;
+    /* No notify necessary */
+    if (!o_ptr->use_verify[RECHARGE_NOTIFY]) return;
 
     /* Describe (briefly) */
     o_name = object_desc(o_ptr, ODESC_BASE);

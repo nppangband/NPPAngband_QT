@@ -88,7 +88,7 @@ SOURCES +=  src/qt_main.cpp\
             src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-            src/wizard_mode.cpp \
+            src/wizard_mode.cpp
 
 
 

@@ -18,7 +18,8 @@
  */
 
 #include <src/player_command.h>
-#include <src/cmd_spell.h>\
+#include <src/cmd_spell.h>
+#include "src/object_settings.h"
 
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -431,6 +432,95 @@ static bool spell_is_available(int spell)
     return (FALSE);
 }
 
+// Return where the book in which a spell exists
+// Assumes spell_is_available has already been checked.
+// And the player belongs to the spell realm
+// The game will likely crash if these checks aren't made first
+int find_study_book(int sval)
+{
+    object_type *o_ptr;
+
+    int k_idx = lookup_kind(cp_ptr->spell_book, sval);
+
+    for (int i = 0; i < INVEN_PACK; i++)
+    {
+        o_ptr = &inventory[i];
+        if (o_ptr->k_idx != k_idx) continue;
+
+        // Found it
+        return (i);
+    }
+
+    s16b this_o_idx, next_o_idx = 0;
+
+    for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
+    {
+        /* Get the object */
+        o_ptr = &o_list[this_o_idx];
+
+        /* Get the next object */
+        next_o_idx = o_ptr->next_o_idx;
+
+        if (o_ptr->k_idx != k_idx) continue;
+
+         // Found it, return as a negative
+        return (-this_o_idx);
+    }
+
+    //should never get this far
+    return (0);
+}
+
+// Return where to the book in which a spell exists
+// Assumes spell_is_available has already been checked.
+// And the player belongs to the spell realm
+// The game will likely crash if these checks aren't made first
+int find_book_with_spell(int spell)
+{
+    int max_books = BOOKS_PER_REALM_ANGBAND;
+    if (game_mode == GAME_NPPMORIA) max_books = BOOKS_PER_REALM_MORIA;
+    int k_idx;\
+
+    object_type *o_ptr;
+
+    // First find the sval
+    for (int sval = 0; sval < max_books; sval++)
+    {
+        k_idx = lookup_kind(cp_ptr->spell_book, sval);
+
+        // Make sure we have the spell and book
+        if (spell_in_book(spell, k_idx))  break;
+    }
+
+    for (int i = 0; i < INVEN_PACK; i++)
+    {
+        o_ptr = &inventory[i];
+        if (o_ptr->k_idx != k_idx) continue;
+
+        // Found it
+        return (i);
+    }
+
+    s16b this_o_idx, next_o_idx = 0;
+
+    for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
+    {
+        /* Get the object */
+        o_ptr = &o_list[this_o_idx];
+
+        /* Get the next object */
+        next_o_idx = o_ptr->next_o_idx;
+
+        if (o_ptr->k_idx != k_idx) continue;
+
+         // Found it, return as a negative
+        return (-this_o_idx);
+    }
+
+    //should never get this far
+    return (0);
+}
+
 
 /*
  * Determine if a spell is "okay" for the player to cast or study
@@ -714,6 +804,9 @@ static void cast_spell(cmd_arg args)
         if (!get_check("Attempt it anyway? ")) return;
     }
 
+    //Find the book, and verify its use if necessary
+
+
     /* Spell failure chance */
     int chance = spell_chance(spell);
 
@@ -815,7 +908,7 @@ void do_cmd_cast(void)
     bool cancelled;
     SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
 
-    // Handle not having a spell to learn
+    // Handle not having a spell to cast
     if ((!success) || (cancelled))
     {
         if (!success && !cancelled) message(QString("You have no %1s that you can %3 right now.") .arg(noun) .arg(verb));
@@ -825,6 +918,8 @@ void do_cmd_cast(void)
     bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
 
     if (spell_needs_aim(cp_ptr->spell_book, spell) && !get_aim_dir(&dir, trap_spell)) return;
+
+   if (!get_item_allow(find_book_with_spell(spell), VERIFY_CAST)) return;
 
     cmd_arg args;
     args.wipe();
@@ -893,6 +988,12 @@ void do_cmd_study(void)
         if (!success && !cancelled) message(QString("You have no %1s that you can study right now.") .arg(noun));
         return;
     }
+
+    if (p_ptr->chooses_spells())
+    {
+        if (!get_item_allow(find_book_with_spell(spell), VERIFY_STUDY)) return;
+    }
+    else if (!get_item_allow(find_study_book(spell), VERIFY_STUDY)) return;
 
     p_ptr->message_append_start();
 
