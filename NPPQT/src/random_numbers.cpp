@@ -126,8 +126,6 @@ void Rand_state_init(u32b seed)
  *
  * Note that "m" must not be greater than 0x1000000, or division
  * by zero will result.
- *
- * ToDo: Check for m > 0x1000000.
  */
 u32b Rand_div(u32b m)
 {

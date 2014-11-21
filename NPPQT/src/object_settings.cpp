@@ -114,70 +114,44 @@ void ObjectSettingsDialog::add_object_verifications()
     object_kind_ver->addWidget(object_kind_label);
 
 
-    if (!o_ptr->is_artifact())
-    {
-        add_type_checkbox(VERIFY_DESTROY);
-        add_kind_checkbox(VERIFY_DESTROY);
-    }
-    if (o_ptr->is_usable_item())
-    {
-        add_type_checkbox(VERIFY_USE);
-        add_kind_checkbox(VERIFY_USE);
-    }
+    if (!o_ptr->is_artifact())   add_type_checkbox(VERIFY_DESTROY);
+
+    if (o_ptr->is_usable_item()) add_type_checkbox(VERIFY_USE);
 
     if (o_ptr->is_wearable())
     {
         add_type_checkbox(VERIFY_TAKEOFF);
         add_type_checkbox(VERIFY_WIELD);
-        add_kind_checkbox(VERIFY_TAKEOFF);
-        add_kind_checkbox(VERIFY_WIELD);
     }
+
     add_type_checkbox(VERIFY_THROW);
     add_type_checkbox(VERIFY_DROP);
     add_type_checkbox(VERIFY_PICKUP);
-    add_kind_checkbox(VERIFY_THROW);
-    add_kind_checkbox(VERIFY_DROP);
-    add_kind_checkbox(VERIFY_PICKUP);
-    if (obj_is_activatable(o_ptr))
-    {
-        add_type_checkbox(VERIFY_ACTIVATE);
-        add_kind_checkbox(VERIFY_ACTIVATE);
-    }
+
+    if (obj_is_activatable(o_ptr))  add_type_checkbox(VERIFY_ACTIVATE);
+
     if (o_ptr->is_ammo())
     {
         add_type_checkbox(VERIFY_FIRE);
         add_type_checkbox(VERIFY_FIRE_NEAR);
-        add_kind_checkbox(VERIFY_FIRE);
-        add_kind_checkbox(VERIFY_FIRE_NEAR);
     }
-    if (o_ptr->is_fuel())
-    {
-        add_type_checkbox(VERIFY_REFILL);
-        add_kind_checkbox(VERIFY_REFILL);
-    }
-    if (o_ptr->is_spellbook())
-    {
-        add_type_checkbox(VERIFY_STUDY);
-        add_type_checkbox(VERIFY_CAST);
-    }
-    if (o_ptr->is_weapon())
-    {
-        add_type_checkbox(AUTO_SWAP);
-        add_kind_checkbox(AUTO_SWAP);
-    }
+
+    if (o_ptr->is_fuel())  add_type_checkbox(VERIFY_REFILL);
+
+    if (o_ptr->is_spellbook())  add_type_checkbox(VERIFY_STUDY);
+
+    if (o_ptr->is_weapon())   add_type_checkbox(AUTO_SWAP);
 
     if (o_ptr->is_ammo() || is_throwing_weapon(o_ptr))
     {
         add_type_checkbox(AUTO_WIELD_QUIVER);
-        add_kind_checkbox(AUTO_WIELD_QUIVER);
     }
+
     if (o_ptr->is_rod() || obj_is_activatable(o_ptr))
     {
         add_type_checkbox(RECHARGE_NOTIFY);
-        add_kind_checkbox(RECHARGE_NOTIFY);
     }
     add_type_checkbox(VERIFY_ALL);
-    add_kind_checkbox(VERIFY_ALL);
 
     connect(object_type_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_type_settings(int, bool)));
     connect(object_kind_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_kind_settings(int, bool)));
@@ -517,4 +491,20 @@ bool get_item_allow(int item, int verify_command)
 
     /* Allow it */
     return (TRUE);
+}
+
+// Copy the default object kind settings to the object
+void apply_object_kind_settings(object_type *o_ptr)
+{
+    // Paranoia
+    if (!o_ptr->k_idx) return;
+
+    object_kind *k_ptr = &k_info[o_ptr->k_idx];
+
+    // Only copy the true ones.
+    for (int i = 0; i < VERIFY_MAX; i++)
+    {
+        if (!k_ptr->use_verify[i]) continue;
+        o_ptr->use_verify[i] = TRUE;
+    }
 }

@@ -820,7 +820,6 @@ extern bool steal_powers(int dir);
 extern bool call_huorns(void);
 
 //squelch.cpp
-extern QString get_autoinscription(s16b kindIdx);
 extern void apply_autoinscription(object_type *o_ptr);
 extern void autoinscribe_ground(void);
 extern void autoinscribe_pack(void);

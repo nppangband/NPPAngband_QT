@@ -633,29 +633,6 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
 }
 
 
-/*
- * Hack -- allow user to "prevent" certain choices.
- *
- * The item can be negative to mean "item on floor".
- */
-static bool get_item_allow(int item, bool is_harmless)
-{
-    object_type *o_ptr;
-
-    /* Inventory or floor */
-    if (item >= 0)
-        o_ptr = &inventory[item];
-    else
-        o_ptr = &o_list[0 - item];
-
-    // TODO - work out a system to verify objects
-
-    /* Allow it */
-    return (TRUE);
-}
-
-
-
 
 /**
  *
@@ -722,15 +699,6 @@ bool get_item(int *cp, QString pmt, QString str, int mode)
     /* Go to menu */
     ObjectSelectDialog(cp, pmt, mode, &success, &cancelled, p_ptr->py, p_ptr->px);
 
-    /* Check validity */
-    if (success)
-    {
-        if (!get_item_allow(*cp, FALSE))
-        {
-            success = FALSE;
-        }
-    }
-
     /* Hack -- Cancel "display" */
     p_ptr->command_see = FALSE;
 
@@ -771,15 +739,6 @@ bool get_item_beside(int *cp, QString pmt, QString str, int sq_y, int sq_x)
 
     /* Go to menu */
     ObjectSelectDialog(cp, pmt, (USE_FLOOR), &success, &cancelled, sq_y, sq_x);
-
-    /* Check validity */
-    if (success)
-    {
-        if (!get_item_allow(*cp, TRUE))
-        {
-            success = FALSE;
-        }
-    }
 
     /* Hack -- Cancel "display" */
     p_ptr->command_see = FALSE;

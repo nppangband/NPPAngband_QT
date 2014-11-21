@@ -18,6 +18,7 @@
  */
 #include "src/npp.h"
 #include "src/squelch.h"
+#include "src/object_settings.h"
 
 /* Pseudo flag */
 #define RBASE (TR2_RES_FIRE | TR2_RES_COLD | TR2_RES_ELEC | TR2_RES_ACID)
@@ -390,7 +391,7 @@ static QString expand_inscription(object_type *o_ptr)
 /*
  * Returns the current autoinscription.
  */
-QString get_autoinscription(s16b kindIdx)
+static QString get_autoinscription(s16b kindIdx)
 {
 
     object_kind *k_ptr = &k_info[kindIdx];
@@ -417,6 +418,8 @@ void apply_autoinscription(object_type *o_ptr)
     {
         return;
     }
+
+    apply_object_kind_settings(o_ptr);
 
     /* We have an autoinscription */
     if (!note.isEmpty())

@@ -92,7 +92,7 @@ private slots:
 // object_settings
 extern void object_settings(int i);
 extern bool get_item_allow(int item, int verify_command);
-
+extern void apply_object_kind_settings(object_type *o_ptr);
 
 
 #endif // OBJECT_SETTINGS_H

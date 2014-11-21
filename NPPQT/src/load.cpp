@@ -2215,9 +2215,6 @@ static int read_savefile(void)
     rd_byte(&sf_minor);
     rd_byte(&sf_patch);
     rd_byte(&sf_extra);
-    /* Clear screen */
-    //TODO clear screen
-    //Term_clear();
 
     if (older_than(OLD_VERSION_MAJOR, OLD_VERSION_MINOR, OLD_VERSION_PATCH))
     {
@@ -2267,10 +2264,6 @@ bool load_player(void)
 
     // Load the game mode
     rd_byte(&savefile_game);
-
-    /* Clear screen */
-    //TODO clear screen
-    //Term_clear();
 
     if (game_mode != savefile_game)
     {
