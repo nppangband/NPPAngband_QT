@@ -128,6 +128,7 @@ class object_type
     // Methods - all in object_class.cpp
     void object_wipe();
     void object_copy (object_type *j_ptr);
+    void settings_erase();
     bool has_hidden_powers();
     bool is_wieldable();
     bool is_wearable();

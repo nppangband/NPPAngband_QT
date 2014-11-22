@@ -124,11 +124,19 @@ static void wr_item(const object_type *o_ptr)
     /* Save the inscription (if any) */
     wr_string(o_ptr->inscription);
 
+    // Write the object kind verify bool array
+    for (int i = 0; i < VERIFY_MAX; i++)
+    {
+        wr_byte(o_ptr->use_verify[i]);
+    }
+
     /* Object history */
     wr_byte(o_ptr->origin_nature);
     wr_s16b(o_ptr->origin_dlvl);
     wr_s16b(o_ptr->origin_r_idx);
     wr_string(o_ptr->origin_m_name);
+
+
 }
 
 

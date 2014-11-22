@@ -20,6 +20,7 @@
 #include "src/npp.h"
 #include "src/store.h"
 #include "src/storedialog.h"
+#include "src/object_settings.h"
 
 
 service_info services_info[] =
@@ -1809,6 +1810,9 @@ static int store_carry(int st, object_type *o_ptr)
     /* Erase the inscription & pseudo-ID bit */
     o_ptr->inscription.clear();
 
+    // Erase the object settings
+    o_ptr->settings_erase();
+
     /* Some item types require maintenance */
     switch (o_ptr->tval)
     {
@@ -2940,6 +2944,8 @@ void do_cmd_sell(int this_store, cmd_arg args)
         message(QString("I have not the room in my store to keep it."));
         return;
     }
+
+    if (!get_item_allow(item, VERIFY_SELL)) return;
 
     price = price_item(this_store, &sold_item, TRUE) * amt;
 

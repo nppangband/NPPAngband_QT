@@ -67,7 +67,7 @@ void object_type::object_wipe()
     origin_m_name.clear();
     obj_flags_1 = obj_flags_2 = obj_flags_3 = obj_flags_native = 0;
     known_obj_flags_1 = known_obj_flags_2 = known_obj_flags_3 = known_obj_flags_native = 0;
-    C_WIPE(use_verify, VERIFY_MAX, byte);
+    settings_erase();
 }
 
 // Copy object safely without using memset.
@@ -114,6 +114,11 @@ void object_type::object_copy(object_type *j_ptr)
     obj_in_use = j_ptr->obj_in_use;
     inscription = j_ptr->inscription;
     origin_m_name = j_ptr->origin_m_name;
+}
+
+void object_type::settings_erase()
+{
+    for (int i = 0; i < VERIFY_MAX; i++) use_verify[i] = FALSE;
 }
 
 /*

@@ -633,7 +633,7 @@ void command_wield(cmd_arg args)
     }
 
     /* checks for taking off old equipment*/
-    if (get_item_allow(args.slot, VERIFY_TAKEOFF)) return;
+    if (!get_item_allow(args.slot, VERIFY_TAKEOFF)) return;
 
     p_ptr->message_append_start();
 
@@ -945,7 +945,7 @@ void command_refuel(cmd_arg args)
         return;
     }
 
-    if (get_item_allow(item, VERIFY_REFILL)) return;
+    if (!get_item_allow(item, VERIFY_REFILL)) return;
 
     /* It is nothing */
     if (j_ptr->tval != TV_LIGHT)

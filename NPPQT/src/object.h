@@ -809,6 +809,7 @@ enum
 enum
 {
     VERIFY_DESTROY = 0,
+    VERIFY_SELL,
     VERIFY_USE,
     VERIFY_TAKEOFF,
     VERIFY_WIELD,
@@ -825,7 +826,8 @@ enum
     AUTO_WIELD_QUIVER,
     VERIFY_ALL,
     RECHARGE_NOTIFY,
-    VERIFY_UNUSED_2,//Just to make it easier to keep savefile compatibility
+    VERIFY_UNUSED_1,//Just to make it easier to keep savefile compatibility
+    VERIFY_UNUSED_2,
     VERIFY_MAX,
 };
 

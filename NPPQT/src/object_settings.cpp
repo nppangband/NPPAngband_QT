@@ -25,6 +25,8 @@ verify_data verification_data[] =
 {
     //  VERIFY_DESTROY
     {CMD_DESTROY, "Confirm Destroy", "Require confirmation before destroying this item."},
+    // VERIFY_SELL
+    {CMD_MAX, "Confirm Sell", "Require verification before selling this item in a store."},
     // VERIFY_USE
     {CMD_ITEM_USE, "Confirm Use", "Require confirmation before using this item."},
     // VERIFY_TAKEOFF
@@ -57,6 +59,8 @@ verify_data verification_data[] =
     {CMD_MAX, "Confirm All", "Confirm before all commands using this item."},
      // RECHARGE_NOTIFY
     {CMD_MAX, "Notify when recharged", "Notify the player when the item is recharged"},
+     // VERIFY_UNUSED_1
+    {CMD_MAX, "Unused", "Unused"},
      // VERIFY_UNUSED_2
     {CMD_MAX, "Unused", "Unused"},
 };
@@ -115,7 +119,7 @@ void ObjectSettingsDialog::add_object_verifications()
 
 
     if (!o_ptr->is_artifact())   add_type_checkbox(VERIFY_DESTROY);
-
+    add_type_checkbox(VERIFY_SELL);
     if (o_ptr->is_usable_item()) add_type_checkbox(VERIFY_USE);
 
     if (o_ptr->is_wearable())
@@ -361,6 +365,7 @@ ObjectSettingsDialog::ObjectSettingsDialog(int o_idx)
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Menu"));
+
 }
 
 void object_settings(int o_idx)
@@ -467,7 +472,7 @@ bool get_item_allow(int item, int verify_command)
 {
     object_type *o_ptr = object_from_item_idx(item);
 
-    int last_command = VERIFY_ALL;
+    int last_command = VERIFY_MAX;
 
     /* Check for a verify command */
     for (int i = 0; i < VERIFY_MAX; i++)
@@ -475,7 +480,7 @@ bool get_item_allow(int item, int verify_command)
         verify_data *verify_ptr = &verification_data[i];
 
         // Find matching command
-        if (verify_command != verify_ptr->matching_command) continue;
+        if (verify_command != i) continue;
 
         if (!o_ptr->use_verify[i]) continue;
 

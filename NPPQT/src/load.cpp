@@ -239,6 +239,14 @@ static int rd_item(object_type *o_ptr)
     /* Save the inscription */
     if (buf.length()) o_ptr->inscription = buf;
 
+    // Read the object verify bool array
+    for (int i = 0; i < VERIFY_MAX; i++)
+    {
+        byte tmp8u;
+        rd_byte(&tmp8u);
+        o_ptr->use_verify[i] = tmp8u;
+    }
+
     /* Object history */
     rd_byte(&o_ptr->origin_nature);
     rd_s16b(&o_ptr->origin_dlvl);
@@ -273,6 +281,8 @@ static int rd_item(object_type *o_ptr)
         o_ptr->pval = k_ptr->pval * o_ptr->number;
 
     }
+
+
 
     /* Repair non "wearable" items */
     if (!o_ptr->is_wearable())
