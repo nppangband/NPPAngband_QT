@@ -40,6 +40,7 @@ enum
     ITEM_UNINSCRIBE,
     ITEM_ACTIVATE,
     ITEM_THROW,
+    ITEM_SETTINGS,
     ITEM_MAX,
 };
 
@@ -62,7 +63,7 @@ public:
     void clear_grid_layout(QGridLayout *lay);
     void add_plain_label(QGridLayout *lay, QString label, int row, int col);
     void add_letter_label(QGridLayout *lay, QChar location, int label_num, int row, int col);
-    void add_object_button(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col);
+    void add_object_label(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col);
     void add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col);
 
 
@@ -86,6 +87,7 @@ public:
 
     // Functions to add the buttons
     void do_buttons(QGridLayout *lay, object_type *o_ptr, s16b item_slot, s16b row, s16b col);
+    void add_settings(QGridLayout *lay, s16b item_slot, int row, int col);
     void add_examine(QGridLayout *lay, s16b item_slot, int row, int col);
     void add_takeoff(QGridLayout *lay, s16b item_slot, int row, int col);
     void add_wield(QGridLayout *lay, s16b item_slot, int row, int col);
@@ -115,7 +117,6 @@ public:
     void update_quiver_list(QGridLayout *lay, bool label, bool buttons);
 
     public slots:
-    void object_click();
     void button_click();
 
     //  These should be replaced by real functions

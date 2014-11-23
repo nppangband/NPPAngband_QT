@@ -59,6 +59,8 @@ item_command item_command_info[ITEM_MAX] =
     {'q', CMD_ACTIVATE},
     // ITEM_THROW
     {'r', CMD_THROW},
+    // ITEM_EXAMINE
+    {'s', CMD_MAX}, //requires special handling
 };
 
 bool ObjectDialog::should_add_takeoff(object_type *o_ptr, s16b item_slot)
@@ -217,6 +219,17 @@ bool ObjectDialog::should_add_throw(object_type *o_ptr, s16b item_slot)
         return FALSE;
     }
     return (TRUE);
+}
+
+void ObjectDialog::add_settings(QGridLayout *lay, s16b item_slot, int row, int col)
+{
+    QString id = (QString("%1%2") .arg(item_command_info[ITEM_SETTINGS].action_char) .arg(item_slot));
+    QPushButton *new_button = new QPushButton;
+    new_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
+    new_button->setObjectName(id);
+    new_button->setToolTip("Object Settings");
+    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
+    lay->addWidget(new_button, row, col);
 }
 
 void ObjectDialog::add_examine(QGridLayout *lay, s16b item_slot, int row, int col)
@@ -468,25 +481,25 @@ void ObjectDialog::add_throw(QGridLayout *lay, s16b item_slot, int row, int col)
 
 void ObjectDialog::do_buttons(QGridLayout *lay, object_type *o_ptr, s16b item_slot, s16b row, s16b col)
 {
-   add_examine(lay, item_slot, row, col++);
-   if (should_add_takeoff(o_ptr, item_slot)) add_takeoff (lay, item_slot, row, col++);
-   if (should_add_wield(o_ptr, item_slot)) add_wield(lay, item_slot, row, col++);
-   if (should_add_swap(o_ptr, item_slot))  add_swap(lay, item_slot, row, col++);
-   if (should_add_use(o_ptr, item_slot))  add_use(lay, item_slot, row, col++);
-   if (should_add_refill(o_ptr, item_slot))  add_refill(lay, item_slot, row, col++);
-   if (should_add_fire(o_ptr, item_slot))  add_fire(lay, item_slot, row, col++);
-   if (should_add_fire_near(o_ptr, item_slot))  add_fire_near(lay, item_slot, row, col++);
-   if (should_add_drop(o_ptr, item_slot))  add_drop(lay, item_slot, row, col++);
-   if (should_add_pickup(o_ptr, item_slot))  add_pickup(lay, item_slot, row, col++);
-   if (should_add_browse(o_ptr, item_slot))  add_browse(lay, item_slot, row, col++);
-   if (should_add_study(o_ptr, item_slot))  add_study(lay, item_slot, row, col++);
-   if (should_add_cast(o_ptr, item_slot))  add_cast(lay, item_slot, row, col++);
-   if (should_add_destroy(o_ptr, item_slot))  add_destroy(lay, item_slot, row, col++);
-   add_inscribe(lay, item_slot, row, col++);
-   if (should_add_uninscribe(o_ptr, item_slot))  add_uninscribe(lay, item_slot, row, col++);
-   if (should_add_activate(o_ptr, item_slot))  add_activate(lay, item_slot, row, col++);
-   if (should_add_throw(o_ptr, item_slot))  add_throw(lay, item_slot, row, col++);
-
+    add_settings(lay, item_slot, row, col++);
+    add_examine(lay, item_slot, row, col++);
+    if (should_add_takeoff(o_ptr, item_slot)) add_takeoff (lay, item_slot, row, col++);
+    if (should_add_wield(o_ptr, item_slot)) add_wield(lay, item_slot, row, col++);
+    if (should_add_swap(o_ptr, item_slot))  add_swap(lay, item_slot, row, col++);
+    if (should_add_use(o_ptr, item_slot))  add_use(lay, item_slot, row, col++);
+    if (should_add_refill(o_ptr, item_slot))  add_refill(lay, item_slot, row, col++);
+    if (should_add_fire(o_ptr, item_slot))  add_fire(lay, item_slot, row, col++);
+    if (should_add_fire_near(o_ptr, item_slot))  add_fire_near(lay, item_slot, row, col++);
+    if (should_add_drop(o_ptr, item_slot))  add_drop(lay, item_slot, row, col++);
+    if (should_add_pickup(o_ptr, item_slot))  add_pickup(lay, item_slot, row, col++);
+    if (should_add_browse(o_ptr, item_slot))  add_browse(lay, item_slot, row, col++);
+    if (should_add_study(o_ptr, item_slot))  add_study(lay, item_slot, row, col++);
+    if (should_add_cast(o_ptr, item_slot))  add_cast(lay, item_slot, row, col++);
+    if (should_add_destroy(o_ptr, item_slot))  add_destroy(lay, item_slot, row, col++);
+    add_inscribe(lay, item_slot, row, col++);
+    if (should_add_uninscribe(o_ptr, item_slot))  add_uninscribe(lay, item_slot, row, col++);
+    if (should_add_activate(o_ptr, item_slot))  add_activate(lay, item_slot, row, col++);
+    if (should_add_throw(o_ptr, item_slot))  add_throw(lay, item_slot, row, col++);
 }
 
 
@@ -515,20 +528,10 @@ s16b ObjectDialog::idx_from_click(QString id)
 }
 
 /*
- * Receive an object click.  Figure out
+ * Receive a button click.  Figure out
  * which command it is, and then process
  * it.
  */
-
-void ObjectDialog::object_click()
-{
-    QString id = QObject::sender()->property("item_id").toString();
-    int o_idx = idx_from_click(id);
-
-    s16b this_idx = (s16b)o_idx;
-
-    object_settings(this_idx);
-}
 
 void ObjectDialog::button_click()
 {
@@ -538,6 +541,14 @@ void ObjectDialog::button_click()
     QChar index = id[0];
 
     p_ptr->message_append_start();
+
+    // Hack = Special handling for object settings
+    if (operator==(index, item_command_info[ITEM_SETTINGS].action_char))
+    {
+        s16b this_idx = (s16b)o_idx;
+        object_settings(this_idx);
+        return;
+    }
 
     // Search for the matching command
     for (int i = 0; i < ITEM_MAX; i++)
@@ -574,20 +585,17 @@ void ObjectDialog::add_letter_label(QGridLayout *lay, QChar location, int label_
     lay->addWidget(lb, row, col);
 }
 
-void ObjectDialog::add_object_button(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col)
+void ObjectDialog::add_object_label(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col)
 {
     QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
     QString style = QString("color: %1;").arg(get_object_color(o_ptr).name());
     style.append(QString("text-align: left; font-weight: bold;"));
 
     QString id = (QString("%1%2") .arg(location) .arg(item_slot));
-    QPushButton *object_button = new QPushButton(desc);
-    object_button->setProperty("item_id", QVariant(id));
-    object_button->setStyleSheet(style);
-    object_button->setToolTip("Modify Object Settings");
-    object_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    connect(object_button, SIGNAL(clicked()), this, SLOT(object_click()));
-    lay->addWidget(object_button, row, col);
+    QLabel *object_label = new QLabel(desc);
+    object_label->setStyleSheet(style);
+    object_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay->addWidget(object_label, row, col);
 }
 
 void ObjectDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col)
@@ -675,7 +683,7 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool label, bool buttons)
         int col = 0;
 
         if (label) add_letter_label(lay, QChar('f'), this_o_idx, row, col++);
-        add_object_button(lay, o_ptr, QChar('f'), -this_o_idx, row, col++);
+        add_object_label(lay, o_ptr, QChar('f'), -this_o_idx, row, col++);
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, -this_o_idx, row, col++);
 
@@ -702,7 +710,7 @@ void ObjectDialog::update_inven_list(QGridLayout *lay, bool label, bool buttons)
         int col = 0;
 
         if (label) add_letter_label(lay, QChar('i'), i, row, col++);
-        add_object_button(lay, o_ptr, QChar('i'), i, row, col++);
+        add_object_label(lay, o_ptr, QChar('i'), i, row, col++);
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, i, row, col++);
 
@@ -735,7 +743,7 @@ void ObjectDialog::update_equip_list(QGridLayout *lay, bool label, bool buttons)
         if (o_ptr->k_idx)
         {
 
-            add_object_button(lay, o_ptr, QChar('e'), i, row, col++);
+            add_object_label(lay, o_ptr, QChar('e'), i, row, col++);
             add_weight_label(lay, o_ptr, row, col++);
             if (buttons) do_buttons(lay, o_ptr, i, row, col++);
         }
@@ -771,7 +779,7 @@ void ObjectDialog::update_quiver_list(QGridLayout *lay, bool label, bool buttons
         if (label) add_letter_label(lay, QChar('e'), i, row, col++);
         add_plain_label(lay, mention_use(i), row, col++);
 
-        add_object_button(lay, o_ptr, QChar('e'), i, row, col++);
+        add_object_label(lay, o_ptr, QChar('e'), i, row, col++);
         add_weight_label(lay, o_ptr, row, col++);
         if (buttons) do_buttons(lay, o_ptr, i, row, col++);
 

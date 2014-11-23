@@ -35,5 +35,6 @@
         <file>lib/icons/drop.png</file>
         <file>lib/icons/throw.png</file>
         <file>lib/icons/pickup.png</file>
+        <file>lib/icons/settings.png</file>
     </qresource>
 </RCC>

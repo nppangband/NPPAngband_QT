@@ -20,8 +20,6 @@
 #include <src/squelch.h>
 #include <QCheckBox>
 
-s16b object_idx;
-
 verify_data verification_data[] =
 {
     //  VERIFY_DESTROY

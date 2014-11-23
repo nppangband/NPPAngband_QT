@@ -160,6 +160,9 @@ command_type command_info[] =
 // First we must make sure the cmd_arg has all the necessary information
 void process_command(int item, s16b command)
 {
+    // Paranoia
+    if (command == CMD_MAX) return;
+
     // Now that we have a match, process the command.
     command_type *command_ptr = &command_info[command];
     cmd_arg args;
