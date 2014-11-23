@@ -242,7 +242,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     }
 
     // Set up the main layout
-    main_layout = new QVBoxLayout;
+    QVBoxLayout *main_layout = new QVBoxLayout;
 
     //Build the header
     header_main = new QLabel("<b><h2>Object Menu</b></h2>");
@@ -267,7 +267,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     inven_tab = new QWidget;
     equip_tab = new QWidget;
 
-    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+
 
     // Add the list of floor items
     QVBoxLayout *floor_vlay = new QVBoxLayout;
@@ -278,7 +278,8 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     floor_list = new QGridLayout;
     update_floor_list(floor_list, FALSE, buttons);
     floor_vlay->addLayout(floor_list);
-    floor_vlay->addSpacerItem(vspacer);
+    QSpacerItem *vspacer1 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    floor_vlay->addSpacerItem(vspacer1);
 
 
     // Add the list of inventory
@@ -290,7 +291,8 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     inven_list = new QGridLayout;
     update_inven_list(inven_list, FALSE, buttons);
     inven_vlay->addLayout(inven_list);
-    inven_vlay->addSpacerItem(vspacer);
+    QSpacerItem *vspacer2 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    inven_vlay->addSpacerItem(vspacer2);
 
     // Add the equipment
     QVBoxLayout *equip_and_quiver_vlay = new QVBoxLayout;
@@ -318,9 +320,11 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     quiver_list = new QGridLayout;
     update_quiver_list(quiver_list, FALSE, buttons);
     quiver_vlay->addLayout(quiver_list);
-    equip_and_quiver_vlay->addSpacerItem(vspacer);
+    QSpacerItem *vspacer3 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    equip_and_quiver_vlay->addSpacerItem(vspacer3);
 
-    main_layout->addSpacerItem(vspacer);
+    QSpacerItem *vspacer4 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    main_layout->addSpacerItem(vspacer4);
 
     QPushButton *btn_close = new QPushButton("Close");
     main_layout->addWidget(btn_close);

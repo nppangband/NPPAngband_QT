@@ -20,6 +20,7 @@
 #include <src/squelch.h>
 #include <QCheckBox>
 
+s16b object_idx;
 
 verify_data verification_data[] =
 {
@@ -64,6 +65,7 @@ verify_data verification_data[] =
      // VERIFY_UNUSED_2
     {CMD_MAX, "Unused", "Unused"},
 };
+
 
 void ObjectSettingsDialog::update_object_type_settings(int id, bool checked)
 {
@@ -160,8 +162,10 @@ void ObjectSettingsDialog::add_object_verifications()
     connect(object_type_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_type_settings(int, bool)));
     connect(object_kind_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_kind_settings(int, bool)));
 
+    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
     object_type_ver->addSpacerItem(vspacer);
-    object_kind_ver->addSpacerItem(vspacer);
+    QSpacerItem *vspacer1 = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    object_kind_ver->addSpacerItem(vspacer1);
 }
 
 void ObjectSettingsDialog::update_ego_setting(int id)
@@ -171,7 +175,7 @@ void ObjectSettingsDialog::update_ego_setting(int id)
     else e_ptr->squelch = FALSE;
 }
 
-void ObjectSettingsDialog::add_ego_buttons()
+void ObjectSettingsDialog::add_ego_buttons(QVBoxLayout *ego_buttons)
 {
     if (!o_ptr->ego_num) return;
 
@@ -199,10 +203,11 @@ void ObjectSettingsDialog::add_ego_buttons()
     ego_group->addButton(ego_yes, TRUE);
     ego_buttons->addWidget(ego_no);
     ego_buttons->addWidget(ego_yes);
+
+    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
     ego_buttons->addSpacerItem(vspacer);
 
     connect(ego_group, SIGNAL(buttonClicked(int)), this, SLOT(update_ego_setting(int)));
-
 }
 
 void ObjectSettingsDialog::update_quality_setting(int id)
@@ -211,7 +216,7 @@ void ObjectSettingsDialog::update_quality_setting(int id)
     squelch_level[squelch_type] = id;
 }
 
-void ObjectSettingsDialog::add_quality_buttons()
+void ObjectSettingsDialog::add_quality_buttons(QVBoxLayout *quality_buttons)
 {
     // First make sure we need the object uses these settings
     byte squelch_type = squelch_type_of(o_ptr);
@@ -264,6 +269,9 @@ void ObjectSettingsDialog::add_quality_buttons()
     }
     quality_buttons->addWidget(quality_all_but_artifact);
 
+    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    quality_buttons->addSpacerItem(vspacer);
+
     connect(quality_group, SIGNAL(buttonClicked(int)), this, SLOT(update_quality_setting(int)));
 }
 
@@ -272,8 +280,7 @@ void ObjectSettingsDialog::update_squelch_setting(int id)
     k_ptr->squelch = id;
 }
 
-
-void ObjectSettingsDialog::add_squelch_buttons()
+void ObjectSettingsDialog::add_squelch_buttons(QVBoxLayout *squelch_buttons)
 {
     squelch_group = new QButtonGroup();
     QLabel *squelch_label = new QLabel(QString("<b><big>   Object Squelch Settings   </b></big>"));
@@ -299,6 +306,7 @@ void ObjectSettingsDialog::add_squelch_buttons()
     squelch_group->addButton(squelch_pickup_yes, NO_SQUELCH_ALWAYS_PICKUP);
     squelch_group->addButton(squelch_always, SQUELCH_ALWAYS);
 
+    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     squelch_buttons->addWidget(squelch_never);
     squelch_buttons->addWidget(squelch_pickup_no);
@@ -310,31 +318,29 @@ void ObjectSettingsDialog::add_squelch_buttons()
 
 }
 
-
-ObjectSettingsDialog::ObjectSettingsDialog(int o_idx)
+ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx)
 {
     o_ptr = object_from_item_idx(o_idx);
 
     // Paranoia
     if (!o_ptr->k_idx) return;
 
-    object_index = o_idx;
-
     k_ptr = &k_info[o_ptr->k_idx];
 
-    main_layout = new QVBoxLayout;
-    main_across = new QHBoxLayout;
-    squelch_vlay = new QVBoxLayout;
-    object_type_ver = new QVBoxLayout;
-    object_kind_ver = new QVBoxLayout;
-    vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    QVBoxLayout *main_layout = new QVBoxLayout;
 
     QLabel *header_main = new QLabel("<b><h2>Object Settings Menu</b></h2>");
     header_main->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(header_main);
+
     QLabel *object_name = new QLabel(QString("<big>%1</big>") .arg(object_desc(o_ptr, ODESC_FULL | ODESC_SINGULAR)));
     object_name->setAlignment(Qt::AlignCenter);
-    main_layout->addWidget(header_main);
     main_layout->addWidget(object_name);
+
+    QHBoxLayout *main_across = new QHBoxLayout;
+    QVBoxLayout *squelch_vlay = new QVBoxLayout;
+    object_type_ver = new QVBoxLayout;
+    object_kind_ver = new QVBoxLayout;
     main_layout->addLayout(main_across);
     main_across->addLayout(object_type_ver);
     main_across->addLayout(object_kind_ver);
@@ -345,31 +351,31 @@ ObjectSettingsDialog::ObjectSettingsDialog(int o_idx)
     // Add squelch settings, except for the instant artifacts
     if (!(k_ptr->k_flags3 & TR3_INSTA_ART))
     {
-        squelch_buttons = new QVBoxLayout;
+        QVBoxLayout *squelch_buttons = new QVBoxLayout;
         squelch_vlay->addLayout(squelch_buttons);
-        add_squelch_buttons();
+        add_squelch_buttons(squelch_buttons);
 
-        quality_buttons = new QVBoxLayout;
+        QVBoxLayout *quality_buttons = new QVBoxLayout;
         squelch_vlay->addLayout(quality_buttons);
-        add_quality_buttons();
+        add_quality_buttons(quality_buttons);
 
-        ego_buttons = new QVBoxLayout;
+        QVBoxLayout *ego_buttons = new QVBoxLayout;
         squelch_vlay->addLayout(ego_buttons);
-        add_ego_buttons();
+        add_ego_buttons(ego_buttons);
     }
 
-    buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addStretch();
     main_layout->addWidget(buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Menu"));
-
 }
 
-void object_settings(int o_idx)
+void object_settings(s16b o_idx)
 {
+
     ObjectSettingsDialog *dlg = new ObjectSettingsDialog(o_idx);
     dlg->exec();
     delete dlg;
@@ -477,8 +483,6 @@ bool get_item_allow(int item, int verify_command)
     /* Check for a verify command */
     for (int i = 0; i < VERIFY_MAX; i++)
     {
-        verify_data *verify_ptr = &verification_data[i];
-
         // Find matching command
         if (verify_command != i) continue;
 

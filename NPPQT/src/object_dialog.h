@@ -58,7 +58,7 @@ class ObjectDialog : public QDialog
 
 
 public:
-    QVBoxLayout *main_layout;
+
     void clear_grid_layout(QGridLayout *lay);
     void add_plain_label(QGridLayout *lay, QString label, int row, int col);
     void add_letter_label(QGridLayout *lay, QChar location, int label_num, int row, int col);

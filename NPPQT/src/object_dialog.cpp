@@ -525,7 +525,9 @@ void ObjectDialog::object_click()
     QString id = QObject::sender()->property("item_id").toString();
     int o_idx = idx_from_click(id);
 
-    object_settings(o_idx);
+    s16b this_idx = (s16b)o_idx;
+
+    object_settings(this_idx);
 }
 
 void ObjectDialog::button_click()
