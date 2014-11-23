@@ -17,6 +17,7 @@
  */
 
 #include "src/player_death.h"
+#include <src/cmds.h>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>

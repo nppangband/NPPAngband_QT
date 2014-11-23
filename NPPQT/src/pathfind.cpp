@@ -1,4 +1,5 @@
-#include "npp.h"
+#include "src/npp.h"
+#include <src/cmds.h>
 
 
 /****** Pathfinding code ******/

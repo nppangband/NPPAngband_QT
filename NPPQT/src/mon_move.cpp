@@ -5,12 +5,16 @@
  * Copyright (c) 2001 Leon Marrick & Bahman Rabii, Ben Harrison,
  * James E. Wilson, Robert A. Koeneke, Jeff Greene, Diego Gonzalez
  *
- * Additional code and concepts by David Reeve Sward, Keldon Jones,
- * and others.
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
  *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.  Other copyrights may also apply.
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 3, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
 
 #include "src/npp.h"

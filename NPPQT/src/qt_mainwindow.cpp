@@ -24,6 +24,7 @@
 #include "src/qt_mainwindow.h"
 #include "src/init.h"
 #include "src/optionsdialog.h"
+#include "src/cmds.h"
 #include "src/birthdialog.h"
 #include "src/utilities.h"
 #include "emitter.h"

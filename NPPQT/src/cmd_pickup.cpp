@@ -17,6 +17,7 @@
  */
 
 #include "npp.h"
+#include "src/cmds.h"
 #include "storedialog.h"
 #include "src/object_settings.h"
 

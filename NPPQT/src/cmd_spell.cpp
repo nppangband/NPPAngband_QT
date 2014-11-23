@@ -18,9 +18,9 @@
  */
 
 #include <src/player_command.h>
-#include <src/cmd_spell.h>
+#include <src/cmds.h>
 #include "src/object_settings.h"
-
+#include <src/npp.h>
 #include <QPushButton>
 #include <QVBoxLayout>
 

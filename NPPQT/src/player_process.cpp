@@ -9,7 +9,7 @@
  * under the terms of either:
  *
  * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
+ *    Foundation, version 3, or
  *
  * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
@@ -18,6 +18,7 @@
  */
 
 #include "src/npp.h"
+#include <src/cmds.h>
 #include <QCoreApplication>
 
 /*

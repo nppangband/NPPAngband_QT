@@ -19,7 +19,7 @@
 #include "player_command.h"
 #include "nppdialog.h"
 #include "storedialog.h"
-
+#include "src/cmds.h"
 
 
 /*

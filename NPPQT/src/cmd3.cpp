@@ -19,6 +19,7 @@
 #include <src/npp.h>
 #include "src/player_command.h"
 #include "src/dun_traps.h"
+#include "src/cmds.h"
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QPushButton>

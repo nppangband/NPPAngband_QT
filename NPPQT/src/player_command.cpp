@@ -17,6 +17,7 @@
  */
 
 #include <src/npp.h>
+#include <src/cmds.h>
 #include "player_command.h"
 #include "nppdialog.h"
 

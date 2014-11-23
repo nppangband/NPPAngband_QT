@@ -18,6 +18,7 @@
  */
 
 #include "src/npp.h"
+#include "src/cmds.h"
 #include "tilebag.h"
 #include <QTime>
 

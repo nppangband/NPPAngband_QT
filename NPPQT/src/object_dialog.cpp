@@ -15,6 +15,7 @@
  */
 
 #include <src/npp.h>
+#include <src/cmds.h>
 #include <src/object_dialog.h>
 #include <src/player_command.h>
 #include <src/object_select.h>

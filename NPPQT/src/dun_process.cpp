@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "src/cmds.h"
 #include "src/store.h"
 #include "src/player_command.h"
 

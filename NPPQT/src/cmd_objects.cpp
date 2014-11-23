@@ -20,6 +20,8 @@
 #include <src/npp.h>
 #include "src/player_command.h"
 #include "src/object_settings.h"
+#include "src/cmds.h"
+#include <QPushButton>
 
 
 
@@ -1135,6 +1137,50 @@ void do_cmd_swap_weapon()
     command_swap(args);
 }
 
+void ObjectDestroyDialog::do_object_settings()
+{
+    object_settings(this_object_num);
+}
+
+ObjectDestroyDialog::ObjectDestroyDialog(s16b o_idx)
+{
+    QVBoxLayout *main_layout = new QVBoxLayout;
+
+    object_type *o_ptr = object_from_item_idx(o_idx);
+    this_object_num = o_idx;
+
+    QLabel *header_main = new QLabel("<b><h2>Confirm Object Destruction</b></h2>");
+    header_main->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(header_main);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Object Menu"));
+
+    QLabel *object_name = new QLabel(QString("Really destory %1?") .arg(object_desc(o_ptr, ODESC_FULL)));
+    object_name->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(object_name);
+
+    QHBoxLayout *main_across = new QHBoxLayout;
+    main_layout->addLayout(main_across);
+
+    QPushButton *obj_settings = new QPushButton("Object Settings");
+    obj_settings->setToolTip("Set verification settings and squelch settings");
+    connect(obj_settings, SIGNAL(clicked()), this, SLOT(do_object_settings()));
+    main_across->addWidget(obj_settings);
+
+    QPushButton *yes_button = new QPushButton("Yes");
+    connect(yes_button, SIGNAL(clicked()), this, SLOT(accept()));
+    main_across->addWidget(yes_button);
+
+    QPushButton *no_button = new QPushButton("No");
+    connect(no_button, SIGNAL(clicked()), this, SLOT(reject()));
+    main_across->addWidget(no_button);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Verify Destroy"));
+
+}
+
 /*
  * Destroy an item
  */
@@ -1206,12 +1252,10 @@ void command_destroy(cmd_arg args)
     /* Verify destruction */
     if (verify_destroy)
     {
-        /* Check for known ego-items */
-        out_val = (QString("Really Destroy %1?") .arg(o_name));
-
-        if (!get_check(out_val)) return;
-
-        // TODO special dialog box for squelching ego-items and object kinds
+        ObjectDestroyDialog *dlg = new ObjectDestroyDialog(item);
+        bool result = dlg->exec();
+        delete dlg;
+        if (!result) return;
     }
 
     if (!get_item_allow(item, VERIFY_DESTROY)) return;

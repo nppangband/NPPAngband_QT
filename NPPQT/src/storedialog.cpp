@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QPixmap>
 #include "npp.h"
+#include <src/cmds.h>
 #include "store.h"
 
 void launch_store(int store_idx)

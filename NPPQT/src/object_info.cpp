@@ -19,6 +19,7 @@
  */
 
 #include "src/npp.h"
+#include <src/cmds.h>
 #include <QMessageBox>
 
 
