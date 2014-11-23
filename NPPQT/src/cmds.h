@@ -1,5 +1,5 @@
-#ifndef CMD_SPELL_H
-#define CMD_SPELL_H
+#ifndef CMDS_H
+#define CMDS_H
 
 
 
@@ -87,4 +87,4 @@ private:
 
 
 
-#endif // CMD_SPELL_H
+#endif // CMDS_H

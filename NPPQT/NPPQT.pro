@@ -93,7 +93,6 @@ SOURCES +=  src/qt_main.cpp\
 
 
 
-
 HEADERS  += src/qt_mainwindow.h\
             src/npp.h\
             src/defines.h\
@@ -113,6 +112,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/object_classes.h \
             src/squelch.h \
             src/randart.h \
+            src/cmds.h \
             src/dun_classes.h \
             src/dun_generate.h \
             src/optionsdialog.h \
@@ -123,7 +123,6 @@ HEADERS  += src/qt_mainwindow.h\
             src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \
-            src/cmd_spell.h \
             src/nppdialog.h \
             src/storedialog.h \
             src/griddialog.h \
@@ -135,9 +134,6 @@ HEADERS  += src/qt_mainwindow.h\
             src/object_dialog.h \
             src/object_all_menu.h \
             src/object_settings.h
-
-
-
 
 
 
