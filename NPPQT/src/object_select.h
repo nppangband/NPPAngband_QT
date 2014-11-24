@@ -4,7 +4,7 @@
 #include "src/object_dialog.h"
 #include <QTabWidget>
 #include <QDialogButtonBox>
-#include <QSignalMapper>
+#include <QButtonGroup>
 #include <QKeyEvent>
 
 
@@ -34,22 +34,18 @@ protected:
 
 private slots:
     // Receives the number of the button pressed.
-    void button_press(QString num_string);
-    void on_dialog_buttons_pressed(QAbstractButton *);
+    void button_press(int item);
 
 private:
 
     QTabWidget *object_tabs;
-    QDialogButtonBox *buttons;
     QWidget *floor_tab;
     QWidget *inven_tab;
     QWidget *equip_tab;
     QWidget *quiver_tab;
     QLabel *main_prompt;
 
-    // Keeps track of which button goes with which object.
-    // Is sent by a signal to the button_press function
-    QSignalMapper* button_values;
+    QButtonGroup *object_select_group;
 
     // Functions to build the actual tabs
     void build_floor_tab();
@@ -59,9 +55,10 @@ private:
 
     byte find_starting_tab(int mode);
 
-    void track_longest_object_name(object_type *o_ptr, byte which_tab, int slot);
     QString add_equip_use(int slot);
-    QString format_button_name(QChar char_index, object_type *o_ptr, byte which_tab, int slot);
+    QString format_button_name(QChar char_index, object_type *o_ptr, bool is_equip, int slot);
+    void add_object_button(object_type *o_ptr, s16b item_slot, QChar char_index, bool is_equip, QGridLayout *lay, int row, int col);
+
 
     //Functions to track the list of possible items
     void floor_items_count(int mode, int sq_y, int sq_x);
@@ -81,14 +78,9 @@ private:
     bool allow_equip;
     bool allow_quiver;
 
-    //Record an item selection
-    int  get_selected_object(int num_tracker);
-
     // Variables for keeping track of which item is selected
     QVector<byte> tab_order;
-    int selected_button;
-    int num_buttons;
-    bool object_found;
+    s16b selected_item;
 
 };
 

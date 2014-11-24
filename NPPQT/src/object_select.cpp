@@ -26,10 +26,9 @@
 #include <QLabel>
 
 // Receives the number of the button pressed.
-void ObjectSelectDialog::button_press(QString num_string)
+void ObjectSelectDialog::button_press(int item)
 {
-    selected_button = num_string.toInt();
-
+    selected_item = item;
     this->accept();
 }
 
@@ -37,7 +36,8 @@ void ObjectSelectDialog::button_press(QString num_string)
 void ObjectSelectDialog::keyPressEvent(QKeyEvent* which_key)
 {
     // Handle escape key
-    if (which_key->key() == Qt::Key_Escape) {
+    if (which_key->key() == Qt::Key_Escape)
+    {
         this->close();
         return;
     }
@@ -80,12 +80,13 @@ QString ObjectSelectDialog::add_equip_use(int slot)
 }
 
 
-QString ObjectSelectDialog::format_button_name(QChar char_index, object_type *o_ptr, byte which_tab, int slot)
+
+QString ObjectSelectDialog::format_button_name(QChar char_index, object_type *o_ptr, bool is_equip, int slot)
 {
     QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
 
     //Add description for equipment.
-    if (which_tab == TAB_EQUIP)
+    if (is_equip)
     {
         o_name.prepend(add_equip_use(slot));
     }
@@ -95,6 +96,20 @@ QString ObjectSelectDialog::format_button_name(QChar char_index, object_type *o_
     return (final_name);
 }
 
+void ObjectSelectDialog::add_object_button(object_type *o_ptr, s16b item_slot, QChar char_index, bool is_equip, QGridLayout *lay, int row, int col)
+{
+    QString desc = format_button_name(char_index, o_ptr, is_equip, item_slot);
+    QString style = QString("color: %1;").arg(get_object_color(o_ptr).name());
+    style.append(QString("text-align: left; font-weight: bold;"));
+
+    QString id = (QString("%1%2") .arg(char_index) .arg(item_slot));
+    QPushButton *object_button = new QPushButton(desc);
+    object_button->setStyleSheet(style);
+    object_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay->addWidget(object_button, row, col);
+    object_select_group->addButton(object_button, item_slot);
+
+}
 
 void ObjectSelectDialog::floor_items_count(int mode, int sq_y, int sq_x)
 {
@@ -140,7 +155,7 @@ void ObjectSelectDialog::build_floor_tab()
     aux->setLayout(object_layout);
 
     // Only column 0 can resize
-    object_layout->setColumnStretch(0, 100);
+    //object_layout->setColumnStretch(0, 100);
 
     // Give each one titles
     QLabel *object_header = new QLabel("Floor Items");
@@ -159,32 +174,23 @@ void ObjectSelectDialog::build_floor_tab()
     // Make a button for each object.
     for (int i = 0; i < floor_items.size(); i++)
     {
+        byte col = 0;
+        s16b item = floor_items[i];
+
         // Make the label.
-        QChar which_char = number_to_letter(i);
-        object_type *o_ptr = &o_list[floor_items[i]];
+        object_type *o_ptr = &o_list[item];
 
         // Make the button for the object.
-        QString button_name = format_button_name(which_char, o_ptr, TAB_FLOOR, floor_items[i]);
-        QString text_num = QString::number(num_buttons);
-        QPushButton *button = new QPushButton(text_num);
-        button->setText(button_name);
-        button->setStyleSheet("Text-align:left");
-
-        // Let the button tell us the number button that was clicked
-        connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
-        button_values->setMapping(button, text_num);
+        add_object_button(o_ptr, -item, number_to_letter(i), FALSE, object_layout, (i+1), col++);
 
         // Add a weight button
-        add_weight_label(object_layout, o_ptr, (i+1), 1);
+        add_weight_label(object_layout, o_ptr, (i+1), col++);
 
         // Add a help button to put up a description of the object.
-        add_examine(object_layout, -floor_items[i], (i+1), 2);
+        add_examine(object_layout, -item, (i+1), col++);
 
-        // Add both buttons to the appropriate layout.
-        object_layout->addWidget(button, (i+1), 0);
-
-        // Keep track of the number of buttons.
-        num_buttons++;
+        // Add a object settings button
+        add_settings(object_layout, -item, (i+1), col++);
     }
 
     floor_tab->setLayout(vlay);
@@ -225,7 +231,7 @@ void ObjectSelectDialog::build_inven_tab()
     QGridLayout *object_layout = new QGridLayout;
     aux->setLayout(object_layout);
 
-    object_layout->setColumnStretch(0, 100);
+    //object_layout->setColumnStretch(0, 100);
 
     // Give each one titles
     QLabel *object_header = new QLabel("Inventory Items");
@@ -243,31 +249,23 @@ void ObjectSelectDialog::build_inven_tab()
     // Make a button, a weight label, and a help button for each object.
     for (int i = 0; i < inven_items.size(); i++)
     {
-        QChar which_char = number_to_letter(inven_items[i]);
-        object_type *o_ptr = &inventory[inven_items[i]];
+        byte col = 0;
+        s16b item = inven_items[i];
+        QChar which_char = number_to_letter(item);
+
+        object_type *o_ptr = &inventory[item];
 
         // Make the button for the object.
-        QString button_name = format_button_name(which_char, o_ptr, TAB_INVEN, inven_items[i]);
-        QString text_num = QString::number(num_buttons);
-        QPushButton *button = new QPushButton(text_num);
-        button->setText(button_name);
-        button->setStyleSheet("Text-align:left");
-
-        // Let the button tell us the number button that was clicked
-        connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
-        button_values->setMapping(button, text_num);
+        add_object_button(o_ptr, item, which_char, FALSE, object_layout, (i+1), col++);
 
         // Add a weight button
-        add_weight_label(object_layout, o_ptr, (i+1), 1);
+        add_weight_label(object_layout, o_ptr, (i+1), col++);
 
         // Add a help button to put up a description of the object.
-        add_examine(object_layout, inven_items[i], (i+1), 2);
+        add_examine(object_layout, item, (i+1), col++);
 
-        // Add both buttons to the appropriate layout.
-        object_layout->addWidget(button, (i+1), 0);
-
-        // Keep track of the number of buttons.
-        num_buttons++;
+        // Add a object settings button
+        add_settings(object_layout, item, (i+1), col++);
     }
 
     inven_tab->setLayout(vlay);
@@ -307,7 +305,7 @@ void ObjectSelectDialog::build_equip_tab()
     QGridLayout *object_layout = new QGridLayout;
     aux->setLayout(object_layout);
 
-    object_layout->setColumnStretch(0, 100);
+    //object_layout->setColumnStretch(0, 100);
 
     // Give each one titles
     QLabel *object_header = new QLabel("Equipment Items");
@@ -325,31 +323,23 @@ void ObjectSelectDialog::build_equip_tab()
     // Make a button for each object.
     for (int i = 0; i < equip_items.size(); i++)
     {
-        QChar which_char = number_to_letter(equip_items[i]-INVEN_WIELD);
-        object_type *o_ptr = &inventory[equip_items[i]];
+        byte col = 0;
+        s16b item = equip_items[i];
+        QChar which_char = number_to_letter(item-INVEN_WIELD);
+
+        object_type *o_ptr = &inventory[item];
 
         // Make the button for the object.
-        QString button_name = format_button_name(which_char, o_ptr, TAB_EQUIP, equip_items[i]);
-        QString text_num = QString::number(num_buttons);
-        QPushButton *button = new QPushButton(text_num);
-        button->setText(button_name);
-        button->setStyleSheet("Text-align:left");
-
-        // Let the button tell us the number button that was clicked
-        connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
-        button_values->setMapping(button, text_num);
+        add_object_button(o_ptr, item, which_char, TRUE, object_layout, (i+1), col++);
 
         // Add a weight button
-        add_weight_label(object_layout, o_ptr, (i+1), 1);
+        add_weight_label(object_layout, o_ptr, (i+1), col++);
 
         // Add a help button to put up a description of the object.
-        add_examine(object_layout, equip_items[i], (i+1), 2);
+        add_examine(object_layout, item, (i+1), col++);
 
-        // Add both buttons to the appropriate layout.
-        object_layout->addWidget(button, (i+1), 0);
-
-        // Keep track of the number of buttons.
-        num_buttons++;
+        // Add a object settings button
+        add_settings(object_layout, item, (i+1), col++);
     }
 
     equip_tab->setLayout(vlay);
@@ -392,7 +382,7 @@ void ObjectSelectDialog::build_quiver_tab()
     QGridLayout *object_layout = new QGridLayout;
     aux->setLayout(object_layout);
 
-    object_layout->setColumnStretch(0, 100);
+    //object_layout->setColumnStretch(0, 100);
 
     // Give each one titles
     QLabel *object_header = new QLabel("Quiver Items");
@@ -410,31 +400,23 @@ void ObjectSelectDialog::build_quiver_tab()
     // Make a button for each object.
     for (int i = 0; i < quiver_items.size(); i++)
     {
-        QChar which_char = number_to_letter(quiver_items[i]-QUIVER_START);
-        object_type *o_ptr = &inventory[quiver_items[i]];
+        byte col = 0;
+        s16b item = quiver_items[i];
+        QChar which_char = number_to_letter(item-QUIVER_START);
+
+        object_type *o_ptr = &inventory[item];
 
         // Make the button for the object.
-        QString button_name = format_button_name(which_char, o_ptr, TAB_QUIVER, quiver_items[i]);
-        QString text_num = QString::number(num_buttons);
-        QPushButton *button = new QPushButton(text_num);
-        button->setText(button_name);
-        button->setStyleSheet("Text-align:left");
-
-        // Let the button tell us the number button that was clicked
-        connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
-        button_values->setMapping(button, text_num);
+        add_object_button(o_ptr, item, which_char, TRUE, object_layout, (i+1), col++);
 
         // Add a weight button
-        add_weight_label(object_layout, o_ptr, (i+1), 1);
+        add_weight_label(object_layout, o_ptr, (i+1), col++);
 
         // Add a help button to put up a description of the object.
-        add_examine(object_layout, quiver_items[i], (i+1), 2);
+        add_examine(object_layout, item, (i+1), col++);
 
-        // Add both buttons to the appropriate layout.
-        object_layout->addWidget(button, (i+1), 0);
-
-        // Keep track of the number of buttons.
-        num_buttons++;
+        // Add a object settings button
+        add_settings(object_layout, item, (i+1), col++);
     }
 
     quiver_tab->setLayout(vlay);
@@ -493,53 +475,6 @@ byte ObjectSelectDialog::find_starting_tab(int mode)
     return (0);
 }
 
-// Return the index off the actual object selected.
-int ObjectSelectDialog::get_selected_object(int num_tracker)
-{
-    object_found = TRUE;
-
-    /*
-     * Go through each array and figure out which button was selected.
-     * based on the order in which the buttons were created.
-     */
-
-    // Floor first
-    if (num_tracker < floor_items.size())
-    {
-        // Floor items are returned as negative items.
-        return (0 - floor_items[num_tracker]);
-    }
-    else num_tracker -= floor_items.size();
-
-    // Inventory next
-    if (num_tracker < inven_items.size())
-    {
-        return (inven_items[num_tracker]);
-    }
-    else num_tracker -= inven_items.size();
-
-    // Now try equipment
-    if (num_tracker < equip_items.size())
-    {
-        return (equip_items[num_tracker]);
-    }
-    else num_tracker -= equip_items.size();
-
-    // must be the quiver
-    if (num_tracker < quiver_items.size())
-    {
-        return (quiver_items[num_tracker]);
-    }
-
-    object_found = FALSE;
-    // This should never happen.  Paranoia
-    return (0);
-}
-
-void ObjectSelectDialog::on_dialog_buttons_pressed(QAbstractButton *)
-{
-    this->reject();
-}
 
 ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool *success, bool *cancelled, int sq_y, int sq_x)
 {
@@ -552,18 +487,18 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     main_prompt = new QLabel(QString("<b><big>%1</big></b>") .arg(prompt));
     main_prompt->setAlignment(Qt::AlignCenter);
 
-    button_values = new QSignalMapper(this);
-    connect(button_values, SIGNAL(mapped(QString)), this, SLOT(button_press(QString)));
-
     // Start with a clean slate
     tab_order.clear();
-    num_buttons = 0;
 
     // First, find the eligible objects
     floor_items_count(mode, sq_y, sq_x);
     inven_items_count(mode);
     equip_items_count(mode);
     quiver_items_count(mode);
+
+    // To keep track of which item was selected
+    object_select_group = new QButtonGroup();
+    object_select_group->setExclusive(FALSE);
 
     // Handle no available objects.
     if (!allow_floor && !allow_inven && !allow_equip && !allow_quiver)
@@ -604,9 +539,11 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
         tab_order.append(TAB_QUIVER);
     }
 
-    buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
-    connect(buttons, SIGNAL(clicked(QAbstractButton*)), this,
-            SLOT(on_dialog_buttons_pressed(QAbstractButton*)));
+    connect(object_select_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
+
+
+    QPushButton *cancel_button = new QPushButton("CANCEL");
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 
     // Figure out which tab should appear first.
     byte tab_idx = find_starting_tab(mode);
@@ -616,7 +553,7 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
 
     main_layout->addWidget(main_prompt);
     main_layout->addWidget(object_tabs);
-    main_layout->addWidget(buttons);
+    main_layout->addWidget(cancel_button);
     setLayout(main_layout);
     setWindowTitle(tr("Object Selection Menu"));
 
@@ -627,8 +564,9 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     }
     else
     {
-        *item = get_selected_object(selected_button);
-        *success = object_found;
+        *item = selected_item;
+        *success = TRUE;
+        *cancelled = FALSE;
     }
 }
 
