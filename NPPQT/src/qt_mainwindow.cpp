@@ -2102,6 +2102,21 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     if (QApplication::queryKeyboardModifiers() & (Qt::AltModifier))      alt_key = TRUE;
     if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     meta_key = TRUE;
 
+    // EXPERIMENTAL - Detect shift modifiers with keypad
+    // VERY IMPORTANT: We assume that the numlock key is alwasy pressed (normally)
+    // because the code needed to tell us that exactly is very very platform dependent
+    if (!shift_key && modifiers.testFlag(Qt::KeypadModifier)) {
+        Qt::Key code = Qt::Key(which_key->key());
+
+        QList<Qt::Key> lNumPadKeys = QList<Qt::Key>() << Qt::Key_Insert
+            << Qt::Key_End << Qt::Key_Down << Qt::Key_PageDown
+            << Qt::Key_Left << Qt::Key_Clear << Qt::Key_Right
+            << Qt::Key_Home << Qt::Key_Up << Qt::Key_PageUp
+            << Qt::Key_Delete;
+
+        shift_key = lNumPadKeys.contains(code);
+    }
+
     // Normal mode
     switch (which_key->key())
     {
