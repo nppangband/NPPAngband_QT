@@ -218,7 +218,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     quest_area->setLayout(quest_layout);
     quest_layout->setContentsMargins(0, 0, 0, 0);
     lay1->addWidget(quest_area);
-    QLabel *quest_header = new QLabel("<b><big>Your Current Quest:</b></big>");
+    QLabel *quest_header = new QLabel("<b><big>Your Current Quest:</big></b>");
     quest_header->setAlignment(Qt::AlignLeft);
     quest_status = new QLabel("Quest Desc");
     quest_picture = new QLabel("Quest Picture");
@@ -353,7 +353,7 @@ void StoreDialog::reset_quest_status()
     }
     else
     {
-        quest_picture->setText(QString("<b><big>'%1'</b></big>") .arg(r_ptr->d_char));
+        quest_picture->setText(QString("<b><big>'%1'</big></b>") .arg(r_ptr->d_char));
         quest_picture->setStyleSheet(QString("color: %1;").arg(r_ptr->d_color.name()));
     }
 

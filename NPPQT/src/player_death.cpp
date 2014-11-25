@@ -62,7 +62,7 @@ PlayerDeathDialog::PlayerDeathDialog(void)
 {
     QVBoxLayout *vlay = new QVBoxLayout;
 
-    QLabel *obj_label = new QLabel(QString("<b><big>Press 'Close' when ready:</b></big>"));
+    QLabel *obj_label = new QLabel(QString("<b><big>Press 'Close' when ready:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
     vlay->addWidget(obj_label);
 

@@ -81,7 +81,7 @@ EditObjectDialog::EditObjectDialog(void)
         o_ptr = &o_list[0 - item];
     }
 
-    QLabel *obj_label = new QLabel(QString("<b><big>Editing %1</b></big>") .arg(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL)));
+    QLabel *obj_label = new QLabel(QString("<b><big>Editing %1</big></b>") .arg(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL)));
     obj_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(obj_label);
@@ -324,7 +324,7 @@ MakeArtifactDialog::MakeArtifactDialog(void)
     object_type *i_ptr = &object_type_body;
 
 
-    QLabel *obj_label = new QLabel(QString("<b><big>Please select an artifact:</b></big>"));
+    QLabel *obj_label = new QLabel(QString("<b><big>Please select an artifact:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(obj_label);
@@ -429,7 +429,7 @@ MakeObjectDialog::MakeObjectDialog(void)
     object_type *i_ptr = &object_type_body;
 
 
-    QLabel *obj_label = new QLabel(QString("<b><big>Please select an object:</b></big>"));
+    QLabel *obj_label = new QLabel(QString("<b><big>Please select an object:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(obj_label);
@@ -521,7 +521,7 @@ MakeMonsterDialog::MakeMonsterDialog(void)
     mon_choice = new QComboBox;
     int y, x;
 
-    QLabel *mon_label = new QLabel(QString("<b><big>Please select a monster:</b></big>"));
+    QLabel *mon_label = new QLabel(QString("<b><big>Please select a monster:</big></b>"));
     mon_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(mon_label);
@@ -610,7 +610,7 @@ MakeFeatureDialog::MakeFeatureDialog(void)
     QVBoxLayout *vlay = new QVBoxLayout;
     feat_choice = new QComboBox;
 
-    QLabel *feat_label = new QLabel(QString("<b><big>Please select a feature:</b></big>"));
+    QLabel *feat_label = new QLabel(QString("<b><big>Please select a feature:</big></b>"));
     feat_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(feat_label);

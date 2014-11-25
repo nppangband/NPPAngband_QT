@@ -105,14 +105,14 @@ void ObjectSettingsDialog::add_object_verifications()
 {
     object_type_group = new QButtonGroup();
     object_type_group->setExclusive(FALSE);
-    QLabel *object_type_label = new QLabel(QString("<b><big>   Object Settings   </b></big>"));
+    QLabel *object_type_label = new QLabel(QString("<b><big>   Object Settings   </big></b>"));
     object_type_label->setAlignment(Qt::AlignCenter);
     object_type_label->setToolTip("Check boxes below to enable these options for this patticular object.");
     object_type_ver->addWidget(object_type_label);
 
     object_kind_group = new QButtonGroup();
     object_kind_group->setExclusive(FALSE);
-    QLabel *object_kind_label = new QLabel(QString("<b><big>   Object Template Settings   </b></big>"));
+    QLabel *object_kind_label = new QLabel(QString("<b><big>   Object Template Settings   </big></b>"));
     object_kind_label->setAlignment(Qt::AlignCenter);
     object_kind_label->setToolTip("Check boxes below to enable these options for ALL objects of this type.");
     object_kind_ver->addWidget(object_kind_label);
@@ -181,7 +181,7 @@ void ObjectSettingsDialog::add_ego_buttons(QVBoxLayout *ego_buttons)
 
     ego_group = new QButtonGroup();
 
-    QLabel *ego_label = new QLabel(QString("<b><big>   Ego Item Settings   </b></big>"));
+    QLabel *ego_label = new QLabel(QString("<b><big>   Ego Item Settings   </big></b>"));
     ego_label->setAlignment(Qt::AlignCenter);
     ego_label->setToolTip("The settings below allow the player to specify if this type of ego-item should be automatically destroyed upon identification.");
     QLabel *ego_name = new QLabel(QString("<b>%1</b>") .arg(get_ego_name(o_ptr)));
@@ -224,7 +224,7 @@ void ObjectSettingsDialog::add_quality_buttons(QVBoxLayout *quality_buttons)
     if (squelch_type == PS_TYPE_AMULET) limited_types = TRUE;
     else if (squelch_type == PS_TYPE_RING) limited_types = TRUE;
     quality_group = new QButtonGroup();
-    QLabel *quality_label = new QLabel(QString("<b><big>   Quality Squelch Settings   </b></big>"));
+    QLabel *quality_label = new QLabel(QString("<b><big>   Quality Squelch Settings   </big></b>"));
     quality_label->setAlignment(Qt::AlignCenter);
     quality_label->setToolTip("The settings below allow the player to automatically destroy an item on identification, or pseudo-id, based on the quality of that item.");
     QLabel *quality_name = new QLabel(QString("<b>%1</b>") .arg(quality_squelch_type_label(o_ptr)));
@@ -281,7 +281,7 @@ void ObjectSettingsDialog::update_squelch_setting(int id)
 void ObjectSettingsDialog::add_squelch_buttons(QVBoxLayout *squelch_buttons)
 {
     squelch_group = new QButtonGroup();
-    QLabel *squelch_label = new QLabel(QString("<b><big>   Object Squelch Settings   </b></big>"));
+    QLabel *squelch_label = new QLabel(QString("<b><big>   Object Squelch Settings   </big></b>"));
     squelch_label->setAlignment(Qt::AlignCenter);
     squelch_label->setToolTip("The settings below allow the player to specify if they want to automatically destroy, pickup, or ignore an item when the player walks over it.");
     squelch_buttons->addWidget(squelch_label);
