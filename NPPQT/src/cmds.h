@@ -5,8 +5,8 @@
 
 #include "src/object_classes.h"
 #include "src/player.h"
+#include <QButtonGroup>
 #include <QDialogButtonBox>
-#include <QSignalMapper>
 #include <QKeyEvent>
 #include <QTabWidget>
 #include <QLabel>
@@ -41,24 +41,19 @@ protected:
 
 private slots:
     // Receives the number of the button pressed.
-    void button_press(QString num_string);
-    void help_press(QString num_string);
-    void on_dialog_buttons_pressed(QAbstractButton *);
+    void button_press(int num);
+    void help_press(int num);
 
 
 
 private:
 
     QTabWidget *spell_dialog;
-    QDialogButtonBox *buttons;
     QWidget *spell_tab;
     QLabel *main_prompt;
 
-    // Keeps track of which button goes with which object.
-    // Is sent by a signal to the button_press function
-    QSignalMapper* button_values;
-    QSignalMapper* help_values;
-
+    QButtonGroup *spell_select_group;
+    QButtonGroup *spell_help_group;
 
 
     // Functions to build the actual tabs
@@ -78,7 +73,7 @@ private:
     bool available_spells[BOOKS_PER_REALM_ANGBAND][SPELLS_PER_BOOK];
     bool available_books[BOOKS_PER_REALM_ANGBAND];
 
-    int num_spells;
+    bool num_spells;
     int num_available_spellbooks;
     int max_spellbooks;
 

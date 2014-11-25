@@ -25,9 +25,9 @@
 #include <QVBoxLayout>
 
 // Receives the number of the button pressed.
-void SpellSelectDialog::button_press(QString num_string)
+void SpellSelectDialog::button_press(int num)
 {
-    selected_button = num_string.toInt();
+    selected_button = num;
 
     this->accept();
 }
@@ -68,14 +68,13 @@ void SpellSelectDialog::keyPressEvent(QKeyEvent* which_key)
 
 
 // Receives the number of the button pressed.
-void SpellSelectDialog::help_press(QString num_string)
+void SpellSelectDialog::help_press(int num)
 {
-    int spell_num = num_string.toInt();
 
     QString spell_desc = (QString("<b><big>%1</big></b><br><br>")
-                        .arg(cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, spell_num, 0)));
+                        .arg(cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, num, 0)));
 
-    spell_desc.append(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell_num, 0));
+    spell_desc.append(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, num, 0));
 
     /* Display the spell */
     QMessageBox::information(0, "Press OK to continue.", spell_desc, QMessageBox::Ok);
@@ -109,7 +108,7 @@ void SpellSelectDialog::count_spells(int mode)
             // Make sure we know we are using this book
             available_books[i] = TRUE;
 
-            num_spells++;
+            num_spells = TRUE;
         }
     }
 }
@@ -154,14 +153,12 @@ QString SpellSelectDialog::get_spell_comment(int spell)
     return (comment);
 }
 
-void SpellSelectDialog::on_dialog_buttons_pressed(QAbstractButton *)
-{
-    this->reject();
-}
-
 
 void SpellSelectDialog::build_spellbook_dialog(int mode)
 {
+    spell_select_group = new QButtonGroup;
+    spell_help_group = new QButtonGroup;
+
     for (int i = 0; i < max_spellbooks; i++)
     {
         // Track to which line we are adding widgets
@@ -195,13 +192,11 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
         if (choosing_book)
         {
             QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
-            QString text_num = QString::number(i);
-            QPushButton *button = new QPushButton(text_num);
-            button->setText(QString("Study a %1 from %2") .arg(noun) .arg(book_name));
+            QString button_text = (QString("Study a %1 from %2") .arg(noun) .arg(book_name));
+            QPushButton *button = new QPushButton(button_text);
             button->setStyleSheet("Text-align:left");
             spell_layout->addWidget(button, row_num, COL_SPELL_TITLE);
-            connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
-            button_values->setMapping(button, text_num);
+            spell_select_group->addButton(button, i);
             row_num++;
         }
 
@@ -268,10 +263,8 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
                 button->setText(spell_name);
                 button->setStyleSheet("Text-align:left");
                 button->setToolTip(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell, 0));
+                spell_select_group->addButton(button, spell);
                 spell_layout->addWidget(button, row_num, COL_SPELL_TITLE);
-                connect(button, SIGNAL(clicked()), button_values, SLOT(map()));
-                button_values->setMapping(button, text_num);
-
             }
             // Add level info
             QLabel *level_value = new QLabel(QString("%1") .arg(s_ptr->slevel));
@@ -293,10 +286,9 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 
             // Add a help button to put up a detailed spell description.
             QPushButton *help_button = new QPushButton(text_num);
+            help_button->setText("");
             help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-            help_button->setText(QString(""));
-            connect(help_button, SIGNAL(clicked()), help_values, SLOT(map()));
-            help_values->setMapping(help_button, text_num);
+            spell_help_group->addButton(help_button, spell);
             spell_layout->addWidget(help_button, row_num, COL_HELP);
 
             row_num++;
@@ -307,6 +299,9 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 
         spell_dialog->addTab(spell_tab, book_name);
     }
+
+    connect(spell_select_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
+    connect(spell_help_group, SIGNAL(buttonClicked(int)), this, SLOT(help_press(int)));
 }
 
 
@@ -318,13 +313,8 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     main_prompt = new QLabel(QString("<b><big>%1</big></b>") .arg(prompt));
     main_prompt->setAlignment(Qt::AlignCenter);
 
-    button_values = new QSignalMapper(this);
-    help_values = new QSignalMapper(this);
-    connect(button_values, SIGNAL(mapped(QString)), this, SLOT(button_press(QString)));
-    connect(help_values, SIGNAL(mapped(QString)), this, SLOT(help_press(QString)));
-
     // Start with a clean slate
-    num_spells = 0;
+    num_spells = FALSE;
     max_spellbooks = (game_mode == GAME_NPPANGBAND ? BOOKS_PER_REALM_ANGBAND : BOOKS_PER_REALM_MORIA);
     num_available_spellbooks = 0;
     choosing_book = FALSE;
@@ -360,18 +350,21 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     // We are selecting a book instead of a specific spell.
     if ((mode == BOOK_STUDY) && !p_ptr->chooses_spells()) choosing_book = TRUE;
 
+    // Set up the button groups
+    spell_select_group = new QButtonGroup();
+    spell_help_group = new QButtonGroup();
+
     build_spellbook_dialog(mode);
 
-    if (mode == BOOK_BROWSE) buttons = new QDialogButtonBox(QDialogButtonBox::Ok);
-    else buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
-    connect(buttons, SIGNAL(clicked(QAbstractButton*)), this,
-    SLOT(on_dialog_buttons_pressed(QAbstractButton*)));
+    QPushButton *cancel_button = new QPushButton("CANCEL");
+    if (mode == BOOK_BROWSE)  cancel_button->setText("OK");
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
 
     QVBoxLayout *main_layout = new QVBoxLayout;
 
     main_layout->addWidget(main_prompt);
     main_layout->addWidget(spell_dialog);
-    main_layout->addWidget(buttons);
+    main_layout->addWidget(cancel_button);
 
     setLayout(main_layout);
     setWindowTitle(tr("Spell Selection Menu"));
