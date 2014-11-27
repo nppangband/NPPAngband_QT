@@ -36,6 +36,7 @@ SOURCES +=  src/qt_main.cpp\
             src/griddialog.cpp \
             src/init_edit_files.cpp\
             src/init_game.cpp\
+            src/knowledge.cpp\
             src/load.cpp \
             src/mon_attack.cpp \
             src/mon_cast.cpp \
@@ -115,6 +116,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/cmds.h \
             src/dun_classes.h \
             src/dun_generate.h \
+            src/knowledge.h\
             src/optionsdialog.h \
             src/mon_classes.h \
             src/player_classes.h \
