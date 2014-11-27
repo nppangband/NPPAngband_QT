@@ -2,6 +2,8 @@
 #define PLAYER_CLASSES_H
 
 #include <src/player.h>
+#include <src/object_classes.h>
+#include <QString>
 
 class magic_type
 {

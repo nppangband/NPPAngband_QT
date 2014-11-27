@@ -872,6 +872,23 @@ static void player_wipe(void)
     for (i = 0; i < PY_MAX_SPELLS; i++) p_ptr->spell_order[i] = 99;
 }
 
+void write_birth_note(void)
+{
+    /* Write a note */
+    QDate today = QDate::currentDate();
+    QTime right_now = QTime::currentTime();
+    QString final_monster = "Morgoth, Lord of Darkness";
+
+    if (game_mode == GAME_NPPMORIA) final_monster = "The Balrog of Moria";
+
+    /* Get time */
+    QString long_day = (QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString()));
+
+    write_note(QString("<h1>%1 the %2 %3 began the quest to kill %4 on %5.</h1>")
+               .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
+               .arg(final_monster) .arg(long_day), p_ptr->depth);
+}
+
 void finish_birth()
 {
     int i, n;
@@ -926,20 +943,7 @@ void finish_birth()
         e_info[i].squelch = false;
     }
 
-    /* Write a note */
-    QDate today = QDate::currentDate();
-    QTime right_now = QTime::currentTime();
-    QString long_day;
-    QString final_monster = "Morgoth, Lord of Darkness";
 
-    if (game_mode == GAME_NPPMORIA) final_monster = "The Balrog of Moria";
-
-    /* Get time */
-    long_day = QString("%1 at %2") .arg(today.toString() .arg(right_now.toString()));
-
-    write_note(QString("%1 the %2 %3 began the quest to kill %4 on %5.")
-               .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
-               .arg(final_monster) .arg(long_day), p_ptr->depth);
 
 
     /* Hack -- outfit the player */
@@ -985,6 +989,8 @@ void finish_birth()
 
     quest_indicator_timer = 0;
     quest_indicator_complete = FALSE;
+
+    write_birth_note();
 }
 
 void init_birth()

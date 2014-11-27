@@ -124,7 +124,7 @@ QChar number_to_letter (int num)
 QString number_to_formatted_string(s32b number)
 {
     bool is_negative = TRUE;
-    if (number > 0) is_negative = FALSE;
+    if (number >= 0) is_negative = FALSE;
 
     QString formatted_num;
     formatted_num.clear();
@@ -1157,10 +1157,4 @@ void write_note(QString note, s16b depth)
     notes_log.append(note_body);
 }
 
-//Allow the player to manually record a note
-void record_note(void)
-{
-    QString note = get_string("Please enter note you wish to record.", "Enter Note", NULL);
 
-    write_note(note, p_ptr->depth);
-}

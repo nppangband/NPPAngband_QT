@@ -27,6 +27,7 @@
 #include "src/cmds.h"
 #include "src/birthdialog.h"
 #include "src/utilities.h"
+#include "src/knowledge.h"
 #include "emitter.h"
 #include "griddialog.h"
 #include "package.h"
@@ -2301,8 +2302,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_W:
         {
-            if (shift_key) record_note();
-            else do_cmd_wield();
+            do_cmd_wield();
             return;
         }
         case Qt::Key_X:
@@ -2344,6 +2344,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Plus:
         {
             do_cmd_alter(DIR_UNKNOWN);
+            return;
+        }
+        case Qt::Key_Colon:
+        {
+            do_cmd_write_note();
             return;
         }
         default:
@@ -2446,6 +2451,7 @@ void MainWindow::update_file_menu_game_active()
     }
 
     options_act->setEnabled(TRUE);
+    view_notes->setEnabled(TRUE);
 }
 
 // Activates and de-activates certain file_menu commands when a game is ended.
@@ -2465,6 +2471,7 @@ void MainWindow::update_file_menu_game_inactive()
     }
 
     options_act->setEnabled(FALSE);
+    view_notes->setEnabled(FALSE);
 }
 
 
@@ -2554,6 +2561,10 @@ void MainWindow::create_actions()
     fontselect_act->setStatusTip(tr("Change the window font or font size."));
     connect(fontselect_act, SIGNAL(triggered()), this, SLOT(fontselect_dialog()));
 
+    view_notes = new QAction(tr("View Game Notes"), this);
+    view_notes->setStatusTip(tr("View the notes file listing the character's game highlights."));
+    connect(view_notes, SIGNAL(triggered()), this, SLOT(display_notes()));
+
     about_act = new QAction(tr("&About"), this);
     about_act->setStatusTip(tr("Show the application's About box"));
     connect(about_act, SIGNAL(triggered()), this, SLOT(about()));
@@ -2586,6 +2597,11 @@ void MainWindow::set_pseudo_ascii()
     do_pseudo_ascii = pseudo_ascii_act->isChecked();
     ui_redraw_all();
     update_sidebar();
+}
+
+void MainWindow::display_notes()
+{
+    display_notes_file();
 }
 
 //  Set's up many of the keystrokes and commands used during the game.
@@ -2684,6 +2700,10 @@ void MainWindow::create_menus()
 
     act = settings->addAction(tr("Extract tiles from package"));
     connect(act, SIGNAL(triggered()), this, SLOT(do_extract_from_package()));
+
+    // Knowledge section of top menu.
+    knowledge = menuBar()->addMenu(tr("&Knowledge"));
+    knowledge->addAction(view_notes);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));

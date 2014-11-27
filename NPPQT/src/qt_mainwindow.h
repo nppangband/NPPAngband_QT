@@ -145,6 +145,7 @@ private slots:
     void set_old_tiles();
     void set_ascii();
     void set_pseudo_ascii();
+    void display_notes();
 
 
 private:
@@ -183,6 +184,7 @@ private:
     QMenu *file_menu;
     QMenu *recent_files_menu;
     QMenu *settings;
+    QMenu *knowledge;
     QMenu *help_menu;
     QToolBar *file_toolbar;
     QAction *new_game_nppangband;
@@ -201,6 +203,9 @@ private:
     QAction *old_tiles_act;
     QAction *pseudo_ascii_act;
     QAction *fontselect_act;
+
+    //Commmands for the knowledge menu
+    QAction *view_notes;
 
 
     // Holds the actual commands for the help menu.

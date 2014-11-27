@@ -361,11 +361,15 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx)
         squelch_vlay->addLayout(ego_buttons);
         add_ego_buttons(ego_buttons);
     }
+    main_layout->addStretch();
 
+    //Add a close button on the right side
+    QHBoxLayout *close_across = new QHBoxLayout;
+    main_layout->addLayout(close_across);
+    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    main_layout->addStretch();
-    main_layout->addWidget(buttons);
+    close_across->addWidget(buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Menu"));

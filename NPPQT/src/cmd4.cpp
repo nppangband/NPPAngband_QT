@@ -140,5 +140,15 @@ void do_cmd_repeat(void)
     }
 
     command_ptr->command_function(p_ptr->command_previous_args);
+}
 
+
+//Allow the player to manually record a note
+void do_cmd_write_note(void)
+{
+    if (!character_dungeon) return;
+
+    QString note = get_string("Please enter note you wish to record.", "Enter Note", NULL);
+
+    write_note(note, p_ptr->depth);
 }

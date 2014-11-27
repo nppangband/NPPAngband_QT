@@ -143,6 +143,7 @@ extern void do_cmd_make_trap(void);
 // cmd4.cpp
 extern void do_cmd_feeling(void);
 extern void do_cmd_repeat(void);
+extern void do_cmd_write_note(void);
 
 //cmd_objects
 extern cmd_arg obj_wield(object_type *o_ptr, cmd_arg args);

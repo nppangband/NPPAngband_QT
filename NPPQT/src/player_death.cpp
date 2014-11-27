@@ -17,6 +17,7 @@
  */
 
 #include "src/player_death.h"
+#include <src/knowledge.h>
 #include <src/cmds.h>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -50,7 +51,7 @@ void PlayerDeathDialog::death_examine(void)
 
 void PlayerDeathDialog::death_notes(void)
 {
-    // TODO display notes
+    display_notes_file();
 }
 
 void PlayerDeathDialog::death_spoilers(void)
@@ -179,6 +180,17 @@ static void death_knowledge(void)
     handle_stuff();
 }
 
+static void write_death_note(void)
+{
+    QDate today = QDate::currentDate();
+    QTime right_now = QTime::currentTime();
+    QString long_day = QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString());
+
+    write_note(QString("<h1>%1 the %2 %3 was killed by %4 on %5.<h1>")
+                   .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
+                   .arg(p_ptr->died_from) .arg(long_day), p_ptr->depth);
+}
+
 void player_death(void)
 {
     /* Try to make a player ghost template */
@@ -203,13 +215,7 @@ void player_death(void)
     }
 
     //TODO automatic screenshot and character dump?
-    QDate today = QDate::currentDate();
-    QTime right_now = QTime::currentTime();
-    QString long_day = QString("%1 at %2") .arg(today.toString() .arg(right_now.toString()));
-
-    write_note(QString("%1 the %2 %3 was killed by %4 on %5.")
-                   .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
-                   .arg(p_ptr->died_from) .arg(long_day), p_ptr->depth);
+    write_death_note();
 
     print_tomb();
     death_knowledge();
