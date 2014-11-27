@@ -142,6 +142,22 @@ void do_cmd_repeat(void)
     command_ptr->command_function(p_ptr->command_previous_args);
 }
 
+/*
+ * Look command
+ */
+void do_cmd_look(void)
+{
+    if (!character_dungeon) return;
+
+    /* Look around */
+    if (target_set_interactive(TARGET_LOOK, -1, -1))
+    {
+        message("Target Selected.");
+        p_ptr->redraw |= (PR_MONLIST);
+        redraw_stuff();
+    }
+}
+
 
 //Allow the player to manually record a note
 void do_cmd_write_note(void)

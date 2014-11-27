@@ -17,10 +17,10 @@ SOURCES +=  src/qt_main.cpp\
             src/birth.cpp \
             src/calcs.cpp \
             src/cmd_actions.cpp \
-            src/cmd3.cpp \
-            src/cmd4.cpp \
+            src/cmd_misc.cpp \
             src/cmd_objects.cpp \
             src/cmd_pickup.cpp \
+            src/cmd_traps.cpp \
             src/cmd_spell.cpp \
             src/dungeon.cpp \
             src/dun_cave.cpp \

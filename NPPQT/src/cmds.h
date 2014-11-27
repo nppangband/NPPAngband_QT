@@ -130,20 +130,13 @@ extern void command_hold(cmd_arg args);
 extern void do_cmd_hold();
 
 
-// cmd3.cpp
-extern void wield_in_quiver(object_type *o_ptr, int slot);
-extern void wield_item(object_type *o_ptr, int item, int slot);
+// cmd_misc.cpp
 extern bool make_monster_trap(void);
 extern void py_set_trap(int y, int x);
 extern bool py_modify_trap(int y, int x);
-extern void do_cmd_look(void);
 extern void command_make_trap(cmd_arg args);
 extern void do_cmd_make_trap(void);
 
-// cmd4.cpp
-extern void do_cmd_feeling(void);
-extern void do_cmd_repeat(void);
-extern void do_cmd_write_note(void);
 
 //cmd_objects
 extern cmd_arg obj_wield(object_type *o_ptr, cmd_arg args);
@@ -170,6 +163,12 @@ extern void command_destroy(cmd_arg args);
 extern void do_cmd_destroy(void);
 extern void do_cmd_activate(void);
 extern void do_cmd_use_item(void);
+
+// cmd_misc.cpp
+extern void do_cmd_feeling(void);
+extern void do_cmd_repeat(void);
+extern void do_cmd_look(void);
+extern void do_cmd_write_note(void);
 
 // cmd_pickup.cpp
 extern bool put_object_in_inventory(object_type *o_ptr);

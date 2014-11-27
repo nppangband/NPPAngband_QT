@@ -323,6 +323,8 @@ extern void command_use(cmd_arg args);
 extern QChar index_to_label(int i);
 extern s16b wield_slot_ammo(object_type *o_ptr);
 extern s16b wield_slot(object_type *o_ptr);
+extern void wield_in_quiver(object_type *o_ptr, int slot);
+extern void wield_item(object_type *o_ptr, int item, int slot);
 extern bool slot_can_wield_item(int slot, object_type *o_ptr);
 extern QString mention_use(int i);
 extern QString describe_use(int i);
