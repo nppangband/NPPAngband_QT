@@ -1,4 +1,4 @@
-/* File: object1.c */
+/* File: object_desc.cpp */
 
 /*
  * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
@@ -813,4 +813,5 @@ QString object_desc_spoil(object_type *o_ptr)
     /* Describe */
     return(object_desc(i_ptr, ODESC_FULL | ODESC_SPOIL));
 }
+
 

@@ -18,9 +18,11 @@
 #include <src/npp.h>
 #include <src/knowledge.h>
 #include <src/utilities.h>
+#include <src/store.h>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QTextEdit>
 
 DisplayNotesFile::DisplayNotesFile(void)
 {
@@ -84,6 +86,59 @@ void display_notes_file(void)
     DisplayNotesFile();
 }
 
+DisplayHomeInven::DisplayHomeInven(void)
+{
+    // First handle an empty home
+    store_type *st_ptr = &store[STORE_HOME];
+    if (!st_ptr->stock_num)
+    {
+        pop_up_message_box("Your Home Is Empty");
+        return;
+    }
+
+    QVBoxLayout *main_layout = new QVBoxLayout;
+
+    QLabel *home_label = new QLabel(QString("<h1><b>Home Inventory</b></h1>"));
+    home_label->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(home_label);
+
+
+    /* Display contents of the home */
+    for (int i = 0; i < st_ptr->stock_num; i++)
+    {
+        QChar prefix = number_to_letter(i);
+        object_type *o_ptr = &st_ptr->stock[i];
+        QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
+        QString o_desc = identify_random_gen(o_ptr);
+
+        QLabel *name_label = new QLabel(QString("<h3>%1) %2</h3>") .arg(prefix) .arg(o_name));
+        QLabel *desc_label = new QLabel(o_desc);
+        desc_label->setWordWrap(TRUE);
+        desc_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+        main_layout->addWidget(name_label);
+        main_layout->addWidget(desc_label);
+    }
+
+     //Add a close button on the right side
+    QHBoxLayout *close_across = new QHBoxLayout;
+    main_layout->addLayout(close_across);
+    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    close_across->addWidget(buttons);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Contents Of Your Home"));
+
+    this->exec();
+}
+
+void display_home_inventory(void)
+{
+    DisplayHomeInven();
+}
+
 DisplayMonKillCount::DisplayMonKillCount(void)
 {
     QVector<mon_kills> mon_kill_list;
@@ -132,7 +187,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     QVBoxLayout *main_layout = new QVBoxLayout;
     QGridLayout *mon_kill_info = new QGridLayout;
 
-    QLabel *mon_label = new QLabel(QString("<b><big>%1 Monster Kills by Race</big></b>") .arg(op_ptr->full_name));
+    QLabel *mon_label = new QLabel(QString("<b><big>Monster Kills by Race</big></b>"));
     mon_label->setAlignment(Qt::AlignCenter);
 
     main_layout->addWidget(mon_label);
@@ -177,6 +232,5 @@ DisplayMonKillCount::DisplayMonKillCount(void)
 
 void display_mon_kill_count(void)
 {
-
     DisplayMonKillCount();
 }

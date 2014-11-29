@@ -146,6 +146,7 @@ private slots:
     void set_ascii();
     void set_pseudo_ascii();
     void display_notes();
+    void display_home();
     void display_kill_count();
 
 
@@ -207,6 +208,7 @@ private:
 
     //Commmands for the knowledge menu
     QAction *view_notes;
+    QAction *view_home_inven;
     QAction *view_kill_count;
 
 

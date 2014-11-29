@@ -1842,3 +1842,25 @@ bool history_interesting(object_type *o_ptr)
 
     return FALSE;
 }
+
+// Provide an object description for character dumps and dialog boxes.
+QString identify_random_gen(object_type *o_ptr)
+{
+    QString obj_string;
+    obj_string.clear();
+    obj_string.append(object_info_out(o_ptr, TRUE));
+    obj_string.remove(QString("\n"));
+    if (history_interesting(o_ptr))
+    {
+        QString obj_history = QString("\n%1") .arg(format_object_history(o_ptr));
+        obj_string.append(obj_history);
+    }
+
+    //Remove the html breaks and excess spaces.
+    obj_string.remove(QString("<br>"));
+    obj_string.replace(QString("   "), QString("  "));
+    obj_string.remove(QString("\n\n"));
+
+    return(obj_string);
+
+}

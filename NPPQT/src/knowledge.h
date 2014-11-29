@@ -23,6 +23,14 @@ public:
     s16b total_kills;
 };
 
+class DisplayHomeInven : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit DisplayHomeInven(void);
+};
+
 class DisplayMonKillCount : public QDialog
 {
     Q_OBJECT
@@ -32,6 +40,7 @@ public:
 };
 
 extern void display_notes_file(void);
+extern void display_home_inventory(void);
 extern void display_mon_kill_count(void);
 
 

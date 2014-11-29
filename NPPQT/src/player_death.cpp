@@ -29,6 +29,11 @@ void PlayerDeathDialog::death_info(void)
     //TODO death info
 }
 
+void PlayerDeathDialog::death_home_inven(void)
+{
+    display_home_inventory();
+}
+
 void PlayerDeathDialog::death_messsages(void)
 {
     // TODO display messages
@@ -69,11 +74,17 @@ PlayerDeathDialog::PlayerDeathDialog(void)
 
     vlay->addStretch();
 
-    // Add the "Information" button
+    // Add the "Home Inventory" button
     QPushButton *info_button = new QPushButton("Player Information");
-    info_button->setToolTip("View player screen, equipment, inventory, and contents of player's home.");
+    info_button->setToolTip("View player screen, equipment, inventory.");
     connect(info_button, SIGNAL(clicked()), this, SLOT(death_info()));
     vlay->addWidget(info_button);
+
+    // Add the "Information" button
+    QPushButton *home_button = new QPushButton("Home Inventory");
+    home_button->setToolTip("View inventory in player's home.");
+    connect(home_button, SIGNAL(clicked()), this, SLOT(death_info()));
+    vlay->addWidget(home_button);
 
     // Add the "Messages" button
     QPushButton *message_button = new QPushButton("Messages");

@@ -262,6 +262,7 @@ extern QString strip_name(int k_idx);
 extern QString object_desc(object_type *o_ptr, byte mode);
 extern QString object_desc_spoil(object_type *o_ptr);
 
+
 // object_hooks.cpp
 extern bool item_tester_hook_wieldable_ided_weapon(object_type *o_ptr);
 extern bool item_tester_hook_wieldable_weapon(object_type *o_ptr);
@@ -284,6 +285,7 @@ extern QString object_info_out(object_type *o_ptr, bool extra_info);
 extern void object_info_screen(object_type *o_ptr);
 extern QString format_object_history(object_type *o_ptr);
 extern bool history_interesting(object_type *o_ptr);
+extern QString identify_random_gen(object_type *o_ptr);
 
 /* object-make.cpp */
 extern s16b get_obj_num(int level);
