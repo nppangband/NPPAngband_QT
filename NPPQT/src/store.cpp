@@ -2956,7 +2956,7 @@ void do_cmd_sell(int this_store, cmd_arg args)
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
-    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
+    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA | PU_PLAYER_SCORE);
 
     /* Redraw stuff */
     p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_RESIST | PR_EXP |

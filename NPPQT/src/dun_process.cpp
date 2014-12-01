@@ -1457,6 +1457,9 @@ static void process_world(void)
         }
     }
 
+    /* Score gets adjusted every 100000 turns */
+    if (!(turn % 100000)) p_ptr->update |= (PU_PLAYER_SCORE);
+
     /* Notice stuff */
     notice_stuff();
 }
@@ -1625,6 +1628,7 @@ void change_player_level(void)
     if (p_ptr->max_depth < p_ptr->depth)
     {
         p_ptr->max_depth = p_ptr->depth;
+        p_ptr->update |= (PU_PLAYER_SCORE);
     }
 
     /* Track maximum quest level */

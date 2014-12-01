@@ -2291,8 +2291,9 @@ void quest_finished(quest_type *q_ptr)
 
         /*if using notes file, make a note*/
         write_quest_note(TRUE);
-
     }
+
+    p_ptr->update |= (PU_PLAYER_SCORE);
 
     notice_stuff();
     handle_stuff();
@@ -2860,7 +2861,7 @@ void quest_fail(void)
 
     /*wipe the quest*/
     guild_quest_wipe(TRUE);
-
+    p_ptr->update |= (PU_PLAYER_SCORE);
     p_ptr->redraw |= (PR_QUEST_ST);
 
     /* Disturb */

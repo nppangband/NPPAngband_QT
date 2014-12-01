@@ -17,7 +17,7 @@
  */
 
 #include "src/npp.h"
-
+#include <src/player_scores.h>
 
 
 
@@ -2020,8 +2020,9 @@ void update_stuff(void)
     if (p_ptr->update & (PU_HP))		calc_hitpoints();
     if (p_ptr->update & (PU_MANA))		calc_mana();
     if (p_ptr->update & (PU_SPELLS)) 	calc_spells();
+    if (p_ptr->update & (PU_PLAYER_SCORE)) update_player_score();
 
-    /* Character is not ready yet or in icky mode, no screen updates */
+    /* Character is not ready yet, no screen updates */
     if (!character_generated)
     {
         /* Clear the flags */

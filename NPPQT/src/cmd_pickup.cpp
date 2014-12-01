@@ -418,7 +418,8 @@ void py_pickup_gold(void)
 		/* Collect the gold */
 		p_ptr->au += gold;
 
-		/* Redraw gold */
+        /* Redraw gold and update player score */
+        p_ptr->update |= (PU_PLAYER_SCORE);
 		p_ptr->redraw |= (PR_GOLD);
 
 		/* Delete the gold */

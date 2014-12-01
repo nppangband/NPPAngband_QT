@@ -49,7 +49,7 @@ void dungeon_change_level(int dlev)
 
     /* Save the game when we arrive on the new level. */
     p_ptr->autosave = TRUE;
-
+    p_ptr->update |= (PU_PLAYER_SCORE);
     p_ptr->redraw |= (PR_DEPTH | PR_QUEST_ST | PR_FEELING);
 }
 

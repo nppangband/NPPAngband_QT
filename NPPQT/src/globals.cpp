@@ -1,6 +1,7 @@
 
 #include "src/npp.h"
 #include "src/utilities.h"
+#include <src/player_scores.h>
 
 // It is important to make sure that all global variables are wiped in between games,
 // and all arrays freed.
@@ -496,3 +497,5 @@ dungeon_capabilities_type *dun_cap = NULL;
 QVector<message_type> message_list;
 //Holds all of the notes.
 QVector<notes_type>  notes_log;
+//Holds all of the scores
+QVector<high_score> player_scores_list;

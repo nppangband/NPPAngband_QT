@@ -877,7 +877,8 @@ bool make_attack_normal(monster_type *m_ptr)
                         }
 
 
-                        /* Redraw gold */
+                        /* Redraw gold and update player score */
+                        p_ptr->update |= (PU_PLAYER_SCORE);
                         p_ptr->redraw |= (PR_GOLD);
 
                         /* Blink away */

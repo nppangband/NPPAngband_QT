@@ -1287,7 +1287,7 @@ void command_destroy(cmd_arg args)
         /* Combine the pack */
         p_ptr->notice |= (PN_COMBINE);
 
-        p_ptr->update |= (PU_NATIVE);
+        p_ptr->update |= (PU_NATIVE | PU_PLAYER_SCORE);
 
         p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_RESIST | PR_EXP |
                           PR_STATS | PU_NATIVE | PR_ITEMLIST);

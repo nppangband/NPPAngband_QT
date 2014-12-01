@@ -19,6 +19,7 @@
 #include "src/player_death.h"
 #include <src/knowledge.h>
 #include <src/cmds.h>
+#include <src/player_scores.h>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -46,7 +47,7 @@ void PlayerDeathDialog::death_file_dump(void)
 
 void PlayerDeathDialog::death_scores(void)
 {
-    // TODO display scores
+    display_player_scores();
 }
 
 void PlayerDeathDialog::death_examine(void)
@@ -191,12 +192,8 @@ static void death_knowledge(void)
     handle_stuff();
 }
 
-static void write_death_note(void)
+static void write_death_note(QString long_day)
 {
-    QDate today = QDate::currentDate();
-    QTime right_now = QTime::currentTime();
-    QString long_day = QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString());
-
     write_note(QString("<h1>%1 the %2 %3 was killed by %4 on %5.<h1>")
                    .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
                    .arg(p_ptr->died_from) .arg(long_day), p_ptr->depth);
@@ -225,12 +222,16 @@ void player_death(void)
         message(QString("death save failed!"));
     }
 
+    QDate today = QDate::currentDate();
+    QTime right_now = QTime::currentTime();
+    QString long_day = QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString());
+
     //TODO automatic screenshot and character dump?
-    write_death_note();
+    write_death_note(long_day);
 
     print_tomb();
     death_knowledge();
-    // TODO enter_score(&right_now);
+    enter_score(long_day);
 
     PlayerDeathDialog();
 }

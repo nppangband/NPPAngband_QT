@@ -598,7 +598,7 @@ enum
 #define PU_FLOW_FLYING		0x00001000L	/* Update flow for flying creatures */
 #define PU_FLOW_PASS_WALLS     0x00002000L     /* Update flow for creatures who pass through or kill walls */
 #define PU_FLOW_NO_DOORS_SPECIAL       0x00004000L /* Update the "doorless" versions of the flows */
-
+#define PU_PLAYER_SCORE 0x00008000L  // Update player score
 #define PU_NATIVE		0x00100000L	/* Calculate nativity */
 #define PU_STEALTH		0x00200000L	/* Calculate bonuses */
 #define PU_BONUS		0x00400000L	/* Calculate bonuses */
@@ -660,8 +660,6 @@ enum
 #define PR_EXTRA \
     (PR_STATUS | PR_STATE | PR_STUDY)
 
-/*Number of possible display options*/
-#define	 MAX_DISPLAY_OPTIONS 17
 
 /*
  * Bit flags for the "p_ptr->window" variable (etc)

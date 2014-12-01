@@ -4,6 +4,8 @@
 #include <QDataStream>
 #include <QFile>
 #include <QTextStream>
+#include "src/utilities.h"
+#include "src/player_scores.h"
 
 extern byte sf_major;
 extern byte sf_minor;

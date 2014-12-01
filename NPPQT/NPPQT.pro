@@ -69,6 +69,7 @@ SOURCES +=  src/qt_main.cpp\
             src/player_command.cpp \
             src/player_info.cpp \
             src/player_process.cpp \
+            src/player_scores.cpp \
             src/player_spell.cpp \
             src/player_util.cpp \          
             src/project.cpp \
@@ -122,6 +123,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/player_classes.h \
             src/player_command.h \
             src/player_info.h \
+            src/player_scores.h \
             src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \
@@ -136,6 +138,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/object_dialog.h \
             src/object_all_menu.h \
             src/object_settings.h
+
 
 
 

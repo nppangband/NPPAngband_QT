@@ -500,7 +500,8 @@ void check_experience(void)
     /* Hack -- maintain "max" experience */
     if (p_ptr->exp > p_ptr->max_exp) p_ptr->max_exp = p_ptr->exp;
 
-    /* Redraw experience */
+    /* Redraw experience and score */
+    p_ptr->update |= (PU_PLAYER_SCORE);
     p_ptr->redraw |= (PR_EXP);
 
     /* Handle stuff */

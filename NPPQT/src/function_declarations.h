@@ -307,7 +307,6 @@ extern void place_object(int y, int x, bool good, bool great, int droptype);
 extern bool place_quest_artifact(int y, int x);
 extern void place_gold(int y, int x);
 extern int  get_coin_type(const monster_race *r_ptr);
-extern void steal_object_from_monster(int y, int x);
 extern void acquirement(int y1, int x1, int num, bool great);
 extern void create_food(void);
 

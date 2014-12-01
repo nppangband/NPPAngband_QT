@@ -18,11 +18,11 @@
 #include <src/npp.h>
 #include <src/knowledge.h>
 #include <src/utilities.h>
+#include <src/player_scores.h>
 #include <src/store.h>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QTextEdit>
 
 DisplayNotesFile::DisplayNotesFile(void)
 {
@@ -102,7 +102,6 @@ DisplayHomeInven::DisplayHomeInven(void)
     home_label->setAlignment(Qt::AlignCenter);
     main_layout->addWidget(home_label);
 
-
     /* Display contents of the home */
     for (int i = 0; i < st_ptr->stock_num; i++)
     {
@@ -120,7 +119,7 @@ DisplayHomeInven::DisplayHomeInven(void)
         main_layout->addWidget(desc_label);
     }
 
-     //Add a close button on the right side
+    //Add a close button on the right side
     QHBoxLayout *close_across = new QHBoxLayout;
     main_layout->addLayout(close_across);
     close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
@@ -137,6 +136,162 @@ DisplayHomeInven::DisplayHomeInven(void)
 void display_home_inventory(void)
 {
     DisplayHomeInven();
+}
+
+DisplayScores::DisplayScores(void)
+{
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    QGridLayout *all_scores = new QGridLayout;
+
+    QLabel *score_label = new QLabel(QString("<h1><b>All Player Scores</b></h1>"));
+    score_label->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(score_label);
+    main_layout->addLayout(all_scores);
+
+    //Copy the vector, add the player and sort it.
+    QVector<high_score> score_list;
+    for (int i = 0; i < player_scores_list.size(); i++)
+    {
+        score_list.append(player_scores_list[i]);
+    }
+
+    if (!p_ptr->is_wizard)
+    {
+        high_score player_current = build_score("Still Alive");
+        player_current.death_how = QString("nobody (yet)!");
+        score_list.append(player_current);
+    }
+    if (!score_list.size())
+    {
+        pop_up_message_box("There are no player scores yet.");
+        return;
+    }
+
+    for (int i = 0; i < score_list.size(); i++)
+    {
+        for (int j = i+1; j < score_list.size(); j++)
+        {
+            if (score_list[i].score >= score_list[j].score) continue;
+
+            high_score temp = score_list[j];
+            score_list[j] = score_list[i];
+            score_list[i] = temp;
+
+        }
+    }
+    int row = 0;
+    int col = 0;
+
+    QLabel *header_num = new QLabel(QString("<big><b>Index  </b></big>"));
+    all_scores->addWidget(header_num, row, col++, Qt::AlignLeft);
+    QLabel *header_score = new QLabel(QString("<big><b>  Player Score  </b></big>"));
+    all_scores->addWidget(header_score, row, col++, Qt::AlignRight);
+    QLabel *header_basic = new QLabel(QString("<big><b>Character</b></big>"));
+    all_scores->addWidget(header_basic, row, col++, Qt::AlignCenter);
+    QLabel *header_status = new QLabel(QString("<big><b>  Killed By </b></big>"));
+    all_scores->addWidget(header_status, row, col++, Qt::AlignLeft);
+    QLabel *header_level = new QLabel(QString("<big><b>  Level</b></big>"));
+    all_scores->addWidget(header_level, row, col++, Qt::AlignLeft);
+    QLabel *header_exp = new QLabel(QString("<big><b>  Experience </b></big>"));
+    all_scores->addWidget(header_exp, row, col++, Qt::AlignRight);
+    QLabel *header_date = new QLabel(QString("<big><b>  Killed On</b></big>"));
+    all_scores->addWidget(header_date, row, col++, Qt::AlignLeft);
+    QLabel *header_turns = new QLabel(QString("<big><b>  Game Turns </b></big>"));
+    all_scores->addWidget(header_turns, row, col++, Qt::AlignRight);
+    QLabel *header_gold = new QLabel(QString("<big><b>  Experience </b></big>"));
+    all_scores->addWidget(header_gold, row, col++, Qt::AlignRight);
+    QLabel *header_fame = new QLabel(QString("<big><b>  Fame </b></big>"));
+    all_scores->addWidget(header_fame, row, col++, Qt::AlignRight);
+
+    // Print out all the scores
+    for (int i = 0; i < score_list.size(); i++)
+    {
+        high_score *score_ptr = &score_list[i];
+        row++;
+        col = 0;
+
+        // Entry number
+        QLabel *entry_num = new QLabel(QString("%1)  ") .arg(number_to_letter(i)));
+        all_scores->addWidget(entry_num, row, col++, Qt::AlignLeft);
+
+        // Score
+        QLabel *entry_score = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->score)));
+        all_scores->addWidget(entry_score, row, col++, Qt::AlignRight);
+
+        // Player name, race, class
+        QLabel *entry_basic = new QLabel("basic");
+        entry_basic->setText(QString("  %1 the %2 %3 (%4)  ")
+                          .arg(score_ptr->p_name) .arg(score_ptr->p_race) .arg(score_ptr->p_class) .arg(score_ptr->p_sex));
+        all_scores->addWidget(entry_basic, row, col++, Qt::AlignLeft);
+
+        //Player Status
+        QString died_by = (QString("  Killed by %1 ") .arg(score_ptr->death_how));
+        if (score_ptr->cur_depth)
+        {
+            died_by.append(QString("on dungeon level %1") .arg(number_to_formatted_string(score_ptr->cur_depth * 50)));
+        }
+        else died_by.append("in the town");
+        if (score_ptr->cur_depth != score_ptr->max_depth)
+        {
+            died_by.append(color_string((QString("  Max Depth %1") .arg(score_ptr->max_depth)), TERM_YELLOW));
+        }
+        QLabel *death_info = new QLabel(died_by);
+        all_scores->addWidget(death_info, row, col++, Qt::AlignLeft);
+
+        // Player Level
+        QString level = (QString("%1") .arg(score_ptr->cur_level));
+        if (score_ptr->max_level != score_ptr->cur_level)
+        {
+            level.append(color_string((QString("  Max Level %1") .arg(score_ptr->max_level)), TERM_YELLOW));
+        }
+        QLabel *entry_level = new QLabel(level);
+        all_scores->addWidget(entry_level, row, col++, Qt::AlignLeft);
+
+        // Player Experience
+        QString experience = (QString("%1  ") .arg(number_to_formatted_string(score_ptr->cur_exp)));
+        if (score_ptr->max_exp != score_ptr->cur_exp)
+        {
+            experience.append(color_string((QString("  Max Exp %1  ") .arg(number_to_formatted_string(score_ptr->max_exp))), TERM_YELLOW));
+        }
+        QLabel *entry_exp = new QLabel(level);
+        all_scores->addWidget(entry_exp, row, col++, Qt::AlignRight);
+
+
+        // When player died
+        QLabel *died_on = new QLabel(score_ptr->date_time);
+        all_scores->addWidget(died_on, row, col++, Qt::AlignLeft);
+
+        // Turns
+        QLabel *entry_turns = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->turns)));
+        all_scores->addWidget(entry_turns, row, col++, Qt::AlignRight);
+
+        // Gold
+        QLabel *entry_gold = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->gold)));
+        all_scores->addWidget(entry_gold, row, col++, Qt::AlignRight);
+
+        // Fame
+        QLabel *entry_fame = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->fame)));
+        all_scores->addWidget(entry_fame, row, col++, Qt::AlignRight);
+
+    }
+
+    //Add a close button on the right side
+    QHBoxLayout *close_across = new QHBoxLayout;
+    main_layout->addLayout(close_across);
+    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    close_across->addWidget(buttons);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Player Scores"));
+
+    this->exec();
+}
+
+void display_player_scores(void)
+{
+    DisplayScores();
 }
 
 DisplayMonKillCount::DisplayMonKillCount(void)

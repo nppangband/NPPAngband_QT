@@ -292,7 +292,6 @@ class player_other
 public:
 
     QString full_name;		/* Full name */
-    QString base_name;		/* Base name */
 
     bool opt[OPT_MAX];		/* Options */
 
@@ -354,6 +353,8 @@ public:
     u16b deferred_rewards; /* Quest reward points deferred for future use */
 
     s32b au;			/* Current Gold */
+
+    u32b current_score; // Player's current score.
 
     s16b quest_depth;	/* Max depth */
     s16b max_depth;		/* Max depth */

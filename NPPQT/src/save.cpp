@@ -18,7 +18,6 @@
  */
 
 #include "src/npp.h"
-#include "src/utilities.h"
 #include "src/loadsave.h"
 #include "src/store.h"
 
@@ -990,7 +989,7 @@ static bool wr_savefile(void)
 
     /* Dump the number of "messages" */
     tmp16u = message_list.size();
-    if (tmp16u > 80) tmp16u = 160;
+    if (tmp16u > 160) tmp16u = 160;
     wr_u16b(tmp16u);
 
     /* Dump the messages (newest first!) */
@@ -1003,6 +1002,30 @@ static bool wr_savefile(void)
         wr_u16b(message_list[i].repeats);
         wr_s32b(message_list[i].message_turn);
         wr_byte(message_list[i].append);
+    }
+
+    /* Dump the number of "scores" */
+    tmp16u = player_scores_list.size();
+    if (tmp16u > 30) tmp16u = 30;
+    wr_u16b(tmp16u);
+
+    /* Dump the messages (newest first!) */
+    for (i = 0; i <tmp16u; i++)
+    {
+        wr_string(player_scores_list[i].version);
+        wr_u32b(player_scores_list[i].score);
+        wr_s32b(player_scores_list[i].gold);
+        wr_s32b(player_scores_list[i].turns);
+        wr_string(player_scores_list[i].date_time);
+        wr_string(player_scores_list[i].p_name);
+        wr_string(player_scores_list[i].p_sex);
+        wr_string(player_scores_list[i].p_race);
+        wr_string(player_scores_list[i].p_class);
+        wr_s16b(player_scores_list[i].cur_level);
+        wr_s16b(player_scores_list[i].cur_depth);
+        wr_s16b(player_scores_list[i].max_level);
+        wr_s16b(player_scores_list[i].max_depth);
+        wr_string(player_scores_list[i].death_how);
     }
 
     /* Dump the monster lore */

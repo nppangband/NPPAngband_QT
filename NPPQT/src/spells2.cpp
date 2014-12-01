@@ -2157,7 +2157,7 @@ int do_ident_item(int item, object_type *o_ptr)
     if (item < INVEN_WIELD) squelch = squelch_itemp(o_ptr, 0, TRUE);
 
     /* Recalculate bonuses */
-    p_ptr->update |= (PU_BONUS | PU_NATIVE);
+    p_ptr->update |= (PU_BONUS | PU_NATIVE | PU_PLAYER_SCORE);
 
     p_ptr->redraw |= (PR_EXP | PR_STATS | PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 

@@ -18,7 +18,6 @@
 
 #include "src/npp.h"
 #include "src/loadsave.h"
-#include "src/utilities.h"
 #include "src/init.h"
 #include <QLabel>
 
@@ -1561,6 +1560,37 @@ static void rd_messages(void)
     }
 }
 
+static void rd_scores(void)
+{
+    u16b num;
+
+    rd_u16b(&num);
+
+    /* Read the scores */
+    for (int i = 0; i < num; i++)
+    {
+        high_score this_score;
+        high_score *score_ptr = &this_score;
+
+        rd_string(&score_ptr->version);
+        rd_u32b(&score_ptr->score);
+        rd_s32b(&score_ptr->gold);
+        rd_s32b(&score_ptr->turns);
+        rd_string(&score_ptr->date_time);
+        rd_string(&score_ptr->p_name);
+        rd_string(&score_ptr->p_sex);
+        rd_string(&score_ptr->p_race);
+        rd_string(&score_ptr->p_class);
+        rd_s16b(&score_ptr->cur_level);
+        rd_s16b(&score_ptr->cur_depth);
+        rd_s16b(&score_ptr->max_level);
+        rd_s16b(&score_ptr->max_depth);
+        rd_string(&score_ptr->death_how);
+
+        player_scores_list.append(this_score);
+    }
+}
+
 
 /*
  * Read the dungeon
@@ -1982,6 +2012,9 @@ static int rd_savefile(void)
     /* Then the "messages" */
     rd_messages();
     if (arg_fiddle) status_update.setText (QString(QObject::tr("Loaded Messages")));
+
+    rd_scores();
+    if (arg_fiddle) status_update.setText (QString(QObject::tr("Loaded Scores")));
 
     /* Monster Memory */
     rd_u16b(&tmp16u);
