@@ -2772,18 +2772,18 @@ void write_quest_note(bool success)
                 /*write note*/
                 if (monster_nonliving(r_ptr))
                 {
-                    note = (QString("Quest: Destroyed %1") .append(race_name));
+                    note = (QString("Quest: Destroyed %1") .arg(race_name));
                 }
-                else note = (QString("Quest: Killed %1") .append(race_name));
+                else note = (QString("Quest: Killed %1") .arg(race_name));
             }
             else
             {
                 /*write note*/
                 if (monster_nonliving(r_ptr))
                 {
-                    note = (QString("Quest: Failed to destroy %1") .append(race_name));
+                    note = (QString("Quest: Failed to destroy %1") .arg(race_name));
                 }
-                else note = (QString("Quest: Failed to kill %1") .append(race_name));
+                else note = (QString("Quest: Failed to kill %1") .arg(race_name));
             }
         }
 

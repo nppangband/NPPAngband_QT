@@ -868,6 +868,10 @@ static void player_wipe(void)
     allow_altered_inventory = FALSE;
     altered_inventory_counter = 0;
 
+    //Clear the messages and notes
+    notes_log.clear();
+    message_list.clear();
+
     /* None of the spells have been learned yet */
     for (i = 0; i < PY_MAX_SPELLS; i++) p_ptr->spell_order[i] = 99;
 }
@@ -943,9 +947,6 @@ void finish_birth()
         e_info[i].squelch = false;
     }
 
-
-
-
     /* Hack -- outfit the player */
     if (!birth_money) player_outfit();
 
@@ -1002,7 +1003,7 @@ void init_birth()
 
     character_loaded = character_dungeon = character_generated = false;
 
-    message_list.clear();
+
 }
 
 /*

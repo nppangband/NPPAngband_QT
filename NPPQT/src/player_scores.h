@@ -15,8 +15,6 @@ struct high_score
 
     u32b score;           /* Total Score*/
 
-    s32b gold;          /* Total Gold*/
-    s32b experience;    // Final Experience
     s32b turns;         /* Turns Taken*/
 
     QString date_time;  /* Time stamp*/

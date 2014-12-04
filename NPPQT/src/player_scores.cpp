@@ -30,7 +30,6 @@ static u32b total_points(void)
     u32b points = p_ptr->max_exp / 10;
     points += (100 * p_ptr->max_depth);
     points += (p_ptr->q_fame * 1000);
-    points += (p_ptr->au / 10);
 
     // Factor in player ghosts and uniques
     for (i = 1; i < z_info->r_max - 1; i++)
@@ -92,9 +91,6 @@ high_score build_score(QString date_death)
     /* Calculate and save the points */
     score_ptr->score = total_points();
 
-    /* Save the current gold */
-    score_ptr->gold = p_ptr->au;
-
     /* Save the current turn */
     score_ptr->turns = turn;
 
@@ -122,7 +118,7 @@ high_score build_score(QString date_death)
     score_ptr->fame =       p_ptr->q_fame;
 
     /* No cause of death */
-    score_ptr->death_how = p_ptr->died_from;
+    score_ptr->death_how = (QString("on %1") .arg(p_ptr->died_from));
 
     return (this_score);
 }
@@ -154,7 +150,7 @@ void enter_score(QString date_death)
     player_scores_list.append(entry);
 
     // Do a bubble sort based on score
-     for (int i = 0; i < player_scores_list.size(); i++)
+    for (int i = 0; i < player_scores_list.size(); i++)
     {
         for (int j = i+1; j < player_scores_list.size(); j++)
         {

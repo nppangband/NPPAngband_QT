@@ -194,14 +194,12 @@ DisplayScores::DisplayScores(void)
     all_scores->addWidget(header_level, row, col++, Qt::AlignLeft);
     QLabel *header_exp = new QLabel(QString("<big><b>  Experience </b></big>"));
     all_scores->addWidget(header_exp, row, col++, Qt::AlignRight);
-    QLabel *header_date = new QLabel(QString("<big><b>  Killed On</b></big>"));
-    all_scores->addWidget(header_date, row, col++, Qt::AlignLeft);
     QLabel *header_turns = new QLabel(QString("<big><b>  Game Turns </b></big>"));
     all_scores->addWidget(header_turns, row, col++, Qt::AlignRight);
-    QLabel *header_gold = new QLabel(QString("<big><b>  Experience </b></big>"));
-    all_scores->addWidget(header_gold, row, col++, Qt::AlignRight);
     QLabel *header_fame = new QLabel(QString("<big><b>  Fame </b></big>"));
     all_scores->addWidget(header_fame, row, col++, Qt::AlignRight);
+    QLabel *header_version = new QLabel(QString("<big><b>  Version </b></big>"));
+    all_scores->addWidget(header_version, row, col++, Qt::AlignLeft);
 
     // Print out all the scores
     for (int i = 0; i < score_list.size(); i++)
@@ -212,66 +210,66 @@ DisplayScores::DisplayScores(void)
 
         // Entry number
         QLabel *entry_num = new QLabel(QString("%1)  ") .arg(number_to_letter(i)));
-        all_scores->addWidget(entry_num, row, col++, Qt::AlignLeft);
+        all_scores->addWidget(entry_num, row, col++, Qt::AlignLeft | Qt::AlignTop);
 
         // Score
         QLabel *entry_score = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->score)));
-        all_scores->addWidget(entry_score, row, col++, Qt::AlignRight);
+        all_scores->addWidget(entry_score, row, col++, Qt::AlignRight | Qt::AlignTop);
 
         // Player name, race, class
         QLabel *entry_basic = new QLabel("basic");
-        entry_basic->setText(QString("  %1 the %2 %3 (%4)  ")
+        entry_basic->setText(QString("%1 the %2 %3 (%4)  ")
                           .arg(score_ptr->p_name) .arg(score_ptr->p_race) .arg(score_ptr->p_class) .arg(score_ptr->p_sex));
-        all_scores->addWidget(entry_basic, row, col++, Qt::AlignLeft);
+        entry_basic->setWordWrap(TRUE);
+        all_scores->addWidget(entry_basic, row, col++, Qt::AlignLeft | Qt::AlignTop);
 
         //Player Status
-        QString died_by = (QString("  Killed by %1 ") .arg(score_ptr->death_how));
+        QString died_by = (QString(" %1 ") .arg(score_ptr->death_how));
         if (score_ptr->cur_depth)
         {
-            died_by.append(QString("on dungeon level %1") .arg(number_to_formatted_string(score_ptr->cur_depth * 50)));
+            died_by.append(QString("on dungeon level %1 ") .arg(number_to_formatted_string(score_ptr->cur_depth * 50) ));
         }
-        else died_by.append("in the town");
+        else died_by.append("in the town ");
+
         if (score_ptr->cur_depth != score_ptr->max_depth)
         {
-            died_by.append(color_string((QString("  Max Depth %1") .arg(score_ptr->max_depth)), TERM_YELLOW));
+            died_by.append(color_string((QString(" (Max Depth %1) ") .arg(score_ptr->max_depth)), TERM_BLUE));
         }
+
+        died_by.append(QString(" %1.     ") .arg(score_ptr->date_time));
         QLabel *death_info = new QLabel(died_by);
-        all_scores->addWidget(death_info, row, col++, Qt::AlignLeft);
+        death_info->setWordWrap(TRUE);
+        all_scores->addWidget(death_info, row, col++, Qt::AlignLeft | Qt::AlignTop);
 
         // Player Level
         QString level = (QString("%1") .arg(score_ptr->cur_level));
         if (score_ptr->max_level != score_ptr->cur_level)
         {
-            level.append(color_string((QString("  Max Level %1") .arg(score_ptr->max_level)), TERM_YELLOW));
+            level.append(color_string((QString("  Max Level %1") .arg(score_ptr->max_level)), TERM_BLUE));
         }
         QLabel *entry_level = new QLabel(level);
-        all_scores->addWidget(entry_level, row, col++, Qt::AlignLeft);
+        all_scores->addWidget(entry_level, row, col++, Qt::AlignRight | Qt::AlignTop);
 
         // Player Experience
         QString experience = (QString("%1  ") .arg(number_to_formatted_string(score_ptr->cur_exp)));
         if (score_ptr->max_exp != score_ptr->cur_exp)
         {
-            experience.append(color_string((QString("  Max Exp %1  ") .arg(number_to_formatted_string(score_ptr->max_exp))), TERM_YELLOW));
+            experience.append(color_string((QString("  Max Exp %1  ") .arg(number_to_formatted_string(score_ptr->max_exp))), TERM_BLUE));
         }
-        QLabel *entry_exp = new QLabel(level);
-        all_scores->addWidget(entry_exp, row, col++, Qt::AlignRight);
-
-
-        // When player died
-        QLabel *died_on = new QLabel(score_ptr->date_time);
-        all_scores->addWidget(died_on, row, col++, Qt::AlignLeft);
+        QLabel *entry_exp = new QLabel(experience);
+        all_scores->addWidget(entry_exp, row, col++, Qt::AlignRight | Qt::AlignTop);
 
         // Turns
         QLabel *entry_turns = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->turns)));
         all_scores->addWidget(entry_turns, row, col++, Qt::AlignRight);
 
-        // Gold
-        QLabel *entry_gold = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->gold)));
-        all_scores->addWidget(entry_gold, row, col++, Qt::AlignRight);
-
         // Fame
         QLabel *entry_fame = new QLabel(QString("%1  ") .arg(number_to_formatted_string(score_ptr->fame)));
-        all_scores->addWidget(entry_fame, row, col++, Qt::AlignRight);
+        all_scores->addWidget(entry_fame, row, col++, Qt::AlignRight | Qt::AlignTop);
+
+        // Version
+        QLabel *entry_version = new QLabel(score_ptr->version);
+        all_scores->addWidget(entry_version, row, col++, Qt::AlignLeft | Qt::AlignTop);
 
     }
 

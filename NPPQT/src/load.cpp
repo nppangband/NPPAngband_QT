@@ -1574,7 +1574,6 @@ static void rd_scores(void)
 
         rd_string(&score_ptr->version);
         rd_u32b(&score_ptr->score);
-        rd_s32b(&score_ptr->gold);
         rd_s32b(&score_ptr->turns);
         rd_string(&score_ptr->date_time);
         rd_string(&score_ptr->p_name);
@@ -1583,8 +1582,10 @@ static void rd_scores(void)
         rd_string(&score_ptr->p_class);
         rd_s16b(&score_ptr->cur_level);
         rd_s16b(&score_ptr->cur_depth);
+        rd_s32b(&score_ptr->cur_exp);
         rd_s16b(&score_ptr->max_level);
         rd_s16b(&score_ptr->max_depth);
+        rd_s32b(&score_ptr->max_exp);
         rd_string(&score_ptr->death_how);
 
         player_scores_list.append(this_score);

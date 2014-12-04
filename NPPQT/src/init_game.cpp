@@ -5,6 +5,8 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <src/qt_mainwindow.h>
+#include <src/utilities.h>
+#include <src/player_scores.h>
 
 // was init.2
 
@@ -752,6 +754,11 @@ static int init_other(void)
     p_ptr->update = 0L;
     p_ptr->redraw = 0L;
 
+    //Clear some vectors
+    notes_log.clear();
+    message_list.clear();
+    player_scores_list.clear();
+
     /* Success */
     return (0);
 }
@@ -1284,6 +1291,8 @@ void init_npp_games(void)
     /* Done */
     status_update.setText (QString(QObject::tr("Initialization complete")));
     status_update.hide();
+
+
 }
 
 

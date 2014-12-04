@@ -1014,7 +1014,6 @@ static bool wr_savefile(void)
     {
         wr_string(player_scores_list[i].version);
         wr_u32b(player_scores_list[i].score);
-        wr_s32b(player_scores_list[i].gold);
         wr_s32b(player_scores_list[i].turns);
         wr_string(player_scores_list[i].date_time);
         wr_string(player_scores_list[i].p_name);
@@ -1023,8 +1022,10 @@ static bool wr_savefile(void)
         wr_string(player_scores_list[i].p_class);
         wr_s16b(player_scores_list[i].cur_level);
         wr_s16b(player_scores_list[i].cur_depth);
+        wr_s32b(player_scores_list[i].cur_exp);
         wr_s16b(player_scores_list[i].max_level);
         wr_s16b(player_scores_list[i].max_depth);
+        wr_s32b(player_scores_list[i].max_exp);
         wr_string(player_scores_list[i].death_how);
     }
 

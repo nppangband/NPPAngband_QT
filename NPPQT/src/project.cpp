@@ -1215,6 +1215,7 @@ void take_hit(int dam, QString kb_str)
     {
         /* Hack -- Note death */
         pop_up_message_box("You Die.", QMessageBox::Critical);
+        message("You Die.");
 
         /* Note cause of death */
         p_ptr->died_from = kb_str;
