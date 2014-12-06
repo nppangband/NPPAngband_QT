@@ -3,7 +3,11 @@
 
 #include <QComboBox>
 #include <QDialogButtonBox>
-
+#include <QGroupBox>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
+#include <QTableView>
+#include <QTableWidget>
 #include "src/npp.h"
 
 
@@ -31,17 +35,34 @@ public:
     explicit DisplayHomeInven(void);
 };
 
+class DisplayScores : public QDialog
+{
+    Q_OBJECT
+
+public:
+    DisplayScores();
+
+private:
+    QTableWidget *scores_table;
+    QSortFilterProxyModel *scores_proxy_model;
+
+};
+
+
 class DisplayMonKillCount : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit DisplayMonKillCount(void);
+
 };
 
 extern void display_notes_file(void);
 extern void display_home_inventory(void);
+extern void display_player_scores(void);
 extern void display_mon_kill_count(void);
+
 
 
 #endif // KNOWLEDGE_H

@@ -147,10 +147,6 @@ void launch_game()
 
     init_tile_bags();
 
-    /* Process some user pref files */
-    // TODO
-    //process_some_user_pref_files();
-
     /* Remove ironman ego-items if needed */
     if (!adult_ironman && !adult_no_stores)
     {

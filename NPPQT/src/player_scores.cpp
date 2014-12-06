@@ -118,7 +118,7 @@ high_score build_score(QString date_death)
     score_ptr->fame =       p_ptr->q_fame;
 
     /* No cause of death */
-    score_ptr->death_how = (QString("on %1") .arg(p_ptr->died_from));
+    score_ptr->death_how = (QString("%1") .arg(p_ptr->died_from));
 
     return (this_score);
 }

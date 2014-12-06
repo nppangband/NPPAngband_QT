@@ -701,7 +701,6 @@ void StoreDialog::help_click()
     int o_idx = id.mid(1).toInt();
     object_type *o_ptr;
 
-    // TODO handle services and quests
     if (id.at(0) == 'q')
     {
         pop_up_message_box(QString("Help files not done yet"));

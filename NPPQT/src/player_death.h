@@ -15,7 +15,7 @@ class PlayerDeathDialog : public QDialog
 public:
     explicit PlayerDeathDialog(void);
 
-private:
+private slots:
     void death_info(void);
     void death_home_inven(void);
     void death_messsages(void);
