@@ -56,6 +56,10 @@ class DisplayMonKillCount : public QDialog
 public:
     explicit DisplayMonKillCount(void);
 
+private:
+    QTableWidget *kill_count_table;
+    QSortFilterProxyModel *kill_count_proxy_model;
+
 };
 
 extern void display_notes_file(void);

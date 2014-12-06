@@ -154,7 +154,7 @@ DisplayScores::DisplayScores(void)
     label_layout->addSpacerItem(spacer_1);
     label_layout->addWidget(score_label);
     label_layout->addSpacerItem(spacer_2);
-    score_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    score_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     main_layout->addLayout(label_layout);
 
     //Copy the vector, add the player and sort it.
@@ -201,7 +201,7 @@ DisplayScores::DisplayScores(void)
     character_header->setTextAlignment(Qt::AlignLeft);
     scores_table->setHorizontalHeaderItem(col++, character_header);
     QTableWidgetItem *killed_by_header = new QTableWidgetItem("Killed By");
-    killed_by_header->setTextAlignment(Qt::AlignRight);
+    killed_by_header->setTextAlignment(Qt::AlignLeft);
     scores_table->setHorizontalHeaderItem(col++, killed_by_header);
     QTableWidgetItem *level_header = new QTableWidgetItem("Level");
     level_header->setTextAlignment(Qt::AlignRight);
@@ -295,7 +295,8 @@ DisplayScores::DisplayScores(void)
 
     scores_table->setSortingEnabled(TRUE);
     scores_table->resizeColumnsToContents();
-
+    scores_table->sortByColumn(0, Qt::DescendingOrder);
+    scores_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     main_layout->addWidget(scores_table);
 
     //Add a close button on the right side
@@ -361,36 +362,82 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         }
     }
 
+    kill_count_proxy_model = new QSortFilterProxyModel;
     QVBoxLayout *main_layout = new QVBoxLayout;
-    QGridLayout *mon_kill_info = new QGridLayout;
 
-    QLabel *mon_label = new QLabel(QString("<b><big>Monster Kills by Race</big></b>"));
-    mon_label->setAlignment(Qt::AlignCenter);
+    QHBoxLayout *label_layout = new QHBoxLayout;
+    QLabel *header_label = new QLabel(QString("<h1><b>Monster Kill Count</b></h1>"));
+    header_label->setAlignment(Qt::AlignCenter);
+    QSpacerItem *spacer_1 = new QSpacerItem(header_label->width()/3, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    QSpacerItem *spacer_2 = new QSpacerItem(header_label->width()/3, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    label_layout->addSpacerItem(spacer_1);
+    label_layout->addWidget(header_label);
+    label_layout->addSpacerItem(spacer_2);
+    header_label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    main_layout->addLayout(label_layout);
 
-    main_layout->addWidget(mon_label);
-    main_layout->addLayout(mon_kill_info);
+        int col = 0;
 
-    int row = 0;
-    int col = 0;
+    //Set up the headers
+    kill_count_table = new QTableWidget(0, 4, this);
+    kill_count_table->setAlternatingRowColors(TRUE);
 
-    QLabel *mon_race = new QLabel("<b><u>Monster Race</u>  </b>");
-    QLabel *num_kills = new QLabel("<b>  <u>Number of Kills</u>  </b>");
-    mon_kill_info->addWidget(mon_race, row, col++, Qt::AlignLeft);
-    mon_kill_info->addWidget(num_kills, row++, col++, Qt::AlignRight);
+    QTableWidgetItem *race_header = new QTableWidgetItem("Monster Race");
+    race_header->setTextAlignment(Qt::AlignLeft);
+    kill_count_table->setHorizontalHeaderItem(col++, race_header);
+    QTableWidgetItem *symbol_header = new QTableWidgetItem("Symbol");
+    symbol_header->setTextAlignment(Qt::AlignCenter);
+    kill_count_table->setHorizontalHeaderItem(col++, symbol_header);
+    QTableWidgetItem *depth_header = new QTableWidgetItem("Native Depth");
+    depth_header->setTextAlignment(Qt::AlignRight);
+    kill_count_table->setHorizontalHeaderItem(col++, depth_header);
+    QTableWidgetItem *kills_header = new QTableWidgetItem("Total Kills");
+    kills_header->setTextAlignment(Qt::AlignRight);
+    kill_count_table->setHorizontalHeaderItem(col++, kills_header);
 
-    // Print out all the monster races
+    // Add the data
     for (int i = 0; i < mon_kill_list.size(); i++)
     {
-        row++;
-        col = 0;
         mon_kills *mk_ptr = &mon_kill_list[i];
-        QString this_mon_race = r_info[mk_ptr->mon_idx].r_name_full;
+        monster_race *r_ptr = &r_info[mk_ptr->mon_idx];
+        col = 0;
+        kill_count_table->insertRow(i);
+
+        // Race
+        QString this_mon_race = r_ptr->r_name_full;
         if (mk_ptr->total_kills > 1) this_mon_race = plural_aux(this_mon_race);
-        QLabel *this_race = new QLabel(this_mon_race);
-        mon_kill_info->addWidget(this_race, row, col++, Qt::AlignLeft);
-        QLabel *total_kills = new QLabel(number_to_formatted_string(mk_ptr->total_kills));
-        mon_kill_info->addWidget(total_kills, row, col++, Qt::AlignRight);
+        this_mon_race = capitalize_first(this_mon_race);
+        QTableWidgetItem *race = new QTableWidgetItem(this_mon_race);
+        race->setTextAlignment(Qt::AlignLeft);
+        kill_count_table->setItem(i, col++, race);
+
+        // Symbol
+        QString mon_symbol = (QString("'%1'") .arg(r_ptr->d_char));
+        QTableWidgetItem *mon_ltr = new QTableWidgetItem(mon_symbol);
+        mon_ltr->setTextColor(r_ptr->d_color);
+        mon_ltr->setTextAlignment(Qt::AlignCenter);
+        kill_count_table->setItem(i, col++, mon_ltr);
+
+
+        // dungeon depth
+        QString mon_level = (QString("%1'") .arg(r_ptr->level * 50));
+        if (!r_ptr->level) mon_level = QString("Town");
+        QTableWidgetItem *mon_lvl = new QTableWidgetItem(mon_level);
+        mon_lvl->setTextAlignment(Qt::AlignRight);
+        kill_count_table->setItem(i, col++, mon_lvl);
+
+        // Monster Kills
+        QTableWidgetItem *total_kills = new QTableWidgetItem(QString("%1") .arg(mk_ptr->total_kills));
+        total_kills->setTextAlignment(Qt::AlignRight);
+        kill_count_table->setItem(i, col++, total_kills);
     }
+
+    kill_count_table->setSortingEnabled(TRUE);
+    kill_count_table->resizeColumnsToContents();
+    kill_count_table->sortByColumn(3, Qt::DescendingOrder);
+    kill_count_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    main_layout->addWidget(kill_count_table);
+
 
     //Add a close button on the right side
     QHBoxLayout *close_across = new QHBoxLayout;
