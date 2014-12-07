@@ -894,7 +894,9 @@ extern void display_info_window(byte mode, int index, QString info, object_type 
 extern QString to_ascii(QString src);
 extern QString cnv_stat(int val);
 extern void write_note(QString note, s16b depth);
-
+extern QString find_roman_numeral(QString full_name);
+extern QString int_to_roman(int n);
+extern int roman_to_int(QString roman);
 
 // widard_mode.cpp
 extern bool make_fake_artifact(object_type *o_ptr, byte art_num);

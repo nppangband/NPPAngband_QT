@@ -1045,6 +1045,8 @@ Birther::Birther()
     history.clear();
 }
 
+
+
 void Birther::save()
 {
     int i;
@@ -1097,6 +1099,26 @@ void Birther::load()
     }
 
     p_ptr->history = history;
+
+    QString roman_numeral = find_roman_numeral(full_name);
+
+    // We found one.  Increase it by 1 and replace it in the name
+    if (roman_numeral.length())
+    {
+        int number = roman_to_int(roman_numeral);
+        QString new_roman_numeral = int_to_roman(number + 1);
+
+        // Search for the roman numeral and replace it
+        int replace_with = full_name.lastIndexOf(roman_numeral, -1, Qt::CaseSensitive);
+        if (replace_with != -1)
+        {
+            full_name.replace(replace_with, roman_numeral.length(), new_roman_numeral);
+        }
+    }
+    // Start the roman numeral process.
+    else full_name.append(" II");
+
+    // Check to advance roman numerals
     op_ptr->full_name = full_name;
 }
 

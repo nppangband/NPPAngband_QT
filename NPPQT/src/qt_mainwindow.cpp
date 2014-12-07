@@ -2453,6 +2453,7 @@ void MainWindow::update_file_menu_game_active()
     options_act->setEnabled(TRUE);
     view_notes->setEnabled(TRUE);
     view_home_inven->setEnabled(TRUE);
+    view_scores->setEnabled(TRUE);
     view_kill_count->setEnabled(TRUE);
 }
 
@@ -2475,6 +2476,7 @@ void MainWindow::update_file_menu_game_inactive()
     options_act->setEnabled(FALSE);
     view_notes->setEnabled(FALSE);
     view_home_inven->setEnabled(FALSE);
+    view_scores->setEnabled(FALSE);
     view_kill_count->setEnabled(FALSE);
 }
 
@@ -2573,6 +2575,10 @@ void MainWindow::create_actions()
     view_home_inven->setStatusTip(tr("View the inventory stored in the character's home."));
     connect(view_home_inven, SIGNAL(triggered()), this, SLOT(display_home()));
 
+    view_scores = new QAction(tr("View Player Scores"), this);
+    view_scores->setStatusTip(tr("View the scores for all characters."));
+    connect(view_scores, SIGNAL(triggered()), this, SLOT(display_scores()));
+
     view_kill_count = new QAction(tr("View Monster Kill Count"), this);
     view_kill_count->setStatusTip(tr("View the number of kills sorted by monster race."));
     connect(view_kill_count, SIGNAL(triggered()), this, SLOT(display_kill_count()));
@@ -2619,6 +2625,11 @@ void MainWindow::display_notes()
 void MainWindow::display_home()
 {
     display_home_inventory();
+}
+
+void MainWindow::display_scores()
+{
+    display_player_scores();
 }
 
 void MainWindow::display_kill_count()
@@ -2727,6 +2738,7 @@ void MainWindow::create_menus()
     knowledge = menuBar()->addMenu(tr("&Knowledge"));
     knowledge->addAction(view_notes);
     knowledge->addAction(view_home_inven);
+    knowledge->addAction(view_scores);
     knowledge->addAction(view_kill_count);
 
     // Help section of top menu.

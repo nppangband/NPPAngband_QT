@@ -1157,4 +1157,140 @@ void write_note(QString note, s16b depth)
     notes_log.append(note_body);
 }
 
+static bool is_roman_numeral_char(QChar letter)
+{
+    QString numerals = "IVXLCDM";
+
+    if (numerals.contains(letter, Qt::CaseSensitive)) return (TRUE);
+    return (FALSE);
+}
+
+// Return the roman number segment of a string
+QString find_roman_numeral(QString full_name)
+{
+    QString roman_numeral = NULL;
+    QString name = full_name;
+    QString space = QString(" ");
+
+    // Require a space
+    if (!name.contains(space)) return NULL;
+
+    //Start analyzing after the first space
+    name.remove(0, name.indexOf(' '));
+
+    while (name.length())
+    {
+        QChar first = name[0];
+
+        // If we find a roman numeral char, start recording
+        if (is_roman_numeral_char(first))
+        {
+            roman_numeral.append(first);
+        }
+        // If the roman numeral stops, quit.
+        else if (roman_numeral.length()) break;
+
+        // Break when a space if found.
+        if (operator==(first, space)) break;
+
+        // Cut off the first letter
+        name.remove(0, 1);
+    }
+    return (roman_numeral);
+}
+
+/*----- Roman numeral functions  ------*/
+
+/*
+ * Converts an arabic numeral (int) to a roman numeral (char *).
+ *
+ * An arabic numeral is accepted in parameter `n`, and the corresponding
+ * upper-case roman numeral is placed in the parameter `roman`.  The
+ * length of the buffer must be passed in the `bufsize` parameter.  When
+ * there is insufficient room in the buffer, or a roman numeral does not
+ * exist (e.g. non-positive integers) a value of 0 is returned and the
+ * `roman` buffer will be the empty string.  On success, a value of 1 is
+ * returned and the zero-terminated roman numeral is placed in the
+ * parameter `roman`.
+ */
+QString int_to_roman(int n)
+{
+    QString roman;
+    /* Roman symbols */
+    QString roman_symbol_labels[13] =
+        {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX",
+         "V", "IV", "I"};
+    int  roman_symbol_values[13] =
+        {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+
+    /* Clear the roman numeral buffer */
+    roman.clear();
+
+    /* Roman numerals have no zero or negative numbers */
+    if (n < 1)
+        return NULL;
+
+    /* Build the roman numeral in the buffer */
+    while (n > 0)
+    {
+        int i = 0;
+
+        /* Find the largest possible roman symbol */
+        while (n < roman_symbol_values[i]) i++;
+
+        roman.append(roman_symbol_labels[i]);
+
+        /* Decrease the value of the arabic numeral */
+        n -= roman_symbol_values[i];
+    }
+
+    return (roman);
+}
+
+
+/*
+ * Converts a roman numeral to an arabic numeral (int).
+ *
+ * The null-terminated roman numeral is accepted in the `roman`
+ * parameter and the corresponding integer arabic numeral is returned.
+ * Only upper-case values are considered. When the `roman` parameter
+ * is empty or does not resemble a roman numeral, a value of -1 is
+ * returned.
+ *
+ * XXX This function will parse certain non-sense strings as roman
+ *     numerals, such as IVXCCCVIII
+ */
+int roman_to_int(QString roman)
+{
+
+    int n = 0;
+
+    QString numerals = "IVXLCDM";
+    QString roman_symbol_labels[13] =
+        {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX",
+         "V", "IV", "I"};
+    int  roman_symbol_values[13] =
+        {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+
+    if (!roman.length()) return -1;
+
+    while (roman.length())
+    {
+        bool found = FALSE;
+        for (int i = 0; i < 13; i++)
+        {
+            if (roman.indexOf(roman_symbol_labels[i]) != 0) continue;
+
+            // We have a match
+            n += roman_symbol_values[i];
+            roman.remove(0, roman_symbol_labels[i].length());
+            found = TRUE;
+            break;
+        }
+        if (!found) roman.remove(0,1);
+    }
+
+    return n;
+}
+
 
