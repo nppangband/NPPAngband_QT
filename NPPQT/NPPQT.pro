@@ -37,6 +37,7 @@ SOURCES +=  src/qt_main.cpp\
             src/init_edit_files.cpp\
             src/init_game.cpp\
             src/knowledge.cpp\
+            src/knowledge_monsters.cpp \
             src/load.cpp \
             src/mon_attack.cpp \
             src/mon_cast.cpp \

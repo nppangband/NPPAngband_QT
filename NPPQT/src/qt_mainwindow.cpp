@@ -2451,6 +2451,11 @@ void MainWindow::update_file_menu_game_active()
     }
 
     options_act->setEnabled(TRUE);
+    view_monster_knowledge->setEnabled(TRUE);
+    view_object_knowledge->setEnabled(TRUE);
+    view_ego_item_knowledge->setEnabled(TRUE);
+    view_artifact_knowledge->setEnabled(TRUE);
+    view_terrain_knowledge->setEnabled(TRUE);
     view_notes->setEnabled(TRUE);
     view_home_inven->setEnabled(TRUE);
     view_scores->setEnabled(TRUE);
@@ -2474,10 +2479,16 @@ void MainWindow::update_file_menu_game_inactive()
     }
 
     options_act->setEnabled(FALSE);
+    view_monster_knowledge->setEnabled(FALSE);
+    view_object_knowledge->setEnabled(FALSE);
+    view_ego_item_knowledge->setEnabled(FALSE);
+    view_artifact_knowledge->setEnabled(FALSE);
+    view_terrain_knowledge->setEnabled(FALSE);
     view_notes->setEnabled(FALSE);
     view_home_inven->setEnabled(FALSE);
     view_scores->setEnabled(FALSE);
     view_kill_count->setEnabled(FALSE);
+
 }
 
 
@@ -2567,6 +2578,26 @@ void MainWindow::create_actions()
     fontselect_act->setStatusTip(tr("Change the window font or font size."));
     connect(fontselect_act, SIGNAL(triggered()), this, SLOT(fontselect_dialog()));
 
+    view_monster_knowledge = new QAction(tr("View Monster Knowledge"), this);
+    view_monster_knowledge->setStatusTip(tr("View all information the character knows about the monsters."));
+    connect(view_monster_knowledge, SIGNAL(triggered()), this, SLOT(display_monster_info()));
+
+    view_object_knowledge = new QAction(tr("View Object Knowledge"), this);
+    view_object_knowledge->setStatusTip(tr("View all information the character knows about game objects."));
+    connect(view_object_knowledge, SIGNAL(triggered()), this, SLOT(display_object_info()));
+
+    view_ego_item_knowledge = new QAction(tr("View Ego Item Knowledge"), this);
+    view_ego_item_knowledge->setStatusTip(tr("View all information the character knows about ego item objects."));
+    connect(view_ego_item_knowledge, SIGNAL(triggered()), this, SLOT(display_ego_item_info()));
+
+    view_artifact_knowledge = new QAction(tr("View Artifact Knowledge"), this);
+    view_artifact_knowledge->setStatusTip(tr("View all information the character knows about artifacts."));
+    connect(view_artifact_knowledge, SIGNAL(triggered()), this, SLOT(display_artifact_info()));
+
+    view_terrain_knowledge = new QAction(tr("View Terrain Knowledge"), this);
+    view_terrain_knowledge->setStatusTip(tr("View all information the character knows about terrains and features."));
+    connect(view_terrain_knowledge, SIGNAL(triggered()), this, SLOT(display_terrain_info()));
+
     view_notes = new QAction(tr("View Game Notes"), this);
     view_notes->setStatusTip(tr("View the notes file listing the character's game highlights."));
     connect(view_notes, SIGNAL(triggered()), this, SLOT(display_notes()));
@@ -2615,6 +2646,31 @@ void MainWindow::set_pseudo_ascii()
     do_pseudo_ascii = pseudo_ascii_act->isChecked();
     ui_redraw_all();
     update_sidebar();
+}
+
+void MainWindow::display_monster_info()
+{
+    display_monster_knowledge();
+}
+
+void MainWindow::display_object_info()
+{
+    display_object_knowledge();
+}
+
+void MainWindow::display_ego_item_info()
+{
+    display_ego_item_knowledge();
+}
+
+void MainWindow::display_artifact_info()
+{
+    display_artifact_knowledge();
+}
+
+void MainWindow::display_terrain_info()
+{
+    display_terrain_knowledge();
 }
 
 void MainWindow::display_notes()
@@ -2736,6 +2792,11 @@ void MainWindow::create_menus()
 
     // Knowledge section of top menu.
     knowledge = menuBar()->addMenu(tr("&Knowledge"));
+    knowledge->addAction(view_monster_knowledge);
+    knowledge->addAction(view_object_knowledge);
+    knowledge->addAction(view_ego_item_knowledge);
+    knowledge->addAction(view_artifact_knowledge);
+    knowledge->addAction(view_terrain_knowledge);
     knowledge->addAction(view_notes);
     knowledge->addAction(view_home_inven);
     knowledge->addAction(view_scores);

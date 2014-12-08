@@ -165,6 +165,23 @@ void monster_race::monster_race_wipe()
     tile_32x32_y = tile_32x32_x = tile_8x8_y = tile_8x8_x = 0;
 }
 
+bool monster_race::is_unique()
+{
+    if (flags1 & (RF1_UNIQUE)) return (TRUE);
+    return (FALSE);
+}
+
+bool monster_race::is_player_ghost()
+{
+    if (flags2 & (RF2_PLAYER_GHOST)) return (TRUE);
+    return (FALSE);
+}
+
+bool monster_race::is_mimic()
+{
+    if (flags1 & (RF1_CHAR_MIMIC)) return (TRUE);
+    return (FALSE);
+}
 
 
 ghost_template::ghost_template()

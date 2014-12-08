@@ -145,8 +145,14 @@ private slots:
     void set_old_tiles();
     void set_ascii();
     void set_pseudo_ascii();
+    void display_monster_info();
+    void display_object_info();
+    void display_ego_item_info();
+    void display_artifact_info();
+    void display_terrain_info();
     void display_notes();
     void display_home();
+    void display_scores();
     void display_kill_count();
 
 
@@ -207,8 +213,14 @@ private:
     QAction *fontselect_act;
 
     //Commmands for the knowledge menu
+    QAction *view_monster_knowledge;
+    QAction *view_object_knowledge;
+    QAction *view_ego_item_knowledge;
+    QAction *view_artifact_knowledge;
+    QAction *view_terrain_knowledge;
     QAction *view_notes;
     QAction *view_home_inven;
+    QAction *view_scores;
     QAction *view_kill_count;
 
 

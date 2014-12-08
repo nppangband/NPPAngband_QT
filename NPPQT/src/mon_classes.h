@@ -118,6 +118,10 @@ public:
     byte tile_8x8_y;
     byte tile_8x8_x;
 
+    bool is_unique(void);
+    bool is_player_ghost(void);
+    bool is_mimic(void);
+
     // Wipe a monster_race entry.  All variabled above need to be cleared.  Intended for player ghosts.
     void monster_race_wipe();
 

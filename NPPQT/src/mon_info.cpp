@@ -1415,7 +1415,7 @@ static QString describe_monster_exp(int r_idx, const monster_lore *l_ptr)
               (long)1000 / p_ptr->lev + 5) / 10);
 
         /* Mention the experience */
-        output.append(QString(" is worth %ld.%02ld point") .arg(i) .arg(j));
+        output.append(QString(" is worth %ld.%2 point") .arg(i) .arg(j));
         if ((i == 1) && (j == 0)) output.append("s");
 
         /* Take account of annoying English */

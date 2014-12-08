@@ -25,6 +25,28 @@
 #include <QPushButton>
 
 
+
+
+void display_object_knowledge(void)
+{
+
+}
+
+void display_ego_item_knowledge(void)
+{
+
+}
+
+void display_artifact_knowledge(void)
+{
+
+}
+
+void display_terrain_knowledge(void)
+{
+
+}
+
 DisplayNotesFile::DisplayNotesFile(void)
 {
     QVBoxLayout *main_layout = new QVBoxLayout;
@@ -144,6 +166,7 @@ void display_home_inventory(void)
 DisplayScores::DisplayScores(void)
 {
     scores_proxy_model = new QSortFilterProxyModel;
+    scores_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
     QVBoxLayout *main_layout = new QVBoxLayout;
 
     QHBoxLayout *label_layout = new QHBoxLayout;
@@ -218,7 +241,6 @@ DisplayScores::DisplayScores(void)
     QTableWidgetItem *version_header = new QTableWidgetItem("Version");
     version_header->setTextAlignment(Qt::AlignLeft);
     scores_table->setHorizontalHeaderItem(col++, version_header);
-
 
     // Add the data
     for (int i = 0; i < score_list.size(); i++)
@@ -298,6 +320,7 @@ DisplayScores::DisplayScores(void)
     scores_table->sortByColumn(0, Qt::DescendingOrder);
     scores_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     main_layout->addWidget(scores_table);
+    scores_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     //Add a close button on the right side
     QHBoxLayout *close_across = new QHBoxLayout;
@@ -363,24 +386,14 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     }
 
     kill_count_proxy_model = new QSortFilterProxyModel;
+    kill_count_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
     QVBoxLayout *main_layout = new QVBoxLayout;
 
-    QHBoxLayout *label_layout = new QHBoxLayout;
-    QLabel *header_label = new QLabel(QString("<h1><b>Monster Kill Count</b></h1>"));
-    header_label->setAlignment(Qt::AlignCenter);
-    QSpacerItem *spacer_1 = new QSpacerItem(header_label->width()/3, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    QSpacerItem *spacer_2 = new QSpacerItem(header_label->width()/3, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    label_layout->addSpacerItem(spacer_1);
-    label_layout->addWidget(header_label);
-    label_layout->addSpacerItem(spacer_2);
-    header_label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
-    main_layout->addLayout(label_layout);
-
-        int col = 0;
+    int col = 0;
 
     //Set up the headers
     kill_count_table = new QTableWidget(0, 4, this);
-    kill_count_table->setAlternatingRowColors(TRUE);
+    kill_count_table->setAlternatingRowColors(FALSE);
 
     QTableWidgetItem *race_header = new QTableWidgetItem("Monster Race");
     race_header->setTextAlignment(Qt::AlignLeft);
@@ -418,7 +431,6 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         mon_ltr->setTextAlignment(Qt::AlignCenter);
         kill_count_table->setItem(i, col++, mon_ltr);
 
-
         // dungeon depth
         QString mon_level = (QString("%1'") .arg(r_ptr->level * 50));
         if (!r_ptr->level) mon_level = QString("Town");
@@ -437,6 +449,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     kill_count_table->sortByColumn(3, Qt::DescendingOrder);
     kill_count_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     main_layout->addWidget(kill_count_table);
+    kill_count_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
     //Add a close button on the right side
@@ -448,7 +461,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     close_across->addWidget(buttons);
 
     setLayout(main_layout);
-    setWindowTitle(tr("Monster Kill Count"));
+    setWindowTitle(QString("<h1><b>Monster Kill Count</b></h1>"));
 
     this->exec();
 }
