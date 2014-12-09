@@ -194,7 +194,7 @@ static void death_knowledge(void)
 
 static void write_death_note(QString long_day)
 {
-    write_note(QString("<h1>%1 the %2 %3 was killed by %4 on %5.<h1>")
+    write_note(QString("<b>%1 the %2 %3 was killed by %4 on %5.<b>")
                    .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
                    .arg(p_ptr->died_from) .arg(long_day), p_ptr->depth);
 }

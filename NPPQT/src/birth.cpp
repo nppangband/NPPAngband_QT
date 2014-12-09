@@ -888,7 +888,7 @@ void write_birth_note(void)
     /* Get time */
     QString long_day = (QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString()));
 
-    write_note(QString("<h1>%1 the %2 %3 began the quest to kill %4 on %5.</h1>")
+    write_note(QString("<b>%1 the %2 %3 began the quest to kill %4 on %5.</b>")
                .arg(op_ptr->full_name) .arg(p_info[p_ptr->prace].pr_name) .arg(c_info[p_ptr->pclass].cl_name)
                .arg(final_monster) .arg(long_day), p_ptr->depth);
 }

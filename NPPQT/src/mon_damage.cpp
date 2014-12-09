@@ -1129,10 +1129,10 @@ void monster_death(int m_idx, int who)
         QString long_day = QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString());
 
         /* Write message */
-        if (game_mode == GAME_NPPMORIA) write_note(QString("<h1>%1 slew The Balrog of Moria on %2.</h1>") .arg(op_ptr->full_name) .arg(long_day), p_ptr->depth);
-        else write_note(QString("<h1>%1 slew Morgoth on %2.</h1>") .arg(op_ptr->full_name)  .arg(long_day), p_ptr->depth);
-        write_note(QString("<h1>Long live %1!!!!!!</h1>") .arg(op_ptr->full_name) , p_ptr->depth);
-        write_note(QString("<h1>Long live %1!!!!!!</h1>") .arg(op_ptr->full_name) , p_ptr->depth);
+        if (game_mode == GAME_NPPMORIA) write_note(QString("<b>%1 slew The Balrog of Moria on %2.</b>") .arg(op_ptr->full_name) .arg(long_day), p_ptr->depth);
+        else write_note(QString("<b>%1 slew Morgoth on %2.</b>") .arg(op_ptr->full_name)  .arg(long_day), p_ptr->depth);
+        write_note(QString("<b>Long live %1!!!!!!</b>") .arg(op_ptr->full_name) , p_ptr->depth);
+        write_note(QString("<b>Long live %1!!!!!!</b>") .arg(op_ptr->full_name) , p_ptr->depth);
 
     }
 }

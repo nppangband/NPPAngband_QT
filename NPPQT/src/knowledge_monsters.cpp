@@ -28,6 +28,7 @@
 // The null entry at the end is essential for initializing the table of groups.
 static struct monster_group monster_group_nppmoria[] =
 {
+// Unique group gets special handling
     { NULL,	"Uniques" },
     { "A",		"Ant Lions" },
     { "a",		"Ants" },
@@ -77,13 +78,15 @@ static struct monster_group monster_group_nppmoria[] =
     { "y",		"Yeeks" },
     { "Y",		"Yeti" },
     { "z",		"Zombies" },
+// The null entry at the end is essential for initializing the table of groups.
     { NULL,       NULL }
 };
 
 
-// The null entry at the end is essential for initializing the table of groups.
+
 static struct monster_group monster_group_nppangband[] =
 {
+// Unique group gets special handling
     {NULL,      "Uniques" },
     { "A",		"Ainur/Maiar" },
     { "a",		"Ants" },
@@ -131,6 +134,7 @@ static struct monster_group monster_group_nppangband[] =
     { "Y",		"Yeti" },
     { "Z",		"Zephyr Hounds" },
     { "z",		"Zombies" },
+// The null entry at the end is essential for initializing the table of groups.
     { NULL,       NULL }
 };
 
@@ -189,6 +193,9 @@ void DisplayMonsterKnowledge::filter_rows(int row, int col)
         which_group++;
     }
 
+    //Remember the group
+    which_group = i;
+
     // Go through and hide all the rows where the creature doesn't meet the criteria
     for (i = 0; i < monster_table->rowCount(); i++)
     {
@@ -220,7 +227,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     mon_info_group = new QButtonGroup;
     mon_info_group->setExclusive(FALSE);
 
-
     // Set the table and headers
     mon_group_table = new QTableWidget(0, 1, this);
     mon_group_table->setAlternatingRowColors(FALSE);
@@ -228,7 +234,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     QTableWidgetItem *mon_group_header = new QTableWidgetItem("Monster Groups");
     mon_group_header->setTextAlignment(Qt::AlignLeft);
     mon_group_table->setHorizontalHeaderItem(0, mon_group_header);
-
 
     monster_table = new QTableWidget(0, 6, this);
     monster_table->setAlternatingRowColors(FALSE);
@@ -278,7 +283,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         x++;
     }
 
-
     //  Populate the table
     for (int i = 1; i < z_info->r_max - 1; i++)
     {
@@ -315,7 +319,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
 
         // dungeon depth
         QString mon_level = (QString("%1'") .arg(r_ptr->level * 50));
-        if (!r_ptr->level) mon_level = QString("Town");
+        if (!r_ptr->level) mon_level.append(" (Town)");
         QTableWidgetItem *mon_lvl = new QTableWidgetItem(mon_level);
         mon_lvl->setTextAlignment(Qt::AlignRight);
         monster_table->setItem(row, col++, mon_lvl);
@@ -354,7 +358,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     }
 
     connect(mon_info_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
-
 
     row = col = 0;
     //Now populate the monster_group table

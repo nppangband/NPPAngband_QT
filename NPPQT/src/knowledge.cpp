@@ -52,10 +52,6 @@ DisplayNotesFile::DisplayNotesFile(void)
     QVBoxLayout *main_layout = new QVBoxLayout;
     QGridLayout *notes_info = new QGridLayout;
 
-    QLabel *obj_label = new QLabel(QString("<b><big>%1 Notes and Accomplishments</big></b>") .arg(op_ptr->full_name));
-    obj_label->setAlignment(Qt::AlignCenter);
-
-    main_layout->addWidget(obj_label);
     main_layout->addLayout(notes_info);
 
     int row = 0;
@@ -99,7 +95,7 @@ DisplayNotesFile::DisplayNotesFile(void)
     close_across->addWidget(buttons);
 
     setLayout(main_layout);
-    setWindowTitle(tr("Display Notes"));
+    setWindowTitle(tr("Notes and Accomplishments"));
 
     this->exec();
 }
@@ -120,10 +116,6 @@ DisplayHomeInven::DisplayHomeInven(void)
     }
 
     QVBoxLayout *main_layout = new QVBoxLayout;
-
-    QLabel *home_label = new QLabel(QString("<h1><b>Home Inventory</b></h1>"));
-    home_label->setAlignment(Qt::AlignCenter);
-    main_layout->addWidget(home_label);
 
     /* Display contents of the home */
     for (int i = 0; i < st_ptr->stock_num; i++)
@@ -151,7 +143,7 @@ DisplayHomeInven::DisplayHomeInven(void)
     close_across->addWidget(buttons);
 
     setLayout(main_layout);
-    setWindowTitle(tr("Contents Of Your Home"));
+    setWindowTitle(tr("Home Inventory"));
 
     this->exec();
 }
@@ -168,17 +160,6 @@ DisplayScores::DisplayScores(void)
     scores_proxy_model = new QSortFilterProxyModel;
     scores_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
     QVBoxLayout *main_layout = new QVBoxLayout;
-
-    QHBoxLayout *label_layout = new QHBoxLayout;
-    QLabel *score_label = new QLabel(QString("<h1><b>Player Scores</b></h1>"));
-    score_label->setAlignment(Qt::AlignCenter);
-    QSpacerItem *spacer_1 = new QSpacerItem(score_label->width(), 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    QSpacerItem *spacer_2 = new QSpacerItem(score_label->width(), 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    label_layout->addSpacerItem(spacer_1);
-    label_layout->addWidget(score_label);
-    label_layout->addSpacerItem(spacer_2);
-    score_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    main_layout->addLayout(label_layout);
 
     //Copy the vector, add the player and sort it.
     QVector<high_score> score_list;
@@ -331,6 +312,7 @@ DisplayScores::DisplayScores(void)
     close_across->addWidget(buttons);
 
     setLayout(main_layout);
+    setWindowTitle("Player Scores");
 
     this->exec();
 }
@@ -381,7 +363,6 @@ DisplayMonKillCount::DisplayMonKillCount(void)
             mon_kills temp = mon_kill_list[j];
             mon_kill_list[j] = mon_kill_list[i];
             mon_kill_list[i] = temp;
-
         }
     }
 
@@ -461,7 +442,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     close_across->addWidget(buttons);
 
     setLayout(main_layout);
-    setWindowTitle(QString("<h1><b>Monster Kill Count</b></h1>"));
+    setWindowTitle(QString("Monster Kill Count"));
 
     this->exec();
 }
