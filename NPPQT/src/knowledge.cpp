@@ -42,11 +42,6 @@ void display_artifact_knowledge(void)
 
 }
 
-void display_terrain_knowledge(void)
-{
-
-}
-
 DisplayNotesFile::DisplayNotesFile(void)
 {
     QVBoxLayout *main_layout = new QVBoxLayout;

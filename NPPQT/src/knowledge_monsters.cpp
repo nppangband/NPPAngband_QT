@@ -220,12 +220,12 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     monster_proxy_model = new QSortFilterProxyModel;
     monster_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
     QVBoxLayout *main_layout = new QVBoxLayout;
-    mon_knowledge_splitter = new QSplitter;
-    main_layout->addWidget(mon_knowledge_splitter);
+    QHBoxLayout *mon_knowledge_hlay = new QHBoxLayout;
+    main_layout->addLayout(mon_knowledge_hlay);
 
         // To track the monster race info button
-    mon_info_group = new QButtonGroup;
-    mon_info_group->setExclusive(FALSE);
+    mon_button_group = new QButtonGroup;
+    mon_button_group->setExclusive(FALSE);
 
     // Set the table and headers
     mon_group_table = new QTableWidget(0, 1, this);
@@ -339,7 +339,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         new_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
         new_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         monster_table->setCellWidget(row, col++, new_button);
-        mon_info_group->addButton(new_button, i);
+        mon_button_group->addButton(new_button, i);
 
         // r_idx
         QString this_r_idx = (QString("%1") .arg(i));
@@ -357,7 +357,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         }
     }
 
-    connect(mon_info_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
+    connect(mon_button_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
 
     row = col = 0;
     //Now populate the monster_group table
@@ -380,10 +380,10 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     mon_group_table->resizeColumnsToContents();
     mon_group_table->resizeRowsToContents();
     mon_group_table->setSortingEnabled(FALSE);
-    mon_group_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mon_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     mon_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect(mon_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
-    mon_knowledge_splitter->addWidget(mon_group_table);
+    mon_knowledge_hlay->addWidget(mon_group_table);
 
     monster_table->setSortingEnabled(TRUE);
     monster_table->resizeColumnsToContents();
@@ -391,10 +391,9 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     monster_table->sortByColumn(2, Qt::DescendingOrder);
     // Hide the r_idx column
     monster_table->setColumnHidden(5, TRUE);
-    monster_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mon_knowledge_splitter->addWidget(monster_table);
     monster_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
+    monster_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    mon_knowledge_hlay->addWidget(monster_table);
 
     //Add a close button on the right side
     QHBoxLayout *close_across = new QHBoxLayout;

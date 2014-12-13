@@ -35,9 +35,7 @@ private:
     QTableWidget *monster_table;
     QTableWidget *mon_group_table;
     QVector<bool> monster_group_info;
-    QButtonGroup *mon_info_group;
-
-    QSplitter *mon_knowledge_splitter;
+    QButtonGroup *mon_button_group;
 
     bool do_spoiler;
 
@@ -46,6 +44,29 @@ private slots:
     void button_press(int mon_race);
     void filter_rows(int row, int col);
     bool mon_matches_mon_group(int r_idx, int group);
+};
+
+class DisplayTerrainKnowledge : public QDialog
+{
+    Q_OBJECT
+
+public:
+    DisplayTerrainKnowledge(void);
+
+private:
+    QSortFilterProxyModel *terrain_proxy_model;
+    QTableWidget *terrain_table;
+    QTableWidget *terrain_group_table;
+    QVector<bool> terrain_group_info;
+    QButtonGroup *terrain_button_group;
+
+    bool do_spoiler;
+
+private slots:
+    // Receives the number of the button pressed.
+    void button_press(int f_idx);
+    void filter_rows(int row, int col);
+    int terrain_matches_group(int f_idx);
 };
 
 class DisplayNotesFile : public QDialog
