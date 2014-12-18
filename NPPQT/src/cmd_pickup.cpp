@@ -415,6 +415,8 @@ void py_pickup_gold(void)
         sound(sound_msg);
         message(QString("You have found %1.").arg(o_name));
 
+        o_ptr->has_been_seen();
+
 		/* Collect the gold */
 		p_ptr->au += gold;
 

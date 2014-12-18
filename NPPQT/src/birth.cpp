@@ -744,7 +744,7 @@ static void player_outfit(void)
             object_aware(i_ptr);
             object_known(i_ptr);
 
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             apply_autoinscription(i_ptr);
 
             /* Remember history */
@@ -763,7 +763,7 @@ static void player_outfit(void)
     i_ptr->number = (byte)rand_range(3, 7);
     object_aware(i_ptr);
     object_known(i_ptr);
-    k_info[i_ptr->k_idx].everseen = TRUE;
+    i_ptr->has_been_seen();
     apply_autoinscription(i_ptr);
     /* Remember history */
     object_history(i_ptr, ORIGIN_BIRTH, 0);
@@ -778,7 +778,7 @@ static void player_outfit(void)
     i_ptr->number = (byte)rand_range(3, 7);
     object_aware(i_ptr);
     object_known(i_ptr);
-    k_info[i_ptr->k_idx].everseen = TRUE;
+    i_ptr->has_been_seen();
     apply_autoinscription(i_ptr);
     /* Remember history */
     object_history(i_ptr, ORIGIN_BIRTH, 0);

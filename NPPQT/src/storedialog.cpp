@@ -639,6 +639,8 @@ void StoreDialog::reset_store()
         object_type *o_ptr = &st->stock[i];
         if (o_ptr->k_idx == 0) continue;
 
+        o_ptr->has_been_seen();
+
         col = 0;
 
         // Make an id for the item
@@ -758,7 +760,9 @@ void StoreDialog::reset_inventory()
     for (i = 0; i < INVEN_WIELD - 1; i++)
     {
         object_type *o_ptr = inventory + i;
-        if (o_ptr->k_idx == 0) continue;        
+        if (o_ptr->k_idx == 0) continue;
+
+        o_ptr->has_been_seen();
 
         // Make an id for the item
         QString id = QString("i%1").arg(i);
@@ -837,6 +841,8 @@ void StoreDialog::reset_equip()
     {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;
+
+        o_ptr->has_been_seen();
 
         QString use;
         if (i < QUIVER_START)

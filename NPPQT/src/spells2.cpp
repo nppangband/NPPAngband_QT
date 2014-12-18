@@ -4218,7 +4218,7 @@ bool read_minds(void)
                     {
                         object_type *o_ptr = &o_list[o_idx];
 
-                        o_ptr->marked = TRUE;
+                        o_ptr->mark_object();
 
                         o_idx = o_ptr->next_o_idx;
                     }

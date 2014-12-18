@@ -173,7 +173,7 @@ static bool detect_objects_gold(int y, int x)
         if (o_ptr->tval == TV_GOLD)
         {
             /* Hack -- memorize it */
-            o_ptr->marked = TRUE;
+            o_ptr->mark_object();
 
             /* Detect */
             detect = TRUE;
@@ -211,7 +211,7 @@ static bool detect_objects_normal(int y, int x)
         if (o_ptr->tval != TV_GOLD)
         {
             /* Hack -- memorize it */
-            o_ptr->marked = TRUE;
+            o_ptr->mark_object();
 
             /* Detect */
             detect = TRUE;
@@ -261,7 +261,7 @@ static bool detect_objects_magic(int y, int x)
             ((o_ptr->to_a > 0) || (o_ptr->to_h + o_ptr->to_d > 0)))
         {
             /* Hack -- memorize it */
-            o_ptr->marked = TRUE;
+            o_ptr->mark_object();
 
             p_ptr->redraw |= (PR_ITEMLIST);
 

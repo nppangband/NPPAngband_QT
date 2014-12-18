@@ -9,6 +9,12 @@
 #include <QLabel>
 #include <src/object_classes.h>
 
+enum
+{
+    SETTINGS_FULL_OBJECT = 0,
+    SETTINGS_OBJECT_KIND,
+    SETTINGS_EGO_ITEM,
+};
 
 class verify_data
 {
@@ -31,7 +37,7 @@ class ObjectSettingsDialog: public QDialog
     Q_OBJECT
 public:
 
-    ObjectSettingsDialog(s16b o_idx);
+    ObjectSettingsDialog(s16b o_idx, byte settings_mode);
 
 private:
     object_kind *k_ptr;
@@ -57,13 +63,15 @@ private:
     QRadioButton *quality_good_weak;
     QRadioButton *quality_all_but_artifact;
 
-    QButtonGroup   *ego_group;
+    QButtonGroup *ego_group;
     QRadioButton *ego_no;
     QRadioButton *ego_yes;
 
-    void add_type_checkbox(byte which_ver);
+    byte squelch_type;
+
+    void add_type_checkbox(byte which_ver, bool full_object);
     void add_kind_checkbox(byte which_ver);
-    void add_object_verifications();
+    void add_object_verifications(byte settings_mode);
     void add_squelch_buttons(QVBoxLayout *squelch_buttons);
     void add_quality_buttons(QVBoxLayout *quality_buttons);
     void add_ego_buttons(QVBoxLayout *ego_buttons);
@@ -78,6 +86,7 @@ private slots:
 
 // object_settings
 extern void object_settings(s16b o_idx);
+extern void object_kind_settings(s16b k_idx);
 extern bool get_item_allow(int item, int verify_command);
 extern void apply_object_kind_settings(object_type *o_ptr);
 

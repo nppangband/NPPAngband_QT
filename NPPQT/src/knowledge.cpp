@@ -27,21 +27,6 @@
 
 
 
-void display_object_knowledge(void)
-{
-
-}
-
-void display_ego_item_knowledge(void)
-{
-
-}
-
-void display_artifact_knowledge(void)
-{
-
-}
-
 DisplayNotesFile::DisplayNotesFile(void)
 {
     QVBoxLayout *main_layout = new QVBoxLayout;

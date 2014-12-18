@@ -138,9 +138,6 @@ static void remove_ironman_items(void)
 
 void launch_game()
 {
-    /* Hack -- Enter wizard mode */
-    // TODO
-    //if (arg_wizard && enter_wizard_mode()) p_ptr->wizard = TRUE;
 
     /* Flavor the objects */
     flavor_init();

@@ -2971,21 +2971,6 @@ const colors_preset preset_colors [MAX_COLORS] =
 };
 
 
-QString squelch_status[SQUELCH_OPT_MAX] =
-{
-    "Never Squelch",
-    "Never Pickup",
-    "Always Pickup",
-    "Always Squelch",
-};
-
-const byte squelch_status_color[SQUELCH_OPT_MAX] =
-{
-    TERM_YELLOW,
-    TERM_L_GREEN,
-    TERM_L_UMBER,
-    TERM_L_RED,
-};
 
 /*
  * Accept values for y and x (considered as the endpoints of lines) between

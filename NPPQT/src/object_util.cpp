@@ -3500,6 +3500,8 @@ s16b quiver_carry(object_type *o_ptr)
         inventory[i].object_wipe();
     }
 
+    o_ptr->has_been_seen();
+
     /* Copy the item */
     inventory[i].object_copy(o_ptr);
 
@@ -3682,6 +3684,8 @@ s16b inven_carry(object_type *o_ptr)
         /* Wipe the empty slot */
         inventory[i].object_wipe();
     }
+
+    o_ptr->has_been_seen();
 
     /* Copy the item */
     inventory[i].object_copy(o_ptr);

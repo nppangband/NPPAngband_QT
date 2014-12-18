@@ -770,7 +770,7 @@ void WizardModeDialog::wiz_winners_kit(void)
             i_ptr->number = 2;
             object_aware(i_ptr);
             object_known(i_ptr);
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             if(inven_carry(i_ptr) < 0)
             {
@@ -786,7 +786,7 @@ void WizardModeDialog::wiz_winners_kit(void)
             apply_magic(i_ptr, k_info[k_idx].k_level, FALSE, TRUE, TRUE, TRUE);
             object_aware(i_ptr);
             object_known(i_ptr);
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             if(inven_carry(i_ptr) < 0)
             {
@@ -806,7 +806,7 @@ void WizardModeDialog::wiz_winners_kit(void)
             i_ptr->to_a = 25;
             object_aware(i_ptr);
             object_known(i_ptr);
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             if(inven_carry(i_ptr) < 0)
             {
@@ -826,7 +826,7 @@ void WizardModeDialog::wiz_winners_kit(void)
             i_ptr->to_a = 25;
             object_aware(i_ptr);
             object_known(i_ptr);
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             if(inven_carry(i_ptr) < 0)
             {
@@ -847,7 +847,7 @@ void WizardModeDialog::wiz_winners_kit(void)
             i_ptr->dd = i_ptr->ds = 9;
             object_aware(i_ptr);
             object_known(i_ptr);
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             if(inven_carry(i_ptr) < 0)
             {
@@ -867,7 +867,7 @@ void WizardModeDialog::wiz_winners_kit(void)
             i_ptr->to_a = 25;
             object_aware(i_ptr);
             object_known(i_ptr);
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             if(inven_carry(i_ptr) < 0)
             {
@@ -887,7 +887,7 @@ void WizardModeDialog::wiz_winners_kit(void)
             i_ptr->to_a = i_ptr->to_h = i_ptr->to_d = 25;
             object_aware(i_ptr);
             object_known(i_ptr);
-            k_info[k_idx].everseen = TRUE;
+            i_ptr->has_been_seen();
             object_history(i_ptr, ORIGIN_CHEAT, 0);
             if(inven_carry(i_ptr) < 0)
             {
@@ -967,7 +967,7 @@ void WizardModeDialog::wiz_winners_kit(void)
         o_ptr->number = 99;
         object_aware(o_ptr);
         object_known(o_ptr);
-        k_info[k_idx].everseen = TRUE;
+        o_ptr->has_been_seen();
         object_history(o_ptr, ORIGIN_CHEAT, 0);
         if(inven_carry(o_ptr) < 0)
         {

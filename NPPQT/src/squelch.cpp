@@ -493,10 +493,11 @@ byte squelch_type_of(object_type *o_ptr)
     /* Find the appropriate squelch group */
     for (i = 0; i < N_ELEMENTS(quality_mapping); i++)
     {
-        if ((quality_mapping[i].tval == o_ptr->tval) &&
-            (quality_mapping[i].min_sval <= o_ptr->sval) &&
-            (quality_mapping[i].max_sval >= o_ptr->sval))
-            return quality_mapping[i].squelch_type;
+        if (quality_mapping[i].tval != o_ptr->tval) continue;
+        if (quality_mapping[i].min_sval > o_ptr->sval) continue;
+        if (quality_mapping[i].max_sval < o_ptr->sval) continue;
+
+        return quality_mapping[i].squelch_type;
     }
 
     return PS_TYPE_MAX;

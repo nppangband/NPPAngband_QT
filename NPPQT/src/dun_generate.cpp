@@ -9817,7 +9817,7 @@ static void light_elements(bool show_objects)
                         object_type *o_ptr = &o_list[o_idx];
 
                         /* Mark the object */
-                        o_ptr->marked = TRUE;
+                        o_ptr->mark_object();
 
                         /* Go to the next object */
                         o_idx = o_ptr->next_o_idx;

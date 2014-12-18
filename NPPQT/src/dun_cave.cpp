@@ -1334,7 +1334,7 @@ void note_spot(int y, int x)
     for (o_ptr = get_first_object(y, x); o_ptr; o_ptr = get_next_object(o_ptr))
     {
         /* Memorize objects */
-        o_ptr->marked = TRUE;
+        o_ptr->mark_object();
     }
 
     /* Hack -- memorize grids */
@@ -1401,9 +1401,6 @@ void note_spot(int y, int x)
  *
  * This function should only be called on "legal" grids.
  *
- * Note the inline use of "print_rel()" for efficiency.
- *
- * The main screen will always be at least 24x80 in size.
  */
 void light_spot(int y, int x)
 {
@@ -3515,7 +3512,7 @@ void wiz_light(void)
         if (o_ptr->held_m_idx) continue;
 
         /* Memorize */
-        o_ptr->marked = TRUE;
+        o_ptr->mark_object();
     }
 
     /* Scan all normal grids */

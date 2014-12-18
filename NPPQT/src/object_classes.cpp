@@ -257,7 +257,20 @@ bool object_type::is_tried()
     return (FALSE);
 }
 
+/*
+ * Record when an object type has been seen
+ */
+void object_type::has_been_seen()
+{
+    k_info[k_idx].everseen = TRUE;
+}
 
+// Mark it and remember it has been seen.
+void object_type::mark_object()
+{
+    marked = TRUE;
+    has_been_seen();
+}
 
 /*
  * returns whether the player is aware of the object's flavour
@@ -882,7 +895,7 @@ void object_kind::object_kind_wipe()
     d_char = QChar(' ');
     autoinscribe.clear();
     flavor = squelch = 0;
-    aware = tried = everseen = 0;
+    aware = tried = everseen = FALSE;
     tile_32x32_y = tile_32x32_x = tile_8x8_y = tile_8x8_x = 0;
     tile_id.clear();
     C_WIPE(use_verify, VERIFY_MAX, byte);

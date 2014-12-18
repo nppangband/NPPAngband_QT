@@ -111,7 +111,7 @@ int DisplayTerrainKnowledge::terrain_matches_group(int f_idx)
     return (MAX_FEATURE_TYPES-1);
 }
 
-// Display the monster info
+// Display the feature info
 void DisplayTerrainKnowledge::button_press(int f_idx)
 {
     describe_feature(f_idx, do_spoiler);
@@ -136,7 +136,7 @@ void DisplayTerrainKnowledge::filter_rows(int row, int col)
     //Remember the group
     which_group = i;
 
-    // Go through and hide all the rows where the creature doesn't meet the criteria
+    // Go through and hide all the rows where the feature doesn't meet the criteria
     for (i = 0; i < terrain_table->rowCount(); i++)
     {
         QString text_idx = this->terrain_table->item(i, 3)->text();
@@ -153,7 +153,7 @@ void DisplayTerrainKnowledge::filter_rows(int row, int col)
 }
 
 
-// Set up the monster knowledge table
+// Set up the feature knowledge table
 
 DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 {
@@ -163,7 +163,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     QHBoxLayout *terrain_knowledge_hlay = new QHBoxLayout;
     main_layout->addLayout(terrain_knowledge_hlay);
 
-        // To track the monster race info button
+    // To track the feature info button
     terrain_button_group = new QButtonGroup;
     terrain_button_group->setExclusive(FALSE);
 
@@ -197,7 +197,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     f_idx_header->setTextAlignment(Qt::AlignCenter);
     terrain_table->setHorizontalHeaderItem(col++, f_idx_header);
 
-    //Gather information to populate the monster groups
+    //Gather information to populate the feature groups
     terrain_group_info.clear();
 
     for (int x = 0; x < MAX_FEATURE_TYPES; x++) terrain_group_info.append(FALSE);
@@ -214,7 +214,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
         terrain_table->insertRow(row);
         col = 0;
 
-        // Race
+        // feature name
         QString this_feature = capitalize_first(f_ptr->f_name);
         QTableWidgetItem *feat = new QTableWidgetItem(this_feature);
         feat->setTextAlignment(Qt::AlignLeft);
@@ -256,13 +256,13 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 
     row = col = 0;
 
-    //Now populate the monster_group table
+    //Now populate the mfeature_group table
     for (int i = 0; i < terrain_group_info.size(); i++)
     {
         if (!terrain_group_info[i]) continue;
         terrain_group_table->insertRow(row);
 
-        // Monster Group
+        // Feature Group
         QString group_name = QString(feature_group_text[i]);
         QTableWidgetItem *feat_group_label = new QTableWidgetItem(group_name);
         feat_group_label->setTextAlignment(Qt::AlignLeft);
@@ -281,7 +281,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     terrain_table->resizeColumnsToContents();
     terrain_table->resizeRowsToContents();
     terrain_table->sortByColumn(2, Qt::DescendingOrder);
-    // Hide the r_idx column
+    // Hide the f_idx column
     terrain_table->setColumnHidden(3, TRUE);
     terrain_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     terrain_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);

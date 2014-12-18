@@ -136,6 +136,8 @@ class object_type
     bool is_known();
     bool is_aware();
     bool is_tried();
+    void has_been_seen();
+    void mark_object();
     bool is_flavor_known();
     bool can_be_pseudo_ided();
     bool is_artifact();
@@ -189,8 +191,6 @@ class object_type
 
 /*
  * Information about object "kinds", including player knowledge.
- *
- * Only "aware" and "tried" are saved in the savefile
  */
 class object_kind
 {

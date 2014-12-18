@@ -751,17 +751,6 @@ QString object_desc(object_type *o_ptr, byte mode)
         known = TRUE;
     }
 
-    /* Player has now seen the item
-     *
-     * This code must be exactly here to properly handle objects in
-     * stores (fake assignment to "aware", see above) and unaware objects
-     * in the dungeon.
-     */
-    if (aware) k_ptr->everseen = TRUE;
-
-    /* We've seen it at least once now we're aware of it */
-    if (known && o_ptr->ego_num) e_info[o_ptr->ego_num].everseen = TRUE;
-
     /*** Some things get really simple descriptions ***/
 
     if (o_ptr->tval == TV_GOLD)

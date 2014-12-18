@@ -14,11 +14,20 @@
 
 
 typedef struct monster_group monster_group;
-
+typedef struct object_grouper object_grouper;
 
 struct monster_group
 {
     QString chars;
+    QString name;
+};
+
+/**
+ * Defines a (value, name) pairing.  Variable names used are historical.
+ */
+struct object_grouper
+{
+    int tval;
     QString name;
 };
 
@@ -44,6 +53,31 @@ private slots:
     void button_press(int mon_race);
     void filter_rows(int row, int col);
     bool mon_matches_mon_group(int r_idx, int group);
+};
+
+class DisplayObjectKnowledge : public QDialog
+{
+    Q_OBJECT
+
+public:
+    DisplayObjectKnowledge(void);
+
+private:
+    QSortFilterProxyModel *object_proxy_model;
+    QTableWidget *object_table;
+    QTableWidget *object_group_table;
+    QVector<bool> object_group_info;
+    QButtonGroup *object_button_group;
+    QButtonGroup *object_settings_group;
+
+    bool do_spoiler;
+
+private slots:
+    // Receives the number of the button pressed.
+    void button_press(int k_idx);
+    void settings_press(int k_idx);
+    void filter_rows(int row, int col);
+    int object_matches_group(int k_idx);
 };
 
 class DisplayTerrainKnowledge : public QDialog
@@ -129,7 +163,8 @@ extern void display_notes_file(void);
 extern void display_home_inventory(void);
 extern void display_player_scores(void);
 extern void display_mon_kill_count(void);
-
+extern void make_object_fake(object_type *o_ptr, int k_idx);
+extern void apply_magic_fake(object_type *o_ptr);
 
 
 #endif // KNOWLEDGE_H

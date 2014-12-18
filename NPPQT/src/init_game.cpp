@@ -1632,7 +1632,7 @@ void flavor_init(void)
         object_kind *k_ptr = &k_info[i];
 
         /*Skip "empty" objects*/
-        if (k_ptr->k_name.isEmpty()) continue;
+        if (!k_ptr->k_name.length()) continue;
 
         /*No flavor yields aware*/
         if (!k_ptr->flavor) k_ptr->aware = TRUE;
