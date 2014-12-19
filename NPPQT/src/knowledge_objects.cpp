@@ -64,8 +64,8 @@ object_grouper object_text_order[NUM_OBJECT_GROUPS] =
     {TV_HAFTED,			"Hafted Weapons"},
     {TV_BOW,			"Bows"			},
     {TV_ARROW,			"Ammunition"	},
-    {TV_BOLT,			"Bolts"			}, // moved to "Ammunition group".  See object_matched_group.
-    {TV_SHOT,			"Shots"			}, // moved to "Ammunition group"   See object_matched_group.
+    {TV_BOLT,			"Bolts"			}, // for objects, moved to "Ammunition group".  See object_matched_group.
+    {TV_SHOT,			"Shots"			}, // for objects, moved to "Ammunition group"   See object_matched_group.
     {TV_SHIELD,			"Shields"		},
     {TV_CROWN,			"Crowns"		},
     {TV_HELM,			"Helms"			},
@@ -290,6 +290,37 @@ void apply_magic_fake(object_type *o_ptr)
             break;
         }
     }
+
+    if (o_ptr->ego_num)
+    {
+        ego_item_type *ego_ptr = &e_info[o_ptr->ego_num];
+        if (ego_ptr->max_to_a)
+        {
+            if (ego_ptr->max_to_a > 0) o_ptr->to_a = 1;
+            else o_ptr->to_a = -1;
+        }
+        if (ego_ptr->max_to_h)
+        {
+            if (ego_ptr->max_to_h > 0) o_ptr->to_h = 1;
+            else o_ptr->to_h = -1;
+        }
+        if (ego_ptr->max_to_d)
+        {
+            if (ego_ptr->max_to_d > 0) o_ptr->to_d = 1;
+            else o_ptr->to_d = -1;
+        }
+        if (ego_ptr->max_pval)
+        {
+            if (ego_ptr->max_pval > 0) o_ptr->pval = 1;
+            else o_ptr->pval = -1;
+        }
+
+        if (ego_ptr->e_flags3 & (TR3_LIGHT_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+        if (ego_ptr->e_flags3 & (TR3_HEAVY_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+        if (ego_ptr->e_flags3 & (TR3_PERMA_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+    }
+
+    o_ptr->update_object_flags();
 }
 
 // Make an object just for display purposes.
@@ -316,10 +347,41 @@ void make_object_fake(object_type *o_ptr, int k_idx)
     }
 }
 
+static int find_first_ego_match(int e_idx)
+{
+    /* Get the actual kind */
+    ego_item_type *e_ptr = &e_info[e_idx];
+
+    for (int i = 1; i < z_info->k_max; i++)
+    {
+        object_kind *k_ptr = &k_info[i];
+
+        if (!k_ptr->k_name.length()) continue;
+
+        /* Test if this is a legal ego-item type for this object */
+        for (int j = 0; j < EGO_TVALS_MAX; j++)
+        {
+            /* Require identical base type */
+            if (k_ptr->tval != e_ptr->tval[j]) continue;
+
+            /* Require sval in bounds, lower */
+            if (k_ptr->sval < e_ptr->min_sval[j]) continue;
+
+            /* Require sval in bounds, upper */
+            if (k_ptr->sval > e_ptr->max_sval[j]) continue;
+
+            return (i);
+        }
+    }
+
+    // Shouldn't every happpen
+    return (0);
+}
+
 /*
  * Describe fake ego item "lore"
  */
-static void desc_ego_fake(int ego_num)
+static void desc_ego_fake(int ego_num, QString object_string)
 {
     /* Hack: dereference the join */
     QString xtra[10] = { "sustains", "higher resistances", "abilities", "immunities", "stat increases",
@@ -329,24 +391,29 @@ static void desc_ego_fake(int ego_num)
 
     object_type dummy;
     object_type *o_ptr = &dummy;
-    o_ptr->object_wipe();
 
-    QString output = color_string(QString("%1\n") .arg(e_ptr->e_name), TERM_L_BLUE);
+        /* List ego flags */
+    int k_idx = find_first_ego_match(ego_num);
+    if (!k_idx) return;
 
+    make_object_fake(o_ptr, k_idx);
+    o_ptr->ego_num = ego_num;
+    apply_magic_fake(o_ptr);
+    o_ptr->xtra2 = 0;
+    o_ptr->update_object_flags();
+
+    QString output = color_string(QString("%1 %2<br>") .arg(object_string) .arg(e_ptr->e_name), TERM_BLUE);
 
     if (e_ptr->e_text.length())
     {
-        output.append(QString("\n%1\n") .arg(e_ptr->e_text));
+        output.append(QString("<br>%1<br>") .arg(e_ptr->e_text));
     }
 
-    /* List ego flags */
-    o_ptr->ego_num = ego_num;
-    o_ptr->tval = e_ptr->tval[0];
     output.append(object_info_out(o_ptr, FALSE));
 
     if (e_ptr->xtra)
     {
-        output.append(QString("It provides one or more random %1.\n") .arg(xtra[e_ptr->xtra - 1]));
+        output.append(QString("<br>It provides one or more random %1.<br>") .arg(xtra[e_ptr->xtra - 1]));
     }
 
     if (e_ptr->e_flags3 & (TR3_PERMA_CURSE)) output.append("It is permanently cursed.");
@@ -599,8 +666,6 @@ void DisplayObjectKnowledge::filter_rows(int row, int col)
         }
         else object_table->hideRow(i);
     }
-
-
 }
 
 
@@ -734,7 +799,7 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
 
         row++;
 
-        // Now make sure the feature type is added to the table.
+        // Now make sure the object type is added to the table.
         object_group_info[object_matches_group(i)] = TRUE;
     }
 
@@ -796,12 +861,258 @@ void display_object_knowledge(void)
     DisplayObjectKnowledge();
 }
 
+// Assumes "everseen" has been handled
+bool DisplayEgoItemKnowledge::ego_item_matches_group(int e_idx, int group)
+{
+    ego_item_type *ego_ptr = &e_info[e_idx];
 
+    object_grouper *group_ptr = &object_text_order[group];
+
+    for (int x = 0; x < EGO_TVALS_MAX; x++)
+    {
+        if (ego_ptr->tval[x] == group_ptr->tval) return (TRUE);
+    }
+
+    // No match found
+    return (FALSE);
+}
+
+// Display the object info
+void DisplayEgoItemKnowledge::button_press(int e_idx)
+{
+    int row = ego_item_group_table->currentRow();
+    QString group_text = this->ego_item_group_table->item(row, 0)->text();
+
+    desc_ego_fake(e_idx, group_text);
+}
+
+// Display the object kind settings
+void DisplayEgoItemKnowledge::settings_press(int e_idx)
+{
+    ego_item_type *ego_ptr = &e_info[e_idx];
+
+    // Find the squelch setting label and update it.
+    for (int i = 0; i < ego_item_table->rowCount(); i++)
+    {
+        QString text_idx = this->ego_item_table->item(i, 4)->text();
+        int row_idx = text_idx.toInt();
+
+        if (row_idx != e_idx) continue;
+
+        // Toggle it
+        ego_ptr->squelch = !ego_ptr->squelch;
+
+        // Update the label
+        QString squelch_st = QString("TRUE");
+        if (!ego_ptr->squelch) squelch_st = QString("FALSE");
+        this->ego_item_table->item(i, 1)->setText(squelch_st);
+    }
+}
+
+void DisplayEgoItemKnowledge::filter_rows(int row, int col)
+{
+    int which_group = 0;
+
+    (void)col;
+    int i;
+
+    // First find the group we want to filter for
+    for (i = 0; i < ego_item_group_info.size(); i++)
+    {
+
+        if (!ego_item_group_info[i]) continue;
+        if (which_group == row) break;
+        which_group++;
+    }
+
+    //Remember the group
+    which_group = i;
+
+    // Go through and hide all the rows where the object doesn't meet the criteria
+    for (i = 0; i < ego_item_table->rowCount(); i++)
+    {
+        QString text_idx = this->ego_item_table->item(i, 4)->text();
+        int e_idx = text_idx.toInt();
+
+        if (ego_item_matches_group(e_idx, which_group))
+        {
+            ego_item_table->showRow(i);
+        }
+        else ego_item_table->hideRow(i);
+    }
+}
+
+
+// Set up the object knowledge table
+
+DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
+{
+    ego_item_proxy_model = new QSortFilterProxyModel;
+    ego_item_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    QHBoxLayout *ego_item_knowledge_hlay = new QHBoxLayout;
+    main_layout->addLayout(ego_item_knowledge_hlay);
+
+    // To track the ego_item info button
+    ego_item_button_group = new QButtonGroup;
+    ego_item_button_group->setExclusive(FALSE);
+
+    // To track the ego_item squelch toggle button
+    ego_item_squelch_toggle = new QButtonGroup;
+    ego_item_squelch_toggle->setExclusive(FALSE);
+
+    // Set the table and headers
+    ego_item_group_table = new QTableWidget(0, 1, this);
+    ego_item_group_table->setAlternatingRowColors(FALSE);
+
+    QTableWidgetItem *ego_item_group_header = new QTableWidgetItem("Object Kinds");
+    ego_item_group_header->setTextAlignment(Qt::AlignLeft);
+    ego_item_group_table->setHorizontalHeaderItem(0, ego_item_group_header);
+
+    ego_item_table = new QTableWidget(0, 5, this);
+    ego_item_table->setAlternatingRowColors(FALSE);
+
+    do_spoiler = FALSE;
+
+    int row = 0;
+    int col = 0;
+
+    QTableWidgetItem *obj_header = new QTableWidgetItem("Ego Item");
+    obj_header->setTextAlignment(Qt::AlignLeft);
+    ego_item_table->setHorizontalHeaderItem(col++, obj_header);
+    QTableWidgetItem *squelch_header = new QTableWidgetItem("Squelch Setting");
+    squelch_header->setTextAlignment(Qt::AlignLeft);
+    ego_item_table->setHorizontalHeaderItem(col++, squelch_header);
+    QTableWidgetItem *info_header = new QTableWidgetItem("Info");
+    info_header->setTextAlignment(Qt::AlignCenter);
+    ego_item_table->setHorizontalHeaderItem(col++, info_header);
+    QTableWidgetItem *toggle_squech_header = new QTableWidgetItem("Toggle Squelch");
+    toggle_squech_header->setTextAlignment(Qt::AlignCenter);
+    ego_item_table->setHorizontalHeaderItem(col++, toggle_squech_header);
+    //This column will be hidden, but is used in filter_rows
+    QTableWidgetItem *e_idx_header = new QTableWidgetItem("e_idx");
+    e_idx_header->setTextAlignment(Qt::AlignCenter);
+    ego_item_table->setHorizontalHeaderItem(col++, e_idx_header);
+
+    //Gather information to populate the object kind groups
+    ego_item_group_info.clear();
+    for (int x = 0; x < NUM_OBJECT_GROUPS; x++) ego_item_group_info.append(FALSE);
+
+    //  Populate the table
+    for (int i = 1; i < z_info->e_max; i++)
+    {
+        ego_item_type *e_ptr = &e_info[i];
+
+        /* Skip "empty" and unknown objects, and gold */
+        if (!e_ptr->e_name.length()) continue;
+        if (!e_ptr->everseen) continue;
+
+        ego_item_table->insertRow(row);
+        col = 0;
+
+        // Object_kind
+        QString this_object = capitalize_first(e_ptr->e_name);
+        QTableWidgetItem *kind = new QTableWidgetItem(this_object);
+        kind->setTextAlignment(Qt::AlignLeft);
+        ego_item_table->setItem(row, col++, kind);
+
+        // Squelch status
+        QString squelch_st = QString("FALSE");
+        if (e_ptr->squelch) squelch_st = QString("TRUE");
+        QTableWidgetItem *squelch = new QTableWidgetItem(squelch_st);
+        squelch->setTextAlignment(Qt::AlignLeft);
+        ego_item_table->setItem(row, col++, squelch);
+
+        // object info
+        QPushButton *info_button = new QPushButton();
+        info_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+        info_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        ego_item_table->setCellWidget(row, col++, info_button);
+        ego_item_button_group->addButton(info_button, i);
+
+        // object settings
+        QPushButton *settings_button = new QPushButton();
+        settings_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
+        settings_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        settings_button->setStatusTip("Toggle Squelch Status");
+        ego_item_table->setCellWidget(row, col++, settings_button);
+        ego_item_squelch_toggle->addButton(settings_button, i);
+
+        // e_idx
+        QString this_e_idx = (QString("%1") .arg(i));
+        QTableWidgetItem *e_idx = new QTableWidgetItem(this_e_idx);
+        e_idx->setTextAlignment(Qt::AlignRight);
+        ego_item_table->setItem(row, col++, e_idx);
+
+        row++;
+
+        // Now make sure the ego_item group is added to the table.
+        for (int x = 0; x < ego_item_group_info.size(); x++)
+        {
+            if (ego_item_matches_group(i, x)) ego_item_group_info[x] = TRUE;
+        }
+
+    }
+
+    connect(ego_item_button_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
+    connect(ego_item_squelch_toggle, SIGNAL(buttonClicked(int)), this, SLOT(settings_press(int)));
+
+    row = col = 0;
+
+    //Now populate the object_group table
+    for (int i = 0; i < ego_item_group_info.size(); i++)
+    {
+        if (!ego_item_group_info[i]) continue;
+        ego_item_group_table->insertRow(row);
+
+        // Object Group
+        QString group_name = QString(object_text_order[i].name);
+        // Hack - work in "Arrow"
+        if (object_text_order[i].tval == TV_ARROW) group_name = QString("Arrows");
+        QTableWidgetItem *ego_group_label = new QTableWidgetItem(group_name);
+        ego_group_label->setTextAlignment(Qt::AlignLeft);
+        ego_item_group_table->setItem(row++, 0, ego_group_label);
+    }
+
+    ego_item_group_table->resizeColumnsToContents();
+    ego_item_group_table->resizeRowsToContents();
+    ego_item_group_table->setSortingEnabled(FALSE);
+    ego_item_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    ego_item_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    connect(ego_item_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
+    ego_item_knowledge_hlay->addWidget(ego_item_group_table);
+
+    ego_item_table->setSortingEnabled(TRUE);
+    ego_item_table->resizeColumnsToContents();
+    ego_item_table->resizeRowsToContents();
+    ego_item_table->sortByColumn(0, Qt::AscendingOrder);
+    // Hide the e_idx column
+    ego_item_table->setColumnHidden(4, TRUE);
+    ego_item_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ego_item_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    ego_item_knowledge_hlay->addWidget(ego_item_table);
+
+    //Add a close button on the right side
+    QHBoxLayout *close_across = new QHBoxLayout;
+    main_layout->addLayout(close_across);
+    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    close_across->addWidget(buttons);
+
+    //Filter for the first monster group.
+    filter_rows(0,0);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Ego Item Knowledge"));
+
+    this->exec();
+}
 
 
 void display_ego_item_knowledge(void)
 {
-
+    DisplayEgoItemKnowledge();
 }
 
 void display_artifact_knowledge(void)

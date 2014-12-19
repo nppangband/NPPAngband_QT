@@ -80,6 +80,31 @@ private slots:
     int object_matches_group(int k_idx);
 };
 
+class DisplayEgoItemKnowledge : public QDialog
+{
+    Q_OBJECT
+
+public:
+    DisplayEgoItemKnowledge(void);
+
+private:
+    QSortFilterProxyModel *ego_item_proxy_model;
+    QTableWidget *ego_item_table;
+    QTableWidget *ego_item_group_table;
+    QVector<bool> ego_item_group_info;
+    QButtonGroup *ego_item_button_group;
+    QButtonGroup *ego_item_squelch_toggle;
+
+    bool do_spoiler;
+
+private slots:
+    // Receives the number of the button pressed.
+    void button_press(int e_idx);
+    void settings_press(int e_idx);
+    void filter_rows(int row, int col);
+    bool ego_item_matches_group(int e_idx, int group);
+};
+
 class DisplayTerrainKnowledge : public QDialog
 {
     Q_OBJECT

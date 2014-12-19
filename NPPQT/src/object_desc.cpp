@@ -728,7 +728,6 @@ QString object_desc(object_type *o_ptr, byte mode)
     bool spoil = (mode & ODESC_SPOIL);
     QString buf;
 
-    bool aware;
     bool known;
 
     object_kind *k_ptr = &k_info[o_ptr->k_idx];
@@ -736,18 +735,13 @@ QString object_desc(object_type *o_ptr, byte mode)
     /* Make sure the flags are up to date */
     o_ptr->update_object_flags();
 
-    /* See if the object is "aware" */
-    aware = o_ptr->is_aware();
-
     /* See if the object is "known" */
     known = o_ptr->is_known();
 
     /* Object is in the inventory of a store */
     if (o_ptr->ident & IDENT_STORE)
     {
-
-        /* Pretend known and aware */
-        aware = TRUE;
+        /* Pretend known */
         known = TRUE;
     }
 
