@@ -105,6 +105,31 @@ private slots:
     bool ego_item_matches_group(int e_idx, int group);
 };
 
+class DisplayArtifactKnowledge : public QDialog
+{
+    Q_OBJECT
+
+public:
+    DisplayArtifactKnowledge(void);
+
+private:
+    QSortFilterProxyModel *artifact_proxy_model;
+    QTableWidget *artifact_table;
+    QTableWidget *artifact_group_table;
+    QVector<bool> artifact_group_info;
+    QButtonGroup *artifact_button_group;
+    QButtonGroup *artifact_settings_group;
+
+    bool do_spoiler;
+
+private slots:
+    // Receives the number of the button pressed.
+    void button_press(int a_idx);
+    void settings_press(int a_idx);
+    void filter_rows(int row, int col);
+    int artifact_matches_group(int a_idx);
+};
+
 class DisplayTerrainKnowledge : public QDialog
 {
     Q_OBJECT

@@ -43,6 +43,7 @@ static const byte squelch_status_color[SQUELCH_OPT_MAX] =
 
 
 #define NUM_OBJECT_GROUPS 34
+#define NUM_ARTIFACT_GROUPS (NUM_OBJECT_GROUPS + 1)
 
 object_grouper object_text_order[NUM_OBJECT_GROUPS] =
 {
@@ -81,6 +82,8 @@ object_grouper object_text_order[NUM_OBJECT_GROUPS] =
     {TV_DIGGING,		"Diggers"		},
     {TV_JUNK,			"Junk"			}, // Junk should be last
 };
+
+
 
 /*
  * Add a pval so the object descriptions don't look strange*
@@ -424,6 +427,22 @@ static void desc_ego_fake(int ego_num, QString object_string)
     display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
 }
 
+static QString get_artifact_display_name(int a_idx)
+{
+    object_type object_type_body;
+    object_type *o_ptr = &object_type_body;
+
+    /* Make fake artifact */
+    o_ptr = &object_type_body;
+    make_fake_artifact(o_ptr, a_idx);
+    object_aware(o_ptr);
+    object_known(o_ptr);
+    o_ptr->ident |= (IDENT_MENTAL);
+
+    /* Get its name */
+    return (object_desc(o_ptr, ODESC_PREFIX | ODESC_BASE | ODESC_SPOIL));
+}
+
 /*
  * Show artifact lore
  */
@@ -495,28 +514,6 @@ void desc_art_fake(int a_idx)
 
 
 /*
- * Looks up an artifact idx given an object_kind *that's already known
- * to be an artifact*.  Behaviour is distinctly unfriendly if passed
- * flavours which don't correspond to an artifact.
- */
-static int get_artifact_from_kind(object_kind *k_ptr)
-{
-    int i;
-
-    /* Look for the corresponding artifact */
-    for (i = 0; i < z_info->art_max; i++)
-    {
-        if (k_ptr->tval == a_info[i].tval &&
-            k_ptr->sval == a_info[i].sval)
-        {
-            break;
-        }
-    }
-
-    return i;
-}
-
-/*
  * Check if the given artifact idx is something we should "Know" about
  */
 static bool artifact_is_known(int a_idx)
@@ -537,7 +534,6 @@ static bool artifact_is_known(int a_idx)
 
         if (!a) continue;
         if (a != a_idx) continue;
-
 
         /* If we haven't actually identified the artifact yet */
         object_type *o_ptr = &o_list[i];
@@ -593,20 +589,8 @@ int DisplayObjectKnowledge::object_matches_group(int k_idx)
 // Display the object info
 void DisplayObjectKnowledge::button_press(int k_idx)
 {
-    object_kind *k_ptr = &k_info[k_idx];
     object_type object_type_body;
     object_type *o_ptr = &object_type_body;
-
-    /* Check for known artifacts, display them as artifacts */
-    if (k_ptr->k_flags3 & (TR3_INSTA_ART))
-    {
-        // DO the insta_art check first
-        if (artifact_is_known(get_artifact_from_kind(k_ptr)))
-        {
-            desc_art_fake(get_artifact_from_kind(k_ptr));
-            return;
-        }
-    }
 
     make_object_fake(o_ptr, k_idx);
 
@@ -669,8 +653,8 @@ void DisplayObjectKnowledge::filter_rows(int row, int col)
 }
 
 
-// Set up the object knowledge table
-
+// Set up the object knowledge table.
+// Note special artifacts are handled under DisplayArtifactKnowledge.
 DisplayObjectKnowledge::DisplayObjectKnowledge(void)
 {
     object_proxy_model = new QSortFilterProxyModel;
@@ -736,6 +720,8 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         if (!k_ptr->k_name.length()) continue;
         if (k_ptr->tval == TV_GOLD) continue;
         if (!k_ptr->everseen || !k_ptr->aware) continue;
+        // Handled in artifact knowledge
+        if (k_ptr->k_flags3 & (TR3_INSTA_ART)) continue;
 
         /* Skip items with no distribution (including special artifacts) */
         int k = 0;
@@ -858,6 +844,9 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
 
 void display_object_knowledge(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayObjectKnowledge();
 }
 
@@ -1051,7 +1040,12 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
         {
             if (ego_item_matches_group(i, x)) ego_item_group_info[x] = TRUE;
         }
+    }
 
+    if (!ego_item_table->rowCount())
+    {
+        pop_up_message_box("You are not currently aware of any ego items");
+        return;
     }
 
     connect(ego_item_button_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
@@ -1059,7 +1053,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
 
     row = col = 0;
 
-    //Now populate the object_group table
+    //Now populate the ego_item_group table
     for (int i = 0; i < ego_item_group_info.size(); i++)
     {
         if (!ego_item_group_info[i]) continue;
@@ -1112,10 +1106,245 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
 
 void display_ego_item_knowledge(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayEgoItemKnowledge();
+}
+
+
+
+int DisplayArtifactKnowledge::artifact_matches_group(int a_idx)
+{
+
+    int tval = a_info[a_idx].tval;
+
+    // Hack - Insta-art group is first.  Note i+1 is returned
+    if (a_info[a_idx].is_special_artifact()) return (0);
+
+    for (int i = 0; i < NUM_OBJECT_GROUPS; i++)
+    {
+        object_grouper *group_ptr = &object_text_order[i];
+
+        if (tval == group_ptr->tval) return (i + 1);
+    }
+
+    // Shouldn't happen, but it must be handled
+    return (NUM_OBJECT_GROUPS);
+}
+
+// Display the object info
+void DisplayArtifactKnowledge::button_press(int a_idx)
+{
+
+    desc_art_fake(a_idx);
+}
+
+// Display the object kind settings
+void DisplayArtifactKnowledge::settings_press(int a_idx)
+{
+    object_artifact_settings(a_idx);
+}
+
+
+void DisplayArtifactKnowledge::filter_rows(int row, int col)
+{
+    int which_group = 0;
+
+    (void)col;
+    int i;
+
+    // First find the group we want to filter for
+    for (i = 0; i < artifact_group_info.size(); i++)
+    {
+        if (!artifact_group_info[i]) continue;
+        if (which_group == row) break;
+        which_group++;
+    }
+
+    //Remember the group
+    which_group = i;
+
+    // Go through and hide all the rows where the object doesn't meet the criteria
+    for (i = 0; i < artifact_table->rowCount(); i++)
+    {
+        QString text_idx = this->artifact_table->item(i, 3)->text();
+        int a_idx = text_idx.toInt();
+
+        if (artifact_matches_group(a_idx) == which_group)
+        {
+            artifact_table->showRow(i);
+        }
+        else artifact_table->hideRow(i);
+    }
+}
+
+
+// Set up the artifact knowledge table
+// Note the code handling creating a group for special artifacts
+DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
+{
+    artifact_proxy_model = new QSortFilterProxyModel;
+    artifact_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    QHBoxLayout *artifact_knowledge_hlay = new QHBoxLayout;
+    main_layout->addLayout(artifact_knowledge_hlay);
+
+    // To track the artifact info button
+    artifact_button_group = new QButtonGroup;
+    artifact_button_group->setExclusive(FALSE);
+
+    // To track the artifact settings button
+    artifact_settings_group = new QButtonGroup;
+    artifact_settings_group->setExclusive(FALSE);
+
+    // Set the table and headers
+    artifact_group_table = new QTableWidget(0, 1, this);
+    artifact_group_table->setAlternatingRowColors(FALSE);
+
+    QTableWidgetItem *artifact_group_header = new QTableWidgetItem("Object Kinds");
+    artifact_group_header->setTextAlignment(Qt::AlignLeft);
+    artifact_group_table->setHorizontalHeaderItem(0, artifact_group_header);
+
+    artifact_table = new QTableWidget(0, 4, this);
+    artifact_table->setAlternatingRowColors(FALSE);
+
+    do_spoiler = FALSE;
+
+    int row = 0;
+    int col = 0;
+
+    QTableWidgetItem *art_header = new QTableWidgetItem("Object");
+    art_header->setTextAlignment(Qt::AlignLeft);
+    artifact_table->setHorizontalHeaderItem(col++, art_header);
+    QTableWidgetItem *info_header = new QTableWidgetItem("Info");
+    info_header->setTextAlignment(Qt::AlignCenter);
+    artifact_table->setHorizontalHeaderItem(col++, info_header);
+    QTableWidgetItem *settings_header = new QTableWidgetItem("settings");
+    settings_header->setTextAlignment(Qt::AlignCenter);
+    artifact_table->setHorizontalHeaderItem(col++, settings_header);
+    //This column will be hidden, but is used in filter_rows
+    QTableWidgetItem *a_idx_header = new QTableWidgetItem("s_idx");
+    a_idx_header->setTextAlignment(Qt::AlignCenter);
+    artifact_table->setHorizontalHeaderItem(col++, a_idx_header);
+
+    //Gather information to populate the object kind groups
+    // First, add one for the special artifacts
+    artifact_group_info.clear();
+    artifact_group_info.append(FALSE);
+    for (int x = 0; x < NUM_OBJECT_GROUPS; x++) artifact_group_info.append(FALSE);
+
+    //  Populate the table
+    for (int i = 0; i < z_info->art_rand_max; i++)
+    {
+        artifact_type *a_ptr = &a_info[i];
+
+        /* This slot is already being used */
+        if ((a_ptr->tval + a_ptr->sval) == 0) continue;
+        if (!artifact_is_known(i)) continue;
+
+        /*  Don't do quest artifacts*/
+        if (i == QUEST_ART_SLOT) continue;
+
+        artifact_table->insertRow(row);
+        col = 0;
+
+        // Object_kind
+        QString this_art = get_artifact_display_name(i);
+        QTableWidgetItem *art_kind = new QTableWidgetItem(this_art);
+        art_kind->setTextAlignment(Qt::AlignLeft);
+        artifact_table->setItem(row, col++, art_kind);
+
+        // object info
+        QPushButton *info_button = new QPushButton();
+        info_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
+        info_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        artifact_table->setCellWidget(row, col++, info_button);
+        artifact_button_group->addButton(info_button, i);
+
+        // object settings
+        QPushButton *settings_button = new QPushButton();
+        settings_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
+        settings_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        artifact_table->setCellWidget(row, col++, settings_button);
+        artifact_settings_group->addButton(settings_button, i);
+
+        // a_idx
+        QString this_a_idx = (QString("%1") .arg(i));
+        QTableWidgetItem *a_idx = new QTableWidgetItem(this_a_idx);
+        a_idx->setTextAlignment(Qt::AlignRight);
+        artifact_table->setItem(row, col++, a_idx);
+
+        row++;
+
+        // Now make sure the object type is added to the table.
+        artifact_group_info[artifact_matches_group(i)] = TRUE;
+    }
+
+    if (!artifact_table->rowCount())
+    {
+        pop_up_message_box("You are not currently aware of any artifacts");
+        return;
+    }
+
+    connect(artifact_button_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
+    connect(artifact_settings_group, SIGNAL(buttonClicked(int)), this, SLOT(settings_press(int)));
+
+    row = col = 0;
+
+    //Now populate the object_group table
+    for (int i = 0; i < artifact_group_info.size(); i++)
+    {
+        if (!artifact_group_info[i]) continue;
+        artifact_group_table->insertRow(row);
+
+        // Object Group
+        QString group_name = QString("Special");
+        if (i) group_name = QString(object_text_order[i-1].name);
+        QTableWidgetItem *artifact_group_label = new QTableWidgetItem(group_name);
+        artifact_group_label->setTextAlignment(Qt::AlignLeft);
+        artifact_group_table->setItem(row++, 0, artifact_group_label);
+    }
+
+    artifact_group_table->resizeColumnsToContents();
+    artifact_group_table->resizeRowsToContents();
+    artifact_group_table->setSortingEnabled(FALSE);
+    artifact_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    artifact_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    connect(artifact_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
+    artifact_knowledge_hlay->addWidget(artifact_group_table);
+
+    artifact_table->setSortingEnabled(TRUE);
+    artifact_table->resizeColumnsToContents();
+    artifact_table->resizeRowsToContents();
+    artifact_table->sortByColumn(0, Qt::AscendingOrder);
+    // Hide the r_idx column
+    artifact_table->setColumnHidden(3, TRUE);
+    artifact_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    artifact_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+    artifact_knowledge_hlay->addWidget(artifact_table);
+
+    //Add a close button on the right side
+    QHBoxLayout *close_across = new QHBoxLayout;
+    main_layout->addLayout(close_across);
+    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    close_across->addWidget(buttons);
+
+    //Filter for the first monster group.
+    filter_rows(0,0);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Object Knowledge"));
+
+    this->exec();
 }
 
 void display_artifact_knowledge(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
 
+    DisplayArtifactKnowledge();
 }

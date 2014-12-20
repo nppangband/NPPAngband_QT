@@ -306,5 +306,8 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 
 void display_terrain_knowledge(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayTerrainKnowledge();
 }

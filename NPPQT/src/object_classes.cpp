@@ -928,6 +928,12 @@ void artifact_type::artifact_wipe()
     time = randtime = 0;
 }
 
+bool artifact_type::is_special_artifact()
+{
+    if (a_flags3 & (TR3_INSTA_ART)) return (TRUE);
+    return (FALSE);
+}
+
 
 flavor_type::flavor_type()
 {

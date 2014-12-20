@@ -82,6 +82,9 @@ DisplayNotesFile::DisplayNotesFile(void)
 
 void display_notes_file(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayNotesFile();
 }
 
@@ -130,6 +133,9 @@ DisplayHomeInven::DisplayHomeInven(void)
 
 void display_home_inventory(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayHomeInven();
 }
 
@@ -299,6 +305,9 @@ DisplayScores::DisplayScores(void)
 
 void display_player_scores(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayScores();
 }
 
@@ -430,5 +439,8 @@ DisplayMonKillCount::DisplayMonKillCount(void)
 
 void display_mon_kill_count(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayMonKillCount();
 }

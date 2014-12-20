@@ -313,6 +313,8 @@ public:
     // Shoudl only be used on randart slots!!!
     void artifact_wipe();
 
+    bool is_special_artifact();
+
 };
 
 

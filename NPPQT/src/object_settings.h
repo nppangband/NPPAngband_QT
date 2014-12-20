@@ -13,7 +13,7 @@ enum
 {
     SETTINGS_FULL_OBJECT = 0,
     SETTINGS_OBJECT_KIND,
-    SETTINGS_EGO_ITEM,
+    SETTINGS_ARTIFACT,
 };
 
 class verify_data
@@ -68,8 +68,10 @@ private:
     QRadioButton *ego_yes;
 
     byte squelch_type;
+    bool do_object_type;
+    bool do_object_kind;
 
-    void add_type_checkbox(byte which_ver, bool full_object);
+    void add_type_checkbox(byte which_ver);
     void add_kind_checkbox(byte which_ver);
     void add_object_verifications(byte settings_mode);
     void add_squelch_buttons(QVBoxLayout *squelch_buttons);
@@ -87,6 +89,7 @@ private slots:
 // object_settings
 extern void object_settings(s16b o_idx);
 extern void object_kind_settings(s16b k_idx);
+extern void object_artifact_settings(s16b a_idx);
 extern bool get_item_allow(int item, int verify_command);
 extern void apply_object_kind_settings(object_type *o_ptr);
 

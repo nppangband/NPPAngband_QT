@@ -1532,6 +1532,8 @@ bool make_fake_artifact(object_type *o_ptr, byte art_num)
     /* Oops */
     if (!i) return (FALSE);
 
+    o_ptr->object_wipe();
+
     /* Create the artifact */
     object_prep(o_ptr, i);
 

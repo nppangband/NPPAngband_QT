@@ -360,6 +360,13 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     connect(mon_button_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
 
     row = col = 0;
+
+    if (!monster_table->columnCount())
+    {
+        pop_up_message_box("You are not yet aware of any creatures");
+        return;
+    }
+
     //Now populate the monster_group table
     for (int i = 0; i < monster_group_info.size(); i++)
     {
@@ -414,5 +421,8 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
 
 void display_monster_knowledge(void)
 {
+    // Paranoia
+    if (!p_ptr->playing) return;
+
     DisplayMonsterKnowledge();
 }

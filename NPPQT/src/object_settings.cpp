@@ -88,11 +88,11 @@ void ObjectSettingsDialog::add_kind_checkbox(byte which_ver)
     object_kind_ver->addWidget(this_checkbox);
 }
 
-void ObjectSettingsDialog::add_type_checkbox(byte which_ver, bool full_object)
+void ObjectSettingsDialog::add_type_checkbox(byte which_ver)
 {
     verify_data *v_ptr = &verification_data[which_ver];
 
-    if (full_object)
+    if (do_object_type)
     {
         QCheckBox *this_checkbox = new QCheckBox(v_ptr->box_label);
         this_checkbox->setToolTip(v_ptr->box_tooltip);
@@ -102,16 +102,17 @@ void ObjectSettingsDialog::add_type_checkbox(byte which_ver, bool full_object)
         object_type_ver->addWidget(this_checkbox);
     }
 
-    add_kind_checkbox(which_ver);
+    if (do_object_kind) add_kind_checkbox(which_ver);
 }
 
 void ObjectSettingsDialog::add_object_verifications(byte settings_mode)
 {
-    if (settings_mode == SETTINGS_EGO_ITEM) return;
-    bool full_object = TRUE;
-    if (settings_mode == SETTINGS_OBJECT_KIND)  full_object = FALSE;
+    do_object_type = FALSE;
+    do_object_kind = FALSE;
+    if (settings_mode != SETTINGS_OBJECT_KIND)  do_object_type = TRUE;
+    if (settings_mode != SETTINGS_ARTIFACT)     do_object_kind = TRUE;
 
-    if (full_object)
+    if (do_object_type)
     {
         object_type_group = new QButtonGroup();
         object_type_group->setExclusive(FALSE);
@@ -121,55 +122,58 @@ void ObjectSettingsDialog::add_object_verifications(byte settings_mode)
         object_type_ver->addWidget(object_type_label);
     }
 
-    object_kind_group = new QButtonGroup();
-    object_kind_group->setExclusive(FALSE);
-    QLabel *object_kind_label = new QLabel(QString("<b><big>   Object Template Settings   </big></b>"));
-    object_kind_label->setAlignment(Qt::AlignCenter);
-    object_kind_label->setToolTip("Check boxes below to enable these options for ALL objects of this type.");
-    object_kind_ver->addWidget(object_kind_label);
+    if (do_object_kind)
+    {
+        object_kind_group = new QButtonGroup();
+        object_kind_group->setExclusive(FALSE);
+        QLabel *object_kind_label = new QLabel(QString("<b><big>   Object Template Settings   </big></b>"));
+        object_kind_label->setAlignment(Qt::AlignCenter);
+        object_kind_label->setToolTip("Check boxes below to enable these options for ALL objects of this type.");
+        object_kind_ver->addWidget(object_kind_label);
+    }
 
 
-    if (!o_ptr->is_artifact())   add_type_checkbox(VERIFY_DESTROY, full_object);
-    add_type_checkbox(VERIFY_SELL, full_object);
-    if (o_ptr->is_usable_item()) add_type_checkbox(VERIFY_USE, full_object);
+    if (!o_ptr->is_artifact())   add_type_checkbox(VERIFY_DESTROY);
+    add_type_checkbox(VERIFY_SELL);
+    if (o_ptr->is_usable_item()) add_type_checkbox(VERIFY_USE);
 
     if (o_ptr->is_wearable())
     {
-        add_type_checkbox(VERIFY_TAKEOFF, full_object);
-        add_type_checkbox(VERIFY_WIELD, full_object);
+        add_type_checkbox(VERIFY_TAKEOFF);
+        add_type_checkbox(VERIFY_WIELD);
     }
 
-    add_type_checkbox(VERIFY_THROW, full_object);
-    add_type_checkbox(VERIFY_DROP, full_object);
-    add_type_checkbox(VERIFY_PICKUP, full_object);
+    add_type_checkbox(VERIFY_THROW);
+    add_type_checkbox(VERIFY_DROP);
+    add_type_checkbox(VERIFY_PICKUP);
 
-    if (obj_is_activatable(o_ptr))  add_type_checkbox(VERIFY_ACTIVATE, full_object);
+    if (obj_is_activatable(o_ptr))  add_type_checkbox(VERIFY_ACTIVATE);
 
     if (o_ptr->is_ammo())
     {
-        add_type_checkbox(VERIFY_FIRE, full_object);
-        add_type_checkbox(VERIFY_FIRE_NEAR, full_object);
+        add_type_checkbox(VERIFY_FIRE);
+        add_type_checkbox(VERIFY_FIRE_NEAR);
     }
 
-    if (o_ptr->is_fuel())  add_type_checkbox(VERIFY_REFILL, full_object);
+    if (o_ptr->is_fuel())  add_type_checkbox(VERIFY_REFILL);
 
-    if (o_ptr->is_spellbook())  add_type_checkbox(VERIFY_STUDY, full_object);
+    if (o_ptr->is_spellbook())  add_type_checkbox(VERIFY_STUDY);
 
-    if (o_ptr->is_weapon())   add_type_checkbox(AUTO_SWAP, full_object);
+    if (o_ptr->is_weapon())   add_type_checkbox(AUTO_SWAP);
 
     if (o_ptr->is_ammo() || is_throwing_weapon(o_ptr))
     {
-        add_type_checkbox(AUTO_WIELD_QUIVER, full_object);
+        add_type_checkbox(AUTO_WIELD_QUIVER);
     }
 
     if (o_ptr->is_rod() || obj_is_activatable(o_ptr))
     {
-        add_type_checkbox(RECHARGE_NOTIFY, full_object);
+        add_type_checkbox(RECHARGE_NOTIFY);
     }
-    add_type_checkbox(VERIFY_ALL, full_object);
+    add_type_checkbox(VERIFY_ALL);
 
-    if (full_object) connect(object_type_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_type_settings(int, bool)));
-    connect(object_kind_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_kind_settings(int, bool)));
+    if (do_object_type) connect(object_type_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_type_settings(int, bool)));
+    if (do_object_kind) connect(object_kind_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_kind_settings(int, bool)));
 
     QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
     object_type_ver->addSpacerItem(vspacer);
@@ -346,9 +350,12 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
         o_ptr = &object_type_body;
         make_object_fake(o_ptr, o_idx);
     }
-    else
+    else //(settings_mode == SETTINGS_ARTIFACT)
     {
-        // Ego item settings
+        artifact_type *a_ptr = &a_info[o_idx];
+        if ((a_ptr->sval + a_ptr->tval) == 0) return;
+        o_ptr = &object_type_body;
+        make_fake_artifact(o_ptr, o_idx);
     }
 
     squelch_type = squelch_type_of(o_ptr);
@@ -379,7 +386,7 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
     if (!(k_ptr->k_flags3 & TR3_INSTA_ART))
     {
         // Add regular and quality squelch buttons
-        if (settings_mode != SETTINGS_EGO_ITEM)
+        if (settings_mode != SETTINGS_ARTIFACT)
         {
             QVBoxLayout *squelch_buttons = new QVBoxLayout;
             squelch_vlay->addLayout(squelch_buttons);
@@ -391,7 +398,7 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
         }
 
         // Add ego item items if appropriate
-        if (settings_mode != SETTINGS_OBJECT_KIND)
+        if (settings_mode == SETTINGS_FULL_OBJECT)
         {
             QVBoxLayout *ego_buttons = new QVBoxLayout;
             squelch_vlay->addLayout(ego_buttons);
@@ -415,15 +422,21 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
 void object_settings(s16b o_idx)
 {
 
-    ObjectSettingsDialog *dlg = new ObjectSettingsDialog(o_idx, FALSE);
+    ObjectSettingsDialog *dlg = new ObjectSettingsDialog(o_idx, SETTINGS_FULL_OBJECT);
     dlg->exec();
     delete dlg;
 }
 
 void object_kind_settings(s16b k_idx)
 {
+    ObjectSettingsDialog *dlg = new ObjectSettingsDialog(k_idx, SETTINGS_OBJECT_KIND);
+    dlg->exec();
+    delete dlg;
+}
 
-    ObjectSettingsDialog *dlg = new ObjectSettingsDialog(k_idx, TRUE);
+void object_artifact_settings(s16b a_idx)
+{
+    ObjectSettingsDialog *dlg = new ObjectSettingsDialog(a_idx, SETTINGS_ARTIFACT);
     dlg->exec();
     delete dlg;
 }
