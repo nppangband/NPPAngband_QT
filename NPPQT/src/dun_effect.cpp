@@ -664,92 +664,6 @@ void place_trap(int y, int x, byte mode)
 }
 
 
-/*
- * Let an effect appear near a location.
- *
- * Currently this only supports passive traps, so invisible traps can be set.
- *
- * The initial location is assumed to be "in_bounds_fully()".
- *
- */
-void effect_near(int feat, int y, int x, byte effect_type)
-{
-    int d, s;
-
-    int bs, bn;
-    int by, bx;
-    int dy, dx;
-    int ty, tx;
-
-    bool flag = FALSE;
-
-    /* Score */
-    bs = -1;
-
-    /* Picker */
-    bn = 0;
-
-    /* Default */
-    by = y;
-    bx = x;
-
-    /* Scan local grids */
-    for (dy = -3; dy <= 3; dy++)
-    {
-        /* Scan local grids */
-        for (dx = -3; dx <= 3; dx++)
-        {
-            /* Calculate actual distance */
-            d = (dy * dy) + (dx * dx);
-
-            /* Ignore distant grids */
-            if (d > 10) continue;
-
-            /* Location */
-            ty = y + dy;
-            tx = x + dx;
-
-            /* Skip illegal grids */
-            if (!in_bounds_fully(ty, tx)) continue;
-
-            /* Require line of sight */
-            if (!los(y, x, ty, tx)) continue;
-
-            /* Validate grid. Ignore monsters */
-            if (!cave_trappable_bold(ty, tx)) continue;
-
-            /* Calculate score */
-            s = 1000 - (d - dungeon_info[ty][tx].feat);
-
-            /* Skip bad values */
-            if (s < bs) continue;
-
-            /* New best value */
-            if (s > bs) bn = 0;
-
-            /* Apply the randomizer to equivalent values */
-            if ((++bn >= 2) && (rand_int(bn) != 0)) continue;
-
-            /* Keep score */
-            bs = s;
-
-            /* Track it */
-            by = ty;
-            bx = tx;
-
-            /* Okay */
-            flag = TRUE;
-        }
-    }
-
-    /* Give it to the floor */
-    if (flag)
-    {
-        pick_and_set_trap(by, bx, 0);
-    }
-}
-
-
 
 
 /*
@@ -1269,7 +1183,7 @@ static void process_effect(int x_idx)
                 if (fire)
                 {
                     QString dummy_string;
-                    u16b flags = fire_trap_smart(x_ptr->x_f_idx, x_ptr->x_cur_y, x_ptr->x_cur_x, MODE_ACTION, &dummy_string);
+                    (void)fire_trap_smart(x_ptr->x_f_idx, x_ptr->x_cur_y, x_ptr->x_cur_x, MODE_ACTION, &dummy_string);
 
                     /*Disturb the player*/
                     disturb (1,0);
@@ -1324,11 +1238,8 @@ static void show_burst_effects(void)
             int y = burst_y[i];
             int x = burst_x[i];
 
-            // TODO display the burst
+            ui_animate_ball(y, x, 1, burst_gf[i], 0L);
         }
-
-        /* Delay */
-        // TODO Term_xtra(TERM_XTRA_DELAY, op_ptr->delay_factor * op_ptr->delay_factor);
 
         /* Clear the burst effects and restore old graphics */
         for (i = 0; i < n_burst; i++)
@@ -1340,9 +1251,6 @@ static void show_burst_effects(void)
             /* Restore */
             light_spot(y, x);
         }
-
-        /* Refresh screen */
-        // TODO (void)Term_fresh();
     }
 
     /* Reset the count of burst effects */

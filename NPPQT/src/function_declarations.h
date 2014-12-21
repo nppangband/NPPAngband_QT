@@ -79,7 +79,6 @@ extern bool set_effect_inscription(int f_idx, byte y, byte x, s16b source, u16b 
 extern void compact_effects(void);
 extern void pick_and_set_trap(int y, int x, int mode);
 extern void place_trap(int y, int x, byte mode);
-extern void effect_near(int feat, int y, int x, byte effect_type);
 extern void wipe_x_list(void);
 extern void delete_effect_idx(int x_idx);
 extern void delete_effects(int y, int x);
@@ -515,8 +514,6 @@ extern bool fire_ball_special(int typ, int dir, int dam, int rad, u32b flg, int 
 extern bool fire_arc_special(int typ, int dir, int dam, int rad, int degrees, u32b flg);
 extern bool fire_arc(int typ, int dir, int dam, int rad, int degrees);
 extern bool fire_star(int typ, int dam, int rad, u32b flg);
-extern void fire_storm(int who, int typ0, int y0, int x0, int dam, int rad,
-    int len, byte projection, bool lingering);
 extern bool beam_burst(int y, int x, int typ, int num, int dam);
 extern bool fire_swarm(int num, int typ, int dir, int dam, int rad);
 extern bool fire_bolt(int typ, int dir, int dam);
@@ -875,7 +872,7 @@ extern QString capitalize_first(QString line);
 extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMessageBox::Information);
 extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
-extern s16b get_quantity(QString prompt, int max, int amt);
+extern s16b get_quantity(QString prompt, int max, int amt, bool allow_zero);
 extern QColor add_preset_color(int which_color);
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);

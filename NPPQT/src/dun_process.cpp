@@ -1682,7 +1682,7 @@ void change_player_level(void)
 
         /* Cancel the stair request */
         p_ptr->create_stair = FALSE;
-    }    
+    }
 
     character_xtra = TRUE;
 

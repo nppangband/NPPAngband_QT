@@ -2915,8 +2915,6 @@ void self_knowledge(void)
     /* Get item flags from equipment */
     for (k = INVEN_WIELD; k < INVEN_TOTAL; k++)
     {
-        u32b t1, t2, t3, tn;
-
         o_ptr = &inventory[k];
 
         /* Skip non-objects */
@@ -3921,7 +3919,7 @@ bool sleep_monster(int dir)
 bool confuse_monster(int dir, int plev)
 {
     u32b flg = PROJECT_STOP;
-    return (fire_bolt_beam_special(GF_OLD_CONF, dir, p_ptr->lev, MAX_RANGE, flg));
+    return (fire_bolt_beam_special(GF_OLD_CONF, dir, plev, MAX_RANGE, flg));
 }
 
 bool poly_monster(int dir)
@@ -3939,7 +3937,7 @@ bool clone_monster(int dir)
 bool fear_monster(int dir, int plev)
 {
     u32b flg = PROJECT_STOP;
-    return (fire_bolt_beam_special(GF_TURN_ALL, dir, p_ptr->lev, MAX_RANGE, flg));
+    return (fire_bolt_beam_special(GF_TURN_ALL, dir, plev, MAX_RANGE, flg));
 }
 
 bool teleport_monster(int dir)

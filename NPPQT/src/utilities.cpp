@@ -229,9 +229,11 @@ QString get_string(QString question, QString description, QString answer)
 /*
  * Request a "quantity" from the user
  */
-s16b get_quantity(QString prompt, int max, int amt)
+s16b get_quantity(QString prompt, int max, int amt, bool allow_zero)
 {
     if (!amt) amt = 1;
+    int min = 1;
+    if (allow_zero) min = 0;
     if (max > 1)
     {
         bool ok;
@@ -245,7 +247,7 @@ s16b get_quantity(QString prompt, int max, int amt)
         else prompt.append(QString(" (0-%1)") .arg(max));
 
         // Input dialog (this, title, prompt, initial value, min, max, step, ok, flags)
-        amt = QInputDialog::getInt(0, "Please enter a number", prompt, amt, 1, max, 1, &ok, 0);
+        amt = QInputDialog::getInt(0, "Please enter a number", prompt, amt, min, max, 1, &ok, 0);
 
         if (!ok) return (0);
     }

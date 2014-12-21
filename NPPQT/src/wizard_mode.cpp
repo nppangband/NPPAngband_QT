@@ -1093,10 +1093,10 @@ void WizardModeDialog::wiz_jump(void)
     /* Prompt */
     QString prompt = QString("Jump to level (0-%1): ") .arg(MAX_DEPTH-1);
 
-    new_level = get_quantity(prompt, MAX_DEPTH - 1, p_ptr->depth);
+    new_level = get_quantity(prompt, MAX_DEPTH - 1, p_ptr->depth, TRUE);
 
     // Same depth - quit
-    //if (new_level == p_ptr->depth) return;
+    if (new_level == p_ptr->depth) return;
 
     /* Accept request */
     message(QString("You jump to dungeon level %1.") .arg(new_level));
@@ -1242,12 +1242,10 @@ void WizardModeDialog::wiz_level_light(void)
 
 void WizardModeDialog::wiz_redraw_dungeon(void)
 {
-    p_ptr->leaving_level = TRUE;
-    p_ptr->autosave = TRUE;
-
     this->accept();
 
-    // TODO re-set the dungeon.  Does this work?
+    // Update everything
+    change_player_level();
 }
 
 void WizardModeDialog::wiz_mass_create_items(void)

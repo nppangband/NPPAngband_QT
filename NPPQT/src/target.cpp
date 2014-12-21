@@ -97,7 +97,6 @@ bool monster_target_exists()
     for (int i = 1; i < mon_max; i++)
     {
         monster_type *m_ptr = &mon_list[i];
-        monster_race *r_ptr = &r_info[m_ptr->r_idx];
 
         /* Don't bother with empty slots */
         if (!m_ptr->r_idx) continue;

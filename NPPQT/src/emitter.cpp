@@ -17,10 +17,6 @@ QPointF mulp(QPointF a, QPointF b)
 
 static double PI = 3.141592653589793238463;
 
-static qreal magnitude(QPointF vec)
-{
-    return qSqrt(vec.x() * vec.x() + vec.y() * vec.y());
-}
 
 static qreal getAngle(QPointF vec)
 {
@@ -136,7 +132,6 @@ QPolygonF make_beam(QPointF from, QPointF to)
     return poly;
 }
 
-static int BALL_TILE_SIZE = 40;
 
 QPolygonF get_cloud_points(QPointF from, QPointF to, qreal step)
 {
@@ -154,6 +149,9 @@ QPolygonF get_cloud_points(QPointF from, QPointF to, qreal step)
 
 void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     painter->save();
 
     bool do_beam = false;
@@ -331,6 +329,9 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
 
 void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     painter->save();
 
     painter->drawPixmap(0, 0, pix);
@@ -447,6 +448,9 @@ BallAnimation::~BallAnimation()
 
 void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     painter->save();    
 
     QPixmap pix = colorize_pix2(tiles_projections->get_tile("ball1.png"), color);
@@ -491,7 +495,6 @@ ArcAnimation::~ArcAnimation()
     if (scene()) scene()->removeItem(this);
 }
 
-static int ARC_TILE_SIZE = 40;
 
 ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad, u32b flg)
 {
@@ -619,6 +622,9 @@ int get_pix_index(int size, qreal percent)
 
 void ArcAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     painter->save();
 
     //painter->fillRect(brect, "yellow");
@@ -719,6 +725,9 @@ void StarAnimation::stop()
 
 void StarAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     painter->save();
 
     for (int i = 0; i < particles.size(); i++) {
@@ -815,6 +824,9 @@ void HaloAnimation::stop()
 
 void HaloAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     QPointF adj(curPix.width() / 2, curPix.height() / 2);
     QPointF center(c_x, c_y);
     center -= adj;

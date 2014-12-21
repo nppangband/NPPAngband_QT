@@ -706,6 +706,9 @@ QRectF DungeonCursor::boundingRect() const
 
 void DungeonCursor::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     if (!character_dungeon) return;
 
     if (!in_bounds(c_y, c_x)) return;
@@ -782,6 +785,9 @@ QString find_cloud_tile(int y, int x)
 
 void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    (void)option;
+    (void)widget;
+
     if (!character_dungeon) return;
 
     if (!in_bounds(c_y, c_x)) return;
@@ -2046,9 +2052,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-static void process_mov_key(QKeyEvent* event, int dir, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
+static void process_mov_key(int dir, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
 {
     if (!character_dungeon) return;
+    (void)meta_key;
 
     // Flip pickup
     if (ctrl_key && alt_key) do_cmd_walk(dir, TRUE);
@@ -2150,15 +2157,16 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Down:
         case Qt::Key_N:
         {
-            process_mov_key(which_key, 2, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(2, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
+
         // Move up
         case Qt::Key_8:
         case Qt::Key_Up:
         case Qt::Key_U:
         {
-            process_mov_key(which_key, 8, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(8, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
 
@@ -2167,7 +2175,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Left:
         case Qt::Key_H:
         {
-            process_mov_key(which_key, 4, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(4, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         // Move right
@@ -2175,7 +2183,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Right:
         case Qt::Key_K:
         {
-            process_mov_key(which_key, 6, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(6, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         // Move diagonally left and up
@@ -2183,7 +2191,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Y:
         case Qt::Key_Home:
         {
-            process_mov_key(which_key, 7, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(7, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         // Move diagonally right and up
@@ -2191,7 +2199,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_I:
         case Qt::Key_PageUp:
         {
-            process_mov_key(which_key, 9, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(9, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         // Move diagonally left and down
@@ -2199,7 +2207,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_B:
         case Qt::Key_End:
         {
-            process_mov_key(which_key, 1, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(1, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         // Move diagonally right and down
@@ -2207,7 +2215,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_M:
         case Qt::Key_PageDown:
         {
-            process_mov_key(which_key, 3, shift_key, alt_key, ctrl_key, meta_key);
+            process_mov_key(3, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         case Qt::Key_5:

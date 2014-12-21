@@ -5104,7 +5104,7 @@ void disturb(int stop_search, int unused_flag)
     if (p_ptr->is_running())
     {
         /* Check for new panel if appropriate */
-        // TODO if (center_player) verify_panel();
+        if (center_player) ui_center(p_ptr->py, p_ptr->px);
 
         /* Calculate torch radius */
         p_ptr->update |= (PU_TORCH);

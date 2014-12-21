@@ -11660,8 +11660,8 @@ void generate_cave(void)
         p_ptr->px = p_ptr->py = 0;
 
         /* Hack -- illegal panel */
-        //TODO Term->offset_y = MAX_DUNGEON_HGT;
-        //TODO Term->offset_x = MAX_DUNGEON_WID;
+        panel_change_offset_y = MAX_DUNGEON_HGT;
+        panel_change_offset_x = MAX_DUNGEON_WID;
 
         /* Reset the monster generation level */
         monster_level = p_ptr->depth;

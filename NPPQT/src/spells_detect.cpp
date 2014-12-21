@@ -21,18 +21,6 @@
 
 
 /*
- * Hack - displays areas effected by detection spells.
- *
- */
-static void animate_detect(int rad)
-{
-
-    // TODO animate the detection
- }
-
-
-
-/*
  * Detect any trap on a square
  */
 static bool detect_traps(int y, int x)
@@ -525,7 +513,7 @@ bool detect(int dist, u16b detect_checks)
     int dist_squared = dist * dist;
 
     /* Show the player the highlighted region */
-    animate_detect(dist);
+    ui_animate_ball(p_ptr->py, p_ptr->px, dist, GF_SHARD, PROJECT_PASS);
 
     /* Hack - always refresh map and statusline if detect_traps is called */
     if (detect_checks & (DETECT_TRAPS))

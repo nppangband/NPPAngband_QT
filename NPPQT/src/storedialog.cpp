@@ -530,8 +530,10 @@ void StoreDialog::reset_store()
         QLabel *price_label = new QLabel("Price");
         price_label->setText("Price");
         price_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        lay->addWidget(price_label, row++, col);
+        lay->addWidget(price_label, row, col);
     }
+
+    row++;
 
     store_type *st = &store[store_idx];
     int i;
@@ -754,10 +756,11 @@ void StoreDialog::reset_inventory()
         QLabel *price_label = new QLabel("Price");
         price_label->setText("price");
         price_label->setAlignment(Qt::AlignRight);
-        lay->addWidget(price_label, row++, 3);
+        lay->addWidget(price_label, row, 3);
     }
-    int i;
-    for (i = 0; i < INVEN_WIELD - 1; i++)
+    row++;
+
+    for (int i = 0; i < INVEN_WIELD - 1; i++)
     {
         object_type *o_ptr = inventory + i;
         if (o_ptr->k_idx == 0) continue;
@@ -835,8 +838,11 @@ void StoreDialog::reset_equip()
         QLabel *price_label = new QLabel("Price");
         price_label->setText("price");
         price_label->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        lay->addWidget(price_label, row++, 3);
+        lay->addWidget(price_label, row, 3);
     }
+
+    row++ ;
+
     for (i = INVEN_WIELD; i < QUIVER_END; i++)
     {
         object_type *o_ptr = inventory + i;

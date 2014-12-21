@@ -192,7 +192,7 @@ void process_command(int item, s16b command)
     // Only for objects
     if(command_ptr->needs_quantity())
     {
-        args.number = get_quantity(command_ptr->prompt(command), o_ptr->number, 1);
+        args.number = get_quantity(command_ptr->prompt(command), o_ptr->number, 1, FALSE);
     }
 
     // Only for objects
@@ -209,7 +209,7 @@ void process_command(int item, s16b command)
         if (!args.choice) return;
         if (args.choice == REST_TURNCOUNT)
         {
-            args.repeats = get_quantity(QString("Enter rest turncount"), 9999, 0);
+            args.repeats = get_quantity(QString("Enter rest turncount"), 9999, 0, FALSE);
         }
     }
 
