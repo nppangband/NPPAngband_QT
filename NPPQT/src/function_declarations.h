@@ -642,7 +642,7 @@ extern bool save_player(void);
 // spells_detect.cpp
 extern bool detect(int dist, u16b detect_checks);
 
-/* spells2.c */
+/* spells_misc.c */
 extern bool hp_player(int num);
 extern bool warding_glyph(void);
 extern bool create_elements(int cy, int cx, int range);

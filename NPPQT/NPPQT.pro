@@ -84,7 +84,7 @@ SOURCES +=  src/qt_main.cpp\
             src/save.cpp \
             src/sound.cpp \
             src/spells_detect.cpp \
-            src/spells2.cpp \
+            src/spells_misc.cpp \
             src/squelch.cpp \
             src/store.cpp \
             src/storedialog.cpp \
@@ -94,6 +94,7 @@ SOURCES +=  src/qt_main.cpp\
             src/timed.cpp \
             src/utilities.cpp \
             src/wizard_mode.cpp
+
 
 
 
