@@ -18,6 +18,10 @@
  */
 
 #include "src/npp.h"
+#include <src/spells.h>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 
 
 /*
@@ -1094,20 +1098,201 @@ void mass_aggravate_monsters(int who)
 }
 
 /*
- * Delete all non-unique monsters of a given "type" from the level
+ * The table of "symbol info" -- each entry is a string of the form
+ * "X:desc" where "X" is the trigger, and "desc" is the "info".
  */
-bool banishment(void)
+static monster_banish_choices banish_info_nppangband[] =
 {
-    int i;
+    {"A", "Ainu/Maia"},
+    {"a", "Ant"},
+    {"B", "Bird"},
+    {"b", "Bat"},
+    {"C", "Canine"},
+    {"c", "Centipede"},
+    {"D", "Ancient Dragon/Wyrm"},
+    {"d", "Dragon"},
+    {"E", "Elemental"},
+    {"e", "Floating Eye"},
+    {"F", "Dragon Fly"},
+    {"f", "Feline"},
+    {"G", "Ghost"},
+    {"g", "Golem"},
+    {"H", "Hybrid"},
+    {"h", "Hobbit/Elf/Dwarf"},
+    {"I", "Insect"},
+    {"i", "Icky Thing"},
+    {"J", "Snake"},
+    {"j", "Jelly"},
+    {"K", "Killer Beetle"},
+    {"k", "Kobold"},
+    {"L", "Lich"},
+    {"l", "Louse"},
+    {"M", "Multi-Headed Reptile"},
+    {"m", "Mold"},
+    {"n", "Naga"},
+    {"O", "Ogre"},
+    {"o", "Orc"},
+    {"P", "Giant Humanoid"},
+    {"p", "Person/Human"},
+    {"Q", "Quylthulg (Pulsing Flesh Mound)"},
+    {"q", "Qudruped"},
+    {"R", "Reptile/Amphibian"},
+    {"r", "Rodent"},
+    {"S", "Spider/Scorpion/Tick"},
+    {"s", "Skeleton"},
+    {"T", "Troll"},
+    {"t", "Townsperson"},
+    {"U", "Major Demon"},
+    {"u", "Minor Demon"},
+    {"V", "Vampire"},
+    {"v", "vortex"},
+    {"W", "Wight/Wraith/etc"},
+    {"w", "Worm/Worm-Mass"},
+    {"X", "Xorn/Xaren/etc"},
+    {"Y", "Yeti"},
+    {"y", "Yeek"},
+    {"Z", "Zephyr Hound"},
+    {"z", "Zombie/Yeek"},
+    {"$", "Mimics"},
+    // Must have NULL at the end to end WHILE loop below
+    {NULL, NULL},
+};
 
-    QChar typ;
 
-    /* Mega-Hack -- Get a monster symbol */
-    // TODO if (!get_com("Choose a monster race (by symbol) to banish: ", &typ))
-        return FALSE;
+/*
+ * The table of "symbol info" -- each entry is a string of the form
+ * "X:desc" where "X" is the trigger, and "desc" is the "info".
+ */
+static monster_banish_choices banish_info_nppmoria[] =
+{
+    {"A", "Ant Lion"},
+    {"a", "Ant"},
+    {"B", "Balrog"},
+    {"b", "Bat"},
+    {"C", "Gelatinous Cube"},
+    {"c", "Centipede"},
+    {"D", "Ancient Dragon (Beware)"},
+    {"d", "Dragon"},
+    {"E", "Elemental/Spirit"},
+    {"e", "Floating Eye"},
+    {"F", "Fly/Dragon Fly/Insect"},
+    {"f", "Frogs"},
+    {"G", "Ghost"},
+    {"g", "Golem"},
+    {"H", "Hobgoblin"},
+    {"h", "harpy"},
+    {"i", "Icky Thing"},
+    {"J", "Jelly"},
+    {"j", "Jackal"},
+    {"K", "Killer Beetle"},
+    {"k", "Kobold"},
+    {"L", "Lich"},
+    {"l", "Louse"},
+    {"M", "Mummy"},
+    {"m", "Mold"},
+    {"n", "Naga"},
+    {"O", "Ooze"},
+    {"o", "Orc"},
+    {"P", "Giant"},
+    {"p", "Person/Humanoid"},
+    {"Q", "Quylthulg (Pulsing Flesh Mound)"},
+    {"q", "Quasit"},
+    {"R", "Snake"},
+    {"r", "Rodent"},
+    {"S", "Scorpions"},
+    {"s", "Skeleton"},
+    {"T", "Troll"},
+    {"t", "Tick"},
+    {"U", "Umber Hulk"},
+    {"V", "Vampire"},
+    {"W", "Wight/Wraith"},
+    {"w", "Worm/Worm-Mass"},
+    {"X", "Xorn"},
+    {"Y", "Yeti"},
+    {"y", "Yeek"},
+    {"z", "Zombie"},
+    {"$", "Mimics"},
+    // Must have NULL at the end to end WHILE loop below
+    {NULL, NULL},
+};
+
+
+// Record the new selected item
+void BanishSelectDialog::update_banish_choice(int choice)
+{
+    chosen_type = choice;
+}
+
+
+BanishSelectDialog::BanishSelectDialog(void)
+{
+    int i = 0;
+    QString selected_char;
+    return_value = FALSE;
+    bool banishing_mimics = FALSE;
+
+    monster_banish_choices *banish_ptr;
+
+    QVBoxLayout *vlay = new QVBoxLayout;
+    banish_choice = new QComboBox;
+
+    QLabel *obj_label = new QLabel(QString("<b><big>Please select a monster type to banish:</big></b>"));
+    obj_label->setAlignment(Qt::AlignCenter);
+    vlay->addWidget(obj_label);
+    vlay->addStretch();
+    connect(banish_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(update_banish_choice(int)));
+
+    while (TRUE)
+    {
+        if (game_mode == GAME_NPPANGBAND) banish_ptr = &banish_info_nppangband[i];
+        else banish_ptr = &banish_info_nppmoria[i];
+
+        if (banish_ptr->mon_race.isNull()) break;
+
+        banish_choice->addItem(QString("%1") .arg(i));
+        banish_choice->setItemText(i++, QString("%1 - %2") .arg(banish_ptr->mon_symbol) .arg(banish_ptr->mon_race));
+    }
+
+    button_boxes = new QDialogButtonBox(QDialogButtonBox::Ok
+                                      | QDialogButtonBox::Cancel);
+    connect(button_boxes, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(button_boxes, SIGNAL(rejected()), this, SLOT(reject()));
+
+    vlay->addWidget(banish_choice);
+    vlay->addWidget(button_boxes);
+
+    setLayout(vlay);
+
+    setWindowTitle(tr("Banishment Selection Screen"));
+
+    if (!this->exec()) return;
+
+    i = 0;
+
+    while (TRUE)
+    {
+        if (game_mode == GAME_NPPANGBAND) banish_ptr = &banish_info_nppangband[i];
+        else banish_ptr = &banish_info_nppmoria[i];
+
+        // Paranoia - shouldn't happen
+        if (banish_ptr->mon_race.isNull()) return;
+
+        if (i == chosen_type)
+        {
+            selected_char = banish_ptr->mon_symbol;
+            break;
+        }
+        i++;
+    }
+
+    return_value = TRUE;
+
+    QString compare = "$";
+
+    if (operator==(selected_char, compare)) banishing_mimics = TRUE;
 
     /* Delete the monsters of that "type" */
-    for (i = 1; i < mon_max; i++)
+    for (int i = 1; i < mon_max; i++)
     {
         monster_type *m_ptr = &mon_list[i];
         monster_race *r_ptr = &r_info[m_ptr->r_idx];
@@ -1122,24 +1307,31 @@ bool banishment(void)
         if (m_ptr->mflag & (MFLAG_QUEST)) continue;
 
         /* Skip "wrong" monsters */
-        if (r_ptr->d_char != typ) continue;
+        if (banishing_mimics)
+        {
+            if (!r_ptr->is_mimic()) continue;
+        }
+        else if (!selected_char.contains(r_ptr->d_char)) continue;
 
         /* Delete the monster */
         delete_monster_idx(i);
 
         /* Take some damage */
         take_hit(randint(4), "the strain of casting Banishment");
-
     }
 
     /* Update monster list window */
     p_ptr->redraw |= PR_MONLIST;
-
-    /* Success */
-    return TRUE;
-
 }
 
+/*
+ * Delete all non-unique monsters of a given "type" from the level
+ */
+bool banishment(void)
+{
+    BanishSelectDialog dlg;
+    return (dlg.return_value);
+}
 
 /*
  * Delete all nearby (non-unique) monsters

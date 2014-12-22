@@ -141,7 +141,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/dun_traps.h \
             src/object_dialog.h \
             src/object_all_menu.h \
-            src/object_settings.h
+            src/object_settings.h \
+    src/spells.h
 
 
 
