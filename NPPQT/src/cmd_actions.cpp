@@ -1557,6 +1557,8 @@ void do_cmd_toggle_search(void)
         /* Redraw stuff */
         p_ptr->redraw |= (PR_STATE | PR_SPEED | PR_STATUS);
     }
+
+    redraw_stuff();
 }
 
 void command_search(cmd_arg args)

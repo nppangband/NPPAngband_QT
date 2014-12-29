@@ -1029,7 +1029,7 @@ static void process_world(void)
     feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
 
     /* If paralyzed, we drown in deep */
-    if ((p_ptr->timed[TMD_PARALYZED] || (p_ptr->timed[TMD_STUN] >= 100)) &&
+    if ((p_ptr->timed[TMD_PARALYZED] || (p_ptr->stun_status() == STUN_KNOCKED_OUT)) &&
         feat_ff2_match(feat, FF2_DEEP))
     {
         /* Calculate damage */
@@ -1060,13 +1060,13 @@ static void process_world(void)
     if (p_ptr->timed[TMD_CUT])
     {
         /* Mortal wound or Deep Gash */
-        if (p_ptr->timed[TMD_CUT] > 200)
+        if (p_ptr->timed[TMD_CUT] > CUT_DEEP_GASH)
         {
             i = 3;
         }
 
         /* Severe cut */
-        else if (p_ptr->timed[TMD_CUT] > 100)
+        else if (p_ptr->timed[TMD_CUT] > CUT_SEVERE)
         {
             i = 2;
         }

@@ -13,6 +13,9 @@ Icons used from C:\Users\Jeff\Documents\NPPAngbandSource\lib\user\Free Icons\gol
 
 Icons used from http://opengameart.org/content/flare-item-variation-60x60-only made by "Mumu", aka Robert C.  (Public domain license).
 
+Poisoned icon is linkware: http://www.aha-soft.com (Artist: Aha-Soft)
+Temporary nativity features icons are based on linkware: http://www.afterglow.ie (Artist: Afterglow)
+
 Some icons drawn by Jeff Greene, and may be used only under the terms of the Creative Commons Attribution 3.0 licence.
 
 This project utilizes QT, which comes with its own licensing restrictions. Usage restrictions at http://qt-project.org/ apply.

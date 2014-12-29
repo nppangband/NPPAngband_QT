@@ -95,7 +95,6 @@ void player_state::player_state_wipe()
 void player_other::player_other_wipe()
 {            
     full_name.clear();
-    base_name.clear();
     for (int i = 0; i < OPT_MAX; i++) op_ptr->opt[i] = options[i].normal;
     for (int i = 0; i < ANGBAND_TERM_MAX; i++) op_ptr->window_flag[i] = 0L;
     hitpoint_warn = delay_factor = 0;
@@ -198,6 +197,26 @@ void player_type::message_append_stop()
     message_append = FALSE;
     message_first_append = FALSE;
     if (!message_list.empty()) message_list[0].append = FALSE;
+}
+
+u16b player_type::cut_status()
+{
+    if (!timed[TMD_CUT])                    return (CUT_NONE);
+    if (timed[TMD_CUT] > CUT_MORTAL_WOUND)  return (CUT_MORTAL_WOUND);
+    if (timed[TMD_CUT] > CUT_DEEP_GASH)     return (CUT_DEEP_GASH);
+    if (timed[TMD_CUT] > CUT_SEVERE)        return (CUT_SEVERE);
+    if (timed[TMD_CUT] > CUT_NASTY)         return (CUT_NASTY);
+    if (timed[TMD_CUT] > CUT_BAD)           return (CUT_BAD);
+    if (timed[TMD_CUT] > CUT_LIGHT)        return (CUT_LIGHT);
+    return (CUT_GRAZE);
+}
+
+u16b player_type::stun_status()
+{
+    if (!timed[TMD_STUN])                    return (STUN_NONE);
+    if (timed[TMD_STUN] >= STUN_KNOCKED_OUT)  return (STUN_KNOCKED_OUT);
+    if (timed[TMD_STUN] > STUN_HEAVY)     return (STUN_HEAVY);
+    return (STUN_LIGHT);
 }
 
 void player_type::player_type_wipe()

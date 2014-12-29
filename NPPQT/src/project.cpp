@@ -1522,7 +1522,7 @@ static bool hates_boiling_mud(const object_type *o_ptr)
 }
 
 /*
- * Does a given object (usually) hate boiling mud?
+ * Does a given object (usually) hate boiling water?
  */
 static bool hates_boiling_water(const object_type *o_ptr)
 {

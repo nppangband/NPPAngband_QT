@@ -749,7 +749,7 @@ int spell_chance(int spell)
     if (chance < minfail) chance = minfail;
 
     /* Stunning makes spells harder (after minfail) */
-    if (p_ptr->timed[TMD_STUN] > 50) chance += 25;
+    if (p_ptr->timed[TMD_STUN] > STUN_HEAVY) chance += 25;
     else if (p_ptr->timed[TMD_STUN]) chance += 15;
 
     /* Always a 5 percent chance of working */
@@ -963,6 +963,8 @@ void command_study(cmd_arg arg)
 // Learn a spell
 void do_cmd_study(void)
 {
+    if (!p_ptr->can_study()) return;
+
     int spell;
     QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
 

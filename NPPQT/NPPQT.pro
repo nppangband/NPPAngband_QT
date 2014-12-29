@@ -13,6 +13,7 @@ TARGET = NPPGAMES
 
 SOURCES +=  src/qt_main.cpp\
             src/qt_mainwindow.cpp\
+            src/qt_statusbar.cpp \
             src/birthdialog.cpp \
             src/birth.cpp \
             src/calcs.cpp \
@@ -99,6 +100,7 @@ SOURCES +=  src/qt_main.cpp\
 
 
 
+
 HEADERS  += src/qt_mainwindow.h\
             src/npp.h\
             src/defines.h\
@@ -124,10 +126,14 @@ HEADERS  += src/qt_mainwindow.h\
             src/knowledge.h\
             src/optionsdialog.h \
             src/mon_classes.h \
+            src/object_dialog.h \
+            src/object_all_menu.h \
+            src/object_settings.h \
             src/player_classes.h \
             src/player_command.h \
             src/player_info.h \
             src/player_scores.h \
+            src/spells.h \
             src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \
@@ -139,10 +145,9 @@ HEADERS  += src/qt_mainwindow.h\
             src/wizard_mode.h \
             src/player_death.h \
             src/dun_traps.h \
-            src/object_dialog.h \
-            src/object_all_menu.h \
-            src/object_settings.h \
-    src/spells.h
+
+
+
 
 
 

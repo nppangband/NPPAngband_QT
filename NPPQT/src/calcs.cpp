@@ -507,7 +507,7 @@ static void calc_hitpoints(void)
     if (game_mode == GAME_NPPMORIA)
     {
         if (p_ptr->timed[TMD_HERO]) mhp += 10;
-        if (p_ptr->timed[TMD_SHERO]) mhp += 15;
+        if (p_ptr->timed[TMD_BERSERK]) mhp += 15;
     }
 
     /* New maximum hitpoints */
@@ -1380,7 +1380,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     /*** Temporary flags ***/
 
     /* Apply temporary "stun" */
-    if (p_ptr->timed[TMD_STUN] > 50)
+    if (p_ptr->timed[TMD_STUN] > STUN_HEAVY)
     {
         new_state->to_h -= 20;
         new_state->dis_to_h -= 20;
@@ -1426,7 +1426,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     }
 
     /* Temporary "Berserk" */
-    if (p_ptr->timed[TMD_SHERO])
+    if (p_ptr->timed[TMD_BERSERK])
     {
         new_state->to_h += 24;
         new_state->dis_to_h += 24;
@@ -1464,7 +1464,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     /*** Special flags ***/
 
     /* Hack -- Hero/Shero -> Res fear */
-    if (p_ptr->timed[TMD_HERO] || p_ptr->timed[TMD_SHERO])
+    if (p_ptr->timed[TMD_HERO] || p_ptr->timed[TMD_BERSERK])
     {
         new_state->resist_fear = TRUE;
     }

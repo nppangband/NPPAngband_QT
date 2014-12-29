@@ -18,6 +18,7 @@
 #include "defines.h"
 #include "structures.h"
 #include "nppdialog.h"
+#include "src/cmds.h"
 
 #define UI_MODE_DEFAULT 0
 #define UI_MODE_INPUT 1
@@ -75,6 +76,9 @@ public:
     QTextEdit *message_area;
 
     QToolBar *toolbar1; // Targeting
+    QToolBar *status_bar;
+
+
 
     QTableWidget *sidebar;
 
@@ -101,6 +105,9 @@ public:
     void update_sidebar();
     void close_game_death();
     void update_titlebar();
+    void create_statusbar();
+    void update_statusbar();
+    void hide_statusbar();
 
 
 protected:
@@ -127,6 +134,8 @@ private slots:
     void slot_find_player();
     void slot_redraw();
     void slot_something();
+    void toggle_searching() {do_cmd_toggle_search();}
+    void click_study() {do_cmd_study();}
 
     void do_create_package();
     void do_extract_from_package();
@@ -234,6 +243,57 @@ private:
     bool use_bigtile;
 
     QActionGroup *multipliers;
+
+    // Actions for the statusbar
+    // buttons for status bar
+    QAction *recall;
+    QAction *resting;
+    QAction *repeating;
+    QAction *searching;
+    QAction *status_cut;
+    QAction *status_stun;
+    QAction *status_hunger;
+    QAction *study;
+
+    QAction *blind;
+    QAction *paralyzed;
+    QAction *confused;
+    QAction *afraid;
+    QAction *hallucination;
+    QAction *poisoned;
+    QAction *protect_evil;
+    QAction *invulnerability;
+    QAction *hero;
+    QAction *berzerk;
+    QAction *shield;
+    QAction *blessed;
+    QAction *see_invisible;
+    QAction *infravision;
+
+    QAction *resist_acid;
+    QAction *resist_cold;
+    QAction *resist_fire;
+    QAction *resist_lightning;
+    QAction *resist_poison;
+
+    QAction *flying;
+
+    QAction *native_lava;
+
+    QAction *native_oil;
+    QAction *native_sand;
+    QAction *native_tree;
+    QAction *native_water;
+    QAction *native_mud;
+
+    QAction *status_speed;
+
+    QAction *elemental_weapon;
+    QAction *call_hourns;
+
+    QAction *nativity;
+    QAction *status_trap_detect;
+
 };
 
 QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p);

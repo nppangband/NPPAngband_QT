@@ -644,7 +644,7 @@ static bool quaff_potion(object_type *o_ptr, bool *ident)
         {
             if (game_mode == GAME_NPPMORIA)
             {
-                if (!p_ptr->timed[TMD_SHERO])
+                if (!p_ptr->timed[TMD_BERSERK])
                 {
                     p_ptr->mhp +=15;
                     p_ptr->chp +=15;
@@ -652,7 +652,7 @@ static bool quaff_potion(object_type *o_ptr, bool *ident)
             }
             if (hp_player(30)) *ident = TRUE;
             if (clear_timed(TMD_AFRAID, TRUE)) *ident = TRUE;
-            if (inc_timed(TMD_SHERO, randint(25) + 25, TRUE)) *ident = TRUE;
+            if (inc_timed(TMD_BERSERK, randint(25) + 25, TRUE)) *ident = TRUE;
             break;
         }
 
@@ -2403,7 +2403,7 @@ static bool activate_object(object_type *o_ptr, int dir)
                 message(QString("Your %1 glows many colours...") .arg(o_name));
                 if (game_mode == GAME_NPPMORIA)
                 {
-                    if (!p_ptr->timed[TMD_SHERO])
+                    if (!p_ptr->timed[TMD_BERSERK])
                     {
                         p_ptr->mhp +=15;
                         p_ptr->chp +=15;
@@ -2411,7 +2411,7 @@ static bool activate_object(object_type *o_ptr, int dir)
                 }
                 (void)hp_player(30);
                 (void)clear_timed(TMD_AFRAID, TRUE);
-                (void)inc_timed(TMD_SHERO, randint(50) + 50, TRUE);
+                (void)inc_timed(TMD_BERSERK, randint(50) + 50, TRUE);
                 (void)inc_timed(TMD_BLESSED, randint(50) + 50, TRUE);
                 (void)inc_timed(TMD_OPP_ACID, act_time, TRUE);
                 (void)inc_timed(TMD_OPP_ELEC, act_time, TRUE);
@@ -2704,13 +2704,13 @@ static bool activate_object(object_type *o_ptr, int dir)
                 message(QString("Your %1 glows in anger...") .arg(o_name));
                 if (game_mode == GAME_NPPMORIA)
                 {
-                    if (!p_ptr->timed[TMD_SHERO])
+                    if (!p_ptr->timed[TMD_BERSERK])
                     {
                         p_ptr->mhp +=15;
                         p_ptr->chp +=15;
                     }
                 }
-                inc_timed(TMD_SHERO, randint(50) + 50, TRUE);
+                inc_timed(TMD_BERSERK, randint(50) + 50, TRUE);
                 break;
             }
 

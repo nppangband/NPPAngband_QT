@@ -377,6 +377,21 @@
 #define PY_MAX_LEVEL		50		/* Maximum level */
 #define PY_MAX_LEVEL_MORIA	40		/* Maximum level */
 
+//Except for graze, should be greater than the value below to qualify.
+#define CUT_MORTAL_WOUND    1000
+#define CUT_DEEP_GASH       200
+#define CUT_SEVERE          100
+#define CUT_NASTY           50
+#define CUT_BAD             25
+#define CUT_LIGHT           10
+#define CUT_GRAZE           1
+#define CUT_NONE            0
+
+// 100 or greater is knocked out, heavy stun is > 51, light stun > 1
+#define STUN_KNOCKED_OUT    100
+#define STUN_HEAVY          50
+#define STUN_LIGHT          1
+#define STUN_NONE           0
 
 /*
  * Player "food" crucial values
@@ -506,7 +521,7 @@ enum
     TMD_PROTEVIL,
     TMD_INVULN,
     TMD_HERO,
-    TMD_SHERO,
+    TMD_BERSERK,
     TMD_SHIELD,
     TMD_BLESSED,
     TMD_SINVIS,

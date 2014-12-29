@@ -24,7 +24,7 @@
 #include "src/qt_mainwindow.h"
 #include "src/init.h"
 #include "src/optionsdialog.h"
-#include "src/cmds.h"
+
 #include "src/birthdialog.h"
 #include "src/utilities.h"
 #include "src/knowledge.h"
@@ -32,6 +32,7 @@
 #include "griddialog.h"
 #include "package.h"
 #include "tilebag.h"
+
 
 MainWindow *main_window = 0;
 
@@ -1233,23 +1234,43 @@ void ui_event_signal(int event)
 {
     switch (event)
     {
-    case EVENT_STATUS:
-    case EVENT_MANA:
-    case EVENT_HP:
-    case EVENT_EXPERIENCE:
-    case EVENT_MONSTERLIST:
-    case EVENT_MONSTERTARGET:
-    case EVENT_STATS:
-    case EVENT_STATE:
-    case EVENT_GOLD:
-    case EVENT_DUNGEONLEVEL:
-    case EVENT_FEELING:
-    case EVENT_PLAYERTITLE:
-    case EVENT_PLAYERSPEED:
-    case EVENT_PLAYERLEVEL:
-        main_window->delayed_sidebar_update = true;
-        break;
+        case EVENT_STATUS:
+        case EVENT_MANA:
+        case EVENT_HP:
+        case EVENT_EXPERIENCE:
+        case EVENT_MONSTERLIST:
+        case EVENT_MONSTERTARGET:
+        case EVENT_STATS:
+        case EVENT_STATE:
+        case EVENT_GOLD:
+        case EVENT_DUNGEONLEVEL:
+        case EVENT_FEELING:
+        case EVENT_PLAYERTITLE:
+        case EVENT_PLAYERSPEED:
+        case EVENT_PLAYERLEVEL:
+        {
+            main_window->delayed_sidebar_update = true;
+            break;
+        }
+        default: break;
+        }
+
+    switch (event)
+    {
+        case EVENT_STUDYSTATUS:
+        case EVENT_STATUS:
+        case EVENT_DETECTIONSTATUS:
+        case EVENT_STATE:
+        case EVENT_MOUSEBUTTONS:
+        case EVENT_RESISTANCES:
+        {
+            main_window->update_statusbar();
+            break;
+        }
+        default: break;
     }
+
+
 }
 
 void ui_flush_graphics()
@@ -1746,6 +1767,8 @@ void MainWindow::update_titlebar()
         str += " - ";
 
         str += prt_title();
+
+        if (p_ptr->is_wizard) str.append("  WIZARD MODE");
     }
 
     this->setWindowTitle(str);
@@ -1806,6 +1829,7 @@ MainWindow::MainWindow()
 
     lay1->addWidget(splitter);
 
+#ifdef TESTING
     QHBoxLayout *lay2 = new QHBoxLayout;
     lay1->addLayout(lay2);
 
@@ -1830,7 +1854,7 @@ MainWindow::MainWindow()
     QPushButton *b5 = new QPushButton("Test something");
     lay2->addWidget(b5);
     connect(b5, SIGNAL(clicked()), this, SLOT(slot_something()));
-
+#endif  // TESTING
     create_actions();
     update_file_menu_game_inactive();
     create_menus();
@@ -2023,6 +2047,7 @@ void MainWindow::save_and_close()
     message_area->clear();
 
     update_sidebar();
+    hide_statusbar();
 
     cursor->setVisible(false);
     destroy_tiles();
@@ -2365,6 +2390,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
     }
 }
+
 
 bool MainWindow::running_command()
 {
@@ -2837,6 +2863,10 @@ void MainWindow::create_toolbars()
     toolbar1->setObjectName("toolbar1");
     addToolBar(Qt::BottomToolBarArea, toolbar1);
     toolbar1->setVisible(false);
+
+
+    create_statusbar();
+
 
     struct ButtonData {
         QString command;

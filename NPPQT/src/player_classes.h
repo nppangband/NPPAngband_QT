@@ -515,6 +515,8 @@ public:
     bool should_stop_resting();
     void message_append_start();
     void message_append_stop();
+    u16b cut_status();
+    u16b stun_status();
 
 };
 

@@ -193,7 +193,7 @@ void process_player(void)
     pack_overflow();
 
     /* Paralyzed or Knocked Out */
-    if ((p_ptr->timed[TMD_PARALYZED]) || (p_ptr->timed[TMD_STUN] >= 100))
+    if ((p_ptr->timed[TMD_PARALYZED]) || (p_ptr->stun_status() == STUN_KNOCKED_OUT))
     {
          /* Take a turn */
          p_ptr->p_energy -= BASE_ENERGY_MOVE;

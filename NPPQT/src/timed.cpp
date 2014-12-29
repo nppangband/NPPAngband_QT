@@ -87,7 +87,7 @@ static timed_effect effects[] =
     { "You feel like a hero!", "You no longer feel heroic.",
             "You feel more like a hero!", "You feel less heroic.",
             0, PU_BONUS, 0, MSG_HERO, FALSE  },
-    /* TMD_SHERO */
+    /* TMD_BERSERK */
     { "You feel like a killing machine!", "You no longer feel berserk.",
             "You feel even more berserk!", "You feel less berserk.",
             0, PU_BONUS, 0, MSG_BERSERK, FALSE  },
@@ -336,19 +336,19 @@ bool set_stun(int v)
     v = (v > 10000) ? 10000 : (v < 0) ? 0 : v;
 
     /* Knocked out */
-    if (p_ptr->timed[TMD_STUN] > 100)
+    if (p_ptr->timed[TMD_STUN] >= STUN_KNOCKED_OUT)
     {
         old_aux = 3;
     }
 
     /* Heavy stun */
-    else if (p_ptr->timed[TMD_STUN] > 50)
+    else if (p_ptr->timed[TMD_STUN] > STUN_HEAVY)
     {
         old_aux = 2;
     }
 
     /* Stun */
-    else if (p_ptr->timed[TMD_STUN] > 0)
+    else if (p_ptr->timed[TMD_STUN] >= STUN_LIGHT)
     {
         old_aux = 1;
     }
@@ -360,19 +360,19 @@ bool set_stun(int v)
     }
 
     /* Knocked out */
-    if (v > 100)
+    if (v >= STUN_KNOCKED_OUT)
     {
         new_aux = 3;
     }
 
     /* Heavy stun */
-    else if (v > 50)
+    else if (v > STUN_HEAVY)
     {
         new_aux = 2;
     }
 
     /* Stun */
-    else if (v > 0)
+    else if (v >= STUN_LIGHT)
     {
         new_aux = 1;
     }
@@ -472,43 +472,43 @@ bool set_cut(int v)
     v = (v > 10000) ? 10000 : (v < 0) ? 0 : v;
 
     /* Mortal wound */
-    if (p_ptr->timed[TMD_CUT] > 1000)
+    if (p_ptr->timed[TMD_CUT] > CUT_MORTAL_WOUND)
     {
         old_aux = 7;
     }
 
     /* Deep gash */
-    else if (p_ptr->timed[TMD_CUT] > 200)
+    else if (p_ptr->timed[TMD_CUT] > CUT_DEEP_GASH)
     {
         old_aux = 6;
     }
 
     /* Severe cut */
-    else if (p_ptr->timed[TMD_CUT] > 100)
+    else if (p_ptr->timed[TMD_CUT] > CUT_SEVERE)
     {
         old_aux = 5;
     }
 
     /* Nasty cut */
-    else if (p_ptr->timed[TMD_CUT] > 50)
+    else if (p_ptr->timed[TMD_CUT] > CUT_NASTY)
     {
         old_aux = 4;
     }
 
     /* Bad cut */
-    else if (p_ptr->timed[TMD_CUT] > 25)
+    else if (p_ptr->timed[TMD_CUT] > CUT_BAD)
     {
         old_aux = 3;
     }
 
     /* Light cut */
-    else if (p_ptr->timed[TMD_CUT] > 10)
+    else if (p_ptr->timed[TMD_CUT] > CUT_LIGHT)
     {
         old_aux = 2;
     }
 
     /* Graze */
-    else if (p_ptr->timed[TMD_CUT] > 0)
+    else if (p_ptr->timed[TMD_CUT] >= CUT_GRAZE)
     {
         old_aux = 1;
     }
@@ -520,43 +520,43 @@ bool set_cut(int v)
     }
 
     /* Mortal wound */
-    if (v > 1000)
+    if (v > CUT_MORTAL_WOUND)
     {
         new_aux = 7;
     }
 
     /* Deep gash */
-    else if (v > 200)
+    else if (v > CUT_DEEP_GASH)
     {
         new_aux = 6;
     }
 
     /* Severe cut */
-    else if (v > 100)
+    else if (v > CUT_SEVERE)
     {
         new_aux = 5;
     }
 
     /* Nasty cut */
-    else if (v > 50)
+    else if (v > CUT_NASTY)
     {
         new_aux = 4;
     }
 
     /* Bad cut */
-    else if (v > 25)
+    else if (v > CUT_BAD)
     {
         new_aux = 3;
     }
 
     /* Light cut */
-    else if (v > 10)
+    else if (v > CUT_LIGHT)
     {
         new_aux = 2;
     }
 
     /* Graze */
-    else if (v > 0)
+    else if (v >= CUT_GRAZE)
     {
         new_aux = 1;
     }

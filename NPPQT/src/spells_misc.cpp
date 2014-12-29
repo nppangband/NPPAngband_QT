@@ -3222,7 +3222,7 @@ void self_knowledge(void)
     {
         info[i++] = "You feel heroic.";
     }
-    if (p_ptr->timed[TMD_SHERO])
+    if (p_ptr->timed[TMD_BERSERK])
     {
         info[i++] = "You are in a battle rage.";
     }

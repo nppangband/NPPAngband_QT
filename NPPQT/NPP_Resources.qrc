@@ -36,5 +36,59 @@
         <file>lib/icons/throw.png</file>
         <file>lib/icons/pickup.png</file>
         <file>lib/icons/settings.png</file>
+        <file>lib/icons/dtrap_edge.png</file>
+        <file>lib/icons/dtrap_inside.png</file>
+        <file>lib/icons/recall.png</file>
+        <file>lib/icons/search.png</file>
+        <file>lib/icons/rest.png</file>
+        <file>lib/icons/repeat.png</file>
+        <file>lib/icons/hunger_faint.png</file>
+        <file>lib/icons/hunger_weak.png</file>
+        <file>lib/icons/hunger_hungry.png</file>
+        <file>lib/icons/hunger_full.png</file>
+        <file>lib/icons/hunger_gorged.png</file>
+        <file>lib/icons/stun_knocked_out.png</file>
+        <file>lib/icons/stun_heavy.png</file>
+        <file>lib/icons/stun_light.png</file>
+        <file>lib/icons/cut_mortal.png</file>
+        <file>lib/icons/cut_deep.png</file>
+        <file>lib/icons/cut_nasty.png</file>
+        <file>lib/icons/cut_bad.png</file>
+        <file>lib/icons/cut_light.png</file>
+        <file>lib/icons/cut_graze.png</file>
+        <file>lib/icons/cut_severe.png</file>
+        <file>lib/icons/elemental_weapon.png</file>
+        <file>lib/icons/hourns.png</file>
+        <file>lib/icons/slowed.png</file>
+        <file>lib/icons/hasted.png</file>
+        <file>lib/icons/native_water.png</file>
+        <file>lib/icons/native_tree.png</file>
+        <file>lib/icons/native_sand.png</file>
+        <file>lib/icons/native_lava.png</file>
+        <file>lib/icons/native_oil.png</file>
+        <file>lib/icons/native_mud.png</file>
+        <file>lib/icons/bless.png</file>
+        <file>lib/icons/berzerk.png</file>
+        <file>lib/icons/hero.png</file>
+        <file>lib/icons/infravision.png</file>
+        <file>lib/icons/see_invisible.png</file>
+        <file>lib/icons/blind.png</file>
+        <file>lib/icons/shield.png</file>
+        <file>lib/icons/protection_evil.png</file>
+        <file>lib/icons/invulnerability.png</file>
+        <file>lib/icons/hallucination.png</file>
+        <file>lib/icons/afraid.png</file>
+        <file>lib/icons/confused.png</file>
+        <file>lib/icons/paralyzed.png</file>
+        <file>lib/icons/poisoned.png</file>
+        <file>lib/icons/flying.png</file>
+        <file>lib/icons/resist_fire.png</file>
+        <file>lib/icons/resist_poison.png</file>
+        <file>lib/icons/resist_acid.png</file>
+        <file>lib/icons/resist_cold.png</file>
+        <file>lib/icons/resist_lightning.png</file>
+        <file>lib/icons/search_stop.png</file>
+        <file>lib/icons/hunger_starved.png</file>
+        <file>lib/icons/dtrap_outside.png</file>
     </qresource>
 </RCC>

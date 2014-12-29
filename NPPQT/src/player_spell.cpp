@@ -1260,7 +1260,7 @@ QString do_mage_spell(int mode, int spell, int dir)
             if (cast)
             {
                 (void)hp_player(dam);
-                (void)inc_timed(TMD_SHERO, randint(dur) + dur, TRUE);
+                (void)inc_timed(TMD_BERSERK, randint(dur) + dur, TRUE);
                 (void)clear_timed(TMD_AFRAID, TRUE);
             }
 
