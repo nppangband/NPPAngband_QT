@@ -42,21 +42,6 @@
         <file>lib/icons/search.png</file>
         <file>lib/icons/rest.png</file>
         <file>lib/icons/repeat.png</file>
-        <file>lib/icons/hunger_faint.png</file>
-        <file>lib/icons/hunger_weak.png</file>
-        <file>lib/icons/hunger_hungry.png</file>
-        <file>lib/icons/hunger_full.png</file>
-        <file>lib/icons/hunger_gorged.png</file>
-        <file>lib/icons/stun_knocked_out.png</file>
-        <file>lib/icons/stun_heavy.png</file>
-        <file>lib/icons/stun_light.png</file>
-        <file>lib/icons/cut_mortal.png</file>
-        <file>lib/icons/cut_deep.png</file>
-        <file>lib/icons/cut_nasty.png</file>
-        <file>lib/icons/cut_bad.png</file>
-        <file>lib/icons/cut_light.png</file>
-        <file>lib/icons/cut_graze.png</file>
-        <file>lib/icons/cut_severe.png</file>
         <file>lib/icons/elemental_weapon.png</file>
         <file>lib/icons/hourns.png</file>
         <file>lib/icons/slowed.png</file>
@@ -88,7 +73,9 @@
         <file>lib/icons/resist_cold.png</file>
         <file>lib/icons/resist_lightning.png</file>
         <file>lib/icons/search_stop.png</file>
-        <file>lib/icons/hunger_starved.png</file>
         <file>lib/icons/dtrap_outside.png</file>
+        <file>lib/icons/hunger.png</file>
+        <file>lib/icons/stun.png</file>
+        <file>lib/icons/cut.png</file>
     </qresource>
 </RCC>

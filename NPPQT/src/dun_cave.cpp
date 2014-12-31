@@ -809,10 +809,10 @@ static void map_terrain (s16b y, s16b x)
     u16b info = dun_ptr->cave_info;
     feature_type *f_ptr;
     bool do_dtrap = FALSE;
+    dun_ptr->dtrap = FALSE;
 
     //Assume som things normal;
-    dun_ptr->special_lighting = FLOOR_LIGHT_NORMAL;
-    dun_ptr->dtrap = FALSE;    
+    dun_ptr->special_lighting = FLOOR_LIGHT_NORMAL;   
 
     /* Boring grids (floors, etc) */
     if (!(f_info[feat].f_flags1 & (FF1_REMEMBER)))
@@ -898,6 +898,9 @@ static void map_terrain (s16b y, s16b x)
     if ((do_dtrap) && (det_trap_edge))
     {
         dun_ptr->dtrap = TRUE;
+        QString single_char = QString("●");
+        dun_ptr->dun_color = defined_colors[TERM_GREEN];
+        dun_ptr->dun_char = single_char[0];
     }
 }
 
@@ -968,8 +971,9 @@ static void map_objects (s16b y, s16b x)
 
         if (do_purple_dot)
         {
+            QString single_char = QString("●");
             dun_ptr->object_color = defined_colors[TERM_VIOLET];
-            dun_ptr->object_char = f_info[1].d_char; // Floor
+            dun_ptr->object_char = single_char[0];
             dun_ptr->object_tile.clear();
         }
 

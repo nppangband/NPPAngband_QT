@@ -63,50 +63,60 @@ void MainWindow::update_statusbar(void)
     {
         int cut = p_ptr->cut_status();
 
+        QString cut_text;
+
         status_cut->setVisible(TRUE);
 
         if (cut == CUT_MORTAL_WOUND)
         {
-            status_cut->setIcon(QIcon(":icons/lib/icons/cut_mortal.png"));
-            status_cut->setStatusTip("Mortal Wound");
+            cut_text = "Mortal";
             status_cut->setToolTip("This mortal wound is so severe it can only be cured by magic, and will cause 3 hit points damage per turn at normal speed.");
         }
         else if (cut == CUT_DEEP_GASH)
         {
-            status_cut->setIcon(QIcon(":icons/lib/icons/cut_deep.png"));
-            status_cut->setStatusTip("Deep Gash");
+            cut_text = "Deep Gash";
             status_cut->setToolTip("This deep gash causes 3 hit points damage per turn at normal speed.");
         }
         else if (cut == CUT_SEVERE)
         {
-            status_cut->setIcon(QIcon(":icons/lib/icons/cut_severe.png"));
-            status_cut->setStatusTip("Severe Cut");
+            cut_text = "Severe Cut";
             status_cut->setToolTip("This severe cut causes 2 hit points damage per turn at normal speed.");
         }
         else if (cut == CUT_NASTY)
         {
-            status_cut->setIcon(QIcon(":icons/lib/icons/cut_nasty.png"));
-            status_cut->setStatusTip("Nasty Cut");
+            cut_text = "Nasty Cut";
             status_cut->setToolTip("This nasty cut causes 1 hit point damage per turn at normal speed.");
         }
         else if (cut == 25)
         {
-            status_cut->setIcon(QIcon(":icons/lib/icons/cut_bad.png"));
-            status_cut->setStatusTip("Bad Cut");
+            cut_text = "Bad Cut";
             status_cut->setToolTip("This bad cut causes 1 hit point damage per turn at normal speed.");
         }
         else if (cut == 10)
         {
-            status_cut->setIcon(QIcon(":icons/lib/icons/cut_light.png"));
-            status_cut->setStatusTip("Light Cut");
+            cut_text = "Light Cut";
             status_cut->setToolTip("This light cut causes 1 hit point damage per turn at normal speed.");
         }
         else // Graze
         {
-            status_cut->setIcon(QIcon(":icons/lib/icons/cut_graze.png"));
-            status_cut->setStatusTip("Graze");
+            cut_text = "Graze";
             status_cut->setToolTip("This graze causes 1 hit point damage per turn at normal speed.");
         }
+
+        QPixmap pix = (QPixmap(":icons/lib/icons/cut.png"));
+        QPainter painter(&pix);
+        int height = pix.height();
+        int width = pix.width();
+        QPen pen = QPen(Qt::black, 4);
+        QFont font = ui_current_font();
+        font.setPointSize(height/5);
+        font.setBold(TRUE);
+        painter.setFont(font);
+        painter.setPen(pen);
+        painter.setOpacity(1);
+        QRect rectangle = QRect(QPoint(0, height/2), QSize(width, height));
+        painter.drawText(rectangle, Qt::AlignRight, cut_text);
+        status_cut->setIcon(pix);
     }
     else status_cut->setVisible(FALSE);
 
@@ -114,26 +124,41 @@ void MainWindow::update_statusbar(void)
     {
         int stun = p_ptr->stun_status();
 
+        QString stun_text;
+
         status_stun->setVisible(TRUE);
 
         if (stun == STUN_KNOCKED_OUT)
         {
-            status_stun->setIcon(QIcon(":icons/lib/icons/stun_knocked_out.png"));
-            status_stun->setStatusTip("Knocked Out");
+            stun_text = "KO";
             status_stun->setToolTip("You are unconscious and will be unable to act until you wake up.");
         }
         else if (stun == STUN_HEAVY)
         {
-            status_stun->setIcon(QIcon(":icons/lib/icons/stun_heavy.png"));
-            status_stun->setStatusTip("Heavily Stunned");
+            stun_text = "Heavy";
             status_stun->setToolTip("You are heavily stunned and are close to being knocked out.  Players who are knocked out rarely survive.  Combat and spellcasting failure rates increase while you are stunned.");
         }
         else // Light stun
         {
-            status_stun->setIcon(QIcon(":icons/lib/icons/stun_light.png"));
-            status_stun->setStatusTip("Lightly Stunned");
+            stun_text = "Light";
             status_stun->setToolTip("You are lightly stunned.  Combat and spellcasting failure rates increase while you are stunned.");
         }
+
+        QPixmap pix = (QPixmap(":icons/lib/icons/stun.png"));
+        QPainter painter(&pix);
+        int height = pix.height();
+        int width = pix.width();
+        QPen pen = QPen(Qt::black, 4);
+        QFont font = ui_current_font();
+        font.setPointSize(height/5);
+        font.setBold(TRUE);
+        painter.setFont(font);
+        painter.setPen(pen);
+        painter.setOpacity(1);
+        QRect rectangle = QRect(QPoint(0, height/2), QSize(width, height));
+        painter.drawText(rectangle, Qt::AlignRight, stun_text);
+        status_stun->setIcon(pix);
+
     }
     else status_stun->setVisible(FALSE);
 
@@ -141,18 +166,20 @@ void MainWindow::update_statusbar(void)
     {
         int food = p_ptr->food;
 
+        QString food_text;
+
         bool visibility = TRUE;
 
         if (food > PY_FOOD_MAX)
         {
             status_hunger->setIcon(QIcon(":icons/lib/icons/hunger_gorged.png"));
-            status_hunger->setStatusTip("Gorged");
+            food_text = "Gorged";
             status_hunger->setToolTip("You have eaten too much and will be temporarily slowed.");
         }
         else if (food > PY_FOOD_FULL)
         {
             status_hunger->setIcon(QIcon(":icons/lib/icons/hunger_full.png"));
-            status_hunger->setStatusTip("Full");
+            food_text = "Full";
             status_hunger->setToolTip("You are full.");
         }
         else if (food > PY_FOOD_ALERT)
@@ -162,26 +189,44 @@ void MainWindow::update_statusbar(void)
         else if (food > PY_FOOD_WEAK)
         {
             status_hunger->setIcon(QIcon(":icons/lib/icons/hunger_hungry.png"));
-            status_hunger->setStatusTip("Hungry");
+            food_text = "Hungry";
             status_hunger->setToolTip("You are hungry.");
         }
         else if (food > PY_FOOD_FAINT)
         {
             status_hunger->setIcon(QIcon(":icons/lib/icons/hunger_weak.png"));
-            status_hunger->setStatusTip("Weak");
+            food_text = "Weak";
             status_hunger->setToolTip("You are weak.  Your regeneration rate will be slowed until you eat.");
         }
         else if (food > PY_FOOD_STARVE)
         {
             status_hunger->setIcon(QIcon(":icons/lib/icons/hunger_faint.png"));
-            status_hunger->setStatusTip("Faint From Hunder");
+            food_text = "Faint";
             status_hunger->setToolTip("You are faint from hunger.  Your regeneration rate will be greatly slowed until you eat.");
         }
         else // PY_FOOD_STARVE
         {
             status_hunger->setIcon(QIcon(":icons/lib/icons/hunger_starved.png"));
-            status_hunger->setStatusTip("Starving");
+            food_text = "Starved";
             status_hunger->setToolTip("You are starving.  You cannot regenerate, and will take damage and have a chance pass out every turn until you eat something.");
+        }
+
+        if (visibility)
+        {
+            QPixmap pix = (QPixmap(":icons/lib/icons/hunger.png"));
+            QPainter painter(&pix);
+            int height = pix.height();
+            int width = pix.width();
+            QPen pen = QPen(Qt::black, 4);
+            QFont font = ui_current_font();
+            font.setPointSize(height/4);
+            font.setBold(TRUE);
+            painter.setFont(font);
+            painter.setPen(pen);
+            painter.setOpacity(1);
+            QRect rectangle = QRect(QPoint(0, height/2), QSize(width, height));
+            painter.drawText(rectangle, Qt::AlignRight, food_text);
+            status_hunger->setIcon(pix);
         }
 
         status_hunger->setVisible(visibility);
@@ -189,10 +234,25 @@ void MainWindow::update_statusbar(void)
 
     if (p_ptr->new_spells)
     {
-        study->setVisible(TRUE);
+        QPixmap pix = (QPixmap(":icons/lib/icons/study.png"));
+        QString text = (QString(" x%1").arg(p_ptr->new_spells));
+        QPainter painter(&pix);
+        int height = pix.height();
+        int width = pix.width();
+        QPen pen = QPen(Qt::white, 4);
+        QFont font = ui_current_font();
+        font.setPointSize(height/3);
+        font.setBold(TRUE);
+        painter.setFont(font);
+        painter.setPen(pen);
+        painter.setOpacity(1);
+        QRect rectangle = QRect(QPoint(0, height/2), QSize(width, height));
+        painter.drawText(rectangle, Qt::AlignRight, text);
+        study->setIcon(pix);
+
         QString p = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
         study->setToolTip(QString("Click to Study.  You can learn %1 new %2s.") .arg(p_ptr->new_spells) .arg(p));
-        study->setText(QString(" x%1").arg(p_ptr->new_spells));
+        study->setVisible(TRUE);
     }
     else study->setVisible(FALSE);
 
@@ -349,6 +409,11 @@ void MainWindow::create_statusbar(void)
     addToolBar(Qt::BottomToolBarArea, status_bar);
     hide_statusbar();
 
+    QSize tool_size = status_bar->iconSize();
+    tool_size.setHeight(tool_size.height()*3/2);
+    tool_size.setWidth(tool_size.width()*3/2);
+    status_bar->setIconSize(tool_size);
+
     QString status = QString("The Word of Recall spell has been cast, and the player is about to be:<br><br>");
     status.append("1) If the player is in the dungeon, the player will be recalled back to town, or:<br><br>");
     status.append("2) If the player is in the town, the player will be recalled back to the dungeon recall depth.<br><br>");
@@ -377,17 +442,17 @@ void MainWindow::create_statusbar(void)
     searching->setVisible(FALSE);
 
     status_cut = new QAction(tr("Cut"), this);
-    status_cut->setIcon(QIcon(":/icons/lib/icons/cut_light.png"));
+    status_cut->setIcon(QIcon(":/icons/lib/icons/cut.png"));
     status_bar->addAction(status_cut);
     status_cut->setVisible(FALSE);
 
     status_stun = new QAction(tr("Stun"), this);
-    status_stun->setIcon(QIcon(":/icons/lib/icons/stun_light.png"));
+    status_stun->setIcon(QIcon(":/icons/lib/icons/stun.png"));
     status_bar->addAction(status_stun);
     status_stun->setVisible(FALSE);
 
     status_hunger = new QAction(tr("Food Status"), this);
-    status_hunger->setIcon(QIcon(":/icons/lib/icons/hunger_full.png"));
+    status_hunger->setIcon(QIcon(":/icons/lib/icons/hunger.png"));
     status_bar->addAction(status_hunger);
     status_hunger->setVisible(FALSE);
 
@@ -399,157 +464,157 @@ void MainWindow::create_statusbar(void)
 
     blind = new QAction(tr("Blind"), this);
     blind->setIcon(QIcon(":/icons/lib/icons/blind.png"));
-    blind->setToolTip("In addition to preventing you from being seeing, it also prevents spellcasting and reading scrolls, and reduces your chances to disarm traps or unlock doors.");
+    blind->setToolTip("You are temporarily blind.  In addition to losing your sight, blindness also prevents spellcasting and reading scrolls, and reduces your chances to disarm traps or unlock doors.");
     status_bar->addAction(blind);
     blind->setVisible(FALSE);
 
     paralyzed = new QAction(tr("Paralyzed"), this);
     paralyzed->setIcon(QIcon(":/icons/lib/icons/paralyzed.png"));
-    paralyzed->setToolTip("You cannot move or act until the paralysis is over.");
+    paralyzed->setToolTip("You are temporarily paralyzed.  You cannot move or act until the paralysis is over.");
     status_bar->addAction(paralyzed);
     paralyzed->setVisible(FALSE);
 
     confused = new QAction(tr("Confused"), this);
     confused->setIcon(QIcon(":/icons/lib/icons/confused.png"));
-    confused->setToolTip("In addition to causing you to move in random directions, it also prevents spellcasting and reading scrolls, and reduces your chances sucessfully use wands, staves, and rods, and to disarm traps or unlock doors.");
+    confused->setToolTip("You are temporarily confused, which causes you to move in random directions, it also prevents spellcasting and reading scrolls, and reduces your chances sucessfully use wands, staves, and rods, and to disarm traps or unlock doors.");
     status_bar->addAction(confused);
     confused->setVisible(FALSE);
 
     afraid = new QAction(tr("Afraid"), this);
     afraid->setIcon(QIcon(":/icons/lib/icons/afraid.png"));
-    afraid->setToolTip("Being afraid prevents you from attacking monsters with your weapon.");
+    afraid->setToolTip("You are temporarily afraid, which prevents you from attacking monsters with your weapon.");
     status_bar->addAction(afraid);
     afraid->setVisible(FALSE);
 
     hallucination = new QAction(tr("Hallucinating"), this);
     hallucination->setIcon(QIcon(":/icons/lib/icons/hallucination.png"));
-    hallucination->setToolTip("In addition to causing you to see rando images, it also prevents spellcasting and reading scrolls, and reduces your chances sucessfully use wands, staves, and rods, and to disarm traps or unlock doors.");
+    hallucination->setToolTip("You are temporarily hallucinating.  In addition to seeing random images, it also prevents spellcasting and reading scrolls, and reduces your chances sucessfully use wands, staves, and rods, and to disarm traps or unlock doors.");
     status_bar->addAction(hallucination);
     hallucination->setVisible(FALSE);
 
     poisoned = new QAction(tr("Poisoned"), this);
     poisoned->setIcon(QIcon(":/icons/lib/icons/poisoned.png"));
-    poisoned->setToolTip("Being poisoned causes the player to take 1 hp damage per turn at regular speed, and prevents hit point regeneration.");
+    poisoned->setToolTip("You are temporarily poisoned, which causes the player to take 1 hp damage per turn at regular speed, and prevents hit point regeneration.");
     status_bar->addAction(poisoned);
     poisoned->setVisible(FALSE);
 
     protect_evil = new QAction(tr("Protection From Evil"), this);
     protect_evil->setIcon(QIcon(":/icons/lib/icons/protection_evil.png"));
-    protect_evil->setToolTip("Protection from Evil gives the player a saving throw from physical attacks from evil creatures of a lessor level than the player.");
+    protect_evil->setToolTip("You are temporarily protected from evil, which gives the player a saving throw from physical attacks from evil creatures of a lessor level than the player.");
     status_bar->addAction(protect_evil);
     protect_evil->setVisible(FALSE);
 
     invulnerability = new QAction(tr("Invulnerability"), this);
     invulnerability->setIcon(QIcon(":/icons/lib/icons/invulnerability.png"));
-    invulnerability->setToolTip("Invulnerability greatly increases the player's armor class, and prevents damage from physical attacks.  The player can still suffer side effects from physical attacks (e.g poison).");
+    invulnerability->setToolTip("You are temporarily invulnerable, which greatly increases the player's armor class, and prevents damage from physical attacks.  The player can still suffer side effects from physical attacks (e.g poison).");
     status_bar->addAction(invulnerability);
     invulnerability->setVisible(FALSE);
 
     hero = new QAction(tr("Heroism"), this);
     hero->setIcon(QIcon(":/icons/lib/icons/hero.png"));
-    hero->setToolTip("Heroism gives the player a bonus to-hit, 10 temporary extra hitpoints, and prevents the player from becoming afraid.");
+    hero->setToolTip("You temporarily are heroic, which gives the player a bonus to-hit, 10 temporary extra hitpoints, and prevents the player from becoming afraid.");
     status_bar->addAction(hero);
     hero->setVisible(FALSE);
 
     berzerk = new QAction(tr("Berzerk Rage"), this);
     berzerk->setIcon(QIcon(":/icons/lib/icons/berzerk.png"));
-    berzerk->setToolTip("Berzerk Rage gives the player a bonus to-hit and reduced armor class, 15 temporary extra hitpoints, and prevents the player from becoming afraid.");
+    berzerk->setToolTip("You are temporarily in a state of Berzerk Rage, which gives the player a bonus to-hit and reduced armor class, 15 temporary extra hitpoints, and prevents the player from becoming afraid.");
     status_bar->addAction(berzerk);
     berzerk->setVisible(FALSE);
 
     shield = new QAction(tr("Shield"), this);
     shield->setIcon(QIcon(":/icons/lib/icons/shield.png"));
-    shield->setToolTip("Temporarily increases the player's armor class by 50.");
+    shield->setToolTip("You are temporarily protected by the shield spell, which increases the player's armor class by 50.");
     status_bar->addAction(shield);
     shield->setVisible(FALSE);
 
     blessed = new QAction(tr("Blessed"), this);
     blessed->setIcon(QIcon(":/icons/lib/icons/bless.png"));
-    shield->setToolTip("Temporarily increases the player's armor class by 5, and to-hit by 10.");
+    shield->setToolTip("You are temporarily blessed, which increases the player's armor class by 5, and to-hit by 10.");
     status_bar->addAction(blessed);
     blessed->setVisible(FALSE);
 
     see_invisible = new QAction(tr("See Invisible"), this);
     see_invisible->setIcon(QIcon(":/icons/lib/icons/see_invisible.png"));
-    see_invisible->setToolTip("For players without a source of a permanent ability to see invisible, this temporarily allows the player to see invisible creatures within line-of-sight.");
+    see_invisible->setToolTip("You are temporarily able to see invisible creatures within line-of-sight.");
     status_bar->addAction(see_invisible);
     see_invisible->setVisible(FALSE);
 
     infravision = new QAction(tr("Infravision"), this);
     infravision->setIcon(QIcon(":/icons/lib/icons/infravision.png"));
-    infravision->setToolTip("Temporarily increases the player's infravision by 50 feet.");
+    infravision->setToolTip("You temporarily have your infravision increased the player's infravision by 50 feet.");
     status_bar->addAction(infravision);
     infravision->setVisible(FALSE);
 
     resist_fire = new QAction(tr("Resist Fire"), this);
     resist_fire->setIcon(QIcon(":/icons/lib/icons/resist_fire.png"));
-    resist_fire->setToolTip("Protects inventory and reduces damage from fire attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_fire->setToolTip("You temporarily resist fire, which protects inventory and reduces damage from fire attacks.  Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_fire);
     resist_fire->setVisible(FALSE);
 
     resist_cold = new QAction(tr("Resist Cold"), this);
     resist_cold->setIcon(QIcon(":/icons/lib/icons/resist_cold.png"));
-    resist_cold->setToolTip("Protects inventory and reduces damage from cold attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_cold->setToolTip("You temporarily resist cold, which protects inventory and reduces damage from cold attacks.  Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_cold);
     resist_cold->setVisible(FALSE);
 
     resist_acid = new QAction(tr("Resist Acid"), this);
     resist_acid->setIcon(QIcon(":/icons/lib/icons/resist_acid.png"));
-    resist_acid->setToolTip("Protects inventory and reduces damage from acid attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_acid->setToolTip("You temporarily resist acid, which protects inventory and reduces damage from acid attacks.  Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_acid);
     resist_acid->setVisible(FALSE);
 
     resist_lightning = new QAction(tr("Resist Lightning"), this);
     resist_lightning->setIcon(QIcon(":/icons/lib/icons/resist_lightning.png"));
-    resist_lightning->setToolTip("Protects inventory and reduces damage from lightning attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_lightning->setToolTip("You temporarily resist lightning, which protects inventory and reduces damage from lightning attacks.  Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_lightning);
     resist_lightning->setVisible(FALSE);
 
     resist_poison = new QAction(tr("Resist Poison"), this);
     resist_poison->setIcon(QIcon(":/icons/lib/icons/resist_poison.png"));
-    resist_poison->setToolTip("Reduces damage from poison attacks, and prevents the player from being poisoned.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_poison->setToolTip("You temporarily resist poison, which protects damage from poison attacks, and prevents the player from being poisoned.  Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_poison);
     resist_poison->setVisible(FALSE);
 
     flying = new QAction(tr("Flying"), this);
     flying->setIcon(QIcon(":/icons/lib/icons/flying.png"));
-    flying->setToolTip("Allows the player to go over dangerous terrain without suffering damage.  Also, the player can go over traps without setting them off.  Negates any player combat or monement bonuses or penalties from terrain.");
+    flying->setToolTip("You are temporarily flying, which allows the player to go over dangerous terrain without suffering damage.  Also, the player can go over traps without setting them off.  Negates any player combat or monement bonuses or penalties from terrain.");
     status_bar->addAction(flying);
     flying->setVisible(FALSE);
 
     native_lava = new QAction(tr("Lava Nativity"), this);
     native_lava->setIcon(QIcon(":/icons/lib/icons/native_lava.png"));
-    native_lava->setToolTip("Provides movement and combat bonuses when the player is in lava, and allows the player to safely pass through lava based terrain.  Also reduces damage to player and inventory from lava attacks.");
+    native_lava->setToolTip("You temporarily native to lava, which provides movement and combat bonuses when the player is in lava, and allows the player to safely pass through lava based terrain.  Also reduces damage to player and inventory from lava attacks.");
     status_bar->addAction(native_lava);
     native_lava->setVisible(FALSE);
 
     native_oil = new QAction(tr("Oil Nativity"), this);
     native_oil->setIcon(QIcon(":/icons/lib/icons/native_oil.png"));
-    native_oil->setToolTip("Provides movement and combat bonuses when the player is in lava, and allows the player to safely pass through lava based terrain.  Also reduces damage to player and inventory from lava attacks.");
+    native_oil->setToolTip("You temporarily native to oil, which provides movement and combat bonuses when the player is in lava, and allows the player to safely pass through lava based terrain.  Also reduces damage to player and inventory from lava attacks.");
     status_bar->addAction(native_oil);
     native_oil->setVisible(FALSE);
 
-    native_sand = new QAction(tr("Lava Sand"), this);
+    native_sand = new QAction(tr("Sand Nativity"), this);
     native_sand->setIcon(QIcon(":/icons/lib/icons/native_sand.png"));
-    native_sand->setToolTip("Provides movement and combat bonuses when the player is in sand.  Also reduces damage to player and inventory from sand attacks.");
+    native_sand->setToolTip("You temporarily native to sand, which provides  movement and combat bonuses when the player is in sand.  Also reduces damage to player and inventory from sand attacks.");
     status_bar->addAction(native_sand);
     native_sand->setVisible(FALSE);
 
     native_tree = new QAction(tr("Forest Nativity"), this);
     native_tree->setIcon(QIcon(":/icons/lib/icons/native_tree.png"));
-    native_tree->setToolTip("Provides movement and combat bonuses when the player is in forest, and allows the player to safely pass through forest based terrain.");
+    native_tree->setToolTip("You temporarily native to the forest, which provides  movement and combat bonuses when the player is in forest, and allows the player to safely pass through forest based terrain.");
     status_bar->addAction(native_tree);
     native_tree->setVisible(FALSE);
 
     native_water = new QAction(tr("Water Nativity"), this);
     native_water->setIcon(QIcon(":/icons/lib/icons/native_water.png"));
-    native_water->setToolTip("Provides movement and combat bonuses when the player is in water.  Also reduces damage to player and inventory from water attacks.");
+    native_water->setToolTip("You temporarily native to water, which provides  movement and combat bonuses when the player is in water.  Also reduces damage to player and inventory from water attacks.");
     status_bar->addAction(native_water);
     native_water->setVisible(FALSE);
 
     native_mud = new QAction(tr("Mud Nativity"), this);
     native_mud->setIcon(QIcon(":/icons/lib/icons/native_mud.png"));
-    native_mud->setToolTip("Provides movement and combat bonuses when the player is in mud.  Also reduces damage to player and inventory from mud attacks.");
+    native_mud->setToolTip("You temporarily native to mud, which provides  movement and combat bonuses when the player is in mud.  Also reduces damage to player and inventory from mud attacks.");
     status_bar->addAction(native_mud);
     native_mud->setVisible(FALSE);
 
@@ -560,7 +625,7 @@ void MainWindow::create_statusbar(void)
 
     elemental_weapon = new QAction(tr("Elemental Weapon"), this);
     elemental_weapon->setIcon(QIcon(":/icons/lib/icons/elemental_weapon.png"));
-    elemental_weapon->setToolTip("Gives the player's weapon a temporary fire, cold, acid, lightning, and poison brand.  This effectively doubles weapon base damage unless the monster resists all five elements.");
+    elemental_weapon->setToolTip("You temporarily have an elemental weapon, which provides the player's weapon a temporary fire, cold, acid, lightning, and poison brand.  This effectively doubles weapon base damage unless the monster resists all five elements.");
     status_bar->addAction(elemental_weapon);
     elemental_weapon->setVisible(FALSE);
 

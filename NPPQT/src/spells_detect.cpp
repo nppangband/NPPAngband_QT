@@ -513,7 +513,7 @@ bool detect(int dist, u16b detect_checks)
     int dist_squared = dist * dist;
 
     /* Show the player the highlighted region */
-    ui_animate_ball(p_ptr->py, p_ptr->px, dist, GF_SHARD, PROJECT_PASS);
+    ui_animate_ball(p_ptr->py, p_ptr->px, dist, GF_TIME, PROJECT_PASS);
 
     /* Hack - always refresh map and statusline if detect_traps is called */
     if (detect_checks & (DETECT_TRAPS))

@@ -380,8 +380,10 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b f
     QPoint p1 = to_dungeon_coord(this, QPoint(0, 0));
     QPoint p2 = to_dungeon_coord(this, QPoint(maxLength * 2, maxLength * 2));
 
-    for (int y = p1.y(); y <= p2.y(); y++) {
-        for (int x = p1.x(); x <= p2.x(); x++) {
+    for (int y = p1.y(); y <= p2.y(); y++)
+    {
+        for (int x = p1.x(); x <= p2.x(); x++)
+        {
             if (!in_bounds(y, x)) continue;
             int gr = GRID(y, x);
             bool value = false;
@@ -419,7 +421,8 @@ void BallAnimation::setLength(qreal newLength)
 
     previousLength = length;
 
-    for (int i = 0; (i < 25); i++) {
+    for (int i = 0; (i < 25); i++)
+    {
         qreal angle = rand_int(360) * 2 * PI / 360;
         BallParticle *p = new BallParticle;
         p->type = rand_int(3);
@@ -428,7 +431,8 @@ void BallAnimation::setLength(qreal newLength)
         particles.append(p);
     }
 
-    for (int i = 0; i < particles.size(); i++) {
+    for (int i = 0; i < particles.size(); i++)
+    {
         BallParticle *p = particles.at(i);
         p->currentLength += delta;
     }
@@ -455,7 +459,8 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     QPixmap pix = colorize_pix2(tiles_projections->get_tile("ball1.png"), color);
 
-    for (int i = 0; i < particles.size(); i++) {
+    for (int i = 0; i < particles.size(); i++)
+    {
         BallParticle *p = particles.at(i);
         QPointF where = position + fromAngle(p->angle, p->currentLength);
 
@@ -463,7 +468,8 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         int gr = GRID(p1.y(), p1.x());
         if (!valid.contains(gr) || !valid.value(gr)) continue;
 
-        if (p->type == 0) {
+        if (p->type == 0)
+        {
             qreal opacity = 1;
             if (p->currentLength > maxLength / 2.0) opacity = 0.5;
             painter->setOpacity(opacity);
@@ -471,7 +477,8 @@ void BallAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
                                 where.y() - pix.height() / 2,
                                 pix);
         }
-        else {
+        else
+        {
             painter->setOpacity(1);
             painter->fillRect(QRectF(where.x(), where.y(), 1, 1), color);
         }

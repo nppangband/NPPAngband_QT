@@ -897,6 +897,21 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                painter->setOpacity(1);
                done_fg = true;
             }
+            // draw foreground circle for dtrap edge
+            else if (d_ptr->dtrap)
+            {
+                QPixmap sample = parent->get_tile(key1);
+                int height = sample.height();
+                int width = sample.width();
+                QBrush brush(Qt::green);
+                painter->setPen(Qt::green);
+                painter->setBrush(brush);
+                painter->setOpacity(0.7);
+                painter->drawEllipse(width/3, height/3, width/3, height/3);
+                painter->setOpacity(1);
+                painter->setBrush(Qt::NoBrush);
+                done_fg = true;
+            }
 
             if (do_shadow) {
                 QPixmap pix = pseudo_ascii(square_char, square_color, parent->cur_font,
@@ -1377,7 +1392,8 @@ static void display_mon(QTableWidget *sidebar, int row, int m_idx)
     int h2 = h;
     if (r_ptr->mana > 0) h2 = h / 2;
 
-    if (m_ptr->maxhp > 0) {
+    if (m_ptr->maxhp > 0)
+    {
         int w2 = w * m_ptr->hp / m_ptr->maxhp;
         w2 = MAX(w2, 1);
         int n = m_ptr->hp * 100 / m_ptr->maxhp;
@@ -1388,17 +1404,43 @@ static void display_mon(QTableWidget *sidebar, int row, int m_idx)
         p.fillRect(0, 0, w2, h2, color);
     }
 
-    if (r_ptr->mana > 0) {
+    if (r_ptr->mana > 0)
+    {
         int w2 = w * m_ptr->mana / r_ptr->mana;
         w2 = MAX(w2, 1);
         p.fillRect(0, h2, w2, h2, "purple");
     }
+
+    //Note monster conditions  - this doesn't work -  text comes out far too big.
+    /*QString status;
+    status.clear();
+    if (m_ptr->m_timed[MON_TMD_CONF]) status.append("C");
+    if (m_ptr->m_timed[MON_TMD_STUN]) status.append("s");
+    if (m_ptr->m_timed[MON_TMD_SLEEP])status.append("Z");
+    if (m_ptr->m_timed[MON_TMD_FEAR])status.append("A");
+    if ((m_ptr->m_timed[MON_TMD_FAST]) && (!m_ptr->m_timed[MON_TMD_SLOW])) status.append("H");
+    else if ((m_ptr->m_timed[MON_TMD_SLOW]) && (!m_ptr->m_timed[MON_TMD_FAST])) status.append("S");
+
+    if (status.length())
+    {
+        QFont font = ui_current_font();
+        font.setPointSize(h);
+        p.setFont(font);
+        p.setPen(QPen(Qt::white, 1));
+        p.setOpacity(1);
+        QRect rectangle = QRect(0,0,w,h);
+        p.drawText(0,0,w,h, Qt::AlignLeft | Qt::AlignTop, status, &rectangle);
+    }*/
 
     lb = wid->findChild<QLabel *>("health");
     lb->setPixmap(QPixmap::fromImage(img));
 
     sidebar->setRowHidden(row, false);
     sidebar->setRowHeight(row, wid->sizeHint().height() + 4);
+
+
+
+
 }
 
 QString moria_speed_labels(int speed)
