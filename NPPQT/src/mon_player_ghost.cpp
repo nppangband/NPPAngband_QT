@@ -839,6 +839,11 @@ void load_player_ghost_file(void)
     QString player_ghost_filename = "ghost_templates.txt";
     QFile player_ghost_file;
 
+    if (game_mode == GAME_NPPANGBAND) player_ghost_filename.prepend("nppangband_");
+
+    // Hack - currently NPPMoria doesn't do player ghosts
+    else if (game_mode == GAME_NPPMORIA) return;
+
     /* Build the filename */
     player_ghost_file.setFileName(QString("%1%2" ) .arg(NPP_DIR_BONE) .arg(player_ghost_filename));
 
@@ -870,6 +875,11 @@ void save_player_ghost_file(void)
 {
     QString player_ghost_filename = "ghost_templates.txt";
     QFile player_ghost_file;
+
+    if (game_mode == GAME_NPPANGBAND) player_ghost_filename.prepend("nppangband_");
+
+    // Hack - currently NPPMoria doesn't do player ghosts
+    else if (game_mode == GAME_NPPMORIA) return;
 
     /* Build the filename */
     player_ghost_file.setFileName(QString("%1%2" ) .arg(NPP_DIR_BONE) .arg(player_ghost_filename));

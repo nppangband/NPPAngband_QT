@@ -275,7 +275,6 @@ static void wr_xtra(int k_idx)
 
     if (k_ptr->aware) tmp8u |= 0x01;
     if (k_ptr->tried) tmp8u |= 0x02;
-    if (k_ptr->everseen) tmp8u |= 0x08;
     wr_byte(tmp8u);
 
     /*write the squelch settings*/
@@ -331,7 +330,7 @@ static void wr_artifact_lore(int a_idx)
     byte tmp8u = 0;
 
     /* We know about this artifact */
-    if (a_l_list[a_idx].was_fully_identified) tmp8u |= 0x01;
+    if (a_l_list[a_idx].was_fully_identified) tmp8u = 1;
 
     /* Write the flags */
     wr_byte(tmp8u);
@@ -621,12 +620,9 @@ static void wr_extra(void)
     for (i = 0; i < z_info->e_max; i++)
     {
         ego_item_type *e_ptr = &e_info[i];
-        byte tmp8u = 0;
 
-        if (e_ptr->squelch) tmp8u |= 0x01;
-        if (e_ptr->everseen) tmp8u |= 0x02;
-
-        wr_byte(tmp8u);
+        if (e_ptr->squelch) wr_byte(1);
+        else wr_byte(0);
     }
 
     /* Store the bones file selector, if the player is not dead. -LM- */
@@ -1004,36 +1000,6 @@ static bool wr_savefile(void)
         wr_byte(message_list[i].append);
     }
 
-    /* Dump the number of "scores" */
-    tmp16u = player_scores_list.size();
-    if (tmp16u > 30) tmp16u = 30;
-    wr_u16b(tmp16u);
-
-    /* Dump the messages (newest first!) */
-    for (i = 0; i <tmp16u; i++)
-    {
-        wr_string(player_scores_list[i].version);
-        wr_u32b(player_scores_list[i].score);
-        wr_s32b(player_scores_list[i].turns);
-        wr_string(player_scores_list[i].date_time);
-        wr_string(player_scores_list[i].p_name);
-        wr_string(player_scores_list[i].p_sex);
-        wr_string(player_scores_list[i].p_race);
-        wr_string(player_scores_list[i].p_class);
-        wr_s16b(player_scores_list[i].cur_level);
-        wr_s16b(player_scores_list[i].cur_depth);
-        wr_s32b(player_scores_list[i].cur_exp);
-        wr_s16b(player_scores_list[i].max_level);
-        wr_s16b(player_scores_list[i].max_depth);
-        wr_s32b(player_scores_list[i].max_exp);
-        wr_string(player_scores_list[i].death_how);
-    }
-
-    /* Dump the monster lore */
-    tmp16u = z_info->r_max;
-    wr_u16b(tmp16u);
-    for (i = 0; i < tmp16u; i++) wr_monster_lore(i);
-
     /* Dump the object memory */
     tmp16u = z_info->k_max;
     wr_u16b(tmp16u);
@@ -1129,13 +1095,127 @@ static bool wr_savefile(void)
     /* Add a sentinel */
     wr_u16b(0xFFFF);
 
-
     /* Note the stores */
     tmp16u = MAX_STORES;
     wr_u16b(tmp16u);
 
     /* Dump the stores */
     for (i = 0; i < tmp16u; i++) wr_store(&store[i]);
+
+    /* Player is not dead, write the dungeon */
+    if (!p_ptr->is_dead)
+    {
+        /* Dump the dungeon */
+        wr_dungeon();
+    }
+
+    save_file.close();
+
+    /* Successful save */
+    return TRUE;
+}
+
+
+/*
+ * Write the player scores
+ */
+static bool wr_scores(void)
+{
+    QString scores_filename = QString("scores.npp");
+
+    if (game_mode == GAME_NPPANGBAND) scores_filename.prepend("nppangband_");
+    else if (game_mode == GAME_NPPMORIA) scores_filename.prepend("nppmoria_");
+    else return (FALSE);
+
+    scores_filename.prepend(QString("%1") .arg(NPP_DIR_BONE));
+
+    int i;
+
+    u16b tmp16u;
+
+    // Open the current file
+    save_file.setFileName(scores_filename);
+    save_file.open(QIODevice::WriteOnly);
+
+    // Ensure the data is read and written consistently
+    out.setVersion(QDataStream::Qt_5_1);
+
+    /*** Actually write the file ***/
+
+    /* Dump the file header */
+    wr_byte(VERSION_MAJOR);
+    wr_byte(VERSION_MINOR);
+    wr_byte(VERSION_PATCH);
+    wr_byte(VERSION_EXTRA);
+    wr_byte(game_mode);
+
+    /* Dump the number of "scores" */
+    tmp16u = player_scores_list.size();
+    if (tmp16u > 30) tmp16u = 30;
+    wr_u16b(tmp16u);
+
+    /* Dump the scores (newest first!) */
+    for (i = 0; i <tmp16u; i++)
+    {
+        wr_string(player_scores_list[i].version);
+        wr_u32b(player_scores_list[i].score);
+        wr_s32b(player_scores_list[i].turns);
+        wr_string(player_scores_list[i].date_time);
+        wr_string(player_scores_list[i].p_name);
+        wr_string(player_scores_list[i].p_sex);
+        wr_string(player_scores_list[i].p_race);
+        wr_string(player_scores_list[i].p_class);
+        wr_s16b(player_scores_list[i].cur_level);
+        wr_s16b(player_scores_list[i].cur_depth);
+        wr_s32b(player_scores_list[i].cur_exp);
+        wr_s16b(player_scores_list[i].max_level);
+        wr_s16b(player_scores_list[i].max_depth);
+        wr_s32b(player_scores_list[i].max_exp);
+        wr_string(player_scores_list[i].death_how);
+    }
+
+    save_file.close();
+
+    /* Successful save */
+    return TRUE;
+}
+
+/*
+ * Write the player scores
+ */
+static bool wr_memory(void)
+{
+    u16b tmp16u;
+    int i;
+
+    QString memory_filename = QString("memory.npp");
+
+    if (game_mode == GAME_NPPANGBAND) memory_filename.prepend("nppangband_");
+    else if (game_mode == GAME_NPPMORIA) memory_filename.prepend("nppmoria_");
+    else return (FALSE);
+
+    memory_filename.prepend(QString("%1") .arg(NPP_DIR_BONE));
+
+    // Open the current file
+    save_file.setFileName(memory_filename);
+    save_file.open(QIODevice::WriteOnly);
+
+    // Ensure the data is read and written consistently
+    out.setVersion(QDataStream::Qt_5_1);
+
+    /*** Actually write the file ***/
+
+    /* Dump the file header */
+    wr_byte(VERSION_MAJOR);
+    wr_byte(VERSION_MINOR);
+    wr_byte(VERSION_PATCH);
+    wr_byte(VERSION_EXTRA);
+    wr_byte(game_mode);
+
+    /* Dump the monster lore */
+    tmp16u = z_info->r_max;
+    wr_u16b(tmp16u);
+    for (i = 0; i < tmp16u; i++) wr_monster_lore(i);
 
     /* Dump the current number of terrain features */
     tmp16u = z_info->f_max;
@@ -1151,11 +1231,27 @@ static bool wr_savefile(void)
     /* Dump artifact lore */
     for (i = 0; i < tmp16u; i++) wr_artifact_lore(i);
 
-    /* Player is not dead, write the dungeon */
-    if (!p_ptr->is_dead)
+    /* Dump the object everseen */
+    tmp16u = z_info->k_max;
+    wr_u16b(tmp16u);
+    for (i = 0; i < tmp16u; i++)
     {
-        /* Dump the dungeon */
-        wr_dungeon();
+        object_kind *k_ptr = &k_info[i];
+
+        if (k_ptr->everseen) wr_byte(1);
+        else wr_byte(0);
+    }
+
+    /* Save the current number of ego-item types */
+    wr_u16b(z_info->e_max);
+
+    /* Save ego-item squelch settings */
+    for (i = 0; i < z_info->e_max; i++)
+    {
+        ego_item_type *e_ptr = &e_info[i];
+
+        if (e_ptr->everseen) wr_byte(1);
+        else wr_byte(0);
     }
 
     save_file.close();
@@ -1177,6 +1273,9 @@ bool save_player(void)
     {
         /* Hack -- Pretend the character was loaded */
         character_loaded = TRUE;
+
+        if (!wr_scores()) return (FALSE);
+        if (!wr_memory()) return (FALSE);
 
         /* Success */
         return (TRUE);

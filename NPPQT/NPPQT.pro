@@ -74,6 +74,7 @@ SOURCES +=  src/qt_main.cpp\
             src/player_info.cpp \
             src/player_process.cpp \
             src/player_scores.cpp \
+            src/player_screen.cpp \
             src/player_spell.cpp \
             src/player_util.cpp \          
             src/project.cpp \
@@ -95,9 +96,6 @@ SOURCES +=  src/qt_main.cpp\
             src/timed.cpp \
             src/utilities.cpp \
             src/wizard_mode.cpp
-
-
-
 
 
 
@@ -133,6 +131,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/player_command.h \
             src/player_info.h \
             src/player_scores.h \
+            src/player_screen.h \
             src/spells.h \
             src/birthdialog.h \
             src/emitter.h \
@@ -144,12 +143,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/wizard_mode.h \
             src/player_death.h \
-            src/dun_traps.h \
-
-
-
-
-
+            src/dun_traps.h
 
 
 RESOURCES += \

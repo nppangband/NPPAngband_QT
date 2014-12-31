@@ -491,9 +491,6 @@ static void rd_monster(monster_type *m_ptr)
 }
 
 
-
-
-
 /*
  * Read an object
  *
@@ -540,15 +537,11 @@ static int rd_effect(void)
     /*Write it, unless it is an empty effect*/
     if (type) effect_prep(x_idx, type, f_idx, y, x, countdown, repeats, power, source, flags);
 
-    /* Read a new field, a monster race for inscriptions */
-    if (!older_than(0,4,8))
-    {
-        s16b r_idx;
+    s16b r_idx;
 
-        rd_s16b(&r_idx);
+    rd_s16b(&r_idx);
 
-        x_list[x_idx].x_r_idx = (type ? r_idx: 0);
-    }
+    x_list[x_idx].x_r_idx = (type ? r_idx: 0);
 
     /* Success */
     return (0);
@@ -713,8 +706,9 @@ static int rd_artifact_lore(int a_idx)
     /* Read flags */
     rd_byte(&tmp8u);
 
-    /* The artifact was fully identified */
-    a_l_list[a_idx].was_fully_identified = ((tmp8u & 0x01) != 0);
+    // Remember whether the artifact was fully identified.
+    if (!tmp8u) a_l_list[a_idx].was_fully_identified = FALSE;
+    else a_l_list[a_idx].was_fully_identified = TRUE;
 
     /* For future use */
     rd_byte(&tmp8u);
@@ -740,9 +734,6 @@ static int rd_feature_lore(int f_idx)
 
     /* Activate the "everseen" flag, if needed */
     f_ptr->f_everseen = (tmp8u & 0x01);
-
-    /*Success, for older savefiles*/
-    if (older_than(0, 4, 3)) return (0);
 
     /* Write the terrain_lore memory*/
     rd_byte(&f_l_ptr->f_l_sights);
@@ -1142,11 +1133,8 @@ static int rd_extra(void)
 
         if (i < file_e_max) rd_byte(&tmp8u);
 
-        e_ptr->squelch = ((tmp8u & 0x01) != 0);
-        e_ptr->everseen = ((tmp8u & 0x02) != 0);
-
-        /* Hack - Repair the savefile */
-        if (!e_ptr->everseen) e_ptr->squelch = FALSE;
+        if (!tmp8u) e_ptr->squelch = FALSE;
+        else e_ptr->squelch = TRUE;
     }
 
     /* Read possible extra elements */
@@ -2014,28 +2002,6 @@ static int rd_savefile(void)
     rd_messages();
     if (arg_fiddle) status_update.setText (QString(QObject::tr("Loaded Messages")));
 
-    rd_scores();
-    if (arg_fiddle) status_update.setText (QString(QObject::tr("Loaded Scores")));
-
-    /* Monster Memory */
-    rd_u16b(&tmp16u);
-
-    /* Incompatible save files */
-    if (tmp16u > z_info->r_max)
-    {
-        pop_up_message_box(QString("Too many (%1) monster races!") .arg(tmp16u));
-        return (-1);
-    }
-
-    /* Read the available records */
-    for (i = 0; i < tmp16u; i++)
-    {
-        /* Read the lore */
-        rd_monster_lore(i);
-    }
-    if (arg_fiddle) status_update.setText (QString(QObject::tr("Loaded Monster Memory")));
-
-
     /* Object Memory */
     rd_u16b(&tmp16u);
 
@@ -2057,7 +2023,6 @@ static int rd_savefile(void)
 
         k_ptr->aware = (tmp8u & 0x01) ? TRUE: FALSE;
         k_ptr->tried = (tmp8u & 0x02) ? TRUE: FALSE;
-        k_ptr->everseen = (tmp8u & 0x08) ? TRUE: FALSE;
 
         rd_byte(&k_ptr->squelch);
 
@@ -2069,8 +2034,7 @@ static int rd_savefile(void)
             k_ptr->use_verify[i] = tmp8u;
         }
 
-        /* Hack - Repair the savefile */
-        if (!k_ptr->everseen) k_ptr->squelch = SQUELCH_NEVER;
+
 
     }
     if (arg_fiddle) pop_up_message_box("Loaded Object Memory");
@@ -2133,7 +2097,6 @@ static int rd_savefile(void)
     }
     if (arg_fiddle) pop_up_message_box("Loaded Artifacts");
 
-
     /* Read the extra stuff */
     if (rd_extra()) return (-1);    
     if (arg_fiddle) pop_up_message_box("Loaded extra information");
@@ -2169,39 +2132,6 @@ static int rd_savefile(void)
     for (i = 0; i < tmp16u; i++)
     {
         if (rd_store(i)) return (-1);
-    }    
-
-    /* Read the stored number of terrain features */
-    rd_u16b(&tmp16u);
-
-    /* Check bounds */
-    if (tmp16u > z_info->f_max)
-    {
-        pop_up_message_box(QString("Too many (%1) terrain features!") .arg(tmp16u));
-        return (-1);
-    }
-
-    /* Read terrain lore */
-    for (i = 0; i < tmp16u; i++)
-    {
-        if (rd_feature_lore(i)) return (-1);
-    }    
-
-    /* Artifact lore */
-    /* Read the stored number of artifacts (normal + special) */
-    rd_u16b(&tmp16u);
-
-    /* Check bounds */
-    if (tmp16u > z_info->art_norm_max)
-    {
-        pop_up_message_box(QString("Too many (%1) artifacts!") .arg(tmp16u));
-        return (-1);
-    }
-
-    /* Read artifact lore */
-    for (i = 0; i < tmp16u; i++)
-    {
-        if (rd_artifact_lore(i)) return (-1);
     }    
 
     /* I'm not dead yet... */
@@ -2276,6 +2206,212 @@ static int read_savefile(void)
     return (TRUE);
 }
 
+/* Open and read the player scores file,
+ * verify correct savefile version #
+ * returns false if anything fails
+ */
+static bool load_scores(void)
+{
+    byte this_game_mode;
+
+    QString scores_filename = QString("scores.npp");
+
+    if (game_mode == GAME_NPPANGBAND) scores_filename.prepend("nppangband_");
+    else if (game_mode == GAME_NPPMORIA) scores_filename.prepend("nppmoria_");
+    else return (FALSE);
+
+    scores_filename.prepend(QString("%1") .arg(NPP_DIR_BONE));
+
+    save_file.setFileName(scores_filename);
+
+    /* Okay */
+    if (!save_file.open(QIODevice::ReadOnly))
+    {
+        /* Message (below) */
+        pop_up_message_box("Cannot open savefile");
+
+        return (FALSE);
+    }
+
+    // Ensure the data is read and written consistently
+    in.setVersion(QDataStream::Qt_5_1);
+
+    /* Extract version */
+    rd_byte(&sf_major);
+    rd_byte(&sf_minor);
+    rd_byte(&sf_patch);
+    rd_byte(&sf_extra);
+    rd_byte(&this_game_mode);
+
+    if (this_game_mode!= game_mode)
+    {
+        pop_up_message_box("invalid scores_file");
+        return (FALSE);
+    }
+
+    if (!older_than(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH + 1))
+    {
+        pop_up_message_box("Scores file is from the future.");
+        return (FALSE);
+    }
+
+    rd_scores();
+
+    // Success
+    return (TRUE);
+}
+
+/* Open and read the player scores file,
+ * verify correct savefile version #
+ * returns false if anything fails
+ */
+static bool load_memory(void)
+{
+    byte this_game_mode;
+
+    u16b tmp16u;
+    byte tmp8u;
+    int i;
+
+    QString memory_filename = QString("memory.npp");
+
+    if (game_mode == GAME_NPPANGBAND) memory_filename.prepend("nppangband_");
+    else if (game_mode == GAME_NPPMORIA) memory_filename.prepend("nppmoria_");
+    else return (FALSE);
+
+    memory_filename.prepend(QString("%1") .arg(NPP_DIR_BONE));
+
+    save_file.setFileName(memory_filename);
+
+    /* Okay */
+    if (!save_file.open(QIODevice::ReadOnly))
+    {
+        /* Message (below) */
+        pop_up_message_box("Cannot open savefile");
+
+        return (FALSE);
+    }
+
+    // Ensure the data is read and written consistently
+    in.setVersion(QDataStream::Qt_5_1);
+
+    /* Extract version */
+    rd_byte(&sf_major);
+    rd_byte(&sf_minor);
+    rd_byte(&sf_patch);
+    rd_byte(&sf_extra);
+    rd_byte(&this_game_mode);
+
+    if (this_game_mode!= game_mode)
+    {
+        pop_up_message_box("invalid memory_file");
+        return (FALSE);
+    }
+
+    if (!older_than(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH + 1))
+    {
+        pop_up_message_box("Memory file is from the future.");
+        return (FALSE);
+    }
+
+
+    /* Monster Memory */
+    rd_u16b(&tmp16u);
+
+    /* Incompatible save files */
+    if (tmp16u > z_info->r_max)
+    {
+        pop_up_message_box(QString("Too many (%1) monster races!") .arg(tmp16u));
+        return (-1);
+    }
+
+    /* Read the available records */
+    for (i = 0; i < tmp16u; i++)
+    {
+        /* Read the lore */
+        rd_monster_lore(i);
+    }
+
+    /* Read the stored number of terrain features */
+    rd_u16b(&tmp16u);
+
+    /* Check bounds */
+    if (tmp16u > z_info->f_max)
+    {
+        pop_up_message_box(QString("Too many (%1) terrain features!") .arg(tmp16u));
+        return (FALSE);
+    }
+
+    /* Read terrain lore */
+    for (i = 0; i < tmp16u; i++)
+    {
+        if (rd_feature_lore(i)) return (FALSE);
+    }
+
+    /* Artifact lore */
+    /* Read the stored number of artifacts (normal + special) */
+    rd_u16b(&tmp16u);
+
+    /* Check bounds */
+    if (tmp16u > z_info->art_norm_max)
+    {
+        pop_up_message_box(QString("Too many (%1) artifacts!") .arg(tmp16u));
+        return (FALSE);
+    }
+
+    /* Read artifact lore */
+    for (i = 0; i < tmp16u; i++)
+    {
+        if (rd_artifact_lore(i)) return (FALSE);
+    }
+
+     /* Object Memory */
+    rd_u16b(&tmp16u);
+
+    /* Incompatible save files */
+    if (tmp16u > z_info->k_max)
+    {
+        pop_up_message_box(QString("Too many (%1) object kinds!") .arg(tmp16u));
+        return (FALSE);
+    }
+
+    /* Read object everseen */
+    for (i = 0; i < tmp16u; i++)
+    {
+        object_kind *k_ptr = &k_info[i];
+
+        rd_byte(&tmp8u);
+
+        if (!tmp8u) k_ptr->everseen = FALSE;
+        else k_ptr->everseen = TRUE;
+
+        /* Hack - Repair the savefile */
+        if (!k_ptr->everseen) k_ptr->squelch = SQUELCH_NEVER;
+    }
+
+    /* Read the number of saved ego-item types */
+    rd_u16b(&tmp16u);
+
+    /* Read ego-item squelch settings */
+    for (i = 0; i < z_info->e_max; i++)
+    {
+        ego_item_type *e_ptr = &e_info[i];
+
+        tmp8u = 0;
+
+        if (i < tmp16u) rd_byte(&tmp8u);
+
+        if (!tmp8u) e_ptr->everseen = FALSE;
+        else e_ptr->everseen = TRUE;
+
+        /* Hack - Repair the savefile */
+        if (!e_ptr->everseen) e_ptr->squelch = FALSE;
+    }
+
+
+    // Success
+    return (TRUE);
+}
 
 /*
  * Attempt to Load a "savefile"
@@ -2329,18 +2465,6 @@ bool load_player(void)
         return (FALSE);
     }
 
-    /* Invalid turn */
-    if (!turn)
-    {
-#if 0
-        pop_up_message_box("Broken savefile");
-
-        // We are done with the file
-        save_file.close();
-        return (FALSE);
-#endif
-    }
-
     /* Give a conversion warning */
     if ((VERSION_MAJOR != sf_major) ||
         (VERSION_MINOR != sf_minor) ||
@@ -2354,7 +2478,7 @@ bool load_player(void)
     /* Player is dead */
     if (p_ptr->is_dead)
     {
-        /*note, add or_true to the arg wixard if statement to resurrect character*/
+        /*note, add or_true to the arg wizard if statement to resurrect character*/
         /* Cheat death (unless the character retired) */
         if (p_ptr->is_wizard)
         {
@@ -2404,6 +2528,9 @@ bool load_player(void)
 
     // We are done with the file
     save_file.close();
+
+    if (!load_scores()) return (FALSE);
+    if (!load_memory()) return (FALSE);
 
     /* Success */
     return (TRUE);

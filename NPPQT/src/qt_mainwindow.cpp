@@ -3072,11 +3072,13 @@ void MainWindow::load_file(const QString &file_name)
 
             load_messages();
 
-            if (!character_loaded) {
+            if (!character_loaded)
+            {
                 save_prev_character();
                 launch_birth(true);
             }
-            else {
+            else
+            {
                 update_file_menu_game_active();
                 launch_game();
                 ui_player_moved();
