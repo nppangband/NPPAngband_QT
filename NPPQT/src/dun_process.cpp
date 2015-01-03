@@ -1440,8 +1440,8 @@ static void process_world(void)
         else chance = 40;
 
         /* After sufficient time, can learn about the level */
-        if ((rand_int(chance) < p_ptr->state.skills[SKILL_SEARCH]) &&
-            (rand_int(chance) < p_ptr->state.skills[SKILL_SEARCH]))
+        if ((rand_int(chance) < p_ptr->state.skills[SKILL_SEARCH_CHANCE]) &&
+            (rand_int(chance) < p_ptr->state.skills[SKILL_SEARCH_CHANCE]))
         {
             /* Now have a feeling */
             do_feeling = TRUE;

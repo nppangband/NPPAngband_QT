@@ -30,18 +30,7 @@
 void AllObjectsDialog::update_header()
 {
     //max capactity in ounces
-    u16b max_capacity;
-
-    if (game_mode == GAME_NPPMORIA)
-    {
-        max_capacity = adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *5;
-    }
-    else //game_mode == GAME_NPPANGBAND
-    {
-        // Slowing starts at 60% of max_weight
-        // and increases by 1 every extra 10%
-        max_capacity = 60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]];
-    }
+    u16b max_capacity = normal_speed_weight_limit();
 
     u32b weight_percent = p_ptr->total_weight * 100 / max_capacity;
 

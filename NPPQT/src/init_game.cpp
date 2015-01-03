@@ -1292,6 +1292,9 @@ void init_npp_games(void)
     status_update.setText (QString(QObject::tr("Initialization complete")));
     status_update.hide();
 
+    // Calculate the maximum possible abilities for each race/class combo.
+    pam_ptr->calculate_maximums();
+
 
 }
 

@@ -403,12 +403,10 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     mon_knowledge_hlay->addWidget(monster_table);
 
     //Add a close button on the right side
-    QHBoxLayout *close_across = new QHBoxLayout;
-    main_layout->addLayout(close_across);
-    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    close_across->addWidget(buttons);
+    QDialogButtonBox buttons;
+    buttons.setStandardButtons(QDialogButtonBox::Close);
+    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(&buttons);
 
     //Flter for the first monster group.
     filter_rows(0,0);

@@ -252,8 +252,8 @@ int rogue_shot(const object_type *o_ptr, int *plus, player_state shot_state)
     return (1);
 }
 
-/* Brigands can sometimes get extra damage with a sling. */
-static int brigand_shot(const object_type *o_ptr, u32b mon_race_flag_r1, bool asleep, player_state shot_state)
+/* Brigands can sometimes get extra multiplier with a sling. */
+int brigand_shot(const object_type *o_ptr, u32b mon_race_flag_r1, bool asleep, player_state shot_state)
 {
     int extra_dam = 0;
 

@@ -554,7 +554,7 @@ enum
     SKILL_DEVICE,			/* Skill: Magic Devices */
     SKILL_SAVE,				/* Skill: Saving throw */
     SKILL_STEALTH,			/* Skill: Stealth factor */
-    SKILL_SEARCH,			/* Skill: Searching ability */
+    SKILL_SEARCH_CHANCE,	/* Skill: Searching ability */
     SKILL_SEARCH_FREQUENCY,	/* Skill: Searching frequency */
     SKILL_TO_HIT_MELEE,		/* Skill: To hit (normal) */
     SKILL_TO_HIT_BOW,		/* Skill: To hit (shooting) */
@@ -579,6 +579,9 @@ enum
 
     A_MAX
 };
+
+#define STAT_TABLE_SIZE         38
+#define STAT_TABLE_MAX_VALUE    (STAT_TABLE_SIZE - 1)
 
 /*** Player flags ***/
 
@@ -898,6 +901,8 @@ enum
 #define NPPMORIA_NORMAL_SPEED	11
 #define STANDARD_ENERGY_GAIN	10
 
+#define NPPANGBAND_SPEED_TABLE 200
+#define NPPANGBAND_MAX_SPEED   (NPPANGBAND_SPEED_TABLE - 1)
 
 #define DIR_UNKNOWN 0
 #define DIR_TARGET 5

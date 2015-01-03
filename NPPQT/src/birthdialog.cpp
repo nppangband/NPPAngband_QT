@@ -279,7 +279,7 @@ void BirthDialog::update_others()
     int xdev = p_ptr->state.skills[SKILL_DEVICE];
     int xsav = p_ptr->state.skills[SKILL_SAVE];
     int xstl = p_ptr->state.skills[SKILL_STEALTH];
-    int xsrh = p_ptr->state.skills[SKILL_SEARCH];
+    int xsrh = p_ptr->state.skills[SKILL_SEARCH_CHANCE];
     int xfos = p_ptr->state.skills[SKILL_SEARCH_FREQUENCY];
 
     if (xsav < 0) xsav = 0;

@@ -24,7 +24,7 @@
 #include "src/qt_mainwindow.h"
 #include "src/init.h"
 #include "src/optionsdialog.h"
-
+#include <src/player_screen.h>
 #include "src/birthdialog.h"
 #include "src/utilities.h"
 #include "src/knowledge.h"
@@ -1443,48 +1443,6 @@ static void display_mon(QTableWidget *sidebar, int row, int m_idx)
 
 }
 
-QString moria_speed_labels(int speed)
-{
-    if (speed < NPPMORIA_LOWEST_SPEED) speed = NPPMORIA_LOWEST_SPEED;
-    else if (speed > NPPMORIA_MAX_SPEED) speed = NPPMORIA_MAX_SPEED;
-
-    switch (speed)
-    {
-        case NPPMORIA_LOWEST_SPEED:
-        {
-            return "Very slow";
-        }
-        case (NPPMORIA_LOWEST_SPEED + 1):
-        {
-            return "Slow";
-        }
-        case NPPMORIA_MAX_SPEED:
-        {
-            return "Max speed";
-        }
-        case (NPPMORIA_MAX_SPEED - 1):
-        {
-            return "Very fast";
-        }
-        case (NPPMORIA_MAX_SPEED - 2):
-        {
-            return "Fast";
-        }
-        default: return "Normal";
-    }
-}
-
-
-/*
- * Hack - Modify the color based on speed bonuses. -DG-
- */
-static byte analyze_speed_bonuses(byte default_attr)
-{
-    if (p_ptr->timed[TMD_SLOW])	return (TERM_ORANGE);
-    else if (p_ptr->timed[TMD_FAST])	return (TERM_VIOLET);
-    else	return (default_attr);
-}
-
 
 /*
  * Prints the speed of a character.			-CJS-
@@ -1495,6 +1453,7 @@ static void prt_speed(QTableWidget *sidebar, int row)
 
     byte attr = TERM_WHITE;
     QString str;
+    str.clear();
 
     QTableWidgetItem *item = sidebar->item(row, 0);
 
@@ -1504,7 +1463,7 @@ static void prt_speed(QTableWidget *sidebar, int row)
     /* Boundry Control */
     if (game_mode == GAME_NPPMORIA)
     {
-        attr = analyze_speed_bonuses(TERM_L_GREEN);
+        attr = analyze_speed_bonuses(i, TERM_L_GREEN);
         str = moria_speed_labels(i);
 
         /* Display the speed */
@@ -1518,12 +1477,12 @@ static void prt_speed(QTableWidget *sidebar, int row)
     /* Fast */
     else if (i > 110)
     {
-        attr = analyze_speed_bonuses(TERM_L_GREEN);
+        attr = analyze_speed_bonuses(i, TERM_L_GREEN);
         str = QString("Fast (+%1)").arg(i - 110);
     }
     else if (i < 110)
     {
-        attr = analyze_speed_bonuses(TERM_L_UMBER);
+        attr = analyze_speed_bonuses(i, TERM_L_GREEN);
         str = QString("Slow (-%1)").arg(110 - i);
     }
 
@@ -2299,7 +2258,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_C:
         {
-            do_cmd_close();
+            if (shift_key) do_cmd_player_screen();
+            else do_cmd_close();
             return;
         }
 

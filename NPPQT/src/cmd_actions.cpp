@@ -1443,7 +1443,7 @@ void do_search(void)
 
 
     /* Start with base search ability */
-    chance = p_ptr->state.skills[SKILL_SEARCH];
+    chance = p_ptr->state.skills[SKILL_SEARCH_CHANCE];
 
     /* Penalize various conditions */
     if (p_ptr->timed[TMD_BLIND] || no_light()) chance = chance / 10;
@@ -2753,8 +2753,8 @@ void command_hold(cmd_arg args)
     int energy = BASE_ENERGY_MOVE;
 
     /* Spontaneous Searching */
-    if ((p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] >= 50) ||
-        (0 == rand_int(50 - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY])))
+    if ((p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] >= SEARCH_CHANCE_MAX) ||
+        (0 == rand_int(SEARCH_CHANCE_MAX - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY])))
     {
         do_search();
     }

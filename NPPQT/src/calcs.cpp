@@ -693,7 +693,7 @@ static void calc_nativity(void)
 /*
  * Computes current weight limit in ounces.
  */
-static int weight_limit(void)
+int weight_limit(void)
 {
     int i;
 
@@ -702,6 +702,20 @@ static int weight_limit(void)
 
     /* Return the result */
     return (i);
+}
+
+// returned in deca-pounds
+int normal_speed_weight_limit(void)
+{
+    // In Moria it is half the weight limit
+    if (game_mode == GAME_NPPMORIA)
+    {
+        return (adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *50);
+    }
+
+    // Slowing starts at 60% of max_weight
+    // and increases by 1 every extra 10%
+    return (60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]]);
 }
 
 
@@ -758,7 +772,7 @@ void calc_stealth(void)
     if ((p_ptr->state.skills[SKILL_STEALTH] != old_skill_stl) || (!p_ptr->state.skills[SKILL_STEALTH]))
     {
         /* Assume character is extremely noisy. */
-        p_ptr->base_wakeup_chance = 100 * WAKEUP_ADJ;
+        p_ptr->base_wakeup_chance = WAKEUP_MAX;
 
         /* For every increase in stealth past 0, multiply wakeup chance by 0.8. */
         for (i = 0; i < p_ptr->state.skills[SKILL_STEALTH]; i++)
@@ -766,9 +780,9 @@ void calc_stealth(void)
             p_ptr->base_wakeup_chance = 4 * p_ptr->base_wakeup_chance / 5;
 
             /* Always make at least some innate noise */
-            if (p_ptr->base_wakeup_chance < 50)
+            if (p_ptr->base_wakeup_chance < WAKEUP_MIN)
             {
-                p_ptr->base_wakeup_chance = 50;
+                p_ptr->base_wakeup_chance = WAKEUP_MIN;
                 break;
             }
         }
@@ -787,7 +801,8 @@ byte calc_energy_gain(byte speed)
         return (extract_energy_nppmoria[speed - NPPMORIA_LOWEST_SPEED]);
     }
 
-    if (speed > 199) speed = 199;
+    // Boundry control
+    if (speed > NPPANGBAND_MAX_SPEED) speed = 199;
 
     return (extract_energy_nppangband[speed]);
 }
@@ -910,9 +925,9 @@ int calc_blows(object_type *o_ptr, player_state *new_state)
 
     /* Boundary control */
     if (str_ind <  0) str_ind =  0;
-    if (str_ind > 37) str_ind = 37;
+    if (str_ind > STAT_TABLE_MAX_VALUE) str_ind = STAT_TABLE_MAX_VALUE;
     if (dex_ind <  0) dex_ind =  0;
-    if (dex_ind > 37) dex_ind = 37;
+    if (dex_ind > STAT_TABLE_MAX_VALUE) dex_ind = STAT_TABLE_MAX_VALUE;
 
     /* Enforce a minimum "weight" (tenth pounds) */
     divide_by = ((o_ptr->weight < cp_ptr->min_weight) ? cp_ptr->min_weight : o_ptr->weight);
@@ -1065,7 +1080,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     new_state->skills[SKILL_SAVE] = rp_ptr->r_sav + cp_ptr->c_sav;
 
     /* Base skill -- searching ability */
-    new_state->skills[SKILL_SEARCH] = rp_ptr->r_srh + cp_ptr->c_srh;
+    new_state->skills[SKILL_SEARCH_CHANCE] = rp_ptr->r_srh + cp_ptr->c_srh;
 
     /* Base skill -- searching frequency */
     new_state->skills[SKILL_SEARCH_FREQUENCY] = rp_ptr->r_fos + cp_ptr->c_fos;
@@ -1180,7 +1195,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (f1 & (TR1_CHR)) 		new_state->stat_add[A_CHR] += o_ptr->pval;
 
         /* Affect searching ability (factor of five) */
-        if (f1 & (TR1_SEARCH)) 		new_state->skills[SKILL_SEARCH] += (o_ptr->pval * 5);
+        if (f1 & (TR1_SEARCH)) 		new_state->skills[SKILL_SEARCH_CHANCE] += (o_ptr->pval * 5);
 
         /* Affect searching frequency (factor of five) */
         if (f1 & (TR1_SEARCH)) 		new_state->skills[SKILL_SEARCH_FREQUENCY] += (o_ptr->pval * 5);
@@ -1369,7 +1384,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         else if (use <= 18+219) ind = (15 + (use - 18) / 10);
 
         /* Range: 18/220+ */
-        else ind = (37);
+        else ind = (STAT_TABLE_MAX_VALUE);
 
         /* Save the new index */
         new_state->stat_ind[i] = ind;
@@ -1576,7 +1591,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     new_state->skills[SKILL_SAVE] += (cp_ptr->x_sav * p_ptr->lev / 10);
 
     /* Affect Skill -- search ability (Level, by Class) */
-    new_state->skills[SKILL_SEARCH] += (cp_ptr->x_srh * p_ptr->lev / 10);
+    new_state->skills[SKILL_SEARCH_CHANCE] += (cp_ptr->x_srh * p_ptr->lev / 10);
 
     /* Affect Skill -- search frequency (Level, by Class) */
     new_state->skills[SKILL_SEARCH_FREQUENCY] += (cp_ptr->x_fos * p_ptr->lev / 10);
@@ -1592,6 +1607,9 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
 
     /* Limit Skill -- digging from 1 up */
     if (new_state->skills[SKILL_DIGGING] < 1) new_state->skills[SKILL_DIGGING] = 1;
+
+    if (cp_ptr->flags & (CF_ROGUE_COMBAT)) new_state->skills[SKILL_TO_HIT_THROW] += 20 +  p_ptr->lev / 3;
+    if (cp_ptr->flags & (CF_BRIGAND_COMBAT)) new_state->skills[SKILL_TO_HIT_THROW] += 20 +  p_ptr->lev / 3;
 
     /* Obtain the "hold" value */
     hold = adj_str_hold[new_state->stat_ind[A_STR]];

@@ -946,8 +946,8 @@ int move_player(int dir, int jumping)
 		}
 
 		/* Spontaneous Searching */
-		if ((p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] >= 50) ||
-			(0 == rand_int(50 - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY])))
+        if ((p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] >= SEARCH_CHANCE_MAX) ||
+            (0 == rand_int(SEARCH_CHANCE_MAX - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY])))
 		{
             do_search();
 		}

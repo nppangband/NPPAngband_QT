@@ -23,6 +23,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QDialogButtonBox>
 
 
 
@@ -66,18 +67,16 @@ DisplayNotesFile::DisplayNotesFile(void)
         notes_info->addWidget(game_event, row, col++, Qt::AlignLeft | Qt::AlignTop);
     }
 
-    //Add a close button on the right side
-    QHBoxLayout *close_across = new QHBoxLayout;
-    main_layout->addLayout(close_across);
-    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    close_across->addWidget(buttons);
+    main_layout->addWidget(buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Notes and Accomplishments"));
 
     this->exec();
+    //cleanup
+
 }
 
 void display_notes_file(void)
@@ -118,12 +117,10 @@ DisplayHomeInven::DisplayHomeInven(void)
     }
 
     //Add a close button on the right side
-    QHBoxLayout *close_across = new QHBoxLayout;
-    main_layout->addLayout(close_across);
-    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    close_across->addWidget(buttons);
+    QDialogButtonBox buttons;
+    buttons.setStandardButtons(QDialogButtonBox::Close);
+    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(&buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Home Inventory"));
@@ -290,12 +287,10 @@ DisplayScores::DisplayScores(void)
     scores_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     //Add a close button on the right side
-    QHBoxLayout *close_across = new QHBoxLayout;
-    main_layout->addLayout(close_across);
-    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    close_across->addWidget(buttons);
+    QDialogButtonBox buttons;
+    buttons.setStandardButtons(QDialogButtonBox::Close);
+    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(&buttons);
 
     setLayout(main_layout);
     setWindowTitle("Player Scores");
@@ -423,12 +418,10 @@ DisplayMonKillCount::DisplayMonKillCount(void)
 
 
     //Add a close button on the right side
-    QHBoxLayout *close_across = new QHBoxLayout;
-    main_layout->addLayout(close_across);
-    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    close_across->addWidget(buttons);
+    QDialogButtonBox buttons;
+    buttons.setStandardButtons(QDialogButtonBox::Close);
+    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(&buttons);
 
     setLayout(main_layout);
     setWindowTitle(QString("Monster Kill Count"));

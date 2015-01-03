@@ -520,7 +520,17 @@ public:
 
 };
 
+class player_attribute_maximums
+{
+public:
 
+   s16b max_skills[SKILL_MAX];	/* Skills */
+   s16b max_p_speed;       // Max energy gain
+   s16b max_wakeup_chance; //for stealth
+
+    // This wipes the structure as well.
+    void calculate_maximums();
+};
 
 
 

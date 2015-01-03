@@ -301,10 +301,13 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define BASE_ENERGY_FLYING	BASE_ENERGY_MOVE
 
 /*
- * Percentage of maximum noise you can make just walking around, given a
- * stealth of zero.
+ * Minimum noise you can make just walking around, given
+ * perfect stealth.  Maximum noise is this *100
  */
-#define WAKEUP_ADJ      20
+#define WAKEUP_MIN      20
+#define WAKEUP_MAX      (WAKEUP_MIN * 100)
+
+#define SEARCH_CHANCE_MAX   50
 
 
 /*

@@ -60,6 +60,7 @@ extern player_class *cp_ptr;
 extern player_magic *mp_ptr;
 extern player_other *op_ptr;
 extern player_type *p_ptr;
+extern player_attribute_maximums *pam_ptr;
 extern vault_type *v_info;
 extern feature_type *f_info;
 extern feature_lore *f_l_list;

@@ -325,3 +325,101 @@ bool player_type::chooses_spells(void)
     return (FALSE);
 }
 
+// Calculate the maximum possible score for each player ability.
+// Called once after the game is initialized
+void player_attribute_maximums::calculate_maximums()
+{
+    s16b current_calcs[SKILL_MAX];
+    int i;
+
+    for (i = 0; i < SKILL_MAX; i++) max_skills[i] = 1;
+
+    for(int r = 0; r < z_info->p_max; r++)
+    {
+
+        for(int c = 0; c < z_info->c_max; c++)
+        {
+            for (i = 0; i < SKILL_MAX; i++) current_calcs[i] = 0;
+
+            // All these calcs need to be kept consistent with calcs.cpp
+            current_calcs[SKILL_DISARM] = p_info[r].r_dis + c_info[c].c_dis;
+            current_calcs[SKILL_DEVICE] = p_info[r].r_dev + c_info[c].c_dev;
+            current_calcs[SKILL_SAVE] = p_info[r].r_sav + c_info[c].c_sav;
+            current_calcs[SKILL_STEALTH] = p_info[r].r_stl + c_info[c].c_stl + 1;
+            current_calcs[SKILL_SEARCH_CHANCE] = p_info[r].r_srh + c_info[c].c_srh;
+            current_calcs[SKILL_SEARCH_FREQUENCY] = p_info[r].r_fos + c_info[c].c_fos;
+            current_calcs[SKILL_TO_HIT_MELEE] = p_info[r].r_thn + c_info[c].c_thn;
+            current_calcs[SKILL_TO_HIT_BOW] = p_info[r].r_thb + c_info[c].c_thb;
+            current_calcs[SKILL_TO_HIT_THROW] = p_info[r].r_thb + c_info[c].c_thb;
+            current_calcs[SKILL_DIGGING] = 0;
+
+            if (game_mode == GAME_NPPMORIA)
+            {
+
+                current_calcs[SKILL_DEVICE] += (moria_class_level_adj[c][MORIA_CLA_DEVICE] * z_info->max_level / 3);
+                current_calcs[SKILL_DISARM] += (moria_class_level_adj[c][MORIA_CLA_DISARM] * z_info->max_level / 3);
+                current_calcs[SKILL_TO_HIT_MELEE] += (moria_class_level_adj[c][MORIA_CLA_BTH] * z_info->max_level);
+                current_calcs[SKILL_SAVE] += (moria_class_level_adj[c][MORIA_CLA_SAVE] * z_info->max_level / 3);
+                current_calcs[SKILL_TO_HIT_BOW] += (moria_class_level_adj[c][MORIA_CLA_BTHB] * z_info->max_level);
+                current_calcs[SKILL_TO_HIT_THROW] += (moria_class_level_adj[c][MORIA_CLA_BTHB] * z_info->max_level);
+            }
+            else // GAME_NPPANGBAND
+            {
+                // assume max
+                current_calcs[SKILL_DISARM] += adj_dex_dis[STAT_TABLE_MAX_VALUE];
+                current_calcs[SKILL_DISARM] += adj_int_dis[STAT_TABLE_MAX_VALUE];
+
+                /* Affect Skill -- magic devices (INT) */
+                current_calcs[SKILL_DEVICE] += adj_int_dev[STAT_TABLE_MAX_VALUE];
+
+                /* Affect Skill -- saving throw (WIS) */
+                current_calcs[SKILL_SAVE] += adj_wis_sav[STAT_TABLE_MAX_VALUE];
+            }
+
+            current_calcs[SKILL_DIGGING] += adj_str_dig[STAT_TABLE_MAX_VALUE];
+            current_calcs[SKILL_DISARM] += (c_info[c].x_dis * z_info->max_level / 10);
+            current_calcs[SKILL_DEVICE] += (c_info[c].x_dev * z_info->max_level / 10);
+            current_calcs[SKILL_SAVE] += (c_info[c].x_sav * z_info->max_level / 10);
+            current_calcs[SKILL_SEARCH_CHANCE] += (c_info[c].x_srh * z_info->max_level / 10);
+            current_calcs[SKILL_SEARCH_FREQUENCY] += (c_info[c].x_fos * z_info->max_level / 10);
+            current_calcs[SKILL_TO_HIT_MELEE] += (c_info[c].x_thn * z_info->max_level / 10);
+            current_calcs[SKILL_TO_HIT_BOW] += (c_info[c].x_thb * z_info->max_level / 10);
+            current_calcs[SKILL_TO_HIT_THROW] += (c_info[c].x_thb * z_info->max_level / 10);
+            current_calcs[SKILL_STEALTH] += (c_info[c].c_stl * z_info->max_level / 10);
+
+            if (c_info[c].flags & (CF_ROGUE_COMBAT)) current_calcs[SKILL_TO_HIT_THROW] += 20 +  z_info->max_level / 3;
+            if (c_info[c].flags & (CF_BRIGAND_COMBAT)) current_calcs[SKILL_TO_HIT_THROW] += 20 +  z_info->max_level / 3;
+
+            // Now see if we have a new maximum;
+            for (i = 0; i < SKILL_MAX; i++)
+            {
+                if (max_skills[i] < current_calcs[i]) max_skills[i] = current_calcs[i];
+            }
+        }
+    }
+
+    // Now work on stealth calculations;
+    if (max_skills[SKILL_STEALTH] > 30) max_skills[SKILL_STEALTH] = 30;
+
+    max_wakeup_chance = WAKEUP_MAX;
+
+    for (i = 0; i < max_skills[SKILL_STEALTH]; i++)
+    {
+        max_wakeup_chance = 4 * max_wakeup_chance / 5;
+
+        /* Always make at least some innate noise */
+        if (max_wakeup_chance < WAKEUP_MIN)
+        {
+            max_wakeup_chance = WAKEUP_MIN;
+            break;
+        }
+    }
+
+    // Saving throw tops out at 100%
+    if (max_skills[SKILL_SAVE] > 100) max_skills[SKILL_SAVE] = 100;
+
+    if (game_mode == GAME_NPPMORIA) max_p_speed = calc_energy_gain(NPPMORIA_MAX_SPEED);
+    // GAME_NPPANGBAND
+    else max_p_speed = calc_energy_gain(NPPANGBAND_MAX_SPEED);
+
+}

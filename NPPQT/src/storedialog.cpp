@@ -1371,18 +1371,21 @@ StatDialog::StatDialog(int service, byte *stat_selected)
     QLabel *race_adj_header = new QLabel("Race Adj.");
     QLabel *class_adj_header = new QLabel("Class Adj");
     QLabel *equip_adj_header = new QLabel("Equip Adj");
+    QLabel *reward_adj_header = new QLabel("Reward_Adj");
     QLabel *total_stat_header = new QLabel("Total Stat");
     stat_header->setAlignment(Qt::AlignLeft);
     self_header->setAlignment(Qt::AlignLeft);
     race_adj_header->setAlignment(Qt::AlignCenter);
     class_adj_header->setAlignment(Qt::AlignCenter);
     equip_adj_header->setAlignment(Qt::AlignCenter);
+    reward_adj_header->setAlignment(Qt::AlignCenter);
     total_stat_header->setAlignment(Qt::AlignLeft);
     stat_layout->addWidget(stat_header, row, col++);
     stat_layout->addWidget(self_header, row, col++);
     if (adult_maximize) stat_layout->addWidget(race_adj_header, row, col++);
     if (adult_maximize) stat_layout->addWidget(class_adj_header, row, col++);
     stat_layout->addWidget(equip_adj_header, row, col++);
+    if (!adult_no_quests) stat_layout->addWidget(reward_adj_header, row, col++);
     stat_layout->addWidget(total_stat_header, row, col++);
 
     for (int i = 0; i < A_MAX; i++)
@@ -1415,7 +1418,7 @@ StatDialog::StatDialog(int service, byte *stat_selected)
 
         if (adult_maximize)
         {
-            QLabel *race_adj = new QLabel(QString("%1") .arg(rp_ptr->r_adj[i] + p_ptr->stat_quest_add[i]));
+            QLabel *race_adj = new QLabel(QString("%1") .arg(rp_ptr->r_adj[i]));
             race_adj->setAlignment(Qt::AlignCenter);
             stat_layout->addWidget(race_adj, row, col++);
 
@@ -1427,6 +1430,13 @@ StatDialog::StatDialog(int service, byte *stat_selected)
         QLabel *equip_adj = new QLabel(QString("%1") .arg(p_ptr->state.stat_add[i]));
         equip_adj->setAlignment(Qt::AlignCenter);
         stat_layout->addWidget(equip_adj, row, col++);
+
+        if (!adult_no_quests)
+        {
+            QLabel *quest_adj = new QLabel(QString("%1") .arg(p_ptr->stat_quest_add[i]));
+            quest_adj->setAlignment(Qt::AlignCenter);
+            stat_layout->addWidget(quest_adj, row, col++);
+        }
 
         QLabel *stat_total = new QLabel(cnv_stat(p_ptr->state.stat_top[i]));
         stat_total->setAlignment(Qt::AlignLeft);

@@ -422,7 +422,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
         ds = k_ptr->ds;
     }
     plus = object_state.dis_to_d + (object_known_p(o_ptr) ? o_ptr->to_d : 0);
-    crit_hit_percent = critical_hit_chance(o_ptr, object_state, FALSE) / (CRIT_HIT_CHANCE / 100);
+    crit_hit_percent = critical_hit_chance(o_ptr, object_state, TRUE) / (CRIT_HIT_CHANCE / 100);
     average = (dd * ds) / 2 + plus;
 
     output.append("<br>");
@@ -646,6 +646,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
 
     /* Check for extra damage with a sling for a rogue */
     mult += rogue_shot(j_ptr, &plus, object_state);
+    mult += brigand_shot(j_ptr, 0L, FALSE, object_state);
 
     dd *= mult;
     plus *= mult;
@@ -752,6 +753,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
 
     /* Check for extra damage with a sling for a rogue */
     mult += rogue_shot(o_ptr, &plus, object_state);
+    mult += brigand_shot(o_ptr, 0L, FALSE, object_state);
 
     dd *= mult;
     plus *= mult;

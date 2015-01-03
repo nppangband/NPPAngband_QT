@@ -408,12 +408,9 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
     main_layout->addStretch();
 
     //Add a close button on the right side
-    QHBoxLayout *close_across = new QHBoxLayout;
-    main_layout->addLayout(close_across);
-    close_across->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    close_across->addWidget(buttons);
+    main_layout->addWidget(buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Settings Menu"));

@@ -273,6 +273,9 @@ static player_type player_type_body;
  */
 player_type *p_ptr = &player_type_body;
 
+//Player maximums record and pointer
+static player_attribute_maximums player_max_body;
+player_attribute_maximums *pam_ptr = &player_max_body;
 
 
 s16b x_pop(void);
