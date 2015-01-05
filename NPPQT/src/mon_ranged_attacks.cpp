@@ -129,7 +129,8 @@ static int get_max_dam(int gf_type, bool powerful)
         case GF_POIS: return (800);
 
         case GF_PLASMA:
-        case GF_INERTIA_NPP: case GF_FORCE:
+        case GF_INERTIA_NPP:
+        case GF_FORCE:
         case GF_TIME:
         {
             if (powerful) return (400);

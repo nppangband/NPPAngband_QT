@@ -1429,7 +1429,7 @@ void update_mon(int m_idx, bool full)
 
             else if ((m_ptr->mflag & (MFLAG_HIDE)) && !player_can_fire_bold(fy, fx))
             {
-                ;
+                //deliberately do nothing
             }
 
             /* Normal mind, allow telepathy */

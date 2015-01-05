@@ -71,7 +71,6 @@ SOURCES +=  src/qt_main.cpp\
             src/player_death.cpp \
             src/player_classes.cpp \
             src/player_command.cpp \
-            src/player_info.cpp \
             src/player_process.cpp \
             src/player_scores.cpp \
             src/player_screen.cpp \
@@ -129,7 +128,6 @@ HEADERS  += src/qt_mainwindow.h\
             src/object_settings.h \
             src/player_classes.h \
             src/player_command.h \
-            src/player_info.h \
             src/player_scores.h \
             src/player_screen.h \
             src/spells.h \

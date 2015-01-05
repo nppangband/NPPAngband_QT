@@ -6,6 +6,16 @@
 #include <QLabel>
 
 
+struct player_flag_record
+{
+    QString name;           /* Name of resistance/ability */
+    byte set;				/* Which field this resistance is in { 1 2 3 } */
+    u32b res_flag;			/* resistance flag bit */
+    u32b im_flag;			/* corresponding immunity bit, if any */
+    bool moria_flag;		/* Is it used in Moria? */
+    bool bad_flag;          // Is it a bad one?
+};
+
 class PlayerScreenDialog : public QDialog
 {
     Q_OBJECT
@@ -20,7 +30,8 @@ private:
     void char_stat_info(QGridLayout *stat_layout);
     void char_combat_info(QGridLayout *return_layout);
     void char_ability_info(QGridLayout *return_layout);
-
+    void equip_resist_info(QGridLayout *return_layout, bool resists);
+    void equip_stat_info(QGridLayout *return_layout);
 };
 
 extern void do_cmd_player_screen(void);

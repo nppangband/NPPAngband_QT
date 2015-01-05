@@ -548,37 +548,37 @@ void MainWindow::create_statusbar(void)
 
     resist_fire = new QAction(tr("Resist Fire"), this);
     resist_fire->setIcon(QIcon(":/icons/lib/icons/resist_fire.png"));
-    resist_fire->setToolTip("You temporarily resist fire, which protects inventory and reduces damage from fire attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_fire->setToolTip("You temporarily resist fire, which protects inventory and reduces damage from fire attacks.<br>Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_fire);
     resist_fire->setVisible(FALSE);
 
     resist_cold = new QAction(tr("Resist Cold"), this);
     resist_cold->setIcon(QIcon(":/icons/lib/icons/resist_cold.png"));
-    resist_cold->setToolTip("You temporarily resist cold, which protects inventory and reduces damage from cold attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_cold->setToolTip("You temporarily resist cold, which protects inventory and reduces damage from cold attacks.<br>Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_cold);
     resist_cold->setVisible(FALSE);
 
     resist_acid = new QAction(tr("Resist Acid"), this);
     resist_acid->setIcon(QIcon(":/icons/lib/icons/resist_acid.png"));
-    resist_acid->setToolTip("You temporarily resist acid, which protects inventory and reduces damage from acid attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_acid->setToolTip("You temporarily resist acid, which protects inventory and reduces damage from acid attacks.<br>Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_acid);
     resist_acid->setVisible(FALSE);
 
     resist_lightning = new QAction(tr("Resist Lightning"), this);
     resist_lightning->setIcon(QIcon(":/icons/lib/icons/resist_lightning.png"));
-    resist_lightning->setToolTip("You temporarily resist lightning, which protects inventory and reduces damage from lightning attacks.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_lightning->setToolTip("You temporarily resist lightning, which protects inventory and reduces damage from lightning attacks.<br>Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_lightning);
     resist_lightning->setVisible(FALSE);
 
     resist_poison = new QAction(tr("Resist Poison"), this);
     resist_poison->setIcon(QIcon(":/icons/lib/icons/resist_poison.png"));
-    resist_poison->setToolTip("You temporarily resist poison, which protects damage from poison attacks, and prevents the player from being poisoned.  Offers cumulative protection if the player has a permanent source of resist.");
+    resist_poison->setToolTip("You temporarily resist poison, which protects damage from poison attacks, and prevents the player from being poisoned.<br>Offers cumulative protection if the player has a permanent source of resist.");
     status_bar->addAction(resist_poison);
     resist_poison->setVisible(FALSE);
 
     flying = new QAction(tr("Flying"), this);
     flying->setIcon(QIcon(":/icons/lib/icons/flying.png"));
-    flying->setToolTip("You are temporarily flying, which allows the player to go over dangerous terrain without suffering damage.  Also, the player can go over traps without setting them off.  Negates any player combat or monement bonuses or penalties from terrain.");
+    flying->setToolTip("You are temporarily flying, which allows the player to go over dangerous terrain without suffering damage.<br>Also, the player can go over traps without setting them off.  Negates any player combat or monement bonuses or penalties from terrain.");
     status_bar->addAction(flying);
     flying->setVisible(FALSE);
 

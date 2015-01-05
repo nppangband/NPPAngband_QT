@@ -1015,7 +1015,7 @@ enum
 
 #define TR3_SLOW_DIGEST     0x00000001L /* Slow digest */
 #define TR3_FEATHER         0x00000002L /* Feather Falling */
-#define TR3_LIGHT            0x00000004L /* Perma-Light */
+#define TR3_LIGHT           0x00000004L /* Perma-Light */
 #define TR3_REGEN           0x00000008L /* Regeneration */
 #define TR3_TELEPATHY       0x00000010L /* Telepathy */
 #define TR3_SEE_INVIS       0x00000020L /* See Invis */
@@ -1048,6 +1048,7 @@ enum
 
 /*TR3 Uber-Flags*/
 #define TR3_IGNORE_ALL (TR3_IGNORE_ACID | TR3_IGNORE_ELEC | TR3_IGNORE_FIRE | TR3_IGNORE_COLD)
+#define TR3_CURSE_ALL (TR3_LIGHT_CURSE | TR3_HEAVY_CURSE | TR3_PERMA_CURSE)
 
 /* Native flags - extracted from feature flags */
 #define TN1_NATIVE_LAVA 	ELEMENT_LAVA
