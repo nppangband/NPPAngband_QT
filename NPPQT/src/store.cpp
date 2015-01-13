@@ -2960,7 +2960,7 @@ void do_cmd_sell(int this_store, cmd_arg args)
 
     /* Redraw stuff */
     p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_RESIST | PR_EXP |
-              PR_STATS | PU_NATIVE | PR_ITEMLIST);
+              PR_STATS | PR_ITEMLIST);
 
     /* Get the "apparent" value */
     dummy = object_value(&sold_item) * amt;

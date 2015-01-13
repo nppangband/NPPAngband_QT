@@ -75,12 +75,15 @@ void player_state::player_state_wipe()
     see_infra = 0;
     for (i = 0; i < SKILL_MAX; i++) skills[i] = 0;
     noise = cur_light = 0;
+    p_flags_native_with_temp = p_flags_native_no_temp = 0;
     sustain_str = sustain_int = sustain_wis = sustain_dex = sustain_con = sustain_chr = FALSE;
     immune_acid = immune_elec = immune_fire = immune_cold = immune_pois = FALSE;
     resist_acid = resist_elec = resist_fire = resist_cold = resist_pois = FALSE;
     resist_fear = resist_light = resist_dark = resist_blind = resist_confu = resist_sound = FALSE;
     resist_shard = resist_nexus = resist_nethr = resist_chaos = resist_disen = FALSE;
-    slow_digest = ffall = regenerate = telepathy = see_inv = free_act = hold_life = afraid = light = FALSE;
+    native_lava = native_ice = native_oil = native_fire = native_sand = native_boiling_water = FALSE;
+    native_forest = native_water = native_acid = native_mud = native_boiling_mud = FALSE;
+    slow_digest = ffall = regenerate = telepathy = see_inv = see_inv_perm = free_act = hold_life = afraid = light = FALSE;
     impact = aggravate = teleport = exp_drain = bless_blade = cursed_quiver = FALSE;
     cumber_armor = cumber_glove = heavy_wield = heavy_shoot = icky_wield = FALSE;
 }
@@ -256,7 +259,6 @@ void player_type::player_type_wipe()
     player_previous_command_wipe();
     new_spells = 0;
     notice = update = redraw = window = 0;
-    p_native = p_native_known = 0;
     au_birth = 0;
     for (i = 0; i < A_MAX; i++) stat_birth[i] = 0;
     ht_birth = wt_birth = sc_birth = 0;

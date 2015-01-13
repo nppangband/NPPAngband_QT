@@ -23,7 +23,7 @@
 #include <QPlainTextEdit>
 #include <QLabel>
 
-// The null line causes the loop to break;
+// The null line is there to prevent crashes as the data is read;
 static struct player_flag_record player_resist_table[] =
 {
     { "Resist Acid",        2, TR2_RES_ACID,	TR2_IM_ACID, TRUE, FALSE},
@@ -45,7 +45,7 @@ static struct player_flag_record player_resist_table[] =
     { NULL,                 0, 0,               0, FALSE, FALSE},
 };
 
-// The null line causes the loop to break;
+// The null line is there to prevent crashes as the data is read;
 static struct player_flag_record player_abilities_table[] =
 {
     { "See Invisible",      3, TR3_SEE_INVIS, 	0, TRUE, FALSE},
@@ -63,15 +63,42 @@ static struct player_flag_record player_abilities_table[] =
     { NULL,                 0, 0,               0, FALSE, FALSE},
 };
 
+// The null line is there to prevent crashes as the data is read;
+//The stats need to come first and in order for the stat tooltips to work properly
 static struct player_flag_record player_pval_table[] =
 {
+    { "Strength:",          1, TR1_STR,         TR2_SUST_STR, TRUE, FALSE},
+    { "Intelligence:",      1, TR1_INT,         TR2_SUST_INT, TRUE, FALSE},
+    { "Wisdom:",            1, TR1_WIS,         TR2_SUST_WIS, TRUE, FALSE},
+    { "Dexterity:",         1, TR1_DEX,         TR2_SUST_DEX, TRUE, FALSE},
+    { "Constitution:",      1, TR1_CON,         TR2_SUST_CON, TRUE, FALSE},
+    { "Charisma:",          1, TR1_CHR,         TR2_SUST_CHR, TRUE, FALSE},
     { "Infravision",        1, TR1_INFRA,		0, TRUE, FALSE},
     { "Stealth",            1, TR1_STEALTH,		0, TRUE, FALSE},
     { "Searching",          1, TR1_SEARCH,		0, TRUE, FALSE},
     { "Speed",              1, TR1_SPEED,		0, TRUE, FALSE},
-    { "Extra Blows",        1, TR1_BLOWS,		0, TRUE, FALSE},
+    { "Tunneling",          1, TR1_TUNNEL,      0, TRUE, FALSE},
+    { "Extra attacks",      1, TR1_BLOWS,		0, TRUE, FALSE},
     { "Extra Shots",        1, TR1_SHOTS,		0, TRUE, FALSE},
     { "Shooting Power",     1, TR1_MIGHT,		0, TRUE, FALSE},
+    { NULL,                 0, 0,               0, FALSE, FALSE},
+};
+
+// The null line is there to prevent crashes as the data is read;
+static struct player_flag_record player_nativity_table[]=
+{
+    { "Lava",   4,  TN1_NATIVE_LAVA,    0, FALSE, FALSE},
+    { "Ice",    4,  TN1_NATIVE_ICE,     0, FALSE, FALSE},
+    { "Oil",    4,  TN1_NATIVE_OIL,		0, FALSE, FALSE},
+    { "Fire",   4,  TN1_NATIVE_FIRE,    0, FALSE, FALSE},
+    { "Sand",   4,  TN1_NATIVE_SAND,    0, FALSE, FALSE},
+    { "Forest", 4,  TN1_NATIVE_FOREST,  0, FALSE, FALSE},
+    { "Water",  4,  TN1_NATIVE_WATER,  0, FALSE, FALSE},
+    { "Acid",   4,  TN1_NATIVE_ACID,    0, FALSE, FALSE},
+    { "Mud",    4,  TN1_NATIVE_MUD,		0, FALSE, FALSE},
+    { "Boiling Water",    4,  TN1_NATIVE_BWATER,		0, FALSE, FALSE},
+    { "Boiling Mud",    4,  TN1_NATIVE_BMUD,		0, FALSE, FALSE},
+    { NULL,       0,    0,              0, FALSE, FALSE},
 };
 
 QString moria_speed_labels(int speed)
@@ -137,7 +164,7 @@ static void make_standard_label(QLabel *this_label, QString title, byte preset_c
 static void make_ability_graph(QLabel *this_label, int min, int max, int value)
 {
     QFontMetrics metrics(ui_current_font());
-    QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMM");;
+    QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMM");
     this_size.setHeight(this_size.height() *2/ 3);
     QPixmap this_img(this_size);
     QPainter paint(&this_img);
@@ -197,15 +224,7 @@ static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool
 
         // Set up a tooltip and pixture and add it to the layout.
         QLabel *obj_label = new QLabel;
-        if (use_graphics)
-        {
-            QPixmap obj_pixmap = ui_get_tile(k_ptr->tile_id);
-            obj_label->setPixmap(obj_pixmap);
-        }
-        else
-        {
-            make_standard_label(obj_label, k_ptr->d_char, k_ptr->color_num);
-        }
+        make_standard_label(obj_label, k_ptr->d_char, k_ptr->color_num);
         QString obj_text = QString("%1: ") .arg(mention_use(i));
         obj_text.append(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL));
         obj_label->setToolTip(obj_text);
@@ -217,15 +236,7 @@ static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool
     if (do_player)
     {
         QLabel *person_label = new QLabel;
-        if (use_graphics)
-        {
-            QPixmap person_icon = ui_get_tile(p_ptr->tile_id);
-            person_label->setPixmap(person_icon);
-        }
-        else
-        {
-            make_standard_label(person_label, "@", TERM_DARK);
-        }
+        make_standard_label(person_label, "@", TERM_DARK);
         person_label->setToolTip("Innate character traits.");
         return_layout->addWidget(person_label, row, col++);
     }
@@ -239,6 +250,26 @@ static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool
 
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, col);
+}
+
+QString stat_entry(int stat)
+{
+    if (stat == A_STR) return(QString("Strength affects total number of melee blows per round, melee to-hit, melee to damage,<br>player weight carrying capacity, maximum weildable weapon weight, bashing chances, throwing range, and digging capability."));
+    if (stat == A_INT)
+    {
+        if (game_mode == GAME_NPPANGBAND) return(QString("Intelligence affects disarming skill, and magic device usage success rate.<br>For mages, druids, rangers, and rogues, intelligence affects maximum mana, spellcasting success rate, and numbers of spells the player can learn."));
+        else return(QString("Intelligence affects disarming skill, and magic device usage success rate.<br>For mages, rangers, and rogues, intelligence affects maximum mana, spellcasting success rate, and numbers of spells the player can learn."));
+    }
+    if (stat == A_WIS)
+    {
+        if (game_mode == GAME_NPPANGBAND) return(QString("Wisdom affects saving throw.  For priests, druids, rangers, and paladins, wisdon affects their mana,<br>spellcasting success rate, and numbers of spells the player can learn."));
+        else return(QString("Wisdom affects saving throw.  For priests and paladins, wisdon affects their mana, spellcasting success rate, and numbers of spells the player can learn."));
+    }
+    if (stat == A_DEX) return(QString("Dexterity affects total number of melee blows per round, melee to-hit, the player's armor class, disarming skill,<br>a monster's success rate in stealing from the player, and the possibility of getting stunned while bashing a door or creature."));
+    if (stat == A_CON) return(QString("Constitution affects maximum hit points, hit point regeneration, and recovery rate from being stunned, cuts, and posion."));
+    if (stat == A_CHR) return(QString("Charisma affects the prices for transactions in the stores, and the player's ability to sleep, stun, confuse, scare, and slow a monster."));
+    //whoops!
+    return(" ");
 }
 
 
@@ -341,6 +372,7 @@ void PlayerScreenDialog::char_basic_info(QGridLayout *return_layout)
     return_layout->addWidget(filler, 0, col + 2);
 
     return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
+
 }
 
 void PlayerScreenDialog::char_basic_data(QGridLayout *return_layout)
@@ -428,6 +460,7 @@ void PlayerScreenDialog::char_basic_data(QGridLayout *return_layout)
     return_layout->addWidget(filler, 0, col + 2);
 
     return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
+
 }
 
 void PlayerScreenDialog::char_game_info(QGridLayout *return_layout)
@@ -554,14 +587,17 @@ void PlayerScreenDialog::char_stat_info(QGridLayout *stat_layout)
     if (!adult_no_quests) stat_layout->addWidget(reward_adj_header, row, col++, Qt::AlignRight);
     stat_layout->addWidget(total_stat_header, row, col++, Qt::AlignLeft);
 
+    row++;
+
     for (int i = 0; i < A_MAX; i++)
     {
         col = 0;
-        row++;
+
 
         // Stat label
         QLabel *stat_label = new QLabel();
         make_standard_label(stat_label, stat_names[i], TERM_DARK);
+        stat_label->setToolTip(stat_entry(i));
         stat_layout->addWidget(stat_label, row, col++, Qt::AlignLeft);
 
         QLabel *self_label = new QLabel();
@@ -601,12 +637,10 @@ void PlayerScreenDialog::char_stat_info(QGridLayout *stat_layout)
         if (!need_display) lower_stat = "       ";
         QLabel *stat_reduce = new QLabel();
         make_standard_label(stat_reduce, lower_stat, need_display ? TERM_RED : TERM_BLUE);
-        stat_layout->addWidget(stat_reduce, row, col++, Qt::AlignRight);
+        stat_layout->addWidget(stat_reduce, row++, col++, Qt::AlignRight);
     }
 
-
     stat_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
-
 }
 
 void PlayerScreenDialog::char_combat_info(QGridLayout *return_layout)
@@ -794,7 +828,6 @@ void PlayerScreenDialog::char_combat_info(QGridLayout *return_layout)
     return_layout->addWidget(label_player_dig, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_dig, row++, col+1, Qt::AlignRight);
 
-
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, col + 2);
 
@@ -887,34 +920,47 @@ void PlayerScreenDialog::char_ability_info(QGridLayout *return_layout)
     return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
-void PlayerScreenDialog::equip_resist_info(QGridLayout *return_layout, bool resists)
+// Prints out the various equipment flags, depending on the specified flag set
+void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_set)
 {
     int row = 0;
     draw_equip_labels(return_layout, row, 0, TRUE, TRUE);
 
     int x = 0;
 
-    /* Extract the player flags */
+
     u32b f1, f2, f3, fn;
+
+    /* Extract the player flags */
     player_flags(&f1, &f2, &f3, &fn);
+
+    if (flag_set == FLAGS_NATIVITY)
+    {
+        QLabel *nativity_to = new QLabel();
+        make_standard_label(nativity_to, "Nativity To:", TERM_BLUE);
+        return_layout->addWidget(nativity_to, row, 0, Qt::AlignLeft);
+    }
 
     while (TRUE)
     {
         int col = 1;
         player_flag_record *pfr_ptr;
-        if (resists) pfr_ptr = &player_resist_table[x++];
-        else pfr_ptr = &player_abilities_table[x++];
+        if (flag_set == FLAGS_RESIST) pfr_ptr = &player_resist_table[x++];
+        else if (flag_set == FLAGS_ABILITY) pfr_ptr = &player_abilities_table[x++];
+        else if (flag_set == FLAGS_NATIVITY) pfr_ptr = &player_nativity_table[x++];
 
         // We are done
         if (pfr_ptr->name.isNull()) break;
-
-        int attr = TERM_RED;
 
         // If in Moria, make sure the flag is used.
         if (game_mode == GAME_NPPMORIA)
         {
             if (!pfr_ptr->moria_flag) continue;
         }
+
+        bool did_resist = FALSE;
+        bool did_temp_resist = FALSE;
+        bool did_immunity = FALSE;
 
         row++;
 
@@ -925,9 +971,9 @@ void PlayerScreenDialog::equip_resist_info(QGridLayout *return_layout, bool resi
             if (!o_ptr->tval) continue;
 
             // First, check for immunity
-            if (pfr_ptr->im_flag)
+            if (pfr_ptr->extra_flag)
             {
-                if (o_ptr->known_obj_flags_2 & (pfr_ptr->im_flag))
+                if (o_ptr->known_obj_flags_2 & (pfr_ptr->extra_flag))
                 {
 
                     QLabel *immune_label = new QLabel();
@@ -935,25 +981,25 @@ void PlayerScreenDialog::equip_resist_info(QGridLayout *return_layout, bool resi
                     return_layout->addWidget(immune_label, row, col, Qt::AlignCenter);
 
                     // Too messy to inlude in player_flag_table
-                    if (pfr_ptr->im_flag == TR2_RES_ACID) immune_label->setToolTip(QString("Acid immunity means acid based spells do not damage the player or the player's equipment and inventory."));
-                    else if (pfr_ptr->im_flag == TR2_IM_ELEC) immune_label->setToolTip(QString("Lightning immunity means lightning based spells do not damage the player or the player's inventory."));
-                    else if (pfr_ptr->im_flag == TR2_IM_FIRE) immune_label->setToolTip(QString("Fire immunity means fire based spells do not damage the player or the player's inventory."));
-                    else if (pfr_ptr->im_flag == TR2_IM_COLD) immune_label->setToolTip(QString("Cold immunity means cold or ice based spells do not damage the player or the player's inventory."));
-                    else if (pfr_ptr->im_flag == TR2_IM_POIS) immune_label->setToolTip(QString("Poison immunity means poison based spells do not damage the player."));
+                    if (pfr_ptr->extra_flag == TR2_RES_ACID) immune_label->setToolTip(QString("Acid immunity means acid based spells do not damage the player or the player's equipment and inventory."));
+                    else if (pfr_ptr->extra_flag == TR2_IM_ELEC) immune_label->setToolTip(QString("Lightning immunity means lightning based spells do not damage the player or the player's inventory."));
+                    else if (pfr_ptr->extra_flag == TR2_IM_FIRE) immune_label->setToolTip(QString("Fire immunity means fire based spells do not damage the player or the player's inventory."));
+                    else if (pfr_ptr->extra_flag == TR2_IM_COLD) immune_label->setToolTip(QString("Cold immunity means cold or ice based spells do not damage the player or the player's inventory."));
+                    else if (pfr_ptr->extra_flag == TR2_IM_POIS) immune_label->setToolTip(QString("Poison immunity means poison based spells do not damage the player."));
 
-                    attr = TERM_BLUE;
+                    did_immunity = TRUE;
                     continue;
                 }
             }
 
             if (pfr_ptr->set == 1)
             {
-                if (!(o_ptr->known_obj_flags_1 & (pfr_ptr->res_flag))) continue;
+                if ((o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
             }
 
             if (pfr_ptr->set == 2)
             {
-                if (!(o_ptr->known_obj_flags_2 & (pfr_ptr->res_flag))) continue;
+                if ((o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
             }
 
             if (pfr_ptr->set == 3)
@@ -963,17 +1009,18 @@ void PlayerScreenDialog::equip_resist_info(QGridLayout *return_layout, bool resi
                 {
                     if (!(o_ptr->ident & (IDENT_CURSED))) continue;
                 }
-                else if (!(o_ptr->known_obj_flags_3 & (pfr_ptr->res_flag))) continue;
+                else if ((o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
             }
             if (pfr_ptr->set == 4)
             {
-                if (!(o_ptr->known_obj_flags_native & (pfr_ptr->res_flag))) continue;
+                if ((o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
             }
+
+            did_resist = TRUE;
 
             QLabel *resist_label = new QLabel();
             make_standard_label(resist_label, "☑", TERM_GREEN);
             return_layout->addWidget(resist_label, row, col, Qt::AlignCenter);
-            if (attr != TERM_BLUE) attr = TERM_GREEN;
         }
 
         // Mark player resists
@@ -984,118 +1031,215 @@ void PlayerScreenDialog::equip_resist_info(QGridLayout *return_layout, bool resi
 
         if (pfr_ptr->set == 1)
         {
-            if (f1 & (pfr_ptr->res_flag)) player_has_flag = TRUE;
-            if (f1 & (pfr_ptr->im_flag))  player_has_immunity = TRUE;
+            if ((f1 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+            if (f1 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
+
+
         }
         if (pfr_ptr->set == 2)
         {
-            if (f2 & (pfr_ptr->res_flag)) player_has_flag = TRUE;
-            if (f2 & (pfr_ptr->im_flag))  player_has_immunity = TRUE;
+            if ((f2 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+            if (f2 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
         }
         if (pfr_ptr->set == 3)
         {
-            if (f3 & (pfr_ptr->res_flag)) player_has_flag = TRUE;
-            if (f3 & (pfr_ptr->im_flag))  player_has_immunity = TRUE;
+            if ((f3 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+            if (f3 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
         }
         if (pfr_ptr->set == 4)
         {
-            if (fn & (pfr_ptr->res_flag)) player_has_flag = TRUE;
-            if (fn & (pfr_ptr->im_flag))  player_has_immunity = TRUE;
+            if ((fn & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+            if (fn & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
+
+            // Special hack for boiling mud and boiling water
+            if (flag_set == FLAGS_NATIVITY)
+            {
+                if (pfr_ptr->this_flag == ELEMENT_BMUD)
+                {
+                    if (p_ptr->state.native_boiling_mud) player_has_flag = TRUE;
+                }
+                else if (pfr_ptr->this_flag == ELEMENT_BWATER)
+                {
+                    if (p_ptr->state.native_boiling_water) player_has_flag = TRUE;
+                }
+            }
         }
 
         if (player_has_flag)
         {
             QLabel *player_label = new QLabel();
             make_standard_label(player_label, "☑", TERM_BLUE);
-            player_label->setToolTip("Resistance");
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
-            if (attr != TERM_BLUE) attr = TERM_GREEN;
+            did_resist = TRUE;
         }
         if (player_has_immunity)
         {
             QLabel *player_label = new QLabel;
             make_standard_label(player_label, "☑", TERM_GREEN);
-            player_label->setToolTip("Immunity");
+            player_label->setToolTip("Inate immunity");
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
-            if (attr != TERM_BLUE) attr = TERM_GREEN;
+            did_immunity = TRUE;
         }
 
         // Note corresponding temporary resists
         col++;
-        if (resists)
+        if (flag_set == FLAGS_RESIST)
         {
-            if (pfr_ptr->res_flag == TR2_RES_ACID)
+            if (pfr_ptr->this_flag == TR2_RES_ACID)
             {
                 if (p_ptr->timed[TMD_OPP_ACID] && !redundant_timed_event(TMD_OPP_ACID))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_BLUE);
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist fire.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    if (attr == TERM_BLUE)  attr = TERM_VIOLET;
-                    else if (attr != TERM_BLUE) attr = TERM_GREEN;
+                    did_temp_resist = TRUE;
                 }
             }
-            else if (pfr_ptr->res_flag == TR2_RES_ELEC)
+            else if (pfr_ptr->this_flag == TR2_RES_ELEC)
             {
                 if (p_ptr->timed[TMD_OPP_ELEC] && !redundant_timed_event(TMD_OPP_ELEC))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_BLUE);
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist lightning.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    if (attr == TERM_BLUE)  attr = TERM_VIOLET;
-                    else if (attr != TERM_BLUE) attr = TERM_GREEN;
+                    did_temp_resist = TRUE;
                 }
             }
-            else if (pfr_ptr->res_flag == TR2_RES_FIRE)
+            else if (pfr_ptr->this_flag == TR2_RES_FIRE)
             {
                 if (p_ptr->timed[TMD_OPP_FIRE] && !redundant_timed_event(TMD_OPP_FIRE))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_BLUE);
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist fire.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    if (attr == TERM_BLUE)  attr = TERM_VIOLET;
-                    else if (attr != TERM_BLUE) attr = TERM_GREEN;
+                    did_temp_resist = TRUE;
                 }
             }
-            else if (pfr_ptr->res_flag == TR2_RES_COLD)
+            else if (pfr_ptr->this_flag == TR2_RES_COLD)
             {
                 if (p_ptr->timed[TMD_OPP_COLD] && !redundant_timed_event(TMD_OPP_COLD))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_BLUE);
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist cold.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    if (attr == TERM_BLUE)  attr = TERM_VIOLET;
-                    else if (attr != TERM_BLUE) attr = TERM_GREEN;
+                    did_temp_resist = TRUE;
                 }
             }
-            else if (pfr_ptr->res_flag == TR2_RES_POIS)
+            else if (pfr_ptr->this_flag == TR2_RES_POIS)
             {
                 if (p_ptr->timed[TMD_OPP_POIS] && !redundant_timed_event(TMD_OPP_POIS))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_BLUE);
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist poison.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    if (attr == TERM_BLUE)  attr = TERM_VIOLET;
-                    else if (attr != TERM_BLUE) attr = TERM_GREEN;
+                    did_temp_resist = TRUE;
                 }
             }
-            else if (pfr_ptr->res_flag == TR2_RES_FEAR)
+            else if (pfr_ptr->this_flag == TR2_RES_FEAR)
             {
                 if (p_ptr->timed[TMD_HERO] || p_ptr->timed[TMD_BERSERK])
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_BLUE);
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily immune to fear.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    attr = TERM_BLUE;
+                    did_temp_resist = TRUE;
                 }
             }
         }
+        else if (flag_set == FLAGS_ABILITY)
+        {
+            if (pfr_ptr->this_flag == TR3_SEE_INVIS)
+            {
+                if ((p_ptr->timed[TMD_SINVIS])  && !redundant_timed_event(TMD_SINVIS))
+                {
+                    QLabel *temp_label = new QLabel;
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    temp_label->setToolTip("You can temporarily see invisible creatures.");
+                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+                    did_temp_resist = TRUE;
+                }
+            }
+        }
+        else if (flag_set == FLAGS_NATIVITY)
+        {
+            if (pfr_ptr->this_flag == TN1_NATIVE_LAVA)
+            {
+                if ((p_ptr->timed[TMD_NAT_LAVA]) && !redundant_timed_event(TMD_NAT_LAVA))
+                {
+                    QLabel *temp_label = new QLabel;
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    temp_label->setToolTip("You are temporarily native to lava terrains.");
+                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+                    did_temp_resist = TRUE;
+                }
+            }
+            else if (pfr_ptr->this_flag == TN1_NATIVE_OIL)
+            {
+                if ((p_ptr->timed[TMD_NAT_OIL]) && !redundant_timed_event(TMD_NAT_OIL))
+                {
+                    QLabel *temp_label = new QLabel;
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    temp_label->setToolTip("You are temporarily native to oily terrains.");
+                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+                    did_temp_resist = TRUE;
+                }
+            }
+            else if (pfr_ptr->this_flag == TN1_NATIVE_SAND)
+            {
+                if ((p_ptr->timed[TMD_NAT_SAND]) && !redundant_timed_event(TMD_NAT_SAND))
+                {
+                    QLabel *temp_label = new QLabel;
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    temp_label->setToolTip("You are temporarily native to sandy terrains.");
+                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+                    did_temp_resist = TRUE;
+                }
+            }
+            else if (pfr_ptr->this_flag == TN1_NATIVE_FOREST)
+            {
+                if ((p_ptr->timed[TMD_NAT_TREE]) && !redundant_timed_event(TMD_NAT_TREE))
+                {
+                    QLabel *temp_label = new QLabel;
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    temp_label->setToolTip("You are temporarily native to forest terrains.");
+                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+                    did_temp_resist = TRUE;
+                }
+            }
+            else if (pfr_ptr->this_flag == TN1_NATIVE_WATER)
+            {
+                if ((p_ptr->timed[TMD_NAT_WATER]) && !redundant_timed_event(TMD_NAT_WATER))
+                {
+                    QLabel *temp_label = new QLabel;
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    temp_label->setToolTip("You are temporarily native to watery terrains.");
+                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+                    did_temp_resist = TRUE;
+                }
+            }
+            else if (pfr_ptr->this_flag == TN1_NATIVE_MUD)
+            {
+                if ((p_ptr->timed[TMD_NAT_MUD]) && !redundant_timed_event(TMD_NAT_MUD))
+                {
+                    QLabel *temp_label = new QLabel;
+                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    temp_label->setToolTip("You are temporarily native to muddy terrains.");
+                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+                    did_temp_resist = TRUE;
+                }
+            }
+        }
+
+        int attr = TERM_RED;
+        if (did_immunity) attr = TERM_BLUE;
+        else if (did_resist && did_temp_resist) attr = TERM_PURPLE;
+        else if (did_resist || did_temp_resist) attr = TERM_GREEN;
 
         // Hack reverse the colors for bad flags
         if (pfr_ptr->bad_flag)
@@ -1109,65 +1253,202 @@ void PlayerScreenDialog::equip_resist_info(QGridLayout *return_layout, bool resi
         if (pfr_ptr->set == 2)
         {
             // Too messy to include in the charts
-            if (pfr_ptr->res_flag == TR2_RES_ACID) line_label->setToolTip(QString("Acid attacks have a maximum damage of 1,600 hp, and can harm player inventory and equipment.<br>Having temporary or permanent resistance divides damage by 3, and helps protect equipment and inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to equipment and inventory."));
-            else if (pfr_ptr->res_flag == TR2_RES_ELEC) line_label->setToolTip(QString("Electricity attacks have a maximum damage of 1,600 hp, and can destroy rings, wands, and rods in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->res_flag == TR2_RES_FIRE) line_label->setToolTip(QString("Fire attacks have a maximum damage of 1,600 hp, and can destroy wearable equipment, destroy spellbooks, chests, staffs, and scrolls in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->res_flag == TR2_RES_COLD) line_label->setToolTip(QString("Ice and Cold attacks have a maximum damage of 1,600 hp, and can destroy potions, flasks, and bottles in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->res_flag == TR2_RES_POIS) line_label->setToolTip(QString("Poison attacks have a maximum damage of 800 hp, and can pioson the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and prevents the player from being poisoned.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->res_flag == TR2_RES_BLIND) line_label->setToolTip(QString("Resist blindness prevents the player from being blinded.<br>Blindness prevents the player from seeing, reading scrolls and casting spells."));
-            else if (pfr_ptr->res_flag == TR2_RES_CONFU) line_label->setToolTip(QString("Confusion attacks have a maximum damage of 400, and can cause the player to be confused.<br>Resist confusion prevents the player from being confused, and reduces damage from confusion attacks by between 28 and 58 percent--damage=(damage*5)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_NEXUS) line_label->setToolTip(QString("Nexus attacks have a maximum damage of 450, and can cause the player to be teleported or teleported off the level, or the player can permanently have two of their stats switched.<br>Resist nexus prevents the nexus side effects, and reduces damage from nexus spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_NETHR) line_label->setToolTip(QString("Nether attacks have a maximum damage of 450, and can drain the player's experience.<br>Resist nether prevents prevents experience drain from nether and chaos attacks, and reduces damage from nether spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_CHAOS) line_label->setToolTip(QString("Chaos attacks have a maximum damage of 500, can polymorph nearby creatures, can drain the player's experience, and causes them to hallucinate and become confused.<br>Resist chaos prevents the hallucination side effect, the confusion side efffect from chaos and confusion attacks, the experience drain side effect from nether or chaos attacks, and reduces damage from chaos spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_DISEN) line_label->setToolTip(QString("Disenchantment attacks have a maximum damage of 500, and can reduce the bonus to-hit, to damage, and armor class qualities of player equiment.<br>Resist disenchantment protects the player's equipment from disenchantment, and reduces damage from disenchantment spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_SOUND) line_label->setToolTip(QString("Sound attacks have a maximum damage of 500 and cause cuts on the player.<br>Resist sound protects the player from being stunned by sound attacks, and reduces damage from sound attacks by between 28 and 58 percent--damage=(damage*5)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_SHARD) line_label->setToolTip(QString("Shard attacks have a maximum damage of 500 and can stun on the player.<br>Resist shards protects the player from cuts by shard attacks, and reduces damage from shard attacks by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_LIGHT) line_label->setToolTip(QString("Light attacks have a maximum damage of 400 and can blind on the player.<br>Resist light protects the player from being blinded by light attacks, and reduces damage from light attacks by between 42 and 67 percent--damage=(damage*4)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_DARK) line_label->setToolTip(QString("Darkness attacks have a maximum damage of 400 and can blind on the player.<br>Resist darkness protects the player from being blinded by darkness attacks, and reduces damage from darkness attacks by between 42 and 67 percent--damage=(damage*4)/(6+1d6)"));
-            else if (pfr_ptr->res_flag == TR2_RES_FEAR) line_label->setToolTip(QString("Fear attacks prevents the player from making melee attacks.<br>Resist fear prevents the player from becoming afraid."));
+            if (pfr_ptr->this_flag == TR2_RES_ACID) line_label->setToolTip(QString("Acid attacks have a maximum damage of 1,600 hp, and can harm player inventory and equipment.<br>Having temporary or permanent resistance divides damage by 3, and helps protect equipment and inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to equipment and inventory."));
+            else if (pfr_ptr->this_flag == TR2_RES_ELEC) line_label->setToolTip(QString("Electricity attacks have a maximum damage of 1,600 hp, and can destroy rings, wands, and rods in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
+            else if (pfr_ptr->this_flag == TR2_RES_FIRE) line_label->setToolTip(QString("Fire attacks have a maximum damage of 1,600 hp, and can destroy wearable equipment, destroy spellbooks, chests, staffs, and scrolls in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
+            else if (pfr_ptr->this_flag == TR2_RES_COLD) line_label->setToolTip(QString("Ice and Cold attacks have a maximum damage of 1,600 hp, and can destroy potions, flasks, and bottles in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
+            else if (pfr_ptr->this_flag == TR2_RES_POIS) line_label->setToolTip(QString("Poison attacks have a maximum damage of 800 hp, and can pioson the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and prevents the player from being poisoned.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
+            else if (pfr_ptr->this_flag == TR2_RES_BLIND) line_label->setToolTip(QString("Resist blindness prevents the player from being blinded.<br>Blindness prevents the player from seeing, reading scrolls and casting spells."));
+            else if (pfr_ptr->this_flag == TR2_RES_CONFU) line_label->setToolTip(QString("Confusion attacks have a maximum damage of 400, and can cause the player to be confused.<br>Resist confusion prevents the player from being confused, and reduces damage from confusion attacks by between 28 and 58 percent--damage=(damage*5)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_NEXUS) line_label->setToolTip(QString("Nexus attacks have a maximum damage of 450, and can cause the player to be teleported or teleported off the level, or the player can permanently have two of their stats switched.<br>Resist nexus prevents the nexus side effects, and reduces damage from nexus spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_NETHR) line_label->setToolTip(QString("Nether attacks have a maximum damage of 450, and can drain the player's experience.<br>Resist nether prevents prevents experience drain from nether and chaos attacks, and reduces damage from nether spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_CHAOS) line_label->setToolTip(QString("Chaos attacks have a maximum damage of 500, can polymorph nearby creatures, can drain the player's experience, and causes them to hallucinate and become confused.<br>Resist chaos prevents the hallucination side effect, the confusion side efffect from chaos and confusion attacks, the experience drain side effect from nether or chaos attacks, and reduces damage from chaos spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_DISEN) line_label->setToolTip(QString("Disenchantment attacks have a maximum damage of 500, and can reduce the bonus to-hit, to damage, and armor class qualities of player equiment.<br>Resist disenchantment protects the player's equipment from disenchantment, and reduces damage from disenchantment spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_SOUND) line_label->setToolTip(QString("Sound attacks have a maximum damage of 500 and cause cuts on the player.<br>Resist sound protects the player from being stunned by sound attacks, and reduces damage from sound attacks by between 28 and 58 percent--damage=(damage*5)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_SHARD) line_label->setToolTip(QString("Shard attacks have a maximum damage of 500 and can stun on the player.<br>Resist shards protects the player from cuts by shard attacks, and reduces damage from shard attacks by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_LIGHT) line_label->setToolTip(QString("Light attacks have a maximum damage of 400 and can blind on the player.<br>Resist light protects the player from being blinded by light attacks, and reduces damage from light attacks by between 42 and 67 percent--damage=(damage*4)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_DARK) line_label->setToolTip(QString("Darkness attacks have a maximum damage of 400 and can blind on the player.<br>Resist darkness protects the player from being blinded by darkness attacks, and reduces damage from darkness attacks by between 42 and 67 percent--damage=(damage*4)/(6+1d6)"));
+            else if (pfr_ptr->this_flag == TR2_RES_FEAR) line_label->setToolTip(QString("Fear attacks prevents the player from making melee attacks.<br>Resist fear prevents the player from becoming afraid."));
         }
-        if (pfr_ptr->set == 3)
+        else if (pfr_ptr->set == 3)
         {
-            if (pfr_ptr->res_flag == TR3_SEE_INVIS) line_label->setToolTip(QString("Allows the player to see invisible creatures that are within line of sight."));
-            else if (pfr_ptr->res_flag == TR3_FREE_ACT) line_label->setToolTip(QString("Prevents the player from being paralyzed, slowed, or slept.<br>If the player is heavily stunned, free action does not prevent them from passing out."));
-            else if (pfr_ptr->res_flag == TR3_TELEPATHY) line_label->setToolTip(QString("Allows the player to sense creatures with an active mind.<br>Telepathy works even if the creatures are out of line of sight, or the player is blind.<br>Telepathy does not sense 'mindless' creatures."));
-            else if (pfr_ptr->res_flag == TR3_HOLD_LIFE) line_label->setToolTip(QString("Protects the player from getting their experience drained.<br>Experience may sometimes be drained, however on those occasions the amount of experience drain is greatly reduced."));
-            else if (pfr_ptr->res_flag == TR3_LIGHT) line_label->setToolTip(QString("Increases the player's light radius by 1 while being worn."));
-            else if (pfr_ptr->res_flag == TR3_REGEN) line_label->setToolTip(QString("Doubles the rate at which a player heals, however it greatly increases the rate of player food consumption.<br>At normal speed, the rate of food consumption is quadrupled."));
-            else if (pfr_ptr->res_flag == TR3_SLOW_DIGEST) line_label->setToolTip(QString("Slows the rate of player food consumption.<br>At normal speed, the rate of food consumption is cut in half."));
-            else if (pfr_ptr->res_flag == TR3_FEATHER) line_label->setToolTip(QString("Prevents injury when the player hits a trap that causes them to fall."));
-            else if (pfr_ptr->res_flag == TR3_TELEPORT) line_label->setToolTip(QString("Causes the player to have a 1% chance of being randomly teleported every game turn at normal speed."));
-            else if (pfr_ptr->res_flag == TR3_AGGRAVATE) line_label->setToolTip(QString("Wakes up all monsters who are able to sense the player.<br>Aggravation negates all player stealth."));
-            else if (pfr_ptr->res_flag == TR3_CURSE_ALL) line_label->setToolTip(QString("Once worn, a cursed item cannot be taken off until the curse is broken.<br>An item that is permanently cursed cannot be removed once wielded."));
-            else if (pfr_ptr->res_flag == TR3_DRAIN_EXP) line_label->setToolTip(QString("Causes the player's experience to be drained by one point on 10% of player turns at normal speed, and cannot be prevented by hold life.<br>Experience loss is to both current experience and maximum experience."));
+            if (pfr_ptr->this_flag == TR3_SEE_INVIS) line_label->setToolTip(QString("Allows the player to see invisible creatures that are within line of sight."));
+            else if (pfr_ptr->this_flag == TR3_FREE_ACT) line_label->setToolTip(QString("Prevents the player from being paralyzed, slowed, or slept.<br>If the player is heavily stunned, free action does not prevent them from passing out."));
+            else if (pfr_ptr->this_flag == TR3_TELEPATHY) line_label->setToolTip(QString("Allows the player to sense creatures with an active mind.<br>Telepathy works even if the creatures are out of line of sight, or the player is blind.<br>Telepathy does not sense 'mindless' creatures."));
+            else if (pfr_ptr->this_flag == TR3_HOLD_LIFE) line_label->setToolTip(QString("Protects the player from getting their experience drained.<br>Experience may sometimes be drained, however on those occasions the amount of experience drain is greatly reduced."));
+            else if (pfr_ptr->this_flag == TR3_LIGHT) line_label->setToolTip(QString("Increases the player's light radius by 1 while being worn."));
+            else if (pfr_ptr->this_flag == TR3_REGEN) line_label->setToolTip(QString("Doubles the rate at which a player heals, however it greatly increases the rate of player food consumption.<br>At normal speed, the rate of food consumption is quadrupled."));
+            else if (pfr_ptr->this_flag == TR3_SLOW_DIGEST) line_label->setToolTip(QString("Slows the rate of player food consumption.<br>At normal speed, the rate of food consumption is cut in half."));
+            else if (pfr_ptr->this_flag == TR3_FEATHER) line_label->setToolTip(QString("Prevents injury when the player hits a trap that causes them to fall."));
+            else if (pfr_ptr->this_flag == TR3_TELEPORT) line_label->setToolTip(QString("Causes the player to have a 1% chance of being randomly teleported every game turn at normal speed."));
+            else if (pfr_ptr->this_flag == TR3_AGGRAVATE) line_label->setToolTip(QString("Wakes up all monsters who are able to sense the player.<br>Aggravation negates all player stealth."));
+            else if (pfr_ptr->this_flag == TR3_CURSE_ALL) line_label->setToolTip(QString("Once worn, a cursed item cannot be taken off until the curse is broken.<br>An item that is permanently cursed cannot be removed once wielded."));
+            else if (pfr_ptr->this_flag == TR3_DRAIN_EXP) line_label->setToolTip(QString("Causes the player's experience to be drained by one point on 10% of player turns at normal speed, and cannot be prevented by hold life.<br>Experience loss is to both current experience and maximum experience."));
         }
-        return_layout->addWidget(line_label, row, 0, Qt::AlignLeft);
+        else if (pfr_ptr->set == 4)
+        {
+            if (pfr_ptr->this_flag == TN1_NATIVE_LAVA) line_label->setToolTip(QString("Being native allows the player to be on lava terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through lava terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_ICE) line_label->setToolTip(QString("Being native allows the player to be on icy terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through icy terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_OIL) line_label->setToolTip(QString("Being native allows the player to be on oily terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through oily terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_FIRE) line_label->setToolTip(QString("Being native allows the player to be on fiery terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through fiery terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_SAND) line_label->setToolTip(QString("Being native allows the player to be on sandy terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through sandy terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_FOREST) line_label->setToolTip(QString("Being native allows the player to be in forest terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through forest terrains., and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_WATER) line_label->setToolTip(QString("Being native allows the player to be on watery terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through watery terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_ACID) line_label->setToolTip(QString("Being native allows the player to be on acidic terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through acidic terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_MUD) line_label->setToolTip(QString("Being native allows the player to be on muddy terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through muddy terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_BMUD) line_label->setToolTip(QString("The player becomes native to boiling mud by being native to both lava and mud.<br>Being native allows the player to be on boiling mud terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through boiling mud terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_BWATER) line_label->setToolTip(QString("The player becomes native to boiling mud by being native to both lava and water.<br>Being native allows the player to be on boiling water terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through biling water terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+        }
+        return_layout->addWidget(line_label, row++, 0, Qt::AlignLeft);
     }
 
-
+    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
-void PlayerScreenDialog::equip_stat_info(QGridLayout *return_layout)
-{
 
+void PlayerScreenDialog::equip_modifier_info(QGridLayout *return_layout)
+{
+    int row = 0;
+    draw_equip_labels(return_layout, row, 0, FALSE, FALSE);
+
+    int x = 0;
+
+    while (TRUE)
+    {
+        int col = 1;
+        player_flag_record *pfr_ptr;
+        pfr_ptr = &player_pval_table[x++];
+
+        // We are done
+        if (pfr_ptr->name.isNull()) break;
+
+        // If in Moria, make sure the flag is used.
+        if (game_mode == GAME_NPPMORIA)
+        {
+            if (!pfr_ptr->moria_flag) continue;
+        }
+
+        bool has_extra_flag = FALSE;
+        int cumulative = 0;
+
+        row++;
+
+        for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++, col++)
+        {
+            object_type *o_ptr = &inventory[i];
+
+            bool this_flag = FALSE;
+            bool this_extra_flag = FALSE;
+
+            if (!o_ptr->tval) continue;
+
+            // First, check for sustain
+            if (pfr_ptr->extra_flag)
+            {
+                if (o_ptr->known_obj_flags_2 & (pfr_ptr->extra_flag))
+                {
+                    this_extra_flag = has_extra_flag = TRUE;
+                }
+            }
+
+            if (pfr_ptr->set == 1)
+            {
+                if (o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) this_flag = TRUE;
+            }
+            else if (pfr_ptr->set == 2)
+            {
+                if (o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) this_flag = TRUE;
+            }
+            else if (pfr_ptr->set == 3)
+            {
+                if (o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) this_flag = TRUE;
+            }
+            else if (pfr_ptr->set == 4)
+            {
+                if (o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) this_flag = TRUE;
+            }
+
+            // Nothing to mark
+            if (!this_flag && !this_extra_flag) continue;
+
+            int attr = TERM_GREEN;
+            if (o_ptr->pval < 0) attr = TERM_RED;
+            QString pval_num = (QString("%1") .arg(o_ptr->pval));
+            if (o_ptr->tval > 0) pval_num.prepend("+");
+            if (this_extra_flag)
+            {
+                pval_num = (QString("<u>%1</u>") .arg(pval_num));
+                if (o_ptr->pval < 0) attr = TERM_ORANGE;
+                else attr = TERM_BLUE;
+            }
+
+            QLabel *pval_label = new QLabel();
+            make_standard_label(pval_label, pval_num, attr);
+            return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
+
+            cumulative += o_ptr->pval;
+        }    
+
+        int attr = TERM_GREEN;
+        if (cumulative < 0) attr = TERM_RED;
+        if (has_extra_flag)
+        {
+            if (cumulative < 0) attr = TERM_ORANGE;
+            else attr = TERM_BLUE;
+        }
+
+        QLabel *line_label = new QLabel;
+        make_standard_label(line_label, pfr_ptr->name, attr);
+
+        if (pfr_ptr->set == 1)
+        {
+            // Too messy to include in the charts
+            if (pfr_ptr->this_flag & (TR1_ALL_STATS)) line_label->setToolTip(stat_entry(x-1));
+            else if (pfr_ptr->this_flag == TR1_INFRA) line_label->setToolTip(QString("Infravision allows the player to see warm blooded creatures, even invisible creatures, outside of their light radius.<br>One square = 10 feet."));
+            else if (pfr_ptr->this_flag == TR1_STEALTH) line_label->setToolTip(QString("Stealth determines how much noise the player makes while in the dungeon.<br>Sleeping creatures will take longer to wake up when the player has high stealth.<br>Wielding an item that aggravates completely eliminates all player stealth."));
+            else if (pfr_ptr->this_flag == TR1_SEARCH) line_label->setToolTip(QString("Searching affects the chance of searching each player turn, as well as the percent chance of noticing any hidden doors or traps that are within 10 feet of player while searching.<br>Also affects how quickly the player gets a feeling about the level they are on."));
+            else if (pfr_ptr->this_flag == TR1_SPEED)
+            {
+                if (game_mode == GAME_NPPANGBAND) line_label->setToolTip(QString("Player rate of speed has a dramatic effect on player power and survivability.<br>The incremental changes in speed are reduced as the extremes are approached.<br>Normal speed = 1 player turn every 10 game turns<br>-7 speed = twice as slow as normal speed<br>+10 speed = 2x normal speed<br>+20 speed = 3x normal speed<br>+20 speed = 3x normal speed<br>+44 speed = 4x normal speed<br>+70 speed = 4.9x normal speed (maximum achievable speed)"));
+                else line_label->setToolTip(QString("Player rate of speed has a dramatic effect on player power and survivability.<br>Each positive increment doubles player speed.<br>Each negative increment cuts player speed in half.<br>(+1)=2x normal speed<br>(+2)=4x normal speed<br>(+3)=8x normal speed<"));
+            }
+            else if (pfr_ptr->this_flag == TR1_TUNNEL) line_label->setToolTip(QString("Improves or reduces the chance of sucessfully tunneling through a walls.<br>Actual chance of success depends on the terrain into which the player is tunneling."));
+            else if (pfr_ptr->this_flag == TR1_BLOWS) line_label->setToolTip(QString("Increases the number of player attacks the player has during per player turn."));
+            else if (pfr_ptr->this_flag == TR1_SHOTS) line_label->setToolTip(QString("Reduces the amount of time it takes the player to fire ammunition from a bow, crossbow, or sling.<br>+1 = 1/2 of a player turn<br>+2 = 1/3 of a player turn etc."));
+            else if (pfr_ptr->this_flag == TR1_MIGHT) line_label->setToolTip(QString("Increases the damage multiplier for ammunition fired from a bow, crossbow, or sling."));
+        }
+        return_layout->addWidget(line_label, row++, 0, Qt::AlignLeft);
+    }
+
+    QLabel *filler = new QLabel("  ");
+    return_layout->addWidget(filler, 0, 5);
+
+    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
 PlayerScreenDialog::PlayerScreenDialog(void)
 {
     QVBoxLayout *main_layout = new QVBoxLayout;
+
+    // Title Box
+    QVBoxLayout *title_line = new QVBoxLayout;
+    main_layout->addLayout(title_line);
+    QLabel *main_prompt = new QLabel(QString("<h2>Character Information %1 %2 </h2>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
+    main_prompt->setAlignment(Qt::AlignCenter);
+    title_line->addWidget(main_prompt);
+    title_line->addWidget(new QLabel("  "));
+
+
+    // Char info line
     QHBoxLayout *char_info = new QHBoxLayout;
     QGridLayout *basic_info = new QGridLayout;
     QGridLayout *basic_data = new QGridLayout;
     QGridLayout *game_info = new QGridLayout;
     QGridLayout *stat_info = new QGridLayout;
+    QGridLayout *combat_info = new QGridLayout;
     QGridLayout *ability_info = new QGridLayout;
 
-    QLabel *main_prompt = new QLabel(QString("<h3>Character Information %1 %2 </h3>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
-    main_prompt->setAlignment(Qt::AlignCenter);
-    main_layout->addWidget(main_prompt);
     main_layout->addLayout(char_info);
-
-
     char_basic_info(basic_info);
     char_info->addLayout(basic_info);
 
@@ -1177,54 +1458,56 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     char_game_info(game_info);
     char_info->addLayout(game_info);
 
+    char_combat_info(combat_info);
+    char_info->addLayout(combat_info);
+
+    char_ability_info(ability_info);
+    char_info->addLayout(ability_info);
+
     char_stat_info(stat_info);
     char_info->addLayout(stat_info);
 
-    QHBoxLayout *char_abilities = new QHBoxLayout;
-    QGridLayout *combat_info = new QGridLayout;
-    main_layout->addLayout(char_abilities);
-
-    char_combat_info(combat_info);
-    char_abilities->addLayout(combat_info);
-
-    char_ability_info(ability_info);
-    char_abilities->addLayout(ability_info);
 
     // Add player history
+    // Title Box
+    QVBoxLayout *history_box = new QVBoxLayout;
+    main_layout->addLayout(history_box);
+    history_box->addWidget(new QLabel("  "));
     QLabel *history = new QLabel();
     make_standard_label(history, p_ptr->history, TERM_BLUE);
-    history->setWordWrap(TRUE);
-    history->setAlignment(Qt::AlignTop);
-    history->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    char_abilities->addWidget(history);
+    history_box->addWidget(history);
+    history_box->addWidget(new QLabel("  "));
 
-    // Add the object flags and abilities
-    QHBoxLayout *equip_info = new QHBoxLayout;
+    // Object Info
+    QGridLayout *equip_info = new QGridLayout;
     main_layout->addLayout(equip_info);
 
-    QVBoxLayout *equip_flag_vlay = new QVBoxLayout;
-    equip_info->addLayout(equip_flag_vlay);
-    QLabel *resist_header = new QLabel(QString("<h4>Resistance Info</h4>"));
-    resist_header->setAlignment(Qt::AlignCenter);
-    equip_flag_vlay->addWidget(resist_header);
     QGridLayout *resist_flags = new QGridLayout;
-    equip_resist_info(resist_flags, TRUE);
-    equip_flag_vlay->addLayout(resist_flags);
-    equip_flag_vlay->addSpacerItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
-
-    QVBoxLayout *ability_flag_vlay = new QVBoxLayout;
-    equip_info->addLayout(ability_flag_vlay);
-    QLabel *ability_header = new QLabel(QString("<h4>Attribute Info</h4>"));
-    ability_header->setAlignment(Qt::AlignCenter);
-    ability_flag_vlay->addWidget(ability_header);
     QGridLayout *ability_flags = new QGridLayout;
-    equip_resist_info(ability_flags, FALSE);
-    ability_flag_vlay->addLayout(ability_flags);
-    ability_flag_vlay->addSpacerItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding));
+    QGridLayout *equip_mods = new QGridLayout;
+    QGridLayout *nativity_flags = new QGridLayout;
 
-    QGridLayout *equip_stats = new QGridLayout;
-    equip_stat_info(equip_stats);
-    equip_info->addLayout(equip_stats);
+
+    QLabel *resist_label = new QLabel("<h3>Resistance Information</h3>");
+    resist_label->setToolTip(QString("Blue represents elemental immunity, green represents resistance, and purple represents double resistance."));
+    equip_info->addWidget(resist_label, 0, 0, Qt::AlignCenter);
+    equip_flag_info(resist_flags, FLAGS_RESIST);
+    equip_info->addLayout(resist_flags, 1, 0);
+
+    QLabel *ability_label = new QLabel("<h3>Ability Information</h3>");
+    equip_info->addWidget(ability_label, 0, 1, Qt::AlignCenter);
+    equip_flag_info(ability_flags, FLAGS_ABILITY);
+    equip_info->addLayout(ability_flags,  1, 1);
+
+    QLabel *nativity_label = new QLabel("<h3>Nativity Information</h3>");
+    equip_info->addWidget(nativity_label, 0, 2, Qt::AlignCenter);
+    equip_flag_info(nativity_flags, FLAGS_NATIVITY);
+    equip_info->addLayout(nativity_flags, 1, 2);
+
+    QLabel *modifier_label = new QLabel("<h3>Equipment Modifiers</h3>");
+    equip_info->addWidget(modifier_label, 0, 3, Qt::AlignCenter);
+    equip_modifier_info(equip_mods);
+    equip_info->addLayout(equip_mods, 1, 3);
 
     QDialogButtonBox buttons;
     buttons.setStandardButtons(QDialogButtonBox::Close);

@@ -182,7 +182,7 @@ void launch_game()
     if (p_ptr->chp < 0) p_ptr->is_dead = TRUE;
 
     /* Update stuff */
-    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
     p_ptr->update |= (PU_TORCH | PU_UPDATE_VIEW | PU_FORGET_VIEW  | PU_DISTANCE);
 
     p_ptr->redraw |= (PR_STATUS);

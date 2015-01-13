@@ -162,7 +162,7 @@ EditObjectDialog::EditObjectDialog(void)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Update stuff */
-    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
     handle_stuff();
 }
@@ -277,7 +277,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Update stuff */
-    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
     /* Fully update the visuals */
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
@@ -727,7 +727,7 @@ void WizardModeDialog::wiz_cure_all(void)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Update stuff */
-    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+    p_ptr->update |= (PU_TORCH | PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
     /* Fully update the visuals */
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);

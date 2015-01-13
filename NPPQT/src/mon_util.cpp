@@ -4816,7 +4816,7 @@ void flush_monster_messages(void)
         /* GF_LAVA attacks learn about Lava nativity */
         case LRN_LAVA:
         {
-            if (p_ptr->p_native & (P_NATIVE_LAVA)) m_ptr->smart |= (SM_NAT_LAVA);
+            if (p_ptr->state.native_lava) m_ptr->smart |= (SM_NAT_LAVA);
             else m_ptr->smart &= ~(SM_NAT_LAVA);
             break;
          }

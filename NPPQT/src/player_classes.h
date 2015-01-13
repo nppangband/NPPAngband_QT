@@ -219,6 +219,9 @@ public:
 
     s16b cur_light;		/* Radius of lite (if any) */
 
+    u32b p_flags_native_with_temp;        // The native flags with temporary resists factored in (essentaial for code that must be efficient)
+    u32b p_flags_native_no_temp;   // The native flags without temporary resists factored in (needed for character screen
+
     bool sustain_str;	/* Keep strength */
     bool sustain_int;	/* Keep intelligence */
     bool sustain_wis;	/* Keep wisdom */
@@ -250,11 +253,24 @@ public:
     bool resist_chaos;	/* Resist chaos */
     bool resist_disen;	/* Resist disenchant */
 
+    bool native_lava;
+    bool native_ice;
+    bool native_oil;
+    bool native_fire;
+    bool native_sand;
+    bool native_forest;
+    bool native_water;
+    bool native_acid;
+    bool native_mud;
+    bool native_boiling_water;
+    bool native_boiling_mud;
+
     bool slow_digest;	/* Slower digestion */
     bool ffall;			/* Feather falling */
     bool regenerate;	/* Regeneration */
     bool telepathy;		/* Telepathy */
     bool see_inv;		/* See invisible */
+    bool see_inv_perm;   // Does the player have permanent see invisible, or is it from a temporary effect?
     bool free_act;		/* Free action */
     bool hold_life;		/* Hold life */
     bool afraid; 		/* Afraid */
@@ -475,11 +491,6 @@ public:
     u32b update;		/* Pending Updates (bit flags) */
     u32b redraw;		/* Normal Redraws (bit flags) */
     u32b window;		/* Window Redraws (bit flags) */
-
-
-
-    u32b p_native;  /* Lists terrains the player is native to*/
-    u32b p_native_known;  /* Lists terrains the player is known to be native to*/
 
     /* Generation fields (for quick start) */
     s32b au_birth;          /* Birth gold when option birth_money is false */

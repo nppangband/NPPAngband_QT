@@ -465,7 +465,7 @@ static int quiver_wield(int item, object_type *o_ptr)
 
     /* Recalculate bonuses */
     p_ptr->notice |= (PN_SORT_QUIVER);
-    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA | PU_NATIVE);
+    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
     p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 
     /* Reorder the quiver and return the perhaps modified slot */
@@ -590,7 +590,7 @@ void wield_item(object_type *o_ptr, int item, int slot)
 
     /* Recalculate bonuses, torch, mana */
     p_ptr->notice |= (PN_SORT_QUIVER);
-    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA | PU_NATIVE);
+    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
     p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 }
 
@@ -2617,7 +2617,7 @@ void inven_item_increase(int item, int num)
         o_ptr->number += num;
 
         /* Recalculate bonuses */
-        p_ptr->update |= (PU_BONUS | PU_NATIVE);
+        p_ptr->update |= (PU_BONUS);
 
         /* Recalculate mana XXX */
         p_ptr->update |= (PU_MANA);

@@ -1062,6 +1062,9 @@ enum
 #define TN1_NATIVE_MUD 		ELEMENT_MUD
 #define TN1_NATIVE_UNUSED 	0x0200
 
+#define TN1_NATIVE_BMUD     ELEMENT_BMUD
+#define TN1_NATIVE_BWATER   ELEMENT_BWATER
+
 
 /* * Store bit definitions What objects are sold in stores */
 #define SF1_GENERAL_STORE  	0x00000001

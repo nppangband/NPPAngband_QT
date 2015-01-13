@@ -1687,7 +1687,7 @@ void change_player_level(void)
     character_xtra = TRUE;
 
     /* Update stuff */
-    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE);
+    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
     /* Calculate torch radius */
     p_ptr->update |= (PU_TORCH);
@@ -1716,7 +1716,7 @@ void change_player_level(void)
     character_xtra = FALSE;
 
     /* Update stuff */
-    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_NATIVE | PU_PANEL);
+    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_PANEL);
 
     /* Combine / Reorder the pack */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);

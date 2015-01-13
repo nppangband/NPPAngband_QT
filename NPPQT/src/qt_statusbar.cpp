@@ -292,7 +292,7 @@ void MainWindow::update_statusbar(void)
     if (p_ptr->timed[TMD_BLESSED]) blessed->setVisible(TRUE);
     else blessed->setVisible(FALSE);
 
-    if (p_ptr->timed[TMD_SINVIS]) see_invisible->setVisible(TRUE);
+    if ((p_ptr->timed[TMD_SINVIS]) && !redundant_timed_event(TMD_SINVIS)) see_invisible->setVisible(TRUE);
     else see_invisible->setVisible(FALSE);
 
     if (p_ptr->timed[TMD_SINFRA]) infravision->setVisible(TRUE);

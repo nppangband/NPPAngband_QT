@@ -2120,7 +2120,7 @@ void acid_dam(int dam, QString kb_str)
     /* Resist the damage */
     if (p_ptr->state.resist_acid) dam = (dam + 2) / 3;
     if (p_ptr->timed[TMD_OPP_ACID]) dam = (dam + 2) / 3;
-    if (p_ptr->p_native & (P_NATIVE_ACID)) dam = (dam * 4 + 1) / 5;
+    if (p_ptr->state.native_acid) dam = (dam * 4 + 1) / 5;
 
     /* If any armor gets hit, defend the player */
     if (minus_ac()) dam = (dam + 1) / 2;
@@ -2178,7 +2178,7 @@ void fire_dam(int dam, QString kb_str)
     /* Resist the damage */
     if (p_ptr->state.resist_fire) dam = (dam + 2) / 3;
     if (p_ptr->timed[TMD_OPP_FIRE]) dam = (dam + 2) / 3;
-    if (p_ptr->p_native & (P_NATIVE_FIRE)) dam = (dam * 4 + 1) / 5;
+    if (p_ptr->state.native_fire) dam = (dam * 4 + 1) / 5;
 
     /* Take damage */
     take_hit(dam, kb_str);
@@ -2205,7 +2205,7 @@ void cold_dam(int dam, QString kb_str)
     /* Resist the damage */
     if (p_ptr->state.resist_cold) dam = (dam + 2) / 3;
     if (p_ptr->timed[TMD_OPP_COLD]) dam = (dam + 2) / 3;
-    if (p_ptr->p_native & P_NATIVE_ICE) dam = (dam  * 4 + 1) / 5;
+    if (p_ptr->state.native_ice) dam = (dam  * 4 + 1) / 5;
 
     /* Take damage */
     take_hit(dam, kb_str);
@@ -5549,7 +5549,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
     if (!is_terrain)
     {
         /* Adjust damage */
-        dam = terrain_adjust_damage(dam, typ, y, x, p_ptr->p_native, TRUE);
+        dam = terrain_adjust_damage(dam, typ, y, x, p_ptr->state.p_flags_native_with_temp, TRUE);
     }
 
     /* Analyze the damage */
@@ -5636,7 +5636,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
         {
 
             /*Player is native*/
-            if (p_ptr->p_native & (FF3_LAVA))
+            if (p_ptr->state.native_lava)
             {
 
                 /*Nothing happens*/
@@ -5669,7 +5669,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
         case GF_BWATER:
         {
             /*Player is native*/
-            if ((p_ptr->p_native & (ELEMENT_BWATER)) == ELEMENT_BWATER)
+            if (p_ptr->state.native_boiling_water)
             {
                 /*Nothing happens*/
                 if (is_terrain) return (FALSE);
@@ -5703,7 +5703,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
         case GF_BMUD:
         {
             /*Player is native*/
-            if ((p_ptr->p_native & (ELEMENT_BMUD)) == ELEMENT_BMUD)
+            if (p_ptr->state.native_boiling_mud)
             {
 
                 /*Nothing happens*/
@@ -5843,7 +5843,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
         /* Water -- stun/confuse */
         case GF_WATER:
         {
-            bool native = ((p_ptr->p_native & (P_NATIVE_WATER)) ? TRUE : FALSE);
+            bool native = p_ptr->state.native_water;
 
             if (blind) message(QString("You are hit by something!"));
 
@@ -6156,7 +6156,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
         /* Ice -- cold plus stun plus cuts */
         case GF_ICE:
         {
-            bool native = ((p_ptr->p_native & (P_NATIVE_ICE)) ? TRUE : FALSE);
+            bool native = p_ptr->state.native_ice;
             if (blind)
             {
                if (!is_terrain) message(QString("You are hit by something sharp!"));
@@ -6220,7 +6220,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
         case GF_SAND:
         {
             /*Player is native*/
-            if (p_ptr->p_native & (FF3_SAND))
+            if (p_ptr->state.native_sand)
             {
 
                 /*Nothing happens*/

@@ -134,27 +134,27 @@ static timed_effect effects[] =
     /* TMD_NAT_LAVA */
     { "You feel native to lava terrains!", "You no longer feel native to lava terrains.",
             NULL, NULL,
-            0, PU_NATIVE, 0, 0, FALSE  },
+            0, PU_BONUS, 0, 0, FALSE  },
     /* TMD_NAT_OIL */
     { "You feel native to oil terrains!", "You no longer feel native to oil terrains.",
             NULL, NULL,
-            0, PU_NATIVE, 0, 0, FALSE  },
+            0, PU_BONUS, 0, 0, FALSE  },
     /* TMD_NAT_SAND */
     { "You feel native to sandy terrains!", "You no longer feel native to sandy terrains.",
             NULL, NULL,
-            0, PU_NATIVE, 0, 0 , FALSE },
+            0, PU_BONUS, 0, 0 , FALSE },
     /* TMD_NAT_TREE */
     { "You feel native to forest terrains!", "You no longer feel native to forest terrains.",
             NULL, NULL,
-            0, PU_NATIVE, 0, 0, FALSE  },
+            0, PU_BONUS, 0, 0, FALSE  },
     /* TMD_NAT_WATER */
     { "You feel native to water terrains!", "You no longer feel native to water terrains.",
             NULL, NULL,
-            0, PU_NATIVE, 0, 0, FALSE  },
+            0, PU_BONUS, 0, 0, FALSE  },
     /* TMD_NAT_MUD */
     { "You feel native to muddy terrains!", "You no longer feel native to muddy terrains.",
             NULL, NULL,
-            0, PU_NATIVE, 0, 0, FALSE  },
+            0, PU_BONUS, 0, 0, FALSE  },
     /* TMD_SLAY_ELEM */
     { "Your weapon glows with many colors!", "Your weapon returns to normal.",
             NULL, NULL,
@@ -166,7 +166,7 @@ static timed_effect effects[] =
 };
 
 
-/* Returns true for a temporary effect if the player has knowledge of permanent protection. */
+/* Returns true for a temporary effect if the player has permanent protection. */
 bool redundant_timed_event(int idx)
 {
     /* Don't mention some effects. */
@@ -175,12 +175,13 @@ bool redundant_timed_event(int idx)
     if (idx == TMD_OPP_FIRE && p_ptr->state.immune_fire) return (TRUE);
     if (idx == TMD_OPP_COLD && p_ptr->state.immune_cold) return (TRUE);
     if (idx == TMD_OPP_POIS && p_ptr->state.immune_pois) return (TRUE);
-    if (idx == TMD_NAT_LAVA && (p_ptr->p_native & P_NATIVE_LAVA)) return (TRUE);
-    if (idx == TMD_NAT_OIL && (p_ptr->p_native & P_NATIVE_OIL)) return (TRUE);
-    if (idx == TMD_NAT_SAND && (p_ptr->p_native & P_NATIVE_SAND)) return (TRUE);
-    if (idx == TMD_NAT_TREE && (p_ptr->p_native & P_NATIVE_FOREST)) return (TRUE);
-    if (idx == TMD_NAT_WATER && (p_ptr->p_native & P_NATIVE_WATER)) return (TRUE);
-    if (idx == TMD_NAT_MUD && (p_ptr->p_native & P_NATIVE_MUD)) return (TRUE);
+    if (idx == TMD_NAT_LAVA && (p_ptr->state.p_flags_native_no_temp & P_NATIVE_LAVA)) return (TRUE);
+    if (idx == TMD_NAT_OIL && (p_ptr->state.p_flags_native_no_temp & P_NATIVE_OIL)) return (TRUE);
+    if (idx == TMD_NAT_SAND && (p_ptr->state.p_flags_native_no_temp & P_NATIVE_SAND)) return (TRUE);
+    if (idx == TMD_NAT_TREE && (p_ptr->state.p_flags_native_no_temp & P_NATIVE_FOREST)) return (TRUE);
+    if (idx == TMD_NAT_WATER && (p_ptr->state.p_flags_native_no_temp & P_NATIVE_WATER)) return (TRUE);
+    if (idx == TMD_NAT_MUD && (p_ptr->state.p_flags_native_no_temp & P_NATIVE_MUD)) return (TRUE);
+    if (idx == TMD_SINVIS && p_ptr->state.see_inv_perm) return (TRUE);
 
     return (FALSE);
 }

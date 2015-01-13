@@ -1055,7 +1055,7 @@ static void swap_weapons(void)
     }
 
     /* Recalculate bonuses, torch, mana */
-    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA | PU_NATIVE);
+    p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
     p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 
     process_player_energy(BASE_ENERGY_MOVE);
@@ -1099,7 +1099,7 @@ static void wield_swap_weapon(void)
         wield_item(o_ptr, i, INVEN_MAIN_WEAPON);
 
         /* Recalculate bonuses, torch, mana */
-        p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA | PU_NATIVE);
+        p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
         p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 
         /* We are done */
@@ -1287,10 +1287,10 @@ void command_destroy(cmd_arg args)
         /* Combine the pack */
         p_ptr->notice |= (PN_COMBINE);
 
-        p_ptr->update |= (PU_NATIVE | PU_PLAYER_SCORE);
+        p_ptr->update |= (PU_PLAYER_SCORE);
 
         p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_RESIST | PR_EXP |
-                          PR_STATS | PU_NATIVE | PR_ITEMLIST);
+                          PR_STATS | PR_ITEMLIST);
 
         /* Done */
         return;

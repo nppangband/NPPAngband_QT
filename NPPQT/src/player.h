@@ -617,7 +617,7 @@ enum
 #define PU_FLOW_PASS_WALLS     0x00002000L     /* Update flow for creatures who pass through or kill walls */
 #define PU_FLOW_NO_DOORS_SPECIAL       0x00004000L /* Update the "doorless" versions of the flows */
 #define PU_PLAYER_SCORE 0x00008000L  // Update player score
-#define PU_NATIVE		0x00100000L	/* Calculate nativity */
+#define PU_UNUSED   	0x00100000L
 #define PU_STEALTH		0x00200000L	/* Calculate bonuses */
 #define PU_BONUS		0x00400000L	/* Calculate bonuses */
 #define PU_TORCH		0x00800000L	/* Calculate torch radius */

@@ -614,81 +614,6 @@ static void calc_torch(void)
 }
 
 
-/*
- * Extract and set the current nativity status
- */
-static void calc_nativity(void)
-{
-    int i;
-    object_type *o_ptr;
-    u32b f1, f2, f3, fn;
-
-    /* Extract the player flags */
-    player_flags(&f1, &f2, &f3, &fn);
-
-    /* Assume nothing */
-    p_ptr->p_native = 0L;
-
-    /* Assume nothing known */
-    p_ptr->p_native_known = 0L;
-
-    /*Class and Race Native flags*/
-    p_ptr->p_native |= fn;
-    p_ptr->p_native_known |= fn;
-
-    /* Loop through all wielded items */
-    for (i = INVEN_WIELD; i < INVEN_TOTAL; i++)
-    {
-        o_ptr = &inventory[i];
-
-        /* Skip empty slots */
-        if (!o_ptr->k_idx) continue;
-
-        /* Don't count the swap weapon */
-        if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
-
-        p_ptr->p_native |= o_ptr->obj_flags_native;
-
-        /* Don't know all the flags */
-        if (!object_known_p(o_ptr)) continue;
-
-        p_ptr->p_native_known |= o_ptr->known_obj_flags_native;
-    }
-
-    /*Manually add the temporary native flags.  Assume known*/
-    if (p_ptr->timed[TMD_NAT_LAVA])
-    {
-        p_ptr->p_native |= P_NATIVE_LAVA;
-        p_ptr->p_native_known |= P_NATIVE_LAVA;
-    }
-    if (p_ptr->timed[TMD_NAT_OIL])
-    {
-        p_ptr->p_native |= P_NATIVE_OIL;
-        p_ptr->p_native_known |= P_NATIVE_OIL;
-    }
-    if (p_ptr->timed[TMD_NAT_SAND])
-    {
-        p_ptr->p_native |= P_NATIVE_SAND;
-        p_ptr->p_native_known |= P_NATIVE_SAND;
-    }
-    if (p_ptr->timed[TMD_NAT_TREE])
-    {
-        p_ptr->p_native |= P_NATIVE_FOREST;
-        p_ptr->p_native_known |= P_NATIVE_FOREST;
-    }
-    if (p_ptr->timed[TMD_NAT_WATER])
-    {
-        p_ptr->p_native |= P_NATIVE_WATER;
-        p_ptr->p_native_known |= P_NATIVE_WATER;
-    }
-    if (p_ptr->timed[TMD_NAT_MUD])
-    {
-        p_ptr->p_native |= P_NATIVE_MUD;
-        p_ptr->p_native_known |= P_NATIVE_MUD;
-    }
-
-}
-
 
 /*
  * Computes current weight limit in ounces.
@@ -1109,7 +1034,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (f3 & (TR3_LIGHT)) 			new_state->light = TRUE;
     if (f3 & (TR3_REGEN)) 			new_state->regenerate = TRUE;
     if (f3 & (TR3_TELEPATHY)) 		new_state->telepathy = TRUE;
-    if (f3 & (TR3_SEE_INVIS)) 		new_state->see_inv = TRUE;
+    if (f3 & (TR3_SEE_INVIS)) 		new_state->see_inv = new_state->see_inv_perm = TRUE;
     if (f3 & (TR3_FREE_ACT)) 		new_state->free_act = TRUE;
     if (f3 & (TR3_HOLD_LIFE)) 		new_state->hold_life = TRUE;
 
@@ -1147,6 +1072,16 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (f2 & (TR2_RES_CHAOS)) 		new_state->resist_chaos = TRUE;
     if (f2 & (TR2_RES_DISEN)) 		new_state->resist_disen = TRUE;
 
+    if (fn & (TN1_NATIVE_LAVA))     new_state->native_lava = TRUE;
+    if (fn & (TN1_NATIVE_ICE))      new_state->native_ice = TRUE;
+    if (fn & (TN1_NATIVE_OIL))      new_state->native_oil = TRUE;
+    if (fn & (TN1_NATIVE_FIRE))     new_state->native_fire = TRUE;
+    if (fn & (TN1_NATIVE_SAND))     new_state->native_sand = TRUE;
+    if (fn & (TN1_NATIVE_FOREST))   new_state->native_forest = TRUE;
+    if (fn & (TN1_NATIVE_WATER))    new_state->native_water = TRUE;
+    if (fn & (TN1_NATIVE_ACID))     new_state->native_acid = TRUE;
+    if (fn & (TN1_NATIVE_MUD))      new_state->native_mud = TRUE;
+
     /* Sustain flags */
     if (f2 & (TR2_SUST_STR)) 		new_state->sustain_str = TRUE;
     if (f2 & (TR2_SUST_INT)) 		new_state->sustain_int = TRUE;
@@ -1154,6 +1089,9 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (f2 & (TR2_SUST_DEX)) 		new_state->sustain_dex = TRUE;
     if (f2 & (TR2_SUST_CON)) 		new_state->sustain_con = TRUE;
     if (f2 & (TR2_SUST_CHR)) 		new_state->sustain_chr = TRUE;
+
+
+    new_state->p_flags_native_no_temp = new_state->p_flags_native_with_temp = fn;
 
 
     /*** Analyze equipment ***/
@@ -1232,7 +1170,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (f3 & (TR3_FEATHER)) 		new_state->ffall = TRUE;
         if (f3 & (TR3_REGEN)) 			new_state->regenerate = TRUE;
         if (f3 & (TR3_TELEPATHY)) 		new_state->telepathy = TRUE;
-        if (f3 & (TR3_SEE_INVIS)) 		new_state->see_inv = TRUE;
+        if (f3 & (TR3_SEE_INVIS)) 		new_state->see_inv = new_state->see_inv_perm = TRUE;
         if (f3 & (TR3_FREE_ACT)) 		new_state->free_act = TRUE;
         if (f3 & (TR3_HOLD_LIFE)) 		new_state->hold_life = TRUE;
 
@@ -1270,6 +1208,16 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (f2 & (TR2_RES_CHAOS)) 		new_state->resist_chaos = TRUE;
         if (f2 & (TR2_RES_DISEN)) 		new_state->resist_disen = TRUE;
 
+        if (fn & (TN1_NATIVE_LAVA))     new_state->native_lava = TRUE;
+        if (fn & (TN1_NATIVE_ICE))      new_state->native_ice = TRUE;
+        if (fn & (TN1_NATIVE_OIL))      new_state->native_oil = TRUE;
+        if (fn & (TN1_NATIVE_FIRE))     new_state->native_fire = TRUE;
+        if (fn & (TN1_NATIVE_SAND))     new_state->native_sand = TRUE;
+        if (fn & (TN1_NATIVE_FOREST))   new_state->native_forest = TRUE;
+        if (fn & (TN1_NATIVE_WATER))    new_state->native_water = TRUE;
+        if (fn & (TN1_NATIVE_ACID))     new_state->native_acid = TRUE;
+        if (fn & (TN1_NATIVE_MUD))      new_state->native_mud = TRUE;
+
         /* Sustain flags */
         if (f2 & (TR2_SUST_STR)) 		new_state->sustain_str = TRUE;
         if (f2 & (TR2_SUST_INT)) 		new_state->sustain_int = TRUE;
@@ -1306,8 +1254,10 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         /* Apply the mental bonuses to hit/damage, if known */
         if (object_known_p(o_ptr)) new_state->dis_to_h += o_ptr->to_h;
         if (object_known_p(o_ptr)) new_state->dis_to_d += o_ptr->to_d;
-    }
 
+        new_state->p_flags_native_with_temp |= fn;
+        new_state->p_flags_native_no_temp |= fn;
+    }
 
     /* Scan the quiver */
     for (i = QUIVER_START; i < QUIVER_END; i++)
@@ -1329,7 +1279,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         }
     }
 
-    /*finally, add infravision to lite radius*/
+    /*finally, add lite radius to infravision range*/
     if (new_state->see_infra) new_state->see_infra += new_state->cur_light;
 
 
@@ -1475,6 +1425,44 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         new_state->see_infra += 5;
     }
 
+    /*Manually add the temporary native flags.  Assume known*/
+    if (p_ptr->timed[TMD_NAT_LAVA])
+    {
+        new_state->p_flags_native_with_temp |= P_NATIVE_LAVA;
+        new_state->native_lava = TRUE;
+    }
+    if (p_ptr->timed[TMD_NAT_OIL])
+    {
+        new_state->p_flags_native_with_temp |= P_NATIVE_OIL;
+        new_state->native_oil = TRUE;
+    }
+    if (p_ptr->timed[TMD_NAT_SAND])
+    {
+        new_state->p_flags_native_with_temp |= P_NATIVE_SAND;
+        new_state->native_sand = TRUE;
+    }
+    if (p_ptr->timed[TMD_NAT_TREE])
+    {
+        new_state->p_flags_native_with_temp |= P_NATIVE_FOREST;
+        new_state->native_forest = TRUE;
+    }
+    if (p_ptr->timed[TMD_NAT_WATER])
+    {
+        new_state->p_flags_native_with_temp |= P_NATIVE_WATER;
+        new_state->native_water = TRUE;
+    }
+    if (p_ptr->timed[TMD_NAT_MUD])
+    {
+        new_state->p_flags_native_with_temp |= P_NATIVE_MUD;
+        new_state->native_mud = TRUE;
+    }
+
+    //Add the combined nativities
+    if (new_state->native_lava)
+    {
+        if (new_state->native_water) new_state->native_boiling_water = TRUE;
+        if (new_state->native_mud)   new_state->native_boiling_mud = TRUE;
+    }
 
     /*** Special flags ***/
 
@@ -2023,16 +2011,10 @@ void update_stuff(void)
         calc_bonuses(inventory, &p_ptr->state, FALSE);
 
         /*hack = always re-check stealth, torch & nativity*/
-        p_ptr->update |= (PU_STEALTH | PU_NATIVE | PU_TORCH);
+        p_ptr->update |= (PU_STEALTH | PU_TORCH);
     }
 
     if (p_ptr->update & (PU_TORCH))	calc_torch();
-
-    if (p_ptr->update & (PU_NATIVE))
-    {
-        calc_nativity();
-        p_ptr->redraw |= PR_RESIST;
-    }
 
     if (p_ptr->update & (PU_STEALTH))	calc_stealth();
     if (p_ptr->update & (PU_HP))		calc_hitpoints();
@@ -2044,7 +2026,7 @@ void update_stuff(void)
     if (!character_generated)
     {
         /* Clear the flags */
-        p_ptr->update &= ~(PU_TORCH | PU_BONUS | PU_STEALTH | PU_NATIVE | \
+        p_ptr->update &= ~(PU_TORCH | PU_BONUS | PU_STEALTH | \
                             PU_HP | PU_MANA | PU_SPELLS);
         return;
     }

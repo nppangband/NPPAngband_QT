@@ -545,7 +545,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
 /*
  * Determines if the player is FULLY native to a certain location.
  */
-#define is_player_native(Y, X) is_monster_native_aux(dungeon_info[Y][X].feat, p_ptr->p_native)
+#define is_player_native(Y, X) is_monster_native_aux(dungeon_info[Y][X].feat, p_ptr->state.p_flags_native_with_temp)
 
 
 /*

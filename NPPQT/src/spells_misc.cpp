@@ -766,7 +766,7 @@ void identify_pack(void)
     }
 
     /* Recalculate bonuses */
-    p_ptr->update |= (PU_BONUS | PU_NATIVE);
+    p_ptr->update |= (PU_BONUS);
 
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -2349,7 +2349,7 @@ int do_ident_item(int item, object_type *o_ptr)
     if (item < INVEN_WIELD) squelch = squelch_itemp(o_ptr, 0, TRUE);
 
     /* Recalculate bonuses */
-    p_ptr->update |= (PU_BONUS | PU_NATIVE | PU_PLAYER_SCORE);
+    p_ptr->update |= (PU_BONUS | PU_PLAYER_SCORE);
 
     p_ptr->redraw |= (PR_EXP | PR_STATS | PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 
@@ -3412,47 +3412,47 @@ void self_knowledge(void)
     {
         info[i++] = "You are resistant to disenchantment.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_LAVA)
+    if (p_ptr->state.native_lava)
     {
         info[i++] = "You are native to lava.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_ICE)
+    if (p_ptr->state.native_ice)
     {
         info[i++] = "You are native to ice.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_OIL)
+    if (p_ptr->state.native_oil)
     {
         info[i++] = "You are native to oil.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_FIRE)
+    if (p_ptr->state.native_fire)
     {
         info[i++] = "You are native to fire.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_SAND)
+    if (p_ptr->state.native_sand)
     {
         info[i++] = "You are native to sand.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_FOREST)
+    if (p_ptr->state.native_forest)
     {
         info[i++] = "You are native to forests.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_WATER)
+    if (p_ptr->state.native_water)
     {
         info[i++] = "You are native to water.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_ACID)
+    if (p_ptr->state.native_acid)
     {
         info[i++] = "You are native to acid.";
     }
-    if (p_ptr->p_native_known & P_NATIVE_MUD)
+    if (p_ptr->state.native_mud)
     {
         info[i++] = "You are native to mud.";
     }
-    if ((p_ptr->p_native_known & ELEMENT_BWATER) == ELEMENT_BWATER)
+    if (p_ptr->state.native_boiling_water)
     {
         info[i++] = "You are native to boiling water.";
     }
-    if ((p_ptr->p_native_known & ELEMENT_BMUD) == ELEMENT_BMUD)
+    if (p_ptr->state.native_boiling_mud)
     {
         info[i++] = "You are native to boiling mud.";
     }
@@ -3774,7 +3774,7 @@ bool curse_armor(void)
         o_ptr->ident |= (IDENT_BROKEN);
 
         /* Recalculate bonuses and mana*/
-        p_ptr->update |= (PU_BONUS | PU_NATIVE | PU_MANA);
+        p_ptr->update |= (PU_BONUS | PU_MANA);
 
         /* Redraw stuff */
         p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
@@ -3842,7 +3842,7 @@ bool curse_weapon(void)
         o_ptr->ident |= (IDENT_BROKEN);
 
         /* Recalculate bonuses and mana*/
-        p_ptr->update |= (PU_BONUS | PU_NATIVE | PU_MANA);
+        p_ptr->update |= (PU_BONUS | PU_MANA);
 
         /* Redraw stuff */
         p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
