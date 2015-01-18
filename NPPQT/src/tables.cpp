@@ -1340,14 +1340,18 @@ const s32b player_exp_nppangband[PY_MAX_LEVEL] =
 const player_sex sex_info[MAX_SEXES] =
 {
     {
+        "Male",
+        "King"
+    },
+    {
         "Female",
         "Queen"
     },
-
     {
-        "Male",
-        "King"
-    }
+        "Neutral",
+        "Monarch"
+    },
+
 };
 
 /*

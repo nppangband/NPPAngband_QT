@@ -637,7 +637,7 @@ bool prepare_ghost(int r_idx)
     /* Sanity check. */
     if (ghost_sex >= MAX_SEXES) ghost_sex = rand_int(MAX_SEXES);
 
-    /* And use that number to toggle on either the male or the female flag. */
+    /* And use that number to specify the male or the female flag (or remain gender neutral). */
     if (ghost_sex == 0) r_ptr->flags1 |= (RF1_FEMALE);
     if (ghost_sex == 1) r_ptr->flags1 |= (RF1_MALE);
 

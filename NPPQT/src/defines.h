@@ -235,13 +235,14 @@ enum
 /*
  * Maximum number of player "sex" types (see "table.c", etc)
  */
-#define MAX_SEXES		2
+#define MAX_SEXES		3
 
 /*
  * Player sex constants (hard-coded by save-files, arrays, etc)
  */
-#define SEX_FEMALE		0
-#define SEX_MALE		1
+#define SEX_MALE		0
+#define SEX_FEMALE		1
+#define SEX_NEUTRAL     2
 
 
 // Ensure the variable sizes are consistent across all platforms.
@@ -998,7 +999,16 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 /*
  * Information for "do_cmd_options()".
  */
-#define OPT_PAGE_MAX			5
+enum
+{
+    OPT_PAGE_INTERFACE = 0,
+    OPT_PAGE_DISPLAY,
+    OPT_PAGE_WARNING,
+    OPT_PAGE_BIRTH,
+    OPT_PAGE_CHEAT,
+    OPT_PAGE_MAX,
+};
+
 #define OPT_PAGE_PER			20
 
 

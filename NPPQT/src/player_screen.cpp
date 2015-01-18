@@ -1,6 +1,4 @@
 
-/* File: knowledge_monsters.cpp */
-
 /*
  * Copyright (c) 2014 Jeff Greene, Diego Gonzalez
  *

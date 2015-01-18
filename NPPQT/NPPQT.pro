@@ -35,6 +35,7 @@ SOURCES +=  src/qt_main.cpp\
             src/emitter.cpp \
             src/globals.cpp \
             src/griddialog.cpp \
+            src/help.cpp \
             src/init_edit_files.cpp\
             src/init_game.cpp\
             src/knowledge.cpp\
@@ -68,6 +69,7 @@ SOURCES +=  src/qt_main.cpp\
             src/package.cpp \
             src/pathfind.cpp \
             src/player_attack.cpp \
+            src/player_birth.cpp \
             src/player_death.cpp \
             src/player_classes.cpp \
             src/player_command.cpp \
@@ -120,12 +122,14 @@ HEADERS  += src/qt_mainwindow.h\
             src/cmds.h \
             src/dun_classes.h \
             src/dun_generate.h \
+            src/help.h \
             src/knowledge.h\
             src/optionsdialog.h \
             src/mon_classes.h \
             src/object_dialog.h \
             src/object_all_menu.h \
             src/object_settings.h \
+            src/player_birth.h \
             src/player_classes.h \
             src/player_command.h \
             src/player_scores.h \
@@ -141,7 +145,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/wizard_mode.h \
             src/player_death.h \
-            src/dun_traps.h
+            src/dun_traps.h \
 
 
 RESOURCES += \

@@ -177,8 +177,6 @@ void ObjectSettingsDialog::add_object_verifications(byte settings_mode)
 
     QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
     object_type_ver->addSpacerItem(vspacer);
-    QSpacerItem *vspacer1 = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    object_kind_ver->addSpacerItem(vspacer1);
 }
 
 void ObjectSettingsDialog::update_ego_setting(int id)

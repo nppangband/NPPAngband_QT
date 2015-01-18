@@ -25,7 +25,7 @@
 #include "src/init.h"
 #include "src/optionsdialog.h"
 #include <src/player_screen.h>
-#include "src/birthdialog.h"
+#include "src/player_birth.h"
 #include "src/utilities.h"
 #include "src/knowledge.h"
 #include "emitter.h"
@@ -3056,26 +3056,30 @@ void MainWindow::load_file(const QString &file_name)
 
 void MainWindow::launch_birth(bool quick_start)
 {
-    BirthDialog *dlg = new BirthDialog(this);    
+    PlayerBirth *dlg = new PlayerBirth(quick_start);
 
-    dlg->set_quick_start(quick_start);
-    if (dlg->run()) {                
+
+    if (dlg->done_birth)
+    {
         update_file_menu_game_active();
         launch_game();
         save_character();
         ui_player_moved();
         graphics_view->setFocus();
         redraw();
-    } else {
+
+        // The main purpose of this greeting is to avoid crashes
+        // due to the message vector being empty.
+        message(QString("Welcome %1") .arg(op_ptr->full_name));
+    } else
+    {
         cleanup_npp_games();
         character_loaded = false;
         current_savefile.clear();
     }
     delete dlg;
 
-    // The main purpose of this greeting is to avoid crashes
-    // due to the message vector being empty.
-    message(QString("Welcome %1") .arg(op_ptr->full_name));
+
 }
 
 void MainWindow::save_file(const QString &file_name)
