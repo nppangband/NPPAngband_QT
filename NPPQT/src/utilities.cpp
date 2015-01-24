@@ -483,7 +483,9 @@ void ang_sort(void *u, void *v, int n)
 
 QString get_player_title(void)
 {
-    if(p_ptr->is_wizard) return ("Wizard Mode");
+    if(p_ptr->is_wizard) return ("--WIZARD--");
+
+    if (p_ptr->total_winner) return(sp_ptr->winner);
 
     if (game_mode == GAME_NPPMORIA)
     {

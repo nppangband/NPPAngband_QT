@@ -471,7 +471,7 @@ bool target_set_interactive(int mode, int x, int y)
     bool done = FALSE;
     bool flag = TRUE;
     bool help = FALSE;
-    bool list_floor_objects = auto_display_lists;
+    bool list_floor_objects = TRUE;
 
     u16b path_n;
     u16b path_g[PATH_SIZE];

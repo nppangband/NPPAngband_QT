@@ -5,8 +5,43 @@
 #include <QButtonGroup>
 #include <QLineEdit>
 
+/*
+ * A class to hold "rolled" information, and any
+ * other useful state for the birth process.
+ */
+class Birther
+{
+public:
 
-class PlayerBirth : public QDialog
+
+    byte mode;
+
+    QString full_name;
+
+    byte p_sex;
+    byte p_race;
+    byte p_class;
+
+    s16b age;
+    s16b wt;
+    s16b ht;
+    s16b sc;
+
+    s32b au;
+
+    s16b stat[A_MAX];
+
+    QString history;
+
+    void birther_wipe();
+    void save();
+    void load();
+
+};
+
+
+
+class PlayerBirth : public PlayerScreenInfo
 {
     Q_OBJECT
 
@@ -16,7 +51,11 @@ public:
     bool done_birth;
     bool quick_start;
 
-private:    
+private:
+    void setup_character();
+
+    // try not to update the character more than once each action
+    bool hold_update;
 
 
     //Option checkboxes
@@ -50,6 +89,11 @@ private:
     QLabel *class_info;
     void add_info_boxes(QVBoxLayout *return_layout);
 
+    //stats
+    QVBoxLayout *vlay_stats_info_area;
+    QGridLayout *grid_stat_modifiers;
+    void add_stat_boxes(QVBoxLayout *return_layout);
+    void update_vlay_stats_info();
 
 
 private slots:
@@ -59,14 +103,31 @@ private slots:
     void class_changed(int new_class);
     void option_changed(int index);
     void call_options_dialog(void);
+    void update_character();
 
     // Random char slots
     void random_name(void);
     void random_gender(void);
     void random_race(void);
     void random_class(void);
+    void random_all(void);
 
 };
+
+// birth.cpp
+extern void init_birth();
+extern void finish_birth();
+extern void reset_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
+extern bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
+extern bool sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
+extern void generate_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
+extern void generate_player();
+extern void roll_player(int stats[A_MAX]);
+extern bool has_prev_character();
+extern void save_prev_character();
+extern void load_prev_character();
+extern QString format_stat(s16b value);
+
 
 
 #endif // PLAYER_BIRTH_H

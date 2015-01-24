@@ -15,11 +15,13 @@
  */
 
 #include <src/player_screen.h>
+#include <src/help.h>
 #include <QDialogButtonBox>
 #include <QPixmap>
 #include <QPainter>
 #include <QPlainTextEdit>
 #include <QLabel>
+#include <QList>
 
 // The null line is there to prevent crashes as the data is read;
 static struct player_flag_record player_resist_table[] =
@@ -65,12 +67,12 @@ static struct player_flag_record player_abilities_table[] =
 //The stats need to come first and in order for the stat tooltips to work properly
 static struct player_flag_record player_pval_table[] =
 {
-    { "Strength:",          1, TR1_STR,         TR2_SUST_STR, TRUE, FALSE},
-    { "Intelligence:",      1, TR1_INT,         TR2_SUST_INT, TRUE, FALSE},
-    { "Wisdom:",            1, TR1_WIS,         TR2_SUST_WIS, TRUE, FALSE},
-    { "Dexterity:",         1, TR1_DEX,         TR2_SUST_DEX, TRUE, FALSE},
-    { "Constitution:",      1, TR1_CON,         TR2_SUST_CON, TRUE, FALSE},
-    { "Charisma:",          1, TR1_CHR,         TR2_SUST_CHR, TRUE, FALSE},
+    { "Strength",           1, TR1_STR,         TR2_SUST_STR, TRUE, FALSE},
+    { "Intelligence",       1, TR1_INT,         TR2_SUST_INT, TRUE, FALSE},
+    { "Wisdom",             1, TR1_WIS,         TR2_SUST_WIS, TRUE, FALSE},
+    { "Dexterity",          1, TR1_DEX,         TR2_SUST_DEX, TRUE, FALSE},
+    { "Constitution",       1, TR1_CON,         TR2_SUST_CON, TRUE, FALSE},
+    { "Charisma",           1, TR1_CHR,         TR2_SUST_CHR, TRUE, FALSE},
     { "Infravision",        1, TR1_INFRA,		0, TRUE, FALSE},
     { "Stealth",            1, TR1_STEALTH,		0, TRUE, FALSE},
     { "Searching",          1, TR1_SEARCH,		0, TRUE, FALSE},
@@ -151,11 +153,11 @@ byte analyze_speed_bonuses(int speed, byte default_attr)
 }
 
 // set up a standard label
-static void make_standard_label(QLabel *this_label, QString title, byte preset_color)
+void make_standard_label(QLabel *this_label, QString title, byte preset_color)
 {
     this_label->clear();
     this_label->setText(QString("<b>%1</b>") .arg(color_string(title, preset_color)));
-    this_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    this_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
 }
 
@@ -252,26 +254,129 @@ static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool
 
 QString stat_entry(int stat)
 {
-    if (stat == A_STR) return(QString("Strength affects total number of melee blows per round, melee to-hit, melee to damage,<br>player weight carrying capacity, maximum weildable weapon weight, bashing chances, throwing range, and digging capability."));
-    if (stat == A_INT)
+
+    // Paranoia
+    if (stat >= A_MAX) return ("invalid stat");
+    if (stat < A_STR) return ("invalid stat");
+
+    return(get_help_topic("character_info", stat_names_full[stat]));
+}
+
+// Go through all the labels and update them
+void PlayerScreenInfo::update_char_screen(void)
+{
+    QList<QLabel *> lbl_list = this->findChildren<QLabel *>();
+    for (int i = 0; i < lbl_list.size(); i++)
     {
-        if (game_mode == GAME_NPPANGBAND) return(QString("Intelligence affects disarming skill, and magic device usage success rate.<br>For mages, druids, rangers, and rogues, intelligence affects maximum mana, spellcasting success rate, and numbers of spells the player can learn."));
-        else return(QString("Intelligence affects disarming skill, and magic device usage success rate.<br>For mages, rangers, and rogues, intelligence affects maximum mana, spellcasting success rate, and numbers of spells the player can learn."));
+        QLabel *this_lbl = lbl_list.at(i);
+
+        QString this_name = this_lbl->objectName();
+
+        //Not a named label
+        if (!this_name.length()) continue;
+
+        if (this_name.operator ==("PLYR_Name"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(op_ptr->full_name), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Sex"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(sp_ptr->title), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Race"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_info[p_ptr->prace].pr_name), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Class"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(c_info[p_ptr->pclass].cl_name), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Title"))
+        {
+            QString title = get_player_title();
+            if (p_ptr->is_wizard) title = "[=-WIZARD-=]";
+            else if (p_ptr->total_winner)  title = "**WINNER**";
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(title), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_HP"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(QString("%1/%2") .arg(p_ptr->chp) .arg(p_ptr->mhp)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_SP"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(QString("%1/%2") .arg(p_ptr->csp) .arg(p_ptr->msp)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Fame"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_ptr->q_fame), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Gold"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->au)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Age"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_ptr->age), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Height"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_ptr->ht), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Weight"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_ptr->wt), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_SC"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_ptr->sc), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("TURN_Game"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(turn)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("TURN_Player"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->p_turn)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("DEPTH_Cur"))
+        {
+            QString cur_depth = (QString("%1") .arg(p_ptr->depth * 50));
+            if (!p_ptr->max_depth) cur_depth = "TOWN";
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(cur_depth), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("DEPTH_Max"))
+        {
+            QString max_depth = (QString("%1") .arg(p_ptr->max_depth * 50));
+            if (!p_ptr->max_depth) max_depth = "TOWN";
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(max_depth), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Infra"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg((QString("%1 feet") .arg(p_ptr->state.see_infra * 10))), TERM_BLUE));
+            continue;
+        }
     }
-    if (stat == A_WIS)
-    {
-        if (game_mode == GAME_NPPANGBAND) return(QString("Wisdom affects saving throw.  For priests, druids, rangers, and paladins, wisdon affects their mana,<br>spellcasting success rate, and numbers of spells the player can learn."));
-        else return(QString("Wisdom affects saving throw.  For priests and paladins, wisdon affects their mana, spellcasting success rate, and numbers of spells the player can learn."));
-    }
-    if (stat == A_DEX) return(QString("Dexterity affects total number of melee blows per round, melee to-hit, the player's armor class, disarming skill,<br>a monster's success rate in stealing from the player, and the possibility of getting stunned while bashing a door or creature."));
-    if (stat == A_CON) return(QString("Constitution affects maximum hit points, hit point regeneration, and recovery rate from being stunned, cuts, and posion."));
-    if (stat == A_CHR) return(QString("Charisma affects the prices for transactions in the stores, and the player's ability to sleep, stun, confuse, scare, and slow a monster."));
-    //whoops!
-    return(" ");
 }
 
 
-void PlayerScreenDialog::char_basic_info(QGridLayout *return_layout)
+void PlayerScreenInfo::char_basic_info(QGridLayout *return_layout)
 {
     int row = 0;
     int col = 0;
@@ -281,53 +386,57 @@ void PlayerScreenDialog::char_basic_info(QGridLayout *return_layout)
     make_standard_label(label_player_name, "NAME:", TERM_DARK);
     QLabel *player_name = new QLabel;
     make_standard_label(player_name, op_ptr->full_name, TERM_BLUE);
+    player_name->setObjectName("PLYR_Name");
     return_layout->addWidget(label_player_name, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_name, row++, col+1, Qt::AlignRight);
 
     // Add gender
     QLabel *label_player_gender = new QLabel;
     make_standard_label(label_player_gender, "GENDER:", TERM_DARK);
-    label_player_gender->setToolTip(QString("Player gender does not have any significant gameplay effects."));
+    label_player_gender->setToolTip(get_help_topic("character_info", "Gender"));
     QLabel *player_gender = new QLabel;
     make_standard_label(player_gender, sp_ptr->title, TERM_BLUE);
+    player_gender->setObjectName("PLYR_Sex");
     return_layout->addWidget(label_player_gender, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_gender, row++, col+1, Qt::AlignRight);
 
     // Add race
     QLabel *label_player_race = new QLabel;
     make_standard_label(label_player_race, "RACE:", TERM_DARK);
-    label_player_race->setToolTip(QString("Different player races have adjustments to stats and abilities.<br>Some races have innate intrinsic abilities."));
+    label_player_race->setToolTip(get_help_topic("race_class_info", "Race"));
     QLabel *player_race = new QLabel;
     make_standard_label(player_race, p_info[p_ptr->prace].pr_name, TERM_BLUE);
+    player_race->setObjectName("PLYR_Race");
     return_layout->addWidget(label_player_race, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_race, row++, col+1, Qt::AlignRight);
 
     // Add class
     QLabel *label_player_class = new QLabel;
     make_standard_label(label_player_class, "CLASS:", TERM_DARK);
-    label_player_class->setToolTip(QString("Different player classes have adjustments to stats, abilities, and spellcasting abilities. and abilities.<br>Some classes have innate intrinsic abilities."));
+    label_player_class->setToolTip(get_help_topic("race_class_info", "Class"));
     QLabel *player_class = new QLabel;
     make_standard_label(player_class, c_info[p_ptr->pclass].cl_name, TERM_BLUE);
+    player_class->setObjectName("PLYR_Class");
     return_layout->addWidget(label_player_class, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_class, row++, col+1, Qt::AlignRight);
 
     // Add title
     QLabel *label_player_title = new QLabel;
     make_standard_label(label_player_title, "TITLE:", TERM_DARK);
+    label_player_title->setToolTip(get_help_topic("character_info", "Title"));
     QLabel *player_title = new QLabel;
-    QString title = get_player_title();
-    if (p_ptr->is_wizard) title = "[=-WIZARD-=]";
-    else if (p_ptr->total_winner)  title = "**WINNER**";
-    make_standard_label(player_title, title, TERM_BLUE);
+    make_standard_label(player_title, get_player_title(), TERM_BLUE);
+    player_title->setObjectName("PLYR_Title");
     return_layout->addWidget(label_player_title, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_title, row++, col+1, Qt::AlignRight);
 
     // Add hit points
     QLabel *label_player_hp = new QLabel;
     make_standard_label(label_player_hp, "HIT POINTS:", TERM_DARK);
-    label_player_hp->setToolTip(QString("The player dies when thier hit points go below 0."));
+    label_player_hp->setToolTip(get_help_topic("character_info", "Hit Points"));
     QLabel *player_hp = new QLabel;
     make_standard_label(player_hp, (QString("%1/%2") .arg(p_ptr->chp) .arg(p_ptr->mhp)), TERM_BLUE);
+    player_hp->setObjectName("PLYR_HP");
     return_layout->addWidget(label_player_hp, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_hp, row++, col+1, Qt::AlignRight);
 
@@ -336,9 +445,10 @@ void PlayerScreenDialog::char_basic_info(QGridLayout *return_layout)
     {
         QLabel *label_player_sp = new QLabel;
         make_standard_label(label_player_sp, "SPELL POINTS:", TERM_DARK);
-        label_player_sp->setToolTip(QString("Spell points are required to cast spells."));
+        label_player_sp->setToolTip(get_help_topic("character_info", "Spell Points"));
         QLabel *player_sp = new QLabel;
         make_standard_label(player_sp, (QString("%1/%2") .arg(p_ptr->csp) .arg(p_ptr->msp)), TERM_BLUE);
+        player_sp->setObjectName("PLYR_SP");
         return_layout->addWidget(label_player_sp, row, col, Qt::AlignLeft);
         return_layout->addWidget(player_sp, row++, col+1, Qt::AlignRight);
     }
@@ -350,9 +460,10 @@ void PlayerScreenDialog::char_basic_info(QGridLayout *return_layout)
         // Add fame
         QLabel *label_player_fame = new QLabel;
         make_standard_label(label_player_fame, "FAME:", TERM_DARK);
-        label_player_fame->setToolTip(QString("Player fame is gained by killing Unique creatures and completing quests.<br>The Adventurer's Guild offers better quest rewards and services as a player's game gets higher."));
+        label_player_fame->setToolTip(get_help_topic("character_info", "Fame"));
         QLabel *player_fame = new QLabel;
         make_standard_label(player_fame, (QString("%1") .arg(p_ptr->q_fame)), TERM_BLUE);
+        player_fame->setObjectName("PLYR_Fame");
         return_layout->addWidget(label_player_fame, row, col, Qt::AlignLeft);
         return_layout->addWidget(player_fame, row++, col+1, Qt::AlignRight);
     }
@@ -361,8 +472,10 @@ void PlayerScreenDialog::char_basic_info(QGridLayout *return_layout)
     // Add Player Gold
     QLabel *label_player_gold = new QLabel;
     make_standard_label(label_player_gold, "GOLD:", TERM_DARK);
+    label_player_gold->setToolTip(get_help_topic("character_info", "Gold"));
     QLabel *player_gold = new QLabel;
     make_standard_label(player_gold, (QString("%1") .arg(number_to_formatted_string(p_ptr->au))), TERM_BLUE);
+    player_gold->setObjectName("PLYR_Gold");
     return_layout->addWidget(label_player_gold, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_gold, row++, col+1, Qt::AlignRight);
 
@@ -373,7 +486,7 @@ void PlayerScreenDialog::char_basic_info(QGridLayout *return_layout)
 
 }
 
-void PlayerScreenDialog::char_basic_data(QGridLayout *return_layout)
+void PlayerScreenInfo::char_basic_data(QGridLayout *return_layout)
 {
     int row = 0;
     int col = 0;
@@ -381,87 +494,105 @@ void PlayerScreenDialog::char_basic_data(QGridLayout *return_layout)
     // Add age
     QLabel *label_player_age = new QLabel;
     make_standard_label(label_player_age, "AGE:", TERM_DARK);
-    label_player_age->setToolTip("Player age does not have any significant gameplay effects.");
+    label_player_age->setToolTip(get_help_topic("character_info", "Player Age"));
     QLabel *player_age = new QLabel;
     make_standard_label(player_age, (QString("%1") .arg(p_ptr->age)), TERM_BLUE);
+    player_age->setObjectName("PLYR_Age");
     return_layout->addWidget(label_player_age, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_age, row++, col+1, Qt::AlignRight);
 
     // Add Height
     QLabel *label_player_height = new QLabel;
     make_standard_label(label_player_height, "HEIGHT:", TERM_DARK);
-    label_player_height->setToolTip("Player height does not have any significant gameplay effects.");
+    label_player_height->setToolTip(get_help_topic("character_info", "Player Height"));
     QLabel *player_height = new QLabel;
     make_standard_label(player_height, (QString("%1") .arg(p_ptr->ht)), TERM_BLUE);
+    player_height->setObjectName("PLYR_Height");
     return_layout->addWidget(label_player_height, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_height, row++, col+1, Qt::AlignRight);
 
     // Add Weight
     QLabel *label_player_weight = new QLabel;
     make_standard_label(label_player_weight, "WEIGHT:", TERM_DARK);
-    label_player_weight->setToolTip("Player weight does not have any significant gameplay effects.");
+    label_player_weight->setToolTip(get_help_topic("character_info", "Player Weight"));
     QLabel *player_weight = new QLabel;
     make_standard_label(player_weight, (QString("%1") .arg(p_ptr->wt)), TERM_BLUE);
+    player_weight->setObjectName("PLYR_Weight");
     return_layout->addWidget(label_player_weight, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_weight, row++, col+1, Qt::AlignRight);
 
     // Add Social Class
     QLabel *label_player_sc = new QLabel;
     make_standard_label(label_player_sc, "SOCIAL CLASS:", TERM_DARK);
-    label_player_sc->setToolTip("Player social class does not have any significant gameplay effects.");
+    label_player_sc->setToolTip(get_help_topic("character_info", "Social Class"));
     QLabel *player_sc = new QLabel;
     make_standard_label(player_sc, (QString("%1") .arg(p_ptr->sc)), TERM_BLUE);
+    player_sc->setObjectName("PLYR_SC");
     return_layout->addWidget(label_player_sc, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_sc, row++, col+1, Qt::AlignRight);
 
     // Add Game Turn
     QLabel *label_player_gturn = new QLabel;
     make_standard_label(label_player_gturn, "GAME TURN:", TERM_DARK);
-    label_player_gturn->setToolTip(QString("10 game turns is equivalent to one player turn at normal speed.<br>The player's score is eventually reduced as turns get greater."));
+    label_player_gturn->setToolTip(get_help_topic("character_info", "Game Turn"));
     QLabel *player_gturn = new QLabel;
     make_standard_label(player_gturn, (QString("%1") .arg(number_to_formatted_string(turn))), TERM_BLUE);
+    player_gturn->setObjectName("TURN_Game");
     return_layout->addWidget(label_player_gturn, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_gturn, row++, col+1, Qt::AlignRight);
 
     // Add Player Turn
     QLabel *label_player_pturn = new QLabel;
     make_standard_label(label_player_pturn, "PLAYER TURN:", TERM_DARK);
-    label_player_pturn->setToolTip(QString("Tracks the number of player turns, independent of player speed."));
+    label_player_pturn->setToolTip(get_help_topic("character_info", "Player Turn"));
     QLabel *player_pturn = new QLabel;
     make_standard_label(player_pturn, (QString("%1") .arg(number_to_formatted_string(p_ptr->p_turn))), TERM_BLUE);
+    player_pturn->setObjectName("TURN_Player");
     return_layout->addWidget(label_player_pturn, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_pturn, row++, col+1, Qt::AlignRight);
+
+    // Add current Depth
+    QLabel *label_player_cur_depth = new QLabel;
+    make_standard_label(label_player_cur_depth, "CUR DEPTH:", TERM_DARK);
+
+    label_player_cur_depth->setToolTip(get_help_topic("character_info", "Current Depth"));
+    QLabel *player_cur_depth = new QLabel;
+    QString cur_depth = (QString("%1") .arg(p_ptr->depth * 50));
+    if (!p_ptr->depth) cur_depth = "TOWN";
+    make_standard_label(player_cur_depth, (QString("%1")) .arg(cur_depth), TERM_BLUE);
+    player_cur_depth->setObjectName("DEPTH_Cur");
+    return_layout->addWidget(label_player_cur_depth, row, col, Qt::AlignLeft);
+    return_layout->addWidget(player_cur_depth, row++, col+1, Qt::AlignRight);
 
     // Add Max Depth
     QLabel *label_player_max_depth = new QLabel;
     make_standard_label(label_player_max_depth, "MAX DEPTH:", TERM_DARK);
-    label_player_max_depth->setToolTip(QString("The deepest dungeon depth the player has reached."));
+    label_player_max_depth->setToolTip(get_help_topic("character_info", "Max Depth"));
     QLabel *player_max_depth = new QLabel;
     QString max_depth = (QString("%1") .arg(p_ptr->max_depth * 50));
     if (!p_ptr->max_depth) max_depth = "TOWN";
     make_standard_label(player_max_depth, (QString("%1")) .arg(max_depth), TERM_BLUE);
+    player_max_depth->setObjectName("DEPTH_Max");
     return_layout->addWidget(label_player_max_depth, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_max_depth, row++, col+1, Qt::AlignRight);
 
     //Infravision
     QLabel *label_player_infra = new QLabel;
     make_standard_label(label_player_infra, "INFRAVISION:", TERM_DARK);
-    label_player_infra->setToolTip(QString("Number of feet outside the light radius where player can see warm-blooded creatures.  10 feet = 1 square."));
+    label_player_infra->setToolTip(get_help_topic("character_info", "Infravision"));
     QLabel *player_infra = new QLabel;
     QString infra_string = "NONE";
     if (p_ptr->state.see_infra) infra_string = (QString("%1 feet") .arg(p_ptr->state.see_infra * 10));
     make_standard_label(player_infra, infra_string, TERM_BLUE);
+    player_infra->setObjectName("PLYR_Infra");
     return_layout->addWidget(label_player_infra, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_infra, row++, col+1, Qt::AlignRight);
 
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, col + 2);
-
-    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
-
 }
 
-void PlayerScreenDialog::char_game_info(QGridLayout *return_layout)
+void PlayerScreenInfo::char_game_info(QGridLayout *return_layout)
 {
     int row = 0;
     int col = 0;
@@ -549,11 +680,9 @@ void PlayerScreenDialog::char_game_info(QGridLayout *return_layout)
 
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, col + 2);
-
-    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
-void PlayerScreenDialog::char_stat_info(QGridLayout *stat_layout)
+void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
 {
     // add the headers
     byte row = 0;
@@ -637,11 +766,9 @@ void PlayerScreenDialog::char_stat_info(QGridLayout *stat_layout)
         make_standard_label(stat_reduce, lower_stat, need_display ? TERM_RED : TERM_BLUE);
         stat_layout->addWidget(stat_reduce, row++, col++, Qt::AlignRight);
     }
-
-    stat_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
-void PlayerScreenDialog::char_combat_info(QGridLayout *return_layout)
+void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
 {
     int row = 0;
     int col = 0;
@@ -828,11 +955,9 @@ void PlayerScreenDialog::char_combat_info(QGridLayout *return_layout)
 
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, col + 2);
-
-    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
-void PlayerScreenDialog::char_ability_info(QGridLayout *return_layout)
+void PlayerScreenInfo::char_ability_info(QGridLayout *return_layout)
 {
     int row = 0;
     int col = 0;
@@ -914,8 +1039,6 @@ void PlayerScreenDialog::char_ability_info(QGridLayout *return_layout)
 
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, col + 2);
-
-    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
 // Prints out the various equipment flags, depending on the specified flag set
@@ -1299,8 +1422,6 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
         }
         return_layout->addWidget(line_label, row++, 0, Qt::AlignLeft);
     }
-
-    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
 
@@ -1401,8 +1522,7 @@ void PlayerScreenDialog::equip_modifier_info(QGridLayout *return_layout)
         if (pfr_ptr->set == 1)
         {
             // Too messy to include in the charts
-            if (pfr_ptr->this_flag & (TR1_ALL_STATS)) line_label->setToolTip(stat_entry(x-1));
-            else if (pfr_ptr->this_flag == TR1_INFRA) line_label->setToolTip(QString("Infravision allows the player to see warm blooded creatures, even invisible creatures, outside of their light radius.<br>One square = 10 feet."));
+            if (pfr_ptr->this_flag == TR1_INFRA) line_label->setToolTip(QString("Infravision allows the player to see warm blooded creatures, even invisible creatures, outside of their light radius.<br>One square = 10 feet."));
             else if (pfr_ptr->this_flag == TR1_STEALTH) line_label->setToolTip(QString("Stealth determines how much noise the player makes while in the dungeon.<br>Sleeping creatures will take longer to wake up when the player has high stealth.<br>Wielding an item that aggravates completely eliminates all player stealth."));
             else if (pfr_ptr->this_flag == TR1_SEARCH) line_label->setToolTip(QString("Searching affects the chance of searching each player turn, as well as the percent chance of noticing any hidden doors or traps that are within 10 feet of player while searching.<br>Also affects how quickly the player gets a feeling about the level they are on."));
             else if (pfr_ptr->this_flag == TR1_SPEED)
@@ -1421,7 +1541,6 @@ void PlayerScreenDialog::equip_modifier_info(QGridLayout *return_layout)
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, 5);
 
-    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
 }
 
 PlayerScreenDialog::PlayerScreenDialog(void)
@@ -1434,47 +1553,66 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     QLabel *main_prompt = new QLabel(QString("<h2>Character Information %1 %2 </h2>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
     main_prompt->setAlignment(Qt::AlignCenter);
     title_line->addWidget(main_prompt);
-    title_line->addWidget(new QLabel("  "));
+    main_layout->addStretch(1);
 
 
     // Char info line
     QHBoxLayout *char_info = new QHBoxLayout;
-    QGridLayout *basic_info = new QGridLayout;
-    QGridLayout *basic_data = new QGridLayout;
-    QGridLayout *game_info = new QGridLayout;
-    QGridLayout *stat_info = new QGridLayout;
-    QGridLayout *combat_info = new QGridLayout;
-    QGridLayout *ability_info = new QGridLayout;
-
     main_layout->addLayout(char_info);
+
+
+    QVBoxLayout *vlay_basic = new QVBoxLayout;
+    char_info->addLayout(vlay_basic);
+    QGridLayout *basic_info = new QGridLayout;
     char_basic_info(basic_info);
-    char_info->addLayout(basic_info);
+    vlay_basic->addLayout(basic_info);
+    vlay_basic->addStretch(1);
 
+    QVBoxLayout *vlay_data = new QVBoxLayout;
+    char_info->addLayout(vlay_data);
+    QGridLayout *basic_data = new QGridLayout;
     char_basic_data(basic_data);
-    char_info->addLayout(basic_data);
+    vlay_data->addLayout(basic_data);
+    vlay_data->addStretch(1);
 
+    QVBoxLayout *vlay_game_info = new QVBoxLayout;
+    char_info->addLayout(vlay_game_info);
+    QGridLayout *game_info = new QGridLayout;
     char_game_info(game_info);
-    char_info->addLayout(game_info);
+    vlay_game_info->addLayout(game_info);
+    vlay_game_info->addStretch(1);
 
+    QVBoxLayout *vlay_combat_info = new QVBoxLayout;
+    char_info->addLayout(vlay_combat_info);
+    QGridLayout *combat_info = new QGridLayout;
     char_combat_info(combat_info);
-    char_info->addLayout(combat_info);
+    vlay_combat_info->addLayout(combat_info);
+    vlay_combat_info->addStretch(1);
 
+    QVBoxLayout *vlay_ability_info = new QVBoxLayout;
+    char_info->addLayout(vlay_ability_info);
+    QGridLayout *ability_info = new QGridLayout;
     char_ability_info(ability_info);
-    char_info->addLayout(ability_info);
+    vlay_ability_info->addLayout(ability_info);
+    vlay_ability_info->addStretch(1);
 
+    QVBoxLayout *vlay_stat_info = new QVBoxLayout;
+    char_info->addLayout(vlay_stat_info);
+    QGridLayout *stat_info = new QGridLayout;
     char_stat_info(stat_info);
-    char_info->addLayout(stat_info);
+    vlay_stat_info->addLayout(stat_info);
+    vlay_stat_info->addStretch(1);
 
 
     // Add player history
     // Title Box
     QVBoxLayout *history_box = new QVBoxLayout;
+    main_layout->addStretch();
     main_layout->addLayout(history_box);
-    history_box->addWidget(new QLabel("  "));
     QLabel *history = new QLabel();
     make_standard_label(history, p_ptr->history, TERM_BLUE);
     history_box->addWidget(history);
-    history_box->addWidget(new QLabel("  "));
+    main_layout->addStretch(1);
 
     // Object Info
     QGridLayout *equip_info = new QGridLayout;

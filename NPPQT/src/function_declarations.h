@@ -852,7 +852,6 @@ extern bool get_rep_dir(int *dp);
 extern bool confuse_dir(int *dp);
 
 /* timed.c */
-
 extern bool redundant_timed_event(int idx);
 extern bool set_timed(int idx, int v, bool notify);
 extern bool inc_timed(int idx, int v, bool notify);
@@ -902,18 +901,7 @@ extern int roman_to_int(QString roman);
 extern bool make_fake_artifact(object_type *o_ptr, byte art_num);
 extern void do_cmd_wizard_mode(void);
 
-// birth.cpp
-void init_birth();
-void finish_birth();
-void reset_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-bool sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-void generate_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-void generate_player();
-void roll_player(int stats[A_MAX]);
-void save_prev_character();
-void load_prev_character();
-bool has_prev_character();
+
 
 
 #endif // FUNCTION_DECLARATIONS_H

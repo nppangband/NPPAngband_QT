@@ -1,5 +1,6 @@
 #include "optionsdialog.h"
 #include "npp.h"
+#include <src/help.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -52,6 +53,7 @@ OptionsDialog::OptionsDialog()
             QCheckBox *chk = new QCheckBox(opt->name + " - " + opt->description);
             chk->setChecked(op_ptr->opt[idx]);
             chk->setProperty("opt_idx", idx);
+            chk->setToolTip(get_help_topic(QString("option_info"), opt->name));
 
             lay2->addWidget(chk);
         }

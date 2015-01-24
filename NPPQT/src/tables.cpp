@@ -2056,130 +2056,47 @@ QString window_flag_desc[32] =
  */
 option_entry options[OPT_MAX] =
 {
-    {"rogue_like_commands",	"Rogue-like commands",					FALSE},		/* OPT_rogue_like_commands */
-    {"quick_messages",		"Activate quick messages",				TRUE},		/* OPT_quick_messages */
-    {NULL,NULL,	FALSE},/* xxx */
     {"carry_query_flag",	"Prompt before picking things up",		FALSE},		/* OPT_carry_query_flag */
     {"use_old_target",		"Use old target by default",			FALSE},		/* OPT_use_old_target */
     {"always_pickup",		"Pick things up by default",			TRUE},		/* OPT_always_pickup */
     {"floor_query_flag",	"Prompt before using floor items",		TRUE},		/* OPT_floor_query_flag */
-    {NULL,					NULL,									FALSE},		/* xxx */
     {"stack_force_notes",	"Merge inscriptions when stacking",		FALSE},		/* OPT_stack_force_notes */
     {"stack_force_costs",	"Merge discounts when stacking",		FALSE},		/* OPT_stack_force_costs */
-    {"expand_inscribe",     "Expand the power of the inscribe commands", TRUE},	/* OPT_expand_inscribe */
-    {"disturb_detect",		"Disturb whenever leaving trap detected area",TRUE},/* OPT_disturb_detect */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {"ring_bell",			"Audible bell (on errors, etc)",		TRUE},		/* OPT_ring_bell */
     {"show_flavors",		"Show flavors in object descriptions",	TRUE},		/* OPT_flavors */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {"disturb_move",		"Disturb whenever any monster moves",	TRUE},		/* OPT_disturb_move */
-    {"disturb_near",		"Disturb whenever viewable monster moves",TRUE},	/* OPT_disturb_near */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {"disturb_state",		"Disturb whenever player state changes",TRUE},		/* OPT_disturb_state */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
+    {"disturb_move",		"Disturb when any monster moves",       TRUE},		/* OPT_disturb_move */
+    {"disturb_near",		"Disturb when viewable monster moves",  TRUE},      /* OPT_disturb_near */
+    {"disturb_state",		"Disturb when player state changes",    TRUE},		/* OPT_disturb_state */
+    {"disturb_detect",		"Disturb when leaving trap detected area",TRUE},    /* OPT_disturb_detect */
     {"verify_destroy",		"Verify destruction of objects",		TRUE},		/* OPT_verify_destroy */
-    {NULL,					NULL,									FALSE},		/* xxx */
+    {"verify_leave_quest",	"Verify before leaving a quest level",TRUE},/* OPT_verify_leave_quest*/
     {NULL,					NULL,									FALSE},		/* xxx */
     {NULL,					NULL,									FALSE},		/* xxx */
     {NULL,					NULL,									FALSE},		/* xxx */
     {"auto_scum",			"Auto-scum for good levels",			FALSE},		/* OPT_auto_scum */
     {"allow_themed_levels","Allow the generation of themed levels",  TRUE},		/* OPT_allow_themed_levels */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
-    {NULL,					NULL,									FALSE},		/* xxx */
     {"view_perma_grids",	"Map remembers all perma-lit grids",	TRUE},		/* OPT_view_perma_grids */
     {"view_torch_grids",	"Map remembers all torch-lit grids",	FALSE},		/* OPT_view_torch_grids */
+    {"view_yellow_light",	"Use special colors for torch light",	FALSE},     /* OPT_view_yellow_light */
+    {"view_bright_light",	"Use special colors for field of view",	FALSE},     /* OPT_view_bright_light */
+    {"view_granite_light",	"Use special colors for wall grids",	FALSE},     /* OPT_view_granite_light */
+    {"view_special_light",	"Use special colors for floor grids",	FALSE},     /* OPT_view_special_light */
     {NULL,					NULL,	FALSE},/* xxx */
     {NULL,					NULL,	FALSE},/* xxx */
     {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {"smart_cheat",			"Monsters exploit players weaknesses",	FALSE},	/* OPT_smart_cheat */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
+    {"smart_cheat",			"Monsters exploit players weaknesses",	FALSE},     /* OPT_smart_cheat */
     {"flush_failure",		"Flush input on various failures",		TRUE},	/* OPT_flush_failure */
     {"flush_disturb",		"Flush input whenever disturbed",		TRUE},	/* OPT_flush_disturb */
-    {NULL,				NULL,										FALSE},	/* xxx flush_command */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,					NULL,	FALSE},/* xxx */
-    {NULL,				NULL,									FALSE},
-    {NULL,				NULL,									FALSE},
     {"hilight_player",		"Hilight the player with the cursor",	FALSE},	/* OPT_hilight_player */
-    {"view_yellow_light",	"Use special colors for torch light",	FALSE},	/* OPT_view_yellow_light */
-    {"view_bright_light",	"Use special colors for field of view",	FALSE},	/* OPT_view_bright_light */
-    {"view_granite_light",	"Use special colors for wall grids",	FALSE},	/* OPT_view_granite_light */
-    {"view_special_light",	"Use special colors for floor grids",	FALSE},	/* OPT_view_special_light */
     {"easy_open",			"Open/Disarm/Close without direction",	TRUE},	/* OPT_easy_open */
     {"easy_alter",			"Open/Disarm doors/traps on movement",	TRUE},	/* OPT_easy_alter */
-    {NULL,				NULL,								FALSE},/* xxx */
     {"show_piles",			"Show stacks using special attr/char",	FALSE},	/* OPT_show_piles */
     {"center_player",		"Center map continuously (very slow)",	FALSE},	/* OPT_center_player */
     {"animate_flicker",    	"Shimmer multi-colored things",  		TRUE}, /* OPT_animate_flicker */
-    {NULL,NULL,	FALSE},/* xxx */
-    {"auto_more",			"Automatically clear '-more-' prompts",	FALSE},	/* OPT_auto_more */
-    {NULL,				NULL,								FALSE},/* xxx */
-    {"auto_display_lists",	"Automatically display drop-down lists", TRUE},	/* OPT_auto_display_lists */
     {"hp_changes_color",	"Player color indicates low hit points",FALSE},	/* OPT_hp_changes_color*/
-    {"verify_leave_quest",	"Verify before leaving a quest level",TRUE},/* OPT_verify_leave_quest*/
     {"mark_squelch_items",	"Items marked for squelch appear as dot",FALSE},/* OPT_mark_squelch_items */
     {"mouse_movement",      "Allow mouse clicks to move the player",       TRUE }, /*OPT_mouse_movement*/
-    {NULL,NULL,	FALSE},/* xxx */
     {"notify_recharge",		"Notify on object recharge", 	FALSE},/* OPT_notify_recharge */
-    {NULL,				NULL,								FALSE},/* xxx */
-    {NULL,				NULL,							FALSE},/* xxx */
-    {NULL,				NULL,							FALSE},/* xxx */
-    {NULL,				NULL,							FALSE},/* xxx */
-    {NULL,				NULL,							FALSE},/* xxx */
-    {NULL,				NULL,							FALSE},/* xxx */
     {NULL,NULL,	FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
@@ -2193,7 +2110,6 @@ option_entry options[OPT_MAX] =
     {"birth_no_artifacts",		"Birth: Restrict creation of artifacts",		FALSE},	/* OPT_birth_no_artifacts */
     {"birth_rand_artifacts",	"Birth: Randomize some of the artifacts",		FALSE},	/* OPT_birth_rand_artifacts */
     {"birth_no_stacking",		"Birth: Never stack objects on the floor",		FALSE},	/* OPT_birth_no_stacking */
-    {NULL,NULL,FALSE},/* xxx */
     {"birth_force_small_lev",	"Birth: All levels will be generated as small",	FALSE},	/* OPT_birth_force_small_lev */
     {"birth_connected_stairs",  "Birth: Generate connected stairs",       		TRUE},	/* OPT_birth_connected_stairs */
     {"birth_no_quests",			"Birth: Disable quests",						FALSE},	/* OPT_birth_no_quests*/
@@ -2201,7 +2117,7 @@ option_entry options[OPT_MAX] =
     {"birth_no_store_services",	"Birth: Disable store services",				FALSE},	/* OPT_birth_no_store_services*/
     {"birth_no_xtra_artifacts", "Birth: Disable extra artifacts",				FALSE},	/* OPT_birth_no_xtra_artifacts*/
     {"birth_money",             "Birth: Start with more money and no equipment",FALSE },/* OPT_birth_money */
-    {"birth_simple_dungeons",   "Birth: Prevent unusual terrains or dungeons",	FALSE },/* OPT_birth_birth_simple_dungeons */
+    {"birth_classic_dungeons",  "Birth: Prevent unusual terrains or dungeons",	FALSE },/* OPT_birth_birth_classic_dungeons */
     {"birth_swap_weapons",   	"Birth: Replace bow slot with swap weapon slot",	FALSE },/* OPT_birth_swap_weapons */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
@@ -2209,7 +2125,23 @@ option_entry options[OPT_MAX] =
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
+    {"adult_no_selling",    	"Adult: Items always sell for 0 gold",          FALSE}, /* OPT_adult_no_selling */
+    {"adult_maximize",			"Adult: Maximize effect of race/class bonuses",	TRUE},	/* OPT_adult_maximize */
+    {"adult_preserve",			"Adult: Preserve artifacts when leaving level",	TRUE},	/* OPT_adult_preserve */
+    {"adult_ironman",			"Adult: Restrict the use of stairs/recall",		FALSE},	/* OPT_adult_ironman */
+    {"adult_no_stores",			"Adult: Restrict the use of stores/home",		FALSE},	/* OPT_adult_no_stores */
+    {"adult_no_artifacts",		"Adult: Restrict creation of artifacts",		FALSE},	/* OPT_adult_no_artifacts */
+    {"adult_rand_artifacts",	"Adult: Randomize some of the artifacts",		FALSE},	/* OPT_adult_rand_artifacts */
+    {"adult_no_stacking",		"Adult: Never stack objects on the floor",		FALSE},	/* OPT_adult_no_stacking */
+    {"adult_force_small_lev",	"Adult: All levels generated small",			FALSE},	/* OPT_adult_force_small_lev*/
+    {"adult_conected_stairs",   "Adult: Generate connected stairs",       		TRUE},	/* OPT_adult_connected_stairs */
+    {"adult_no_quests",			"Adult: Disable quests",						FALSE},	/* OPT_adult_no_quests*/
+    {"adult_no_player_ghosts",	"Adult: Disable player ghosts",					FALSE},	/* OPT_adult_no_player ghosts*/
+    {"adult_no_store_services",	"Adult: Disable store services",				FALSE},	/* OPT_adult_no_store_services*/
+    {"adult_no_xtra_artifacts",	"Adult: Disable extra artifacts",				FALSE},	/* OPT_adult_no_xtra_artifacts*/
+    {"adult_birth_money",      	"Adult: Start with more money and no equipment",FALSE },/* OPT_adult_birth_money*/
+    {"adult_classic_dungeons",   "Adult: Prevent unusual terrains or dungeons",	FALSE },/* OPT_adult_birth_classic_dungeons */
+    {"adult_swap_weapons",   	"Adult: Replace bow slot with swap weapon slot",	FALSE },/* OPT_adult_swap_weapons */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
@@ -2225,93 +2157,6 @@ option_entry options[OPT_MAX] =
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {"adult_no_selling",    	"Adult: Items always sell for 0 gold",          FALSE}, /* OPT_adult_no_selling */
-    {"adult_maximize",			"Adult: Maximize effect of race/class bonuses",	TRUE},	/* OPT_adult_maximize */
-    {"adult_preserve",			"Adult: Preserve artifacts when leaving level",	TRUE},	/* OPT_adult_preserve */
-    {"adult_ironman",			"Adult: Restrict the use of stairs/recall",		FALSE},	/* OPT_adult_ironman */
-    {"adult_no_stores",			"Adult: Restrict the use of stores/home",		FALSE},	/* OPT_adult_no_stores */
-    {"adult_no_artifacts",		"Adult: Restrict creation of artifacts",		FALSE},	/* OPT_adult_no_artifacts */
-    {"adult_rand_artifacts",	"Adult: Randomize some of the artifacts",		FALSE},	/* OPT_adult_rand_artifacts */
-    {"adult_no_stacking",		"Adult: Never stack objects on the floor",		FALSE},	/* OPT_adult_no_stacking */
-    {NULL,NULL,FALSE},/* xxx */
-    {"adult_force_small_lev",	"Adult: All levels generated small",			FALSE},	/* OPT_adult_force_small_lev*/
-    {"adult_conected_stairs",   "Adult: Generate connected stairs",       		TRUE},	/* OPT_adult_connected_stairs */
-    {"adult_no_quests",			"Adult: Disable quests",						FALSE},	/* OPT_adult_no_quests*/
-    {"adult_no_player_ghosts",	"Adult: Disable player ghosts",					FALSE},	/* OPT_adult_no_player ghosts*/
-    {"adult_no_store_services",	"Adult: Disable store services",				FALSE},	/* OPT_adult_no_store_services*/
-    {"adult_no_xtra_artifacts",	"Adult: Disable extra artifacts",				FALSE},	/* OPT_adult_no_xtra_artifacts*/
-    {"adult_birth_money",      	"Adult: Start with more money and no equipment",FALSE },/* OPT_adult_birth_money*/
-    {"adult_simple_dungeons",   "Adult: Prevent unusual terrains or dungeons",	FALSE },/* OPT_adult_birth_simple_dungeons */
-    {"adult_swap_weapons",   	"Adult: Replace bow slot with swap weapon slot",	FALSE },/* OPT_adult_swap_weapons */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {"score_peek",			"Score: Peek into object creation",				FALSE},	/* OPT_score_peek */
-    {"score_hear",			"Score: Peek into monster creation",			FALSE},	/* OPT_score_hear */
-    {"score_room",			"Score: Peek into dungeon creation",			FALSE},	/* OPT_score_room */
-    {"score_xtra",			"Score: Peek into something else",				FALSE},	/* OPT_score_xtra */
-    {"score_know",			"Score: Know complete monster info",			FALSE},	/* OPT_score_know */
-    {"score_live",			"Score: Allow player to avoid death",			FALSE},	/* OPT_score_live */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE},/* xxx */
-    {NULL,NULL,FALSE} /* xxx */
 };
 
 /*
@@ -2322,21 +2167,21 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
     /*** Interface/Gameplay ***/
 
     {
-        OPT_rogue_like_commands,
         OPT_floor_query_flag,
         OPT_carry_query_flag,
         OPT_use_old_target,
         OPT_always_pickup,
         OPT_stack_force_notes,
         OPT_stack_force_costs,
-        OPT_auto_display_lists,
         OPT_easy_open,
         OPT_easy_alter,
-        OPT_expand_inscribe,
         OPT_mouse_movement,
         OPT_auto_scum,
         OPT_allow_themed_levels,
         OPT_smart_cheat,
+        OPT_NONE,
+        OPT_NONE,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,
@@ -2376,14 +2221,14 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_disturb_near,
         OPT_disturb_detect,
         OPT_disturb_state,
-        OPT_quick_messages,
-        OPT_auto_more,
-        OPT_ring_bell,
         OPT_flush_failure,
         OPT_flush_disturb,
         OPT_verify_destroy,
         OPT_notify_recharge,
         OPT_verify_leave_quest,
+        OPT_NONE,
+        OPT_NONE,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,
@@ -2412,7 +2257,7 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_birth_no_store_services,
         OPT_birth_no_xtra_artifacts,
         OPT_birth_no_selling,
-        OPT_birth_simple_dungeons,
+        OPT_birth_classic_dungeons,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,
@@ -2453,19 +2298,19 @@ const byte option_page_nppmoria[OPT_PAGE_MAX][OPT_PAGE_PER] =
     /*** Interface/Gameplay ***/
 
     {
-        OPT_rogue_like_commands,
         OPT_floor_query_flag,
         OPT_carry_query_flag,
         OPT_use_old_target,
         OPT_always_pickup,
         OPT_stack_force_notes,
         OPT_stack_force_costs,
-        OPT_auto_display_lists,
         OPT_easy_open,
         OPT_easy_alter,
-        OPT_expand_inscribe,
         OPT_mouse_movement,
         OPT_smart_cheat,
+        OPT_NONE,
+        OPT_NONE,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,
@@ -2507,13 +2352,13 @@ const byte option_page_nppmoria[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_disturb_near,
         OPT_disturb_detect,
         OPT_disturb_state,
-        OPT_quick_messages,
-        OPT_auto_more,
-        OPT_ring_bell,
         OPT_flush_failure,
         OPT_flush_disturb,
         OPT_verify_destroy,
         OPT_notify_recharge,
+        OPT_NONE,
+        OPT_NONE,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,

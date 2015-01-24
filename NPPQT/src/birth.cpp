@@ -19,6 +19,7 @@
 #include "npp.h"
 #include "store.h"
 #include "src/utilities.h"
+#include "src/player_birth.h"
 #include <QTime>
 #include <QDate>
 
@@ -72,6 +73,13 @@ static void recalculate_stats(int *stats, int points_left)
 
     /* Update bonuses, hp, etc. */
     get_bonuses();
+}
+
+QString format_stat(s16b value)
+{
+    QString text;
+    if (value > 0) text.append('+');
+    return QString("<b>%1%2</b>").arg(text).arg(value);
 }
 
 void reset_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left)
@@ -458,7 +466,7 @@ static void set_moria_options(void)
     birth_rand_artifacts = adult_rand_artifacts = FALSE;
     birth_force_small_lev = adult_force_small_lev = FALSE;
     birth_no_artifacts = adult_no_artifacts = FALSE;
-    birth_simple_dungeons = adult_simple_dungeons = TRUE;
+    birth_classic_dungeons = adult_classic_dungeons = TRUE;
     birth_swap_weapons = adult_swap_weapons = TRUE;
     birth_no_xtra_artifacts = adult_no_xtra_artifacts = TRUE;
     birth_no_store_services = adult_no_store_services = TRUE;
@@ -571,6 +579,18 @@ static void get_ahw(void)
     {
         p_ptr->ht = p_ptr->ht_birth = Rand_normal(rp_ptr->f_b_ht, rp_ptr->f_m_ht);
         p_ptr->wt = p_ptr->wt_birth = Rand_normal(rp_ptr->f_b_wt, rp_ptr->f_m_wt);
+    }  //Gender Neutral
+    else
+    {
+
+        int b_ht = (rp_ptr->m_b_ht + rp_ptr->f_b_ht) / 2;
+        int m_ht = (rp_ptr->m_m_ht + rp_ptr->f_m_ht) / 2;
+        int b_wt = (rp_ptr->m_b_wt + rp_ptr->f_b_wt) / 2;
+        int m_wt = (rp_ptr->m_m_wt + rp_ptr->f_m_wt) / 2;
+
+
+        p_ptr->ht = p_ptr->ht_birth = Rand_normal(b_ht, m_ht);
+        p_ptr->wt = p_ptr->wt_birth = Rand_normal(b_wt, m_wt);
     }
 }
 
@@ -900,16 +920,12 @@ void finish_birth()
     // Hit points
     roll_hp();
 
-    /* Set adult options from birth options */
-    for (i = OPT_BIRTH; i < OPT_CHEAT; i++)
-    {
-        op_ptr->opt[OPT_ADULT + (i - OPT_BIRTH)] = op_ptr->opt[i];
-    }
+    int x = OPT_ADULT_HEAD;
 
-    /* Reset score options from cheat options */
-    for (i = OPT_CHEAT; i < OPT_ADULT; i++)
+    /* Set adult options from birth options */
+    for (i = OPT_BIRTH_HEAD; i < OPT_BIRTH_TAIL; i++, x++)
     {
-        op_ptr->opt[OPT_SCORE + (i - OPT_CHEAT)] = op_ptr->opt[i];
+        op_ptr->opt[x] = op_ptr->opt[i];
     }
 
     /*Re-set the squelch settings.  Spellbooks are never_pickup by default. */
@@ -1006,39 +1022,10 @@ void init_birth()
 
 }
 
-/*
- * A class to hold "rolled" information, and any
- * other useful state for the birth process.
- */
-class Birther
-{
-public:
-    Birther();
+//==============================Birther class
 
-    byte mode;
 
-    QString full_name;
-
-    byte p_sex;
-    byte p_race;
-    byte p_class;
-
-    s16b age;
-    s16b wt;
-    s16b ht;
-    s16b sc;
-
-    s32b au;
-
-    s16b stat[A_MAX];
-
-    QString history;
-
-    void save();
-    void load();
-};
-
-Birther::Birther()
+void Birther::birther_wipe()
 {
     p_sex = p_race = p_class = age = wt = ht = sc = au = mode = 0;
     C_WIPE(stat, A_MAX, s16b);
@@ -1122,19 +1109,20 @@ void Birther::load()
     op_ptr->full_name = full_name;
 }
 
-static Birther _birther;
+static Birther this_berth;
+
 
 bool has_prev_character()
 {
-    return _birther.mode == game_mode;
+    return this_berth.mode == game_mode;
 }
 
 void save_prev_character()
 {
-    _birther.save();
+    this_berth.save();
 }
 
 void load_prev_character()
 {
-    _birther.load();
+    this_berth.load();
 }

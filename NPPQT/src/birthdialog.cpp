@@ -17,6 +17,7 @@
 #include "ui_birthdialog.h"
 #include "optionsdialog.h"
 #include "birthdialog.h"
+#include "src/player_birth.h"
 #include <QRadioButton>
 #include <QGridLayout>
 #include <QButtonGroup>
@@ -24,12 +25,7 @@
 #include <QToolButton>
 #include "src/utilities.h"
 
-static QString format_stat(s16b value)
-{
-    QString text;
-    if (value >= 0) text.append('+');
-    return QString("%1%2").arg(text).arg(value);
-}
+
 
 static QString stat_notation(int value)
 {

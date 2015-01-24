@@ -619,241 +619,169 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
 
 /*** Option Definitions ***/
-
-/*
- * Option indexes (offsets)
- *
- * These values are hard-coded by savefiles (and various pieces of code).
- */
-#define OPT_USER_INTERFACE			0
-#define OPT_DISTURBANCE				16
-#define OPT_GAME_PLAY				32
-#define OPT_EFFICIENCY				48
-#define OPT_BIRTH					128
-#define OPT_CHEAT					160
-#define OPT_ADULT					192
-#define OPT_SCORE					224
-#define OPT_NONE					255
-#define OPT_MAX						256
-
-
 /*
  * Option indexes (normal)
- *
- * These values are hard-coded by savefiles.
  */
-#define OPT_rogue_like_commands		0
-#define OPT_quick_messages			1
-/* xxx */
-#define OPT_carry_query_flag		3
-#define OPT_use_old_target			4
-#define OPT_always_pickup			5
-#define OPT_floor_query_flag		6
-/* xxx */
-#define OPT_stack_force_notes		8
-#define OPT_stack_force_costs		9
-#define OPT_expand_inscribe			10
-#define OPT_disturb_detect			11
-/* xxx */
-/* xxx */
-#define OPT_ring_bell				14
-#define OPT_show_flavors			15
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define OPT_disturb_move			20
-#define OPT_disturb_near			21
-/* xxx */
-#define OPT_disturb_state			23
-/* xxx */
-/* xxx */
-/* xxx OPT_alert_hitpoint */
-/* xxx OPT_alert_failure */
-#define OPT_verify_destroy			28
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define OPT_auto_scum				33
-#define OPT_allow_themed_levels		34
-/* xxx */
-/* xxx */
-/* xxx */
-#define OPT_view_perma_grids		38
-#define OPT_view_torch_grids		39
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define OPT_smart_cheat				47
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define OPT_flush_failure			52
-#define OPT_flush_disturb			53
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define OPT_hilight_player			59
-#define OPT_view_yellow_light		60
-#define OPT_view_bright_light		61
-#define OPT_view_granite_light		62
-#define OPT_view_special_light		63
-#define OPT_easy_open 				64
-#define OPT_easy_alter 				65
-/* xxx */
-#define OPT_show_piles				67
-#define OPT_center_player			68
-#define OPT_animate_flicker			69
-/* xxx */
-#define OPT_auto_more				71
-/* xxx */
-#define OPT_auto_display_lists		73
-#define OPT_hp_changes_color  		74
-#define OPT_verify_leave_quest		75
-#define OPT_mark_squelch_items		76
-#define OPT_mouse_movement			77
-/* xxx */
-#define OPT_notify_recharge			79
-/* xxx */
-/* xxx */
-/* xxx xxx */
-/* xxx xxx */						/*(OPT_BIRTH+0)*/
-#define OPT_birth_no_selling		(OPT_BIRTH+1)
-#define OPT_birth_maximize			(OPT_BIRTH+2)
-#define OPT_birth_preserve			(OPT_BIRTH+3)
-#define OPT_birth_ironman			(OPT_BIRTH+4)
-#define OPT_birth_no_stores			(OPT_BIRTH+5)
-#define OPT_birth_no_artifacts		(OPT_BIRTH+6)
-#define OPT_birth_rand_artifacts	(OPT_BIRTH+7)
-#define OPT_birth_no_stacking		(OPT_BIRTH+8)
-// Was take_notes
-#define OPT_birth_force_small_lev	(OPT_BIRTH+10)
-#define OPT_birth_connected_stairs	(OPT_BIRTH+11)
-#define OPT_birth_no_quests			(OPT_BIRTH+12)
-#define OPT_birth_no_player_ghosts	(OPT_BIRTH+13)
-#define OPT_birth_no_store_services	(OPT_BIRTH+14)
-#define OPT_birth_no_xtra_artifacts	(OPT_BIRTH+15)
-#define OPT_birth_money				(OPT_BIRTH+16)
-#define OPT_birth_simple_dungeons	(OPT_BIRTH+17)
-#define OPT_birth_swap_weapons		(OPT_BIRTH+18)
+enum
+{
+    OPT_carry_query_flag = 0,
+    OPT_use_old_target,
+    OPT_always_pickup,
+    OPT_floor_query_flag,
+    OPT_stack_force_notes,
+    OPT_stack_force_costs,
+    OPT_show_flavors,
+    OPT_disturb_move,
+    OPT_disturb_near,
+    OPT_disturb_state,
+    OPT_disturb_detect,
+    OPT_verify_destroy,
+    OPT_verify_leave_quest,
+    OPT_UNUSED_1,
+    OPT_UNUSED_2,
+    OPT_UNUSED_3,
+    OPT_auto_scum,
+    OPT_allow_themed_levels,
+    OPT_view_perma_grids,
+    OPT_view_torch_grids,
+    OPT_view_yellow_light,
+    OPT_view_bright_light,
+    OPT_view_granite_light,
+    OPT_view_special_light,
+    OPT_UNUSED_4,
+    OPT_UNUSED_5,
+    OPT_UNUSED_6,
+    OPT_smart_cheat,
+    OPT_flush_failure,
+    OPT_flush_disturb,
+    OPT_hilight_player,
+    OPT_easy_open,
+    OPT_easy_alter,
+    OPT_show_piles,
+    OPT_center_player,
+    OPT_animate_flicker,
+    OPT_hp_changes_color,
+    OPT_mark_squelch_items,
+    OPT_mouse_movement,
+    OPT_notify_recharge,
+    OPT_UNUSED_7,
+    OPT_UNUSED_8,
+    OPT_UNUSED_9,
+    OPT_UNUSED_10,
+    OPT_UNUSED_11,
+    OPT_UNUSED_12,
+    OPT_birth_no_selling,
+    OPT_birth_maximize,
+    OPT_birth_preserve,
+    OPT_birth_ironman,
+    OPT_birth_no_stores,
+    OPT_birth_no_artifacts,
+    OPT_birth_rand_artifacts,
+    OPT_birth_no_stacking,
+    OPT_birth_force_small_lev,
+    OPT_birth_connected_stairs,
+    OPT_birth_no_quests,
+    OPT_birth_no_player_ghosts,
+    OPT_birth_no_store_services,
+    OPT_birth_no_xtra_artifacts,
+    OPT_birth_money,
+    OPT_birth_classic_dungeons,
+    OPT_birth_swap_weapons,
+    OPT_UNUSED_13,
+    OPT_UNUSED_14,
+    OPT_UNUSED_15,
+    OPT_UNUSED_16,
+    OPT_UNUSED_18,
+    OPT_UNUSED_19,
+    OPT_adult_no_selling,
+    OPT_adult_maximize,
+    OPT_adult_preserve,
+    OPT_adult_ironman,
+    OPT_adult_no_stores,
+    OPT_adult_no_artifacts,
+    OPT_adult_rand_artifacts,
+    OPT_adult_no_stacking,
+    OPT_adult_force_small_lev,
+    OPT_adult_connected_stairs,
+    OPT_adult_no_quests,
+    OPT_adult_no_player_ghosts,
+    OPT_adult_no_store_services,
+    OPT_adult_no_xtra_artifacts,
+    OPT_adult_birth_money,
+    OPT_adult_classic_dungeons,
+    OPT_adult_swap_weapons,
+    OPT_UNUSED_20,
+    OPT_UNUSED_21,
+    OPT_UNUSED_22,
+    OPT_UNUSED_23,
+    OPT_UNUSED_24,
+    OPT_UNUSED_25,
+    OPT_cheat_peek,
+    OPT_cheat_hear,
+    OPT_cheat_room,
+    OPT_cheat_xtra,
+    OPT_cheat_know,
+    OPT_cheat_live,
+    OPT_UNUSED_26,
+    OPT_UNUSED_27,
+    OPT_UNUSED_28,
+    OPT_MAX,
+};
 
-/* xxx xxx */
-#define OPT_cheat_peek				(OPT_CHEAT+0)
-#define OPT_cheat_hear				(OPT_CHEAT+1)
-#define OPT_cheat_room				(OPT_CHEAT+2)
-#define OPT_cheat_xtra				(OPT_CHEAT+3)
-#define OPT_cheat_know				(OPT_CHEAT+4)
-#define OPT_cheat_live				(OPT_CHEAT+5)
-/* xxx xxx */
-/* xxx xxx */       				/*(OPT_ADULT+0)*/
-#define OPT_adult_no_selling		(OPT_ADULT+1)
-#define OPT_adult_maximize			(OPT_ADULT+2)
-#define OPT_adult_preserve			(OPT_ADULT+3)
-#define OPT_adult_ironman			(OPT_ADULT+4)
-#define OPT_adult_no_stores			(OPT_ADULT+5)
-#define OPT_adult_no_artifacts		(OPT_ADULT+6)
-#define OPT_adult_rand_artifacts	(OPT_ADULT+7)
-#define OPT_adult_no_stacking		(OPT_ADULT+8)
-// Was take_notes
-#define OPT_adult_force_small_lev	(OPT_ADULT+10)
-#define OPT_adult_connected_stairs	(OPT_ADULT+11)
-#define OPT_adult_no_quests			(OPT_ADULT+12)
-#define OPT_adult_no_player_ghosts	(OPT_ADULT+13)
-#define OPT_adult_no_store_services	(OPT_ADULT+14)
-#define OPT_adult_no_xtra_artifacts	(OPT_ADULT+15)
-#define OPT_adult_birth_money		(OPT_ADULT+16)
-#define OPT_adult_simple_dungeons	(OPT_ADULT+17)
-#define OPT_adult_swap_weapons		(OPT_ADULT+18)
-/* xxx xxx */
-#define OPT_score_peek				(OPT_SCORE+0)
-#define OPT_score_hear				(OPT_SCORE+1)
-#define OPT_score_room				(OPT_SCORE+2)
-#define OPT_score_xtra				(OPT_SCORE+3)
-#define OPT_score_know				(OPT_SCORE+4)
-#define OPT_score_live				(OPT_SCORE+5)
-/* xxx xxx */
 
+#define OPT_BIRTH_HEAD  OPT_birth_no_selling
+#define OPT_BIRTH_TAIL  OPT_UNUSED_19
+#define OPT_ADULT_HEAD  OPT_adult_no_selling
+#define OPT_ADULT_TAIL	OPT_UNUSED_25,
+#define OPT_CHEAT_HEAD  OPT_cheat_peek
+#define OPT_CHEAT_TAIL  OPT_UNUSED_28
+#define OPT_NONE        (OPT_MAX + 1)
 
 /*
  * Hack -- Option symbols
  */
-#define rogue_like_commands		op_ptr->opt[OPT_rogue_like_commands]
-#define quick_messages			op_ptr->opt[OPT_quick_messages]
-/* xxx */
 #define carry_query_flag		op_ptr->opt[OPT_carry_query_flag]
 #define use_old_target			op_ptr->opt[OPT_use_old_target]
 #define always_pickup			op_ptr->opt[OPT_always_pickup]
 #define floor_query_flag		op_ptr->opt[OPT_floor_query_flag]
-/* xxx */
 #define stack_force_notes		op_ptr->opt[OPT_stack_force_notes]
 #define stack_force_costs		op_ptr->opt[OPT_stack_force_costs]
-#define expand_inscribe			op_ptr->opt[OPT_expand_inscribe]
-/* xxx */
-/* xxx */
-/* xxx */
-#define ring_bell				op_ptr->opt[OPT_ring_bell]
 #define show_flavors			op_ptr->opt[OPT_show_flavors]
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
 #define disturb_move			op_ptr->opt[OPT_disturb_move]
 #define disturb_near			op_ptr->opt[OPT_disturb_near]
-/* xxx */
 #define disturb_state			op_ptr->opt[OPT_disturb_state]
-/* xxx */
-/* xxx */
 #define disturb_detect			op_ptr->opt[OPT_disturb_detect]
-/* xxx alert_failure */
 #define verify_destroy			op_ptr->opt[OPT_verify_destroy]
-/* xxx */
+#define verify_leave_quest		op_ptr->opt[OPT_verify_leave_quest]
 /* xxx */
 /* xxx */
 /* xxx */
 #define auto_scum				op_ptr->opt[OPT_auto_scum]
 #define allow_themed_levels		op_ptr->opt[OPT_allow_themed_levels]
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
 #define view_perma_grids		op_ptr->opt[OPT_view_perma_grids]
 #define view_torch_grids		op_ptr->opt[OPT_view_torch_grids]
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define smart_cheat				op_ptr->opt[OPT_smart_cheat]
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define flush_failure			op_ptr->opt[OPT_flush_failure]
-#define flush_disturb			op_ptr->opt[OPT_flush_disturb]
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-/* xxx */
-#define hilight_player			op_ptr->opt[OPT_hilight_player]
 #define view_yellow_light		op_ptr->opt[OPT_view_yellow_light]
 #define view_bright_light		op_ptr->opt[OPT_view_bright_light]
 #define view_granite_light		op_ptr->opt[OPT_view_granite_light]
 #define view_special_light		op_ptr->opt[OPT_view_special_light]
+/* xxx */
+/* xxx */
+/* xxx */
+#define smart_cheat				op_ptr->opt[OPT_smart_cheat]
+#define flush_failure			op_ptr->opt[OPT_flush_failure]
+#define flush_disturb			op_ptr->opt[OPT_flush_disturb]
+#define hilight_player			op_ptr->opt[OPT_hilight_player]
 #define easy_open				op_ptr->opt[OPT_easy_open]
 #define easy_alter				op_ptr->opt[OPT_easy_alter]
-/* xxx */
 #define show_piles				op_ptr->opt[OPT_show_piles]
 #define center_player			op_ptr->opt[OPT_center_player]
 #define animate_flicker 		op_ptr->opt[OPT_animate_flicker]
+#define hp_changes_color		op_ptr->opt[OPT_hp_changes_color]
+#define mark_squelch_items		op_ptr->opt[OPT_mark_squelch_items]
+#define mouse_movement			op_ptr->opt[OPT_mouse_movement]
+#define notify_recharge			op_ptr->opt[OPT_notify_recharge]
 /* xxx */
-#define auto_more				op_ptr->opt[OPT_auto_more]
 /* xxx */
-#define auto_display_lists		op_ptr->opt[OPT_auto_display_lists]
 /* xxx */
 /* xxx */
 /* xxx */
@@ -866,7 +794,6 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define birth_no_artifacts		op_ptr->opt[OPT_birth_no_artifacts]
 #define birth_rand_artifacts	op_ptr->opt[OPT_birth_rand_artifacts]
 #define birth_no_stacking		op_ptr->opt[OPT_birth_no_stacking]
-// was birth_take_notes
 #define	birth_force_small_lev	op_ptr->opt[OPT_birth_force_small_lev]
 #define	birth_connected_stairs	op_ptr->opt[OPT_birth_connected_stairs]
 #define birth_no_quests			op_ptr->opt[OPT_birth_no_quests]
@@ -874,18 +801,14 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define birth_no_store_services	op_ptr->opt[OPT_birth_no_store_services]
 #define birth_no_xtra_artifacts	op_ptr->opt[OPT_birth_no_xtra_artifacts]
 #define birth_money				op_ptr->opt[OPT_birth_money]
-#define birth_simple_dungeons	op_ptr->opt[OPT_birth_simple_dungeons]
+#define birth_classic_dungeons	op_ptr->opt[OPT_birth_classic_dungeons]
 #define birth_swap_weapons		op_ptr->opt[OPT_birth_swap_weapons]
-
-/* xxx xxx */
-#define cheat_peek				op_ptr->opt[OPT_cheat_peek]
-#define cheat_hear				op_ptr->opt[OPT_cheat_hear]
-#define cheat_room				op_ptr->opt[OPT_cheat_room]
-#define cheat_xtra				op_ptr->opt[OPT_cheat_xtra]
-#define cheat_know				op_ptr->opt[OPT_cheat_know]
-#define cheat_live				op_ptr->opt[OPT_cheat_live]
-/* xxx xxx */
-/* xxx xxx */
+/* xxx */
+/* xxx */
+/* xxx */
+/* xxx */
+/* xxx */
+/* xxx */
 #define adult_no_selling		op_ptr->opt[OPT_adult_no_selling]
 #define adult_maximize			op_ptr->opt[OPT_adult_maximize]
 #define adult_preserve			op_ptr->opt[OPT_adult_preserve]
@@ -894,7 +817,6 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define adult_no_artifacts		op_ptr->opt[OPT_adult_no_artifacts]
 #define adult_rand_artifacts	op_ptr->opt[OPT_adult_rand_artifacts]
 #define adult_no_stacking		op_ptr->opt[OPT_adult_no_stacking]
-// Was adult_take_notes
 #define	adult_force_small_lev	op_ptr->opt[OPT_adult_force_small_lev]
 #define	adult_connected_stairs	op_ptr->opt[OPT_adult_connected_stairs]
 #define adult_no_quests			op_ptr->opt[OPT_adult_no_quests]
@@ -902,23 +824,24 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define adult_no_store_services	op_ptr->opt[OPT_adult_no_store_services]
 #define adult_no_xtra_artifacts	op_ptr->opt[OPT_adult_no_xtra_artifacts]
 #define adult_money				op_ptr->opt[OPT_adult_money]
-#define adult_simple_dungeons	op_ptr->opt[OPT_adult_simple_dungeons]
+#define adult_classic_dungeons	op_ptr->opt[OPT_adult_classic_dungeons]
 #define adult_swap_weapons		op_ptr->opt[OPT_adult_swap_weapons]
-
-#define hp_changes_color		op_ptr->opt[OPT_hp_changes_color]
-#define verify_leave_quest		op_ptr->opt[OPT_verify_leave_quest]
-#define mark_squelch_items		op_ptr->opt[OPT_mark_squelch_items]
-#define mouse_movement			op_ptr->opt[OPT_mouse_movement]
-#define mouse_buttons			op_ptr->opt[OPT_mouse_buttons]
-#define notify_recharge			op_ptr->opt[OPT_notify_recharge]
-
-#define score_peek				op_ptr->opt[OPT_score_peek]
-#define score_hear				op_ptr->opt[OPT_score_hear]
-#define score_room				op_ptr->opt[OPT_score_room]
-#define score_xtra				op_ptr->opt[OPT_score_xtra]
-#define score_know				op_ptr->opt[OPT_score_know]
-#define score_live				op_ptr->opt[OPT_score_live]
+/* xxx */
+/* xxx */
+/* xxx */
+/* xxx */
+/* xxx */
+/* xxx */
+#define cheat_peek				op_ptr->opt[OPT_cheat_peek]
+#define cheat_hear				op_ptr->opt[OPT_cheat_hear]
+#define cheat_room				op_ptr->opt[OPT_cheat_room]
+#define cheat_xtra				op_ptr->opt[OPT_cheat_xtra]
+#define cheat_know				op_ptr->opt[OPT_cheat_know]
+#define cheat_live				op_ptr->opt[OPT_cheat_live]
 /* xxx xxx */
+/* xxx xxx */
+/* xxx xxx */
+
 
 /*
  * Convert a "location" (Y,X) into a "grid" (G)

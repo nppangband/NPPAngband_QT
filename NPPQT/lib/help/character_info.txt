@@ -1,0 +1,84 @@
+*******Strength
+Strength is etxremely important in fighting with weapons and in melee combat, and can greatly increase a player's killing power.  A high strength helps increase total number of melee blows per round, melee to-hit, melee to damage, player weight carrying capacity, maximum weildable weapon weight, bashing chances, throwing range, and digging capability.  Characters with low strengths may receive penalties in these areas.
+*******<end>
+
+*******Intelligence
+Intelligence affects the ability of mages and rogues to cast spells, and a druid or ranger's ability to chant incantations.  Intelligence will affect the number of spells or incantations you may learn each level as well as the number of spell points you receive.  A high intelligence also improves your chances of successfully casting a spell or incantations.  You cannot learn spells if your intelligence is 7 or lower.  A good intelligence can also help with using magic devices, picking locks, and disarming traps.  Characters with low intelligence may receive penalties in these areas.
+*******<end>
+
+*******Wisdom
+Wisdom is to determine the ability of a priest or paladin to use prayers, and a druid's or ranger's ability to chant incantations.  High wisdom will increase the number of spell points you have and increase the number of prayers you can learn each level.  A high wisdom also improves the chance that a prayer will be successful.  A good wisdom can also help to improve your chances of resisting magical spells cast upon you by monsters.  Characters with low wisdom may receive penalties in these areas.
+*******<end>
+
+*******Dexterity
+Dexterity is a combination of agility and quickness.  A high dexterity may allow a character to get multiple blows with weapons, thus greatly increasing his kill power, and will increase his chances of hitting with any weapon and dodging blows from enemies.  A high dexterity is also useful in picking locks, disarming traps, and protecting yourself from some of the thieves that inhabit the dungeons. Indeed, if the character has a dexterity of 18/150 or greater, thieves will never be successful in stealing from the player.  A high dexterity also reduces the possibilty of the player getting stunned while bashing a door or a creature.  Characters with low dexterity may receive penalties in these areas.
+*******<end>
+
+*******Constitution
+Constitution is a character's ability to resist damage to his                body, and to recover from damage received.  Therefore a character with a high constitution will receive more hit points and also regenerate them faster.  A high consitutions also affects the player's recovery rate from cuts, poison, and being stunned.  Characters with a low constitution may receive penalties in these areas.
+*******<end>
+
+*******Charisma
+Charisma represents a character's personality and physical appearance.  A character with a high charisma will receive better prices from store owners, whereas a character with a very low charisma may be robbed blind. Charisma also affects the character's chances to use magic to sleep, slow, confuse, scare or stun a monster.
+*******<end>
+
+*******Gender
+Gender is for game "flavor" and does not have any significant gameplay effects.
+*******<end>
+
+*******Title
+Title indicates a gain in status as the player gains levels.  It does not have any significant gameplay effects.
+*******<end>
+
+*******Hit Points
+When the player's hit points go below zero, the player dies.  The player's maximum hit points are gained when the player levels up or increases their Consitution.  There is also a chance that the Adventurer's Guild will offer to increase the player's maximum hit points as a quest reward.  Unless the player has a dangerous temporary effect (e.g. being poisoned, being cut), the player will regenerate a small amount of hit points each turn.  The player also has the option to rest until their hit points are fully recovered, or use magic to heal themselves.
+*******<end>
+
+*******Spell Points
+Spell points are required for spellcating classes to cast spells (Mage, Ranger), pray prayers (Priest, Paladin), or chant incantations (Druid, Ranger).  Casting a spell without having sufficient mana can damage the player's health, or cause them to pass out.  Maximum spell points increase as the player levels up, or their primary spell stat increases.  Unless the player has a dangerous temporary effect (e.g. being poisoned, being cut), the player will regenerate a small amount of hit points each turn.  The player also has the option to rest until their hit points are fully recovered.  The player will regenerate a small amount of spell points each turn.  The player also has the option to rest until their spell points are fully recovered, or use magic items to recover spell potions.
+*******<end>
+
+*******Fame
+The player increases their fame by completing quests, killing uniques, and killing player ghosts.  A high enough player fame  prompts the Adventurer's Guild to offer a wider variety of quests, and greatly increases the variety and quanity of quest rewards.  If the player fails or abandons a quest, the player's fame is sharply decreased.
+*******<end>
+
+*******Gold
+The player can collect gold found in the dungeon, as a quest reward, as well as by selling object in the town stores.  Gold can be used to purchase items and services in the town shops.
+*******<end>
+
+*******Player Age
+Player Age is for game "flavor" and does not have any significant gameplay effects.
+*******<end>
+
+*******Player Height
+Player height in inches.  Player height is for game "flavor" and does not have any significant gameplay effects.
+*******<end>
+
+*******Player Weight
+Player weight in pounds.  Player weight is for game "flavor" and does not have any significant gameplay effects.
+*******<end>
+
+*******Social Class
+Player Social Class is for game "flavor" and does not have any significant gameplay effects.  Social class is reated to the player history.
+*******<end>
+
+*******Game Turn
+10 game turns is equivalent to one player turn at normal speed.  The player's score is eventually reduced if the game turn count gets high enough.
+*******<end>
+
+*******Player Turn
+Player Turn is the number of player turns, independent of player speed.
+*******<end>
+
+*******Current Depth
+The player's current dungeon depth.
+*******<end>
+
+*******Max Depth
+The deepest dungeon depth the player has reached.
+*******<end>
+
+*******Infravision
+Infravision is the ability to see heat sources. Since most of the dungeon is cool or cold, infra-vision will not allow the player to see walls and objects.  Infravision will allow a character  to see any warm-blooded creatures up to a certain distance past the player's light source, even if the players are invisible.  However, many of Angband's creatures are cold-blooded, and will not be detected unless lit up by a light source. All non-human races have innate infra-vision ability.  Humans (including Dúnedain) cannot gain infra-vision unless it is magically enhanced. Infravision does not increase with character level, and is purely dependent on race, magical equipment, and magical items.  1 square = 10 feet.
+*******<end>
+

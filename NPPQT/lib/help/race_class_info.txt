@@ -14,7 +14,7 @@ Half-elves are the descendants of Elves and Humans.  Half-elves tend to be smart
 Known as the Elder Race, and as the First-Born, Elves are famed for their knowledge and craftsmanship.  They tend to be smarter and more dexterous than either humans or half-elves, but not as wise or strong.  Elves are better at searching, disarming, perception, stealth, and magic, but they somewhat weak in melee.  They are fond of bows, somewhat weak in melee, and have some infravision.  Elves are resistant to attacks involving bright light, and have their dexterity sustained, and are to forest terrain.
 *******<end>
 
-*******Hobbit
+*******Hobbit / Halfling
 Hobbits, or halflings are shy, retiring folk with enough good sense to share.  They live in homes with circular entranceways built partially underground, and are the smallest of all the races.  Although they are weak, have perilously few hitpoints, and are very poor at melee, they are extraordinary at searching, disarming, perception, and stealth.  They make excellent rogues, but prefer to be called burglers.  Hobbits are highly intelligent, dexterous, have fair infravision, and good saving throws.  They resist attacks on their life force, and are thus intrinsically resistant to life draining.
 *******<end>
 

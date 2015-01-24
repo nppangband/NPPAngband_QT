@@ -129,7 +129,7 @@ high_score build_score(QString date_death)
 void enter_score(QString date_death)
 {
     /* Cheaters are not scored */
-    for (int j = OPT_SCORE; j < OPT_MAX; ++j)
+    for (int j = OPT_CHEAT_HEAD; j < OPT_CHEAT_TAIL; ++j)
     {
         if (op_ptr->opt[j]) return;
     }

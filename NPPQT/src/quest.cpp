@@ -2083,7 +2083,7 @@ bool quest_allowed(byte j)
     }
     else if (j == QUEST_SLOT_LEVEL)
     {
-        if (adult_simple_dungeons) return (FALSE);
+        if (adult_classic_dungeons) return (FALSE);
         if (!allow_themed_levels) return (FALSE);
         if (p_ptr->max_depth < 14) return (FALSE);
         if (!check_level_quest()) return (FALSE);
@@ -2095,7 +2095,7 @@ bool quest_allowed(byte j)
     }
     else if (j == QUEST_SLOT_WILDERNESS)
     {
-        if (adult_simple_dungeons) return (FALSE);
+        if (adult_classic_dungeons) return (FALSE);
         if (p_ptr->max_depth < 17) return (FALSE);
         if (!(q_info[GUILD_QUEST_SLOT].q_flags & (QFLAG_WILDERNESS_QUEST))) return (FALSE);
     }

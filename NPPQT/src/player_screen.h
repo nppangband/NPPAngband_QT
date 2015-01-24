@@ -23,7 +23,20 @@ struct player_flag_record
     bool bad_flag;          // Is it a bad one?
 };
 
-class PlayerScreenDialog : public QDialog
+class PlayerScreenInfo : public QDialog
+{
+public:
+    void update_char_screen(void);
+    void char_basic_info(QGridLayout *return_layout);
+    void char_basic_data(QGridLayout *return_layout);
+    void char_game_info(QGridLayout *return_layout);
+    void char_stat_info(QGridLayout *stat_layout);
+    void char_combat_info(QGridLayout *return_layout);
+    void char_ability_info(QGridLayout *return_layout);
+};
+
+
+class PlayerScreenDialog : public PlayerScreenInfo
 {
     Q_OBJECT
 
@@ -31,18 +44,16 @@ public:
     explicit PlayerScreenDialog(void);
 
 private:
-    void char_basic_info(QGridLayout *return_layout);
-    void char_basic_data(QGridLayout *return_layout);
-    void char_game_info(QGridLayout *return_layout);
-    void char_stat_info(QGridLayout *stat_layout);
-    void char_combat_info(QGridLayout *return_layout);
-    void char_ability_info(QGridLayout *return_layout);
+
+
     void equip_flag_info(QGridLayout *return_layout, int flag_set);
     void equip_modifier_info(QGridLayout *return_layout);
 };
 
+extern QString stat_entry(int stat);
 extern void do_cmd_player_screen(void);
 extern QString moria_speed_labels(int speed);
 extern byte analyze_speed_bonuses(int speed, byte default_attr);
+extern void make_standard_label(QLabel *this_label, QString title, byte preset_color);
 
 #endif // PLAYER_SCREEN_H
