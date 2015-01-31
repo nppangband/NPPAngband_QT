@@ -205,6 +205,8 @@ static void make_ability_graph(QLabel *this_label, int min, int max, int value)
     //draw a box around the progress bar.
     paint.drawRect(filler);
 
+    this_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
     this_label->setPixmap(this_img);
 }
 
@@ -262,7 +264,7 @@ QString stat_entry(int stat)
     return(get_help_topic("character_info", stat_names_full[stat]));
 }
 
-// Go through all the labels and update them
+// Go through all the labels and update the ones that show data.
 void PlayerScreenInfo::update_char_screen(void)
 {
     QList<QLabel *> lbl_list = this->findChildren<QLabel *>();
@@ -370,6 +372,104 @@ void PlayerScreenInfo::update_char_screen(void)
         if (this_name.operator ==("PLYR_Infra"))
         {
             this_lbl->setText(color_string(QString("<b>%1</b>") .arg((QString("%1 feet") .arg(p_ptr->state.see_infra * 10))), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Speed"))
+        {
+            make_ability_graph(this_lbl, 0, pam_ptr->max_p_speed, calc_energy_gain(p_ptr->state.p_speed));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Save"))
+        {
+            make_ability_graph(this_lbl, 0, 100, p_ptr->state.skills[SKILL_SAVE]);
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Stealth"))
+        {
+            int stealth = (WAKEUP_MAX - p_ptr->base_wakeup_chance);
+            if (p_ptr->state.aggravate) stealth = WAKEUP_MAX;
+            make_ability_graph(this_lbl, WAKEUP_MIN, WAKEUP_MAX, stealth);
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Stealth"))
+        {
+            int stealth = (WAKEUP_MAX - p_ptr->base_wakeup_chance);
+            if (p_ptr->state.aggravate) stealth = WAKEUP_MAX;
+            make_ability_graph(this_lbl, WAKEUP_MIN, WAKEUP_MAX, stealth);
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Fight"))
+        {
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_MELEE], p_ptr->state.skills[SKILL_TO_HIT_MELEE]);
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Bow"))
+        {
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_BOW], p_ptr->state.skills[SKILL_TO_HIT_BOW]);
+        }
+        if (this_name.operator ==("PLYR_Throw"))
+        {
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_THROW], p_ptr->state.skills[SKILL_TO_HIT_THROW]);
+        }
+        if (this_name.operator ==("PLYR_Disarm"))
+        {
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_DISARM], p_ptr->state.skills[SKILL_DISARM]);
+        }
+        if (this_name.operator ==("PLYR_Magic"))
+        {
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_DEVICE], p_ptr->state.skills[SKILL_DEVICE]);
+        }
+        if (this_name.operator ==("PLYR_Level"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_ptr->lev), (p_ptr->lev >= p_ptr->max_lev) ? TERM_BLUE : TERM_RED));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Cur_Exp"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->exp)), (p_ptr->exp >= p_ptr->max_exp) ? TERM_BLUE : TERM_RED));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Max_Exp"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->max_exp)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Advance"))
+        {
+            if (p_ptr->lev == z_info->max_level)
+            {
+                this_lbl->setText(color_string("---------", TERM_BLUE));
+                continue;
+            }
+
+            s32b advance = (get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L);
+            s32b exp_needed = advance - p_ptr->exp;
+            QString exp_output = number_to_formatted_string(exp_needed);
+            QString exp_advance = (QString("The total experience needed for the next level is %1") .arg(number_to_formatted_string(advance)));
+
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(exp_output), TERM_BLUE));
+            this_lbl->setToolTip(exp_advance);
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Score"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->current_score)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("BURDEN_Cur"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(formatted_weight_string(p_ptr->total_weight)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("BURDEN_Max"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(formatted_weight_string(normal_speed_weight_limit())), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("BURDEN_Percent"))
+        {
+            int pct = (p_ptr->total_weight * 100) / normal_speed_weight_limit();
+            this_lbl->setText(color_string(QString("<b>%1%</b>") .arg(pct), TERM_BLUE));
             continue;
         }
     }
@@ -600,17 +700,19 @@ void PlayerScreenInfo::char_game_info(QGridLayout *return_layout)
     // Add Character Level
     QLabel *label_player_lev = new QLabel;
     make_standard_label(label_player_lev, "CHAR. LEVEL:", TERM_DARK);
-    label_player_lev->setToolTip(QString("Current character level.<br>Player's hit points, spell points and abilities increase as their level increases."));
+    label_player_lev->setToolTip(get_help_topic("character_info", "Player Level"));
     QLabel *player_lev = new QLabel;
     make_standard_label(player_lev, (QString("%1") .arg(p_ptr->lev)), (p_ptr->lev >= p_ptr->max_lev) ? TERM_BLUE : TERM_RED);
+    player_lev->setObjectName("PLYR_Level");
     return_layout->addWidget(label_player_lev, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_lev, row++, col+1, Qt::AlignRight);
 
     // Add Player Experience
     QLabel *label_player_exp = new QLabel;
     make_standard_label(label_player_exp, "EXPERIENCE:", TERM_DARK);
-    label_player_exp->setToolTip(QString("Total current player experience."));
+    label_player_exp->setToolTip(get_help_topic("character_info", "Player Current Experience"));
     QLabel *player_exp = new QLabel;
+    player_exp->setObjectName("PLYR_Cur_Exp");
     make_standard_label(player_exp, (QString("%1") .arg(number_to_formatted_string(p_ptr->exp))), (p_ptr->exp >= p_ptr->max_exp) ? TERM_BLUE : TERM_RED);
     return_layout->addWidget(label_player_exp, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_exp, row++, col+1, Qt::AlignRight);
@@ -618,8 +720,9 @@ void PlayerScreenInfo::char_game_info(QGridLayout *return_layout)
     // Add Player Maximum Experience
     QLabel *label_player_max_exp = new QLabel;
     make_standard_label(label_player_max_exp, "MAX EXP:", TERM_DARK);
-    label_player_max_exp->setToolTip(QString("Maximum player experience.<br>Maximum experience increases at 10 percent of the normal rate when player experience is drained."));
+    label_player_max_exp->setToolTip(get_help_topic("character_info", "Player Maximum Experience"));
     QLabel *player_max_exp = new QLabel;
+    player_max_exp->setObjectName("PLYR_Max_Exp");
     make_standard_label(player_max_exp, (QString("%1") .arg(number_to_formatted_string(p_ptr->max_exp))), TERM_BLUE);
     return_layout->addWidget(label_player_max_exp, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_max_exp, row++, col+1, Qt::AlignRight);
@@ -629,13 +732,15 @@ void PlayerScreenInfo::char_game_info(QGridLayout *return_layout)
     {
         s32b advance = (get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L);
         s32b exp_needed = advance - p_ptr->exp;
-        QString exp_output = number_to_formatted_string(exp_needed);;
+        QString exp_output = number_to_formatted_string(exp_needed);
 
         QLabel *label_player_exp_adv = new QLabel;
         make_standard_label(label_player_exp_adv, "ADVANCE EXP:", TERM_DARK);
+        label_player_max_exp->setToolTip(get_help_topic("character_info", "Player Experience Advance"));
         QLabel *player_exp_adv = new QLabel;
         make_standard_label(player_exp_adv, (QString("%1") .arg(exp_output)), TERM_BLUE);
         player_exp_adv->setToolTip(QString("The total experience needed for the next level is %1") .arg(number_to_formatted_string(advance)));
+        player_exp_adv->setObjectName("PLYR_Advance");
         return_layout->addWidget(label_player_exp_adv, row, col, Qt::AlignLeft);
         return_layout->addWidget(player_exp_adv, row++, col+1, Qt::AlignRight);
     }
@@ -644,37 +749,41 @@ void PlayerScreenInfo::char_game_info(QGridLayout *return_layout)
     // Add player score
     QLabel *label_player_score = new QLabel;
     make_standard_label(label_player_score, "SCORE:", TERM_DARK);
-    //label_player_score->setToolTip(QString("An attempt to quantify the player accomplishments.<br>Does not have any gameplay effects.<br>Factors in uniques killed, artifats found, player fame, experience gained, how deep in the dungeon the player has gone, and total game turns."));
+    label_player_score->setToolTip(get_help_topic("character_info", "Player Score"));
     QLabel *player_score = new QLabel;
     make_standard_label(player_score, (QString("%1") .arg(number_to_formatted_string(p_ptr->current_score))), TERM_BLUE);
+    player_score->setObjectName("PLYR_Score");
     return_layout->addWidget(label_player_score, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_score, row++, col+1, Qt::AlignRight);
 
     // Add Burden
     QLabel *label_player_burden = new QLabel;
     make_standard_label(label_player_burden, "BURDEN:", TERM_DARK);
-    label_player_burden->setToolTip("Total weight of all the player's equipment and inventory.");
+    label_player_burden->setToolTip(get_help_topic("character_info", "Player Burden"));
     QLabel *player_burden = new QLabel;
     make_standard_label(player_burden, (QString("%1 lbs") .arg(formatted_weight_string(p_ptr->total_weight))), TERM_BLUE);
+    player_burden->setObjectName("BURDEN_Cur");
     return_layout->addWidget(label_player_burden, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_burden, row++, col+1, Qt::AlignRight);
 
     // Add Max Burden
     QLabel *label_player_burden_max = new QLabel;
     make_standard_label(label_player_burden_max, "MAX WEIGHT:", TERM_DARK);
+    label_player_burden_max->setToolTip(get_help_topic("character_info", "Max Burden"));
     QLabel *player_burden_max = new QLabel;
     make_standard_label(player_burden_max, (QString("%1 lbs") .arg(formatted_weight_string(normal_speed_weight_limit()))), TERM_BLUE);
-    label_player_burden_max->setToolTip("Max weight is the total weight you can carry without being slowed by the burden.");
+    player_burden_max->setObjectName("BURDEN_Max");
     return_layout->addWidget(label_player_burden_max, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_burden_max, row++, col+1, Qt::AlignRight);
 
     // Add Burden %
     QLabel *label_player_burden_pct = new QLabel;
     make_standard_label(label_player_burden_pct, "% BURDEN:", TERM_DARK);
-    label_player_burden_pct->setToolTip(QString("The player suffers from reduced speed when this percentage goes above 100."));
+    label_player_burden_pct->setToolTip(get_help_topic("character_info", "Percent Burden"));
     QLabel *player_burden_pct = new QLabel;
     int pct = (p_ptr->total_weight * 100) / normal_speed_weight_limit();
     make_standard_label(player_burden_pct, (QString("%1%")) .arg(pct), (pct <= 100 ? TERM_BLUE : TERM_RED));
+    player_burden_pct->setObjectName("BURDEN_Percent");
     return_layout->addWidget(label_player_burden_pct, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_burden_pct, row++, col+1, Qt::AlignRight);
 
@@ -965,75 +1074,82 @@ void PlayerScreenInfo::char_ability_info(QGridLayout *return_layout)
     // Add Speed
     QLabel *label_player_speed = new QLabel;
     make_standard_label(label_player_speed, "SPEED:", TERM_DARK);
-    label_player_speed->setToolTip(QString("Player current energy gain, with temporary effects, relative to the hightst and lowest possible energy gains."));
+    label_player_speed->setToolTip(get_help_topic("character_info", "Speed"));
     return_layout->addWidget(label_player_speed, row, col, Qt::AlignLeft);
     QLabel *player_speed = new QLabel;
+    player_speed->setObjectName("PLYR_Speed");
     make_ability_graph(player_speed, 0, pam_ptr->max_p_speed, calc_energy_gain(p_ptr->state.p_speed));
     return_layout->addWidget(player_speed, row++, col+1);
 
     // Add Saving Throw
     QLabel *label_player_save = new QLabel;
     make_standard_label(label_player_save, "SAVING THROW:", TERM_DARK);
-    label_player_save->setToolTip(QString("Current Saving throw percentage against some monster magical attacks such as fear, paralysis, slowness, blindness, and confusion.<br>It is based on player race, class, level, and wisdom.<br>Note some monster attacks do not allow a saving throw, so even a perfect saving throw doesn't offer complete protection from these side effects."));
+    label_player_save->setToolTip(get_help_topic("character_info", "Saving Throw"));
     return_layout->addWidget(label_player_save, row, col, Qt::AlignLeft);
     QLabel *player_save = new QLabel;
+    player_save->setObjectName("PLYR_Save");
     make_ability_graph(player_save, 0, 100, p_ptr->state.skills[SKILL_SAVE]);
     return_layout->addWidget(player_save, row++, col+1);
 
     // Add Stealth - note special handling since stealth is inverted
     QLabel *label_player_stealth = new QLabel;
     make_standard_label(label_player_stealth, "STEALTH:", TERM_DARK);
-    label_player_stealth->setToolTip(QString("The better the stealth, the longer it takes monsters to wake up.<br>The player can be extremely quiet, but can not achieve perfect silence."));
+    label_player_stealth->setToolTip(get_help_topic("character_info", "Stealth"));
     return_layout->addWidget(label_player_stealth, row, col, Qt::AlignLeft);
     QLabel *player_stealth = new QLabel;
+    player_stealth->setObjectName("PLYR_Stealth");
     int stealth = (WAKEUP_MAX - p_ptr->base_wakeup_chance);
     if (p_ptr->state.aggravate) stealth = WAKEUP_MAX;
     make_ability_graph(player_stealth, WAKEUP_MIN, WAKEUP_MAX, stealth);
-    if (p_ptr->state.aggravate) player_stealth->setToolTip(QString("You are wearing equipment that aggravates monsters."));
     return_layout->addWidget(player_stealth, row++, col+1);
 
     // Add Fighting ability
     QLabel *label_player_fight = new QLabel;
     make_standard_label(label_player_fight, "FIGHTING:", TERM_DARK);
-    label_player_fight->setToolTip(QString("Fighting ability is based on player race, class, and level.  It is a significant factor in making a weapon attack sucessful, and for getting a critical hit.<br>Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the hightest calculated damage used.<br>In terms of total damage inflicted, this factor is significantly less important than # of attacks per round, player speed, player to-damage, and quality of weapon.<br>More details of total potential weapon damage can be found by inspecting the weapon."));
+    label_player_fight->setToolTip(get_help_topic("character_info", "Fighting Ability"));
     return_layout->addWidget(label_player_fight, row, col, Qt::AlignLeft);
     QLabel *player_fight = new QLabel;
+    player_fight->setObjectName("PLYR_Fight");
     make_ability_graph(player_fight, 0, pam_ptr->max_skills[SKILL_TO_HIT_MELEE], p_ptr->state.skills[SKILL_TO_HIT_MELEE]);
     return_layout->addWidget(player_fight, row++, col+1);
 
     // Add bow ability
     QLabel *label_player_bow = new QLabel;
     make_standard_label(label_player_bow, "SHOOTING:", TERM_DARK);
-    label_player_bow->setToolTip(QString("Shooting ability is based on player race, class, and level.  It is a significant factor in making a sucessful hit, and for getting a critical hit.<br>Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the hightest calculated damage used.<br>In terms of total damage inflicted, this factor is significantly less important than shooting speed, player speed, bow multiplier, the quality of missile launcher, and the quality of ammunition fired.<br>More details of total potential shooting damage can be found by inspecting ammunition.<br>Rogues, Brigands, and Rangers get significantly boosted shooting abilities as they advance levels."));
+    label_player_bow->setToolTip(get_help_topic("character_info", "Shooting Ability"));
     return_layout->addWidget(label_player_bow, row, col, Qt::AlignLeft);
     QLabel *player_bow = new QLabel;
+    player_bow->setObjectName("PLYR_Bow");
     make_ability_graph(player_bow, 0, pam_ptr->max_skills[SKILL_TO_HIT_BOW], p_ptr->state.skills[SKILL_TO_HIT_BOW]);
     return_layout->addWidget(player_bow, row++, col+1);
 
     // Add throwing ability
     QLabel *label_player_throw = new QLabel;
     make_standard_label(label_player_throw, "THROWING:", TERM_DARK);
-    label_player_throw->setToolTip(QString("Throwing ability is based on player race, class, and level.  It is a significant factor in making the throw a sucessful hit, and for getting a critical hit.<br>Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the hightest calculated damage used.<br>In terms of total damage inflicted, this factor is significantly less important than the qualitiess of the item thrown.<br>More details of total potential throwing damage can be found by inspecting the item.<br>Some potions can have interesting side effects when thrown.<br>Rogues and Brigands get significantly boosted throwing abilities as they advance levels."));
+    label_player_throw->setToolTip(get_help_topic("character_info", "Throwing Ability"));
     return_layout->addWidget(label_player_throw, row, col, Qt::AlignLeft);
     QLabel *player_throw = new QLabel;
+    player_throw->setObjectName("PLYR_Disarm");
     make_ability_graph(player_throw, 0, pam_ptr->max_skills[SKILL_TO_HIT_THROW], p_ptr->state.skills[SKILL_TO_HIT_THROW]);
     return_layout->addWidget(player_throw, row++, col+1);
 
     // Add disarming ability
     QLabel *label_player_disarm = new QLabel;
     make_standard_label(label_player_disarm, "DISARMING:", TERM_DARK);
-    label_player_disarm->setToolTip(QString("Disarming ability is based on player race, class, dexterity, and level.<br>It is used to determine if a player has sucessfully disarmed traps or picked locks."));
+    label_player_disarm->setToolTip(get_help_topic("character_info", "Disarming"));
     return_layout->addWidget(label_player_disarm, row, col, Qt::AlignLeft);
     QLabel *player_disarm = new QLabel;
+    player_disarm->setObjectName("PLYR_Disarm");
     make_ability_graph(player_disarm, 0, pam_ptr->max_skills[SKILL_DISARM], p_ptr->state.skills[SKILL_DISARM]);
     return_layout->addWidget(player_disarm, row++, col+1);
 
     // Add magic device
     QLabel *label_player_magic = new QLabel;
     make_standard_label(label_player_magic, "MAGIC DEVICE:", TERM_DARK);
-    label_player_magic->setToolTip(QString("Magic usage is used in determining if the player has sucessfully activated an object, or used a wand, rod, or staff.<br>It is based on player race, class, intelligence, and level.<br>Object or atifact level also factors into the equation."));
+    label_player_magic->setToolTip(get_help_topic("character_info", "Magic Device"));
     return_layout->addWidget(label_player_magic, row, col, Qt::AlignLeft);
     QLabel *player_magic = new QLabel;
+    player_magic->setObjectName("PLYR_Magic");
     make_ability_graph(player_magic, 0, pam_ptr->max_skills[SKILL_DEVICE], p_ptr->state.skills[SKILL_DEVICE]);
     return_layout->addWidget(player_magic, row++, col+1);
 

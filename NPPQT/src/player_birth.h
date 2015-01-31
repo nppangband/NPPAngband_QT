@@ -59,12 +59,10 @@ private:
 
 
     //Option checkboxes
-    QVBoxLayout *vlay_options;
     QButtonGroup *group_options;
     void add_option_boxes(QVBoxLayout *return_layout);
 
     //Gender and buttons
-    QVBoxLayout *vlay_gender;
     QButtonGroup *group_gender;
     QLineEdit *player_name;
     QString cur_name;
@@ -72,28 +70,37 @@ private:
     void add_genders(QVBoxLayout *return_layout);
 
     //Race
-    QVBoxLayout *vlay_race;
     QButtonGroup *group_race;
     int cur_race;
     void add_races(QVBoxLayout *return_layout);
 
     //Class
-    QVBoxLayout *vlay_class;
     QButtonGroup *group_class;
     int cur_class;
     void add_classes(QVBoxLayout *return_layout);
 
     //help boxes
-    QVBoxLayout *vlay_help_area;
     QLabel *race_info;
     QLabel *class_info;
     void add_info_boxes(QVBoxLayout *return_layout);
 
     //stats
-    QVBoxLayout *vlay_stats_info_area;
-    QGridLayout *grid_stat_modifiers;
     void add_stat_boxes(QVBoxLayout *return_layout);
-    void update_vlay_stats_info();
+    void add_stat_results(void);
+    void update_stats_info();
+
+    //Statroll options
+    QVBoxLayout *vlay_stats_current;
+    QGridLayout *grid_stat_results;
+    QButtonGroup *group_stat_choice;
+    void add_stat_choices(QVBoxLayout *return_layout);
+    bool point_based;
+    int stats[A_MAX];
+    int points_spent[A_MAX];
+    int points_left;
+
+    void update_points();
+    void update_character();
 
 
 private slots:
@@ -103,7 +110,11 @@ private slots:
     void class_changed(int new_class);
     void option_changed(int index);
     void call_options_dialog(void);
-    void update_character();
+    void point_button_chosen(void);
+    void random_button_chosen(void);
+    void redo_stat_box(void);
+    void stat_spin_changed(int new_value);
+
 
     // Random char slots
     void random_name(void);
@@ -119,7 +130,7 @@ extern void init_birth();
 extern void finish_birth();
 extern void reset_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
 extern bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-extern bool sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
+extern void sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
 extern void generate_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
 extern void generate_player();
 extern void roll_player(int stats[A_MAX]);

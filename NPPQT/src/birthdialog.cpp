@@ -49,17 +49,21 @@ void BirthDialog::update_points()
         ui->edit_table->item(i, 5)->setText(QString::number(cost));
 
         int best;        
-        if (point_based) {
-            if (adult_maximize) {
+        if (point_based)
+        {
+            if (birth_maximize)
+            {
                 int bonus = ui->edit_table->item(i, 3)->text().toInt();
                 best = modify_stat_value(stats[i], bonus);
             }
-            else {
+            else
+            {
                 best = p_ptr->stat_max[i];
             }
 
         }
-        else {
+        else
+        {
             best = stats[i];
         }
         ui->edit_table->item(i, 4)->setText(stat_notation(best));
@@ -374,7 +378,8 @@ void BirthDialog::on_sell_clicked()
     if (!point_based) return;
     QWidget *button = dynamic_cast<QWidget *>(sender());
     int idx = button->property("stat_idx").toInt();
-    if (sell_stat(idx, stats, points_spent, &points_left)) update_points();
+    sell_stat(idx, stats, points_spent, &points_left);
+    update_points();
 }
 
 void BirthDialog::on_buy_clicked()
@@ -401,7 +406,8 @@ void BirthDialog::on_options_button_clicked()
     OptionsDialog *dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
-    if (birth_maximize != old_maximize) {
+    if (birth_maximize != old_maximize)
+    {
         dirty = true;
     }
 }

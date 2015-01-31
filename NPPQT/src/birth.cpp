@@ -23,6 +23,8 @@
 #include <QTime>
 #include <QDate>
 
+
+
 /*
  * Cost of each "point" of a stat.
  */
@@ -46,7 +48,7 @@ static void recalculate_stats(int *stats, int points_left)
     for (i = 0; i < A_MAX; i++)
     {
         /* Variable stat maxes */
-        if (adult_maximize)
+        if (birth_maximize)
         {
             /* Reset stats */
             p_ptr->stat_cur[i] = p_ptr->stat_max[i] = p_ptr->stat_birth[i] = stats[i];
@@ -105,7 +107,7 @@ void reset_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left)
 bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
                      int *points_left)
 {
-    byte max_stat = (adult_maximize ? 18 : 17);
+    byte max_stat = (birth_maximize ? 18 : 17);
 
     /* Must be a valid stat, and have a "base" of below allowable max to be adjusted */
     if (!(choice >= A_MAX || choice < 0) &&	(stats[choice] < max_stat))
@@ -132,27 +134,19 @@ bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
     return FALSE;
 }
 
-bool sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
+// With the spinners, sell stat can't fail.
+void sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
                       int *points_left)
 {
-    /* Must be a valid stat, and we can't "sell" stats below the base of 10. */
-    if (!(choice >= A_MAX || choice < 0) && (stats[choice] > 10))
-    {
-        int stat_cost = birth_stat_costs[stats[choice]];
+    int stat_cost = birth_stat_costs[stats[choice]];
 
-        stats[choice]--;
-        points_spent[choice] -= stat_cost;
-        *points_left += stat_cost;
+    stats[choice]--;
+    points_spent[choice] -= stat_cost;
+    *points_left += stat_cost;
 
-        /* Recalculate everything that's changed because
-           the stat has changed, and inform the UI. */
-        recalculate_stats(stats, *points_left);
-
-        return TRUE;
-    }
-
-    /* Didn't adjust stat. */
-    return FALSE;
+    /* Recalculate everything that's changed because
+       the stat has changed, and inform the UI. */
+    recalculate_stats(stats, *points_left);
 }
 
 /*
@@ -350,7 +344,7 @@ void generate_stats(int stats[A_MAX], int points_spent[A_MAX],
 static int adjust_stat(int value, int amount)
 {
     /* Negative amounts or maximize mode */
-    if ((amount < 0) || adult_maximize)
+    if ((amount < 0) || birth_maximize)
     {
         return (modify_stat_value(value, amount));
     }
@@ -429,7 +423,7 @@ static void get_stats(int stat_use[A_MAX])
         bonus = rp_ptr->r_adj[i] + cp_ptr->c_adj[i];
 
         /* Variable stat maxes */
-        if (adult_maximize)
+        if (birth_maximize)
         {
             /* Start fully healed */
             p_ptr->stat_cur[i] = p_ptr->stat_max[i];
