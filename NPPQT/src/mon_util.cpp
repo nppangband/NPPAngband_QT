@@ -1413,7 +1413,7 @@ void update_mon(int m_idx, bool full)
             else if (r_ptr->flags2 & (RF2_WEIRD_MIND))
             {
                 /* Monster is rarely detectable */
-                if (((turn / 10) % 10) == (m_idx % 10))
+                if (((p_ptr->game_turn / 10) % 10) == (m_idx % 10))
                 {
                     /* Detectable */
                     is_visible = TRUE;

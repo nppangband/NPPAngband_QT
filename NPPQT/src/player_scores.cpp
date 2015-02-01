@@ -64,10 +64,10 @@ static u32b total_points(void)
         points += (a_ptr->a_level * a_ptr->a_rarity) / ( i <= z_info->art_spec_max ? 3 : 10);
     }
 
-    if (turn < 200000) return (points);
+    if (p_ptr->game_turn < 200000) return (points);
 
     // Factor in amount of time played, reduce points for longer games.
-    int x = (turn / 100000) - 1;
+    int x = (p_ptr->game_turn / 100000) - 1;
     for (i = 0; i < x; i++)
     {
         if (i < 10) points = (points * 99) / 100;
@@ -92,7 +92,7 @@ high_score build_score(QString date_death)
     score_ptr->score = total_points();
 
     /* Save the current turn */
-    score_ptr->turns = turn;
+    score_ptr->turns = p_ptr->game_turn;
 
     /* Time of death */
     score_ptr->date_time = date_death;

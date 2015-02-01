@@ -50,7 +50,6 @@ class PlayerBirth : public PlayerScreenInfo
 public:
     explicit PlayerBirth(bool quickstart);
 
-    bool done_birth;
     bool quick_start;
 
 private:
@@ -58,8 +57,6 @@ private:
 
     // try not to update the character more than once each action
     bool hold_update;
-
-    void accept();
 
 
     //Option checkboxes
@@ -116,6 +113,9 @@ private slots:
     void redo_stat_box(void);
     void stat_spin_changed(int new_value);
     void random_roll(void);
+    void accept_char(void);
+    void reject_char(void);
+
 
 
     // Random char slots
@@ -129,6 +129,7 @@ private slots:
 
 // birth.cpp
 extern void init_birth();
+extern void update_adult_options();
 extern void finish_birth();
 extern void reset_stats(void);
 extern bool buy_stat(int choice);

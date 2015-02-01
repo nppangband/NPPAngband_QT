@@ -1195,7 +1195,7 @@ static int rd_extra(void)
     do_feeling = tmp8u;
 
     /* Current turn */
-    rd_s32b(&turn);
+    rd_s32b(&p_ptr->game_turn);
 
     /*Current Player Turn*/
     rd_s32b(&p_ptr->p_turn);
@@ -2429,7 +2429,7 @@ bool load_player(void)
     character_loaded = false;
 
     /* Paranoia */
-    turn = 0;
+    p_ptr->game_turn = 0;
 
     p_ptr->p_turn = 0;
 
@@ -2505,7 +2505,7 @@ bool load_player(void)
         sf_lives++;
 
         /* Forget turns */
-        turn = 0;
+        p_ptr->game_turn = 0;
 
         p_ptr->p_turn = 0;
 

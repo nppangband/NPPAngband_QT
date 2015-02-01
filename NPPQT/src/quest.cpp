@@ -2565,7 +2565,7 @@ int quest_item_count(void)
 s32b quest_time_remaining(void)
 {
     quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-    s32b turns_lapsed = turn - q_ptr->turn_counter;
+    s32b turns_lapsed = p_ptr->game_turn - q_ptr->turn_counter;
     s32b turns_allowed = GREATER_VAULT_INITIAL_TIME + (GREATER_VAULT_BONUS_TIME * q_ptr->q_num_killed);
 
     /* Paranoia */

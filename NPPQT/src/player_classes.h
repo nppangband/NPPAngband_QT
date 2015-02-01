@@ -510,6 +510,7 @@ public:
                                         terrain (multiplied by 10) */
 
     s32b p_turn; /* Player turn */
+    s32b game_turn; /* Player turn */
 
     u16b dungeon_type;	/* One of the DUNGEON_TYPE_* constants */
 

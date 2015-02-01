@@ -297,7 +297,7 @@ static void add_message_to_vector(QString msg, QColor which_color)
         message_type *msg_one = &message_list[0];
 
         if (operator==(msg_one->message, msg) && (msg_one->msg_color == which_color) &&
-            (msg_one->message_turn == turn) && !p_ptr->message_append)
+            (msg_one->message_turn == p_ptr->game_turn) && !p_ptr->message_append)
         {
             msg_one->repeats++;
             add_message = FALSE;
@@ -310,7 +310,7 @@ static void add_message_to_vector(QString msg, QColor which_color)
         msg_ptr->msg_color = which_color;
 
         msg_ptr->message = msg;
-        msg_ptr->message_turn = turn;
+        msg_ptr->message_turn = p_ptr->game_turn;
         msg_ptr->repeats = 1;
         if (!p_ptr->message_append) msg_ptr->append = FALSE;
         else if (p_ptr->message_first_append)
@@ -946,7 +946,7 @@ void write_note(QString note, s16b depth)
     notes_type note_body;
     notes_type *notes_ptr = &note_body;
 
-    notes_ptr->game_turn = turn;
+    notes_ptr->game_turn = p_ptr->game_turn;
     notes_ptr->dun_depth = depth;
     notes_ptr->player_level = p_ptr->lev;
     notes_ptr->recorded_note = note;

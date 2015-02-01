@@ -28,7 +28,6 @@ QChar summon_kin_type;		/* Hack -- See summon_specific() */
 
 monster_type *summoner; 	/*Track the current summoner*/
 
-s32b turn;				/* Current game turn */
 
 int use_graphics;		/* The "graphics" mode is enabled */
 

@@ -320,7 +320,7 @@ static void regen_monsters(void)
 {
     int i, frac;
 
-    int smooth = (turn / 100) % 100;
+    int smooth = (p_ptr->game_turn / 100) % 100;
 
     /* Regenerate everyone */
     for (i = 1; i < mon_max; i++)
@@ -673,7 +673,7 @@ static void play_ambient_sound(void)
     if (p_ptr->depth == 0)
     {
         /* Hack - is it daytime or nighttime? */
-        if (turn % (10L * TOWN_DAWN) < TOWN_DAWN / 2)
+        if (p_ptr->game_turn % (10L * TOWN_DAWN) < TOWN_DAWN / 2)
         {
             /* It's day. */
             sound(MSG_AMBIENT_DAY);
@@ -858,7 +858,7 @@ static void process_world(void)
         total_wakeup_chance = p_ptr->base_wakeup_chance;
 
     /* Every 10 game turns */
-    if (turn % 10) return;
+    if (p_ptr->game_turn % 10) return;
 
     /*** Update quests ***/
     if (guild_quest_active())
@@ -870,7 +870,7 @@ static void process_world(void)
         {
             if (one_in_(20))
             {
-                if (!(turn % QUEST_TURNS))
+                if (!(p_ptr->game_turn % QUEST_TURNS))
                 {
                     if (quest_might_fail_now())
                     {
@@ -886,12 +886,12 @@ static void process_world(void)
             else if (q_ptr->q_type == QUEST_LABYRINTH) 		process_labyrinth_quest();
             else if (q_ptr->q_type == QUEST_WILDERNESS)		process_wilderness_quest();
             else if (q_ptr->q_type == QUEST_GREATER_VAULT)	process_greater_vault_quest();
-            else if (!(turn % QUEST_TURNS)) process_guild_quests();
+            else if (!(p_ptr->game_turn % QUEST_TURNS)) process_guild_quests();
         }
     }
 
     /* Play an ambient sound at regular intervals. */
-    if (!(turn % ((10L * TOWN_DAWN) / 4)))
+    if (!(p_ptr->game_turn % ((10L * TOWN_DAWN) / 4)))
     {
         play_ambient_sound();
     }
@@ -902,12 +902,12 @@ static void process_world(void)
     if (!p_ptr->depth)
     {
         /* Hack -- Daybreak/Nighfall in town */
-        if (!(turn % ((10L * TOWN_DAWN) / 2)))
+        if (!(p_ptr->game_turn % ((10L * TOWN_DAWN) / 2)))
         {
             bool dawn;
 
             /* Check for dawn */
-            dawn = (!(turn % (10L * TOWN_DAWN)));
+            dawn = (!(p_ptr->game_turn % (10L * TOWN_DAWN)));
 
             /* Day breaks */
             if (dawn)
@@ -934,7 +934,7 @@ static void process_world(void)
         /*** Update the Stores ***/
 
         /* Update each store once a day (while in dungeon) */
-        if (!(turn % (10L * STORE_TURNS)))
+        if (!(p_ptr->game_turn % (10L * STORE_TURNS)))
         {
 
             int n;
@@ -1000,19 +1000,19 @@ static void process_world(void)
     }
 
     /* Occasionally have the ghost give a challenge */
-    if (turn % 500)
+    if (p_ptr->game_turn % 500)
     {
         if (one_in_(50)) ghost_challenge();
     }
 
     /* Put out fire if necessary */
-    if ((level_flag & (LF1_FIRE)) && !(turn % 1000)) put_out_fires();
+    if ((level_flag & (LF1_FIRE)) && !(p_ptr->game_turn % 1000)) put_out_fires();
 
     /* Hack -- Check for terrain damage */
     monster_terrain_damage();
 
     /* Hack -- Check for creature regeneration */
-    if (!(turn % 100)) regen_monsters();
+    if (!(p_ptr->game_turn % 100)) regen_monsters();
 
     /* Process effects */
     process_effects();
@@ -1090,7 +1090,7 @@ static void process_world(void)
     if (p_ptr->food < PY_FOOD_MAX)
     {
         /* Every 100 game turns */
-        if (!(turn % 100))
+        if (!(p_ptr->game_turn % 100))
         {
             /* Basic digestion rate based on speed */
             i = calc_energy_gain(p_ptr->state.p_speed) * 2;
@@ -1422,7 +1422,7 @@ static void process_world(void)
     }
 
     /* Delayed level feelings */
-    if ((p_ptr->depth) && (!p_ptr->leaving_level) && (!do_feeling) && (!(turn % 100)))
+    if ((p_ptr->depth) && (!p_ptr->leaving_level) && (!do_feeling) && (!(p_ptr->game_turn % 100)))
     {
         int chance;
 
@@ -1458,7 +1458,7 @@ static void process_world(void)
     }
 
     /* Score gets adjusted every 100000 turns */
-    if (!(turn % 100000)) p_ptr->update |= (PU_PLAYER_SCORE);
+    if (!(p_ptr->game_turn % 100000)) p_ptr->update |= (PU_PLAYER_SCORE);
 
     /* Notice stuff */
     notice_stuff();
@@ -1827,7 +1827,7 @@ static void process_game_turns(void)
         if (p_ptr->leaving_level) change_player_level();
 
         /* Count game turns */
-        turn++;
+        p_ptr->game_turn++;
     }
 }
 
@@ -1840,7 +1840,8 @@ static void redraw_hallucination()
             int y = vis.y() + i;
             int x = vis.x() + j;
             int m_idx = dungeon_info[y][x].monster_idx;
-            if (m_idx > 0 && mon_list[m_idx].ml) {
+            if (m_idx > 0 && mon_list[m_idx].ml)
+            {
                 light_spot(y, x);
                 continue;
             }

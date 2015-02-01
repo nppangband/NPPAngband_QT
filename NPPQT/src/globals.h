@@ -26,7 +26,6 @@ extern s16b object_level;
 extern s16b monster_level;
 extern QChar summon_kin_type;
 extern monster_type *summoner;
-extern s32b turn;
 extern int use_graphics;
 extern s16b image_count;
 

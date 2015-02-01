@@ -265,10 +265,12 @@ UserInput ui_get_input()
 
     main_window->cursor->update();
 
-    if (main_window->input.mode == INPUT_MODE_KEY) {
+    if (main_window->input.mode == INPUT_MODE_KEY)
+    {
         main_window->input.x = main_window->input.y = -1;
     }
-    else {
+    else
+    {
         main_window->input.key = 0;
         main_window->input.text.clear();
     }
@@ -284,7 +286,8 @@ void ui_player_moved()
     int py = p_ptr->py;
     int px = p_ptr->px;
 
-    if (center_player && !p_ptr->is_running()) {
+    if (center_player && !p_ptr->is_running())
+    {
         ui_center(py, px);
         return;
     }
@@ -293,7 +296,8 @@ void ui_player_moved()
     if (py < vis.y() + panel_change_offset_y
             || py >= vis.y() + vis.height() - panel_change_offset_y
             || px < vis.x() + panel_change_offset_x
-            || px >= vis.x() + vis.width() - panel_change_offset_x) {
+            || px >= vis.x() + vis.width() - panel_change_offset_x)
+    {
         ui_center(py, px);
     }
 }
@@ -3060,7 +3064,7 @@ void MainWindow::launch_birth(bool quick_start)
     PlayerBirth *dlg = new PlayerBirth(quick_start);
 
 
-    if (dlg->done_birth)
+    if (p_ptr->game_turn)
     {
         update_file_menu_game_active();
         launch_game();

@@ -2756,13 +2756,13 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
         {
             /* We're heading up */
             dir0 = 8;
-            if ((dx < 0) || (dx == 0 && (turn % 2 == 0))) dir0 += 10;
+            if ((dx < 0) || (dx == 0 && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
         else
         {
             /* We're heading down */
             dir0 = 2;
-            if ((dx > 0) || (dx == 0 && (turn % 2 == 0))) dir0 += 10;
+            if ((dx > 0) || (dx == 0 && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
     }
 
@@ -2774,13 +2774,13 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
         {
             /* We're heading left */
             dir0 = 4;
-            if ((dy > 0) || (dy == 0 && (turn % 2 == 0))) dir0 += 10;
+            if ((dy > 0) || (dy == 0 && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
         else
         {
             /* We're heading right */
             dir0 = 6;
-            if ((dy < 0) || (dy == 0 && (turn % 2 == 0))) dir0 += 10;
+            if ((dy < 0) || (dy == 0 && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
     }
 
@@ -2792,13 +2792,13 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
         {
             /* We're heading up and left */
             dir0 = 7;
-            if ((ay < ax) || (ay == ax && (turn % 2 == 0))) dir0 += 10;
+            if ((ay < ax) || (ay == ax && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
         else
         {
             /* We're heading up and right */
             dir0 = 9;
-            if ((ay > ax) || (ay == ax && (turn % 2 == 0))) dir0 += 10;
+            if ((ay > ax) || (ay == ax && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
     }
 
@@ -2810,13 +2810,13 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
         {
             /* We're heading down and left */
             dir0 = 1;
-            if ((ay > ax) || (ay == ax && (turn % 2 == 0))) dir0 += 10;
+            if ((ay > ax) || (ay == ax && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
         else
         {
             /* We're heading down and right */
             dir0 = 3;
-            if ((ay < ax) || (ay == ax && (turn % 2 == 0))) dir0 += 10;
+            if ((ay < ax) || (ay == ax && (p_ptr->game_turn % 2 == 0))) dir0 += 10;
         }
     }
 

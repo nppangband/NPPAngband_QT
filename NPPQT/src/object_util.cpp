@@ -2531,10 +2531,10 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
         static long last_turn = -1;
 
         /* Compare current turn with the one we saved before */
-        if (turn != last_turn)
+        if (p_ptr->game_turn != last_turn)
         {
             /* Save the turn */
-            last_turn = turn;
+            last_turn = p_ptr->game_turn;
 
             /* Message */
             message(QString("You feel something roll beneath your feet."));

@@ -207,14 +207,31 @@ void generate_stats(void)
 
                         if (int_spell_stat)
                         {
-                            if (stats[A_MAX] >= spell_stat_max) maxed[A_INT] = TRUE;
-                            else buy_stat(A_INT);
+                            if (stats[A_INT] >= spell_stat_max)
+                            {
+                                maxed[A_INT] = TRUE;
+                                int_spell_stat = FALSE;
+                            }
+
+                            else if (!buy_stat(A_INT))
+                            {
+                                maxed[A_INT] = TRUE;
+                                int_spell_stat = FALSE;
+                            }
                         }
 
                         if (wis_spell_stat)
                         {
-                            if (stats[A_WIS] >= spell_stat_max) maxed[A_WIS] = TRUE;
-                            else buy_stat(A_WIS);
+                            if (stats[A_WIS] >= spell_stat_max)
+                            {
+                                maxed[A_WIS] = TRUE;
+                                wis_spell_stat = FALSE;
+                            }
+                            else if (!buy_stat(A_WIS))
+                            {
+                                maxed[A_WIS] = TRUE;
+                                wis_spell_stat = FALSE;
+                            }
                         }
                     }
                 }
@@ -348,7 +365,7 @@ static void get_stats()
         }
 
         /* Verify totals */
-        if ((j > 42) && (j < 54)) break;
+        if ((j > 44) && (j < 58)) break;
     }
 
     /* Roll the stats */
@@ -380,7 +397,7 @@ static void get_stats()
             p_ptr->state.stat_loaded_max[i] = p_ptr->state.stat_loaded_cur[i] = adjust_stat(p_ptr->stat_base_max[i], bonus);
 
             /* Save the resulting stat maximum */
-            p_ptr->stat_base_cur[i] = p_ptr->stat_base_max[i] = p_ptr->state.stat_loaded_cur[i];
+            p_ptr->stat_base_cur[i] = p_ptr->stat_base_max[i] = p_ptr->state.stat_loaded_max[i];
         }
 
         p_ptr->stat_birth[i] = p_ptr->stat_base_max[i];
@@ -514,7 +531,8 @@ static void get_ahw(void)
     {
         p_ptr->ht = p_ptr->ht_birth = Rand_normal(rp_ptr->f_b_ht, rp_ptr->f_m_ht);
         p_ptr->wt = p_ptr->wt_birth = Rand_normal(rp_ptr->f_b_wt, rp_ptr->f_m_wt);
-    }  //Gender Neutral
+    }
+    //Gender Neutral
     else
     {
 
@@ -848,6 +866,17 @@ void write_birth_note(void)
                .arg(final_monster) .arg(long_day), p_ptr->depth);
 }
 
+void update_adult_options(void)
+{
+    int x = OPT_ADULT_HEAD;
+
+    /* Set adult options from birth options */
+    for (int i = OPT_BIRTH_HEAD; i < OPT_BIRTH_TAIL; i++, x++)
+    {
+        op_ptr->opt[x] = op_ptr->opt[i];
+    }
+}
+
 void finish_birth()
 {
     int i, n;
@@ -855,13 +884,7 @@ void finish_birth()
     // Hit points
     roll_hp();
 
-    int x = OPT_ADULT_HEAD;
-
-    /* Set adult options from birth options */
-    for (i = OPT_BIRTH_HEAD; i < OPT_BIRTH_TAIL; i++, x++)
-    {
-        op_ptr->opt[x] = op_ptr->opt[i];
-    }
+    update_adult_options();
 
     /*Re-set the squelch settings.  Spellbooks are never_pickup by default. */
     for (i = 0; i < z_info->k_max; i++)
@@ -935,7 +958,7 @@ void finish_birth()
     }
 
     /* Hack -- enter the world */
-    turn = 1;
+    p_ptr->game_turn = 1;
 
     p_ptr->p_turn = 0;
 
@@ -1049,7 +1072,7 @@ static Birther this_berth;
 
 bool has_prev_character()
 {
-    return this_berth.mode == game_mode;
+    return (this_berth.mode == game_mode);
 }
 
 void save_prev_character()

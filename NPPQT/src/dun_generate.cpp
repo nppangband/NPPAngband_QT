@@ -10468,7 +10468,7 @@ static bool build_labyrinth_level(void)
         monster_level = p_ptr->depth;
     }
 
-    else q_info->turn_counter = (turn - 170);
+    else q_info->turn_counter = (p_ptr->game_turn - 170);
 
     /* If we want the players to see the maze layout, do that now */
     if (known) wiz_light();
@@ -10653,7 +10653,7 @@ static bool build_arena_level(void)
     }
 
     /* Mark the start of the quest */
-    q_ptr->turn_counter = turn;
+    q_ptr->turn_counter = p_ptr->game_turn;
 
     /* Always use this level */
     rating += 100;
@@ -10844,7 +10844,7 @@ static bool build_greater_vault_level(void)
     }
 
     /* Mark the start of the quest */
-    q_ptr->turn_counter = turn;
+    q_ptr->turn_counter = p_ptr->game_turn;
 
     /* Always place this level */
     rating += 100;
@@ -11449,7 +11449,7 @@ static void town_gen(void)
     p_ptr->cur_map_wid = (2 * PANEL_WID_FIXED);
 
     /* Day time */
-    if ((turn % (10L * TOWN_DAWN)) < ((10L * TOWN_DAWN) / 2))
+    if ((p_ptr->game_turn % (10L * TOWN_DAWN)) < ((10L * TOWN_DAWN) / 2))
     {
         /* Day time */
         daytime = TRUE;

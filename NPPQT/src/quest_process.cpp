@@ -355,7 +355,7 @@ void process_arena_quest(void)
 {
     int i;
     quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-    s32b turns_lapsed = turn - q_info->turn_counter;
+    s32b turns_lapsed = p_ptr->game_turn - q_info->turn_counter;
     bool new_squares = FALSE;
 
     /* Each monster phase is 5 game turns at normal speed */
@@ -582,7 +582,7 @@ static bool add_labyrinth_monster_object(bool add_object, bool add_parchment)
 void process_labyrinth_quest(void)
 {
     int i;
-    s32b turns_lapsed = turn - q_info->turn_counter;
+    s32b turns_lapsed = p_ptr->game_turn - q_info->turn_counter;
 
     /* Each wave is 20 game turns at normal speed */
     s32b current_lab_wave = turns_lapsed / LABYRINTH_STAGE_LEN;
@@ -831,7 +831,7 @@ void process_wilderness_quest(void)
     int ice_or_mud = 0;
 
     /* Every 100 game turns */
-    if (turn % 100) return;
+    if (p_ptr->game_turn % 100) return;
 
     /* First, figure out if we are on an ice level or mud level */
     for (y = 1; y < (p_ptr->cur_map_hgt - 1); y++)

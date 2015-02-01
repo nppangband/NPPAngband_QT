@@ -347,7 +347,7 @@ void PlayerScreenInfo::update_char_screen(void)
         }
         if (this_name.operator ==("TURN_Game"))
         {
-            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(turn)), TERM_BLUE));
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->game_turn)), TERM_BLUE));
             continue;
         }
         if (this_name.operator ==("TURN_Player"))
@@ -636,7 +636,7 @@ void PlayerScreenInfo::char_basic_data(QGridLayout *return_layout)
     make_standard_label(label_player_gturn, "GAME TURN:", TERM_DARK);
     label_player_gturn->setToolTip(get_help_topic("character_info", "Game Turn"));
     QLabel *player_gturn = new QLabel;
-    make_standard_label(player_gturn, (QString("%1") .arg(number_to_formatted_string(turn))), TERM_BLUE);
+    make_standard_label(player_gturn, (QString("%1") .arg(number_to_formatted_string(p_ptr->game_turn))), TERM_BLUE);
     player_gturn->setObjectName("TURN_Game");
     return_layout->addWidget(label_player_gturn, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_gturn, row++, col+1, Qt::AlignRight);

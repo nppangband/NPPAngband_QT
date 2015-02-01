@@ -674,7 +674,7 @@ static void wr_extra(void)
     wr_byte(do_feeling);
 
     /* Current turn */
-    wr_s32b(turn);
+    wr_s32b(p_ptr->game_turn);
 
     /*Current Player Turn*/
     wr_s32b(p_ptr->p_turn);

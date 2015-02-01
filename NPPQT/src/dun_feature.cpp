@@ -2824,7 +2824,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
         }
 
         /* Pick a direction for the waves */
-        k = turn % freq;
+        k = p_ptr->game_turn % freq;
 
         /* To the right */
         if (k < (freq / 2))
