@@ -837,7 +837,7 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
         stat_layout->addWidget(stat_label, row, col++, Qt::AlignLeft);
 
         QLabel *self_label = new QLabel();
-        make_standard_label(self_label, (QString("%1 ") .arg(p_ptr->stat_max[i])), TERM_BLUE);
+        make_standard_label(self_label, (QString("%1 ") .arg(p_ptr->stat_base_max[i])), TERM_BLUE);
         stat_layout->addWidget(self_label, row, col++, Qt::AlignLeft);
 
         if (adult_maximize)
@@ -852,7 +852,7 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
         }
 
         QLabel *equip_adj = new QLabel();
-        make_standard_label(equip_adj, (QString("%1 ") .arg(p_ptr->state.stat_add[i])), TERM_BLUE);
+        make_standard_label(equip_adj, (QString("%1 ") .arg(p_ptr->state.stat_equip[i])), TERM_BLUE);
         stat_layout->addWidget(equip_adj, row, col++, Qt::AlignRight);
 
         if (!adult_no_quests)
@@ -863,13 +863,13 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
         }
 
         QLabel *stat_total = new QLabel();
-        make_standard_label(stat_total, (QString("  %1 ") .arg(cnv_stat(p_ptr->state.stat_top[i]))), TERM_BLUE);
+        make_standard_label(stat_total, (QString("  %1 ") .arg(cnv_stat(p_ptr->state.stat_loaded_max[i]))), TERM_BLUE);
         stat_layout->addWidget(stat_total, row, col++, Qt::AlignLeft);
 
         //Display reduced stat if necessary
         bool need_display = FALSE;
-        if (p_ptr->state.stat_use[i] < p_ptr->state.stat_top[i]) need_display = TRUE;
-        QString lower_stat = cnv_stat(p_ptr->state.stat_use[i]);
+        if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i]) need_display = TRUE;
+        QString lower_stat = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
         if (!need_display) lower_stat = "       ";
         QLabel *stat_reduce = new QLabel();
         make_standard_label(stat_reduce, lower_stat, need_display ? TERM_RED : TERM_BLUE);

@@ -76,8 +76,8 @@
 /*Define the spell slot for the various classes*/
 #define SPELL_STAT_SLOT \
         ((cp_ptr->spell_book == TV_DRUID_BOOK) ? \
-         ((p_ptr->state.stat_ind[A_INT] + p_ptr->state.stat_ind[A_WIS]) / 2) : \
-         ((cp_ptr->spell_book == TV_MAGIC_BOOK) ? p_ptr->state.stat_ind[A_INT] : p_ptr->state.stat_ind[A_WIS]))
+         ((p_ptr->state.stat_index[A_INT] + p_ptr->state.stat_index[A_WIS]) / 2) : \
+         ((cp_ptr->spell_book == TV_MAGIC_BOOK) ? p_ptr->state.stat_index[A_INT] : p_ptr->state.stat_index[A_WIS]))
 
 /*Define the spell stat for the various classes (Note, can't handle druids) */
 #define MORIA_SPELL_STAT ((cp_ptr->spell_book == TV_MAGIC_BOOK) ? A_INT : A_WIS)

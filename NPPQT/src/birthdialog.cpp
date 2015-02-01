@@ -42,10 +42,10 @@ static QString stat_notation(int value)
 void BirthDialog::update_points()
 {
     for (int i = 0; i < A_MAX; i++) {        
-        int self = p_ptr->stat_max[i];
+        int self = p_ptr->stat_base_max[i];
         ui->edit_table->item(i, 0)->setText(stat_notation(self));
 
-        int cost = points_spent[i];
+        int cost = points_spent;
         ui->edit_table->item(i, 5)->setText(QString::number(cost));
 
         int best;        
@@ -58,7 +58,7 @@ void BirthDialog::update_points()
             }
             else
             {
-                best = p_ptr->stat_max[i];
+                best = p_ptr->stat_base_max[i];
             }
 
         }
@@ -378,7 +378,7 @@ void BirthDialog::on_sell_clicked()
     if (!point_based) return;
     QWidget *button = dynamic_cast<QWidget *>(sender());
     int idx = button->property("stat_idx").toInt();
-    sell_stat(idx, stats, points_spent, &points_left);
+    sell_stat(idx);
     update_points();
 }
 
@@ -387,7 +387,7 @@ void BirthDialog::on_buy_clicked()
     if (!point_based) return;
     QWidget *button = dynamic_cast<QWidget *>(sender());
     int idx = button->property("stat_idx").toInt();
-    if (buy_stat(idx, stats, points_spent, &points_left)) update_points();
+    if (buy_stat(idx)) update_points();
 }
 
 BirthDialog::~BirthDialog()
@@ -526,8 +526,8 @@ void BirthDialog::on_prev_button_clicked()
 void BirthDialog::on_point_radio_clicked()
 {
     point_based = true;
-    reset_stats(stats, points_spent, &points_left);
-    generate_stats(stats, points_spent, &points_left);
+    reset_stats();
+    generate_stats();
     ui->edit_table->showColumn(5);
     ui->edit_table->showColumn(6);
     ui->edit_table->showRow(6);
@@ -538,9 +538,10 @@ void BirthDialog::on_point_radio_clicked()
 void BirthDialog::on_roller_radio_clicked()
 {
     point_based = false;
-    reset_stats(stats, points_spent, &points_left);
-    for (int i = 0; i < A_MAX; i++) {
-        points_spent[i] = 0;
+    reset_stats();
+    for (int i = 0; i < A_MAX; i++)
+    {
+        points_spent = 0;
     }
     points_left = 0;
     ui->edit_table->hideColumn(5);
@@ -553,7 +554,7 @@ void BirthDialog::on_roller_radio_clicked()
 void BirthDialog::on_roll_button_clicked()
 {
     if (point_based) return;
-    roll_player(stats);
+    roll_player();
     update_points();
 }
 

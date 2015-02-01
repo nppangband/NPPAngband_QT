@@ -347,7 +347,13 @@ static bool eat_food(object_type *o_ptr, bool *ident)
 
         case SV_FOOD_RESTORATION:
         {
-            if (hp_player(damroll(3, 6))) *ident = TRUE;
+            if (restore_level()) *ident = TRUE;
+            if (do_res_stat(A_STR)) *ident = TRUE;
+            if (do_res_stat(A_INT)) *ident = TRUE;
+            if (do_res_stat(A_WIS)) *ident = TRUE;
+            if (do_res_stat(A_DEX)) *ident = TRUE;
+            if (do_res_stat(A_CON)) *ident = TRUE;
+            if (do_res_stat(A_CHR)) *ident = TRUE;
             break;
         }
 

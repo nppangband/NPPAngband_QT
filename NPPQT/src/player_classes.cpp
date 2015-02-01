@@ -66,10 +66,10 @@ void player_state::player_state_wipe()
     ammo_mult = ammo_tval = 0;
     for (i = 0; i < A_MAX; i++)
     {
-        stat_add[i] = 0;
-        stat_ind[i] = 0;
-        stat_use[i] = 0;
-        stat_top[i] = 0;
+        stat_equip[i] = 0;
+        stat_index[i] = 0;
+        stat_loaded_cur[i] = 0;
+        stat_loaded_max[i] = 0;
     }
     dis_ac = ac = dis_to_a = to_a = to_h = dis_to_h = to_d = dis_to_d = 0;
     see_infra = 0;
@@ -235,7 +235,13 @@ void player_type::player_type_wipe()
     q_fame = deferred_rewards = quest_depth = max_depth = depth = recall_depth = 0;
     max_lev = lev = max_exp = exp = exp_frac = 0;
     mhp = chp = chp_frac = msp = csp = csp_frac = 0;
-    for (i = 0; i < A_MAX; i++) stat_max[i] = stat_cur[i] = stat_quest_add[i] = 0;
+    for (i = 0; i < A_MAX; i++)
+    {
+        stat_base_max[i] = 0;
+        stat_base_cur[i] = 0;
+        stat_quest_add[i] = 0;
+    }
+
     for (i = 0; i < TMD_MAX; i++) timed[i] = 0;
     word_recall = p_energy = food = 0;
     confusing = searching = 0;

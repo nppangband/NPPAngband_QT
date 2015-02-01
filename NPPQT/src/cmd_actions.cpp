@@ -2456,7 +2456,7 @@ static bool player_bash(int y, int x)
     object_type *o_ptr = &inventory[INVEN_ARM];
 
     /* Chance to hit based on strength and weight */
-    int base_to_hit = p_ptr->state.stat_ind[A_STR] + o_ptr->weight / 2 + p_ptr->total_weight/10;
+    int base_to_hit = p_ptr->state.stat_index[A_STR] + o_ptr->weight / 2 + p_ptr->total_weight/10;
 
     /* Paranoia */
     if (!(m_idx > 0)) return (FALSE);
@@ -2500,7 +2500,7 @@ static bool player_bash(int y, int x)
     else message("You miss " + m_name + ".");
 
     /* High dexterity yields coolness */
-    if (randint1(150) < p_ptr->state.stat_ind[A_DEX])
+    if (randint1(150) < p_ptr->state.stat_index[A_DEX])
     {
         /* Message */
         message("You retain your balance.");
@@ -2561,7 +2561,7 @@ static bool do_cmd_bash_aux(int y, int x)
     /* Hack -- Bash power based on strength */
     /* (Ranges from 3-20 with step=1 and 20-240 with step=10) */
     /* (A character with 18/00 STR gets 20)*/
-    bash = adj_str_blow[p_ptr->state.stat_ind[A_STR]];
+    bash = adj_str_blow[p_ptr->state.stat_index[A_STR]];
 
     /* Extract door power (must be between 0 and 6) */
     temp = feat_state_power(feat, FS_BASH);
@@ -2631,7 +2631,7 @@ static bool do_cmd_bash_aux(int y, int x)
     }
 
     /* Saving throw against stun */
-    else if (rand_int(100) < adj_dex_safe[p_ptr->state.stat_ind[A_DEX]] +
+    else if (rand_int(100) < adj_dex_safe[p_ptr->state.stat_index[A_DEX]] +
              p_ptr->lev)
     {
         /* Message */

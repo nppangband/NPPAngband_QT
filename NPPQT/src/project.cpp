@@ -501,7 +501,7 @@ void disease(int *damage)
     int i;
 
     /* Get current constitution */
-    con = p_ptr->stat_cur[A_CON];
+    con = p_ptr->stat_base_cur[A_CON];
 
     /* Adjust damage and choose message based on constitution */
     if (con < 8)
@@ -759,15 +759,15 @@ static void apply_nexus(int who)
             ii = rand_int(A_MAX);
             for (jj = ii; jj == ii; jj = rand_int(A_MAX)) /* loop */;
 
-            max1 = p_ptr->stat_max[ii];
-            cur1 = p_ptr->stat_cur[ii];
-            max2 = p_ptr->stat_max[jj];
-            cur2 = p_ptr->stat_cur[jj];
+            max1 = p_ptr->stat_base_max[ii];
+            cur1 = p_ptr->stat_base_cur[ii];
+            max2 = p_ptr->stat_base_max[jj];
+            cur2 = p_ptr->stat_base_cur[jj];
 
-            p_ptr->stat_max[ii] = max2;
-            p_ptr->stat_cur[ii] = cur2;
-            p_ptr->stat_max[jj] = max1;
-            p_ptr->stat_cur[jj] = cur1;
+            p_ptr->stat_base_max[ii] = max2;
+            p_ptr->stat_base_cur[ii] = cur2;
+            p_ptr->stat_base_max[jj] = max1;
+            p_ptr->stat_base_cur[jj] = cur1;
 
             p_ptr->update |= (PU_BONUS);
 
@@ -6093,8 +6093,8 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
 
                     message(QString("You're not as %1 as you used to be...") .arg(act));
 
-                    p_ptr->stat_cur[k] = (p_ptr->stat_cur[k] * 3) / 4;
-                    if (p_ptr->stat_cur[k] < 3) p_ptr->stat_cur[k] = 3;
+                    p_ptr->stat_base_cur[k] = (p_ptr->stat_base_cur[k] * 3) / 4;
+                    if (p_ptr->stat_base_cur[k] < 3) p_ptr->stat_base_cur[k] = 3;
                     p_ptr->update |= (PU_BONUS);
                     break;
                 }
@@ -6105,8 +6105,8 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
 
                     for (k = 0; k < A_MAX; k++)
                     {
-                        p_ptr->stat_cur[k] = (p_ptr->stat_cur[k] * 3) / 4;
-                        if (p_ptr->stat_cur[k] < 3) p_ptr->stat_cur[k] = 3;
+                        p_ptr->stat_base_cur[k] = (p_ptr->stat_base_cur[k] * 3) / 4;
+                        if (p_ptr->stat_base_cur[k] < 3) p_ptr->stat_base_cur[k] = 3;
                     }
                     p_ptr->update |= (PU_BONUS);
                     break;

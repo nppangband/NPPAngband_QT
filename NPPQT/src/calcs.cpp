@@ -26,7 +26,7 @@ static int moria_toac_adj()
 {
     int stat;
 
-    stat = p_ptr->state.stat_use[A_DEX];
+    stat = p_ptr->state.stat_loaded_cur[A_DEX];
     if	  (stat <   4)	return(-4);
     else if (stat ==  4)	return(-3);
     else if (stat ==  5)	return(-2);
@@ -43,7 +43,7 @@ static int moria_toac_adj()
 /* Returns a character's adjustment to damage		 -JWT-	 */
 static int moria_todam_adj()
 {
-    int stat = p_ptr->state.stat_use[A_STR];
+    int stat = p_ptr->state.stat_loaded_cur[A_STR];
     if	  (stat <   4)	return(-2);
     else if (stat <   5)	return(-1);
     else if (stat <  16)	return( 0);
@@ -61,7 +61,7 @@ static int moria_tohit_adj()
     int total;
 
     /* First do dexterity adjustments */
-    int stat = p_ptr->state.stat_use[A_DEX];
+    int stat = p_ptr->state.stat_loaded_cur[A_DEX];
     if	  (stat <   4)		total = -3;
     else if (stat <   6)	total = -2;
     else if (stat <   8)	total = -1;
@@ -73,7 +73,7 @@ static int moria_tohit_adj()
     else			total =	 5;
 
     /* Now do strength adjustments */
-    stat = p_ptr->state.stat_use[A_STR];
+    stat = p_ptr->state.stat_loaded_cur[A_STR];
     if	  (stat <   4)	total -= 3;
     else if (stat <   5)	total -= 2;
     else if (stat <   7)	total -= 1;
@@ -94,7 +94,7 @@ int stat_adj_moria(int stat)
 {
 
 
-    int value = p_ptr->state.stat_use[stat];
+    int value = p_ptr->state.stat_loaded_cur[stat];
 
     if (value > 117) 		return(7);
     else if (value > 107)	return(6);
@@ -483,7 +483,7 @@ static void calc_hitpoints(void)
 
     if (game_mode == GAME_NPPMORIA)
     {
-        int con = p_ptr->state.stat_use[A_CON];
+        int con = p_ptr->state.stat_loaded_cur[A_CON];
 
         if (con < 7) 			bonus = -700;
         else if (con < 17)		bonus = 0;
@@ -495,7 +495,7 @@ static void calc_hitpoints(void)
     else
     {
         /* Get "1/100th hitpoint bonus per level" value */
-        bonus = adj_con_mhp[p_ptr->state.stat_ind[A_CON]];
+        bonus = adj_con_mhp[p_ptr->state.stat_index[A_CON]];
     }
 
     /* Calculate hitpoints */
@@ -623,7 +623,7 @@ int weight_limit(void)
     int i;
 
     /* Weight limit based only on strength */
-    i = adj_str_wgt[p_ptr->state.stat_ind[A_STR]] * 100;
+    i = adj_str_wgt[p_ptr->state.stat_index[A_STR]] * 100;
 
     /* Return the result */
     return (i);
@@ -635,12 +635,12 @@ int normal_speed_weight_limit(void)
     // In Moria it is half the weight limit
     if (game_mode == GAME_NPPMORIA)
     {
-        return (adj_str_wgt[p_ptr->state.stat_ind[A_STR]] *50);
+        return (adj_str_wgt[p_ptr->state.stat_index[A_STR]] *50);
     }
 
     // Slowing starts at 60% of max_weight
     // and increases by 1 every extra 10%
-    return (60 * adj_str_wgt[p_ptr->state.stat_ind[A_STR]]);
+    return (60 * adj_str_wgt[p_ptr->state.stat_index[A_STR]]);
 }
 
 
@@ -793,8 +793,8 @@ static int calc_blows_moria(const object_type *o_ptr, player_state *new_state)
 {
     int adj_weight;
     int str_index, dex_index;
-    int str = new_state->stat_use[A_STR];
-    int dex = new_state->stat_use[A_DEX];
+    int str = new_state->stat_loaded_cur[A_STR];
+    int dex = new_state->stat_loaded_cur[A_DEX];
 
     /* Boundry control */
     if (str > 118) str = 118;
@@ -845,8 +845,8 @@ int calc_blows(object_type *o_ptr, player_state *new_state)
         return calc_blows_moria(o_ptr, new_state);
     }
 
-    str_ind = new_state->stat_ind[A_STR];
-    dex_ind = new_state->stat_ind[A_DEX];
+    str_ind = new_state->stat_index[A_STR];
+    dex_ind = new_state->stat_index[A_DEX];
 
     /* Boundary control */
     if (str_ind <  0) str_ind =  0;
@@ -924,9 +924,9 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     int extra_shots = 0;
     int extra_might = 0;
 
-    int old_stat_top[A_MAX];
-    int old_stat_use[A_MAX];
-    int old_stat_ind[A_MAX];
+    int old_stat_loaded_max[A_MAX];
+    int old_stat_loaded_cur[A_MAX];
+    int old_stat_index[A_MAX];
 
     bool old_heavy_shoot;
     bool old_heavy_wield;
@@ -960,9 +960,9 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     /* Save the old stats */
     for (i = 0; i < A_MAX; i++)
     {
-        old_stat_top[i] = new_state->stat_top[i];
-        old_stat_use[i] = new_state->stat_use[i];
-        old_stat_ind[i] = new_state->stat_ind[i];
+        old_stat_loaded_max[i] = new_state->stat_loaded_max[i];
+        old_stat_loaded_cur[i] = new_state->stat_loaded_cur[i];
+        old_stat_index[i] = new_state->stat_index[i];
     }
 
     old_heavy_shoot = new_state->heavy_shoot;
@@ -1125,12 +1125,12 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         }
 
         /* Affect stats */
-        if (f1 & (TR1_STR)) 		new_state->stat_add[A_STR] += o_ptr->pval;
-        if (f1 & (TR1_INT)) 		new_state->stat_add[A_INT] += o_ptr->pval;
-        if (f1 & (TR1_WIS)) 		new_state->stat_add[A_WIS] += o_ptr->pval;
-        if (f1 & (TR1_DEX)) 		new_state->stat_add[A_DEX] += o_ptr->pval;
-        if (f1 & (TR1_CON)) 		new_state->stat_add[A_CON] += o_ptr->pval;
-        if (f1 & (TR1_CHR)) 		new_state->stat_add[A_CHR] += o_ptr->pval;
+        if (f1 & (TR1_STR)) 		new_state->stat_equip[A_STR] += o_ptr->pval;
+        if (f1 & (TR1_INT)) 		new_state->stat_equip[A_INT] += o_ptr->pval;
+        if (f1 & (TR1_WIS)) 		new_state->stat_equip[A_WIS] += o_ptr->pval;
+        if (f1 & (TR1_DEX)) 		new_state->stat_equip[A_DEX] += o_ptr->pval;
+        if (f1 & (TR1_CON)) 		new_state->stat_equip[A_CON] += o_ptr->pval;
+        if (f1 & (TR1_CHR)) 		new_state->stat_equip[A_CHR] += o_ptr->pval;
 
         /* Affect searching ability (factor of five) */
         if (f1 & (TR1_SEARCH)) 		new_state->skills[SKILL_SEARCH_CHANCE] += (o_ptr->pval * 5);
@@ -1291,7 +1291,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         int add, top, use, ind;
 
         /* Extract modifier */
-        add = new_state->stat_add[i];
+        add = new_state->stat_equip[i];
 
         /* Maximize mode */
         if (adult_maximize)
@@ -1304,7 +1304,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         add += p_ptr->stat_quest_add[i];
 
         /* Extract the new "stat_top" value for the stat */
-        top = modify_stat_value(p_ptr->stat_max[i], add);
+        top = modify_stat_value(p_ptr->stat_base_max[i], add);
 
         /* Stats max out at 118 in Moria */
         if (game_mode == GAME_NPPMORIA)
@@ -1313,10 +1313,10 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         }
 
         /* Save the new value */
-        new_state->stat_top[i] = top;
+        new_state->stat_loaded_max[i] = top;
 
         /* Extract the new "stat_use" value for the stat */
-        use = modify_stat_value(p_ptr->stat_cur[i], add);
+        use = modify_stat_value(p_ptr->stat_base_cur[i], add);
 
         /* Stats max out at 118 in Moria */
         if (game_mode == GAME_NPPMORIA)
@@ -1325,7 +1325,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         }
 
         /* Save the new value */
-        new_state->stat_use[i] = use;
+        new_state->stat_loaded_cur[i] = use;
 
         /* Values: 3, 4, ..., 17 */
         if (use <= 18) ind = (use - 3);
@@ -1337,7 +1337,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         else ind = (STAT_TABLE_MAX_VALUE);
 
         /* Save the new index */
-        new_state->stat_ind[i] = ind;
+        new_state->stat_index[i] = ind;
     }
 
 
@@ -1542,32 +1542,32 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     else
     {
         /* Affect Skill -- disarming (DEX and INT) */
-        new_state->skills[SKILL_DISARM] += adj_dex_dis[new_state->stat_ind[A_DEX]];
-        new_state->skills[SKILL_DISARM] += adj_int_dis[new_state->stat_ind[A_INT]];
+        new_state->skills[SKILL_DISARM] += adj_dex_dis[new_state->stat_index[A_DEX]];
+        new_state->skills[SKILL_DISARM] += adj_int_dis[new_state->stat_index[A_INT]];
 
         /* Affect Skill -- magic devices (INT) */
-        new_state->skills[SKILL_DEVICE] += adj_int_dev[new_state->stat_ind[A_INT]];
+        new_state->skills[SKILL_DEVICE] += adj_int_dev[new_state->stat_index[A_INT]];
 
         /* Affect Skill -- saving throw (WIS) */
-        new_state->skills[SKILL_SAVE] += adj_wis_sav[new_state->stat_ind[A_WIS]];
+        new_state->skills[SKILL_SAVE] += adj_wis_sav[new_state->stat_index[A_WIS]];
 
         /* Actual Modifier Bonuses (Un-inflate stat bonuses) */
-        new_state->to_a += ((int)(adj_dex_ta[new_state->stat_ind[A_DEX]]) - 128);
-        new_state->to_d += ((int)(adj_str_td[new_state->stat_ind[A_STR]]) - 128);
-        new_state->to_h += ((int)(adj_dex_th[new_state->stat_ind[A_DEX]]) - 128);
-        new_state->to_h += ((int)(adj_str_th[new_state->stat_ind[A_STR]]) - 128);
+        new_state->to_a += ((int)(adj_dex_ta[new_state->stat_index[A_DEX]]) - 128);
+        new_state->to_d += ((int)(adj_str_td[new_state->stat_index[A_STR]]) - 128);
+        new_state->to_h += ((int)(adj_dex_th[new_state->stat_index[A_DEX]]) - 128);
+        new_state->to_h += ((int)(adj_str_th[new_state->stat_index[A_STR]]) - 128);
 
         /* Displayed Modifier Bonuses (Un-inflate stat bonuses) */
-        new_state->dis_to_a += ((int)(adj_dex_ta[new_state->stat_ind[A_DEX]]) - 128);
-        new_state->dis_to_d += ((int)(adj_str_td[new_state->stat_ind[A_STR]]) - 128);
-        new_state->dis_to_h += ((int)(adj_dex_th[new_state->stat_ind[A_DEX]]) - 128);
-        new_state->dis_to_h += ((int)(adj_str_th[new_state->stat_ind[A_STR]]) - 128);
+        new_state->dis_to_a += ((int)(adj_dex_ta[new_state->stat_index[A_DEX]]) - 128);
+        new_state->dis_to_d += ((int)(adj_str_td[new_state->stat_index[A_STR]]) - 128);
+        new_state->dis_to_h += ((int)(adj_dex_th[new_state->stat_index[A_DEX]]) - 128);
+        new_state->dis_to_h += ((int)(adj_str_th[new_state->stat_index[A_STR]]) - 128);
     }
 
 
 
     /* Affect Skill -- digging (STR) */
-    new_state->skills[SKILL_DIGGING] += adj_str_dig[new_state->stat_ind[A_STR]];
+    new_state->skills[SKILL_DIGGING] += adj_str_dig[new_state->stat_index[A_STR]];
 
     /* Affect Skill -- disarming (Level, by Class) */
     new_state->skills[SKILL_DISARM] += (cp_ptr->x_dis * p_ptr->lev / 10);
@@ -1600,7 +1600,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (cp_ptr->flags & (CF_BRIGAND_COMBAT)) new_state->skills[SKILL_TO_HIT_THROW] += 20 +  p_ptr->lev / 3;
 
     /* Obtain the "hold" value */
-    hold = adj_str_hold[new_state->stat_ind[A_STR]];
+    hold = adj_str_hold[new_state->stat_index[A_STR]];
 
 
     /*** Analyze current bow ***/
@@ -1779,7 +1779,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     for (i = 0; i < A_MAX; i++)
     {
         /* Notice changes */
-        if (new_state->stat_top[i] != old_stat_top[i])
+        if (new_state->stat_loaded_max[i] != old_stat_loaded_max[i])
         {
             /* Redisplay the stats later */
             p_ptr->redraw |= (PR_STATS);
@@ -1787,7 +1787,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         }
 
         /* Notice changes */
-        if (new_state->stat_use[i] != old_stat_use[i])
+        if (new_state->stat_loaded_cur[i] != old_stat_loaded_cur[i])
         {
             /* Redisplay the stats later */
             p_ptr->redraw |= (PR_STATS);
@@ -1795,7 +1795,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         }
 
         /* Notice changes */
-        if (new_state->stat_ind[i] != old_stat_ind[i])
+        if (new_state->stat_index[i] != old_stat_index[i])
         {
             /* Change in CON affects Hitpoints */
             if (i == A_CON)

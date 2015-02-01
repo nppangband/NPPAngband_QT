@@ -779,7 +779,7 @@ static void put_out_fires(void)
  */
 static void decrease_timeouts(void)
 {
-    int adjust = (adj_con_fix[p_ptr->state.stat_ind[A_CON]] + 1);
+    int adjust = (adj_con_fix[p_ptr->state.stat_index[A_CON]] + 1);
     int i;
 
     /* Decrement all effects that can be done simply */

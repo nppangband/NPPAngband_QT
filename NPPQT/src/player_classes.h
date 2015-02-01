@@ -194,10 +194,10 @@ public:
     byte ammo_mult;		/* Ammo multiplier */
     byte ammo_tval;		/* Ammo variety */
 
-    s16b stat_add[A_MAX];	/* Equipment stat bonuses */
-    s16b stat_ind[A_MAX];	/* Indexes into stat tables */
-    s16b stat_use[A_MAX];	/* Current modified stats */
-    s16b stat_top[A_MAX];	/* Maximal modified stats */
+    s16b stat_equip[A_MAX];	/* Equipment stat bonuses */
+    s16b stat_index[A_MAX];	/* Indexes for the lookup tables */
+    s16b stat_loaded_cur[A_MAX];	/* Current "natural" stats with all adjustments */
+    s16b stat_loaded_max[A_MAX];       /* Current "maximal" stats with all adjustments */
 
     s16b dis_ac;		/* Known base ac */
     s16b ac;			/* Base ac */
@@ -392,8 +392,8 @@ public:
     s16b csp;			/* Cur mana pts */
     u16b csp_frac;		/* Cur mana frac (times 2^16) */
 
-    s16b stat_max[A_MAX];	/* Current "maximal" stat values */
-    s16b stat_cur[A_MAX];	/* Current "natural" stat values */
+    s16b stat_base_cur[A_MAX];	/* Current "natural" stat values, before adjustments */
+    s16b stat_base_max[A_MAX];	/* Current "maximal" stat values, before adjustments */
     s16b stat_quest_add[A_MAX];	/* Quest reward bonuses */
 
     s16b timed[TMD_MAX];	/* Timed effects */

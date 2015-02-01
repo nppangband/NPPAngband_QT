@@ -40,7 +40,7 @@ static void get_bonuses(void)
     p_ptr->csp = p_ptr->msp;
 }
 
-static void recalculate_stats(int *stats, int points_left)
+static void recalculate_stats(void)
 {
     int i;
 
@@ -51,7 +51,8 @@ static void recalculate_stats(int *stats, int points_left)
         if (birth_maximize)
         {
             /* Reset stats */
-            p_ptr->stat_cur[i] = p_ptr->stat_max[i] = p_ptr->stat_birth[i] = stats[i];
+            p_ptr->stat_base_cur[i] = p_ptr->stat_base_max[i] = p_ptr->stat_birth[i] = stats[i];
+            p_ptr->state.stat_loaded_max[i] = p_ptr->state.stat_loaded_cur[i] = p_ptr->stat_base_cur[i];
         }
 
         /* Fixed stat maxes */
@@ -61,17 +62,18 @@ static void recalculate_stats(int *stats, int points_left)
             int bonus = rp_ptr->r_adj[i] + cp_ptr->c_adj[i];
 
             /* Apply the racial/class bonuses */
-            p_ptr->stat_cur[i] = p_ptr->stat_max[i] = p_ptr->stat_birth[i] = modify_stat_value(stats[i], bonus);
+            p_ptr->stat_base_cur[i] = p_ptr->stat_base_max[i] = p_ptr->stat_birth[i] = modify_stat_value(stats[i], bonus);
+            p_ptr->state.stat_loaded_max[i] = p_ptr->state.stat_loaded_cur[i] = p_ptr->stat_base_cur[i];
         }
     }
 
     /* Gold is inversely proportional to cost */
     if (birth_money)
-        p_ptr->au = 500;
+        p_ptr->au = 500 + (50 * (MAX_POINTS - points_spent));
     else
-        p_ptr->au = 200 + (50 * points_left);
+        p_ptr->au = 200 + (50 * (MAX_POINTS - points_spent));
 
-    p_ptr->au_birth = 200 + (50 * points_left);
+    p_ptr->au_birth = 200 + (50 * (MAX_POINTS - points_spent));
 
     /* Update bonuses, hp, etc. */
     get_bonuses();
@@ -84,28 +86,26 @@ QString format_stat(s16b value)
     return QString("<b>%1%2</b>").arg(text).arg(value);
 }
 
-void reset_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left)
+void reset_stats(void)
 {
     int i;
-
-    /* Calculate and signal initial stats and points totals. */
-    *points_left = MAX_BIRTH_POINTS;
 
     for (i = 0; i < A_MAX; i++)
     {
         /* Initial stats are all 10 and costs are zero */
         stats[i] = 10;
-        points_spent[i] = 0;
+
     }
+
+    points_spent = 0;
 
     /* Use the new "birth stat" values to work out the "other"
        stat values (i.e. after modifiers) and tell the UI things have
        changed. */
-    recalculate_stats(stats, *points_left);
+    recalculate_stats();
 }
 
-bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
-                     int *points_left)
+bool buy_stat(int choice)
 {
     byte max_stat = (birth_maximize ? 18 : 17);
 
@@ -116,15 +116,14 @@ bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
            it has already cost to get this far). */
         int stat_cost = birth_stat_costs[stats[choice] + 1];
 
-        if (stat_cost <= *points_left)
+        if (stat_cost <= POINTS_LEFT)
         {
             stats[choice]++;
-            points_spent[choice] += stat_cost;
-            *points_left -= stat_cost;
+            points_spent += stat_cost;
 
             /* Recalculate everything that's changed because
                the stat has changed, and inform the UI. */
-            recalculate_stats(stats, *points_left);
+            recalculate_stats();
 
             return TRUE;
         }
@@ -135,58 +134,106 @@ bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
 }
 
 // With the spinners, sell stat can't fail.
-void sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX],
-                      int *points_left)
+void sell_stat(int choice)
 {
     int stat_cost = birth_stat_costs[stats[choice]];
 
     stats[choice]--;
-    points_spent[choice] -= stat_cost;
-    *points_left += stat_cost;
+
+    points_spent -= stat_cost;
 
     /* Recalculate everything that's changed because
        the stat has changed, and inform the UI. */
-    recalculate_stats(stats, *points_left);
+    recalculate_stats();
 }
 
 /*
  * This picks some reasonable starting values for stats based on the
- * current race/class combo, etc.  For now I'm disregarding concerns
- * about role-playing, etc, and using the simple outline from
- * http://angband.oook.cz/forum/showpost.php?p=17588&postcount=6:
+ * current race/class combo, etc.
  *
- * 0. buy base STR 17
- * 1. if possible buy adj DEX of 18/10
- * 2. spend up to half remaining points on each of spell-stat and con,
- *    but only up to max base of 16 unless a pure class
- *    [mage or priest or warrior]
- * 3. If there are any points left, spend as much as possible in order
- *    on DEX, non-spell-stat, CHR.
+ * 0  Get spell stats up to 17 for the pure spellcasters,
+ *    but only up to 16 for the mixed spellcasters
+ * 1. buy STR 17
+ * 2. buy 17 CON
+ * 3. Buy 17 DEX
  */
-void generate_stats(int stats[A_MAX], int points_spent[A_MAX],
-                           int *points_left)
+void generate_stats(void)
 {
     int step = 0;
-    int maxed[A_MAX] = { 0 };
+    bool maxed[A_MAX] = { FALSE };
     bool pure = FALSE;
 
-    /* Determine whether the class is "pure" */
-    if (cp_ptr->spell_book == 0 || cp_ptr-> max_attacks < 5)
+    /* Determine whether the class is a "pure" spellcaster */
+    if (cp_ptr->flags & (CF_ZERO_FAIL))
     {
         pure = TRUE;
     }
 
-    while (*points_left && step >= 0)
+    while ((points_spent < MAX_POINTS) && step >= 0)
     {
         switch (step)
         {
-            /* Buy base STR 17 */
+        /*
+         * Spend up to half remaining points on each of spell-stat and
+         * con, but only up to max base of 16 unless a pure class
+         * [mage or priest or warrior]
+         */
             case 0:
+            {
+                if (cp_ptr->spell_book)
+                {
+                    int spell_stat_max = (pure ? 17 : 16);
+
+                    bool int_spell_stat = FALSE;
+                    bool wis_spell_stat = FALSE;
+
+                    // The druid has two spell stats
+                    if (cp_ptr->spell_book != TV_PRAYER_BOOK) int_spell_stat = TRUE;
+                    if (cp_ptr->spell_book != TV_MAGIC_BOOK) wis_spell_stat = TRUE;
+
+                    while (TRUE)
+                    {
+                        bool int_maxed = FALSE;
+                        bool wis_maxed = FALSE;
+
+                        if (!int_spell_stat) int_maxed = TRUE;
+                        if (!wis_spell_stat) wis_maxed = TRUE;
+
+                        if (maxed[A_INT]) int_maxed = TRUE;
+                        if (maxed[A_WIS]) wis_maxed = TRUE;
+
+                        // We are done
+                        if (int_maxed && wis_maxed) break;
+
+                        if (int_spell_stat)
+                        {
+                            if (stats[A_MAX] >= spell_stat_max) maxed[A_INT] = TRUE;
+                            else buy_stat(A_INT);
+                        }
+
+                        if (wis_spell_stat)
+                        {
+                            if (stats[A_WIS] >= spell_stat_max) maxed[A_WIS] = TRUE;
+                            else buy_stat(A_WIS);
+                        }
+                    }
+                }
+
+                // Onto the next step
+                step++;
+                break;
+
+            }
+
+            /* Buy base STR 17 */
+            case 1:
             {
                 if (!maxed[A_STR] && stats[A_STR] < 17)
                 {
-                    if (!buy_stat(A_STR, stats, points_spent, points_left))
+                    if (!buy_stat(A_STR))
+                    {
                         maxed[A_STR] = TRUE;
+                    }
                 }
                 else
                 {
@@ -196,138 +243,34 @@ void generate_stats(int stats[A_MAX], int points_spent[A_MAX],
                 break;
             }
 
-            /* Try and buy adj DEX of 18/10 */
-            case 1:
+            /* Try and buy as much CON as possible */
+            case 2:
             {
-                if (!maxed[A_DEX] && p_ptr->state.stat_top[A_DEX] < 18+10)
+                if (!maxed[A_CON] && stats[A_CON] < 17)
                 {
-                    if (!buy_stat(A_DEX, stats, points_spent, points_left))
+                    if (!buy_stat(A_CON))
+                        maxed[A_CON] = TRUE;
+                }
+                else
+                {
+                    step++;
+                }
+
+                break;
+            }
+
+            /* Try and buy as much DEX as possible */
+            case 3:
+            {
+                if (!maxed[A_DEX] && stats[A_DEX] < 17)
+                {
+                    if (!buy_stat(A_DEX))
                         maxed[A_DEX] = TRUE;
                 }
                 else
                 {
                     step++;
                 }
-
-                break;
-            }
-
-            /* If we can't get 18/10 dex, sell it back. */
-            case 2:
-            {
-                if (p_ptr->state.stat_top[A_DEX] < 18+10)
-                {
-                    while (stats[A_DEX] > 10)
-                        sell_stat(A_DEX, stats, points_spent, points_left);
-
-                    maxed[A_DEX] = FALSE;
-                }
-
-                step++;
-
-                break;
-            }
-
-            /*
-             * Spend up to half remaining points on each of spell-stat and
-             * con, but only up to max base of 16 unless a pure class
-             * [mage or priest or warrior]
-             */
-            case 3:
-            {
-                int points_trigger = *points_left / 2;
-
-                if (cp_ptr->spell_book)
-                {
-                    int spell_stat;
-
-                    if (cp_ptr->spell_book == TV_MAGIC_BOOK) spell_stat = A_INT;
-                    else if (cp_ptr->spell_book == TV_PRAYER_BOOK) spell_stat = A_WIS;
-                    /*ugly hack for the druid and ranger class, which have 2 spell stats*/
-                    else if (stats[A_INT] > stats[A_WIS]) spell_stat = A_WIS;
-                    else /*(stats[A_WIS] >= stats[A_INT])*/ spell_stat = A_INT;
-
-
-
-                    while (!maxed[spell_stat] &&
-                           (pure || stats[spell_stat] < 16) &&
-                           points_spent[spell_stat] < points_trigger)
-                    {
-                        if (!buy_stat(spell_stat, stats, points_spent,
-                                      points_left))
-                        {
-                            maxed[spell_stat] = TRUE;
-                        }
-
-                        if (points_spent[spell_stat] > points_trigger)
-                        {
-                            sell_stat(spell_stat, stats, points_spent,
-                                      points_left);
-                            maxed[spell_stat] = TRUE;
-                        }
-                    }
-                }
-
-                while (!maxed[A_CON] &&
-                       (pure || stats[A_CON] < 16) &&
-                       points_spent[A_CON] < points_trigger)
-                {
-                    if (!buy_stat(A_CON, stats, points_spent,points_left))
-                    {
-                        maxed[A_CON] = TRUE;
-                    }
-
-                    if (points_spent[A_CON] > points_trigger)
-                    {
-                        sell_stat(A_CON, stats, points_spent, points_left);
-                        maxed[A_CON] = TRUE;
-                    }
-                }
-
-                step++;
-                break;
-            }
-
-            /*
-             * If there are any points left, spend as much as possible in
-             * order on DEX, non-spell-stat, CHR.
-             */
-            case 4:
-            {
-                int next_stat;
-
-                if (!maxed[A_DEX])
-                {
-                    next_stat = A_DEX;
-                }
-                else if (!maxed[A_INT] && cp_ptr->spell_book != TV_MAGIC_BOOK)
-                {
-                    next_stat = A_INT;
-                }
-                else if (!maxed[A_WIS] && cp_ptr->spell_book != TV_PRAYER_BOOK)
-                {
-                    next_stat = A_WIS;
-                }
-                else if (!maxed[A_CHR])
-                {
-                    next_stat = A_CHR;
-                }
-                else
-                {
-                    step++;
-                    break;
-                }
-
-                /* Buy until we can't buy any more. */
-                while (buy_stat(next_stat, stats, points_spent, points_left));
-                maxed[next_stat] = TRUE;
-
-                break;
-            }
-
-            default:
-            {
-                step = -1;
                 break;
             }
         }
@@ -382,10 +325,8 @@ static int adjust_stat(int value, int amount)
 
 /*
  * Roll for a character's stats
- *
- * For efficiency, we include a chunk of "calc_bonuses()".
  */
-static void get_stats(int stat_use[A_MAX])
+static void get_stats()
 {
     int i, j;
 
@@ -417,7 +358,7 @@ static void get_stats(int stat_use[A_MAX])
         j = 5 + dice[3*i] + dice[3*i+1] + dice[3*i+2];
 
         /* Save that value */
-        p_ptr->stat_max[i] = j;
+        stats[i] = p_ptr->stat_base_max[i] = j;
 
         /* Obtain a "bonus" for "race" and "class" */
         bonus = rp_ptr->r_adj[i] + cp_ptr->c_adj[i];
@@ -426,23 +367,23 @@ static void get_stats(int stat_use[A_MAX])
         if (birth_maximize)
         {
             /* Start fully healed */
-            p_ptr->stat_cur[i] = p_ptr->stat_max[i];
+            p_ptr->stat_base_cur[i] = p_ptr->stat_base_max[i];
 
             /* Efficiency -- Apply the racial/class bonuses */
-            stat_use[i] = modify_stat_value(p_ptr->stat_max[i], bonus);
+            p_ptr->state.stat_loaded_max[i] = p_ptr->state.stat_loaded_cur[i] = modify_stat_value(p_ptr->stat_base_max[i], bonus);
         }
 
         /* Fixed stat maxes */
         else
         {
             /* Apply the bonus to the stat (somewhat randomly) */
-            stat_use[i] = adjust_stat(p_ptr->stat_max[i], bonus);
+            p_ptr->state.stat_loaded_max[i] = p_ptr->state.stat_loaded_cur[i] = adjust_stat(p_ptr->stat_base_max[i], bonus);
 
             /* Save the resulting stat maximum */
-            p_ptr->stat_cur[i] = p_ptr->stat_max[i] = stat_use[i];
+            p_ptr->stat_base_cur[i] = p_ptr->stat_base_max[i] = p_ptr->state.stat_loaded_cur[i];
         }
 
-        p_ptr->stat_birth[i] = p_ptr->stat_max[i];
+        p_ptr->stat_birth[i] = p_ptr->stat_base_max[i];
     }
 }
 
@@ -641,10 +582,10 @@ void generate_player()
     get_history();
 }
 
-void roll_player(int stats[A_MAX])
+void roll_player()
 {
     /* Get a new character */
-    get_stats(stats);
+    get_stats();
 
     /* Roll for gold */
     get_money();
@@ -1076,7 +1017,7 @@ void Birther::load()
     /* Load the stats */
     for (int i = 0; i < A_MAX; i++)
     {
-        p_ptr->stat_max[i] = p_ptr->stat_cur[i] = p_ptr->stat_birth[i] = stat[i];
+        p_ptr->stat_base_max[i] = p_ptr->stat_base_cur[i] = p_ptr->stat_birth[i] = stat[i];
     }
 
     p_ptr->history = history;

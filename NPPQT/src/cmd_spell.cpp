@@ -682,7 +682,7 @@ static bool is_trap_spell(byte spell_book, int spell)
 /* Adjustment to minimum failure rates for wisdom/intelligence in moria */
 static int spell_failure_min_moria(int stat)
 {
-    int value = p_ptr->state.stat_use[stat];
+    int value = p_ptr->state.stat_loaded_cur[stat];
 
     if (value > 117) 		return(0);
     else if (value > 107)	return(1);

@@ -5,6 +5,8 @@
 #include <QButtonGroup>
 #include <QLineEdit>
 
+
+
 /*
  * A class to hold "rolled" information, and any
  * other useful state for the birth process.
@@ -57,6 +59,8 @@ private:
     // try not to update the character more than once each action
     bool hold_update;
 
+    void accept();
+
 
     //Option checkboxes
     QButtonGroup *group_options;
@@ -95,12 +99,9 @@ private:
     QButtonGroup *group_stat_choice;
     void add_stat_choices(QVBoxLayout *return_layout);
     bool point_based;
-    int stats[A_MAX];
-    int points_spent[A_MAX];
-    int points_left;
 
-    void update_points();
-    void update_character();
+    void update_screen(void);
+    void update_character(bool new_player, bool needs_stat_update);
 
 
 private slots:
@@ -114,6 +115,7 @@ private slots:
     void random_button_chosen(void);
     void redo_stat_box(void);
     void stat_spin_changed(int new_value);
+    void random_roll(void);
 
 
     // Random char slots
@@ -128,17 +130,22 @@ private slots:
 // birth.cpp
 extern void init_birth();
 extern void finish_birth();
-extern void reset_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-extern bool buy_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-extern void sell_stat(int choice, int stats[A_MAX], int points_spent[A_MAX], int *points_left);
-extern void generate_stats(int stats[A_MAX], int points_spent[A_MAX], int *points_left);
+extern void reset_stats(void);
+extern bool buy_stat(int choice);
+extern void sell_stat(int choice);
+extern void generate_stats(void);
 extern void generate_player();
-extern void roll_player(int stats[A_MAX]);
+extern void roll_player(void);
 extern bool has_prev_character();
 extern void save_prev_character();
 extern void load_prev_character();
 extern QString format_stat(s16b value);
 
+extern int points_spent;
+extern int stats[A_MAX];
 
+#define MAX_POINTS 24
+
+#define POINTS_LEFT  (MAX_POINTS - points_spent)
 
 #endif // PLAYER_BIRTH_H

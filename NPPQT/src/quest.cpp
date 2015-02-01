@@ -1137,7 +1137,7 @@ static void create_reward_objects(quest_type *q_ptr, byte reward_type)
         if (o_ptr->is_weapon())
         {
             /* Make sure weapon isn't too heavy */
-            if (adj_str_hold[p_ptr->state.stat_ind[A_STR]] < o_ptr->weight / 10)
+            if (adj_str_hold[p_ptr->state.stat_index[A_STR]] < o_ptr->weight / 10)
             {
                 continue;
             }

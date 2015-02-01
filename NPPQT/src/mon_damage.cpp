@@ -65,7 +65,7 @@ static int charisma_adjustment(const monster_race *r_ptr)
     if ((r_ptr->flags2 & (RF2_WEIRD_MIND)) && (!one_in_(10))) return (0);
 
     /*charisma applies*/
-    return (adj_chr_charm[p_ptr->state.stat_ind[A_CHR]]);
+    return (adj_chr_charm[p_ptr->state.stat_index[A_CHR]]);
 }
 
 #define ZERO_RESIST		0

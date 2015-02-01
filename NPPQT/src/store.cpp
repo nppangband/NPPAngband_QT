@@ -1131,7 +1131,7 @@ bool do_service_augment(byte choice, u32b price)
 /* Percent decrease or increase in price of goods		 */
 s16b moria_chr_adj(void)
 {
-    int charisma  = p_ptr->state.stat_use[A_CHR];
+    int charisma  = p_ptr->state.stat_loaded_cur[A_CHR];
 
     if (charisma > 117) 		return(90);
     else if (charisma > 107) 	return(92);
@@ -1196,7 +1196,7 @@ s32b price_item(int this_store, object_type *o_ptr, bool store_buying)
     {
         adjust = moria_chr_adj();
     }
-    else adjust = adj_chr_gold[p_ptr->state.stat_ind[A_CHR]];
+    else adjust = adj_chr_gold[p_ptr->state.stat_index[A_CHR]];
 
 
     /* Shop is buying */

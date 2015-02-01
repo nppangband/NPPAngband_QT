@@ -1934,7 +1934,7 @@ void command_throw(cmd_arg args)
     divider = ((i_ptr->weight > 10) ? i_ptr->weight : 10);
 
     /* Hack -- Distance -- Reward strength, penalize weight */
-    tdis = (adj_str_blow[p_ptr->state.stat_ind[A_STR]] + 20) * mul / divider;
+    tdis = (adj_str_blow[p_ptr->state.stat_index[A_STR]] + 20) * mul / divider;
 
     /* Max distance of 10 */
     if (tdis > 10) tdis = 10;

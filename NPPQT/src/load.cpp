@@ -1009,8 +1009,8 @@ static int rd_extra(void)
     rd_s16b(&p_ptr->wt);
 
     /* Read the stat info */
-    for (i = 0; i < A_MAX; i++) rd_s16b(&p_ptr->stat_max[i]);
-    for (i = 0; i < A_MAX; i++) rd_s16b(&p_ptr->stat_cur[i]);
+    for (i = 0; i < A_MAX; i++) rd_s16b(&p_ptr->stat_base_max[i]);
+    for (i = 0; i < A_MAX; i++) rd_s16b(&p_ptr->stat_base_cur[i]);
     for (i = 0; i < A_MAX; i++) rd_s16b(&p_ptr->stat_birth[i]);
     for (i = 0; i < A_MAX; ++i) rd_s16b(&p_ptr->stat_quest_add[i]);
 

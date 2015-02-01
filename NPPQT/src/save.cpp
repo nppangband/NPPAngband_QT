@@ -537,8 +537,8 @@ static void wr_extra(void)
     wr_s16b(p_ptr->wt);
 
     /* Dump the stats (maximum and current) */
-    for (i = 0; i < A_MAX; ++i) wr_s16b(p_ptr->stat_max[i]);
-    for (i = 0; i < A_MAX; ++i) wr_s16b(p_ptr->stat_cur[i]);
+    for (i = 0; i < A_MAX; ++i) wr_s16b(p_ptr->stat_base_max[i]);
+    for (i = 0; i < A_MAX; ++i) wr_s16b(p_ptr->stat_base_cur[i]);
     for (i = 0; i < A_MAX; ++i) wr_s16b(p_ptr->stat_birth[i]);
     for (i = 0; i < A_MAX; ++i) wr_s16b(p_ptr->stat_quest_add[i]);
 

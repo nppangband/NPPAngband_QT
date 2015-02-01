@@ -1651,29 +1651,30 @@ void MainWindow::update_sidebar()
 
     // STATS
 
-    for (int i = 0; i < A_MAX; i++) {
+    for (int i = 0; i < A_MAX; i++)
+    {
         int row = i + SBAR_STATS;
 
         QString str;
 
-        if (p_ptr->stat_cur[i] < p_ptr->stat_max[i]) {
+        if (p_ptr->stat_base_cur[i] < p_ptr->stat_base_max[i])
+        {
             str += stat_names_reduced[i];
         }
-        else {
-            str += stat_names[i];
-        }
+        else str += stat_names[i];
 
-        if (p_ptr->stat_max[i] >= 18+100) {
+        if (p_ptr->stat_base_max[i] >= 18+100)
+        {
             str[3] = '!';
         }
 
         str += " ";
 
-        str += cnv_stat(p_ptr->state.stat_use[i]);
+        str += cnv_stat(p_ptr->state.stat_loaded_cur[i]);
 
         item = sidebar->item(row, 0);
         item->setText(str);
-        if (p_ptr->stat_cur[i] >= p_ptr->stat_max[i]) item->setTextColor(SBAR_NORMAL);
+        if (p_ptr->stat_base_cur[i] >= p_ptr->stat_base_max[i]) item->setTextColor(SBAR_NORMAL);
         else item->setTextColor(SBAR_DRAINED);
 
         sidebar->setRowHidden(row, false);

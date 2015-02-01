@@ -808,7 +808,7 @@ bool make_attack_normal(monster_type *m_ptr)
 
                     /* Saving throw (unless paralyzed) based on dex and level */
                     if (!p_ptr->timed[TMD_PARALYZED] &&
-                        (rand_int(100) < (adj_dex_safe[p_ptr->state.stat_ind[A_DEX]] +
+                        (rand_int(100) < (adj_dex_safe[p_ptr->state.stat_index[A_DEX]] +
                                           (p_ptr->lev / 10))))
                     {
                         /* Saving throw message */
@@ -899,7 +899,7 @@ bool make_attack_normal(monster_type *m_ptr)
 
                     /* Saving throw (unless paralyzed) based on dex and level */
                     if (!p_ptr->timed[TMD_PARALYZED] &&
-                        (rand_int(100) < (adj_dex_safe[p_ptr->state.stat_ind[A_DEX]] +
+                        (rand_int(100) < (adj_dex_safe[p_ptr->state.stat_index[A_DEX]] +
                                           (p_ptr->lev / 10))))
                     {
                         /* Saving throw message */

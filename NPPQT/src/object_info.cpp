@@ -524,13 +524,13 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
     /* Record current strength and dex */
     if (game_mode == GAME_NPPMORIA)
     {
-        old_str = object_state.stat_use[A_STR];
-        old_dex = object_state.stat_use[A_DEX];
+        old_str = object_state.stat_loaded_cur[A_STR];
+        old_dex = object_state.stat_loaded_cur[A_DEX];
     }
     else
     {
-        old_str = object_state.stat_ind[A_STR];
-        old_dex = object_state.stat_ind[A_DEX];
+        old_str = object_state.stat_index[A_STR];
+        old_dex = object_state.stat_index[A_DEX];
     }
 
     /* Then we check for extra "real" blows */
@@ -540,13 +540,13 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
         {
             if (game_mode == GAME_NPPMORIA)
             {
-                object_state.stat_use[A_STR] = modify_stat_value(old_str, str_plus);
-                object_state.stat_use[A_DEX] = modify_stat_value(old_dex, dex_plus);
+                object_state.stat_loaded_cur[A_STR] = modify_stat_value(old_str, str_plus);
+                object_state.stat_loaded_cur[A_DEX] = modify_stat_value(old_dex, dex_plus);
             }
             else
             {
-                object_state.stat_ind[A_STR] = old_str + str_plus;
-                object_state.stat_ind[A_DEX] = old_dex + dex_plus;
+                object_state.stat_index[A_STR] = old_str + str_plus;
+                object_state.stat_index[A_DEX] = old_dex + dex_plus;
             }
 
             new_blows = calc_blows(o_ptr, &object_state);

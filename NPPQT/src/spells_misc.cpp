@@ -382,7 +382,7 @@ bool inc_stat(int stat)
     int value, gain;
 
     /* Then augment the current/max stat */
-    value = p_ptr->stat_cur[stat];
+    value = p_ptr->stat_base_cur[stat];
 
     /* Cannot go above 18/100 */
     if (value < 18+100)
@@ -417,12 +417,12 @@ bool inc_stat(int stat)
         }
 
         /* Save the new value */
-        p_ptr->stat_cur[stat] = value;
+        p_ptr->stat_base_cur[stat] = value;
 
         /* Bring up the maximum too */
-        if (value > p_ptr->stat_max[stat])
+        if (value > p_ptr->stat_base_max[stat])
         {
-            p_ptr->stat_max[stat] = value;
+            p_ptr->stat_base_max[stat] = value;
         }
 
         /* Recalculate bonuses */
@@ -456,8 +456,8 @@ bool dec_stat(int stat, int amount,bool permanent)
 
 
     /* Get the current value */
-    cur = p_ptr->stat_cur[stat];
-    max = p_ptr->stat_max[stat];
+    cur = p_ptr->stat_base_cur[stat];
+    max = p_ptr->stat_base_max[stat];
 
     /* Note when the values are identical */
     same = (cur == max);
@@ -502,7 +502,7 @@ bool dec_stat(int stat, int amount,bool permanent)
         if (cur < 3) cur = 3;
 
         /* Something happened */
-        if (cur != p_ptr->stat_cur[stat]) res = TRUE;
+        if (cur != p_ptr->stat_base_cur[stat]) res = TRUE;
     }
 
     /* Damage "max" value */
@@ -539,15 +539,15 @@ bool dec_stat(int stat, int amount,bool permanent)
         if (same || (max < cur)) max = cur;
 
         /* Something happened */
-        if (max != p_ptr->stat_max[stat]) res = TRUE;
+        if (max != p_ptr->stat_base_max[stat]) res = TRUE;
     }
 
     /* Apply changes */
     if (res)
     {
         /* Actually set the stat to its new value. */
-        p_ptr->stat_cur[stat] = cur;
-        p_ptr->stat_max[stat] = max;
+        p_ptr->stat_base_cur[stat] = cur;
+        p_ptr->stat_base_max[stat] = max;
 
         /* Recalculate bonuses */
         p_ptr->update |= (PU_BONUS);
@@ -567,10 +567,10 @@ bool dec_stat(int stat, int amount,bool permanent)
 bool res_stat(int stat)
 {
     /* Restore if needed */
-    if (p_ptr->stat_cur[stat] != p_ptr->stat_max[stat])
+    if (p_ptr->stat_base_cur[stat] != p_ptr->stat_base_max[stat])
     {
         /* Restore */
-        p_ptr->stat_cur[stat] = p_ptr->stat_max[stat];
+        p_ptr->stat_base_cur[stat] = p_ptr->stat_base_max[stat];
 
         /* Recalculate bonuses */
         p_ptr->update |= (PU_BONUS);

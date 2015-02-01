@@ -178,7 +178,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     QLabel *str_label = new QLabel("Strength");
     QSpinBox *str_spinner = new QSpinBox;
     str_spinner->setRange(3,118);
-    str_spinner->setValue(p_ptr->stat_cur[A_STR]);
+    str_spinner->setValue(p_ptr->stat_base_cur[A_STR]);
     edit_info->addWidget(str_label, 1, 0);
     edit_info->addWidget(str_spinner, 1, 1);
 
@@ -186,7 +186,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     QLabel *int_label = new QLabel("Intelligence");
     QSpinBox *int_spinner = new QSpinBox;
     int_spinner->setRange(3,118);
-    int_spinner->setValue(p_ptr->stat_cur[A_INT]);
+    int_spinner->setValue(p_ptr->stat_base_cur[A_INT]);
     edit_info->addWidget(int_label, 2, 0);
     edit_info->addWidget(int_spinner, 2, 1);
 
@@ -194,7 +194,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     QLabel *wis_label = new QLabel("Wisdom");
     QSpinBox *wis_spinner = new QSpinBox;
     wis_spinner->setRange(3,118);
-    wis_spinner->setValue(p_ptr->stat_cur[A_WIS]);
+    wis_spinner->setValue(p_ptr->stat_base_cur[A_WIS]);
     edit_info->addWidget(wis_label, 3, 0);
     edit_info->addWidget(wis_spinner, 3, 1);
 
@@ -202,7 +202,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     QLabel *dex_label = new QLabel("Dexterity");
     QSpinBox *dex_spinner = new QSpinBox;
     dex_spinner->setRange(3,118);
-    dex_spinner->setValue(p_ptr->stat_cur[A_DEX]);
+    dex_spinner->setValue(p_ptr->stat_base_cur[A_DEX]);
     edit_info->addWidget(dex_label, 4, 0);
     edit_info->addWidget(dex_spinner, 4, 1);
 
@@ -210,7 +210,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     QLabel *con_label = new QLabel("Constitution");
     QSpinBox *con_spinner = new QSpinBox;
     con_spinner->setRange(3,118);
-    con_spinner->setValue(p_ptr->stat_cur[A_CON]);
+    con_spinner->setValue(p_ptr->stat_base_cur[A_CON]);
     edit_info->addWidget(con_label, 5, 0);
     edit_info->addWidget(con_spinner, 5, 1);
 
@@ -218,7 +218,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     QLabel *chr_label = new QLabel("Charisma");
     QSpinBox *chr_spinner = new QSpinBox;
     chr_spinner->setRange(3,118);
-    chr_spinner->setValue(p_ptr->stat_cur[A_CHR]);
+    chr_spinner->setValue(p_ptr->stat_base_cur[A_CHR]);
     edit_info->addWidget(chr_label, 6, 0);
     edit_info->addWidget(chr_spinner, 6, 1);
 
@@ -261,12 +261,12 @@ EditCharacterDialog::EditCharacterDialog(void)
     setWindowTitle(tr("Character Edit Screen"));
     this->exec();
 
-    p_ptr->stat_cur[A_STR] = p_ptr->stat_max[A_STR] = str_spinner->value();
-    p_ptr->stat_cur[A_INT] = p_ptr->stat_max[A_INT] = int_spinner->value();
-    p_ptr->stat_cur[A_WIS] = p_ptr->stat_max[A_WIS] = wis_spinner->value();
-    p_ptr->stat_cur[A_DEX] = p_ptr->stat_max[A_DEX] = dex_spinner->value();
-    p_ptr->stat_cur[A_CON] = p_ptr->stat_max[A_CON] = con_spinner->value();
-    p_ptr->stat_cur[A_CHR] = p_ptr->stat_max[A_CHR] = chr_spinner->value();
+    p_ptr->stat_base_cur[A_STR] = p_ptr->stat_base_max[A_STR] = str_spinner->value();
+    p_ptr->stat_base_cur[A_INT] = p_ptr->stat_base_max[A_INT] = int_spinner->value();
+    p_ptr->stat_base_cur[A_WIS] = p_ptr->stat_base_max[A_WIS] = wis_spinner->value();
+    p_ptr->stat_base_cur[A_DEX] = p_ptr->stat_base_max[A_DEX] = dex_spinner->value();
+    p_ptr->stat_base_cur[A_CON] = p_ptr->stat_base_max[A_CON] = con_spinner->value();
+    p_ptr->stat_base_cur[A_CHR] = p_ptr->stat_base_max[A_CHR] = chr_spinner->value();
     p_ptr->au = gold_spinner->value();
     p_ptr->max_exp = p_ptr->exp = exp_spinner->value();
     check_experience();

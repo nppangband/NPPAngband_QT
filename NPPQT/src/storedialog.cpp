@@ -489,7 +489,7 @@ s32b StoreDialog::price_services(int service_idx)
         {
             price = ((price * moria_chr_adj()) / 100L);
         }
-        else price = ((price * adj_chr_gold[p_ptr->state.stat_ind[A_CHR]]) / 100L);
+        else price = ((price * adj_chr_gold[p_ptr->state.stat_index[A_CHR]]) / 100L);
     }
 
     /*Guild price factoring*/
@@ -1301,10 +1301,10 @@ bool StatDialog::init_stats_table(int service)
     {
         /* Add the stat that need to be restored */
         if ((service == SERVICE_RESTORE_STAT) &&
-            (p_ptr->stat_cur[i] == p_ptr->stat_max[i])) continue;
+            (p_ptr->stat_base_cur[i] == p_ptr->stat_base_max[i])) continue;
 
         if ((service == SERVICE_INCREASE_STAT) &&
-            (p_ptr->stat_max[i] == 18+100))  continue;
+            (p_ptr->stat_base_max[i] == 18+100))  continue;
 
         if ((service == SERVICE_QUEST_REWARD_INC_STAT) &&
             (p_ptr->stat_quest_add[i] >= 3)) continue;
@@ -1412,7 +1412,7 @@ StatDialog::StatDialog(int service, byte *stat_selected)
             stat_layout->addWidget(self_label, row, col++);
         }
 
-        QLabel *stat_player = new QLabel(cnv_stat(p_ptr->stat_max[i]));
+        QLabel *stat_player = new QLabel(cnv_stat(p_ptr->stat_base_max[i]));
         stat_player->setAlignment(Qt::AlignCenter);
         stat_layout->addWidget(stat_player, row, col++);
 
@@ -1427,7 +1427,7 @@ StatDialog::StatDialog(int service, byte *stat_selected)
             stat_layout->addWidget(class_adj, row, col++);
         }
 
-        QLabel *equip_adj = new QLabel(QString("%1") .arg(p_ptr->state.stat_add[i]));
+        QLabel *equip_adj = new QLabel(QString("%1") .arg(p_ptr->state.stat_equip[i]));
         equip_adj->setAlignment(Qt::AlignCenter);
         stat_layout->addWidget(equip_adj, row, col++);
 
@@ -1438,14 +1438,14 @@ StatDialog::StatDialog(int service, byte *stat_selected)
             stat_layout->addWidget(quest_adj, row, col++);
         }
 
-        QLabel *stat_total = new QLabel(cnv_stat(p_ptr->state.stat_top[i]));
+        QLabel *stat_total = new QLabel(cnv_stat(p_ptr->state.stat_loaded_max[i]));
         stat_total->setAlignment(Qt::AlignLeft);
         stat_layout->addWidget(stat_total, row, col++);
 
         //Display reduced stat if necessary
-        if (p_ptr->state.stat_use[i] < p_ptr->state.stat_top[i])
+        if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
         {
-            QString lower_stat = cnv_stat(p_ptr->state.stat_use[i]);
+            QString lower_stat = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
             lower_stat = color_string(lower_stat, TERM_YELLOW);
             QLabel *stat_reduce = new QLabel(lower_stat);
             stat_reduce->setAlignment(Qt::AlignLeft);
