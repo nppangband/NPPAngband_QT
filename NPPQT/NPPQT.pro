@@ -14,8 +14,6 @@ TARGET = NPPGAMES
 SOURCES +=  src/qt_main.cpp\
             src/qt_mainwindow.cpp\
             src/qt_statusbar.cpp \
-            src/birthdialog.cpp \
-            src/birth.cpp \
             src/calcs.cpp \
             src/cmd_actions.cpp \
             src/cmd_misc.cpp \
@@ -70,6 +68,7 @@ SOURCES +=  src/qt_main.cpp\
             src/pathfind.cpp \
             src/player_attack.cpp \
             src/player_birth.cpp \
+            src/player_birth_aux.cpp \
             src/player_death.cpp \
             src/player_classes.cpp \
             src/player_command.cpp \
@@ -97,7 +96,6 @@ SOURCES +=  src/qt_main.cpp\
             src/timed.cpp \
             src/utilities.cpp \
             src/wizard_mode.cpp
-
 
 
 HEADERS  += src/qt_mainwindow.h\
@@ -135,7 +133,6 @@ HEADERS  += src/qt_mainwindow.h\
             src/player_scores.h \
             src/player_screen.h \
             src/spells.h \
-            src/birthdialog.h \
             src/emitter.h \
             src/object_select.h \
             src/nppdialog.h \
@@ -151,5 +148,3 @@ HEADERS  += src/qt_mainwindow.h\
 RESOURCES += \
     NPP_Resources.qrc
 
-FORMS += \    
-    src/birthdialog.ui
