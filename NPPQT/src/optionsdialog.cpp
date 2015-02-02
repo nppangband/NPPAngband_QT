@@ -39,12 +39,12 @@ OptionsDialog::OptionsDialog()
 
         for (int i = 0; i < OPT_PAGE_PER; i++) {
             byte idx;
-            if ((game_mode == GAME_NPPANGBAND) || (game_mode == GAME_MODE_UNDEFINED)) {
+            if ((game_mode == GAME_NPPANGBAND) || (game_mode == GAME_MODE_UNDEFINED))
+            {
                 idx = option_page_nppangband[t][i];
             }
-            else {
-                idx = option_page_nppmoria[t][i];
-            }
+            else idx = option_page_nppmoria[t][i];
+
             if (idx == OPT_NONE) continue;
 
             option_entry *opt = options + idx;
@@ -54,6 +54,15 @@ OptionsDialog::OptionsDialog()
             chk->setChecked(op_ptr->opt[idx]);
             chk->setProperty("opt_idx", idx);
             chk->setToolTip(get_help_topic(QString("option_info"), opt->name));
+
+            // Only edit birth options during character creation.
+            if (p_ptr->game_turn)
+            {
+                if ((idx >= OPT_BIRTH_HEAD) && (idx <= OPT_BIRTH_TAIL))
+                {
+                    chk->setEnabled(FALSE);
+                }
+            }
 
             lay2->addWidget(chk);
         }

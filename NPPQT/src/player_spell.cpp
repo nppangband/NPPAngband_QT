@@ -3624,7 +3624,7 @@ QString do_priest_prayer(int mode, int spell, int dir)
             if (cast)
             {
                 /* Ironman */
-                if (adult_ironman && !p_ptr->total_winner)
+                if (birth_ironman && !p_ptr->total_winner)
                 {
                     message(QString("Nothing happens."));
                 }

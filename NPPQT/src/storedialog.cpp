@@ -544,7 +544,7 @@ void StoreDialog::reset_store()
     {
 
         /* Check if the services option is disabled */
-        if (adult_no_store_services) break;
+        if (birth_no_store_services) break;
 
         /* Services are store-specific */
         if (!should_offer_service(i)) continue;
@@ -1382,10 +1382,10 @@ StatDialog::StatDialog(int service, byte *stat_selected)
     total_stat_header->setAlignment(Qt::AlignLeft);
     stat_layout->addWidget(stat_header, row, col++);
     stat_layout->addWidget(self_header, row, col++);
-    if (adult_maximize) stat_layout->addWidget(race_adj_header, row, col++);
-    if (adult_maximize) stat_layout->addWidget(class_adj_header, row, col++);
+    if (birth_maximize) stat_layout->addWidget(race_adj_header, row, col++);
+    if (birth_maximize) stat_layout->addWidget(class_adj_header, row, col++);
     stat_layout->addWidget(equip_adj_header, row, col++);
-    if (!adult_no_quests) stat_layout->addWidget(reward_adj_header, row, col++);
+    if (!birth_no_quests) stat_layout->addWidget(reward_adj_header, row, col++);
     stat_layout->addWidget(total_stat_header, row, col++);
 
     for (int i = 0; i < A_MAX; i++)
@@ -1416,7 +1416,7 @@ StatDialog::StatDialog(int service, byte *stat_selected)
         stat_player->setAlignment(Qt::AlignCenter);
         stat_layout->addWidget(stat_player, row, col++);
 
-        if (adult_maximize)
+        if (birth_maximize)
         {
             QLabel *race_adj = new QLabel(QString("%1") .arg(rp_ptr->r_adj[i]));
             race_adj->setAlignment(Qt::AlignCenter);
@@ -1431,7 +1431,7 @@ StatDialog::StatDialog(int service, byte *stat_selected)
         equip_adj->setAlignment(Qt::AlignCenter);
         stat_layout->addWidget(equip_adj, row, col++);
 
-        if (!adult_no_quests)
+        if (!birth_no_quests)
         {
             QLabel *quest_adj = new QLabel(QString("%1") .arg(p_ptr->stat_quest_add[i]));
             quest_adj->setAlignment(Qt::AlignCenter);

@@ -71,7 +71,7 @@ static void sense_inventory(void)
         if (!o_ptr->k_idx) continue;
 
         /* Sensing the swap weapon is kind of cheating */
-        if (adult_swap_weapons && (i == INVEN_SWAP_WEAPON))	continue;
+        if (birth_swap_weapons && (i == INVEN_SWAP_WEAPON))	continue;
 
         /* Skip non-sense machines */
         if (!o_ptr->can_be_pseudo_ided()) continue;
@@ -521,7 +521,7 @@ static void recharge_objects(void)
         if (!o_ptr->k_idx) continue;
 
         /* Skip the swap weapon */
-        if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
+        if ((birth_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /* Recharge activatable objects */
         if (o_ptr->timeout > 0 && !o_ptr->is_fuelable_lite())

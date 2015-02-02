@@ -83,7 +83,7 @@ bool ObjectDialog::should_add_wield(object_type *o_ptr, s16b item_slot)
 
 bool ObjectDialog::should_add_swap(object_type *o_ptr, s16b item_slot)
 {
-    if (!adult_swap_weapons) return (FALSE);
+    if (!birth_swap_weapons) return (FALSE);
     if (!obj_can_wear(o_ptr)) return (FALSE);
 
     if (item_slot >= INVEN_WIELD)
@@ -207,7 +207,7 @@ bool ObjectDialog::should_add_uninscribe(object_type *o_ptr, s16b item_slot)
 bool ObjectDialog::should_add_activate(object_type *o_ptr, s16b item_slot)
 {
     if (!obj_can_activate(o_ptr)) return (FALSE);
-    if (adult_swap_weapons && item_slot == INVEN_SWAP_WEAPON) return (FALSE);
+    if (birth_swap_weapons && item_slot == INVEN_SWAP_WEAPON) return (FALSE);
     return (TRUE);
 }
 

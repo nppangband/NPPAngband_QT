@@ -1333,7 +1333,7 @@ static bool read_scroll(object_type *o_ptr, bool *ident)
                 o_ptr = &o_list[0 - item];
             }
 
-            if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
+            if ((birth_no_artifacts) || (birth_no_xtra_artifacts))
             {
                 message(QString("Nothing happens."));
                 break;

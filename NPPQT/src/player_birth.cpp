@@ -542,8 +542,6 @@ void PlayerBirth::option_changed(int index)
         break;
     }
 
-     update_adult_options();
-
     //Reset the stats if birth_maximize has been selected
     if (index == OPT_birth_maximize)
     {
@@ -579,8 +577,6 @@ void PlayerBirth::call_options_dialog()
         int id = group_options->id(chk);
         chk->setChecked(op_ptr->opt[id]);
     }
-
-     update_adult_options();
 }
 
 
@@ -620,8 +616,6 @@ void PlayerBirth::add_option_boxes(QVBoxLayout *return_layout)
     }
 
     connect(group_options, SIGNAL(buttonClicked(int)), this, SLOT(option_changed(int)));
-
-    update_adult_options();
 }
 
 void PlayerBirth::add_info_boxes(QVBoxLayout *return_layout)

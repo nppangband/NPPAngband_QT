@@ -1254,8 +1254,8 @@ static void check_reward_stat_increase(quest_type *q_ptr, int chance)
 /* Helper function to decide if the player should have a custom quest reward */
 static void check_reward_custom_randart(quest_type *q_ptr, int chance, int dice)
 {
-    if (adult_no_artifacts) return;
-    if (adult_no_xtra_artifacts) return;
+    if (birth_no_artifacts) return;
+    if (birth_no_xtra_artifacts) return;
 
     if (chance + damroll(dice,225) > (p_ptr->q_fame + p_ptr->deferred_rewards)) return;
 
@@ -2083,7 +2083,7 @@ bool quest_allowed(byte j)
     }
     else if (j == QUEST_SLOT_LEVEL)
     {
-        if (adult_classic_dungeons) return (FALSE);
+        if (birth_classic_dungeons) return (FALSE);
         if (!allow_themed_levels) return (FALSE);
         if (p_ptr->max_depth < 14) return (FALSE);
         if (!check_level_quest()) return (FALSE);
@@ -2095,7 +2095,7 @@ bool quest_allowed(byte j)
     }
     else if (j == QUEST_SLOT_WILDERNESS)
     {
-        if (adult_classic_dungeons) return (FALSE);
+        if (birth_classic_dungeons) return (FALSE);
         if (p_ptr->max_depth < 17) return (FALSE);
         if (!(q_info[GUILD_QUEST_SLOT].q_flags & (QFLAG_WILDERNESS_QUEST))) return (FALSE);
     }
@@ -2127,7 +2127,7 @@ bool can_quest_at_level(void)
     int i;
 
     /*Honor the no quests option*/
-    if (adult_no_quests) return (FALSE);
+    if (birth_no_quests) return (FALSE);
 
     /* No more quests if they are at the bottom of the dungeon. */
     if (guild_quest_new_level() >= MAX_DEPTH) return (FALSE);

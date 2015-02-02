@@ -136,7 +136,7 @@ s16b wield_slot(object_type *o_ptr)
 
         case TV_BOW:
         {
-            if (adult_swap_weapons) return (INVEN_WIELD);
+            if (birth_swap_weapons) return (INVEN_WIELD);
             else return (INVEN_BOW);
         }
 
@@ -243,7 +243,7 @@ QString mention_use(int slot)
         case INVEN_BOW:
         {
             object_type *o_ptr = &inventory[slot];
-            if (adult_swap_weapons)
+            if (birth_swap_weapons)
             {
                 if (slot == INVEN_SWAP_WEAPON) return "holding";
             }
@@ -297,7 +297,7 @@ QString describe_use(int i)
     QString p;
     object_type *o_ptr;
 
-    if ((adult_swap_weapons) && ((i == INVEN_MAIN_WEAPON) || (i == INVEN_SWAP_WEAPON)))
+    if ((birth_swap_weapons) && ((i == INVEN_MAIN_WEAPON) || (i == INVEN_SWAP_WEAPON)))
     {
         o_ptr = &inventory[i];
         if (o_ptr->is_bow())
@@ -1142,7 +1142,7 @@ void wipe_o_list(void)
         if (!o_ptr->k_idx) continue;
 
         /* Mega-Hack -- preserve artifacts */
-        if (!character_dungeon || adult_preserve)
+        if (!character_dungeon || birth_preserve)
         {
             /* Hack -- Preserve unknown artifacts */
             if (o_ptr->is_artifact() && !object_known_p(o_ptr))
@@ -2090,7 +2090,7 @@ s16b floor_carry(int y, int x, object_type *j_ptr)
     }
 
     /* Option -- disallow stacking */
-    if ((adult_no_stacking) && n) return (0);
+    if ((birth_no_stacking) && n) return (0);
 
     /* The stack is already too large */
     if (n > MAX_FLOOR_STACK) return (0);
@@ -2416,7 +2416,7 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
                 if (!comb) k++;
 
                 /* Option -- disallow stacking */
-                if (adult_no_stacking && (k > 1)) continue;
+                if (birth_no_stacking && (k > 1)) continue;
 
                 /* Paranoia */
                 if (k > MAX_FLOOR_STACK) continue;
@@ -4470,7 +4470,7 @@ bool ammo_can_fire(object_type *o_ptr, int item)
     /* Get the "bow" (if any) */
     object_type *j_ptr = &inventory[INVEN_BOW];
 
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         j_ptr = &inventory[INVEN_MAIN_WEAPON];
         if (!j_ptr->is_bow()) return (FALSE);

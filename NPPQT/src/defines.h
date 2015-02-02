@@ -690,23 +690,6 @@ enum
     OPT_UNUSED_16,
     OPT_UNUSED_18,
     OPT_UNUSED_19,
-    OPT_adult_no_selling,
-    OPT_adult_maximize,
-    OPT_adult_preserve,
-    OPT_adult_ironman,
-    OPT_adult_no_stores,
-    OPT_adult_no_artifacts,
-    OPT_adult_rand_artifacts,
-    OPT_adult_no_stacking,
-    OPT_adult_force_small_lev,
-    OPT_adult_connected_stairs,
-    OPT_adult_no_quests,
-    OPT_adult_no_player_ghosts,
-    OPT_adult_no_store_services,
-    OPT_adult_no_xtra_artifacts,
-    OPT_adult_birth_money,
-    OPT_adult_classic_dungeons,
-    OPT_adult_swap_weapons,
     OPT_UNUSED_20,
     OPT_UNUSED_21,
     OPT_UNUSED_22,
@@ -728,8 +711,6 @@ enum
 
 #define OPT_BIRTH_HEAD  OPT_birth_no_selling
 #define OPT_BIRTH_TAIL  OPT_UNUSED_19
-#define OPT_ADULT_HEAD  OPT_adult_no_selling
-#define OPT_ADULT_TAIL	OPT_UNUSED_25,
 #define OPT_CHEAT_HEAD  OPT_cheat_peek
 #define OPT_CHEAT_TAIL  OPT_UNUSED_28
 #define OPT_NONE        (OPT_MAX + 1)
@@ -806,23 +787,6 @@ enum
 /* xxx */
 /* xxx */
 /* xxx */
-#define adult_no_selling		op_ptr->opt[OPT_adult_no_selling]
-#define adult_maximize			op_ptr->opt[OPT_adult_maximize]
-#define adult_preserve			op_ptr->opt[OPT_adult_preserve]
-#define adult_ironman			op_ptr->opt[OPT_adult_ironman]
-#define adult_no_stores			op_ptr->opt[OPT_adult_no_stores]
-#define adult_no_artifacts		op_ptr->opt[OPT_adult_no_artifacts]
-#define adult_rand_artifacts	op_ptr->opt[OPT_adult_rand_artifacts]
-#define adult_no_stacking		op_ptr->opt[OPT_adult_no_stacking]
-#define	adult_force_small_lev	op_ptr->opt[OPT_adult_force_small_lev]
-#define	adult_connected_stairs	op_ptr->opt[OPT_adult_connected_stairs]
-#define adult_no_quests			op_ptr->opt[OPT_adult_no_quests]
-#define adult_no_player_ghosts	op_ptr->opt[OPT_adult_no_player_ghosts]
-#define adult_no_store_services	op_ptr->opt[OPT_adult_no_store_services]
-#define adult_no_xtra_artifacts	op_ptr->opt[OPT_adult_no_xtra_artifacts]
-#define adult_money				op_ptr->opt[OPT_adult_money]
-#define adult_classic_dungeons	op_ptr->opt[OPT_adult_classic_dungeons]
-#define adult_swap_weapons		op_ptr->opt[OPT_adult_swap_weapons]
 /* xxx */
 /* xxx */
 /* xxx */

@@ -3112,7 +3112,7 @@ void self_knowledge(void)
         /* Skip non-objects */
         if (!o_ptr->k_idx) continue;
 
-        if ((adult_swap_weapons) && (k == INVEN_SWAP_WEAPON)) continue;
+        if ((birth_swap_weapons) && (k == INVEN_SWAP_WEAPON)) continue;
 
         o_ptr->update_object_flags();
 
@@ -3666,7 +3666,7 @@ void self_knowledge(void)
 bool set_recall(void)
 {
     /* Ironman */
-    if (adult_ironman && !p_ptr->total_winner)
+    if (birth_ironman && !p_ptr->total_winner)
     {
         message(QString("Nothing happens."));
         return (FALSE);

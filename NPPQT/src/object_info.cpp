@@ -611,7 +611,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
     }
 
     /* Now replace the bow slot with the one being examined */
-    if (adult_swap_weapons) object_inven[INVEN_MAIN_WEAPON] = *o_ptr;
+    if (birth_swap_weapons) object_inven[INVEN_MAIN_WEAPON] = *o_ptr;
     else object_inven[INVEN_BOW] = *o_ptr;
 
     /* Get the player state */
@@ -705,7 +705,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
     }
 
     /* Now replace the bow slot with the one being examined */
-    if (adult_swap_weapons) j_ptr = &object_inven[INVEN_MAIN_WEAPON];
+    if (birth_swap_weapons) j_ptr = &object_inven[INVEN_MAIN_WEAPON];
     else j_ptr = &object_inven[INVEN_BOW];
 
     /* Get the player state */
@@ -1570,7 +1570,7 @@ QString screen_out_head(object_type *o_ptr)
     output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(obj_symbol) .arg(o_name));
 
     /* Display the known artifact description */
-    if (!adult_rand_artifacts &&
+    if (!birth_rand_artifacts &&
         o_ptr->is_known_artifact() && !a_info[o_ptr->art_num].a_text.isEmpty())
 
     {

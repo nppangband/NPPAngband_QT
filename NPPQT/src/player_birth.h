@@ -129,7 +129,6 @@ private slots:
 
 // birth.cpp
 extern void init_birth();
-extern void update_adult_options();
 extern void finish_birth();
 extern void reset_stats(void);
 extern bool buy_stat(int choice);

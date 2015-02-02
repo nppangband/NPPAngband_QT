@@ -704,7 +704,7 @@ static void wr_randarts(void)
 {
     int i, begin;
 
-    if (adult_rand_artifacts) begin = 0;
+    if (birth_rand_artifacts) begin = 0;
     else begin = z_info->art_norm_max;
 
     wr_u16b(begin);

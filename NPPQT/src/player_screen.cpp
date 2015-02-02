@@ -555,7 +555,7 @@ void PlayerScreenInfo::char_basic_info(QGridLayout *return_layout)
     else row++;
 
     // Add fame or skip a space
-    if (!adult_no_quests)
+    if (!birth_no_quests)
     {
         // Add fame
         QLabel *label_player_fame = new QLabel;
@@ -817,10 +817,10 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
     make_standard_label(total_stat_header, "  TOTAL STAT", TERM_DARK);
     stat_layout->addWidget(stat_header, row, col++, Qt::AlignLeft);
     stat_layout->addWidget(self_header, row, col++, Qt::AlignLeft);
-    if (adult_maximize) stat_layout->addWidget(race_adj_header, row, col++, Qt::AlignRight);
-    if (adult_maximize) stat_layout->addWidget(class_adj_header, row, col++, Qt::AlignRight);
+    if (birth_maximize) stat_layout->addWidget(race_adj_header, row, col++, Qt::AlignRight);
+    if (birth_maximize) stat_layout->addWidget(class_adj_header, row, col++, Qt::AlignRight);
     stat_layout->addWidget(equip_adj_header, row, col++, Qt::AlignRight);
-    if (!adult_no_quests) stat_layout->addWidget(reward_adj_header, row, col++, Qt::AlignRight);
+    if (!birth_no_quests) stat_layout->addWidget(reward_adj_header, row, col++, Qt::AlignRight);
     stat_layout->addWidget(total_stat_header, row, col++, Qt::AlignLeft);
 
     row++;
@@ -840,7 +840,7 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
         make_standard_label(self_label, (QString("%1 ") .arg(p_ptr->stat_base_max[i])), TERM_BLUE);
         stat_layout->addWidget(self_label, row, col++, Qt::AlignLeft);
 
-        if (adult_maximize)
+        if (birth_maximize)
         {
             QLabel *race_adj = new QLabel();
             make_standard_label(race_adj, (QString("%1 ") .arg(rp_ptr->r_adj[i])), TERM_BLUE);
@@ -855,7 +855,7 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
         make_standard_label(equip_adj, (QString("%1 ") .arg(p_ptr->state.stat_equip[i])), TERM_BLUE);
         stat_layout->addWidget(equip_adj, row, col++, Qt::AlignRight);
 
-        if (!adult_no_quests)
+        if (!birth_no_quests)
         {
             QLabel *quest_adj = new QLabel();
             make_standard_label(quest_adj, (QString("%1 ") .arg(p_ptr->stat_quest_add[i])), TERM_BLUE);
@@ -994,7 +994,7 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     QLabel *player_shoot = new QLabel;
 
     //Make sure we are factoring in the bow and not a swap weapon
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         if (inventory[INVEN_MAIN_WEAPON].tval == TV_BOW) o_ptr = &inventory[INVEN_MAIN_WEAPON];
 

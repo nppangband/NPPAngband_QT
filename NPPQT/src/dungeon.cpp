@@ -73,7 +73,7 @@ static void remove_ironman_ego_items(void)
          * are disabled
          */
         if ((table[i].index == EGO_FIREPROOF) &&
-            adult_no_store_services) continue;
+            birth_no_store_services) continue;
 
         /* Ignore ironman ego-item types */
         if (e_ptr->e_flags3 & TR3_IRONMAN_ONLY)
@@ -145,7 +145,7 @@ void launch_game()
     init_tile_bags();
 
     /* Remove ironman ego-items if needed */
-    if (!adult_ironman && !adult_no_stores)
+    if (!birth_ironman && !birth_no_stores)
     {
         remove_ironman_items();
         remove_ironman_ego_items();

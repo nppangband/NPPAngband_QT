@@ -565,7 +565,7 @@ bool prepare_ghost(int r_idx)
 
     /* Paranoia. */
     if (!(r_ptr->flags2 & (RF2_PLAYER_GHOST))) return (FALSE);
-    if (adult_no_player_ghosts) return (FALSE);
+    if (birth_no_player_ghosts) return (FALSE);
     if (!z_info->ghost_template_max) return (FALSE);
 
     /* No more than one player ghost at a time */

@@ -2125,23 +2125,6 @@ option_entry options[OPT_MAX] =
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
-    {"adult_no_selling",    	"Adult: Items always sell for 0 gold",          FALSE}, /* OPT_adult_no_selling */
-    {"adult_maximize",			"Adult: Maximize effect of race/class bonuses",	TRUE},	/* OPT_adult_maximize */
-    {"adult_preserve",			"Adult: Preserve artifacts when leaving level",	TRUE},	/* OPT_adult_preserve */
-    {"adult_ironman",			"Adult: Restrict the use of stairs/recall",		FALSE},	/* OPT_adult_ironman */
-    {"adult_no_stores",			"Adult: Restrict the use of stores/home",		FALSE},	/* OPT_adult_no_stores */
-    {"adult_no_artifacts",		"Adult: Restrict creation of artifacts",		FALSE},	/* OPT_adult_no_artifacts */
-    {"adult_rand_artifacts",	"Adult: Randomize some of the artifacts",		FALSE},	/* OPT_adult_rand_artifacts */
-    {"adult_no_stacking",		"Adult: Never stack objects on the floor",		FALSE},	/* OPT_adult_no_stacking */
-    {"adult_force_small_lev",	"Adult: All levels generated small",			FALSE},	/* OPT_adult_force_small_lev*/
-    {"adult_conected_stairs",   "Adult: Generate connected stairs",       		TRUE},	/* OPT_adult_connected_stairs */
-    {"adult_no_quests",			"Adult: Disable quests",						FALSE},	/* OPT_adult_no_quests*/
-    {"adult_no_player_ghosts",	"Adult: Disable player ghosts",					FALSE},	/* OPT_adult_no_player ghosts*/
-    {"adult_no_store_services",	"Adult: Disable store services",				FALSE},	/* OPT_adult_no_store_services*/
-    {"adult_no_xtra_artifacts",	"Adult: Disable extra artifacts",				FALSE},	/* OPT_adult_no_xtra_artifacts*/
-    {"adult_birth_money",      	"Adult: Start with more money and no equipment",FALSE },/* OPT_adult_birth_money*/
-    {"adult_classic_dungeons",   "Adult: Prevent unusual terrains or dungeons",	FALSE },/* OPT_adult_birth_classic_dungeons */
-    {"adult_swap_weapons",   	"Adult: Replace bow slot with swap weapon slot",	FALSE },/* OPT_adult_swap_weapons */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */

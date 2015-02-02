@@ -297,7 +297,7 @@ static cmd_arg select_item(item_act act)
     }
 
     /* Don't allow activation of swap weapons */
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         if (act == ACTION_ACTIVATE)  item_tester_swap = TRUE;
     }
@@ -1122,7 +1122,7 @@ void command_swap(cmd_arg args)
 
     (void)args;
 
-    if (adult_swap_weapons) swap_weapons();
+    if (birth_swap_weapons) swap_weapons();
     else wield_swap_weapon();
 }
 

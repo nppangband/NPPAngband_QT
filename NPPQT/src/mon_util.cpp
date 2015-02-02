@@ -715,7 +715,7 @@ s16b get_mon_num(int level, int y, int x, byte mp_flags)
                 if (r_ptr->flags2 & (RF2_PLAYER_GHOST))
                 {
                     if (mp_flags & (MPLACE_NO_GHOST)) continue;
-                    if (adult_no_player_ghosts) continue;
+                    if (birth_no_player_ghosts) continue;
 
                     /* Already a player ghost on the level */
                     if (ghost_r_idx) continue;

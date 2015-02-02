@@ -1531,7 +1531,7 @@ enum
  */
 #define ARTIFACT_EASY_MENTAL(O_PTR) \
         (o_ptr->is_artifact() && \
-        !adult_rand_artifacts && \
+        !birth_rand_artifacts && \
         ((O_PTR)->art_num < z_info->art_norm_max))
 
 /*** Variables ***/

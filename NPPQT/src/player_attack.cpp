@@ -645,7 +645,7 @@ void py_attack(int y, int x)
     o_ptr = &inventory[INVEN_WIELD];
 
     /* Make sure we are using a weapon instead of a bow/shovel */
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         if (o_ptr->is_bow() || o_ptr->is_shovel())
         {
@@ -872,7 +872,7 @@ void command_fire(cmd_arg args)
     j_ptr = &inventory[INVEN_BOW];
 
     /* Make sure we are using a weapon instead of a bow/shovel */
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         j_ptr = &inventory[INVEN_MAIN_WEAPON];
 
@@ -1199,7 +1199,7 @@ void do_cmd_fire(void)
     j_ptr = &inventory[INVEN_BOW];
 
     /* Make sure we are using a weapon instead of a bow/shovel */
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         j_ptr = &inventory[INVEN_MAIN_WEAPON];
 
@@ -1255,7 +1255,7 @@ void do_cmd_fire_at_nearest(void)
     int i, dir = 5, item = -1;
 
     /* Make sure we are using a weapon instead of a bow/shovel */
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         j_ptr = &inventory[INVEN_MAIN_WEAPON];
 

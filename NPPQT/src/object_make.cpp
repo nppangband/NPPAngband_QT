@@ -387,7 +387,7 @@ static bool make_artifact_special(object_type *o_ptr)
     if (object_generation_mode == OB_GEN_MODE_QUEST) return (FALSE);
 
     /* No artifacts, do nothing */
-    if (adult_no_artifacts) return (FALSE);
+    if (birth_no_artifacts) return (FALSE);
 
     /* No artifacts in the town, unless opening a chest or creating chest item */
     if (!depth_check) return (FALSE);
@@ -470,13 +470,13 @@ static bool make_artifact(object_type *o_ptr)
         (object_generation_mode <= OB_GEN_MODE_BOOKSHOP)) return (FALSE);
 
     /* No artifacts, do nothing */
-    if (adult_no_artifacts) return (FALSE);
+    if (birth_no_artifacts) return (FALSE);
 
     /* No artifacts in the town, unless opening a chest or creating chest item */
     if (!depth_check) return (FALSE);
 
     /* First try to create a randart, if allowed */
-    if ((can_be_randart(o_ptr)) && (!adult_no_xtra_artifacts))
+    if ((can_be_randart(o_ptr)) && (!birth_no_xtra_artifacts))
     {
         int chance = depth_check;
 
@@ -2422,7 +2422,7 @@ static bool kind_is_great(int k_idx)
         {
             if (k_ptr->sval == SV_SCROLL_STAR_ACQUIREMENT) return (TRUE);
             if ((k_ptr->sval == SV_SCROLL_CREATE_RANDART) &&
-                (!adult_no_xtra_artifacts))   return (TRUE);
+                (!birth_no_xtra_artifacts))   return (TRUE);
             return (FALSE);
         }
 
@@ -2948,7 +2948,7 @@ static bool kind_is_scroll(int k_idx)
         {
             if (k_ptr->sval == SV_SCROLL_ACQUIREMENT) return (TRUE);
             if ((k_ptr->sval == SV_SCROLL_CREATE_RANDART) &&
-                (!adult_no_xtra_artifacts))   return (TRUE);
+                (!birth_no_xtra_artifacts))   return (TRUE);
             if (k_ptr->sval == SV_SCROLL_STAR_ACQUIREMENT) return (TRUE);
             if (k_ptr->sval == SV_SCROLL_BANISHMENT) return (TRUE);
             if (k_ptr->sval == SV_SCROLL_MASS_BANISHMENT) return (TRUE);
@@ -3312,7 +3312,7 @@ static bool kind_is_good(int k_idx)
             if (k_ptr->sval == SV_SCROLL_ACQUIREMENT) return (TRUE);
             if (k_ptr->sval == SV_SCROLL_STAR_ACQUIREMENT) return (TRUE);
             if ((k_ptr->sval == SV_SCROLL_CREATE_RANDART) &&
-                (!adult_no_xtra_artifacts))   return (TRUE);
+                (!birth_no_xtra_artifacts))   return (TRUE);
             return (FALSE);
         }
 

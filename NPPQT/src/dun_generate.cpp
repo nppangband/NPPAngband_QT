@@ -7158,7 +7158,7 @@ static void build_nature(void)
      level_flag = 0;
 
     /* No NPP terrains option turned on */
-    if (adult_classic_dungeons) return;
+    if (birth_classic_dungeons) return;
 
     /* Debug message */
     if (cheat_room)
@@ -7297,7 +7297,7 @@ static void build_themed_level_nature(byte theme)
     level_flag = 0;
 
     /* No NPP terrains option turned on */
-    if (adult_classic_dungeons) return;
+    if (birth_classic_dungeons) return;
 
     /* Find if the theme has some restrictions to generate terrain */
     for (i = 0; i < N_ELEMENTS(themed_level_flags); i++)
@@ -8774,7 +8774,7 @@ static void build_misc_features(void)
     }
 
     /* More flavor! */
-    if (!adult_classic_dungeons) transform_walls_regions();
+    if (!birth_classic_dungeons) transform_walls_regions();
 }
 
 
@@ -10888,7 +10888,7 @@ static bool cave_gen(void)
     else if ((p_ptr->depth > 10) && (one_in_(DUN_DEST))) destroyed = TRUE;
 
     /* Possible "fractal" level */
-    if (!destroyed && (p_ptr->depth >= 15) && one_in_(DUN_FRACTAL) && (!adult_classic_dungeons)) fractal_level = TRUE;
+    if (!destroyed && (p_ptr->depth >= 15) && one_in_(DUN_FRACTAL) && (!birth_classic_dungeons)) fractal_level = TRUE;
 
     /*Clear the level flag*/
     level_flag = 0;
@@ -10925,7 +10925,7 @@ static bool cave_gen(void)
         }
     }
 
-    if (((adult_force_small_lev) || (one_in_(SMALL_LEVEL)) ||
+    if (((birth_force_small_lev) || (one_in_(SMALL_LEVEL)) ||
         (quest_on_level == QUEST_VAULT)) && (game_mode != GAME_NPPMORIA))
     {
         int l, m;
@@ -10962,12 +10962,12 @@ static bool cave_gen(void)
                 (p_ptr->cur_map_wid < MAX_DUNGEON_WID)) break;
         }
 
-        if ((cheat_room) && (!adult_force_small_lev))
+        if ((cheat_room) && (!birth_force_small_lev))
         {
             message(QString("A 'small' dungeon level (%1x%2).") .arg(m) .arg(l));
         }
 
-        if (!adult_force_small_lev) rating += ((m + l <= 3) ? 15 : 10);
+        if (!birth_force_small_lev) rating += ((m + l <= 3) ? 15 : 10);
     }
     else
     {
@@ -11125,7 +11125,7 @@ static bool cave_gen(void)
 
         /* Occasionally attempt a starburst room */
         /* Maximum chance: one in 20 */
-        if ((randint(800) <= MIN(p_ptr->depth, 40)) && (!adult_classic_dungeons))
+        if ((randint(800) <= MIN(p_ptr->depth, 40)) && (!birth_classic_dungeons))
         {
             int room_idx = (one_in_(10) ? 11 : 10);
 
@@ -11134,7 +11134,7 @@ static bool cave_gen(void)
 
         /* Occasionally attempt a fractal room */
         /* Maximum chance: one in 7 */
-        if ((randint(490) <= MIN(p_ptr->depth, 70)) && (!adult_classic_dungeons))
+        if ((randint(490) <= MIN(p_ptr->depth, 70)) && (!birth_classic_dungeons))
         {
             if (one_in_(8) && room_build(by, bx, 14)) continue;
 
@@ -11548,14 +11548,14 @@ static int pick_dungeon_type(void)
     if (!quest_check(p_ptr->depth))
     {
         /* Random themed level */
-        if (allow_themed_levels && (p_ptr->depth >= 10) && (!adult_classic_dungeons) &&
+        if (allow_themed_levels && (p_ptr->depth >= 10) && (!birth_classic_dungeons) &&
             one_in_(THEMED_LEVEL_CHANCE))
         {
             return DUNGEON_TYPE_THEMED_LEVEL;
         }
 
         /* Random wilderness level */
-        if ((p_ptr->depth > 10) && (!adult_classic_dungeons) &&
+        if ((p_ptr->depth > 10) && (!birth_classic_dungeons) &&
             one_in_(WILDERNESS_LEVEL_CHANCE))
         {
             return DUNGEON_TYPE_WILDERNESS;
@@ -11775,7 +11775,7 @@ void generate_cave(void)
                 else feeling = 10;
 
                 /* Hack -- Have a special feeling sometimes */
-                if (good_item_flag && !adult_preserve) feeling = 1;
+                if (good_item_flag && !birth_preserve) feeling = 1;
 
                 /* Hack -- no feeling in the town */
                 if (!p_ptr->depth) feeling = 0;

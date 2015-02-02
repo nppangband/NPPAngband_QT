@@ -421,7 +421,7 @@ bool teleport_player_level(int who)
     /* Dead player? */
     if (p_ptr->is_dead) return (FALSE);
 
-    if (adult_ironman)
+    if (birth_ironman)
     {
         message(QString("Nothing happens."));
         return(TRUE);
@@ -587,7 +587,7 @@ bool apply_disenchant(int mode)
 
     /* Pick a random slot */
     /* Ignore the swap weapon */
-    if (adult_swap_weapons) switch (randint(7))
+    if (birth_swap_weapons) switch (randint(7))
     {
         case 1: {t = INVEN_WIELD; break;}
         case 2: {t = INVEN_BODY; break;}
@@ -1891,7 +1891,7 @@ static int inven_drain(int dam)
         if (!o_ptr->k_idx) continue;
 
         /* Ignore the swap weapon */
-        if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
+        if ((birth_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /*
          * No messages needed.

@@ -414,18 +414,18 @@ static void set_moria_options(void)
     auto_scum = FALSE;
     allow_themed_levels = FALSE;
     verify_leave_quest = FALSE;
-    birth_maximize = adult_maximize = FALSE;
-    birth_rand_artifacts = adult_rand_artifacts = FALSE;
-    birth_force_small_lev = adult_force_small_lev = FALSE;
-    birth_no_artifacts = adult_no_artifacts = FALSE;
-    birth_classic_dungeons = adult_classic_dungeons = TRUE;
-    birth_swap_weapons = adult_swap_weapons = TRUE;
-    birth_no_xtra_artifacts = adult_no_xtra_artifacts = TRUE;
-    birth_no_store_services = adult_no_store_services = TRUE;
-    birth_no_player_ghosts = adult_no_player_ghosts = TRUE;
-    birth_no_quests = adult_no_quests = TRUE;
-    birth_connected_stairs = adult_connected_stairs = FALSE;
-    birth_preserve = adult_preserve = TRUE;
+    birth_maximize = FALSE;
+    birth_rand_artifacts = FALSE;
+    birth_force_small_lev = FALSE;
+    birth_no_artifacts = FALSE;
+    birth_classic_dungeons = TRUE;
+    birth_swap_weapons = TRUE;
+    birth_no_xtra_artifacts = TRUE;
+    birth_no_store_services = TRUE;
+    birth_no_player_ghosts = TRUE;
+    birth_no_quests = TRUE;
+    birth_connected_stairs = FALSE;
+    birth_preserve = TRUE;
 }
 
 
@@ -866,16 +866,6 @@ void write_birth_note(void)
                .arg(final_monster) .arg(long_day), p_ptr->depth);
 }
 
-void update_adult_options(void)
-{
-    int x = OPT_ADULT_HEAD;
-
-    /* Set adult options from birth options */
-    for (int i = OPT_BIRTH_HEAD; i < OPT_BIRTH_TAIL; i++, x++)
-    {
-        op_ptr->opt[x] = op_ptr->opt[i];
-    }
-}
 
 void finish_birth()
 {
@@ -883,8 +873,6 @@ void finish_birth()
 
     // Hit points
     roll_hp();
-
-    update_adult_options();
 
     /*Re-set the squelch settings.  Spellbooks are never_pickup by default. */
     for (i = 0; i < z_info->k_max; i++)
@@ -952,7 +940,7 @@ void finish_birth()
     seed_ghost = rand_int(0x10000000);
 
     /* Randomize the artifacts */
-    if (adult_rand_artifacts)
+    if (birth_rand_artifacts)
     {
         do_randart(seed_randart, TRUE);
     }

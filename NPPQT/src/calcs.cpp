@@ -554,7 +554,7 @@ static void calc_torch(void)
         if (!o_ptr->k_idx) continue;
 
         /* Don't count the swap weapon */
-        if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
+        if ((birth_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /* Examine actual lites */
         if (o_ptr->tval == TV_LIGHT)
@@ -671,7 +671,7 @@ void calc_stealth(void)
         if (!o_ptr->k_idx) continue;
 
         /* Don't count the swap weapon */
-        if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
+        if ((birth_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /* Extract the item flags */
         o_ptr->update_object_flags();
@@ -1105,7 +1105,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (!o_ptr->k_idx) continue;
 
         /* Don't count the swap weapon */
-        if ((adult_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
+        if ((birth_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /* Extract the item flags */
         object_known(o_ptr);
@@ -1294,7 +1294,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         add = new_state->stat_equip[i];
 
         /* Maximize mode */
-        if (adult_maximize)
+        if (birth_maximize)
         {
             /* Modify the stats for race/class */
             add += (rp_ptr->r_adj[i] + cp_ptr->c_adj[i]);
@@ -1609,7 +1609,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     o_ptr = &calc_inven[INVEN_BOW];
 
     /* Don't count the swap weapon */
-    if (adult_swap_weapons)
+    if (birth_swap_weapons)
     {
         o_ptr = &calc_inven[INVEN_MAIN_WEAPON];
     }
@@ -1864,7 +1864,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         /* default: SV_SHORT_BOW or SV_LONG_BOW	*/
         QString launcher = "bow";
 
-        int bow_slot = (adult_swap_weapons ? INVEN_MAIN_WEAPON : INVEN_BOW);
+        int bow_slot = (birth_swap_weapons ? INVEN_MAIN_WEAPON : INVEN_BOW);
 
         /* Examine the "current bow" */
         object_kind *k_ptr = &k_info[calc_inven[bow_slot].k_idx];

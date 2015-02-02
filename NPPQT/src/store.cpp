@@ -664,7 +664,7 @@ bool do_service_make_randart(byte choice, u32b price)
     s32b o_value;
     QString title = get_title();
 
-    if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
+    if ((birth_no_artifacts) || (birth_no_xtra_artifacts))
     {
         message(QString("Nothing happens."));
         return (FALSE);
@@ -1016,7 +1016,7 @@ bool do_service_quest_art_reward(byte choice, u32b price)
     quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
 
     /* Paranoia - should never happen */
-    if ((adult_no_artifacts) || (adult_no_xtra_artifacts))
+    if ((birth_no_artifacts) || (birth_no_xtra_artifacts))
     {
         message(QString("Nothing happens."));
         return (FALSE);
@@ -1203,7 +1203,7 @@ s32b price_item(int this_store, object_type *o_ptr, bool store_buying)
     if (store_buying)
     {
         /* Check for no_selling option */
-        if (adult_no_selling) return (0L);
+        if (birth_no_selling) return (0L);
 
         /* Set the factor */
         adjust = 185 - adjust;

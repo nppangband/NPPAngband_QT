@@ -618,7 +618,7 @@ void pick_and_set_trap(int y, int x, int mode)
     if (cave_any_trap_bold(y, x)) return;
 
     /* No NPP terrains option turned on */
-    if (adult_classic_dungeons) mode = EFFECT_TRAP_DUMB;
+    if (birth_classic_dungeons) mode = EFFECT_TRAP_DUMB;
 
     /*Make sure there aren't too many smart traps in the same place*/
     else if (mode != EFFECT_TRAP_DUMB)

@@ -119,7 +119,7 @@ void do_cmd_go_up(void)
     }
 
     /* Ironman */
-    if (adult_ironman)
+    if (birth_ironman)
     {
         message(QString("Nothing happens!"));
         return;
@@ -144,7 +144,7 @@ void do_cmd_go_up(void)
     if (game_mode == GAME_NPPMORIA) message(QString("You pass through a one-way door."));
 
     /* Create a way back */
-    if (adult_connected_stairs) p_ptr->create_stair = FEAT_MORE;
+    if (birth_connected_stairs) p_ptr->create_stair = FEAT_MORE;
 
     /* New depth */
     decrease++;
@@ -159,7 +159,7 @@ void do_cmd_go_up(void)
         decrease++;
 
         /* Create a way back (usually) */
-        if (adult_connected_stairs) p_ptr->create_stair = FEAT_MORE_SHAFT;
+        if (birth_connected_stairs) p_ptr->create_stair = FEAT_MORE_SHAFT;
     }
 
     /* Change level */
@@ -213,7 +213,7 @@ void do_cmd_go_down(void)
     if (game_mode == GAME_NPPMORIA) message(QString("You pass through a one-way door."));
 
     /* Create a way back (usually) */
-    if (adult_connected_stairs) p_ptr->create_stair = FEAT_LESS;
+    if (birth_connected_stairs) p_ptr->create_stair = FEAT_LESS;
 
     /* New level */
     increase++;
@@ -228,7 +228,7 @@ void do_cmd_go_down(void)
         increase++;
 
         /* Create a way back (usually) */
-        if (adult_connected_stairs) p_ptr->create_stair = FEAT_LESS_SHAFT;
+        if (birth_connected_stairs) p_ptr->create_stair = FEAT_LESS_SHAFT;
     }
 
     /* Change level */
