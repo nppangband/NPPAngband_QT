@@ -149,3 +149,5 @@ RESOURCES += \
     NPP_Resources.qrc
 
 DESTDIR = ../NPPQT
+
+RC_FILE = lib/icons/nppicon.rc
