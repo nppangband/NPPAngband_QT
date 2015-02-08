@@ -1127,7 +1127,7 @@ static bool wr_scores(void)
     else if (game_mode == GAME_NPPMORIA) scores_filename.prepend("nppmoria_");
     else return (FALSE);
 
-    scores_filename.prepend(QString("%1") .arg(NPP_DIR_BONE));
+    scores_filename.prepend(QString("%1/") .arg(npp_dir_bone.path()));
 
     int i;
 
@@ -1194,7 +1194,7 @@ static bool wr_memory(void)
     else if (game_mode == GAME_NPPMORIA) memory_filename.prepend("nppmoria_");
     else return (FALSE);
 
-    memory_filename.prepend(QString("%1") .arg(NPP_DIR_BONE));
+    memory_filename.prepend(QString("%1/") .arg(npp_dir_bone.path()));
 
     // Open the current file
     save_file.setFileName(memory_filename);

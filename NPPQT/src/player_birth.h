@@ -128,6 +128,7 @@ private slots:
 };
 
 // birth.cpp
+extern void update_hp_sp(void);
 extern void init_birth();
 extern void finish_birth();
 extern void reset_stats(void);

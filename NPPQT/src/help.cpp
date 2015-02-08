@@ -18,6 +18,7 @@
 #include <src/help.h>
 #include <QFile>
 #include <QTextStream>
+#include <src/init.h>
 
 QString get_help_topic(QString help_file, QString help_topic)
 {
@@ -26,7 +27,7 @@ QString get_help_topic(QString help_file, QString help_topic)
     QString return_string;
     return_string.clear();
 
-    help_file.prepend(QString("%1") .arg(NPP_DIR_HELP));
+    help_file.prepend(QString("%1/") .arg(npp_dir_help.path()));
     help_file.append(".txt");
 
     QFile topic_file;

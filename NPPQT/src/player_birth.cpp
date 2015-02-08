@@ -978,6 +978,10 @@ PlayerBirth::PlayerBirth(bool quickstart)
     hold_update = FALSE;
 
     QVBoxLayout *main_layout = new QVBoxLayout;
+
+    // Title Box
+    QLabel *main_prompt = new QLabel(QString("<h2>Character Creation %1 %2 </h2>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
+    main_layout->addWidget(main_prompt,Qt::AlignCenter );
     QHBoxLayout *hlay_choices = new QHBoxLayout;
     main_layout->addLayout(hlay_choices);
 

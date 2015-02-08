@@ -112,7 +112,7 @@ T:Lord Gallant
 T:Lord Keeper
 T:Lord Noble
 E:35:1:1:1
-E:23:30:1:1
+E:23:3:1:1
 E:36:4:1:1
 F:BRAVERY_30 | PSEUDO_ID_HEAVY | PSEUDO_ID_IMPROV | EXTRA_ATTACK
 
@@ -165,7 +165,7 @@ T:Wizard (8th)
 T:Wizard (9th)
 T:Wizard Lord)
 E:35:1:1:1
-E:23:30:1:1
+E:23:3:1:1
 E:90:0:1:1
 F:CUMBER_GLOVE | BEAM | CHOOSE_SPELLS | ZERO_FAIL
 B:0:1:1:22:1
@@ -294,7 +294,7 @@ T:High Priest
 T:Great Priest
 T:Noble Priest
 E:35:1:1:1
-E:23:30:1:1
+E:23:3:1:1
 E:91:0:1:1
 F:BLESS_WEAPON | PSEUDO_ID_IMPROV | ZERO_FAIL
 B:0:1:1:10:1
@@ -424,7 +424,7 @@ T:Assassin
 T:High Assassin
 T:Guildsmaster
 E:35:1:1:1
-E:23:30:1:1
+E:23:3:1:1
 E:90:0:1:1
 F:CUMBER_GLOVE | CHOOSE_SPELLS | PSEUDO_ID_HEAVY | PSEUDO_ID_IMPROV | EXTRA_SHOT 
 B:0:99:0:0:0
@@ -554,7 +554,7 @@ T:Ranger
 T:High Ranger
 T:Ranger Lord
 E:35:1:1:1
-E:23:30:1:1
+E:23:3:1:1
 E:90:0:1:1
 F:EXTRA_ARROW | CHOOSE_SPELLS | PSEUDO_ID_IMPROV
 B:0:3:1:30:1
@@ -683,7 +683,7 @@ T:Justiciar
 T:Paladin
 T:High Lord
 E:35:1:1:1
-E:23:30:1:1
+E:23:3:1:1
 E:91:0:1:1
 F:PSEUDO_ID_HEAVY | PSEUDO_ID_IMPROV
 B:0:1:1:30:1

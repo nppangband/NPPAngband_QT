@@ -100,17 +100,6 @@ extern byte squelch_level[SQUELCH_BYTES];
 extern quiver_group_type quiver_group[MAX_QUIVER_GROUPS];
 
 
-//Various directories used by NPP
-extern QString NPP_DIR_BASE;
-extern QString NPP_DIR_BONE;
-extern QString NPP_DIR_EDIT;
-extern QString NPP_DIR_HELP;
-extern QString NPP_DIR_ICON;
-extern QString NPP_DIR_PREF;
-extern QString NPP_DIR_SAVE;
-extern QString NPP_DIR_USER;
-extern QString NPP_DIR_GRAF;
-
 extern bool item_tester_full;
 extern byte item_tester_tval;
 extern bool item_tester_swap;

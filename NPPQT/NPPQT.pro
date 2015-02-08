@@ -148,3 +148,4 @@ HEADERS  += src/qt_mainwindow.h\
 RESOURCES += \
     NPP_Resources.qrc
 
+DESTDIR = ../NPPQT

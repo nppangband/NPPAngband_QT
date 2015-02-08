@@ -3,6 +3,7 @@
 #include "src/utilities.h"
 #include "src/knowledge.h"
 #include "tilebag.h"
+#include "src/init.h"
 #include <QInputDialog>
 #include <QLineEdit>
 
@@ -655,13 +656,13 @@ static QPixmap old_get_tile(int y32, int x32, int y8, int x8)
 
         cur_mode = use_graphics;
 
-        if (cur_mode == GRAPHICS_DAVID_GERVAIS) {
-            QDir dir(NPP_DIR_GRAF);
-            map = new QPixmap(dir.absoluteFilePath("32x32.png"));
+        if (cur_mode == GRAPHICS_DAVID_GERVAIS)
+        {
+            map = new QPixmap(npp_dir_graf.absoluteFilePath("32x32.png"));
         }
-        else {
-            QDir dir(NPP_DIR_GRAF);
-            map = new QPixmap(dir.absoluteFilePath("8x8.png"));
+        else
+        {
+            map = new QPixmap(npp_dir_graf.absoluteFilePath("8x8.png"));
         }
     }
 
@@ -683,10 +684,10 @@ static QPixmap old_get_tile(int y32, int x32, int y8, int x8)
 void extract_tiles(bool save)
 {
     int i;
-    QDir dir(NPP_DIR_GRAF);
-    if (save) {
-        dir.mkdir("tiles");
-        dir.cd("tiles");
+    if (save)
+    {
+        npp_dir_graf.mkdir("tiles");
+        npp_dir_graf.cd("tiles");
     }
 
     for (i = 0; i < z_info->r_max; i++)\
@@ -699,7 +700,7 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(r_ptr->tile_32x32_y, r_ptr->tile_32x32_x,
                                        r_ptr->tile_8x8_y, r_ptr->tile_8x8_x);
-            QFile tile_file(dir.absoluteFilePath(race_name + ".png"));
+            QFile tile_file(npp_dir_graf.absoluteFilePath(race_name + ".png"));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
@@ -750,7 +751,7 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(k_ptr->tile_32x32_y, k_ptr->tile_32x32_x,
                                        k_ptr->tile_8x8_y, k_ptr->tile_8x8_x);
-            QFile tile_file(dir.absoluteFilePath(object_name + ".png"));
+            QFile tile_file(npp_dir_graf.absoluteFilePath(object_name + ".png"));
             //if (object_name == "obj_nothing") qDebug("nothing: %d", i);
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
@@ -768,7 +769,7 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(f_ptr->tile_32x32_y, f_ptr->tile_32x32_x,
                                        f_ptr->tile_8x8_y, f_ptr->tile_8x8_x);
-            QFile tile_file(dir.absoluteFilePath(feat_name + ".png"));
+            QFile tile_file(npp_dir_graf.absoluteFilePath(feat_name + ".png"));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
@@ -785,7 +786,7 @@ void extract_tiles(bool save)
         if (save) {
             QPixmap pix = old_get_tile(flavor_ptr->tile_32x32_y, flavor_ptr->tile_32x32_x,
                                        flavor_ptr->tile_8x8_y, flavor_ptr->tile_8x8_x);
-            QFile tile_file(dir.absoluteFilePath(flavor_name + ".png"));
+            QFile tile_file(npp_dir_graf.absoluteFilePath(flavor_name + ".png"));
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }
@@ -807,7 +808,7 @@ void extract_tiles(bool save)
                 init_graphics();
                 QPixmap pix = old_get_tile(p_ptr->tile_32x32_y, p_ptr->tile_32x32_x,
                                            p_ptr->tile_8x8_y, p_ptr->tile_8x8_x);
-                QFile tile_file(dir.absoluteFilePath("player_" + race_name + "_" + class_name + ".png"));
+                QFile tile_file(npp_dir_graf.absoluteFilePath("player_" + race_name + "_" + class_name + ".png"));
                 tile_file.open(QIODevice::WriteOnly);
                 pix.save(&tile_file, "PNG");
             }
@@ -821,7 +822,7 @@ void extract_tiles(bool save)
     if (save && use_graphics == GRAPHICS_DAVID_GERVAIS)
     {
         QPixmap pix = old_get_tile(0x87 & 0x7F, 0xB7 & 0x7F, 0, 0);
-        QFile tile_file(dir.absoluteFilePath("obj_pile.png"));
+        QFile tile_file(npp_dir_graf.absoluteFilePath("obj_pile.png"));
         tile_file.open(QIODevice::WriteOnly);
         pix.save(&tile_file, "PNG");
     }

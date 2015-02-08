@@ -10,6 +10,7 @@
 #include "src/structures.h"
 #include "src/globals.h"
 #include "src/function_declarations.h"
+#include "QDir"
 
 
 /*
@@ -100,5 +101,15 @@ extern int shop_idx;
 extern int owner_idx;
 extern int cur_title;
 extern int cur_equip;
+
+//Various directories used by NPP
+extern QDir npp_dir_base;
+extern QDir npp_dir_bone;
+extern QDir npp_dir_edit;
+extern QDir npp_dir_help;
+extern QDir npp_dir_icon;
+extern QDir npp_dir_save;
+extern QDir npp_dir_user;
+extern QDir npp_dir_graf;
 
 #endif // INIT_H

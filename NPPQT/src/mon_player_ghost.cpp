@@ -845,7 +845,7 @@ void load_player_ghost_file(void)
     else if (game_mode == GAME_NPPMORIA) return;
 
     /* Build the filename */
-    player_ghost_file.setFileName(QString("%1%2" ) .arg(NPP_DIR_BONE) .arg(player_ghost_filename));
+    player_ghost_file.setFileName(QString("%1/%2" ) .arg(npp_dir_bone.path()) .arg(player_ghost_filename));
 
     if (!player_ghost_file.exists()) return;
     if (!player_ghost_file.open(QIODevice::ReadOnly)) return;
@@ -882,7 +882,7 @@ void save_player_ghost_file(void)
     else if (game_mode == GAME_NPPMORIA) return;
 
     /* Build the filename */
-    player_ghost_file.setFileName(QString("%1%2" ) .arg(NPP_DIR_BONE) .arg(player_ghost_filename));
+    player_ghost_file.setFileName(QString("%1/%2" ) .arg(npp_dir_bone.path()) .arg(player_ghost_filename));
 
     if (!player_ghost_file.exists()) return;
     if (!player_ghost_file.open(QIODevice::WriteOnly)) return;

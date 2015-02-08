@@ -1915,7 +1915,7 @@ void MainWindow::start_game_nppmoria()
 void MainWindow::open_current_savefile()
 {
     // Let the user select the savefile
-    QString file_name = QFileDialog::getOpenFileName(this, tr("Select a savefile"), NPP_DIR_SAVE, tr("NPP (*.npp)"));
+    QString file_name = QFileDialog::getOpenFileName(this, tr("Select a savefile"), npp_dir_save.path(), tr("NPP (*.npp)"));
     if (file_name.isEmpty()) return;
 
     load_file(file_name);
@@ -1931,7 +1931,7 @@ void MainWindow::save_character()
 
 void MainWindow::save_character_as()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Select a savefile"), NPP_DIR_SAVE, tr("NPP (*.npp)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Select a savefile"), npp_dir_save.path(), tr("NPP (*.npp)"));
     if (fileName.isEmpty())
         return;
 

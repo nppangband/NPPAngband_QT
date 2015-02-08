@@ -31,8 +31,14 @@
 static const int birth_stat_costs[18 + 1] =
     { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 4 };
 
-static void get_bonuses(void)
+void update_hp_sp(void)
 {
+    /* Calculate the bonuses and hitpoints */
+    p_ptr->update |= (PU_BONUS | PU_HP);
+
+    /* Update stuff */
+    update_stuff();
+
     /* Fully healed */
     p_ptr->chp = p_ptr->mhp;
 
@@ -76,7 +82,7 @@ static void recalculate_stats(void)
     p_ptr->au_birth = 200 + (50 * (MAX_POINTS - points_spent));
 
     /* Update bonuses, hp, etc. */
-    get_bonuses();
+    update_hp_sp();
 }
 
 QString format_stat(s16b value)
@@ -609,7 +615,7 @@ void roll_player()
     get_money();
 
     /* Update stats with bonuses, etc. */
-    get_bonuses();
+    update_hp_sp();
 
     /* There's no real need to do this here, but it's tradition. */
     get_ahw();
@@ -896,6 +902,8 @@ void finish_birth()
             }
         }
     }
+
+    update_hp_sp();
 
     /* Clear the squelch bytes */
     for (i = 0; i < SQUELCH_BYTES; i++)

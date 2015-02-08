@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include "src/utilities.h"
 #include "src/player_scores.h"
+#include "src/init.h"
 
 extern byte sf_major;
 extern byte sf_minor;

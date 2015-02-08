@@ -1,6 +1,7 @@
 #include "tilebag.h"
 #include "package.h"
 #include "npp.h"
+#include "src/init.h"
 
 TileBag *tiles_32x32;
 TileBag *tiles_8x8;
@@ -9,14 +10,12 @@ TileBag *current_tiles;
 
 void init_tile_bags()
 {
-    QDir graf(NPP_DIR_GRAF);
-
     if (tiles_32x32) delete tiles_32x32;
     tiles_32x32 = 0;
     if (tiles_8x8) delete tiles_8x8;
     tiles_8x8 = 0;
 
-    if (!tiles_projections) tiles_projections = new TileBag(graf.absoluteFilePath("projections.pak"));
+    if (!tiles_projections) tiles_projections = new TileBag(npp_dir_graf.absoluteFilePath("projections.pak"));
 
     QString pak32("tiles_32x32.pak");
     QString pak8("tiles_8x8.pak");
@@ -24,8 +23,8 @@ void init_tile_bags()
         pak32 = "moria_tiles_32x32.pak";
         pak8 = "moria_tiles_8x8.pak";
     }
-    tiles_32x32 = new TileBag(graf.absoluteFilePath(pak32));
-    tiles_8x8 = new TileBag(graf.absoluteFilePath(pak8));
+    tiles_32x32 = new TileBag(npp_dir_graf.absoluteFilePath(pak32));
+    tiles_8x8 = new TileBag(npp_dir_graf.absoluteFilePath(pak8));
 
     if (use_graphics == GRAPHICS_DAVID_GERVAIS) current_tiles = tiles_32x32;
     else if (use_graphics == GRAPHICS_ORIGINAL) current_tiles = tiles_8x8;

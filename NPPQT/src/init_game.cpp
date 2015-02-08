@@ -53,6 +53,16 @@ int owner_idx;
 int cur_title;
 int cur_equip;
 
+// The file directories
+QDir npp_dir_base;
+QDir npp_dir_bone;
+QDir npp_dir_edit;
+QDir npp_dir_help;
+QDir npp_dir_icon;
+QDir npp_dir_save;
+QDir npp_dir_user;
+QDir npp_dir_graf;
+
 
 /*
  * Standard error message text
@@ -130,20 +140,17 @@ static void display_parse_error(QString filename, int err, QString buf, int erro
 //Initialize the various directories used by NPP
 void create_directories()
 {
-    NPP_DIR_BASE = QDir::currentPath();
 
-    //Hack - figure out how this should work on all machines
-    NPP_DIR_BASE.append ("/NPPQT");
-    NPP_DIR_EDIT = NPP_DIR_HELP = NPP_DIR_ICON = NPP_DIR_PREF = NPP_DIR_GRAF =
-            NPP_DIR_SAVE = NPP_DIR_BONE = NPP_DIR_USER = NPP_DIR_BASE;
-    NPP_DIR_EDIT.append ("/lib/edit/");
-    NPP_DIR_BONE.append ("/lib/bone/");
-    NPP_DIR_HELP.append ("/lib/help/");
-    NPP_DIR_ICON.append ("/lib/icons/");
-    NPP_DIR_PREF.append ("/lib/pref/");
-    NPP_DIR_SAVE.append ("/lib/save/");
-    NPP_DIR_SAVE.append ("/lib/user/");
-    NPP_DIR_GRAF.append ("/lib/xtra/graf/");
+    npp_dir_base.setPath(QDir::currentPath());
+
+    npp_dir_bone.setPath(QString(npp_dir_base.path() .append("/lib/bone/")));
+    npp_dir_edit.setPath(QString(npp_dir_base.path() .append("/lib/edit/")));
+    npp_dir_help.setPath(QString(npp_dir_base.path() .append("/lib/help/")));
+    npp_dir_icon.setPath(QString(npp_dir_base.path() .append("/lib/icons/")));
+    npp_dir_save.setPath(QString(npp_dir_base.path() .append("/lib/save/")));
+    npp_dir_user.setPath(QString(npp_dir_base.path() .append("/lib/user/")));
+    npp_dir_graf.setPath(QString(npp_dir_base.path() .append("/lib/xtra/graf/")));
+
 }
 
 
@@ -161,7 +168,7 @@ static int read_edit_file(QString file_name)
     file_name.append(".txt");
 
     /* Build the filename */
-    edit_file.setFileName(QString("%1%2" ) .arg(NPP_DIR_EDIT) .arg(file_name));
+    edit_file.setFileName(QString("%1/%2" ) .arg(npp_dir_edit.path()) .arg(file_name));
 
     if (!edit_file.exists())
     {

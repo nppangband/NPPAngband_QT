@@ -38,7 +38,7 @@ void SpellSelectDialog::keyPressEvent(QKeyEvent* which_key)
     // Handle escape key
     if (which_key->key() == Qt::Key_Escape)
     {
-        this->close();
+        this->reject();
         return;
     }
 
@@ -58,7 +58,9 @@ void SpellSelectDialog::keyPressEvent(QKeyEvent* which_key)
     QList<QPushButton *> buttons = tab->findChildren<QPushButton *>();
     for (int i = 0; i < buttons.size(); i++)
     {
-        if (buttons.at(i)->text().startsWith(key_pressed))
+        QString this_text = buttons.at(i)->text();
+
+        if (this_text.startsWith(key_pressed))
         {
             buttons.at(i)->click();
             break;
