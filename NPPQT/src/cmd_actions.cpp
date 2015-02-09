@@ -1799,6 +1799,17 @@ void do_cmd_tunnel(void)
     command_tunnel(args);
 }
 
+void do_cmd_tunnel_dir(int dir)
+{
+    if (!character_dungeon) return;
+
+    cmd_arg args;
+    args.wipe();
+    args.direction = dir;
+
+    command_tunnel(args);
+}
+
 /*
  * Perform the basic "close" command
  *
@@ -2243,10 +2254,22 @@ void do_cmd_rest(void)
     p_ptr->command_current = CMD_RESTING;
     p_ptr->player_args.choice = choice;
 
+    command_rest(p_ptr->player_args);
+}
 
+void do_cmd_rest_specific(int choice)
+{
+    if (!character_dungeon) return;
+
+    /* Cancel the command */
+    p_ptr->player_command_wipe();
+
+    p_ptr->command_current = CMD_RESTING;
+    p_ptr->player_args.choice = choice;
 
     command_rest(p_ptr->player_args);
 }
+
 
 /*
  * Determine if a given grid may be "walked"

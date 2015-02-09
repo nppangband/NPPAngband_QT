@@ -128,12 +128,12 @@ private slots:
     void save_and_close();
     void open_recent_file();
     void about();
+    void command_list();
     void options_dialog();
     void fontselect_dialog();
 
     void slot_find_player();
     void slot_redraw();
-    void slot_something();
     void toggle_searching() {do_cmd_toggle_search();}
     void click_study() {do_cmd_study();}
 
@@ -234,9 +234,11 @@ private:
 
 
     // Holds the actual commands for the help menu.
-    QAction *about_act;
-    QAction *about_Qt_act;
+    QAction *help_about;
+    QAction *help_about_Qt;
+    QAction *help_command_list;
     QAction *separator_act;
+
 
     // information about the main window
     QFontDatabase font_database;

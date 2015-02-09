@@ -11,10 +11,13 @@ int main(int argc, char *argv[])
     game_mode = 0;
 
     QApplication app(argc, argv);
+    QIcon main_icon(":/icons/lib/icons/nppicon.ico");
+    app.setWindowIcon(main_icon);
 
     app.setApplicationName("NPP Games");
 
     MainWindow *main_window = new MainWindow;
+
     main_window->show();
     return app.exec();
 }

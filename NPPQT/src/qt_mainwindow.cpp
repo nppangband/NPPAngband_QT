@@ -24,10 +24,12 @@
 #include "src/qt_mainwindow.h"
 #include "src/init.h"
 #include "src/optionsdialog.h"
-#include <src/player_screen.h>
+#include <src/command_list.h>
+#include <src/player_command.h>
 #include "src/player_birth.h"
 #include "src/utilities.h"
 #include "src/knowledge.h"
+#include "src/help.h"
 #include "emitter.h"
 #include "griddialog.h"
 #include "package.h"
@@ -360,10 +362,6 @@ QPixmap ui_get_tile(QString tile_id, TileBag *tileset)
     return pix;
 }
 
-void MainWindow::slot_something()
-{
-    take_hit(p_ptr->chp+2, "testing");
-}
 
 void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
 {
@@ -2090,15 +2088,18 @@ static void process_mov_key(int dir, bool shift_key, bool alt_key, bool ctrl_key
 
     // Flip pickup
     if (ctrl_key && alt_key) do_cmd_walk(dir, TRUE);
+    else if (ctrl_key && shift_key) do_cmd_tunnel_dir(dir);
     else if (ctrl_key) do_cmd_run(dir);
     else if (alt_key) do_cmd_alter(dir);
     else if (shift_key) ui_change_panel(dir);
+    else if (meta_key) do_cmd_tunnel_dir(dir);
     else do_cmd_walk(dir, FALSE);
 }
 
 bool MainWindow::check_disturb()
 {
-    if (p_ptr->is_resting() || p_ptr->is_running() || p_ptr->command_current) {
+    if (p_ptr->is_resting() || p_ptr->is_running() || p_ptr->command_current)
+    {
         disturb(0, 0);
         message("Cancelled.");
         return true;
@@ -2135,16 +2136,18 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     bool ctrl_key = modifiers.testFlag(Qt::ControlModifier);
     bool alt_key = modifiers.testFlag(Qt::AltModifier);
     bool meta_key = modifiers.testFlag(Qt::MetaModifier);
+    bool using_mods = FALSE;
 
-    if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))    shift_key = TRUE;
-    if (QApplication::queryKeyboardModifiers() & (Qt::ControlModifier))  ctrl_key = TRUE;
-    if (QApplication::queryKeyboardModifiers() & (Qt::AltModifier))      alt_key = TRUE;
-    if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     meta_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))    using_mods = shift_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::ControlModifier))  using_mods = ctrl_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::AltModifier))      using_mods = alt_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     using_mods = meta_key = TRUE;
 
     // EXPERIMENTAL - Detect shift modifiers with keypad
     // VERY IMPORTANT: We assume that the numlock key is alwasy pressed (normally)
     // because the code needed to tell us that exactly is very very platform dependent
-    if (!shift_key && modifiers.testFlag(Qt::KeypadModifier)) {
+    if (!shift_key && modifiers.testFlag(Qt::KeypadModifier))
+    {
         Qt::Key code = Qt::Key(which_key->key());
 
         QList<Qt::Key> lNumPadKeys = QList<Qt::Key>() << Qt::Key_Insert
@@ -2153,7 +2156,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             << Qt::Key_Home << Qt::Key_Up << Qt::Key_PageUp
             << Qt::Key_Delete;
 
-        shift_key = lNumPadKeys.contains(code);
+        if (lNumPadKeys.contains(code)) using_mods = shift_key = TRUE;
     }
 
     // Normal mode
@@ -2165,28 +2168,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             ui_center(p_ptr->py, p_ptr->px);
             break;
         }
-        // TODO PLAYTESTING
-        case Qt::Key_Asterisk:
-        {
-            // Stone to mud
-            if (which_key->modifiers() & Qt::ControlModifier) {
-                int dir;
-                if (get_aim_dir(&dir, false)) {
-                    wall_to_mud(dir, 100);
-                }
-            }
-            // Shot everything
-            else {
-                slot_something();
-            }
-            // Take a turn
-            process_player_energy(BASE_ENERGY_MOVE);
-            break;
-        }
+
         // Move down
         case Qt::Key_2:
         case Qt::Key_Down:
-        case Qt::Key_N:
+        case Qt::Key_B:
         {
             process_mov_key(2, shift_key, alt_key, ctrl_key, meta_key);
             return;
@@ -2195,7 +2181,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         // Move up
         case Qt::Key_8:
         case Qt::Key_Up:
-        case Qt::Key_U:
+        case Qt::Key_Y:
         {
             process_mov_key(8, shift_key, alt_key, ctrl_key, meta_key);
             return;
@@ -2204,7 +2190,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         // Move left
         case Qt::Key_4:
         case Qt::Key_Left:
-        case Qt::Key_H:
+        case Qt::Key_G:
         {
             process_mov_key(4, shift_key, alt_key, ctrl_key, meta_key);
             return;
@@ -2212,14 +2198,14 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         // Move right
         case Qt::Key_6:
         case Qt::Key_Right:
-        case Qt::Key_K:
+        case Qt::Key_J:
         {
             process_mov_key(6, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         // Move diagonally left and up
         case Qt::Key_7:
-        case Qt::Key_Y:
+        case Qt::Key_T:
         case Qt::Key_Home:
         {
             process_mov_key(7, shift_key, alt_key, ctrl_key, meta_key);
@@ -2227,7 +2213,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         // Move diagonally right and up
         case Qt::Key_9:
-        case Qt::Key_I:
+        case Qt::Key_U:
         case Qt::Key_PageUp:
         {
             process_mov_key(9, shift_key, alt_key, ctrl_key, meta_key);
@@ -2235,7 +2221,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         // Move diagonally left and down
         case Qt::Key_1:
-        case Qt::Key_B:
+        case Qt::Key_V:
         case Qt::Key_End:
         {
             process_mov_key(1, shift_key, alt_key, ctrl_key, meta_key);
@@ -2243,117 +2229,118 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         // Move diagonally right and down
         case Qt::Key_3:
-        case Qt::Key_M:
+        case Qt::Key_N:
         case Qt::Key_PageDown:
         {
             process_mov_key(3, shift_key, alt_key, ctrl_key, meta_key);
             return;
         }
         case Qt::Key_5:
-        case Qt::Key_J:
+        case Qt::Key_H:
         {
             do_cmd_hold();
             return;
         }
         case Qt::Key_A:
         {
-            if (ctrl_key) do_cmd_wizard_mode();
-            else do_cmd_activate();
+            if (ctrl_key)           do_cmd_wizard_mode();
+            else if (!using_mods)   do_cmd_activate();
             return;
         }
         case Qt::Key_C:
         {
-            if (shift_key) do_cmd_player_screen();
-            else do_cmd_close();
-            return;
+            do_cmd_repeat();
         }
-
         case Qt::Key_D:
         {
-            if (alt_key)            do_cmd_destroy();
-            else if (shift_key)     do_cmd_disarm();
-            else                    do_cmd_drop();
+            if (alt_key)            do_cmd_bash();
+            if (shift_key)          do_cmd_close();
+            else if (!using_mods)   do_cmd_open();
             return;
         }
         case Qt::Key_E:
         {
-            if (shift_key)          do_cmd_all_objects();
-            else do_cmd_use_item();
+            if (!using_mods)        do_cmd_use_item();
             return;
         }
         case Qt::Key_F:
         {
             if (alt_key)            do_cmd_feeling();
             else if (shift_key)     do_cmd_fire_at_nearest();
-            else                    do_cmd_fire();
+            else if (!using_mods)   do_cmd_fire();
             return;
         }
-        case Qt::Key_G:
+        case Qt::Key_I:
         {
-            if (shift_key)          do_cmd_study();
-            else                    do_cmd_pickup();
+            if (shift_key)          do_cmd_examine();
+            else if (!using_mods)   do_cmd_all_objects();
+            return;
+        }
+        case Qt::Key_K:
+        {
+            if (!using_mods)        do_cmd_throw();
             return;
         }
         case Qt::Key_L:
         {
-            do_cmd_look();
+            if (shift_key)          do_cmd_refuel();
+            else if (!using_mods)   do_cmd_look();
+            return;
+        }
+        case Qt::Key_M:
+        {
+            if (shift_key)          do_cmd_study();
+            else if (ctrl_key)      do_cmd_browse();
+            else if (!using_mods)   do_cmd_cast();
             return;
         }
         case Qt::Key_O:
         {
-            if (shift_key) do_cmd_examine();
-            do_cmd_open();
+            if (alt_key)            do_cmd_tunnel();
+            else if (shift_key)     do_cmd_make_trap();
+            else if (!using_mods)   do_cmd_disarm();
             return;
         }
         case Qt::Key_P:
         {
-            do_cmd_cast();
+            if (!using_mods)        do_cmd_player_screen();
             return;
         }
         case Qt::Key_Q:
         {
-            do_cmd_spike();
+            if (!using_mods)        do_cmd_spike();
             return;
         }
         case Qt::Key_R:
         {
-            if (alt_key)    do_cmd_repeat();
-            else if (shift_key)  do_cmd_refuel();
-            else            do_cmd_rest();
+            if (alt_key && ctrl_key)do_cmd_rest_specific(REST_BOTH_SP_HP);
+            else if (ctrl_key)      do_cmd_rest_specific(REST_HP);
+            else if (alt_key)       do_cmd_rest_specific(REST_SP);
+            else if (shift_key)     do_cmd_rest();
+            else if (!using_mods)   do_cmd_rest_specific(REST_COMPLETE);
             return;
         }
         case Qt::Key_S:
         {
-            if (shift_key)      do_cmd_toggle_search();
-            else                do_cmd_search();
-            return;
-        }
-        case Qt::Key_T:
-        {
-            if (alt_key)        do_cmd_make_trap();
-            else if (shift_key) do_cmd_tunnel();
-            else                do_cmd_takeoff();
-            return;
-        }
-        case Qt::Key_V:
-        {
-            do_cmd_throw();
+            if (shift_key)          do_cmd_toggle_search();
+            else if (!using_mods)   do_cmd_search();
             return;
         }
         case Qt::Key_W:
         {
-            do_cmd_wield();
+            if (ctrl_key)           do_cmd_takeoff();
+            else if (shift_key)     do_cmd_swap_weapon();
+            else if (!using_mods)   do_cmd_wield();
             return;
         }
         case Qt::Key_X:
         {
-            do_cmd_swap_weapon();
+            if (!using_mods)        do_cmd_destroy();
             return;
         }
         case Qt::Key_Z:
         {
-            if (shift_key) do_cmd_bash();
-            else do_cmd_browse();
+            if (!using_mods)        do_cmd_alter(DIR_UNKNOWN);
             return;
         }
         case Qt::Key_BraceLeft:
@@ -2383,7 +2370,13 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_Plus:
         {
-            do_cmd_alter(DIR_UNKNOWN);
+            do_cmd_pickup();
+
+            return;
+        }
+        case Qt::Key_Minus:
+        {
+            do_cmd_drop();
             return;
         }
         case Qt::Key_Colon:
@@ -2473,6 +2466,11 @@ void MainWindow::about()
                "<p>Sangband 0.9.9 and Demoband by Leon Marrick"
                "<p>FAangband 1.6 by Nick McConnell"
                "<p>Please see copyright.txt for complete copyright and licensing restrictions."));
+}
+
+void MainWindow::command_list()
+{
+    do_cmd_command_list();
 }
 
 // Activates and de-activates certain file_menu commands when a game is started.
@@ -2655,13 +2653,17 @@ void MainWindow::create_actions()
     view_kill_count->setStatusTip(tr("View the number of kills sorted by monster race."));
     connect(view_kill_count, SIGNAL(triggered()), this, SLOT(display_kill_count()));
 
-    about_act = new QAction(tr("&About"), this);
-    about_act->setStatusTip(tr("Show the application's About box"));
-    connect(about_act, SIGNAL(triggered()), this, SLOT(about()));
+    help_about = new QAction(tr("&About"), this);
+    help_about->setStatusTip(tr("Show the application's About box"));
+    connect(help_about, SIGNAL(triggered()), this, SLOT(about()));
 
-    about_Qt_act = new QAction(tr("About &Qt"), this);
-    about_Qt_act->setStatusTip(tr("Show the Qt library's About box"));
-    connect(about_Qt_act, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    help_about_Qt = new QAction(tr("About &Qt"), this);
+    help_about_Qt->setStatusTip(tr("Show the Qt library's About box"));
+    connect(help_about_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
+    help_command_list = new QAction(tr("&Show Command List"), this);
+    help_command_list->setStatusTip(tr("Show a list of all keybord commands"));
+    connect(help_command_list, SIGNAL(triggered()), this, SLOT(command_list()));
 }
 
 void MainWindow::set_dvg()
@@ -2845,8 +2847,9 @@ void MainWindow::create_menus()
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
-    help_menu->addAction(about_act);
-    help_menu->addAction(about_Qt_act);
+    help_menu->addAction(help_about);
+    help_menu->addAction(help_about_Qt);
+    help_menu->addAction(help_command_list);
 }
 
 // Create the toolbars

@@ -16,6 +16,7 @@ SOURCES +=  src/qt_main.cpp\
             src/qt_statusbar.cpp \
             src/calcs.cpp \
             src/cmd_actions.cpp \
+            src/command_list.cpp \
             src/cmd_misc.cpp \
             src/cmd_objects.cpp \
             src/cmd_pickup.cpp \
@@ -112,37 +113,38 @@ HEADERS  += src/qt_mainwindow.h\
             src/random_numbers.h \
             src/function_declarations.h \
             src/loadsave.h \
-            src/user_macros.h \
-            src/utilities.h \
             src/object_classes.h \
             src/squelch.h \
-            src/randart.h \
             src/cmds.h \
+            src/command_list.h \
             src/dun_classes.h \
             src/dun_generate.h \
+            src/dun_traps.h \
+            src/emitter.h \
+            src/griddialog.h \
             src/help.h \
             src/knowledge.h\
             src/optionsdialog.h \
             src/mon_classes.h \
+            src/nppdialog.h \
             src/object_dialog.h \
             src/object_all_menu.h \
+            src/object_select.h \
             src/object_settings.h \
             src/player_birth.h \
             src/player_classes.h \
             src/player_command.h \
+            src/player_death.h \
             src/player_scores.h \
             src/player_screen.h \
+            src/randart.h \
             src/spells.h \
-            src/emitter.h \
-            src/object_select.h \
-            src/nppdialog.h \
             src/storedialog.h \
-            src/griddialog.h \
             src/package.h \
             src/tilebag.h \
+            src/user_macros.h \
+            src/utilities.h \
             src/wizard_mode.h \
-            src/player_death.h \
-            src/dun_traps.h \
 
 
 RESOURCES += \

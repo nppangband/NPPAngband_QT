@@ -20,7 +20,6 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QPlainTextEdit>
-#include <QLabel>
 #include <QList>
 
 // The null line is there to prevent crashes as the data is read;
@@ -1214,7 +1213,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 {
 
                     QLabel *immune_label = new QLabel();
-                    make_standard_label(immune_label, "☑", TERM_BLUE);
+                    make_standard_label(immune_label, "✔", TERM_BLUE);
                     return_layout->addWidget(immune_label, row, col, Qt::AlignCenter);
 
                     // Too messy to inlude in player_flag_table
@@ -1256,7 +1255,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
             did_resist = TRUE;
 
             QLabel *resist_label = new QLabel();
-            make_standard_label(resist_label, "☑", TERM_GREEN);
+            make_standard_label(resist_label, "✔", TERM_GREEN);
             return_layout->addWidget(resist_label, row, col, Qt::AlignCenter);
         }
 
@@ -1305,14 +1304,14 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
         if (player_has_flag)
         {
             QLabel *player_label = new QLabel();
-            make_standard_label(player_label, "☑", TERM_BLUE);
+            make_standard_label(player_label, "✔", TERM_BLUE);
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
             did_resist = TRUE;
         }
         if (player_has_immunity)
         {
             QLabel *player_label = new QLabel;
-            make_standard_label(player_label, "☑", TERM_GREEN);
+            make_standard_label(player_label, "✔", TERM_GREEN);
             player_label->setToolTip("Inate immunity");
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
             did_immunity = TRUE;
@@ -1327,7 +1326,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if (p_ptr->timed[TMD_OPP_ACID] && !redundant_timed_event(TMD_OPP_ACID))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist fire.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1338,7 +1337,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if (p_ptr->timed[TMD_OPP_ELEC] && !redundant_timed_event(TMD_OPP_ELEC))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist lightning.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1349,7 +1348,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if (p_ptr->timed[TMD_OPP_FIRE] && !redundant_timed_event(TMD_OPP_FIRE))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist fire.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1360,7 +1359,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if (p_ptr->timed[TMD_OPP_COLD] && !redundant_timed_event(TMD_OPP_COLD))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist cold.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1371,7 +1370,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if (p_ptr->timed[TMD_OPP_POIS] && !redundant_timed_event(TMD_OPP_POIS))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You temporarily resist poison.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1382,7 +1381,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if (p_ptr->timed[TMD_HERO] || p_ptr->timed[TMD_BERSERK])
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily immune to fear.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1396,7 +1395,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if ((p_ptr->timed[TMD_SINVIS])  && !redundant_timed_event(TMD_SINVIS))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You can temporarily see invisible creatures.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1410,7 +1409,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if ((p_ptr->timed[TMD_NAT_LAVA]) && !redundant_timed_event(TMD_NAT_LAVA))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily native to lava terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1421,7 +1420,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if ((p_ptr->timed[TMD_NAT_OIL]) && !redundant_timed_event(TMD_NAT_OIL))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily native to oily terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1432,7 +1431,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if ((p_ptr->timed[TMD_NAT_SAND]) && !redundant_timed_event(TMD_NAT_SAND))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily native to sandy terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1443,7 +1442,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if ((p_ptr->timed[TMD_NAT_TREE]) && !redundant_timed_event(TMD_NAT_TREE))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily native to forest terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1454,7 +1453,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if ((p_ptr->timed[TMD_NAT_WATER]) && !redundant_timed_event(TMD_NAT_WATER))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily native to watery terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1465,7 +1464,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                 if ((p_ptr->timed[TMD_NAT_MUD]) && !redundant_timed_event(TMD_NAT_MUD))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "☑", TERM_PURPLE);
+                    make_standard_label(temp_label, "✔", TERM_PURPLE);
                     temp_label->setToolTip("You are temporarily native to muddy terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1667,8 +1666,7 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     QVBoxLayout *title_line = new QVBoxLayout;
     main_layout->addLayout(title_line);
     QLabel *main_prompt = new QLabel(QString("<h2>Character Information %1 %2 </h2>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
-    main_prompt->setAlignment(Qt::AlignCenter);
-    title_line->addWidget(main_prompt);
+    title_line->addWidget(main_prompt, Qt::AlignCenter);
     main_layout->addStretch(1);
 
 
