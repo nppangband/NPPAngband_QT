@@ -690,10 +690,6 @@ static void wr_extra(void)
         /* Write timer + complete bit */
         wr_u16b(tmp16u);
     }
-
-    /* Panel change offsets */
-    wr_u16b(panel_change_offset_y);
-    wr_u16b(panel_change_offset_x);
 }
 
 

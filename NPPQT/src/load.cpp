@@ -1211,21 +1211,6 @@ static int rd_extra(void)
         quest_indicator_timer &= ~(QUEST_INDICATOR_COMPLETE_BIT);
     }
 
-    /* Panel change offsets */
-    rd_u16b(&panel_change_offset_y);
-    rd_u16b(&panel_change_offset_x);
-
-    /* Check bounds */
-    if (panel_change_offset_y < MIN_PANEL_CHANGE_OFFSET_Y)
-    {
-        panel_change_offset_y = MIN_PANEL_CHANGE_OFFSET_Y;
-    }
-
-    if (panel_change_offset_x < MIN_PANEL_CHANGE_OFFSET_X)
-    {
-        panel_change_offset_x = MIN_PANEL_CHANGE_OFFSET_X;
-    }
-
     /* Read the player_hp array */
     rd_u16b(&tmp16u);
 

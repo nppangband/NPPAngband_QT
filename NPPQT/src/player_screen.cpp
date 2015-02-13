@@ -1183,7 +1183,7 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
         player_flag_record *pfr_ptr;
         if (flag_set == FLAGS_RESIST) pfr_ptr = &player_resist_table[x++];
         else if (flag_set == FLAGS_ABILITY) pfr_ptr = &player_abilities_table[x++];
-        else if (flag_set == FLAGS_NATIVITY) pfr_ptr = &player_nativity_table[x++];
+        else pfr_ptr = &player_nativity_table[x++];  // (flag_set == FLAGS_NATIVITY)
 
         // We are done
         if (pfr_ptr->name.isNull()) break;

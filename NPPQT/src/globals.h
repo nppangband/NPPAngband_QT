@@ -151,8 +151,6 @@ extern int sidebar_monsters[SIDEBAR_MONSTER_MAX];
 extern u16b quest_indicator_timer;
 extern byte quest_indicator_complete;
 
-extern u16b panel_change_offset_y;
-extern u16b panel_change_offset_x;
 
 extern dungeon_capabilities_type *dun_cap;
 

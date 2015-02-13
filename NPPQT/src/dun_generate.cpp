@@ -2986,6 +2986,9 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
     if (one_in_(2)) flip_v = TRUE;
     if (one_in_(2)) flip_h = TRUE;
 
+    // Avoid annoying compiler warning
+    x = y = 0;
+
     /* Place dungeon features and objects */
     for (dy = 0; dy < ymax; dy++)
     {
@@ -11658,10 +11661,6 @@ void generate_cave(void)
 
         /* Mega-Hack -- no player yet */
         p_ptr->px = p_ptr->py = 0;
-
-        /* Hack -- illegal panel */
-        panel_change_offset_y = MAX_DUNGEON_HGT;
-        panel_change_offset_x = MAX_DUNGEON_WID;
 
         /* Reset the monster generation level */
         monster_level = p_ptr->depth;

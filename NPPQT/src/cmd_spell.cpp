@@ -84,10 +84,12 @@ void SpellSelectDialog::help_press(int num)
 
 
 
-void SpellSelectDialog::count_spells(int mode)
+void SpellSelectDialog::available_spells(int mode)
 {
     for (int i = 0; i < max_spellbooks; i++)
     {
+        available_books[i] = FALSE;
+
         int idx = lookup_kind(cp_ptr->spell_book, i);
         if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN | USE_STORE)) continue;
 
@@ -104,28 +106,16 @@ void SpellSelectDialog::count_spells(int mode)
                 if (!spell_okay(spell, (mode == BOOK_CAST))) continue;
             }
 
-            // Note that the book and spell is available for use.
-            available_spells[i][j] = TRUE;
-
             // Make sure we know we are using this book
             available_books[i] = TRUE;
 
-            num_spells = TRUE;
+            usable_spells = TRUE;
+
+            break;
         }
     }
 }
 
-void SpellSelectDialog::clear_spells(void)
-{
-    for (int i = 0; i < BOOKS_PER_REALM_ANGBAND; i++)
-    {
-        available_books[i] = FALSE;
-        for (int x = 0; x < SPELLS_PER_BOOK; x++)
-        {
-            available_spells[i][x] = FALSE;
-        }
-    }
-}
 
 QString SpellSelectDialog::get_spell_comment(int spell)
 {
@@ -183,12 +173,10 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
         QWidget *aux = new QWidget;
         vlay->addWidget(aux);
 
-        vlay->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+        vlay->addStretch(1);
 
         QGridLayout *spell_layout = new QGridLayout;
         aux->setLayout(spell_layout);
-
-        spell_layout->setColumnStretch(0, 100);
 
         // Add a button to select the spellbook
         if (choosing_book)
@@ -196,35 +184,26 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
             QString button_text = (QString("Study a %1 from %2") .arg(noun) .arg(book_name));
             QPushButton *button = new QPushButton(button_text);
-            button->setStyleSheet("Text-align:left");
-            spell_layout->addWidget(button, row_num, COL_SPELL_TITLE);
+            spell_layout->addWidget(button, row_num, COL_SPELL_TITLE, Qt::AlignLeft);
             spell_select_group->addButton(button, i);
             row_num++;
         }
 
-            // Give each one titles
+        // Give each one titles
         QLabel *spell_title_header = new QLabel("Spell Name");
         QLabel *level_header = new QLabel("  Level  ");
         QLabel *mana_header = new QLabel("  Mana  ");
         QLabel *fail_header = new QLabel("  % Fail  ");
         QLabel *info_header = new QLabel(" Info");
         QLabel *help_header = new QLabel("  Help  ");
-        spell_title_header->setAlignment(Qt::AlignLeft);
-        spell_title_header->setAlignment(Qt::AlignVCenter);
-        level_header->setAlignment(Qt::AlignCenter);
-        mana_header->setAlignment(Qt::AlignCenter);
-        fail_header->setAlignment(Qt::AlignCenter);
-        info_header->setAlignment(Qt::AlignLeft);
-        info_header->setAlignment(Qt::AlignVCenter);
-        help_header->setAlignment(Qt::AlignCenter);
 
         // Add the headers
-        spell_layout->addWidget(spell_title_header, row_num, COL_SPELL_TITLE);
-        spell_layout->addWidget(level_header, row_num, COL_LEVEL);
-        spell_layout->addWidget(mana_header, row_num, COL_MANA);
-        spell_layout->addWidget(fail_header, row_num, COL_FAIL_PCT);
-        spell_layout->addWidget(info_header, row_num, COL_INFO);
-        spell_layout->addWidget(help_header, row_num, COL_HELP);
+        spell_layout->addWidget(spell_title_header, row_num, COL_SPELL_TITLE, Qt::AlignLeft);
+        spell_layout->addWidget(level_header, row_num, COL_LEVEL, Qt::AlignCenter);
+        spell_layout->addWidget(mana_header, row_num, COL_MANA, Qt::AlignCenter);
+        spell_layout->addWidget(fail_header, row_num, COL_FAIL_PCT, Qt::AlignCenter);
+        spell_layout->addWidget(info_header, row_num, COL_INFO, Qt::AlignLeft);
+        spell_layout->addWidget(help_header, row_num, COL_HELP, Qt::AlignCenter);
 
         row_num++;
 
@@ -253,42 +232,33 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             if (do_text)
             {
                 QLabel *spell_label = new QLabel(spell_name);
-                spell_label->setAlignment(Qt::AlignLeft);
-                spell_label->setAlignment(Qt::AlignVCenter);
                 spell_label->setToolTip(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell, 0));
-                spell_layout->addWidget(spell_label, row_num, COL_SPELL_TITLE);
+                spell_layout->addWidget(spell_label, row_num, COL_SPELL_TITLE, Qt::AlignLeft);
             }
             // Create a push button and link it
             else
             {
                 QPushButton *button = new QPushButton(text_num);
                 button->setText(spell_name);
-                button->setStyleSheet("Text-align:left");
                 button->setToolTip(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell, 0));
                 spell_select_group->addButton(button, spell);
-                spell_layout->addWidget(button, row_num, COL_SPELL_TITLE);
+                spell_layout->addWidget(button, row_num, COL_SPELL_TITLE, Qt::AlignLeft);
             }
             // Add level info
             QLabel *level_value = new QLabel(QString("%1") .arg(s_ptr->slevel));
-            level_value->setAlignment(Qt::AlignCenter);
-            spell_layout->addWidget(level_value, row_num, COL_LEVEL);
+            spell_layout->addWidget(level_value, row_num, COL_LEVEL, Qt::AlignCenter);
             // Add mana info
             QLabel *mana_value = new QLabel(QString("%1") .arg(s_ptr->smana));
-            mana_value->setAlignment(Qt::AlignCenter);
-            spell_layout->addWidget(mana_value, row_num, COL_MANA);
+            spell_layout->addWidget(mana_value, row_num, COL_MANA, Qt::AlignCenter);
             // Add spell % info
             QLabel *spell_value = new QLabel(QString("%1%") .arg(spell_chance(spell)));
-            spell_value->setAlignment(Qt::AlignCenter);
-            spell_layout->addWidget(spell_value, row_num, COL_FAIL_PCT);
+            spell_layout->addWidget(spell_value, row_num, COL_FAIL_PCT, Qt::AlignCenter);
             // Add spell_desc info
             QLabel *info_desc = new QLabel(QString("%1") .arg(spell_comment));
-            info_desc->setAlignment(Qt::AlignLeft);
-            info_desc->setAlignment(Qt::AlignVCenter);
-            spell_layout->addWidget(info_desc, row_num, COL_INFO);
+            spell_layout->addWidget(info_desc, row_num, COL_INFO, Qt::AlignLeft);
 
             // Add a help button to put up a detailed spell description.
-            QPushButton *help_button = new QPushButton(text_num);
-            help_button->setText("");
+            QPushButton *help_button = new QPushButton();
             help_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
             spell_help_group->addButton(help_button, spell);
             spell_layout->addWidget(help_button, row_num, COL_HELP);
@@ -296,6 +266,8 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             row_num++;
 
         }
+
+        vlay->addStretch(1);
 
         spell_tab->setLayout(vlay);
 
@@ -316,16 +288,15 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     main_prompt->setAlignment(Qt::AlignCenter);
 
     // Start with a clean slate
-    num_spells = FALSE;
+    usable_spells = FALSE;
     max_spellbooks = (game_mode == GAME_NPPANGBAND ? BOOKS_PER_REALM_ANGBAND : BOOKS_PER_REALM_MORIA);
     num_available_spellbooks = 0;
     choosing_book = FALSE;
     *cancelled = FALSE;
     *success = FALSE;
-    clear_spells();
 
     // First, find the eligible spells
-    count_spells(mode);
+    available_spells(mode);
 
     // Make sure we can actually do the command asked for
     if ((mode == BOOK_STUDY) && !p_ptr->can_study())
@@ -343,7 +314,7 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
         /* Report failure */
          return;
     }
-    else if (!num_spells)
+    else if (!usable_spells)
     {
         /* Report failure */
         return;
@@ -906,6 +877,8 @@ void do_cmd_cast(void)
     // Handle not having a spell to cast
     if ((!success) || (cancelled))
     {
+        pop_up_message_box(QString("%1 is %2") .arg(verb) .arg(cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, spell, 0)));
+
         if (!success && !cancelled) message(QString("You have no %1s that you can %3 right now.") .arg(noun) .arg(verb));
         return;
     }
@@ -983,6 +956,8 @@ void do_cmd_study(void)
     if ((!success) || (cancelled))
     {
         if (!success && !cancelled) message(QString("You have no %1s that you can study right now.") .arg(noun));
+
+        if (!success && !cancelled) pop_up_message_box(QString("spell is %1") .arg(spell));
         return;
     }
 

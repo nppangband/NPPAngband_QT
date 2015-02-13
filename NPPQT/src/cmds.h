@@ -62,18 +62,16 @@ private:
     QString format_button_name(QChar char_index, object_type *o_ptr, byte which_tab, int slot);
 
     //Functions to track the list of possible items
-    void count_spells(int mode);
-    void clear_spells(void);
+    void available_spells(int mode);
 
     QString get_spell_comment(int spell);
 
     // Variables for keeping track of which item is selected
     int selected_button;
 
-    bool available_spells[BOOKS_PER_REALM_ANGBAND][SPELLS_PER_BOOK];
     bool available_books[BOOKS_PER_REALM_ANGBAND];
 
-    bool num_spells;
+    bool usable_spells;
     int num_available_spellbooks;
     int max_spellbooks;
 

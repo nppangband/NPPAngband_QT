@@ -1028,8 +1028,8 @@ enum
 /*
  * Minimum values for panel change offsets
  */
-#define MIN_PANEL_CHANGE_OFFSET_Y 2
-#define MIN_PANEL_CHANGE_OFFSET_X 4
+#define PANEL_CHANGE_OFFSET_Y 2
+#define PANEL_CHANGE_OFFSET_X 4
 
 enum
 {

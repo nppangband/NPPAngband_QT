@@ -143,27 +143,26 @@ bool player_type::should_stop_resting()
 
     if (player_args.choice == REST_BOTH_SP_HP)
     {
-        if (chp != mhp) return (FALSE);
-        if (csp != msp) return (FALSE);
+        if (chp < mhp) return (FALSE);
+        if (csp < msp) return (FALSE);
         return (TRUE);
     }
 
     if (player_args.choice == REST_HP)
     {
-        if (chp != mhp) return (FALSE);
+        if (chp < mhp) return (FALSE);
         return (TRUE);
     }
     if (player_args.choice == REST_SP)
     {
-        if (csp != msp) return (FALSE);
+        if (csp < msp) return (FALSE);
         return (TRUE);
     }
 
-    if ((player_args.choice == REST_COMPLETE) ||
-        (player_args.choice == REST_TURNCOUNT))
+    if (player_args.choice == REST_COMPLETE)
     {
-        if (chp != mhp) return (FALSE);
-        if (csp != msp) return (FALSE);
+        if (chp < mhp) return (FALSE);
+        if (csp < msp) return (FALSE);
         if (timed[TMD_BLIND])  return (FALSE);
         if (timed[TMD_CONFUSED])  return (FALSE);
         if (timed[TMD_AFRAID])  return (FALSE);
@@ -171,13 +170,14 @@ bool player_type::should_stop_resting()
         if (timed[TMD_SLOW])  return (FALSE);
         if (timed[TMD_PARALYZED])  return (FALSE);
         if (timed[TMD_IMAGE])  return (FALSE);
-        if (word_recall)  return (FALSE);
-        if (food < PY_FOOD_UPPER)  return (FALSE);
+        if (food > PY_FOOD_UPPER)  return (TRUE);
 
-        if (player_args.choice == REST_TURNCOUNT)
-        {
-            if (player_args.repeats) return (FALSE);
-        }
+        return (TRUE);
+    }
+
+    if (player_args.choice == REST_TURNCOUNT)
+    {
+        if (player_args.repeats) return (FALSE);
         return (TRUE);
     }
 

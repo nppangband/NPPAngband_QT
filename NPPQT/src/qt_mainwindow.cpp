@@ -295,10 +295,10 @@ void ui_player_moved()
     }
 
     QRect vis = visible_dungeon();
-    if (py < vis.y() + panel_change_offset_y
-            || py >= vis.y() + vis.height() - panel_change_offset_y
-            || px < vis.x() + panel_change_offset_x
-            || px >= vis.x() + vis.width() - panel_change_offset_x)
+    if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
+            || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
+            || px < vis.x() + PANEL_CHANGE_OFFSET_X
+            || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
     {
         ui_center(py, px);
     }
@@ -1270,7 +1270,7 @@ void ui_event_signal(int event)
             break;
         }
         default: break;
-        }
+    }
 
     switch (event)
     {
@@ -1314,7 +1314,7 @@ static void prt_exp(QTableWidget *sidebar, int row)
         xp = (long)(get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L) - p_ptr->exp;
 
     /* Format XP */
-    s2 = QString("%1").arg(xp);
+    s2 = number_to_formatted_string(xp);
 
     QTableWidgetItem *item = sidebar->item(row, 0);
 
@@ -1688,7 +1688,7 @@ void MainWindow::update_sidebar()
 
     // GOLD
 
-    QString gold = QString("GOLD %1").arg(p_ptr->au);
+    QString gold = QString(number_to_formatted_string(p_ptr->au));
     item = sidebar->item(SBAR_GOLD, 0);
     item->setText(gold);
     item->setTextColor(SBAR_NORMAL);
