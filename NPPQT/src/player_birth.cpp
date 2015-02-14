@@ -675,14 +675,12 @@ void PlayerBirth::add_stat_choices(QVBoxLayout *return_layout)
     group_stat_choice->setExclusive(TRUE);
 
     QLabel *stat_choice_label = new QLabel("<h2>Stat Gen Method</h2>");
-    //stat_choice_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(stat_choice_label, Qt::AlignLeft);
 
     QRadioButton *point_radiobutton = new QRadioButton("Point Based");
     point_based = TRUE;
     point_radiobutton->setChecked(TRUE);
     point_radiobutton->setObjectName("point_radio");
-    //point_radiobutton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     group_stat_choice->addButton(point_radiobutton, TRUE);
     return_layout->addWidget(point_radiobutton, Qt::AlignLeft);
     connect(point_radiobutton, SIGNAL(clicked()), this, SLOT(point_button_chosen()));
@@ -690,7 +688,6 @@ void PlayerBirth::add_stat_choices(QVBoxLayout *return_layout)
     QRadioButton *roller_radiobutton = new QRadioButton("Random Roller");
     roller_radiobutton->setChecked(FALSE);
     roller_radiobutton->setObjectName("roller_radio");
-    //roller_radiobutton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     group_stat_choice->addButton(roller_radiobutton, FALSE);
     return_layout->addWidget(roller_radiobutton, Qt::AlignLeft);
     connect(roller_radiobutton, SIGNAL(clicked()), this, SLOT(random_button_chosen()));
@@ -710,7 +707,6 @@ void PlayerBirth::add_stat_choices(QVBoxLayout *return_layout)
     return_layout->addWidget(points_left, Qt::AlignLeft);
 
     QPushButton *roll_char = new QPushButton("Roll Character");
-    //roll_char->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     roll_char->setObjectName("roll_char");
     roll_char->setToolTip("Press to roll your player characteristics.");
     connect(roll_char, SIGNAL(clicked()), this, SLOT(random_roll()));
@@ -733,7 +729,6 @@ void PlayerBirth::add_classes(QVBoxLayout *return_layout)
 
     QLabel *class_label = new QLabel("<h2>Player Class</h2>");
     class_label->setToolTip(get_help_topic("race_class_info", "Classes"));
-    //class_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(class_label, 0, Qt::AlignCenter);
 
     cur_class = 0;
@@ -743,7 +738,6 @@ void PlayerBirth::add_classes(QVBoxLayout *return_layout)
         QRadioButton *this_radiobutton = new QRadioButton(c_info[i].cl_name);
         if (i == cur_class) this_radiobutton->setChecked(TRUE);
         else this_radiobutton->setChecked(FALSE);
-        //this_radiobutton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         group_class->addButton(this_radiobutton, i);
         return_layout->addWidget(this_radiobutton);
     }
@@ -767,7 +761,6 @@ void PlayerBirth::add_races(QVBoxLayout *return_layout)
 
     QLabel *race_label = new QLabel("<h2>Player Race</h2>");
     race_label->setToolTip(get_help_topic("race_class_info", "races"));
-    //race_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(race_label, 0, Qt::AlignCenter);
 
     cur_race = 0;
@@ -777,7 +770,6 @@ void PlayerBirth::add_races(QVBoxLayout *return_layout)
         QRadioButton *this_radiobutton = new QRadioButton(p_info[i].pr_name);
         if (i == cur_race) this_radiobutton->setChecked(TRUE);
         else this_radiobutton->setChecked(FALSE);
-        //this_radiobutton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         group_race->addButton(this_radiobutton, i);
         return_layout->addWidget(this_radiobutton);
     }
@@ -839,21 +831,18 @@ void PlayerBirth::random_all(void)
 void PlayerBirth::add_genders(QVBoxLayout *return_layout)
 {
     QLabel *name_label = new QLabel("<h2>Charater Name</h2>");
-    //name_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(name_label, 0, Qt::AlignCenter);
 
     op_ptr->full_name = cur_name = "Player";
     player_name = new QLineEdit(cur_name);
     player_name->setText(cur_name);
     connect(player_name, SIGNAL(textChanged(QString)), this, SLOT(name_changed(QString)));
-    //player_name->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(player_name, Qt::AlignLeft);
 
     group_gender = new QButtonGroup;
     group_gender->setExclusive(TRUE);
 
     QLabel *gender_label = new QLabel("<h2>Player Gender</h2>");
-    //gender_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(gender_label, 0, Qt::AlignCenter);
 
     cur_gender = 0;
@@ -864,7 +853,6 @@ void PlayerBirth::add_genders(QVBoxLayout *return_layout)
         this_radiobutton->setChecked(TRUE);
         if (i == cur_gender) this_radiobutton->setChecked(TRUE);
         else this_radiobutton->setChecked(FALSE);
-        //this_radiobutton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
         group_gender->addButton(this_radiobutton, i);
         return_layout->addWidget(this_radiobutton);
     }
@@ -877,33 +865,27 @@ void PlayerBirth::add_genders(QVBoxLayout *return_layout)
     return_layout->addWidget(gender_expl);
 
     QPushButton *rand_name = new QPushButton("Random Name");
-    //rand_name->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(rand_name, 0, Qt::AlignLeft);
     connect(rand_name, SIGNAL(clicked()), this, SLOT(random_name()));
 
     QPushButton *rand_gender = new QPushButton("Random Gender");
-    //rand_gender->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(rand_gender, 0, Qt::AlignLeft);
     connect(rand_gender, SIGNAL(clicked()), this, SLOT(random_gender()));
 
     QPushButton *rand_race = new QPushButton("Random Race");
-    //rand_race->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(rand_race, 0, Qt::AlignLeft);
     connect(rand_race, SIGNAL(clicked()), this, SLOT(random_race()));
 
     QPushButton *rand_class = new QPushButton("Random Class");
-    //rand_class->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(rand_class, 0, Qt::AlignLeft);
     connect(rand_class, SIGNAL(clicked()), this, SLOT(random_class()));
 
     QPushButton *rand_all = new QPushButton("Random Character");
     rand_all->setToolTip("Randomly select the character's name, gender, race, and class.");
-    //rand_all->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(rand_all, 0, Qt::AlignLeft);
     connect(rand_all, SIGNAL(clicked()), this, SLOT(random_all()));
 
     QPushButton *all_options = new QPushButton("All Options");
-    //all_options->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     return_layout->addWidget(all_options, 0, Qt::AlignLeft);
     connect(all_options, SIGNAL(clicked()), this, SLOT(call_options_dialog()));
 }
@@ -992,28 +974,24 @@ PlayerBirth::PlayerBirth(bool quickstart)
     hlay_choices->addLayout(vlay_options);
     add_option_boxes(vlay_options);
     vlay_options->addStretch(1);
-    //hlay_choices->addStretch(1);
 
     // Add gender column and buttons
     QVBoxLayout *vlay_gender = new QVBoxLayout;
     hlay_choices->addLayout(vlay_gender);
     add_genders(vlay_gender);
     vlay_gender->addStretch(1);
-    //hlay_choices->addStretch(1);
 
     // Add race column
     QVBoxLayout *vlay_race  = new QVBoxLayout;
     hlay_choices->addLayout(vlay_race);
     add_races(vlay_race);
     vlay_race->addStretch(1);
-    //hlay_choices->addStretch(1);
 
     //Add class column
     QVBoxLayout *vlay_class  = new QVBoxLayout;
     hlay_choices->addLayout(vlay_class);
     add_classes(vlay_class);
     vlay_class->addStretch(1);
-    //hlay_choices->addStretch(1);
 
     QVBoxLayout *vlay_help_area = new QVBoxLayout;
     hlay_choices->addLayout(vlay_help_area, 1);

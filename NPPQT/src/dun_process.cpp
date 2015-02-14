@@ -2067,6 +2067,4 @@ void process_player_energy(byte energy_used)
 
     /* Redraw the state */
     p_ptr->redraw |= (PR_STATE);
-
-    handle_stuff();
 }

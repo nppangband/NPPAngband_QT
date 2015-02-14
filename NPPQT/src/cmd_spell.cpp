@@ -232,18 +232,21 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             if (do_text)
             {
                 QLabel *spell_label = new QLabel(spell_name);
+                spell_label->setAlignment(Qt::AlignLeft);
                 spell_label->setToolTip(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell, 0));
-                spell_layout->addWidget(spell_label, row_num, COL_SPELL_TITLE, Qt::AlignLeft);
+                spell_layout->addWidget(spell_label, row_num, COL_SPELL_TITLE);
             }
             // Create a push button and link it
             else
             {
                 QPushButton *button = new QPushButton(text_num);
                 button->setText(spell_name);
+                button->setStyleSheet("Text-align:left");
                 button->setToolTip(cast_spell(MODE_SPELL_DESC, cp_ptr->spell_book, spell, 0));
                 spell_select_group->addButton(button, spell);
-                spell_layout->addWidget(button, row_num, COL_SPELL_TITLE, Qt::AlignLeft);
+                spell_layout->addWidget(button, row_num, COL_SPELL_TITLE);
             }
+
             // Add level info
             QLabel *level_value = new QLabel(QString("%1") .arg(s_ptr->slevel));
             spell_layout->addWidget(level_value, row_num, COL_LEVEL, Qt::AlignCenter);
@@ -280,7 +283,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 
 
 // This assumes the check that the player can cast has already been done.
-SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool *success, bool *cancelled)
+SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool *cannot, bool *cancelled)
 {
     spell_dialog = new QTabWidget;
 
@@ -293,7 +296,7 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     num_available_spellbooks = 0;
     choosing_book = FALSE;
     *cancelled = FALSE;
-    *success = FALSE;
+    *cannot = TRUE;
 
     // First, find the eligible spells
     available_spells(mode);
@@ -320,6 +323,9 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
         return;
     }
 
+    // Passed all the pre-dialog checks.
+    *cannot = FALSE;
+
     // We are selecting a book instead of a specific spell.
     if ((mode == BOOK_STUDY) && !p_ptr->chooses_spells()) choosing_book = TRUE;
 
@@ -345,32 +351,22 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     if (!this->exec())
     {
         *cancelled = TRUE;
-        *success = FALSE;
     }
     else
     {
         *spell = selected_button;
-        if (*spell > -1) *success = TRUE;
-        else *success = FALSE;
     }
 }
 
-static int get_spell_index(const object_type *o_ptr, int index)
-{
-    return get_spell_from_list(o_ptr->sval,index);
-}
 
 /*
  * Check if the given spell is in the given book.
  */
-static bool spell_in_book(int spell, int book)
+static bool spell_in_book(int spell, int sval)
 {
-    int i;
-    object_type *o_ptr = object_from_item_idx(book);
-
-    for (i = 0; i < SPELLS_PER_BOOK; i++)
+    for (int i = 0; i < SPELLS_PER_BOOK; i++)
     {
-        if (spell == get_spell_index(o_ptr, i)) return TRUE;
+        if (spell == get_spell_from_list(sval, i)) return TRUE;
     }
 
     return FALSE;
@@ -388,7 +384,8 @@ static bool spell_is_available(int spell)
         int k_idx = lookup_kind(cp_ptr->spell_book, i);
 
         // Make sure we have the spell and book
-        if (!spell_in_book(spell, k_idx)) continue;
+        if (!spell_in_book(spell, i)) continue;
+
         if (!object_kind_is_available(k_idx, USE_INVEN | USE_FLOOR)) continue;
 
         // Success
@@ -397,96 +394,6 @@ static bool spell_is_available(int spell)
 
     return (FALSE);
 }
-
-// Return where the book in which a spell exists
-// Assumes spell_is_available has already been checked.
-// And the player belongs to the spell realm
-// The game will likely crash if these checks aren't made first
-int find_study_book(int sval)
-{
-    object_type *o_ptr;
-
-    int k_idx = lookup_kind(cp_ptr->spell_book, sval);
-
-    for (int i = 0; i < INVEN_PACK; i++)
-    {
-        o_ptr = &inventory[i];
-        if (o_ptr->k_idx != k_idx) continue;
-
-        // Found it
-        return (i);
-    }
-
-    s16b this_o_idx, next_o_idx = 0;
-
-    for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
-    {
-        /* Get the object */
-        o_ptr = &o_list[this_o_idx];
-
-        /* Get the next object */
-        next_o_idx = o_ptr->next_o_idx;
-
-        if (o_ptr->k_idx != k_idx) continue;
-
-         // Found it, return as a negative
-        return (-this_o_idx);
-    }
-
-    //should never get this far
-    return (0);
-}
-
-// Return where to the book in which a spell exists
-// Assumes spell_is_available has already been checked.
-// And the player belongs to the spell realm
-// The game will likely crash if these checks aren't made first
-int find_book_with_spell(int spell)
-{
-    int max_books = BOOKS_PER_REALM_ANGBAND;
-    if (game_mode == GAME_NPPMORIA) max_books = BOOKS_PER_REALM_MORIA;
-    int k_idx;\
-
-    object_type *o_ptr;
-
-    // First find the sval
-    for (int sval = 0; sval < max_books; sval++)
-    {
-        k_idx = lookup_kind(cp_ptr->spell_book, sval);
-
-        // Make sure we have the spell and book
-        if (spell_in_book(spell, k_idx))  break;
-    }
-
-    for (int i = 0; i < INVEN_PACK; i++)
-    {
-        o_ptr = &inventory[i];
-        if (o_ptr->k_idx != k_idx) continue;
-
-        // Found it
-        return (i);
-    }
-
-    s16b this_o_idx, next_o_idx = 0;
-
-    for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
-    {
-        /* Get the object */
-        o_ptr = &o_list[this_o_idx];
-
-        /* Get the next object */
-        next_o_idx = o_ptr->next_o_idx;
-
-        if (o_ptr->k_idx != k_idx) continue;
-
-         // Found it, return as a negative
-        return (-this_o_idx);
-    }
-
-    //should never get this far
-    return (0);
-}
-
 
 /*
  * Determine if a spell is "okay" for the player to cast or study
@@ -743,7 +650,6 @@ static void cast_spell(cmd_arg args)
     bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
 
     // Verify we have access to the spell book;
-
     if (!spell_okay(spell, TRUE) || !spell_is_available(spell))
     {
         pop_up_message_box(QString("You cannot %1 this %2.") .arg(verb) .arg(noun));
@@ -870,24 +776,21 @@ void do_cmd_cast(void)
     QString prompt = (QString("Please select a %1 to %2.") .arg(noun) .arg(verb));
 
     int mode = BOOK_CAST;
-    bool success;
     bool cancelled;
-    SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
+    bool cannot;
+    SpellSelectDialog(&spell, prompt, mode, &cannot, &cancelled);
 
     // Handle not having a spell to cast
-    if ((!success) || (cancelled))
+    if (cannot)
     {
-        pop_up_message_box(QString("%1 is %2") .arg(verb) .arg(cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, spell, 0)));
-
-        if (!success && !cancelled) message(QString("You have no %1s that you can %3 right now.") .arg(noun) .arg(verb));
+        message(QString("You have no %1s that you can %3 right now.") .arg(noun) .arg(verb));
         return;
     }
+    else if (cancelled) return;
 
     bool trap_spell = is_trap_spell(cp_ptr->spell_book, spell);
 
     if (spell_needs_aim(cp_ptr->spell_book, spell) && !get_aim_dir(&dir, trap_spell)) return;
-
-   if (!get_item_allow(find_book_with_spell(spell), VERIFY_CAST)) return;
 
     cmd_arg args;
     args.wipe();
@@ -914,7 +817,7 @@ bool player_can_use_book(const object_type *o_ptr, bool known)
     /* Extract spells */
     for (i = 0; i < SPELLS_PER_BOOK; i++)
     {
-        int s = get_spell_index(o_ptr, i);
+        int s = get_spell_from_list(o_ptr->sval, i);
 
         /* Skip non-OK spells */
         if (s == -1) continue;
@@ -948,24 +851,18 @@ void do_cmd_study(void)
     QString prompt = (QString("Please select a %1 to study.") .arg(noun));
 
     int mode = BOOK_STUDY;
-    bool success;
     bool cancelled;
-    SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
+    bool cannot;
+    SpellSelectDialog(&spell, prompt, mode, &cannot, &cancelled);
 
     // Handle not having a spell to learn
-    if ((!success) || (cancelled))
+    if (cannot)
     {
-        if (!success && !cancelled) message(QString("You have no %1s that you can study right now.") .arg(noun));
+        message(QString("You have no %1s that you can study right now.") .arg(noun));
 
-        if (!success && !cancelled) pop_up_message_box(QString("spell is %1") .arg(spell));
         return;
     }
-
-    if (p_ptr->chooses_spells())
-    {
-        if (!get_item_allow(find_book_with_spell(spell), VERIFY_STUDY)) return;
-    }
-    else if (!get_item_allow(find_study_book(spell), VERIFY_STUDY)) return;
+    else if (cancelled) return;
 
     p_ptr->message_append_start();
 

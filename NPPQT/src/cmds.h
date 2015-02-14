@@ -34,7 +34,7 @@ class SpellSelectDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SpellSelectDialog(int *spell, QString prompt, int mode, bool *success, bool *cancelled);
+    explicit SpellSelectDialog(int *spell, QString prompt, int mode, bool *cannot, bool *cancelled);
 
 protected:
     void keyPressEvent(QKeyEvent* which_key);

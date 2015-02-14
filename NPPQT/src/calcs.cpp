@@ -1303,9 +1303,6 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         /* Add permanent stat increases */
         add += p_ptr->stat_quest_add[i];
 
-        p_ptr->au = 3000000;
-        p_ptr->stat_base_cur[i] = p_ptr->stat_base_max[i] = 118;
-
         /* Extract the new "stat_top" value for the stat */
         top = modify_stat_value(p_ptr->stat_base_max[i], add);
 

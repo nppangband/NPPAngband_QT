@@ -2241,6 +2241,8 @@ static bool load_scores(void)
 
     rd_scores();
 
+    save_file.close();
+
     // Success
     return (TRUE);
 }

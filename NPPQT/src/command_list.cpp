@@ -145,7 +145,7 @@ static struct command_desc dir_commands[] =
     {"Run", "(CTRL)direction key"},
     {"Alter", "(ALT)direction key"},
     {"Look (Change Panel)", "(shift)direction key"},
-    {"Tunnel (Specified Direction)", "'h', or '5'"},
+    {"Tunnel (Specified Direction)", "(CTRL + SHIFT)direction key"},
     // The null entry at the end is essential for initializing the table of groups.
     {NULL, NULL},
 };
@@ -234,15 +234,18 @@ CommandList::CommandList(void)
     QVBoxLayout *vlay_pad_dirs = new QVBoxLayout;
     add_dir_keyboard(vlay_pad_dirs, FALSE);
     top_across->addLayout(vlay_pad_dirs);
-
     top_across->addStretch(1);
+
+    QGridLayout *glay_dir_commands = new QGridLayout;
+    add_dir_commands(glay_dir_commands);
+    main_layout->addLayout(glay_dir_commands);
 
     QLabel *keyboard_prompt = new QLabel(QString("<h2>Keyboard Commands</h2>"));
     main_layout->addWidget(keyboard_prompt, Qt::AlignCenter);
 
-    QGridLayout *glay_dir_commands = new QGridLayout;
-    add_keyboard_commands(glay_dir_commands);
-    main_layout->addLayout(glay_dir_commands);
+    QGridLayout *glay_key_commands = new QGridLayout;
+    add_keyboard_commands(glay_key_commands);
+    main_layout->addLayout(glay_key_commands);
 
     QDialogButtonBox buttons;
     buttons.setStandardButtons(QDialogButtonBox::Ok);
