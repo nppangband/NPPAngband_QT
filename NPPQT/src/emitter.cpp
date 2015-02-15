@@ -894,6 +894,8 @@ DetectionAnimation::DetectionAnimation(int y, int x, int rad)
 
     angle = 0;
 
+    opacity = 0.7;
+
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
 
     this->setVisible(false);
@@ -919,7 +921,7 @@ QRectF DetectionAnimation::boundingRect() const
 
 void DetectionAnimation::do_timeout()
 {
-    if (++steps > 4) {
+    if (++steps > 5) {
         stop();
         return;
     }
@@ -927,6 +929,8 @@ void DetectionAnimation::do_timeout()
     if (steps > 1) {
         angle += 3;
         currentPix = rotate_pix(detectionPix, angle);
+
+        opacity = MIN(opacity + 0.20, 1.0);
     }
 
     this->setVisible(true);
@@ -939,8 +943,10 @@ void DetectionAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem
     (void)option;
     (void)widget;
 
+    painter->setOpacity(opacity);
     QPointF adj(currentPix.width() / 2, currentPix.height() / 2);
     QPointF center(c_x, c_y);
     center -= adj;
     painter->drawPixmap(center, currentPix);
+    painter->setOpacity(1.0);
 }
