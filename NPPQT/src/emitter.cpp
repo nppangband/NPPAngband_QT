@@ -873,7 +873,13 @@ DetectionAnimation::DetectionAnimation(int y, int x, int rad)
 
     size = MIN(size, detectionPix.width());
 
-    currentPix = detectionPix = detectionPix.scaled(size, size);
+    if (size != detectionPix.width()) {
+        detectionPix = detectionPix.scaled(QSize(size, size),
+                                            Qt::IgnoreAspectRatio,
+                                            Qt::SmoothTransformation);
+    }
+
+    currentPix = detectionPix;
 
     QPointF adj(size / 2, size / 2);
 
@@ -882,7 +888,7 @@ DetectionAnimation::DetectionAnimation(int y, int x, int rad)
     c_y = adj.y();
     c_x = adj.x();
 
-    timer.setInterval(200);
+    timer.setInterval(70);
 
     steps = 0;
 
@@ -913,7 +919,7 @@ QRectF DetectionAnimation::boundingRect() const
 
 void DetectionAnimation::do_timeout()
 {
-    if (++steps > 10) {
+    if (++steps > 4) {
         stop();
         return;
     }
