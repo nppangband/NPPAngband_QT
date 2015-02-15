@@ -135,7 +135,7 @@ private slots:
     void slot_find_player();
     void slot_redraw();
     void toggle_searching() {do_cmd_toggle_search();}
-    void click_study() {do_cmd_study();}
+    void click_study() {do_cmd_study(-1);}
 
     void do_create_package();
     void do_extract_from_package();

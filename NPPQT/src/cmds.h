@@ -34,7 +34,7 @@ class SpellSelectDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SpellSelectDialog(int *spell, QString prompt, int mode, bool *cannot, bool *cancelled);
+    explicit SpellSelectDialog(int *spell, int start_sval, QString prompt, int mode, bool *cannot, bool *cancelled);
 
 protected:
     void keyPressEvent(QKeyEvent* which_key);
@@ -43,6 +43,8 @@ private slots:
     // Receives the number of the button pressed.
     void button_press(int num);
     void help_press(int num);
+    void move_left(void);
+    void move_right(void);
 
 
 
@@ -74,6 +76,8 @@ private:
     bool usable_spells;
     int num_available_spellbooks;
     int max_spellbooks;
+    int selected_book;
+    int activate_tab;
 
     // Are we a priest studying a book, or do we get to choose ?
     bool choosing_book;
@@ -184,12 +188,13 @@ extern int move_player(int dir, int jumping);
 extern int spell_chance(int spell);
 extern bool spell_okay(int spell, bool known);
 extern void command_browse(cmd_arg arg);
-extern void do_cmd_browse(void);
+extern void do_cmd_browse(int book_choice);
 extern bool player_can_use_book(const object_type *o_ptr, bool known);
 extern void command_study(cmd_arg args);
-extern void do_cmd_study(void);
+extern void do_cmd_study(int book_choice);
 extern void command_cast(cmd_arg args);
-extern void do_cmd_cast(void);
+extern void do_cmd_cast(int book_choice);
 extern s16b get_spell_from_list(s16b book, s16b spell);
+extern bool obj_can_cast(object_type *o_ptr);
 
 #endif // CMDS_H

@@ -4424,17 +4424,7 @@ bool obj_can_refill(object_type *o_ptr)
 }
 
 
-/*
- * Is this a spellbook?
- */
-bool obj_is_spellbook(object_type *o_ptr)
-{
-    if (o_ptr->tval == TV_MAGIC_BOOK) return (TRUE);
-    if (o_ptr->tval == TV_PRAYER_BOOK) return (TRUE);
-    if (o_ptr->tval == TV_DRUID_BOOK) return (TRUE);
 
-    return (FALSE);
-}
 
 bool obj_is_chest(object_type *o_ptr) {return o_ptr->is_chest();}
 

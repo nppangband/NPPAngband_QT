@@ -153,7 +153,7 @@ extern void set_dungeon_type(u16b dungeon_type);
 extern void process_player_energy(byte energy);
 extern void change_player_level(void);
 
-/* init2.c */
+/* init_game.cpp */
 extern void init_player_graf_info();
 extern void clear_graphics();
 extern void init_graphics();
@@ -161,12 +161,17 @@ extern void init_npp_games(void);
 extern void cleanup_npp_games(void);
 extern void flavor_init(void);
 
-/* load.c */
+/* load.cpp */
 extern bool load_player(void);
 extern bool load_gamemode(void);
 
 // mon_attack.cpp
 extern bool make_attack_normal(monster_type *m_ptr);
+
+// messages.cpp
+extern void message(QString msg);
+extern void color_message(QString msg, int which_color);
+extern void custom_color_message(QString msg, byte red, byte green, byte blue);
 
 //mon_cast.cpp
 extern int choose_ranged_attack(int m_idx, int *tar_y, int *tar_x);
@@ -872,11 +877,9 @@ extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
 extern s16b get_quantity(QString prompt, int max, int amt, bool allow_zero);
 extern QColor add_preset_color(int which_color);
-extern void message(QString msg);
-extern void color_message(QString msg, int which_color);
 extern QString color_string(QString msg, byte which_color);
 extern QString color_string_16bit(QString msg, QColor which_color);
-extern void custom_color_message(QString msg, byte red, byte green, byte blue);
+
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);
 extern QString format_object_weight(object_type *o_ptr);

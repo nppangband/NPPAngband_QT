@@ -24,6 +24,18 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+void SpellSelectDialog::move_left()
+{
+    int which_tab = spell_dialog->currentIndex();
+    spell_dialog->setCurrentIndex(which_tab - 1);
+}
+
+void SpellSelectDialog::move_right()
+{
+    int which_tab = spell_dialog->currentIndex();
+    spell_dialog->setCurrentIndex(which_tab + 1);
+}
+
 // Receives the number of the button pressed.
 void SpellSelectDialog::button_press(int num)
 {
@@ -39,6 +51,18 @@ void SpellSelectDialog::keyPressEvent(QKeyEvent* which_key)
     if (which_key->key() == Qt::Key_Escape)
     {
         this->reject();
+        return;
+    }
+
+    if (which_key->key() == Qt::Key_Less)
+    {
+        move_left();
+        return;
+    }
+
+    if (which_key->key() == Qt::Key_Greater)
+    {
+        move_right();
         return;
     }
 
@@ -274,16 +298,21 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 
         spell_tab->setLayout(vlay);
 
-        spell_dialog->addTab(spell_tab, book_name);
+        int tab_index = spell_dialog->addTab(spell_tab, book_name);
+
+        // Prepare to activate the right tab, if specified
+        if (k_info[idx].sval == selected_book) activate_tab = tab_index;
     }
 
     connect(spell_select_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
     connect(spell_help_group, SIGNAL(buttonClicked(int)), this, SLOT(help_press(int)));
+
+
 }
 
 
 // This assumes the check that the player can cast has already been done.
-SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool *cannot, bool *cancelled)
+SpellSelectDialog::SpellSelectDialog(int *spell, int start_sval, QString prompt, int mode, bool *cannot, bool *cancelled)
 {
     spell_dialog = new QTabWidget;
 
@@ -297,6 +326,8 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
     choosing_book = FALSE;
     *cancelled = FALSE;
     *cannot = TRUE;
+    activate_tab = -1;
+    selected_book = start_sval;
 
     // First, find the eligible spells
     available_spells(mode);
@@ -335,18 +366,35 @@ SpellSelectDialog::SpellSelectDialog(int *spell, QString prompt, int mode, bool 
 
     build_spellbook_dialog(mode);
 
-    QPushButton *cancel_button = new QPushButton("CANCEL");
-    if (mode == BOOK_BROWSE)  cancel_button->setText("OK");
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    QDialogButtonBox *buttons = new QDialogButtonBox();
+    QPushButton *button_left = new QPushButton();
+    button_left->setText("<");
+    button_left->setToolTip("Pressing '<' also moves the active tab to the left.");
+    connect(button_left, SIGNAL(clicked()), this, SLOT(move_left()));
+    buttons->addButton(button_left, QDialogButtonBox::ActionRole);
+    QPushButton *button_right = new QPushButton();
+    button_right->setText(">");
+    button_left->setToolTip("Pressing '>' also moves the active tab to the right.");
+    connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
+    buttons->addButton(button_right, QDialogButtonBox::ActionRole);
+
+    if (mode == BOOK_BROWSE)
+    {
+        buttons->addButton(QDialogButtonBox::Close);
+    }
+    else buttons->addButton(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
 
     QVBoxLayout *main_layout = new QVBoxLayout;
 
     main_layout->addWidget(main_prompt);
     main_layout->addWidget(spell_dialog);
-    main_layout->addWidget(cancel_button);
+    main_layout->addWidget(buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Spell Selection Menu"));
+
+    if (activate_tab >=0) spell_dialog->setCurrentIndex(activate_tab);
 
     if (!this->exec())
     {
@@ -758,12 +806,14 @@ static void cast_spell(cmd_arg args)
 // Placeholder for use in the player_command menu
 void command_cast(cmd_arg arg)
 {
-    (void)arg;
-    do_cmd_cast();
+    object_type *o_ptr = object_from_item_idx(arg.item);
+    do_cmd_cast(o_ptr->sval);
 }
 
-// Cast a spell
-void do_cmd_cast(void)
+/* Cast a spell if book choice is -1,
+ * need to select book, otherwise it is the book sval
+ */
+void do_cmd_cast(int book_choice)
 {
     if (!character_dungeon) return;
     if (!p_ptr->can_cast()) return;
@@ -773,12 +823,32 @@ void do_cmd_cast(void)
     QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
     QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
 
+    //Is a spellbook selected?
+    if (book_choice < 0)
+    {
+        QString q = "Use which book?";
+        QString s = "You have no books that you can cast from.";
+
+        /* Restrict the choices */
+        item_tester_hook = obj_can_cast;
+
+        if (!get_item(&book_choice, q, s, (USE_INVEN | USE_FLOOR)))
+        {
+            /*clear the restriction*/
+            item_tester_hook = NULL;
+            return;
+        }
+
+        /*clear the restriction*/
+        item_tester_hook = NULL;
+    }
+
     QString prompt = (QString("Please select a %1 to %2.") .arg(noun) .arg(verb));
 
     int mode = BOOK_CAST;
     bool cancelled;
     bool cannot;
-    SpellSelectDialog(&spell, prompt, mode, &cannot, &cancelled);
+    SpellSelectDialog(&spell, book_choice, prompt, mode, &cannot, &cancelled);
 
     // Handle not having a spell to cast
     if (cannot)
@@ -831,15 +901,16 @@ bool player_can_use_book(const object_type *o_ptr, bool known)
     return (FALSE);
 }
 
-// Placeholder for use in the player_command menu
+// Study with a specific spellbook in mind
 void command_study(cmd_arg arg)
 {
-    (void)arg;
-    do_cmd_study();
+    object_type *o_ptr = object_from_item_idx(arg.item);
+
+    do_cmd_study(o_ptr->sval);
 }
 
 // Learn a spell
-void do_cmd_study(void)
+void do_cmd_study(int book_choice)
 {
     if (!p_ptr->can_study()) return;
 
@@ -853,7 +924,7 @@ void do_cmd_study(void)
     int mode = BOOK_STUDY;
     bool cancelled;
     bool cannot;
-    SpellSelectDialog(&spell, prompt, mode, &cannot, &cancelled);
+    SpellSelectDialog(&spell, book_choice, prompt, mode, &cannot, &cancelled);
 
     // Handle not having a spell to learn
     if (cannot)
@@ -872,22 +943,44 @@ void do_cmd_study(void)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-// Placeholder for use in the player_command menu
+// Browse with a specific spellbook in mind.
 void command_browse(cmd_arg arg)
 {
-    (void)arg;
-    do_cmd_browse();
+    object_type *o_ptr = object_from_item_idx(arg.item);
+
+    do_cmd_browse(o_ptr->sval);
 }
 
 // Browse the available spellbooks
-void do_cmd_browse(void)
+void do_cmd_browse(int book_choice)
 {
     int spell;
     QString prompt = QString("Press OK when done browsing.");
     int mode = BOOK_BROWSE;
     bool success;
     bool cancelled;
-    SpellSelectDialog(&spell, prompt, mode, &success, &cancelled);
+    SpellSelectDialog(&spell, book_choice, prompt, mode, &success, &cancelled);
 
     if (!success) message(QString("You have no books that you can read."));
+}
+
+/*
+ * Determine if an object is a spellbook with spells that can be cast
+ */
+bool obj_can_cast(object_type *o_ptr)
+{
+    int i;
+    if (o_ptr->tval != cp_ptr->spell_book) return FALSE;
+
+    for (i = 0;  i < SPELLS_PER_BOOK; i++)
+    {
+        int spell = get_spell_from_list(o_ptr->sval, i);
+
+        /* Not a spell */
+        if (spell == -1) continue;
+
+        /* Is there a spell we can learn? */
+        if (spell_okay(spell, TRUE)) return (TRUE);
+    }
+    return (FALSE);
 }

@@ -2212,9 +2212,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_M:
         {
-            if (shift_key)          do_cmd_study();
-            else if (ctrl_key)      do_cmd_browse();
-            else if (!using_mods)   do_cmd_cast();
+            if (shift_key)          do_cmd_study(-1);
+            else if (ctrl_key)      do_cmd_browse(-1);
+            else if (!using_mods)   do_cmd_cast(-1);
             return;
         }
         case Qt::Key_O:

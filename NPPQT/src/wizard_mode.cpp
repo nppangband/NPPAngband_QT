@@ -1185,6 +1185,8 @@ void WizardModeDialog::wiz_detect_all_monsters(void)
 {
     int i;
 
+    this->accept();
+
     /* Process monsters */
     for (i = 1; i < mon_max; i++)
     {
@@ -1203,9 +1205,6 @@ void WizardModeDialog::wiz_detect_all_monsters(void)
         /* Update the monster */
         update_mon(i, FALSE);
     }
-
-    this->accept();
-
 }
 
 void WizardModeDialog::wiz_edit_object(void)
@@ -1255,6 +1254,8 @@ void WizardModeDialog::wiz_mass_create_items(void)
 
     object_type *i_ptr;
 
+    this->accept();
+
     for(i=0; i < 25; i++)
     {
         /* Get local object */
@@ -1269,7 +1270,7 @@ void WizardModeDialog::wiz_mass_create_items(void)
         /* Drop the object */
         drop_near(i_ptr, -1, p_ptr->py, p_ptr->px);
     }
-    this->accept();
+
 }
 
 
@@ -1287,8 +1288,9 @@ void WizardModeDialog::wiz_create_great_item(void)
 
 void WizardModeDialog::wiz_mass_identify_items(void)
 {
-    (void)mass_identify(4);
     this->accept();
+    (void)mass_identify(4);
+
 }
 
 WizardModeDialog::WizardModeDialog(void)
