@@ -7,7 +7,7 @@
 #include <QColor>
 
 typedef struct letters_and_numbers letters_and_numbers;
-typedef struct message_type message_type;
+
 typedef struct notes_type notes_type;
 
 struct letters_and_numbers
@@ -16,15 +16,7 @@ struct letters_and_numbers
     int num;
 };
 
-struct message_type
-{
-    QColor msg_color;
-    QString message;
-    u16b repeats;
-    s32b message_turn;
-    bool append;
 
-};
 
 struct notes_type
 {
@@ -34,7 +26,7 @@ struct notes_type
     QString recorded_note;
 };
 
-extern QVector<message_type> message_list;
+
 extern QVector<notes_type>  notes_log;
 
 static letters_and_numbers lowercase_and_numbers[26] =

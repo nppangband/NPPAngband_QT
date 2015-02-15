@@ -17,7 +17,7 @@
 
 #include <src/npp.h>
 #include <src/object_all_menu.h>
-
+#include <src/messages.h>
 
 /*
  *
@@ -50,18 +50,6 @@ void AllObjectsDialog::update_header()
     }
 }
 
-void AllObjectsDialog::add_message_area()
-{
-    last_message = message_list[0];
-    lay_message = new QVBoxLayout;
-    message_area->setLayout(lay_message);
-    message_one = new QLabel("msg_one");
-    message_two = new QLabel("msg_two");
-    message_three = new QLabel("msg_three");
-    lay_message->addWidget(message_one);
-    lay_message->addWidget(message_two);
-    lay_message->addWidget(message_three);
-}
 
 // Confirm which tabs should be displayed.
 void AllObjectsDialog::confirm_tabs()
@@ -150,8 +138,8 @@ void AllObjectsDialog::update_dialog()
     update_inven_list(inven_list, FALSE, TRUE);
     update_equip_list(equip_list, FALSE, TRUE);
     update_quiver_list(quiver_list, FALSE, TRUE);
-    reset_messages(last_message, message_one, message_two, message_three);
     hide_or_show_tabs();
+    update_message_area(message_area, 3);
 }
 
 void AllObjectsDialog::update_active_tabs()
@@ -244,10 +232,11 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     update_header();
 
     // add the message area
-    message_area = new QWidget;
+    message_area = new QTextEdit;
     main_layout->addWidget(message_area);
-    add_message_area();
-    reset_messages(last_message, message_one, message_two, message_three);
+    message_area->setReadOnly(true);
+    message_area->setStyleSheet("background-color: black;");
+    update_message_area(message_area, 3);
 
     // Set up the tabs
     object_tabs = new QTabWidget;
@@ -255,8 +244,6 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     floor_tab = new QWidget;
     inven_tab = new QWidget;
     equip_tab = new QWidget;
-
-
 
     // Add the list of floor items
     QVBoxLayout *floor_vlay = new QVBoxLayout;

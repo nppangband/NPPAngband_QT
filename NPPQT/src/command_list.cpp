@@ -41,6 +41,7 @@ static struct command_desc list_commands[] =
     {"Learn Magic Spells", "M (shift-m)"},
     {"Look", "l"},
     {"Make/Modify Trap", "O (shift-o)"},
+    {"Message Log", "QTRL-L"},
     {"New Game NPPAngband", "CTRL-A"},
     {"New Game NPPMoria", "CTRL-R"},
     {"Open Door", "d"},

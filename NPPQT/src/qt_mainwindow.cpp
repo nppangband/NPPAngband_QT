@@ -34,6 +34,7 @@
 #include "griddialog.h"
 #include "package.h"
 #include "tilebag.h"
+#include <src/messages.h>
 
 
 MainWindow *main_window = 0;
@@ -1251,6 +1252,11 @@ void ui_event_signal(int event)
 {
     switch (event)
     {
+        case EVENT_MESSAGE:
+        {
+            main_window->update_messages();
+        }
+
         case EVENT_STATUS:
         case EVENT_MANA:
         case EVENT_HP:
@@ -1936,97 +1942,14 @@ void MainWindow::save_character_as()
     save_file(fileName);
 }
 
-void MainWindow::load_messages()
+void MainWindow::update_messages()
 {
-    message_area->clear();
-    for (int i = message_list.size() - 1; i >= 0; i--)
-    {
-        QString message_output = message_list[i].message;
+    update_message_area(message_area, 3);
 
-        if (message_list[i].repeats > 1)
-        {
-            message_output.append(QString(" (x%1)") .arg(message_list[i].repeats));
-        }
-
-        if (message_list[i].append)
-        {
-            main_window->message_area->textCursor().deletePreviousChar();
-            main_window->message_area->moveCursor(QTextCursor::End);
-            message_area->setTextColor(message_list[i].msg_color);
-            main_window->message_area->insertPlainText(QString("  %1\n") .arg(message_output));
-        }
-        else
-        {
-            main_window->message_area->moveCursor(QTextCursor::End);
-            message_area->setTextColor(message_list[i].msg_color);
-            main_window->message_area->insertPlainText(QString("%1: %2\n")
-                .arg(message_list[i].message_turn)  .arg(message_output));
-        }
-    }
     message_area->moveCursor(QTextCursor::End);
 }
 
-void ui_show_message(int idx)
-{
-    // Clear contents if too many lines
-    if (main_window->message_area->document()->blockCount() > 1000)
-    {
-        main_window->load_messages();
-        return;
-    }
 
-    //Paranoia
-    if (idx < 0) return;
-    if (idx >= message_list.size()) return;
-
-    QString message_output = message_list[idx].message;
-
-    // For a repeated message, add a counter onto the end rather than repeat the message
-    if (message_list[idx].repeats > 1)
-    {
-        // First delete the '/n' from the last line.
-        main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
-        main_window->message_area->textCursor().deletePreviousChar();
-
-        QString repeat_add_on = (QString(" (x%1)\n") .arg(message_list[idx].repeats));
-
-        // Delete the previous counter (if necessary
-        if (message_list[idx].repeats != 1)
-        {
-            QString fake_add_on = (QString(" (x%1)") .arg(message_list[idx].repeats - 1));
-            u16b length = fake_add_on.size();
-            for (u16b i = 0; i < length; i++)
-            {
-               main_window->message_area->moveCursor( QTextCursor::End, QTextCursor::MoveAnchor );
-               main_window->message_area->textCursor().deletePreviousChar();
-               main_window->message_area->moveCursor(QTextCursor::End);
-            }
-        }
-
-        // Add on the counter
-        main_window->message_area->moveCursor(QTextCursor::End);
-        main_window->message_area->setTextColor(message_list[idx].msg_color);
-        main_window->message_area->insertPlainText(repeat_add_on);
-        main_window->message_area->moveCursor(QTextCursor::End);
-        return;
-    }
-
-    main_window->message_area->moveCursor(QTextCursor::End);
-    if (message_list[idx].append)
-    {
-        main_window->message_area->textCursor().deletePreviousChar();
-        main_window->message_area->moveCursor(QTextCursor::End);
-        main_window->message_area->setTextColor(message_list[idx].msg_color);
-        main_window->message_area->insertPlainText(QString("  %1\n") .arg(message_output));
-    }
-    else
-    {
-        main_window->message_area->setTextColor(message_list[idx].msg_color);
-        main_window->message_area->insertPlainText(QString("%1: %2\n")
-            .arg(message_list[idx].message_turn)  .arg(message_output));
-    }
-    main_window->message_area->moveCursor(QTextCursor::End);
-}
 
 void MainWindow::close_game_death()
 {
@@ -2496,6 +2419,7 @@ void MainWindow::update_file_menu_game_active()
     view_artifact_knowledge->setEnabled(TRUE);
     view_terrain_knowledge->setEnabled(TRUE);
     view_notes->setEnabled(TRUE);
+    view_messages->setEnabled(TRUE);
     view_home_inven->setEnabled(TRUE);
     view_scores->setEnabled(TRUE);
     view_kill_count->setEnabled(TRUE);
@@ -2524,6 +2448,7 @@ void MainWindow::update_file_menu_game_inactive()
     view_artifact_knowledge->setEnabled(FALSE);
     view_terrain_knowledge->setEnabled(FALSE);
     view_notes->setEnabled(FALSE);
+    view_messages->setEnabled(FALSE);
     view_home_inven->setEnabled(FALSE);
     view_scores->setEnabled(FALSE);
     view_kill_count->setEnabled(FALSE);
@@ -2641,6 +2566,11 @@ void MainWindow::create_actions()
     view_notes->setStatusTip(tr("View the notes file listing the character's game highlights."));
     connect(view_notes, SIGNAL(triggered()), this, SLOT(display_notes()));
 
+    view_messages = new QAction(tr("View Messages"), this);
+    view_messages->setStatusTip(tr("View the message log."));
+    view_messages->setShortcut(tr("Ctrl+L"));
+    connect(view_messages, SIGNAL(triggered()), this, SLOT(display_messages()));
+
     view_home_inven = new QAction(tr("View Home Inventory"), this);
     view_home_inven->setStatusTip(tr("View the inventory stored in the character's home."));
     connect(view_home_inven, SIGNAL(triggered()), this, SLOT(display_home()));
@@ -2719,6 +2649,11 @@ void MainWindow::display_terrain_info()
 void MainWindow::display_notes()
 {
     display_notes_file();
+}
+
+void MainWindow::display_messages()
+{
+    display_message_log();
 }
 
 void MainWindow::display_home()
@@ -2841,6 +2776,7 @@ void MainWindow::create_menus()
     knowledge->addAction(view_artifact_knowledge);
     knowledge->addAction(view_terrain_knowledge);
     knowledge->addAction(view_notes);
+    knowledge->addAction(view_messages);
     knowledge->addAction(view_home_inven);
     knowledge->addAction(view_scores);
     knowledge->addAction(view_kill_count);
@@ -3038,7 +2974,7 @@ void MainWindow::load_file(const QString &file_name)
             //update_file_menu_game_active();
             statusBar()->showMessage(tr("File loaded"), 2000);
 
-            load_messages();
+            update_messages();
 
             if (!character_loaded)
             {

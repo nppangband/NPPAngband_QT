@@ -7,6 +7,7 @@
 #include <src/qt_mainwindow.h>
 #include <src/utilities.h>
 #include <src/player_scores.h>
+#include <src/messages.h>
 
 // was init.2
 

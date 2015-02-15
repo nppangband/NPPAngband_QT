@@ -431,8 +431,7 @@ public:
     bool playing;			/* True if player is playing */
     bool in_store;          // Player is inside a store
     bool in_menu;           // player is in object menu.  If chagned to false we need to leave the menu.
-    bool message_append;    /* Messages should be appended to the main menu */
-    bool message_first_append;  // Tracks whether the first appended message has been appended.
+    bool message_append;    /* Messages should be appended onscreen */
 
     bool leaving_level;		/* True if player is leaving the current level*/
 

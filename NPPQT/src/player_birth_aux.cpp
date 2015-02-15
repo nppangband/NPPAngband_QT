@@ -22,6 +22,7 @@
 #include "src/player_birth.h"
 #include <QTime>
 #include <QDate>
+#include <src/messages.h>
 
 
 

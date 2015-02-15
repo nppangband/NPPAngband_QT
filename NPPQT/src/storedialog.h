@@ -8,6 +8,7 @@
 #include "src/npp.h"
 #include "src/utilities.h"
 #include "store.h"
+#include "src/messages.h"
 
 enum
 {
@@ -54,20 +55,15 @@ public:
     QTabWidget *char_tabs;
     QWidget *inven_tab;
     QWidget *equip_tab;
-    QWidget *message_area;
+    QTextEdit *message_area;
     QWidget *store_area;
     QWidget *quest_area;
     QLabel  *quest_status;
     QLabel  *quest_picture;
-    QLabel  *message_one;
-    QLabel  *message_two;
-    QLabel  *message_three;
 
 
     bool home;
     bool guild;
-
-    message_type last_message;
 
     QLabel *mode_label;
 

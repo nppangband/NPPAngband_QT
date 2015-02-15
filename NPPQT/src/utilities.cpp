@@ -273,75 +273,6 @@ QColor add_preset_color(int which_color)
     return (color);
 }
 
-/*
- * Add a message
- * This should be the only function to add to the message list, to make sure
- * it never gets larger than 200 messages.
- */
-static void add_message_to_vector(QString msg, QColor which_color)
-{
-    message_type message_body;
-    message_type *msg_ptr = &message_body;
-
-    bool add_message = TRUE;
-
-    // First make sure the message list gets no greater than 200
-    while (message_list.size() >= 400)
-    {
-        message_list.removeLast();
-    }
-
-    // Without this check, the game will crash when adding the first message
-    if (!message_list.empty())
-    {
-        // Point to the last message
-        message_type *msg_one = &message_list[0];
-
-        if (operator==(msg_one->message, msg) && (msg_one->msg_color == which_color) &&
-            (msg_one->message_turn == p_ptr->game_turn) && !p_ptr->message_append)
-        {
-            msg_one->repeats++;
-            add_message = FALSE;
-        }
-    }
-
-    if (add_message)
-    {
-        // Default is a while message
-        msg_ptr->msg_color = which_color;
-
-        msg_ptr->message = msg;
-        msg_ptr->message_turn = p_ptr->game_turn;
-        msg_ptr->repeats = 1;
-        if (!p_ptr->message_append) msg_ptr->append = FALSE;
-        else if (p_ptr->message_first_append)
-        {
-            msg_ptr->append = FALSE;
-            p_ptr->message_first_append = FALSE;
-        }
-        else msg_ptr->append = TRUE;
-
-        // Add the message at the beginning of the list
-        message_list.prepend(message_body);
-    }
-    ui_show_message(0);
-}
-
-/*
- *  Add a message with a preset color.
- */
-void color_message(QString msg, int which_color)
-{
-    QColor msg_color;
-
-    //Paranoia
-    if (which_color > MAX_COLORS) which_color = TERM_WHITE;
-
-    // Default is a while message
-    msg_color = defined_colors[which_color];
-
-    add_message_to_vector(msg, msg_color);
-}
 
 
 // Returns a QString in any 16 bit color, in HTML format
@@ -365,23 +296,6 @@ QString color_string(QString msg, byte color_num)
     return (color_string_16bit(msg, msg_color));
 }
 
-
-
-//  Add a message - assume the color of white
-void message(QString msg)
-{
-    add_message_to_vector(msg, add_preset_color(TERM_WHITE));
-}
-
-//  Add a message with any 24 bit color
-void custom_color_message(QString msg, byte red, byte green, byte blue)
-{
-    QColor msg_color;
-
-    msg_color.setRgb(red, green, blue, 255);
-
-    add_message_to_vector(msg, msg_color);
-}
 
 static bool repeat_prev_allowed;
 

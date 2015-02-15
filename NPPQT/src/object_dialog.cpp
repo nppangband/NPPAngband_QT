@@ -609,60 +609,6 @@ void ObjectDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int ro
     lay->addWidget(weight, row, col);
 }
 
-void ObjectDialog::reset_messages(message_type last_message, QLabel *message_one, QLabel *message_two, QLabel *message_three)
-{
-    int which_message = 1;
-
-    /* Show the messages if they exist.
-     * Check carefully to avoid crashes from
-     * pointers larger than message list size.
-     * We only want messages generated while in
-     * the store->
-     */
-
-    message_one->setText(" ");
-    message_two->setText(" ");
-    message_three->setText(" ");
-
-    int msg_size = message_list.size();
-
-    for (int i = 0; i < msg_size; i++)
-    {
-
-        if (which_message > 3) break;
-        bool next_line = FALSE;
-
-        // Point to the last message
-        message_type *current_message = &message_list[i];
-
-        /* Stop when we hit messages that were posted
-         * before the player went into the store.
-         */
-        if ((operator==(current_message->message, last_message.message)) &&
-            (operator==(current_message->message_turn, last_message.message_turn))) break;
-
-
-        if (which_message == 1)
-        {
-            message_one->setText(QString("%1 %2") .arg(message_one->text()) .arg(current_message->message));
-            if (message_one->text().length() > 200) next_line = TRUE;
-        }
-        else if (which_message == 2)
-        {
-            message_two->setText(QString("%1 %2") .arg(message_two->text()) .arg(current_message->message));
-            if (message_two->text().length() > 200) next_line = TRUE;
-        }
-        else if (which_message == 3)
-        {
-            message_three->setText(QString("%1 %2") .arg(message_three->text()) .arg(current_message->message));
-            if (message_three->text().length() > 200) next_line = TRUE;
-        }
-
-        // Skip down to the next line if necessary.
-        if (!current_message->append || next_line) which_message++;
-    }
-}
-
 /*
  *
  * Floor Layout

@@ -109,7 +109,6 @@ public:
 
     s16b idx_from_click(QString id);
 
-    void reset_messages(message_type last_message, QLabel *message_one, QLabel *message_two, QLabel *message_three);
 
     void update_floor_list(QGridLayout *lay, bool label, bool buttons);
     void update_inven_list(QGridLayout *lay, bool label, bool buttons);

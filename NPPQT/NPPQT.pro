@@ -42,6 +42,7 @@ SOURCES +=  src/qt_main.cpp\
             src/knowledge_objects.cpp \
             src/knowledge_terrain.cpp \
             src/load.cpp \
+            src/messages.cpp \
             src/mon_attack.cpp \
             src/mon_cast.cpp \
             src/mon_classes.cpp \
@@ -124,6 +125,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/griddialog.h \
             src/help.h \
             src/knowledge.h\
+            src/messages.h \
             src/optionsdialog.h \
             src/mon_classes.h \
             src/nppdialog.h \
@@ -144,7 +146,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/user_macros.h \
             src/utilities.h \
-            src/wizard_mode.h \
+            src/wizard_mode.h
 
 
 RESOURCES += \

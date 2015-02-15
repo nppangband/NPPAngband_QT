@@ -6,6 +6,7 @@
 
 #include <src/object_dialog.h> //includes npp.h and player_command.h
 #include "src/utilities.h"
+#include <QTextEdit>
 
 
 
@@ -27,21 +28,13 @@ private:
     void update_header();
     void update_all();
 
-
     // Header area
     QLabel *header_main;
     QLabel *header_weight1;
     QLabel *header_weight2;
 
     // Message area
-    QWidget *message_area;
-    QVBoxLayout *lay_message;
-    QLabel  *message_one;
-    QLabel  *message_two;
-    QLabel  *message_three;
-    message_type last_message;
-
-    void add_message_area();
+    QTextEdit *message_area;
 
 
     QTabWidget *object_tabs;

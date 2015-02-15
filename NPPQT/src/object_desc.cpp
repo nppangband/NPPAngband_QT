@@ -146,19 +146,19 @@ static QString obj_desc_get_basename(object_type *o_ptr, bool aware, bool plural
 
         case TV_WAND:
         {
-            if (plural) return (show_flavor ? "& # Wand" : "& Wands");
+            if (plural) return (show_flavor ? "& # Wands" : "& Wands");
             else     return (show_flavor ? "& # Wand" : "& Wand");
         }
 
         case TV_ROD:
         {
-            if (plural) return (show_flavor ? "& # Rod" : "& Rods");
+            if (plural) return (show_flavor ? "& # Rods" : "& Rods");
             else     return (show_flavor ? "& # Rod" : "& Rod");
         }
 
         case TV_POTION:
         {
-            if (plural) return (show_flavor ? "& # Potion" : "& Potions");
+            if (plural) return (show_flavor ? "& # Potions" : "& Potions");
             else     return (show_flavor ? "& # Potion" : "& Potion");
         }
 

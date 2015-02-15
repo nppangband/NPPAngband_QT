@@ -84,7 +84,7 @@ public:
 
     MainWindow();
 
-    void load_messages();
+    void update_messages(void);
     QPoint get_target(u32b flags);
     void init_scene();
     void set_font(QFont newFont);
@@ -160,6 +160,7 @@ private slots:
     void display_artifact_info();
     void display_terrain_info();
     void display_notes();
+    void display_messages();
     void display_home();
     void display_scores();
     void display_kill_count();
@@ -228,6 +229,7 @@ private:
     QAction *view_artifact_knowledge;
     QAction *view_terrain_knowledge;
     QAction *view_notes;
+    QAction *view_messages;
     QAction *view_home_inven;
     QAction *view_scores;
     QAction *view_kill_count;

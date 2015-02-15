@@ -492,8 +492,6 @@ byte quest_indicator_complete = FALSE;
  */
 dungeon_capabilities_type *dun_cap = NULL;
 
-// Holds all of the messages.
-QVector<message_type> message_list;
 //Holds all of the notes.
 QVector<notes_type>  notes_log;
 //Holds all of the scores

@@ -577,7 +577,6 @@ extern void process_guild_quests(void);
 #define TOOLBAR_TARGETTING_INTERACTIVE 2
 extern void ui_toolbar_show(int toolbar);
 extern void ui_toolbar_hide(int toolbar);
-extern void ui_show_message(int idx);
 extern QString rect_to_string(QRect rect);
 extern QRect visible_dungeon();
 extern bool panel_contains(int y, int x);

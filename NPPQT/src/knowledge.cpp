@@ -75,8 +75,6 @@ DisplayNotesFile::DisplayNotesFile(void)
     setWindowTitle(tr("Notes and Accomplishments"));
 
     this->exec();
-    //cleanup
-
 }
 
 void display_notes_file(void)
