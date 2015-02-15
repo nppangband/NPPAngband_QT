@@ -189,4 +189,30 @@ public slots:
     void do_timeout();
 };
 
+class DetectionAnimation: public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
+public:
+    qreal angle;
+    qreal opacity;
+    QPixmap detectionPix;
+    QPixmap currentPix;
+    int c_y, c_x;
+    QTimer timer;
+    int size;
+    int steps;
+
+    DetectionAnimation(int y, int x, int rad);
+
+    void start();
+    void stop();
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const;
+
+public slots:
+    void do_timeout();
+};
+
 #endif // EMITTER_H

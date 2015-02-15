@@ -860,3 +860,93 @@ void HaloAnimation::do_timeout()
 
     update();
 }
+
+DetectionAnimation::DetectionAnimation(int y, int x, int rad)
+{
+    QPointF center = getCenter(y, x);
+
+    detectionPix = tiles_projections->get_tile("one_ring.png");
+
+    QSize s = ui_grid_size();
+
+    size = MIN(s.height(), s.width()) * rad * 2;
+
+    size = MIN(size, detectionPix.width());
+
+    if (size != detectionPix.width()) {
+        detectionPix = detectionPix.scaled(QSize(size, size),
+                                            Qt::IgnoreAspectRatio,
+                                            Qt::SmoothTransformation);
+    }
+
+    currentPix = detectionPix;
+
+    QPointF adj(size / 2, size / 2);
+
+    setPos(center - adj);
+
+    c_y = adj.y();
+    c_x = adj.x();
+
+    timer.setInterval(70);
+
+    steps = 0;
+
+    angle = 0;
+
+    opacity = 0.7;
+
+    connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+
+    this->setVisible(false);
+}
+
+void DetectionAnimation::start()
+{
+    timer.start();
+}
+
+void DetectionAnimation::stop()
+{
+    timer.stop();
+    main_window->animation_done();
+    if (scene()) scene()->removeItem(this);
+    this->deleteLater();
+}
+
+QRectF DetectionAnimation::boundingRect() const
+{
+    return QRectF(0, 0, size, size);
+}
+
+void DetectionAnimation::do_timeout()
+{
+    if (++steps > 5) {
+        stop();
+        return;
+    }
+
+    if (steps > 1) {
+        angle += 3;
+        currentPix = rotate_pix(detectionPix, angle);
+
+        opacity = MIN(opacity + 0.20, 1.0);
+    }
+
+    this->setVisible(true);
+
+    update();
+}
+
+void DetectionAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    (void)option;
+    (void)widget;
+
+    painter->setOpacity(opacity);
+    QPointF adj(currentPix.width() / 2, currentPix.height() / 2);
+    QPointF center(c_x, c_y);
+    center -= adj;
+    painter->drawPixmap(center, currentPix);
+    painter->setOpacity(1.0);
+}
