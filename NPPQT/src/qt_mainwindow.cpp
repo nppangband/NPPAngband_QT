@@ -331,6 +331,7 @@ QPixmap rotate_pix(QPixmap src, qreal angle)
         }
     }
     QPainter p(&img);
+    p.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
     QTransform tra;
     tra.translate(src.width() / 2, src.height() / 2);
     tra.rotate(-angle);
@@ -3165,3 +3166,12 @@ void player_death_close_game(void)
     player_death();
     main_window->close_game_death();
 }
+
+void ui_animate_detection(int y, int x, int rad)
+{
+    DetectionAnimation *anim = new DetectionAnimation(y, x, rad);
+    main_window->dungeon_scene->addItem(anim);
+    anim->start();
+    main_window->wait_animation();
+}
+

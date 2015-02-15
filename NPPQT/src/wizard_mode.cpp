@@ -1223,8 +1223,8 @@ void WizardModeDialog::wiz_edit_character(void)
 void WizardModeDialog::wiz_detection(void)
 {
     //wiz_light();
-    (void)detect(DETECT_RADIUS, DETECT_ALL);  
     this->accept();
+    (void)detect(DETECT_RADIUS, DETECT_ALL);  
 }
 
 void WizardModeDialog::wiz_magic_mapping(void)
