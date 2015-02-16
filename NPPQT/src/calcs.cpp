@@ -2047,90 +2047,59 @@ void update_stuff(void)
 }
 
 
-struct flag_event_trigger
-{
-    u32b flag;
-    int event;
-};
-
-/*
- * Events triggered by the various flags.
- */
-static const struct flag_event_trigger redraw_events[] =
-{
-    { PR_MISC,		EVENT_RACE_CLASS },
-    { PR_TITLE,		EVENT_PLAYERTITLE },
-    { PR_LEV,		EVENT_PLAYERLEVEL },
-    { PR_EXP,		EVENT_EXPERIENCE },
-    { PR_STATS,		EVENT_STATS },
-    { PR_ARMOR,		EVENT_AC },
-    { PR_HP,		EVENT_HP },
-    { PR_MANA,		EVENT_MANA },
-    { PR_GOLD,		EVENT_GOLD },
-    { PR_HEALTH,	EVENT_MONSTERHEALTH },
-    { PR_DEPTH,		EVENT_DUNGEONLEVEL },
-    { PR_SPEED,		EVENT_PLAYERSPEED },
-    { PR_STATE,		EVENT_STATE },
-    { PR_STATUS,	EVENT_STATUS },
-    { PR_STUDY,		EVENT_STUDYSTATUS },
-    { PR_DTRAP,		EVENT_DETECTIONSTATUS },
-
-    { PR_INVEN,		EVENT_INVENTORY },
-    { PR_EQUIP,		EVENT_EQUIPMENT },
-
-    /* It is now important that this be processed before PR_MONSTER */
-    { PR_MONLIST,	EVENT_MONSTERLIST },
-    { PR_ITEMLIST,	EVENT_ITEMLIST },
-    { PR_MONSTER,	EVENT_MONSTERTARGET },
-    { PR_OBJECT,	EVENT_OBJECTTARGET },
-    { PR_MESSAGE,	EVENT_MESSAGE },
-    { PR_RESIST,	EVENT_RESISTANCES },
-    { PR_QUEST_ST,	EVENT_QUEST_TICKER },
-    { PR_FEELING,	EVENT_FEELING },
-    { PR_FEATURE,	EVENT_FEATURE},
-
-};
-
 
 /*
  * Handle "p_ptr->redraw"
  */
 void redraw_stuff(void)
 {
-    size_t i;
-
     /* Redraw stuff */
     if (!p_ptr->redraw) return;
 
     /* Character is not ready yet, no screen updates */
     if (!character_generated) return;
 
-    /* See if we need to re-prioritize the monster targets */
-    if (p_ptr->redraw & (PR_MONLIST))
+    if (p_ptr->redraw & (PR_SIDEBAR))
     {
-        p_ptr->redraw |= PR_HEALTH;
-        ui_flush_graphics();
-    }
-
-    /* For each listed flag, send the appropriate signal to the UI */
-    for (i = 0; i < N_ELEMENTS(redraw_events); i++)
-    {
-        const struct flag_event_trigger *hnd = &redraw_events[i];
-
-        if (p_ptr->redraw & (hnd->flag))
+        if (!p_ptr->is_resting() && !p_ptr->is_running())
         {
-            ui_event_signal(hnd->event);
+            ui_update_sidebar();
+            p_ptr->redraw &= ~(PR_SIDEBAR);
         }
     }
 
-    /* Then the ones that require parameters to be supplied. */
+    if (p_ptr->redraw & (PR_STATUSBAR))
+    {
+        if (p_ptr->is_resting() || p_ptr->is_running())
+        {
+            ui_update_statusbar();
+            p_ptr->redraw &= ~(PR_STATUSBAR);
+        }
+    }
+
+    if (p_ptr->redraw & (PR_TITLEBAR))
+    {
+
+        ui_update_statusbar();
+        p_ptr->redraw &= ~(PR_TITLEBAR);
+
+    }
+
+    if (p_ptr->redraw & (PR_TITLEBAR))
+    {
+
+        ui_update_statusbar();
+        p_ptr->redraw &= ~(PR_TITLEBAR);
+
+    }
+
+
     if (p_ptr->redraw & (PR_MAP))
     {
         /* Mark the whole map to be redrawn */        
         ui_redraw_all();
+        p_ptr->redraw &= ~(PR_MAP);
     }
-
-    p_ptr->redraw = 0;
 }
 
 
@@ -2141,9 +2110,9 @@ void handle_stuff(void)
 {
 
     /* Update stuff */
-    if (p_ptr->update) update_stuff();
+    update_stuff();
 
     /* Redraw stuff */
-    if (p_ptr->redraw) redraw_stuff();
+    redraw_stuff();
 }
 

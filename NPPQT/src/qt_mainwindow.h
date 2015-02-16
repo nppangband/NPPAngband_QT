@@ -61,8 +61,6 @@ public:
     QString current_multiplier;
     bool do_pseudo_ascii;
 
-    bool delayed_sidebar_update;
-
     // Scaled tiles
     QHash<QString,QPixmap> tiles;
 

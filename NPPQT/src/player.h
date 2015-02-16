@@ -635,7 +635,7 @@ enum
 /*
  * Bit flags for the "p_ptr->redraw" variable
  */
-#define PR_MISC			0x00000001L	/* Display Race/Class */
+#define PR_UNUSED0  	0x00000001L
 #define PR_TITLE		0x00000002L	/* Display Title */
 #define PR_LEV			0x00000004L	/* Display Level */
 #define PR_EXP			0x00000008L	/* Display Experience */
@@ -668,16 +668,23 @@ enum
 #define PR_PLAYER_NATIVE 0x40000000L	/* Returns whether the terrain is native or not */
 #define PR_UNUSED2		0x80000000L	/* Unused */
 /* xxx (many) */
-/* Display Basic Info */
-#define PR_BASIC \
-    (PR_MISC | PR_TITLE | PR_STATS | PR_LEV |\
+/* Display Sidebar Info */
+#define PR_SIDEBAR \
+    (PR_TITLE | PR_STATS | PR_LEV | PR_MONLIST | PR_MON_MANA |\
      PR_EXP | PR_GOLD | PR_ARMOR | PR_HP | PR_FEELING | \
      PR_MANA | PR_DEPTH | PR_HEALTH | PR_SPEED | PR_QUEST_ST)
 
-/* Display Extra Info */
-#define PR_EXTRA \
-    (PR_STATUS | PR_STATE | PR_STUDY)
+/* Display Statusbar */
+#define PR_STATUSBAR \
+    (PR_STATUS | PR_STATE | PR_STUDY | PR_DTRAP | PR_RESIST | PR_PLAYER_NATIVE)
 
+/* Display Titlebar */
+#define PR_TITLEBAR \
+    (PR_LEV | PR_TITLE)
+
+/* Display Extra Info */
+#define PR_MESSAGEBOX \
+    (PR_MESSAGE)
 
 /*
  * Bit flags for the "p_ptr->window" variable (etc)

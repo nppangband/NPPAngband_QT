@@ -2230,7 +2230,9 @@ void command_rest(cmd_arg args)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw the state */
-    p_ptr->redraw |= (PR_STATE);
+    p_ptr->redraw |= (PR_SIDEBAR);
+
+    if (p_ptr->should_stop_resting()) disturb(0, 0);
 
     /* Handle stuff */
     handle_stuff();

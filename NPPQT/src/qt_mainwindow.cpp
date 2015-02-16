@@ -1249,61 +1249,24 @@ QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size)
     return QPixmap::fromImage(img);
 }
 
-void ui_event_signal(int event)
+void ui_update_sidebar()
 {
-    switch (event)
-    {
-        case EVENT_MESSAGE:
-        {
-            main_window->update_messages();
-            break;
-        }
-
-        case EVENT_STATUS:
-        case EVENT_MANA:
-        case EVENT_HP:
-        case EVENT_EXPERIENCE:
-        case EVENT_MONSTERLIST:
-        case EVENT_MONSTERTARGET:
-        case EVENT_STATS:
-        case EVENT_STATE:
-        case EVENT_GOLD:
-        case EVENT_DUNGEONLEVEL:
-        case EVENT_FEELING:
-        case EVENT_PLAYERTITLE:
-        case EVENT_PLAYERSPEED:
-        case EVENT_PLAYERLEVEL:
-        {
-            main_window->delayed_sidebar_update = true;
-            break;
-        }
-        default: break;
-    }
-
-    switch (event)
-    {
-        case EVENT_STUDYSTATUS:
-        case EVENT_STATUS:
-        case EVENT_DETECTIONSTATUS:
-        case EVENT_STATE:
-        case EVENT_RESISTANCES:
-        {
-            main_window->update_statusbar();
-            break;
-        }
-        default: break;
-    }
-
-
+    main_window->update_sidebar();
 }
 
-void ui_flush_graphics()
+void ui_update_statusbar()
 {
-    if (main_window->delayed_sidebar_update && !p_ptr->is_resting() &&
-            !p_ptr->is_running())
-    {
-        main_window->update_sidebar();
-    }
+    main_window->update_statusbar();
+}
+
+void ui_update_titlebar()
+{
+    main_window->update_titlebar();
+}
+
+void ui_update_messages()
+{
+    main_window->update_messages();
 }
 
 /*
@@ -1631,13 +1594,9 @@ void MainWindow::update_sidebar()
 {
     //message("update sidebar");
 
-    delayed_sidebar_update = false;
-
     for (int i = 0; i < SBAR_MAX; i++) {
         sidebar->setRowHidden(i, true);
     }
-
-    update_titlebar();
 
     if (!character_dungeon) return;
 
@@ -1793,8 +1752,6 @@ MainWindow::MainWindow()
     if (!main_window) main_window = this;
 
     anim_depth = 0;
-
-    delayed_sidebar_update = false;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -2358,7 +2315,7 @@ void MainWindow::options_dialog()
     delete dlg;
     p_ptr->redraw |= (PR_MAP | PR_STATUS);
     handle_stuff();
-    ui_flush_graphics();
+    ui_update_sidebar();
 }
 
 void MainWindow::fontselect_dialog()

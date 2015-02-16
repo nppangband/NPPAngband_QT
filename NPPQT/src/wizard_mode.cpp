@@ -283,7 +283,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw everything */
-    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP | PR_INVEN | PR_EQUIP |
+    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR | PR_MAP | PR_INVEN | PR_EQUIP |
                       PR_MESSAGE | PR_MONSTER | PR_OBJECT |
                       PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
 
@@ -733,7 +733,7 @@ void WizardModeDialog::wiz_cure_all(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw everything */
-    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP | PR_INVEN | PR_EQUIP |
+    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR | PR_MAP | PR_INVEN | PR_EQUIP |
                       PR_MESSAGE | PR_MONSTER | PR_OBJECT |
                       PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
 

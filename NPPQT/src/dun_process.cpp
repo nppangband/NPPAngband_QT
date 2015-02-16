@@ -1470,13 +1470,13 @@ void change_player_level(void)
     play_ambient_sound();
 
     /* Notice stuff */
-    if (p_ptr->notice) notice_stuff();
+    notice_stuff();
 
     /* Update stuff */
-    if (p_ptr->update) update_stuff();
+    update_stuff();
 
     /* Redraw stuff */
-    if (p_ptr->redraw) redraw_stuff();
+    redraw_stuff();
 
     /* Cancel the target */
     target_set_monster(0);
@@ -1702,7 +1702,7 @@ void change_player_level(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_DISTANCE);
 
     /* Redraw dungeon */
-    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP);
+    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR | PR_MAP);
 
     /* Redraw "statusy" things */
     p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_MONSTER | PR_MONLIST | PR_ITEMLIST);
@@ -1801,10 +1801,10 @@ static void process_game_turns(void)
         process_entities();
 
         /* Update stuff */
-        if (p_ptr->update) update_stuff();
+        update_stuff();
 
         /* Redraw stuff */
-        if (p_ptr->redraw) redraw_stuff();
+        redraw_stuff();
 
         /* Handle reasons to break the loop */
         if (p_ptr->player_turn) return;
@@ -1815,10 +1815,10 @@ static void process_game_turns(void)
         process_world();
 
         /* Update stuff */
-        if (p_ptr->update) update_stuff();
+        update_stuff();
 
         /* Redraw stuff */
-        if (p_ptr->redraw) redraw_stuff();
+        redraw_stuff();
 
         /* Handle reasons to break the loop */
         if (p_ptr->player_turn) return;
@@ -2016,7 +2016,7 @@ void process_player_energy_aux(byte energy_used)
     // process game turns until it is the player's turn again, or the player is dead;
     process_game_turns();
 
-    ui_flush_graphics();
+    redraw_stuff();
 
     depth_counter = 0;
 
@@ -2067,4 +2067,6 @@ void process_player_energy(byte energy_used)
 
     /* Redraw the state */
     p_ptr->redraw |= (PR_STATE);
+
+    handle_stuff();
 }

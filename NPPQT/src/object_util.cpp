@@ -4911,13 +4911,13 @@ void pack_overflow(void)
     inven_item_optimize(item);
 
     /* Notice stuff (if needed) */
-    if (p_ptr->notice) notice_stuff();
+    notice_stuff();
 
     /* Update stuff (if needed) */
-    if (p_ptr->update) update_stuff();
+    update_stuff();
 
     /* Redraw stuff (if needed) */
-    if (p_ptr->redraw) redraw_stuff();
+    redraw_stuff();
 
 }
 

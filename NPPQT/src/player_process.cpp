@@ -181,13 +181,13 @@ void process_player(void)
     }
 
     /* Notice stuff (if needed) */
-    if (p_ptr->notice) notice_stuff();
+    notice_stuff();
 
     /* Update stuff (if needed) */
-    if (p_ptr->update) update_stuff();
+    update_stuff();
 
     /* Redraw stuff (if needed) */
-    if (p_ptr->redraw) redraw_stuff();
+    redraw_stuff();
 
     /* Hack -- Pack Overflow */
     pack_overflow();
@@ -292,11 +292,11 @@ void process_player(void)
     }
 
     /* Notice stuff (if needed) */
-    if (p_ptr->notice) notice_stuff();
+    notice_stuff();
 
     /* Update stuff (if needed) */
-    if (p_ptr->update) update_stuff();
+    update_stuff();
 
     /* Redraw stuff (if needed) */
-    if (p_ptr->redraw) redraw_stuff();
+    redraw_stuff();
 }

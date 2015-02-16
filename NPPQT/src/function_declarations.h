@@ -625,8 +625,10 @@ extern QPixmap ui_make_blank();
 extern void ui_animate_victory(int y, int x);
 extern qreal ui_get_angle(int y1, int x1, int y2, int x2);
 extern QPoint ui_get_center(int y, int x);
-extern void ui_event_signal(int event);
-extern void ui_flush_graphics();
+extern void ui_update_sidebar();
+extern void ui_update_statusbar();
+extern void ui_update_titlebar();
+extern void ui_update_messages();
 extern QWidget *ui_main_window();
 extern void player_death_close_game(void);
 
