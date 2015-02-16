@@ -428,11 +428,11 @@ QPixmap ui_make_blank()
     return QPixmap::fromImage(img);
 }
 
-void ui_animate_victory(int y, int x)
+void ui_animate_accomplishment(int y, int x, int gf_type)
 {
     u32b flg = PROJECT_PASS;
 
-    BallAnimation *b1 = new BallAnimation(QPointF(x, y), 3, GF_TIME, flg);
+    BallAnimation *b1 = new BallAnimation(QPointF(x, y), 3, gf_type, flg);
     main_window->dungeon_scene->addItem(b1);
     b1->setZValue(1000);
 
@@ -1256,6 +1256,7 @@ void ui_event_signal(int event)
         case EVENT_MESSAGE:
         {
             main_window->update_messages();
+            break;
         }
 
         case EVENT_STATUS:
@@ -1285,7 +1286,6 @@ void ui_event_signal(int event)
         case EVENT_STATUS:
         case EVENT_DETECTIONSTATUS:
         case EVENT_STATE:
-        case EVENT_MOUSEBUTTONS:
         case EVENT_RESISTANCES:
         {
             main_window->update_statusbar();
@@ -1300,7 +1300,8 @@ void ui_event_signal(int event)
 void ui_flush_graphics()
 {
     if (main_window->delayed_sidebar_update && !p_ptr->is_resting() &&
-            !p_ptr->is_running()) {
+            !p_ptr->is_running())
+    {
         main_window->update_sidebar();
     }
 }

@@ -620,6 +620,7 @@ class QTableWidget;
 extern QSize ui_estimate_table_size(QTableWidget *table, bool horiz = true, bool vert = true,
                                     int padding = 30);
 extern QFont ui_current_font();
+extern void ui_animate_accomplishment(int y, int x, int gf_type);
 extern QPixmap ui_make_blank();
 extern void ui_animate_victory(int y, int x);
 extern qreal ui_get_angle(int y1, int x1, int y2, int x2);

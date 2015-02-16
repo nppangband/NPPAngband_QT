@@ -35,6 +35,8 @@ protected:
 private slots:
     // Receives the number of the button pressed.
     void button_press(int item);
+    void move_left(void);
+    void move_right(void);
 
 private:
 

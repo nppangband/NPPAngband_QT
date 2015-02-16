@@ -74,7 +74,6 @@ private:
     bool available_books[BOOKS_PER_REALM_ANGBAND];
 
     bool usable_spells;
-    int num_available_spellbooks;
     int max_spellbooks;
     int selected_book;
     int activate_tab;

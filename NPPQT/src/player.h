@@ -659,7 +659,7 @@ enum
 #define PR_SPEED		0x00200000L	/* Display Extra (Speed) */
 #define PR_STUDY		0x00400000L	/* Display Extra (Study) */
 #define PR_RESIST		0X00800000L	/* Display Resistances */
-#define PR_BUTTONS      0x01000000L /* Display mouse buttons */
+#define PR_UNUSED1      0x01000000L
 #define PR_DTRAP		0x02000000L /* Trap Detection Indicator */
 #define PR_ITEMLIST     0x04000000L /* Display item list */
 #define PR_MAP			0x08000000L	/* Display Map */

@@ -32,6 +32,18 @@ void ObjectSelectDialog::button_press(int item)
     this->accept();
 }
 
+void ObjectSelectDialog::move_left()
+{
+    int which_tab = object_tabs->currentIndex();
+    object_tabs->setCurrentIndex(which_tab - 1);
+}
+
+void ObjectSelectDialog::move_right()
+{
+    int which_tab = object_tabs->currentIndex();
+    object_tabs->setCurrentIndex(which_tab + 1);
+}
+
 // See if the user selected a button bia a keypress.
 void ObjectSelectDialog::keyPressEvent(QKeyEvent* which_key)
 {
@@ -39,6 +51,18 @@ void ObjectSelectDialog::keyPressEvent(QKeyEvent* which_key)
     if (which_key->key() == Qt::Key_Escape)
     {
         this->close();
+        return;
+    }
+
+    if (which_key->key() == Qt::Key_Less)
+    {
+        move_left();
+        return;
+    }
+
+    if (which_key->key() == Qt::Key_Greater)
+    {
+        move_right();
         return;
     }
 
@@ -542,8 +566,18 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     connect(object_select_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
 
 
-    QPushButton *cancel_button = new QPushButton("CANCEL");
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    QDialogButtonBox *buttons = new QDialogButtonBox();
+    QPushButton *button_left = new QPushButton();
+    button_left->setText("<");
+    button_left->setToolTip("Pressing '<' also moves the active tab to the left.");
+    connect(button_left, SIGNAL(clicked()), this, SLOT(move_left()));
+    buttons->addButton(button_left, QDialogButtonBox::ActionRole);
+    QPushButton *button_right = new QPushButton();
+    button_right->setText(">");
+    button_right->setToolTip("Pressing '>' also moves the active tab to the right.");
+    connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
+    buttons->addButton(button_right, QDialogButtonBox::ActionRole);
+    buttons->addButton(QDialogButtonBox::Cancel);
 
     // Figure out which tab should appear first.
     byte tab_idx = find_starting_tab(mode);
@@ -553,7 +587,7 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
 
     main_layout->addWidget(main_prompt);
     main_layout->addWidget(object_tabs);
-    main_layout->addWidget(cancel_button);
+    main_layout->addWidget(buttons);
     setLayout(main_layout);
     setWindowTitle(tr("Object Selection Menu"));
 

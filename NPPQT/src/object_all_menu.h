@@ -75,13 +75,17 @@ private:
     QLabel *header_quiver;
     QLabel *empty_space;
 
+private slots:
 
+    void move_left(void);
+    void move_right(void);
 
-
+protected:
+    void keyPressEvent(QKeyEvent* which_key);
 
 
 public:
-    explicit AllObjectsDialog(bool buttons);
+    explicit AllObjectsDialog(bool do_buttons);
     void update_dialog();
     void close_dialog();
 

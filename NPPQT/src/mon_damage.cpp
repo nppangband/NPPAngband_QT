@@ -1090,6 +1090,8 @@ void monster_death(int m_idx, int who)
         quest_indicator_timer = 50;
         quest_indicator_complete = TRUE;
 
+        ui_animate_accomplishment(p_ptr->py, p_ptr->px, GF_DISP_ALL);
+
         /* Redraw the status */
         p_ptr->redraw |= (PR_QUEST_ST);
 
@@ -1101,6 +1103,8 @@ void monster_death(int m_idx, int who)
     {
         p_ptr->q_fame += 150;
         altered_inventory_counter += 50;
+
+        ui_animate_accomplishment(p_ptr->py, p_ptr->px, GF_STATIC);
     }
 
     /* Nothing left, game over... */
@@ -1120,6 +1124,7 @@ void monster_death(int m_idx, int who)
         message(QString("*** CONGRATULATIONS ***"));
         message(QString("You have won the game!"));
         message(QString("You may retire (commit suicide) when you are ready."));
+        ui_animate_accomplishment(p_ptr->py, p_ptr->px, GF_TIME);
 
         /* Write a note */
         QDate today = QDate::currentDate();

@@ -117,8 +117,6 @@ void SpellSelectDialog::available_spells(int mode)
         int idx = lookup_kind(cp_ptr->spell_book, i);
         if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN | USE_STORE)) continue;
 
-        num_available_spellbooks++;
-
         for (int j = 0; j < SPELLS_PER_BOOK; j++)
         {
             int spell = get_spell_from_list(i, j);
@@ -322,7 +320,6 @@ SpellSelectDialog::SpellSelectDialog(int *spell, int start_sval, QString prompt,
     // Start with a clean slate
     usable_spells = FALSE;
     max_spellbooks = (game_mode == GAME_NPPANGBAND ? BOOKS_PER_REALM_ANGBAND : BOOKS_PER_REALM_MORIA);
-    num_available_spellbooks = 0;
     choosing_book = FALSE;
     *cancelled = FALSE;
     *cannot = TRUE;
@@ -343,15 +340,10 @@ SpellSelectDialog::SpellSelectDialog(int *spell, int start_sval, QString prompt,
     }
 
     // Handle no available objects.
-    if ((mode == BOOK_BROWSE) && (!num_available_spellbooks))
+    if (!usable_spells)
     {
         /* Report failure */
          return;
-    }
-    else if (!usable_spells)
-    {
-        /* Report failure */
-        return;
     }
 
     // Passed all the pre-dialog checks.
@@ -374,7 +366,7 @@ SpellSelectDialog::SpellSelectDialog(int *spell, int start_sval, QString prompt,
     buttons->addButton(button_left, QDialogButtonBox::ActionRole);
     QPushButton *button_right = new QPushButton();
     button_right->setText(">");
-    button_left->setToolTip("Pressing '>' also moves the active tab to the right.");
+    button_right->setToolTip("Pressing '>' also moves the active tab to the right.");
     connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
     buttons->addButton(button_right, QDialogButtonBox::ActionRole);
 

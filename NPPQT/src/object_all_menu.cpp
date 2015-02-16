@@ -18,6 +18,9 @@
 #include <src/npp.h>
 #include <src/object_all_menu.h>
 #include <src/messages.h>
+#include <QButtonGroup>
+#include <QKeyEvent>
+#include <QDialogButtonBox>
 
 /*
  *
@@ -26,6 +29,41 @@
  *
  *
  */
+
+void AllObjectsDialog::move_left()
+{
+    int which_tab = object_tabs->currentIndex();
+    object_tabs->setCurrentIndex(which_tab - 1);
+}
+
+void AllObjectsDialog::move_right()
+{
+    int which_tab = object_tabs->currentIndex();
+    object_tabs->setCurrentIndex(which_tab + 1);
+}
+
+// See if the user selected a button bia a keypress.
+void AllObjectsDialog::keyPressEvent(QKeyEvent* which_key)
+{
+    // Handle escape key
+    if (which_key->key() == Qt::Key_Escape)
+    {
+        this->close();
+        return;
+    }
+
+    if (which_key->key() == Qt::Key_Less)
+    {
+        move_left();
+        return;
+    }
+
+    if (which_key->key() == Qt::Key_Greater)
+    {
+        move_right();
+        return;
+    }
+}
 
 void AllObjectsDialog::update_header()
 {
@@ -207,7 +245,7 @@ void AllObjectsDialog::hide_or_show_tabs()
 }
 
 
-AllObjectsDialog::AllObjectsDialog(bool buttons)
+AllObjectsDialog::AllObjectsDialog(bool do_buttons)
 {
     confirm_tabs();
 
@@ -252,10 +290,9 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_floor->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     floor_vlay->addWidget(header_floor);
     floor_list = new QGridLayout;
-    update_floor_list(floor_list, FALSE, buttons);
+    update_floor_list(floor_list, FALSE, do_buttons);
     floor_vlay->addLayout(floor_list);
-    QSpacerItem *vspacer1 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    floor_vlay->addSpacerItem(vspacer1);
+    floor_vlay->addStretch(1);
 
 
     // Add the list of inventory
@@ -265,10 +302,9 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_inven->setAlignment(Qt::AlignCenter | Qt::AlignTop);
     inven_vlay->addWidget(header_inven);
     inven_list = new QGridLayout;
-    update_inven_list(inven_list, FALSE, buttons);
+    update_inven_list(inven_list, FALSE, do_buttons);
     inven_vlay->addLayout(inven_list);
-    QSpacerItem *vspacer2 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    inven_vlay->addSpacerItem(vspacer2);
+    inven_vlay->addStretch(1);
 
     // Add the equipment
     QVBoxLayout *equip_and_quiver_vlay = new QVBoxLayout;
@@ -279,7 +315,7 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_equip->setAlignment(Qt::AlignCenter | Qt::AlignTop);
     equip_vlay->addWidget(header_equip);
     equip_list = new QGridLayout;
-    update_equip_list(equip_list, FALSE, buttons);
+    update_equip_list(equip_list, FALSE, do_buttons);
     equip_vlay->addLayout(equip_list);
 
     // Add a space
@@ -294,17 +330,28 @@ AllObjectsDialog::AllObjectsDialog(bool buttons)
     header_quiver->setAlignment(Qt::AlignCenter | Qt::AlignTop);
     quiver_vlay->addWidget(header_quiver);
     quiver_list = new QGridLayout;
-    update_quiver_list(quiver_list, FALSE, buttons);
+    update_quiver_list(quiver_list, FALSE, do_buttons);
     quiver_vlay->addLayout(quiver_list);
-    QSpacerItem *vspacer3 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    equip_and_quiver_vlay->addSpacerItem(vspacer3);
+    equip_and_quiver_vlay->addStretch(1);
 
-    QSpacerItem *vspacer4 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    main_layout->addSpacerItem(vspacer4);
+    main_layout->addStretch(1);
 
-    QPushButton *btn_close = new QPushButton("Close");
-    main_layout->addWidget(btn_close);
-    connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
+    QDialogButtonBox *buttons = new QDialogButtonBox();
+    QPushButton *button_left = new QPushButton();
+    button_left->setText("<");
+    button_left->setToolTip("Pressing '<' also moves the active tab to the left.");
+    connect(button_left, SIGNAL(clicked()), this, SLOT(move_left()));
+    buttons->addButton(button_left, QDialogButtonBox::ActionRole);
+    QPushButton *button_right = new QPushButton();
+    button_right->setText(">");
+    button_right->setToolTip("Pressing '>' also moves the active tab to the right.");
+    connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
+    buttons->addButton(button_right, QDialogButtonBox::ActionRole);
+    buttons->addButton(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close_dialog()));
+
+
+    main_layout->addWidget(buttons);
 
     hide_or_show_tabs();
 
