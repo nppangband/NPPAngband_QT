@@ -1120,7 +1120,7 @@ void command_swap(cmd_arg args)
     // Paranoia
     if (!p_ptr->playing) return;
 
-    (void)args;
+    p_ptr->player_previous_command_update(CMD_SWAP, args);
 
     if (birth_swap_weapons) swap_weapons();
     else wield_swap_weapon();

@@ -798,8 +798,7 @@ static void cast_spell(cmd_arg args)
 // Placeholder for use in the player_command menu
 void command_cast(cmd_arg arg)
 {
-    object_type *o_ptr = object_from_item_idx(arg.item);
-    do_cmd_cast(o_ptr->sval);
+    cast_spell(arg);
 }
 
 /* Cast a spell if book choice is -1,
@@ -859,6 +858,9 @@ void do_cmd_cast(int book_choice)
 
     args.direction = dir;
     args.number = spell;
+
+    // Set up the spell for repeating
+    p_ptr->player_previous_command_update(CMD_CAST, args);
 
     cast_spell(args);
 }

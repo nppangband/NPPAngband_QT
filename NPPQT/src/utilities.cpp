@@ -903,7 +903,7 @@ QString find_roman_numeral(QString full_name)
         else if (roman_numeral.length()) break;
 
         // Break when a space if found.
-        if (operator==(first, space)) break;
+        if (operator==(first, space) && roman_numeral.length()) break;
 
         // Cut off the first letter
         name.remove(0, 1);

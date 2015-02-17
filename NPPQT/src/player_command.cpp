@@ -120,9 +120,9 @@ command_type command_info[] =
     // CMD_HOLD
     {0L,            command_hold,   TRUE,  FALSE, 0},
     // CMD_TAKEOFF
-    {ARG_ITEM,      command_takeoff, TRUE,  FALSE, 0},
+    {ARG_ITEM,      command_takeoff, FALSE,  FALSE, 0},
     // CMD_WIELD
-    {ARG_ITEM | ARG_SLOT, command_wield, TRUE,  FALSE, 0},
+    {ARG_ITEM | ARG_SLOT, command_wield, FALSE,  FALSE, 0},
     // CMD_SWAP
     {0L,            command_swap, TRUE,  FALSE, 0},
     // CMD_ITEM_USE
@@ -134,27 +134,27 @@ command_type command_info[] =
     // CMD_FIRE_NEAR
     {ARG_ITEM,      command_fire_nearest,TRUE,  FALSE, 0},
     // CMD_DROP
-    {ARG_ITEM | ARG_NUMBER,  command_drop,   TRUE,  FALSE, 0},
+    {ARG_ITEM | ARG_NUMBER,  command_drop,   FALSE,  FALSE, 0},
     // CMD_PICKUP
-    {ARG_ITEM,  command_pickup,   TRUE,  FALSE, 0},
+    {ARG_ITEM,  command_pickup,   FALSE,  FALSE, 0},
     // CMD_BROWSE
     {ARG_ITEM,      command_browse,   TRUE,  FALSE, 0},
     // CMD_STUDY
-    {ARG_ITEM,      command_study,   TRUE,  FALSE, 0},
-    // CMD_CAST  Direction handled by cast command
-    {ARG_ITEM, command_cast,   TRUE,  FALSE, 0},
+    {ARG_ITEM,      command_study,   FALSE,  FALSE, 0},
+    // CMD_CAST
+    {0L, command_cast,   TRUE,  FALSE, 0},
     // CMD_DESTROY
-    {ARG_ITEM | ARG_NUMBER, command_destroy,   TRUE,  FALSE, 0},
+    {ARG_ITEM | ARG_NUMBER, command_destroy,   FALSE,  FALSE, 0},
     // CMD_EXAMINE
-    {ARG_ITEM,      command_examine,   TRUE,  FALSE, 0},
+    {ARG_ITEM,      command_examine,   FALSE,  FALSE, 0},
     // CMD_INSCRIBE
-    {ARG_ITEM,      command_inscribe,   TRUE,  FALSE, 0},
+    {ARG_ITEM,      command_inscribe,   FALSE,  FALSE, 0},
     // CMD_UNINSCRIBE
-    {ARG_ITEM,      command_uninscribe,   TRUE,  FALSE, 0},
+    {ARG_ITEM,      command_uninscribe,   FALSE,  FALSE, 0},
     // CMD_ACTIVATE
-    {ARG_ITEM, command_use, TRUE,  FALSE, 0},
+    {ARG_ITEM, command_use, FALSE,  FALSE, 0},
     // CMD_THROW
-    {ARG_ITEM,command_throw,TRUE,  FALSE, 0},
+    {ARG_ITEM,command_throw, TRUE,  FALSE, 0},
 };
 
 // Prepare a command for processing.

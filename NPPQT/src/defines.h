@@ -684,7 +684,7 @@ enum
     OPT_birth_money,
     OPT_birth_classic_dungeons,
     OPT_birth_swap_weapons,
-    OPT_UNUSED_13,
+    OPT_birth_point_based,
     OPT_UNUSED_14,
     OPT_UNUSED_15,
     OPT_UNUSED_16,
@@ -781,6 +781,7 @@ enum
 #define birth_money				op_ptr->opt[OPT_birth_money]
 #define birth_classic_dungeons	op_ptr->opt[OPT_birth_classic_dungeons]
 #define birth_swap_weapons		op_ptr->opt[OPT_birth_swap_weapons]
+#define birth_point_based       op_ptr->opt[OPT_birth_point_based]
 /* xxx */
 /* xxx */
 /* xxx */

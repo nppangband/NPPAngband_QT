@@ -2119,7 +2119,7 @@ option_entry options[OPT_MAX] =
     {"birth_money",             "Birth: Start with more money and no equipment",FALSE },/* OPT_birth_money */
     {"birth_classic_dungeons",  "Birth: Prevent unusual terrains or dungeons",	FALSE },/* OPT_birth_birth_classic_dungeons */
     {"birth_swap_weapons",   	"Birth: Replace bow slot with swap weapon slot",	FALSE },/* OPT_birth_swap_weapons */
-    {NULL,NULL,FALSE},/* xxx */
+    {"birth_point_based",       "Birth: Use point based birth options",         TRUE},/* OPT_birth_point_based */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */

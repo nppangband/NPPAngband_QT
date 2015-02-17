@@ -95,7 +95,6 @@ private:
     QGridLayout *grid_stat_results;
     QButtonGroup *group_stat_choice;
     void add_stat_choices(QVBoxLayout *return_layout);
-    bool point_based;
 
     void update_screen(void);
     void update_character(bool new_player, bool needs_stat_update);

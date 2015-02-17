@@ -2933,6 +2933,7 @@ void MainWindow::load_file(const QString &file_name)
             //update_file_menu_game_active();
             statusBar()->showMessage(tr("File loaded"), 2000);
 
+            if (!character_loaded) message_list.clear();
             update_messages();
 
             if (!character_loaded)

@@ -159,7 +159,7 @@ void PlayerBirth::update_stats_info()
             {
                 QString this_points = (QString("<b>Points Spent: %1/24</b>") .arg(points_spent));
                 this_lbl->setText(color_string(this_points, TERM_BLUE));
-                if (point_based) this_lbl->show();
+                if (birth_point_based) this_lbl->show();
                 else this_lbl->hide();
                 continue;
             }
@@ -169,7 +169,7 @@ void PlayerBirth::update_stats_info()
             {
                 QString this_points = (QString("<b>Points Left:  %1/24</b>") .arg(POINTS_LEFT));
                 this_lbl->setText(color_string(this_points, (POINTS_LEFT ? TERM_BLUE : TERM_RED)));
-                if (point_based) this_lbl->show();
+                if (birth_point_based) this_lbl->show();
                 else this_lbl->hide();
                 continue;
             }
@@ -189,7 +189,7 @@ void PlayerBirth::update_stats_info()
         // Update the points spent
         if (this_name.operator ==("roll_char"))
         {
-            if (!point_based) this_push->show();
+            if (!birth_point_based) this_push->show();
             else this_push->hide();
             continue;
         }
@@ -486,7 +486,7 @@ void PlayerBirth::add_stat_results(void)
         int r = rp_ptr->r_adj[i];
         int c = cp_ptr->c_adj[i];
 
-        if (point_based)
+        if (birth_point_based)
         {
             QSpinBox *this_spinner = new QSpinBox;
             int max_value = (birth_maximize ? 18 : 17);
@@ -545,17 +545,17 @@ void PlayerBirth::option_changed(int index)
     //Reset the stats if birth_maximize has been selected
     if (index == OPT_birth_maximize)
     {
-        if (point_based)
+        if (birth_point_based)
         {
-            //ugly hack - pretend point based is being selected
-            point_based = FALSE;
+            //hack - pretend point based is being selected
+            birth_point_based = FALSE;
             QRadioButton *btn = this->findChild<QRadioButton *>("point_radio");
             btn->click();
         }
         else
         {
             // hack - pretend random roller is being selected
-            point_based = TRUE;
+            birth_point_based = TRUE;
             QRadioButton *btn = this->findChild<QRadioButton *>("roller_radio");
             btn->click();
         }
@@ -641,9 +641,9 @@ void PlayerBirth::add_info_boxes(QVBoxLayout *return_layout)
 void PlayerBirth::point_button_chosen()
 {
     //Already chosen
-    if (point_based) return;
+    if (birth_point_based) return;
 
-    point_based = TRUE;
+    birth_point_based = TRUE;
     generate_player();
     reset_stats();
     generate_stats();
@@ -654,10 +654,9 @@ void PlayerBirth::point_button_chosen()
 void PlayerBirth::random_button_chosen()
 {
     // Already chosen
-    if (!point_based) return;
+    if (!birth_point_based) return;
 
-
-    point_based = FALSE;
+    birth_point_based = FALSE;
     reset_stats();
     random_roll();
     redo_stat_box();
@@ -678,15 +677,16 @@ void PlayerBirth::add_stat_choices(QVBoxLayout *return_layout)
     return_layout->addWidget(stat_choice_label, Qt::AlignLeft);
 
     QRadioButton *point_radiobutton = new QRadioButton("Point Based");
-    point_based = TRUE;
-    point_radiobutton->setChecked(TRUE);
+    if (birth_point_based) point_radiobutton->setChecked(TRUE);
+    else point_radiobutton->setChecked(FALSE);
     point_radiobutton->setObjectName("point_radio");
     group_stat_choice->addButton(point_radiobutton, TRUE);
     return_layout->addWidget(point_radiobutton, Qt::AlignLeft);
     connect(point_radiobutton, SIGNAL(clicked()), this, SLOT(point_button_chosen()));
 
     QRadioButton *roller_radiobutton = new QRadioButton("Random Roller");
-    roller_radiobutton->setChecked(FALSE);
+    if (birth_point_based) roller_radiobutton->setChecked(FALSE);
+    else roller_radiobutton->setChecked(TRUE);
     roller_radiobutton->setObjectName("roller_radio");
     group_stat_choice->addButton(roller_radiobutton, FALSE);
     return_layout->addWidget(roller_radiobutton, Qt::AlignLeft);
@@ -699,19 +699,21 @@ void PlayerBirth::add_stat_choices(QVBoxLayout *return_layout)
     lab_points_spent->setObjectName("points_spent");
     lab_points_spent->setToolTip("Increasing a stat by 1 between 10 and 16 costs 1 point.<br>Increasing a stat from 16 to 17 costs 2 points.4<br>Increasing a stat from 17 to 18 costs 4 points.");
     return_layout->addWidget(lab_points_spent, Qt::AlignLeft);
+    if (!birth_point_based) lab_points_spent->hide();
 
     QLabel *points_left = new QLabel;
     make_standard_label(points_left, (QString("Points Left:  %1/24") .arg(POINTS_LEFT)), TERM_BLUE);
     points_left->setObjectName("points_left");
     points_left->setToolTip("The player receives an extra 50 gold pieces at startup for each unused point.");
     return_layout->addWidget(points_left, Qt::AlignLeft);
+    if (birth_point_based) points_left->hide();
 
     QPushButton *roll_char = new QPushButton("Roll Character");
     roll_char->setObjectName("roll_char");
     roll_char->setToolTip("Press to roll your player characteristics.");
     connect(roll_char, SIGNAL(clicked()), this, SLOT(random_roll()));
     return_layout->addWidget(roll_char, Qt::AlignLeft);
-    roll_char->hide();
+    if (birth_point_based) roll_char->hide();
 }
 
 void PlayerBirth::class_changed(int new_class)
@@ -730,8 +732,6 @@ void PlayerBirth::add_classes(QVBoxLayout *return_layout)
     QLabel *class_label = new QLabel("<h2>Player Class</h2>");
     class_label->setToolTip(get_help_topic("race_class_info", "Classes"));
     return_layout->addWidget(class_label, 0, Qt::AlignCenter);
-
-    cur_class = 0;
 
     for (int i = 0; i < z_info->c_max; i++)
     {
@@ -762,8 +762,6 @@ void PlayerBirth::add_races(QVBoxLayout *return_layout)
     QLabel *race_label = new QLabel("<h2>Player Race</h2>");
     race_label->setToolTip(get_help_topic("race_class_info", "races"));
     return_layout->addWidget(race_label, 0, Qt::AlignCenter);
-
-    cur_race = 0;
 
     for (int i = 0; i < z_info->p_max; i++)
     {
@@ -833,7 +831,8 @@ void PlayerBirth::add_genders(QVBoxLayout *return_layout)
     QLabel *name_label = new QLabel("<h2>Charater Name</h2>");
     return_layout->addWidget(name_label, 0, Qt::AlignCenter);
 
-    op_ptr->full_name = cur_name = "Player";
+    if (op_ptr->full_name.length()) cur_name = op_ptr->full_name;
+    else op_ptr->full_name = cur_name = "Player";
     player_name = new QLineEdit(cur_name);
     player_name->setText(cur_name);
     connect(player_name, SIGNAL(textChanged(QString)), this, SLOT(name_changed(QString)));
@@ -845,12 +844,9 @@ void PlayerBirth::add_genders(QVBoxLayout *return_layout)
     QLabel *gender_label = new QLabel("<h2>Player Gender</h2>");
     return_layout->addWidget(gender_label, 0, Qt::AlignCenter);
 
-    cur_gender = 0;
-
     for (int i = 0; i < MAX_SEXES; i++)
     {
         QRadioButton *this_radiobutton = new QRadioButton(sex_info[i].title);
-        this_radiobutton->setChecked(TRUE);
         if (i == cur_gender) this_radiobutton->setChecked(TRUE);
         else this_radiobutton->setChecked(FALSE);
         group_gender->addButton(this_radiobutton, i);
@@ -904,7 +900,7 @@ void PlayerBirth::update_character(bool new_player, bool needs_stat_update)
 
     if (needs_stat_update)
     {
-        if (point_based)
+        if (birth_point_based)
         {
             reset_stats();
             generate_stats();
@@ -930,25 +926,32 @@ void PlayerBirth::setup_character()
 {
     init_birth();
 
-    if (quick_start && has_prev_character())
-    {
-        cur_name = op_ptr->full_name;
-        player_name->setText(cur_name);
-        cur_gender = p_ptr->psex;
-        cur_race = p_ptr->prace;
-        cur_class = p_ptr->pclass;
-        load_prev_character();
-    }
-
     for (int i = 0; i < A_MAX; i++)
     {
         stats[i] = p_ptr->stat_birth[i];
     }
+    if (quick_start && has_prev_character())
+    {
+        load_prev_character();
+        cur_name = op_ptr->full_name;
+        cur_gender = p_ptr->psex;
+        cur_race = p_ptr->prace;
+        cur_class = p_ptr->pclass;
+        for (int i = 0; i < A_MAX; i++)
+        {
+            stats[i] = p_ptr->stat_birth[i];
+        }
 
-    p_ptr->prace = cur_race;
-    p_ptr->pclass = cur_class;
-    p_ptr->psex = cur_gender;
-    generate_player();
+    }
+    else
+    {
+        p_ptr->prace = cur_race = 0;
+        p_ptr->pclass = cur_class = 0;
+        p_ptr->psex = cur_gender = 0;
+        generate_player();
+    }
+
+
     calc_bonuses(inventory, &p_ptr->state, false);
     calc_stealth();
 
@@ -962,6 +965,9 @@ PlayerBirth::PlayerBirth(bool quickstart)
     hold_update = FALSE;
 
     QVBoxLayout *main_layout = new QVBoxLayout;
+
+    // Setup the character, only after hlay choices are completed
+    setup_character();
 
     // Title Box
     QLabel *main_prompt = new QLabel(QString("<h2>Character Creation %1 %2 </h2>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
@@ -998,8 +1004,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     add_info_boxes(vlay_help_area);
     vlay_help_area->addStretch(1);
 
-    // Setup the character, only after hlay choices is completed
-    setup_character();
+
 
     QVBoxLayout *vlay_stats_info_area = new QVBoxLayout;
     hlay_choices->addLayout(vlay_stats_info_area);
@@ -1034,7 +1039,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     hlay_info->addStretch(1);
 
     QVBoxLayout *vlay_stat_choice = new QVBoxLayout;
-    add_stat_choices(vlay_stat_choice);;
+    add_stat_choices(vlay_stat_choice);
     vlay_stat_choice->addStretch(1);
     hlay_info->addLayout(vlay_stat_choice);
     hlay_info->addStretch(1);
@@ -1042,10 +1047,6 @@ PlayerBirth::PlayerBirth(bool quickstart)
     vlay_stats_current = new QVBoxLayout;
     hlay_info->addLayout(vlay_stats_current);
     add_stat_results();
-
-    // Calculate the player's initial stats.
-    point_based = FALSE;
-    point_button_chosen();
 
     //Add a close button on the right side
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);

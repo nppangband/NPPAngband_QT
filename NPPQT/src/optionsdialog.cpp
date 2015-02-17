@@ -47,6 +47,9 @@ OptionsDialog::OptionsDialog()
 
             if (idx == OPT_NONE) continue;
 
+            // hack - this option handled on birth dialog
+            if (idx == OPT_birth_point_based) continue;
+
             option_entry *opt = options + idx;
             if (opt->name.isEmpty()) continue;
 
