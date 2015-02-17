@@ -348,7 +348,7 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons)
     connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
     buttons->addButton(button_right, QDialogButtonBox::ActionRole);
     buttons->addButton(QDialogButtonBox::Close);
-    connect(buttons, SIGNAL(rejected()), this, SLOT(close_dialog()));
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
 
 
     main_layout->addWidget(buttons);
