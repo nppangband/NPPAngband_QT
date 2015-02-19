@@ -1757,7 +1757,7 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
         cheat_monster_lore(r_idx, &lore);
     }
 
-    QString mon_symbol = color_string_16bit(r_ptr->d_char, r_ptr->d_color);
+    QString mon_symbol = color_string(r_ptr->d_char, r_ptr->d_color);
 
     /* Print, in colour */
     output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(mon_symbol) .arg(mon_name));

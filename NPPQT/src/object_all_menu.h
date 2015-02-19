@@ -6,7 +6,7 @@
 
 #include <src/object_dialog.h> //includes npp.h and player_command.h
 #include "src/utilities.h"
-#include <QTextEdit>
+#include <QLabel>
 
 
 
@@ -34,7 +34,7 @@ private:
     QLabel *header_weight2;
 
     // Message area
-    QTextEdit *message_area;
+    QLabel *message_area;
 
 
     QTabWidget *object_tabs;

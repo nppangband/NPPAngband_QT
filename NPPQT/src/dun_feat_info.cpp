@@ -887,7 +887,7 @@ void describe_feature(int f_idx, bool spoilers)
         cheat_feature_lore(f_idx, &lore);
     }
 
-    QString feat_symbol = color_string_16bit(f_ptr->d_char, f_ptr->d_color);
+    QString feat_symbol = color_string(f_ptr->d_char, f_ptr->d_color);
 
     /* Print, in colour */
     output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(feat_symbol) .arg(feat_name));

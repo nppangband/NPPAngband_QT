@@ -67,11 +67,14 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     lay1->setSpacing(10);
     this->setClient(central);  // IMPORTANT: it must be called AFTER setting the layout
 
-    message_area = new QTextEdit;
+    message_area = new QLabel;
+    message_area->setWordWrap(TRUE);
+    message_area->setAutoFillBackground(TRUE);
+    QPalette this_palette;
+    this_palette.setColor(QPalette::Window, QColor(Qt::black));
+    message_area->setPalette(this_palette);
     lay1->addWidget(message_area);
-    message_area->setReadOnly(true);
-    message_area->setStyleSheet("background-color: black;");
-
+    message_area->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     update_message_area(message_area, 3);
 
     QWidget *area1 = new QWidget;

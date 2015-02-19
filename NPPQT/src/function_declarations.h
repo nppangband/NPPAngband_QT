@@ -171,7 +171,9 @@ extern bool make_attack_normal(monster_type *m_ptr);
 // messages.cpp
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);
-extern void custom_color_message(QString msg, byte red, byte green, byte blue);
+extern void color_message(QString msg, byte red, byte green, byte blue);
+extern void color_message(QString msg, QColor msg_color);
+
 
 //mon_cast.cpp
 extern int choose_ranged_attack(int m_idx, int *tar_y, int *tar_x);
@@ -882,7 +884,7 @@ extern QString get_string(QString question, QString description, QString answer)
 extern s16b get_quantity(QString prompt, int max, int amt, bool allow_zero);
 extern QColor add_preset_color(int which_color);
 extern QString color_string(QString msg, byte which_color);
-extern QString color_string_16bit(QString msg, QColor which_color);
+extern QString color_string(QString msg, QColor which_color);
 
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);
