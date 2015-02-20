@@ -2070,7 +2070,7 @@ void redraw_stuff(void)
 
     if (p_ptr->redraw & (PR_STATUSBAR))
     {
-        if (p_ptr->is_resting() || p_ptr->is_running())
+        if (!p_ptr->is_running())
         {
             ui_update_statusbar();
             p_ptr->redraw &= ~(PR_STATUSBAR);

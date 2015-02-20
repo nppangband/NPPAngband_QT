@@ -258,7 +258,7 @@ bool set_timed(int idx, int v, bool notify)
 
     /* Update the visuals, as appropriate. */
     p_ptr->update |= effect->flag_update;
-    p_ptr->redraw |= (PR_STATUS | effect->flag_redraw);
+    p_ptr->redraw |= (effect->flag_redraw);
 
     /* Handle stuff */
     handle_stuff();
@@ -278,6 +278,8 @@ bool inc_timed(int idx, int v, bool notify)
     /* Set v */
     v = v + p_ptr->timed[idx];
 
+    if (!p_ptr->timed[idx]) p_ptr->redraw |= PR_STATUSBAR;
+
     return set_timed(idx, v, notify);
 }
 
@@ -292,6 +294,8 @@ bool dec_timed(int idx, int v, bool notify)
     /* Set v */
     v = p_ptr->timed[idx] - v;
 
+    if (p_ptr->timed[idx] && (v < 1)) p_ptr->redraw |= PR_STATUSBAR;
+
     return set_timed(idx, v, notify);
 }
 
@@ -300,6 +304,8 @@ bool dec_timed(int idx, int v, bool notify)
  */
 bool clear_timed(int idx, bool notify)
 {
+    if (p_ptr->timed[idx]) p_ptr->redraw |= PR_STATUSBAR;
+
     return set_timed(idx, 0, notify);
 }
 

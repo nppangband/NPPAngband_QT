@@ -190,6 +190,8 @@ static void add_message_to_vector(QString msg, QColor which_color)
     }
 
     p_ptr->redraw |= PR_MESSAGE;
+
+    redraw_stuff();
 }
 
 //  Add a message - assume the color of white

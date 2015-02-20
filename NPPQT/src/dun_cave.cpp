@@ -5101,7 +5101,7 @@ void disturb(int stop_search, int unused_flag)
     if (p_ptr->is_resting())
     {
         /* Redraw the state (later) */
-        p_ptr->redraw |= (PR_STATE);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
     }
 
     /* Cancel running */

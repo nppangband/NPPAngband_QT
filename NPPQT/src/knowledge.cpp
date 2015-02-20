@@ -35,6 +35,9 @@ DisplayNotesFile::DisplayNotesFile(void)
 
     main_layout->addLayout(notes_info);
 
+    QFontMetrics metrics(ui_current_font());
+    QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMMMMM");
+
     int row = 0;
     int col = 0;
 
@@ -42,6 +45,8 @@ DisplayNotesFile::DisplayNotesFile(void)
     QLabel *header_depth = new QLabel("<b>  <u>DUNGEON DEPTH</u>  </b>");
     QLabel *header_level = new QLabel("<b>  <u>PLAYER LEVEL</u>  </b>");
     QLabel *header_event = new QLabel("<b>  <u>EVENT</u>  </b>");
+    header_event->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    header_event->setMinimumWidth(this_size.width() * 2);
     notes_info->addWidget(header_turn, row, col++, Qt::AlignRight);
     notes_info->addWidget(header_depth, row, col++, Qt::AlignRight);
     notes_info->addWidget(header_level, row, col++, Qt::AlignRight);
@@ -60,12 +65,16 @@ DisplayNotesFile::DisplayNotesFile(void)
         if (notes_ptr->dun_depth) depth_note = number_to_formatted_string(notes_ptr->dun_depth * 50);
         QLabel *game_depth = new QLabel(depth_note);
         notes_info->addWidget(game_depth, row, col++, Qt::AlignRight | Qt::AlignTop);
-        QLabel *player_level = new QLabel(QString("%1") .arg(notes_ptr->player_level));
+        QLabel *player_level = new QLabel(QString("%1 ") .arg(notes_ptr->player_level));
         notes_info->addWidget(player_level, row, col++, Qt::AlignRight | Qt::AlignTop);
         QLabel *game_event = new QLabel(notes_ptr->recorded_note);
         game_event->setWordWrap(TRUE);
+        game_event->setMinimumWidth(this_size.width() * 2);
         notes_info->addWidget(game_event, row, col++, Qt::AlignLeft | Qt::AlignTop);
+
     }
+
+    main_layout->addStretch(1);
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));

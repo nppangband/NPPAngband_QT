@@ -411,6 +411,9 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     //Flter for the first monster group.
     filter_rows(0,0);
 
+    resize(QSize(width() * 3 / 2, height() * 4 / 3));
+    updateGeometry();
+
     setLayout(main_layout);
     setWindowTitle(tr("Monster Knowledge"));
 
