@@ -296,6 +296,9 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     //Filter for the first monster group.
     filter_rows(0,0);
 
+    // This table starts out too small. It needs to be made bigger.
+    resize(QSize(width() * 9 / 8, height() * 4 / 3));
+
     setLayout(main_layout);
     setWindowTitle(tr("Terrain Knowledge"));
 

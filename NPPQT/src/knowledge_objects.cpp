@@ -819,7 +819,8 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     object_table->resizeColumnsToContents();
     object_table->resizeRowsToContents();
     object_table->sortByColumn(0, Qt::AscendingOrder);
-    // Hide the r_idx column
+
+    // Hide the k_idx column
     object_table->setColumnHidden(5, TRUE);
     object_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     object_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
@@ -831,8 +832,12 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    //Filter for the first monster group.
+    //Filter for the first object group.
     filter_rows(0,0);
+
+    // This table starts out too small. It needs to be made bigger.
+    resize(QSize(width() * 10 / 7, height() * 4 / 3));
+    updateGeometry();
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Knowledge"));
@@ -997,27 +1002,27 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
         ego_item_table->insertRow(row);
         col = 0;
 
-        // Object_kind
+        // Ego_kind
         QString this_object = capitalize_first(e_ptr->e_name);
         QTableWidgetItem *kind = new QTableWidgetItem(this_object);
         kind->setTextAlignment(Qt::AlignLeft);
         ego_item_table->setItem(row, col++, kind);
 
-        // Squelch status
+        // EgoSquelch status
         QString squelch_st = QString("FALSE");
         if (e_ptr->squelch) squelch_st = QString("TRUE");
         QTableWidgetItem *squelch = new QTableWidgetItem(squelch_st);
         squelch->setTextAlignment(Qt::AlignLeft);
         ego_item_table->setItem(row, col++, squelch);
 
-        // object info
+        // Ego info
         QPushButton *info_button = new QPushButton();
         info_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
         info_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         ego_item_table->setCellWidget(row, col++, info_button);
         ego_item_button_group->addButton(info_button, i);
 
-        // object settings
+        // Ego settings
         QPushButton *settings_button = new QPushButton();
         settings_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
         settings_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -1057,7 +1062,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
         if (!ego_item_group_info[i]) continue;
         ego_item_group_table->insertRow(row);
 
-        // Object Group
+        // Ego Group
         QString group_name = QString(object_text_order[i].name);
         // Hack - work in "Arrow"
         if (object_text_order[i].tval == TV_ARROW) group_name = QString("Arrows");
@@ -1090,8 +1095,11 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    //Filter for the first monster group.
+    //Filter for the first ego group.
     filter_rows(0,0);
+
+    // This table starts out too small. It needs to be made bigger.
+    resize(QSize(width() * 10 / 7, height() * 4 / 3));
 
     setLayout(main_layout);
     setWindowTitle(tr("Ego Item Knowledge"));
@@ -1245,20 +1253,20 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
         artifact_table->insertRow(row);
         col = 0;
 
-        // Object_kind
+        // artifact kind
         QString this_art = get_artifact_display_name(i);
         QTableWidgetItem *art_kind = new QTableWidgetItem(this_art);
         art_kind->setTextAlignment(Qt::AlignLeft);
         artifact_table->setItem(row, col++, art_kind);
 
-        // object info
+        // artifact info
         QPushButton *info_button = new QPushButton();
         info_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
         info_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         artifact_table->setCellWidget(row, col++, info_button);
         artifact_button_group->addButton(info_button, i);
 
-        // object settings
+        // artifact settings
         QPushButton *settings_button = new QPushButton();
         settings_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
         settings_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -1288,13 +1296,13 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
 
     row = col = 0;
 
-    //Now populate the object_group table
+    //Now populate the artifact group table
     for (int i = 0; i < artifact_group_info.size(); i++)
     {
         if (!artifact_group_info[i]) continue;
         artifact_group_table->insertRow(row);
 
-        // Object Group
+        // artifact Group
         QString group_name = QString("Special");
         if (i) group_name = QString(object_text_order[i-1].name);
         QTableWidgetItem *artifact_group_label = new QTableWidgetItem(group_name);
@@ -1314,7 +1322,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     artifact_table->resizeColumnsToContents();
     artifact_table->resizeRowsToContents();
     artifact_table->sortByColumn(0, Qt::AscendingOrder);
-    // Hide the r_idx column
+    // Hide the a_idx column
     artifact_table->setColumnHidden(3, TRUE);
     artifact_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
     artifact_table->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
@@ -1328,6 +1336,9 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
 
     //Filter for the first monster group.
     filter_rows(0,0);
+
+    // This table starts out too small. It needs to be made bigger.
+    resize(QSize(width() * 10 / 7, height() * 4 / 3));
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Knowledge"));

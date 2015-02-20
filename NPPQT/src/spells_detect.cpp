@@ -552,6 +552,7 @@ bool detect(int dist, u16b detect_checks)
                     /* Mark it so we can print out the message when we are done */
                     detect_type_found |= (dtc->detect_type);
                 }
+
             }
         }
     }
@@ -567,6 +568,7 @@ bool detect(int dist, u16b detect_checks)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             if (panel_contains(y, x)) light_spot(y, x);
+            else map_info(y, x);
         }
     }
 

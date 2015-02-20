@@ -2050,6 +2050,8 @@ void process_player_energy(byte energy_used)
         if (p_ptr->should_stop_resting())
         {
             disturb(0,0);
+            p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
+            handle_stuff();
             return;
         }
     }

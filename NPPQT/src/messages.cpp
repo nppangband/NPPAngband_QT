@@ -19,6 +19,7 @@
 #include <src/utilities.h>
 
 
+
 // Holds all of the messages.
 QVector<message_type> message_list;
 
@@ -90,6 +91,52 @@ void update_message_area(QTextEdit *message_area, int max_messages)
     message_area->moveCursor(QTextCursor::End);
 }
 
+void update_message_area(QLabel *message_label, int max_messages)
+{
+    int num_messages = 0;
+
+    QString next_message;
+    next_message.clear();
+
+    QString output;
+    output.clear();
+
+    for (int i = 0; i < message_list.size(); i++)
+    {
+        QString this_message = message_list[i].message;
+
+        if (message_list[i].repeats > 1)
+        {
+           this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
+        }
+
+        next_message.prepend(color_string(this_message, message_list[i].msg_color));
+
+        // See if the next message should go before this one.
+        if ((i+1) < message_list.size())
+        {
+
+            if (message_list[i+1].append)
+            {
+                next_message.prepend("  ");
+                continue;
+            }
+        }
+
+        output.prepend(next_message);
+
+        next_message.clear();
+
+        num_messages++;
+
+        if (num_messages >= max_messages) break;
+
+        output.prepend("<br>");
+    }
+
+    message_label->setText(output);
+}
+
 
 void display_message_log(void)
 {
@@ -143,6 +190,14 @@ static void add_message_to_vector(QString msg, QColor which_color)
     }
 
     p_ptr->redraw |= PR_MESSAGE;
+
+    redraw_stuff();
+}
+
+//  Add a message - assume the color of white
+void message(QString msg)
+{
+    add_message_to_vector(msg, add_preset_color(TERM_WHITE));
 }
 
 /*
@@ -162,18 +217,19 @@ void color_message(QString msg, int which_color)
 }
 
 
-//  Add a message - assume the color of white
-void message(QString msg)
-{
-    add_message_to_vector(msg, add_preset_color(TERM_WHITE));
-}
-
 //  Add a message with any 24 bit color
-void custom_color_message(QString msg, byte red, byte green, byte blue)
+void color_message(QString msg, byte red, byte green, byte blue)
 {
     QColor msg_color;
 
     msg_color.setRgb(red, green, blue, 255);
+
+    add_message_to_vector(msg, msg_color);
+}
+
+//  Add a message with any 24 bit color
+void color_message(QString msg, QColor msg_color)
+{
 
     add_message_to_vector(msg, msg_color);
 }

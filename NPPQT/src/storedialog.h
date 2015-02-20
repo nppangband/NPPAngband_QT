@@ -55,7 +55,7 @@ public:
     QTabWidget *char_tabs;
     QWidget *inven_tab;
     QWidget *equip_tab;
-    QTextEdit *message_area;
+    QLabel *message_area;
     QWidget *store_area;
     QWidget *quest_area;
     QLabel  *quest_status;

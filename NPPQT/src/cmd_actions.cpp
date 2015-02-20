@@ -2221,6 +2221,11 @@ void do_cmd_spike(void)
 // Just burn some energy
 void command_rest(cmd_arg args)
 {
+    if (!p_ptr->is_resting())
+    {
+        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
+    }
+
     p_ptr->player_previous_command_update(CMD_RESTING, args);
 
     /* Cancel searching */
@@ -2229,10 +2234,11 @@ void command_rest(cmd_arg args)
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS);
 
-    /* Redraw the state */
-    p_ptr->redraw |= (PR_SIDEBAR);
-
-    if (p_ptr->should_stop_resting()) disturb(0, 0);
+    if (p_ptr->should_stop_resting())
+    {
+        disturb(0, 0);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
+    }
 
     /* Handle stuff */
     handle_stuff();

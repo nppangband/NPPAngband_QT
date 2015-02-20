@@ -1415,8 +1415,8 @@ static QString describe_monster_exp(int r_idx, const monster_lore *l_ptr)
               (long)1000 / p_ptr->lev + 5) / 10);
 
         /* Mention the experience */
-        output.append(QString(" is worth %ld.%2 point") .arg(i) .arg(j));
-        if ((i == 1) && (j == 0)) output.append("s");
+        output.append(QString(" is worth %1.%2 point") .arg(number_to_formatted_string(i)) .arg(j));
+        if ((i != 1) || (j != 0)) output.append("s");
 
         /* Take account of annoying English */
         p = "th";
@@ -1757,7 +1757,7 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
         cheat_monster_lore(r_idx, &lore);
     }
 
-    QString mon_symbol = color_string_16bit(r_ptr->d_char, r_ptr->d_color);
+    QString mon_symbol = color_string(r_ptr->d_char, r_ptr->d_color);
 
     /* Print, in colour */
     output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(mon_symbol) .arg(mon_name));

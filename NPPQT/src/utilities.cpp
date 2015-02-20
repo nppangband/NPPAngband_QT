@@ -276,7 +276,7 @@ QColor add_preset_color(int which_color)
 
 
 // Returns a QString in any 16 bit color, in HTML format
-QString color_string_16bit(QString msg, QColor which_color)
+QString color_string(QString msg, QColor which_color)
 {
     return (QString("<font color='%1'>%2</font>").arg(which_color.name()).arg(msg));
 }
@@ -293,7 +293,7 @@ QString color_string(QString msg, byte color_num)
 
     QColor msg_color = defined_colors[color_num];
 
-    return (color_string_16bit(msg, msg_color));
+    return (color_string(msg, msg_color));
 }
 
 

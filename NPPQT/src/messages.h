@@ -4,6 +4,7 @@
 #include <src/npp.h>
 #include <QDialog>
 #include <QTextEdit>
+#include <QLabel>
 
 typedef struct message_type message_type;
 
@@ -29,6 +30,7 @@ public:
 extern QVector<message_type> message_list;
 
 extern void update_message_area(QTextEdit *message_area, int max_messages);
+extern void update_message_area(QLabel *message_label, int max_messages);
 extern void display_message_log(void);
 
 #endif // MESSAGES_H

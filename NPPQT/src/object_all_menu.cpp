@@ -270,10 +270,14 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons)
     update_header();
 
     // add the message area
-    message_area = new QTextEdit;
+    message_area = new QLabel;
+    message_area->setWordWrap(TRUE);
+    message_area->setAutoFillBackground(TRUE);
+    QPalette this_palette;
+    this_palette.setColor(QPalette::Window, QColor(Qt::black));
+    message_area->setPalette(this_palette);
     main_layout->addWidget(message_area);
-    message_area->setReadOnly(true);
-    message_area->setStyleSheet("background-color: black;");
+    message_area->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     update_message_area(message_area, 3);
 
     // Set up the tabs
@@ -348,10 +352,11 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons)
     connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
     buttons->addButton(button_right, QDialogButtonBox::ActionRole);
     buttons->addButton(QDialogButtonBox::Close);
-    connect(buttons, SIGNAL(rejected()), this, SLOT(close_dialog()));
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
 
 
     main_layout->addWidget(buttons);
+    main_layout->addStretch(1);
 
     hide_or_show_tabs();
 

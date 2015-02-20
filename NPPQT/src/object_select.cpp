@@ -74,10 +74,6 @@ void ObjectSelectDialog::keyPressEvent(QKeyEvent* which_key)
     // Make it lowercase
     key_pressed = key_pressed.toLower();
 
-    // Make sure we are dealing with the item name buttons and not the info buttons
-    // or other future buttons
-    key_pressed.append(") ");
-
     QWidget *tab = this->object_tabs->currentWidget(); // Search in the current tab
     QList<QPushButton *> buttons = tab->findChildren<QPushButton *>();
     for (int i = 0; i < buttons.size(); i++)
@@ -578,6 +574,7 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
     buttons->addButton(button_right, QDialogButtonBox::ActionRole);
     buttons->addButton(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
 
     // Figure out which tab should appear first.
     byte tab_idx = find_starting_tab(mode);

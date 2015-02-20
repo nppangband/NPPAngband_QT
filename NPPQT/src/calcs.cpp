@@ -2070,7 +2070,7 @@ void redraw_stuff(void)
 
     if (p_ptr->redraw & (PR_STATUSBAR))
     {
-        if (p_ptr->is_resting() || p_ptr->is_running())
+        if (!p_ptr->is_running())
         {
             ui_update_statusbar();
             p_ptr->redraw &= ~(PR_STATUSBAR);
@@ -2085,14 +2085,13 @@ void redraw_stuff(void)
 
     }
 
-    if (p_ptr->redraw & (PR_TITLEBAR))
+    if (p_ptr->redraw & (PR_MESSAGE))
     {
 
-        ui_update_statusbar();
-        p_ptr->redraw &= ~(PR_TITLEBAR);
+        ui_update_messages();
+        p_ptr->redraw &= ~(PR_MESSAGE);
 
     }
-
 
     if (p_ptr->redraw & (PR_MAP))
     {
