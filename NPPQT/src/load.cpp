@@ -2394,6 +2394,7 @@ static bool load_memory(void)
         if (!e_ptr->everseen) e_ptr->squelch = FALSE;
     }
 
+    save_file.close();
 
     // Success
     return (TRUE);
