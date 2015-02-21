@@ -2051,7 +2051,6 @@ void process_player_energy(byte energy_used)
         {
             disturb(0,0);
             p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
-            handle_stuff();
             return;
         }
     }

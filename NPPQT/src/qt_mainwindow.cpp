@@ -2057,7 +2057,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_B:
         {
             process_mov_key(2, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
 
         // Move up
@@ -2066,7 +2066,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Y:
         {
             process_mov_key(8, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
 
         // Move left
@@ -2075,7 +2075,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_G:
         {
             process_mov_key(4, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
         // Move right
         case Qt::Key_6:
@@ -2083,7 +2083,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_J:
         {
             process_mov_key(6, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
         // Move diagonally left and up
         case Qt::Key_7:
@@ -2091,7 +2091,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_Home:
         {
             process_mov_key(7, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
         // Move diagonally right and up
         case Qt::Key_9:
@@ -2099,7 +2099,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_PageUp:
         {
             process_mov_key(9, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
         // Move diagonally left and down
         case Qt::Key_1:
@@ -2107,7 +2107,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_End:
         {
             process_mov_key(1, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
         // Move diagonally right and down
         case Qt::Key_3:
@@ -2115,83 +2115,84 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         case Qt::Key_PageDown:
         {
             process_mov_key(3, shift_key, alt_key, ctrl_key, meta_key);
-            return;
+            break;
         }
         case Qt::Key_5:
         case Qt::Key_H:
         {
             do_cmd_hold();
-            return;
+            break;
         }
         case Qt::Key_A:
         {
             if (ctrl_key)           do_cmd_wizard_mode();
             else if (!using_mods)   do_cmd_activate();
-            return;
+            break;
         }
         case Qt::Key_C:
         {
             do_cmd_repeat();
+            break;
         }
         case Qt::Key_D:
         {
             if (alt_key)            do_cmd_bash();
             if (shift_key)          do_cmd_close();
             else if (!using_mods)   do_cmd_open();
-            return;
+            break;
         }
         case Qt::Key_E:
         {
             if (!using_mods)        do_cmd_use_item();
-            return;
+            break;
         }
         case Qt::Key_F:
         {
             if (alt_key)            do_cmd_feeling();
             else if (shift_key)     do_cmd_fire_at_nearest();
             else if (!using_mods)   do_cmd_fire();
-            return;
+            break;
         }
         case Qt::Key_I:
         {
             if (shift_key)          do_cmd_examine();
             else if (!using_mods)   do_cmd_all_objects();
-            return;
+            break;
         }
         case Qt::Key_K:
         {
             if (!using_mods)        do_cmd_throw();
-            return;
+            break;
         }
         case Qt::Key_L:
         {
             if (shift_key)          do_cmd_refuel();
             else if (!using_mods)   do_cmd_look();
-            return;
+            break;
         }
         case Qt::Key_M:
         {
             if (shift_key)          do_cmd_study(-1);
             else if (ctrl_key)      do_cmd_browse(-1);
             else if (!using_mods)   do_cmd_cast(-1);
-            return;
+            break;
         }
         case Qt::Key_O:
         {
             if (alt_key)            do_cmd_tunnel();
             else if (shift_key)     do_cmd_make_trap();
             else if (!using_mods)   do_cmd_disarm();
-            return;
+            break;
         }
         case Qt::Key_P:
         {
             if (!using_mods)        do_cmd_player_screen();
-            return;
+            break;
         }
         case Qt::Key_Q:
         {
             if (!using_mods)        do_cmd_spike();
-            return;
+            break;
         }
         case Qt::Key_R:
         {
@@ -2200,77 +2201,77 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             else if (alt_key)       do_cmd_rest_specific(REST_SP);
             else if (shift_key)     do_cmd_rest();
             else if (!using_mods)   do_cmd_rest_specific(REST_COMPLETE);
-            return;
+            break;
         }
         case Qt::Key_S:
         {
             if (shift_key)          do_cmd_toggle_search();
             else if (!using_mods)   do_cmd_search();
-            return;
+            break;
         }
         case Qt::Key_W:
         {
             if (ctrl_key)           do_cmd_takeoff();
             else if (shift_key)     do_cmd_swap_weapon();
             else if (!using_mods)   do_cmd_wield();
-            return;
+            break;
         }
         case Qt::Key_X:
         {
             if (!using_mods)        do_cmd_destroy();
-            return;
+            break;
         }
         case Qt::Key_Z:
         {
             if (!using_mods)        do_cmd_alter(DIR_UNKNOWN);
-            return;
+            break;
         }
         case Qt::Key_BraceLeft:
         {
             do_cmd_inscribe();
-            return;
+            break;
         }
         case Qt::Key_BraceRight:
         {
             do_cmd_uninscribe();
-            return;
+            break;
         }
         case Qt::Key_Greater:
         {
             do_cmd_go_down();
-            return;
+            break;
         }
         case Qt::Key_Less:
         {
             do_cmd_go_up();
-            return;
+            break;
         }
         case Qt::Key_Period:
         {
             do_cmd_run(DIR_UNKNOWN);
-            return;
+            break;
         }
         case Qt::Key_Plus:
         {
             do_cmd_pickup();
-
-            return;
+            break;
         }
         case Qt::Key_Minus:
         {
             do_cmd_drop();
-            return;
+            break;
         }
         case Qt::Key_Colon:
         {
             do_cmd_write_note();
-            return;
+            break;
         }
         default:
         {
             break;
         }
     }
+    handle_stuff();
 }
 
 

@@ -21,7 +21,10 @@
 #include <src/spells.h>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QPushButton>
+#include <QRadioButton>
+#include <qmath.h>
+#include <QKeyEvent>
+#include <QApplication>
 
 
 /*
@@ -1223,6 +1226,91 @@ void BanishSelectDialog::update_banish_choice(int choice)
     chosen_type = choice;
 }
 
+// See if the user selected a button bia a keypress.
+void BanishSelectDialog::keyPressEvent(QKeyEvent* which_key)
+{
+    // Get the keypress and make sure we have the case correct
+    QString key_pressed = which_key->text();
+
+    // Just a modifier key pressed
+    if (!key_pressed.length()) return;
+
+    //make sure we know the right case
+    if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))
+    {
+        key_pressed[0] = key_pressed.at(0).toTitleCase();
+    }
+
+    // Search for a radio button that starts with the keypress.
+    QList<QRadioButton *> buttons = this->findChildren<QRadioButton *>();
+    for (int i = 0; i < buttons.size(); i++)
+    {
+        QString this_text = buttons.at(i)->text();
+
+        this_text.truncate(1);
+
+        if (this_text.contains(key_pressed, Qt::CaseSensitive))
+        {
+            buttons.at(i)->click();
+            this->accept();
+        }
+    }
+}
+
+void BanishSelectDialog::add_monster_types(QGridLayout *return_layout)
+{
+    int count = 0;
+    int i = 0;
+
+    monster_banish_choices *banish_ptr;
+
+    // First count the number of monster groups
+    while (TRUE)
+    {
+        if (game_mode == GAME_NPPANGBAND) banish_ptr = &banish_info_nppangband[i];
+        else banish_ptr = &banish_info_nppmoria[i];
+
+        if (banish_ptr->mon_race.isNull()) break;
+        count++;
+        i++;
+    }
+
+    banish_choice_group = new QButtonGroup;
+    banish_choice_group->setExclusive(TRUE);
+
+    count = qSqrt(count);
+
+    int row = 0;
+    int col = 0;
+    i = 0;
+
+    // Now put the radio buttons into the grid
+    while (TRUE)
+    {
+        if (game_mode == GAME_NPPANGBAND) banish_ptr = &banish_info_nppangband[i];
+        else banish_ptr = &banish_info_nppmoria[i];
+
+        if (banish_ptr->mon_race.isNull()) break;
+
+        QString mon_name = (QString("%1 - %2") .arg(banish_ptr->mon_symbol) .arg(banish_ptr->mon_race));
+
+        QRadioButton *this_radiobutton = new QRadioButton(mon_name);
+        if (!i) this_radiobutton->setChecked(TRUE);
+        banish_choice_group->addButton(this_radiobutton, i);
+        return_layout->addWidget(this_radiobutton, row++, col, Qt::AlignLeft);
+
+        if (row >= count)
+        {
+            col++;
+            row = 0;
+        }
+
+        i++;
+    }
+
+    connect(banish_choice_group, SIGNAL(buttonClicked(int)), this, SLOT(update_banish_choice(int)));
+}
+
 
 BanishSelectDialog::BanishSelectDialog(void)
 {
@@ -1234,31 +1322,22 @@ BanishSelectDialog::BanishSelectDialog(void)
     monster_banish_choices *banish_ptr;
 
     QVBoxLayout *vlay = new QVBoxLayout;
-    banish_choice = new QComboBox;
 
     QLabel *obj_label = new QLabel(QString("<b><big>Please select a monster type to banish:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
     vlay->addWidget(obj_label);
     vlay->addStretch();
-    connect(banish_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(update_banish_choice(int)));
 
-    while (TRUE)
-    {
-        if (game_mode == GAME_NPPANGBAND) banish_ptr = &banish_info_nppangband[i];
-        else banish_ptr = &banish_info_nppmoria[i];
+    QGridLayout *banish_choices = new QGridLayout;
+    vlay->addLayout(banish_choices);
+    add_monster_types(banish_choices);
 
-        if (banish_ptr->mon_race.isNull()) break;
-
-        banish_choice->addItem(QString("%1") .arg(i));
-        banish_choice->setItemText(i++, QString("%1 - %2") .arg(banish_ptr->mon_symbol) .arg(banish_ptr->mon_race));
-    }
 
     button_boxes = new QDialogButtonBox(QDialogButtonBox::Ok
                                       | QDialogButtonBox::Cancel);
     connect(button_boxes, SIGNAL(accepted()), this, SLOT(accept()));
     connect(button_boxes, SIGNAL(rejected()), this, SLOT(reject()));
 
-    vlay->addWidget(banish_choice);
     vlay->addWidget(button_boxes);
 
     setLayout(vlay);

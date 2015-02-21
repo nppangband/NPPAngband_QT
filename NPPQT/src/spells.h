@@ -2,8 +2,10 @@
 #define SPELLS_H
 
 #include <QDialog>
-#include <QComboBox>
 #include <QDialogButtonBox>
+#include <QGridLayout>
+#include <QButtonGroup>
+
 
 typedef struct monster_banish_choices monster_banish_choices;
 
@@ -21,13 +23,18 @@ public:
     BanishSelectDialog(void);
     bool return_value;
 
+protected:
+    void keyPressEvent(QKeyEvent* which_key);
+
+
 private slots:
     void update_banish_choice(int choice);
+    void add_monster_types(QGridLayout *return_layout);
 
 private:
     int chosen_type;
     QDialogButtonBox *button_boxes;
-    QComboBox *banish_choice;
+    QButtonGroup *banish_choice_group;
 };
 
 #endif // SPELLS_H
