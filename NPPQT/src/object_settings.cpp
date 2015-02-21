@@ -175,8 +175,8 @@ void ObjectSettingsDialog::add_object_verifications(byte settings_mode)
     if (do_object_type) connect(object_type_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_type_settings(int, bool)));
     if (do_object_kind) connect(object_kind_group, SIGNAL(buttonToggled(int, bool)), this, SLOT(update_object_kind_settings(int, bool)));
 
-    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    object_type_ver->addSpacerItem(vspacer);
+    object_type_ver->addStretch(1);
+    object_kind_ver->addStretch(1);
 }
 
 void ObjectSettingsDialog::update_ego_setting(int id)
@@ -215,8 +215,7 @@ void ObjectSettingsDialog::add_ego_buttons(QVBoxLayout *ego_buttons)
     ego_buttons->addWidget(ego_no);
     ego_buttons->addWidget(ego_yes);
 
-    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    ego_buttons->addSpacerItem(vspacer);
+    ego_buttons->addStretch(1);
 
     connect(ego_group, SIGNAL(buttonClicked(int)), this, SLOT(update_ego_setting(int)));
 }
@@ -377,6 +376,7 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
     main_across->addLayout(object_type_ver);
     main_across->addLayout(object_kind_ver);
     main_across->addLayout(squelch_vlay);
+
 
     add_object_verifications(settings_mode);
 

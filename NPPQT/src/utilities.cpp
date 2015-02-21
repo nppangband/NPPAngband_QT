@@ -6,6 +6,41 @@
 #include "src/init.h"
 #include <QInputDialog>
 #include <QLineEdit>
+#include <QVBoxLayout>
+#include <QDialogButtonBox>
+#include <QPushButton>
+
+
+
+static letters_and_numbers lowercase_and_numbers[26] =
+{
+    { 'a', 0},
+    { 'b', 1},
+    { 'c', 2},
+    { 'd', 3},
+    { 'e', 4},
+    { 'f', 5},
+    { 'g', 6},
+    { 'h', 7},
+    { 'i', 8},
+    { 'j', 9},
+    { 'k', 10},
+    { 'l', 11},
+    { 'm', 12},
+    { 'n', 13},
+    { 'o', 14},
+    { 'p', 15},
+    { 'q', 16},
+    { 'r', 17},
+    { 's', 18},
+    { 't', 19},
+    { 'u', 20},
+    { 'v', 21},
+    { 'w', 22},
+    { 'x', 23},
+    { 'y', 24},
+    { 'z', 25}
+};
 
 
 QString _num(int n)
@@ -227,6 +262,67 @@ QString get_string(QString question, QString description, QString answer)
     return (text);
 }
 
+// Return the maximum value
+void GetQuantityDialog::max_number_button(void)
+{
+    current_quantity = this_quantity->maximum();
+    this->accept();
+}
+
+// return the minimum value
+void GetQuantityDialog::min_number_button(void)
+{
+    current_quantity = this_quantity->minimum();
+    this->accept();
+}
+
+void GetQuantityDialog::update_quantity(int new_value)
+{
+    current_quantity = new_value;
+}
+
+GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value)
+{
+    QVBoxLayout *main_layout = new QVBoxLayout;
+
+    QLabel *header_main = new QLabel(QString("<b><h2>%1  %2-%3</b></h2>") .arg(prompt) .arg(min) .arg(max));
+    header_main->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(header_main);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Please select a quantity:"));
+
+    this_quantity = new QSpinBox;
+    this_quantity->setRange(min, max);
+    this_quantity->setValue(value);
+
+    main_layout->addWidget(this_quantity);
+
+    connect(this_quantity, SIGNAL(valueChanged(int)), this, SLOT(update_quantity(int)));
+
+    // Add buttons for min value, max value, OK, and cancel
+    QDialogButtonBox *buttons = new QDialogButtonBox();
+    QPushButton *min_button = new QPushButton();
+    min_button->setText(QString("Min - %1") .arg(min));
+    min_button->setToolTip("Use the minimum possible value");
+    connect(min_button, SIGNAL(clicked()), this, SLOT(min_number_button()));
+    buttons->addButton(min_button, QDialogButtonBox::ActionRole);
+    QPushButton *max_button = new QPushButton();
+    max_button->setText(QString("Max - %1") .arg(max));
+    max_button->setToolTip("Use the maximum possible value");
+    connect(max_button, SIGNAL(clicked()), this, SLOT(max_number_button()));
+    buttons->addButton(max_button, QDialogButtonBox::ActionRole);
+    buttons->addButton(QDialogButtonBox::Ok);
+    buttons->addButton(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    main_layout->addWidget(buttons);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Verify Destroy"));
+
+}
+
 /*
  * Request a "quantity" from the user
  */
@@ -235,29 +331,20 @@ s16b get_quantity(QString prompt, int max, int amt, bool allow_zero)
     if (!amt) amt = 1;
     int min = 1;
     if (allow_zero) min = 0;
-    if (max > 1)
+    if (max == 1) return (1);
+
+    /* Build a prompt if needed */
+    if (prompt.isEmpty())
     {
-        bool ok;
-
-        /* Build a prompt if needed */
-        if (prompt.isEmpty())
-        {
-            /* Build a prompt */
-            prompt = (QString("Please enter a quantity (0-%1)") .arg(max));
-        }
-        else prompt.append(QString(" (0-%1)") .arg(max));
-
-        // Input dialog (this, title, prompt, initial value, min, max, step, ok, flags)
-        amt = QInputDialog::getInt(0, "Please enter a number", prompt, amt, min, max, 1, &ok, 0);
-
-        if (!ok) return (0);
+        /* Build a prompt */
+        prompt = (QString("Please enter a quantity (0-%1)") .arg(max));
     }
+    else prompt.append(QString(" (0-%1)") .arg(max));
 
-    /* Enforce the maximum */
-    if (amt > max) amt = max;
+    GetQuantityDialog dlg(prompt, min, max, amt);
 
-    /* Enforce the minimum */
-    if (amt < 0) amt = 0;
+    if (!dlg.exec()) amt = 0;
+    else amt = dlg.current_quantity;
 
     /* Return the result */
     return (amt);

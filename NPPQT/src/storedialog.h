@@ -129,6 +129,10 @@ public:
 public slots:
     void update_totals(int value);
     void do_accept();
+
+private slots:
+    void max_number_button();
+    void min_number_button();
 };
 
 class StatDialog : public QDialog

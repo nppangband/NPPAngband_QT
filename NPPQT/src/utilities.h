@@ -5,6 +5,8 @@
 #include <src/defines.h>
 #include <QString>
 #include <QColor>
+#include <QSpinBox>
+#include <QDialog>
 
 typedef struct letters_and_numbers letters_and_numbers;
 
@@ -27,37 +29,29 @@ struct notes_type
 };
 
 
+class GetQuantityDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit GetQuantityDialog(QString prompt, int min, int max, int value);
+
+    s16b current_quantity;
+
+private slots:
+    void max_number_button();
+    void min_number_button();
+    void update_quantity(int new_value);
+
+private:
+
+    QSpinBox *this_quantity;
+};
+
+
 extern QVector<notes_type>  notes_log;
 
-static letters_and_numbers lowercase_and_numbers[26] =
-{
-    { 'a', 0},
-    { 'b', 1},
-    { 'c', 2},
-    { 'd', 3},
-    { 'e', 4},
-    { 'f', 5},
-    { 'g', 6},
-    { 'h', 7},
-    { 'i', 8},
-    { 'j', 9},
-    { 'k', 10},
-    { 'l', 11},
-    { 'm', 12},
-    { 'n', 13},
-    { 'o', 14},
-    { 'p', 15},
-    { 'q', 16},
-    { 'r', 17},
-    { 's', 18},
-    { 't', 19},
-    { 'u', 20},
-    { 'v', 21},
-    { 'w', 22},
-    { 'x', 23},
-    { 'y', 24},
-    { 'z', 25}
-};
+
 
 #define IS_GRAY(color) ((color).red() == (color).green() && (color).green() == (color).blue())
 

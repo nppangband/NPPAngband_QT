@@ -1156,7 +1156,7 @@ ObjectDestroyDialog::ObjectDestroyDialog(s16b o_idx)
     setLayout(main_layout);
     setWindowTitle(tr("Object Menu"));
 
-    QLabel *object_name = new QLabel(QString("Really destory %1?") .arg(object_desc(o_ptr, ODESC_FULL)));
+    QLabel *object_name = new QLabel(QString("Really destroy %1?") .arg(object_desc(o_ptr, ODESC_FULL)));
     object_name->setAlignment(Qt::AlignCenter);
     main_layout->addWidget(object_name);
 

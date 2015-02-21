@@ -1125,6 +1125,20 @@ void QuantityDialog::do_accept()
     accept();
 }
 
+// Return the maximum value
+void QuantityDialog::max_number_button(void)
+{
+    amt = amt_spin->maximum();
+    this->accept();
+}
+
+// return the minimum value
+void QuantityDialog::min_number_button(void)
+{
+    amt = amt_spin->minimum();
+    this->accept();
+}
+
 QuantityDialog::QuantityDialog(object_type *op, bool buy)
 {
     o_ptr = op;
@@ -1159,7 +1173,7 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
 
     amt_spin = new QSpinBox();
     lay1->addWidget(amt_spin);
-    amt_spin->setMinimum(0);
+    amt_spin->setMinimum(1);
     amt_spin->setMaximum(max);
     if (buying) amt_spin->setValue(1);
     else amt_spin->setValue(max);
@@ -1175,16 +1189,25 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
     lay2->setContentsMargins(0, 0, 0, 0);
     lay1->addLayout(lay2);
 
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay2->addItem(spacer);
+    lay2->addStretch(1);
 
-    QPushButton *btn1 = new QPushButton("Ok");
-    lay2->addWidget(btn1);
-    connect(btn1, SIGNAL(clicked()), this, SLOT(do_accept()));
-
-    QPushButton *btn2 = new QPushButton("Cancel");
-    lay2->addWidget(btn2);
-    connect(btn2, SIGNAL(clicked()), this, SLOT(reject()));
+    // Add buttons for min value, max value, OK, and cancel
+    QDialogButtonBox *buttons = new QDialogButtonBox();
+    QPushButton *min_button = new QPushButton();
+    min_button->setText(QString("Min - %1") .arg(amt_spin->minimum()));
+    min_button->setToolTip("Use the minimum possible value");
+    connect(min_button, SIGNAL(clicked()), this, SLOT(min_number_button()));
+    buttons->addButton(min_button, QDialogButtonBox::ActionRole);
+    QPushButton *max_button = new QPushButton();
+    max_button->setText(QString("Max - %1") .arg(max));
+    max_button->setToolTip("Use the maximum possible value");
+    connect(max_button, SIGNAL(clicked()), this, SLOT(max_number_button()));
+    buttons->addButton(max_button, QDialogButtonBox::ActionRole);
+    buttons->addButton(QDialogButtonBox::Ok);
+    buttons->addButton(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(accepted()), this, SLOT(do_accept()));
+    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    lay1->addWidget(buttons);
 }
 
 void QuantityDialog::update_totals(int value)
