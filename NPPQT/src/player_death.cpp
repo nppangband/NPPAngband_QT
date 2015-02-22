@@ -23,6 +23,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <src/messages.h>
 
 
 void PlayerDeathDialog::death_info(void)
@@ -37,7 +38,7 @@ void PlayerDeathDialog::death_home_inven(void)
 
 void PlayerDeathDialog::death_messsages(void)
 {
-    // TODO display messages
+    display_message_log();
 }
 
 void PlayerDeathDialog::death_file_dump(void)

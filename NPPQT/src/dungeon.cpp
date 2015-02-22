@@ -192,7 +192,4 @@ void launch_game()
     ui_update_titlebar();
     ui_update_messages();
 
-
-    // TODO PLAYTESTING
-    debug_rarities();
 }

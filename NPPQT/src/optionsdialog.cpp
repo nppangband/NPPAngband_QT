@@ -70,8 +70,7 @@ OptionsDialog::OptionsDialog()
             lay2->addWidget(chk);
         }
 
-        QSpacerItem *sp = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-        lay2->addItem(sp);
+        lay2->addStretch(1);
     }
 
     QWidget *wid3 = new QWidget;
@@ -80,8 +79,7 @@ OptionsDialog::OptionsDialog()
 
     lay1->addWidget(wid3);
 
-    QSpacerItem *sp2 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay3->addItem(sp2);
+    lay3->addStretch(1);
 
     QPushButton *btn1 = new QPushButton(tr("Save"));
     lay3->addWidget(btn1);

@@ -17,6 +17,7 @@
  */
 
 #include "src/npp.h"
+#include "src/help.h"
 
 /*
  * Return a string that describes the type of a feature
@@ -842,6 +843,18 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
     return(output);
 }
 
+static QString describe_store(int f_idx)
+{
+
+    feature_type *f_ptr = &f_info[f_idx];
+
+    QString output = get_help_topic("store_info", f_ptr->f_name);
+
+    return (output);
+
+
+}
+
 /*
  * Display feature information
  */
@@ -919,6 +932,8 @@ void describe_feature(int f_idx, bool spoilers)
     output.append(describe_feature_stealth_effects(f_idx, &lore));
 
     output.append(describe_feature_dynamic(f_idx, &lore));
+
+    if (f_ptr->f_flags1 & (FF1_SHOP)) output.append(describe_store(f_idx));
 
     /* Finally, display it */
     display_info_window(DISPLAY_INFO_FEATURE, f_idx, output);

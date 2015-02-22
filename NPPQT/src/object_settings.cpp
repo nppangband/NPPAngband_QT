@@ -279,8 +279,7 @@ void ObjectSettingsAux::add_quality_buttons(QVBoxLayout *quality_buttons)
     }
     quality_buttons->addWidget(quality_all_but_artifact);
 
-    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    quality_buttons->addSpacerItem(vspacer);
+    quality_buttons->addStretch(1);
 
     connect(quality_group, SIGNAL(buttonClicked(int)), this, SLOT(update_quality_setting(int)));
 }

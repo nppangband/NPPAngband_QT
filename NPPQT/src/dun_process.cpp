@@ -290,12 +290,6 @@ static void monster_terrain_damage(void)
 
             get_spell_type_from_feature(feat, &gf_type);
 
-            // TODO - Playtesting
-            QString str = QString("%1 takes damage from %2 (%3,%4)")
-                    .arg(r_ptr->r_name_full).arg(f_ptr->f_name)
-                    .arg(m_ptr->fy).arg(m_ptr->fx);
-            message(str);
-
             /* Hack - quest monsters shouldn't take damage from terrain */
             if (m_ptr->mflag & (MFLAG_QUEST))
             {
@@ -1761,11 +1755,6 @@ void change_player_level(void)
 
     /* Announce a player ghost challenge. -LM- */
     ghost_challenge();
-
-    /*** Process this dungeon level ***/
-
-    // TODO PLAYTESTING
-    debug_rarities();
 }
 
 

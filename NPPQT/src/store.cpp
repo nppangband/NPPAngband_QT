@@ -41,7 +41,7 @@ service_info services_info[] =
     //SERVICE_IDENTIFY
     {STORE_MAGIC,   75,     do_service_identify,    "Identify item"},
     //SERVICE_IDENTIFY_FULLY
-    {STORE_MAGIC,   4500,   do_service_identify,    "*Identify* item"},
+    {STORE_MAGIC,   4500,   do_service_identify,    "Fully identify item"},
     //SERVICE_CURE_CRITICAL
     {STORE_TEMPLE,  75,     do_service_cure_critical,"Cure Critical Wounds"},
     //SERVICE_RESTORE_LIFE_LEVELS
@@ -49,7 +49,7 @@ service_info services_info[] =
     //SERVICE_REMOVE_CURSE
     {STORE_TEMPLE,  300,    do_service_remove_curse,"Remove curse"},
     //SERVICE_REMOVE_HEAVY_CURSE
-    {STORE_TEMPLE,  15000,  do_service_remove_curse,"Remove *curse*"},
+    {STORE_TEMPLE,  15000,  do_service_remove_curse,"Remove heavy curse"},
     //SERVICE_RESTORE_STAT
     {STORE_ALCHEMY, 700,    do_service_stat,        "Restore stat"},
     //SERVICE_INCREASE_STAT

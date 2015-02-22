@@ -13,6 +13,7 @@
 #include "npp.h"
 #include <src/cmds.h>
 #include "store.h"
+#include <src/help.h>
 
 void launch_store(int store_idx)
 {
@@ -105,8 +106,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
         lay3->addWidget(new QLabel("<b>Your home</b>"));
     }
 
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay3->addItem(spacer);
+    lay3->addStretch(1);
 
     QPushButton *btn_buy = new QPushButton(home ? "Retrieve (F2)": "Buy (F2)");
     lay3->addWidget(btn_buy);
@@ -141,8 +141,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 
     set_mode(SMODE_DEFAULT);
 
-    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay6->addItem(spacer);
+    lay6->addStretch(1);
 
     QPushButton *btn_exam = new QPushButton("Examine (F5)");
     lay6->addWidget(btn_exam);
@@ -219,7 +218,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     quest_layout->addWidget(quest_status, 1, 1);
     quest_layout->addWidget(quest_picture, 1, 0);
 
-    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
     quest_layout->addItem(spacer, 1, 2);
 
     this->reset_quest_status();
@@ -230,8 +229,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     lay5->setContentsMargins(0, 0, 0, 0);
     lay1->addWidget(area3);
 
-    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay5->addItem(spacer);
+    lay5->addStretch(1);
 
     QPushButton *btn_close = new QPushButton("Close");
     lay5->addWidget(btn_close);
@@ -645,11 +643,19 @@ void StoreDialog::help_click()
 
     if (id.at(0) == 'q')
     {
-        pop_up_message_box(QString("Help files not done yet"));
+        QString quest_name = quests_info[o_idx];
+
+        QString info = get_help_topic("store_info", quest_name);
+
+        pop_up_message_box(info, QMessageBox::Information);
     }
     else if (id.at(0) == 's')
     {
-        pop_up_message_box(QString("Help files not done yet"));
+        QString service_name = services_info[o_idx].service_names;
+
+        QString info = get_help_topic("store_info", service_name);
+
+        pop_up_message_box(info, QMessageBox::Information);
     }
     else if (id.at(0) == 'p')
     {

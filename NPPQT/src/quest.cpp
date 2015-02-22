@@ -30,6 +30,8 @@ QString quests_info[] =
     "Wilderness Quest",
     /* QUEST_THEMED_LEVEL*/
     "Level Quest",
+    /* QUEST_SLOT_VAULT */
+    "Artifact Vault Quest",
     /* QUEST_ARENA_LEVEL */
     "Arena Quest",
     /* QUEST_LABYRINTH_LEVEL */

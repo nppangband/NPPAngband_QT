@@ -169,7 +169,7 @@ void ObjectSelectDialog::build_floor_tab()
     QWidget *aux = new QWidget;
     vlay->addWidget(aux);
 
-    vlay->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    vlay->addStretch(1);
 
     QGridLayout *object_layout = new QGridLayout;
     aux->setLayout(object_layout);
@@ -246,7 +246,7 @@ void ObjectSelectDialog::build_inven_tab()
     QWidget *aux = new QWidget;
     vlay->addWidget(aux);
 
-    vlay->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    vlay->addStretch(1);
 
     QGridLayout *object_layout = new QGridLayout;
     aux->setLayout(object_layout);
@@ -320,7 +320,7 @@ void ObjectSelectDialog::build_equip_tab()
     QWidget *aux = new QWidget;
     vlay->addWidget(aux);
 
-    vlay->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    vlay->addStretch(1);
 
     QGridLayout *object_layout = new QGridLayout;
     aux->setLayout(object_layout);

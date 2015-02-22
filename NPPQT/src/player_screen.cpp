@@ -581,8 +581,6 @@ void PlayerScreenInfo::char_basic_info(QGridLayout *return_layout)
     QLabel *filler = new QLabel("  ");
     return_layout->addWidget(filler, 0, col + 2);
 
-    return_layout->addItem(new QSpacerItem(1,1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding), row, 0);
-
 }
 
 void PlayerScreenInfo::char_basic_data(QGridLayout *return_layout)
