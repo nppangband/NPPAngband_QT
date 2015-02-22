@@ -466,22 +466,13 @@ bool target_set_interactive(int mode, int x, int y)
     int px = p_ptr->px;
 
     int i, d, m, t, bd;
-    int wid, hgt, help_prompt_loc;
 
     bool done = FALSE;
     bool flag = TRUE;
-    bool help = FALSE;
-    bool list_floor_objects = TRUE;
 
     u16b path_n;
     u16b path_g[PATH_SIZE];
     u16b path_gx[PATH_SIZE];
-
-    char info[80];
-
-    /* These are used for displaying the path to the target */
-    char path_char[MAX_RANGE];
-    byte path_attr[MAX_RANGE];
 
     /* Temporarily turn off animate_flicker, must be re-set before exiting the function  */
     //bool temp_animate_flicker = animate_flicker;
@@ -502,7 +493,6 @@ bool target_set_interactive(int mode, int x, int y)
     {
         flag = FALSE;
     }
-
 
     /* Cancel target */
     target_set_monster(0);
@@ -543,21 +533,6 @@ bool target_set_interactive(int mode, int x, int y)
             yy = y;
             xx = x;
 
-            /* Allow targets for monsters....or traps, if applicable */
-#if 0
-            if (((cave_m_idx[y][x] > 0) && target_able(cave_m_idx[y][x])) ||
-                ((mode & (TARGET_TRAP)) && target_able_trap(y, x)))
-            {
-                strcpy(info, "q,t,r,f,p,o,+,-,<dir>");
-            }
-
-            /* Dis-allow target */
-            else
-            {
-                strcpy(info, "q,p,f,o,+,-,<dir>");
-            }
-#endif
-
             /* Adjust panel if needed */
             ui_ensure(y, x);
 
@@ -573,7 +548,6 @@ bool target_set_interactive(int mode, int x, int y)
             ui_show_cursor(y, x);
 
             /* Describe and Prompt */
-            //query = target_set_interactive_aux(y, x, mode, info, list_floor_objects);
             describe_grid_brief(y, x);
 
             UserInput input = ui_get_input();
@@ -583,8 +557,6 @@ bool target_set_interactive(int mode, int x, int y)
 
             ui_show_cursor(-1, -1);
 
-            /* Cancel tracking */
-            /* health_track(0); */
 
             /* Assume no "direction" */
             d = 0;
@@ -601,7 +573,6 @@ bool target_set_interactive(int mode, int x, int y)
                 }
 
                 case Qt::Key_Space:
-                case Qt::Key_Asterisk:
                 case Qt::Key_Plus:
                 {
                     if (++m == temp_n) m = 0;
@@ -624,21 +595,9 @@ bool target_set_interactive(int mode, int x, int y)
                     break;
                 }
 
-                case Qt::Key_O:
-                {
-                    flag = FALSE;
-                    break;
-                }
-
                 case Qt::Key_L:
                 {
                     GridDialog(y, x);
-                    break;
-                }
-
-
-                case Qt::Key_M:
-                {
                     break;
                 }
 
@@ -653,7 +612,13 @@ bool target_set_interactive(int mode, int x, int y)
                     break;
                 }
 
-                case Qt::Key_T:
+                case Qt::Key_M:
+                {
+                    flag = FALSE;
+                    break;
+                }
+
+                case Qt::Key_H:
                 case Qt::Key_5:
                 case Qt::Key_0:
                 case Qt::Key_Period:
@@ -682,37 +647,6 @@ bool target_set_interactive(int mode, int x, int y)
                     }
                     break;
                 }
-
-                /*
-                case 'g':
-                {
-                    cmd_insert(CMD_PATHFIND, y, x);
-                    done = TRUE;
-                    break;
-                }
-                */
-
-                case Qt::Key_F:
-                {
-                    list_floor_objects = (!list_floor_objects);
-                    break;
-                }
-
-#if 0
-                case '?':
-                {
-                    help = !help;
-
-                    /* Redraw main window */
-                    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP | PR_EQUIP);
-                    Term_clear();
-                    handle_stuff();
-                    if (!help)
-                        prt("'?' - help", help_prompt_loc, 0);
-
-                    break;
-                }
-#endif
 
                 default:
                 {
@@ -775,30 +709,6 @@ bool target_set_interactive(int mode, int x, int y)
             int yy = y;
             int xx = x;
 
-#if 0
-            /* Don't need this button any more */
-            button_kill('o');
-
-            /* Update help */
-            if (help)
-            {
-                bool good_target = ((cave_m_idx[y][x] > 0) && target_able(cave_m_idx[y][x]));
-                target_display_help(good_target, !(flag && temp_n));
-            }
-
-            /* Default prompt */
-            if (!(mode & (TARGET_GRID)))
-            {
-                strcpy(info, "q,t,f,p,m,+,-,<dir>");
-            }
-
-            /* Disable monster selection */
-            else
-            {
-                strcpy(info, "q,t,f.p,+,-,<dir>");
-            }
-#endif
-
             /* Find the path. */
             path_n = project_path(path_g, path_gx, MAX_RANGE, py, px, &yy, &xx, PROJECT_THRU);
 
@@ -809,10 +719,6 @@ bool target_set_interactive(int mode, int x, int y)
                 path_drawn = ui_draw_path(path_n, path_g, y, x);
             }
 
-            //event_signal(EVENT_MOUSEBUTTONS);
-
-            /* Describe and Prompt (enable "TARGET_LOOK") */
-            //query = target_set_interactive_aux(y, x, (mode | TARGET_LOOK), info, list_floor_objects);
             describe_grid_brief(y, x);
 
             ui_show_cursor(y, x);
@@ -863,11 +769,6 @@ bool target_set_interactive(int mode, int x, int y)
                     y = py;
                     x = px;
 
-                    break;
-                }
-
-                case Qt::Key_O:
-                {
                     break;
                 }
 
@@ -937,7 +838,7 @@ bool target_set_interactive(int mode, int x, int y)
                     break;
                 }
 
-                case Qt::Key_T:
+                case Qt::Key_H:
                 case Qt::Key_5:
                 case Qt::Key_0:
                 case Qt::Key_Period:
@@ -946,36 +847,6 @@ bool target_set_interactive(int mode, int x, int y)
                     done = TRUE;
                     break;
                 }
-
-                /*
-                case 'g':
-                {
-                    cmd_insert(CMD_PATHFIND, y, x);
-                    done = TRUE;
-                    break;
-                }
-                */
-
-                case Qt::Key_F:
-                {
-                    list_floor_objects = (!list_floor_objects);
-                }
-
-#if 0
-                case '?':
-                {
-                    help = !help;
-
-                    /* Redraw main window */
-                    p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP | PR_EQUIP);
-                    Term_clear();
-                    handle_stuff();
-                    if (!help)
-                        prt("'?' - help.", help_prompt_loc, 0);
-
-                    break;
-                }
-#endif
 
                 default:
                 {
@@ -1019,21 +890,6 @@ bool target_set_interactive(int mode, int x, int y)
 
     /* Forget */
     temp_n = 0;
-
-#if 0
-    /* Redraw as necessary */
-    if (help)
-    {
-        p_ptr->redraw |= (PR_BASIC | PR_EXTRA | PR_MAP | PR_EQUIP);
-        Term_clear();
-    }
-    else
-    {
-        prt("", 0, 0);
-        prt("", help_prompt_loc, 0);
-        p_ptr->redraw |= (PR_DEPTH | PR_STATUS);
-    }
-#endif
 
     ui_toolbar_hide(TOOLBAR_TARGETTING_INTERACTIVE);
 
@@ -1169,7 +1025,7 @@ int target_dir(UserInput input)
         // Left
         case Qt::Key_Left:
         case Qt::Key_4:
-        case Qt::Key_H:
+        case Qt::Key_G:
         {
             d = 4;
             break;
@@ -1177,7 +1033,7 @@ int target_dir(UserInput input)
         // Right
         case Qt::Key_Right:
         case Qt::Key_6:
-        case Qt::Key_K:
+        case Qt::Key_J:
         {
             d = 6;
             break;
@@ -1185,7 +1041,7 @@ int target_dir(UserInput input)
         // Up
         case Qt::Key_Up:
         case Qt::Key_8:
-        case Qt::Key_U:
+        case Qt::Key_Y:
         {
             d = 8;
             break;
@@ -1193,14 +1049,14 @@ int target_dir(UserInput input)
         // Down
         case Qt::Key_Down:
         case Qt::Key_2:
-        case Qt::Key_N:
+        case Qt::Key_B:
         {
             d = 2;
             break;
         }
         // left and up
         case Qt::Key_7:
-        case Qt::Key_Y:
+        case Qt::Key_T:
         case Qt::Key_Home:
         {
             d = 7;
@@ -1208,7 +1064,7 @@ int target_dir(UserInput input)
         }
         // right and up
         case Qt::Key_9:
-        case Qt::Key_I:
+        case Qt::Key_U:
         case Qt::Key_PageUp:
         {
             d = 9;
@@ -1216,7 +1072,7 @@ int target_dir(UserInput input)
         }
         // left and down
         case Qt::Key_1:
-        case Qt::Key_B:
+        case Qt::Key_V:
         case Qt::Key_End:
         {
             d = 1;
@@ -1224,7 +1080,7 @@ int target_dir(UserInput input)
         }
         // right and down
         case Qt::Key_3:
-        case Qt::Key_M:
+        case Qt::Key_N:
         case Qt::Key_PageDown:
         {
             d = 3;
@@ -1331,7 +1187,7 @@ bool get_aim_dir(int *dp, bool target_trap)
                 if (target_set_closest(TARGET_KILL)) dir = 5;
                 break;
             }
-            case Qt::Key_T:
+            case Qt::Key_H:
             case Qt::Key_5:
             case Qt::Key_0:
             case Qt::Key_Period:
@@ -1389,7 +1245,6 @@ bool target_set_closest(int mode)
     int y, x, m_idx;
     monster_type *m_ptr;
     QString m_name;
-    bool visibility;
 
     /* Cancel old target */
     target_set_monster(0);
@@ -1426,10 +1281,6 @@ bool target_set_closest(int mode)
     monster_race_track(m_ptr->r_idx);
     // TODO health_track(cave_m_idx[y][x]);
     target_set_monster(m_idx);
-
-    /* Visual cue */
-    // TODO draw it
-
 
     return TRUE;
 }

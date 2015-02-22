@@ -2,15 +2,10 @@
 #define CMDS_H
 
 
-
-#include "src/object_classes.h"
+#include <src/object_settings.h>
 #include "src/player.h"
-#include <QButtonGroup>
-#include <QDialogButtonBox>
 #include <QKeyEvent>
 #include <QTabWidget>
-#include <QLabel>
-#include <QDialog>
 
 enum
 {
@@ -45,8 +40,6 @@ private slots:
     void help_press(int num);
     void move_left(void);
     void move_right(void);
-
-
 
 private:
 
@@ -83,17 +76,13 @@ private:
 
 };
 
-class ObjectDestroyDialog : public QDialog
+class ObjectDestroyDialog : public ObjectSettingsAux
 {
     Q_OBJECT
 
 public:
     explicit ObjectDestroyDialog(s16b o_idx);
 
-private slots:
-    void do_object_settings();
-private:
-    s16b this_object_num;
 
 };
 

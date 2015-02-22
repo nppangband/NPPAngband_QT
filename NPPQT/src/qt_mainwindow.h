@@ -73,10 +73,8 @@ public:
 
     QTextEdit *message_area;
 
-    QToolBar *toolbar1; // Targeting
+    QToolBar *target_toolbar;
     QToolBar *status_bar;
-
-
 
     QTableWidget *sidebar;
 
@@ -103,8 +101,11 @@ public:
     void update_sidebar();
     void close_game_death();
     void update_titlebar();
+    void create_titlebar();
     void create_statusbar();
     void update_statusbar();
+    void create_targetbar();
+    void update_targetbar(int toolbar);
     void hide_statusbar();
 
 
@@ -295,6 +296,15 @@ private:
 
     QAction *nativity;
     QAction *status_trap_detect;
+
+    // QActions for the targetbar
+    QAction *escape;
+    QAction *use_current;
+    QAction *target_closest;
+    QAction *target_interactive;
+    QAction *target_manually;
+    QAction *target_player;
+    QAction *view_grid_contents;
 
 };
 

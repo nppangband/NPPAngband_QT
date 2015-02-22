@@ -78,5 +78,11 @@
         <file>lib/icons/stun.png</file>
         <file>lib/icons/cut.png</file>
         <file>lib/icons/nppicon.ico</file>
+        <file>lib/icons/target-cancel.png</file>
+        <file>lib/icons/target-manual.png</file>
+        <file>lib/icons/target-interactive.png</file>
+        <file>lib/icons/target-player.png</file>
+        <file>lib/icons/target-closest.png</file>
+        <file>lib/icons/target.png</file>
     </qresource>
 </RCC>

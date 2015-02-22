@@ -1,5 +1,5 @@
 /*
- * File: qt_statusbar.c
+ * File: qt_statusbar.cpp
  *
  * Copyright (c) 2014  Jeff Greene, Diego Gonzalez
  *

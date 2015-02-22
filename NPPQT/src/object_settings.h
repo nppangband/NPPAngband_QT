@@ -25,35 +25,23 @@ public:
 
 };
 
-
-extern verify_data verification_data[VERIFY_MAX];
-
-/*
- *  Include all generic functions to be
- * used across all object dialog boxes.
- */
-class ObjectSettingsDialog: public QDialog
+class ObjectSettingsAux: public QDialog
 {
     Q_OBJECT
+
 public:
-
-    ObjectSettingsDialog(s16b o_idx, byte settings_mode);
-
-private:
-    object_kind *k_ptr;
-    object_type *o_ptr;
-
-    QVBoxLayout *object_type_ver;
-    QButtonGroup *object_type_group;
-
-    QVBoxLayout *object_kind_ver;
-    QButtonGroup *object_kind_group;
+    void add_squelch_buttons(QVBoxLayout *squelch_buttons);
+    void add_quality_buttons(QVBoxLayout *quality_buttons);
+    void add_ego_buttons(QVBoxLayout *ego_buttons);
 
     QButtonGroup *squelch_group;
     QRadioButton *squelch_never;
     QRadioButton *squelch_pickup_no;
     QRadioButton *squelch_pickup_yes;
     QRadioButton *squelch_always;
+
+    object_kind *k_ptr;
+    object_type *o_ptr;
 
     QButtonGroup *quality_group;
     QRadioButton *quality_none;
@@ -68,22 +56,47 @@ private:
     QRadioButton *ego_yes;
 
     byte squelch_type;
+
+public slots:
+    void update_squelch_setting(int id);
+    void update_quality_setting(int id);
+    void update_ego_setting(int id);
+};
+
+
+extern verify_data verification_data[VERIFY_MAX];
+
+/*
+ *  Include all generic functions to be
+ * used across all object dialog boxes.
+ */
+class ObjectSettingsDialog: public ObjectSettingsAux
+{
+    Q_OBJECT
+public:
+
+    ObjectSettingsDialog(s16b o_idx, byte settings_mode);
+
+private:
+
+
+    QVBoxLayout *object_type_ver;
+    QButtonGroup *object_type_group;
+
+    QVBoxLayout *object_kind_ver;
+    QButtonGroup *object_kind_group;
+
     bool do_object_type;
     bool do_object_kind;
 
     void add_type_checkbox(byte which_ver);
     void add_kind_checkbox(byte which_ver);
     void add_object_verifications(byte settings_mode);
-    void add_squelch_buttons(QVBoxLayout *squelch_buttons);
-    void add_quality_buttons(QVBoxLayout *quality_buttons);
-    void add_ego_buttons(QVBoxLayout *ego_buttons);
 
 private slots:
     void update_object_type_settings(int id, bool checked);
     void update_object_kind_settings(int id, bool checked);
-    void update_squelch_setting(int id);
-    void update_quality_setting(int id);
-    void update_ego_setting(int id);
+
 };
 
 // object_settings

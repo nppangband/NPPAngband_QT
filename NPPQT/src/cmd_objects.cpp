@@ -1128,7 +1128,7 @@ void command_swap(cmd_arg args)
 
 /*
  * Depending on game options, either swap weapons between the main weapon
- * slot and the swap weapon slot, or search for weapon with the @x inscription and wield it
+ * slot and the swap weapon slot, or search for weapon with the swap flag inscription and wield it
  */
 void do_cmd_swap_weapon()
 {
@@ -1137,17 +1137,13 @@ void do_cmd_swap_weapon()
     command_swap(args);
 }
 
-void ObjectDestroyDialog::do_object_settings()
-{
-    object_settings(this_object_num);
-}
-
 ObjectDestroyDialog::ObjectDestroyDialog(s16b o_idx)
 {
     QVBoxLayout *main_layout = new QVBoxLayout;
 
-    object_type *o_ptr = object_from_item_idx(o_idx);
-    this_object_num = o_idx;
+    o_ptr = object_from_item_idx(o_idx);
+    k_ptr = &k_info[o_ptr->k_idx];
+    squelch_type = squelch_type_of(o_ptr);
 
     QLabel *header_main = new QLabel("<b><h2>Confirm Object Destruction</b></h2>");
     header_main->setAlignment(Qt::AlignCenter);
@@ -1156,25 +1152,35 @@ ObjectDestroyDialog::ObjectDestroyDialog(s16b o_idx)
     setLayout(main_layout);
     setWindowTitle(tr("Object Menu"));
 
-    QLabel *object_name = new QLabel(QString("Really destroy %1?") .arg(object_desc(o_ptr, ODESC_FULL)));
+    main_layout->addStretch(1);
+
+    // Add squelch settings, except for the instant artifacts
+    if (!o_ptr->art_num)
+    {
+        QVBoxLayout *squelch_buttons = new QVBoxLayout;
+        main_layout->addLayout(squelch_buttons);
+        add_squelch_buttons(squelch_buttons);
+
+        QVBoxLayout *quality_buttons = new QVBoxLayout;
+        main_layout->addLayout(quality_buttons);
+        add_quality_buttons(quality_buttons);
+
+        QVBoxLayout *ego_buttons = new QVBoxLayout;
+        main_layout->addLayout(ego_buttons);
+        add_ego_buttons(ego_buttons);
+    }
+
+    QLabel *object_name = new QLabel(QString("<br><h2>Really destroy %1?</h2><br>") .arg(object_desc(o_ptr, ODESC_FULL)));
     object_name->setAlignment(Qt::AlignCenter);
     main_layout->addWidget(object_name);
 
-    QHBoxLayout *main_across = new QHBoxLayout;
-    main_layout->addLayout(main_across);
+    main_layout->addStretch(1);
 
-    QPushButton *obj_settings = new QPushButton("Object Settings");
-    obj_settings->setToolTip("Set verification settings and squelch settings");
-    connect(obj_settings, SIGNAL(clicked()), this, SLOT(do_object_settings()));
-    main_across->addWidget(obj_settings);
-
-    QPushButton *yes_button = new QPushButton("Yes");
-    connect(yes_button, SIGNAL(clicked()), this, SLOT(accept()));
-    main_across->addWidget(yes_button);
-
-    QPushButton *no_button = new QPushButton("No");
-    connect(no_button, SIGNAL(clicked()), this, SLOT(reject()));
-    main_across->addWidget(no_button);
+    //Add a close buttons
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+    main_layout->addWidget(buttons);
 
     setLayout(main_layout);
     setWindowTitle(tr("Verify Destroy"));

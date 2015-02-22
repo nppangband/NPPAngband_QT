@@ -179,14 +179,14 @@ void ObjectSettingsDialog::add_object_verifications(byte settings_mode)
     object_kind_ver->addStretch(1);
 }
 
-void ObjectSettingsDialog::update_ego_setting(int id)
+void ObjectSettingsAux::update_ego_setting(int id)
 {
     ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
     if (id) e_ptr->squelch = TRUE;
     else e_ptr->squelch = FALSE;
 }
 
-void ObjectSettingsDialog::add_ego_buttons(QVBoxLayout *ego_buttons)
+void ObjectSettingsAux::add_ego_buttons(QVBoxLayout *ego_buttons)
 {
     if (!o_ptr->ego_num) return;
 
@@ -222,12 +222,12 @@ void ObjectSettingsDialog::add_ego_buttons(QVBoxLayout *ego_buttons)
 
 
 
-void ObjectSettingsDialog::update_quality_setting(int id)
+void ObjectSettingsAux::update_quality_setting(int id)
 {
     squelch_level[squelch_type] = id;
 }
 
-void ObjectSettingsDialog::add_quality_buttons(QVBoxLayout *quality_buttons)
+void ObjectSettingsAux::add_quality_buttons(QVBoxLayout *quality_buttons)
 {
     // First make sure we need the object uses these settings
     if (squelch_type == PS_TYPE_MAX) return;
@@ -285,12 +285,12 @@ void ObjectSettingsDialog::add_quality_buttons(QVBoxLayout *quality_buttons)
     connect(quality_group, SIGNAL(buttonClicked(int)), this, SLOT(update_quality_setting(int)));
 }
 
-void ObjectSettingsDialog::update_squelch_setting(int id)
+void ObjectSettingsAux::update_squelch_setting(int id)
 {
     k_ptr->squelch = id;
 }
 
-void ObjectSettingsDialog::add_squelch_buttons(QVBoxLayout *squelch_buttons)
+void ObjectSettingsAux::add_squelch_buttons(QVBoxLayout *squelch_buttons)
 {
     squelch_group = new QButtonGroup();
     QLabel *squelch_label = new QLabel(QString("<b><big>   Object Squelch Settings   </big></b>"));
@@ -316,13 +316,11 @@ void ObjectSettingsDialog::add_squelch_buttons(QVBoxLayout *squelch_buttons)
     squelch_group->addButton(squelch_pickup_yes, NO_SQUELCH_ALWAYS_PICKUP);
     squelch_group->addButton(squelch_always, SQUELCH_ALWAYS);
 
-    QSpacerItem *vspacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-
     squelch_buttons->addWidget(squelch_never);
     squelch_buttons->addWidget(squelch_pickup_no);
     squelch_buttons->addWidget(squelch_pickup_yes);
     squelch_buttons->addWidget(squelch_always);
-    squelch_buttons->addSpacerItem(vspacer);
+    squelch_buttons->addStretch(1);
 
     connect(squelch_group, SIGNAL(buttonClicked(int)), this, SLOT(update_squelch_setting(int)));
 

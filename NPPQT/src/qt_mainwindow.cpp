@@ -2765,88 +2765,8 @@ void MainWindow::create_toolbars()
     file_toolbar->addSeparator();
     file_toolbar->addAction(exit_npp);
 
-    toolbar1 = new QToolBar;
-    toolbar1->setObjectName("toolbar1");
-    addToolBar(Qt::BottomToolBarArea, toolbar1);
-    toolbar1->setVisible(false);
-
-
+    create_targetbar();
     create_statusbar();
-
-
-    struct ButtonData {
-        QString command;
-        int key;
-        QString tooltip;
-    };
-
-    struct ButtonData buttons[] =
-    {
-        {"ESCAPE", Qt::Key_Escape, tr("Cancel current targeting mode")},
-        {"5", Qt::Key_5, tr("Accept current target")},
-        {"c", Qt::Key_C, tr("Target closest")},
-        {"*", Qt::Key_Asterisk, tr("Interactive targeting mode")},
-        {"o", Qt::Key_O, tr("Manual targeting")},
-        {"p", Qt::Key_P, tr("Target player location")},
-        {"l", Qt::Key_L, tr("View grid contents")},
-        {"", 0, ""}
-    };
-
-    for (int i = 0; buttons[i].command.length() > 0; i++) {
-        QAction *act = toolbar1->addAction(buttons[i].command);
-        act->setObjectName(buttons[i].command);
-        act->setProperty("key", QVariant(buttons[i].key));
-        act->setStatusTip(buttons[i].tooltip);
-        act->setToolTip(buttons[i].tooltip);
-        connect(act, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
-    }
-}
-
-void ui_toolbar_show(int toolbar)
-{
-    QToolBar *tb = main_window->toolbar1;
-    switch (toolbar)
-    {
-    case TOOLBAR_TARGETTING:
-        tb->findChild<QAction *>("c")->setVisible(true);
-        tb->findChild<QAction *>("*")->setVisible(true);
-        tb->findChild<QAction *>("o")->setVisible(false);
-        tb->findChild<QAction *>("p")->setVisible(false);
-        tb->findChild<QAction *>("l")->setVisible(false);
-        tb->show();
-        break;
-    case TOOLBAR_TARGETTING_INTERACTIVE:
-        tb->findChild<QAction *>("c")->setVisible(false);
-        tb->findChild<QAction *>("*")->setVisible(false);
-        tb->findChild<QAction *>("o")->setVisible(true);
-        tb->findChild<QAction *>("p")->setVisible(true);
-        tb->findChild<QAction *>("l")->setVisible(true);
-        tb->show();
-        break;
-    }
-}
-
-void ui_toolbar_hide(int toolbar)
-{
-    switch (toolbar)
-    {
-    case TOOLBAR_TARGETTING:
-    case TOOLBAR_TARGETTING_INTERACTIVE:
-        main_window->toolbar1->hide();
-        break;
-    }
-}
-
-void MainWindow::slot_targetting_button()
-{
-    if (ui_mode != UI_MODE_INPUT || !ev_loop.isRunning()) return;
-
-    QObject *snd = QObject::sender();
-    input.text = snd->objectName();
-    input.key = snd->property("key").toInt();
-    input.mode = INPUT_MODE_KEY;
-    ui_mode = UI_MODE_DEFAULT;
-    ev_loop.quit();
 }
 
 // Just find an initial font to start the game

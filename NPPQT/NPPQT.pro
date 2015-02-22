@@ -14,6 +14,7 @@ TARGET = NPPGAMES
 SOURCES +=  src/qt_main.cpp\
             src/qt_mainwindow.cpp\
             src/qt_statusbar.cpp \
+            src/qt_target_toolbar.cpp \
             src/calcs.cpp \
             src/cmd_actions.cpp \
             src/command_list.cpp \
