@@ -1,0 +1,23 @@
+*******Targeting Information
+
+Manual Target Mode:
+ESC - cancel targeting mode
+Mouseclick - select square
+'c' - target closest
+'?'  - help
+'h", '5', '#', '.' - select target
+{direction keys} move target square
+
+Interactive Target Mode
+ESC - cancel targeting mode
+Mouseclick - select square
+{space} or '+' = goto next target
+'-' = goto previous target
+'@' or 'p' - center on player
+'!' or 'l' - get information on current grid
+'m' - exit interactive mode
+'h", '5', '#', '.' - select target
+'?'  - help
+{direction keys} move target square
+
+*******<end>

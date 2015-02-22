@@ -305,6 +305,7 @@ private:
     QAction *target_manually;
     QAction *target_player;
     QAction *view_grid_contents;
+    QAction *target_help;
 
 };
 

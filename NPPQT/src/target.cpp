@@ -18,7 +18,7 @@
 
 #include "src/npp.h"
 #include "griddialog.h"
-
+#include "src/help.h"
 #include <QObject>
 
 /*
@@ -465,7 +465,7 @@ bool target_set_interactive(int mode, int x, int y)
     int py = p_ptr->py;
     int px = p_ptr->px;
 
-    int i, d, m, t, bd;
+    int i, d, m;
 
     bool done = FALSE;
     bool flag = TRUE;
@@ -566,6 +566,7 @@ bool target_set_interactive(int mode, int x, int y)
             {
                 case Qt::Key_Escape:
                 case Qt::Key_Q:
+                case Qt::Key_X:
                 {
                     color_message(QObject::tr("Exiting interactive mode"), TERM_SKY_BLUE);
                     done = TRUE;
@@ -584,7 +585,7 @@ bool target_set_interactive(int mode, int x, int y)
                     if (m-- == 0)  m = temp_n - 1;
                     break;
                 }
-
+                case Qt::Key_Ampersand:
                 case Qt::Key_P:
                 {
                     /* Recenter around player */
@@ -594,7 +595,7 @@ bool target_set_interactive(int mode, int x, int y)
                     x = px;
                     break;
                 }
-
+                case Qt::Key_Exclam:
                 case Qt::Key_L:
                 {
                     GridDialog(y, x);
@@ -614,7 +615,15 @@ bool target_set_interactive(int mode, int x, int y)
 
                 case Qt::Key_M:
                 {
+                    color_message("Exiting interactive mode", TERM_SKY_BLUE);
                     flag = FALSE;
+                    done = TRUE;
+                    break;
+                }
+                case Qt::Key_Question:
+                {
+                    QString help = get_help_topic(QString("target_info"), "Targeting Information");
+                    pop_up_message_box(help, QMessageBox::Information);
                     break;
                 }
 
@@ -622,6 +631,7 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_5:
                 case Qt::Key_0:
                 case Qt::Key_Period:
+                case Qt::Key_NumberSign:
                 {
                     int m_idx = dungeon_info[y][x].monster_idx;
 
@@ -741,26 +751,20 @@ bool target_set_interactive(int mode, int x, int y)
             {
                 case Qt::Key_Escape:
                 case Qt::Key_Q:
+                case Qt::Key_X:
                 {
                     color_message(QObject::tr("Exiting interactive mode"), TERM_SKY_BLUE);
                     done = TRUE;
                     break;
                 }
-
+                case Qt::Key_Exclam:
                 case Qt::Key_L:
                 {
                     GridDialog(y, x);
                     break;
                 }
 
-                case Qt::Key_Space:
-                case Qt::Key_Asterisk:
-                case Qt::Key_Plus:
-                case Qt::Key_Minus:
-                {
-                    break;
-                }
-
+                case Qt::Key_Ampersand:
                 case Qt::Key_P:
                 {
                     /* Recenter around player */
@@ -768,35 +772,6 @@ bool target_set_interactive(int mode, int x, int y)
 
                     y = py;
                     x = px;
-
-                    break;
-                }
-
-                case Qt::Key_M:
-                {
-                    /* Monster selection is disabled */
-                    if (mode & (TARGET_GRID)) break;
-
-                    flag = TRUE;
-
-                    m = 0;
-                    bd = 999;
-
-                    /* Pick a nearby monster */
-                    for (i = 0; i < temp_n; i++)
-                    {
-                        t = distance(y, x, temp_y[i], temp_x[i]);
-
-                        /* Pick closest */
-                        if (t < bd)
-                        {
-                            m = i;
-                            bd = t;
-                        }
-                    }
-
-                    /* Nothing interesting */
-                    if (bd == 999) flag = FALSE;
 
                     break;
                 }
@@ -838,6 +813,7 @@ bool target_set_interactive(int mode, int x, int y)
                     break;
                 }
 
+                case Qt::Key_NumberSign:
                 case Qt::Key_H:
                 case Qt::Key_5:
                 case Qt::Key_0:
@@ -848,6 +824,12 @@ bool target_set_interactive(int mode, int x, int y)
                     break;
                 }
 
+                case Qt::Key_Question:
+                {
+                    QString help = get_help_topic(QString("target_info"), "Targeting Information");
+                    pop_up_message_box(help, QMessageBox::Information);
+                    break;
+                }
                 default:
                 {
                     /* Extract a direction */
@@ -1159,7 +1141,8 @@ bool get_aim_dir(int *dp, bool target_trap)
         // Paranoia
         if (input.mode == INPUT_MODE_NONE) break;
 
-        if (input.key == Qt::Key_Escape) {
+        if (input.key == Qt::Key_Escape)
+        {
             color_message(QObject::tr("Exiting targetting mode"), TERM_VIOLET);
             break;
         }
@@ -1181,16 +1164,24 @@ bool get_aim_dir(int *dp, bool target_trap)
                 if (target_set_interactive(mode, -1, -1)) dir = 5;
                 break;
             }
+            case Qt::Key_copyright:
             case Qt::Key_C:
             {
                 /* Set to closest target */
                 if (target_set_closest(TARGET_KILL)) dir = 5;
                 break;
             }
+            case Qt::Key_Question:
+            {
+                QString help = get_help_topic(QString("target_info"), "Targeting Information");
+                pop_up_message_box(help, QMessageBox::Information);
+                break;
+            }
             case Qt::Key_H:
             case Qt::Key_5:
             case Qt::Key_0:
             case Qt::Key_Period:
+            case Qt::Key_NumberSign:
             {
                 /* Use current target, if set and legal */
                 if (target_okay()) dir = 5;

@@ -84,5 +84,7 @@
         <file>lib/icons/target-player.png</file>
         <file>lib/icons/target-closest.png</file>
         <file>lib/icons/target.png</file>
+        <file>lib/icons/target-information.png</file>
+        <file>lib/icons/target-help.png</file>
     </qresource>
 </RCC>

@@ -93,6 +93,13 @@ void MainWindow::create_targetbar(void)
     target_toolbar->addAction(view_grid_contents);
     connect(view_grid_contents, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
 
+    target_help = new QAction(tr("View Grid Contents"), this);
+    target_help->setIcon(QIcon(":icons/lib/icons/help.png"));
+    target_help->setToolTip("L = View the contents of the grid.");
+    target_help->setProperty("key", Qt::Key_Question);
+    target_toolbar->addAction(target_help);
+    connect(target_help, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+
     ui_toolbar_hide(TOOLBAR_TARGETTING);
 }
 
