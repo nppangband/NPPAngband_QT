@@ -949,8 +949,14 @@ void PlayerBirth::setup_character()
         p_ptr->pclass = cur_class = 0;
         p_ptr->psex = cur_gender = 0;
         generate_player();
-    }
+        if (birth_point_based)
+        {
+            reset_stats();
+            generate_stats();
+        }
+        else roll_player();
 
+    }
 
     calc_bonuses(inventory, &p_ptr->state, false);
     calc_stealth();

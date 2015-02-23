@@ -798,7 +798,12 @@ static void cast_spell(cmd_arg args)
 // Placeholder for use in the player_command menu
 void command_cast(cmd_arg arg)
 {
-    cast_spell(arg);
+    // Are we repeating a spell, or casting for the first time?
+    if (p_ptr->command_previous == CMD_CAST) cast_spell(arg);
+
+    // Not repeating a spell
+    else do_cmd_cast(arg.item);
+
 }
 
 /* Cast a spell if book choice is -1,

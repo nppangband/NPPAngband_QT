@@ -96,25 +96,25 @@ command_type command_info[] =
     // CMD_RUNNING
     {ARG_DIRECTION, command_run,    TRUE,  TRUE,  9999},
     // CMD_WALK
-    {ARG_DIRECTION, command_walk,   FALSE,  FALSE,  0 },
+    {ARG_DIRECTION, command_walk,   FALSE,  FALSE,  0},
     // CMD_JUMP
-    {ARG_DIRECTION, command_walk,   TRUE,  FALSE,  0 },
+    {ARG_DIRECTION, command_walk,   TRUE,  FALSE,  0},
     // CMD_OPEN
-    {ARG_DIRECTION, command_open,   TRUE,  TRUE,  99 },
+    {ARG_DIRECTION, command_open,   TRUE,  TRUE,  99},
     // CMD_CLOSE
-    {ARG_DIRECTION, command_close,  TRUE,  FALSE, 0 },
+    {ARG_DIRECTION, command_close,  TRUE,  FALSE, 0},
     // CMD_SPIKE
-    {ARG_DIRECTION, command_spike,  TRUE,  FALSE, 0 },
+    {ARG_DIRECTION, command_spike,  TRUE,  FALSE, 0},
     // CMD_DISARM
-    {ARG_DIRECTION, command_disarm, TRUE,  TRUE,  99 },
+    {ARG_DIRECTION, command_disarm, TRUE,  TRUE,  99},
     // CMD_BASH
-    {ARG_DIRECTION, command_bash,   TRUE,  TRUE,  99 },
+    {ARG_DIRECTION, command_bash,   TRUE,  TRUE,  99},
     // CMD_TUNNEL
-    {ARG_DIRECTION, command_tunnel, TRUE,  TRUE,  99 },
+    {ARG_DIRECTION, command_tunnel, TRUE,  TRUE,  99},
     // CMD_ALTER
-    {ARG_DIRECTION, command_alter,  TRUE,  TRUE,  99 },
+    {ARG_DIRECTION, command_alter,  TRUE,  TRUE,  99},
     // CMD_SEARCH
-    {ARG_DIRECTION, command_search, TRUE,  FALSE,  0 },
+    {ARG_DIRECTION, command_search, TRUE,  FALSE,  0},
     // CMD_MAKE_TRAP
     {ARG_DIRECTION, command_make_trap, TRUE,  FALSE, 0},
     // CMD_HOLD
@@ -176,6 +176,7 @@ void process_command(int item, s16b command)
      */
     o_ptr = object_from_item_idx(item);
     args.item = item;
+
 
     // Get the direction, if necessary
     if (command_ptr->needs_direction())

@@ -46,6 +46,7 @@ static struct command_desc list_commands[] =
     {"New Game NPPMoria", "CTRL-R"},
     {"Open Door", "d"},
     {"Open Savefile", "CTRL-F"},
+    {"Option Settings", "="},
     {"Pickup Items", "+"},
     {"Player Character Screen", "p"},
     {"Quit NPP Games", "CTRL-Q"},

@@ -2472,6 +2472,7 @@ void MainWindow::create_actions()
 
     options_act = new QAction(tr("Options"), this);
     options_act->setStatusTip(tr("Change the game options."));
+    options_act->setShortcut(Qt::Key_Equal);
     options_act->setIcon(QIcon(":/icons/lib/icons/options.png"));
     connect(options_act, SIGNAL(triggered()), this, SLOT(options_dialog()));
 

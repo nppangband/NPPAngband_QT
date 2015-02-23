@@ -2438,8 +2438,11 @@ bool guild_purchase(int choice)
      * Have the next quest be either two or three levels above
      * this one.
      */
-    if (one_in_(2)) q_info[GUILD_QUEST_SLOT].q_flags &= ~(QFLAG_EXTRA_LEVEL);
-    else q_info[GUILD_QUEST_SLOT].q_flags |= (QFLAG_EXTRA_LEVEL);
+    if (one_in_(2) || (q_info[GUILD_QUEST_SLOT].base_level < p_ptr->max_lev))
+    {
+        q_info[GUILD_QUEST_SLOT].q_flags |= (QFLAG_EXTRA_LEVEL);
+    }
+    else q_info[GUILD_QUEST_SLOT].q_flags &= ~(QFLAG_EXTRA_LEVEL);
 
     /* Vault quest allowed 1/5 of the time */
     if (one_in_(5)) q_info[GUILD_QUEST_SLOT].q_flags |= (QFLAG_VAULT_QUEST);

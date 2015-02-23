@@ -17,6 +17,7 @@ class item_command
 public:
     QChar action_char;
     byte object_command;
+    bool onscreen_action;
 };
 
 //Different types of object commands.

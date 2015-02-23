@@ -25,43 +25,43 @@
 item_command item_command_info[ITEM_MAX] =
 {
     // ITEM_EXAMINE
-    {'a', CMD_EXAMINE},
+    {'a', CMD_EXAMINE, FALSE},
     // ITEM_TAKEOFF
-    {'b', CMD_TAKEOFF},
+    {'b', CMD_TAKEOFF, FALSE},
      // ITEM_WIELD
-    {'c', CMD_WIELD},
+    {'c', CMD_WIELD, FALSE},
     // ITEM_SWAP
-    {'d', CMD_SWAP},
+    {'d', CMD_SWAP, FALSE},
     // _ITEM_USE
-    {'e', CMD_ITEM_USE},
+    {'e', CMD_ITEM_USE, TRUE},
     // ITEM_REFILL
-    {'f', CMD_REFUEL},
+    {'f', CMD_REFUEL, FALSE},
     // ITEM_FIRE
-    {'g', CMD_FIRE},
+    {'g', CMD_FIRE, TRUE},
     // ITEM_FIRE_NEAR
-    {'h', CMD_FIRE_NEAR},
+    {'h', CMD_FIRE_NEAR, TRUE},
     // ITEM_DROP
-    {'i', CMD_DROP},
+    {'i', CMD_DROP, FALSE},
     // ITEM_PICKUP
-    {'j', CMD_PICKUP},
+    {'j', CMD_PICKUP, FALSE},
     // ITEM_BROWSE
-    {'k', CMD_BROWSE},
+    {'k', CMD_BROWSE, FALSE},
     // ITEM_STUDY
-    {'l', CMD_STUDY},
+    {'l', CMD_STUDY, FALSE},
     // ITEM_CAST
-    {'m', CMD_CAST},
+    {'m', CMD_CAST, TRUE},
     // ITEM_DESTROY
-    {'n', CMD_DESTROY},
+    {'n', CMD_DESTROY, FALSE},
     // ITEM_INSCRIBE
-    {'o', CMD_INSCRIBE},
+    {'o', CMD_INSCRIBE, FALSE},
     // ITEM_UNINSCRIBE
-    {'p', CMD_UNINSCRIBE},
+    {'p', CMD_UNINSCRIBE, FALSE},
     // ITEM_ACIVATE
-    {'q', CMD_ACTIVATE},
+    {'q', CMD_ACTIVATE, TRUE},
     // ITEM_THROW
-    {'r', CMD_THROW},
+    {'r', CMD_THROW, TRUE},
     // ITEM_EXAMINE
-    {'s', CMD_MAX}, //requires special handling
+    {'s', CMD_MAX, FALSE}, //requires special handling
 };
 
 bool ObjectDialog::should_add_takeoff(object_type *o_ptr, s16b item_slot)
@@ -557,7 +557,18 @@ void ObjectDialog::button_click()
         QChar check = item_command_info[i].action_char;
         if (operator!=(check, index)) continue;
 
+        // We aren't repeating the previous command
+        p_ptr->player_previous_command_wipe();
+
+        // We are planning to close the dialog so we can see the screen
+        if (item_command_info[i].onscreen_action)
+        {
+            this->hide();
+            p_ptr->in_menu = FALSE;
+        }
+
         process_command(o_idx, item_command_info[i].object_command);
+
         break;
     }
 
