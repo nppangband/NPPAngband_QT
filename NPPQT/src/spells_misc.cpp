@@ -25,6 +25,7 @@
 #include <qmath.h>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QTextEdit>
 
 
 /*
@@ -3159,23 +3160,9 @@ bool enchant_spell(int num_hit, int num_dam, int num_ac)
 }
 
 
-
-/*
- * Hack -- acquire self knowledge
- *
- * List various information about the player and/or his current equipment.
- *
- * See also "identify_fully()".
- *
- * Use the "roff()" routines, perhaps.  XXX XXX XXX
- *
- * Use the "show_file()" method, perhaps.  XXX XXX XXX
- *
- * This function cannot display more than 20 lines.  XXX XXX XXX
- */
-void self_knowledge(void)
+DisplaySelfKnowledge::DisplaySelfKnowledge()
 {
-    int i = 0, j, k;
+    int i = 0, k;
 
     u32b f1 = 0L, f2 = 0L, f3 = 0L, fn = 0L;
 
@@ -3709,34 +3696,54 @@ void self_knowledge(void)
     }
 
 
-    // TODO display
+    // Display the info
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    QTextEdit *message_area = new QTextEdit;
 
-    /* Label the information */
-   // TODO  prt("     Your Attributes:", 1, 0);
+    main_layout->addWidget(message_area);
+    message_area->setReadOnly(true);
+    message_area->setStyleSheet("background-color: black;");
 
-    /* Dump the info */
-    for (k = 2, j = 0; j < i; j++)
+    message_area->clear();
+
+    for (int x = 0; x < i; x++)
     {
-        /* Show the info */
-        //  TODO prt(info[j], k++, 0);
-
-        /* Page wrap */
-        if ((k == 22) && (j+1 < i))
-        {
-            // TODO prt("-- more --", k, 0);
-
-
-            /* Label the information */
-           // TODO  prt("     Your Attributes:", 1, 0);
-
-            /* Reset */
-            k = 2;
-        }
+        message_area->moveCursor(QTextCursor::End);
+        message_area->setTextColor(defined_colors[TERM_WHITE]);
+        message_area->insertPlainText(QString("%1\n") .arg(info[x]));
     }
 
-    /* Pause */
-    // TODO prt("[Press any key to continue]", k, 0);
-    // TODO dialog box?? (void)inkey()
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(buttons);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Player Self Knowldge"));
+
+    resize(QSize(width(), height() * 3 / 2));
+
+    updateGeometry();
+
+    this->exec();
+
+}
+
+/*
+ * Hack -- acquire self knowledge
+ *
+ * List various information about the player and/or his current equipment.
+ *
+ * See also "identify_fully()".
+ *
+ * Use the "roff()" routines, perhaps.  XXX XXX XXX
+ *
+ * Use the "show_file()" method, perhaps.  XXX XXX XXX
+ *
+ * This function cannot display more than 20 lines.  XXX XXX XXX
+ */
+void self_knowledge(void)
+{
+    DisplaySelfKnowledge();
 }
 
 /*

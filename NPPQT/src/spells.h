@@ -37,4 +37,12 @@ private:
     QButtonGroup *banish_choice_group;
 };
 
+class DisplaySelfKnowledge : public QDialog
+{
+    Q_OBJECT
+
+public:
+    DisplaySelfKnowledge(void);
+};
+
 #endif // SPELLS_H
