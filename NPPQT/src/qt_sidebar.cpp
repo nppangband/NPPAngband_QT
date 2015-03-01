@@ -23,9 +23,10 @@
 #include <src/player_screen.h>
 #include <src/utilities.h>
 
+// Taken from 32 bit colors in defines.h
 #define SBAR_NORMAL "#00FF00"
-#define SBAR_DRAINED "yellow"
-
+#define SBAR_DRAINED "#FFFF00"
+#define SBAR_GOLD   "#FFD700"
 
 #define SIDEBAR_MON_MAX     15
 
@@ -39,7 +40,7 @@ void MainWindow::create_sidebar()
     sidebar->addLayout(player_info);
 
     QLabel *hp_label = new QLabel;
-    hp_label->setText(color_string("HP", TERM_WHITE));
+    hp_label->setText(color_string("HP", SBAR_NORMAL));
     player_info->addWidget(hp_label, row, 0, Qt::AlignLeft);
     QLabel *hp_info = new QLabel;
     hp_info->setObjectName("HP");
@@ -47,7 +48,7 @@ void MainWindow::create_sidebar()
 
     // SpellPoints
     QLabel *sp_label = new QLabel;
-    sp_label->setText(color_string("SP", TERM_WHITE));
+    sp_label->setText(color_string("SP", SBAR_NORMAL));
     player_info->addWidget(sp_label, row, 0, Qt::AlignLeft);
     sp_label->setObjectName("SP_LABEL");
     QLabel *sp_info = new QLabel;
@@ -58,7 +59,7 @@ void MainWindow::create_sidebar()
 
     // Experience
     QLabel *exp_label = new QLabel;
-    exp_label->setText(color_string("EXP", TERM_WHITE));
+    exp_label->setText(color_string("EXP", SBAR_NORMAL));
     exp_label->setObjectName("EXP_LABEL");
     player_info->addWidget(exp_label, row, 0, Qt::AlignLeft);
     QLabel *exp_info = new QLabel;
@@ -67,7 +68,7 @@ void MainWindow::create_sidebar()
 
     // gold
     QLabel *gold_label = new QLabel;
-    gold_label->setText(color_string("GOLD", TERM_GOLD));
+    gold_label->setText(color_string("GOLD", SBAR_GOLD));
     player_info->addWidget(gold_label, row, 0, Qt::AlignLeft);
     QLabel *gold_info = new QLabel;
     gold_info->setObjectName("GOLD");
@@ -430,6 +431,9 @@ void MainWindow::update_sidebar()
                 {
                     QString stat_string;
 
+                    QColor this_color = SBAR_NORMAL;
+                    if (p_ptr->stat_base_cur[i] < p_ptr->stat_base_max[i]) this_color = SBAR_DRAINED;
+
                     if (p_ptr->stat_base_cur[i] < p_ptr->stat_base_max[i])
                     {
                         stat_string = stat_names_reduced[i];
@@ -441,7 +445,7 @@ void MainWindow::update_sidebar()
                         stat_string[3] = '!';
                     }
 
-                    this_lbl->setText(color_string(stat_string, TERM_WHITE));
+                    this_lbl->setText(color_string(stat_string, this_color));
                     continue;
                 }
                 if (this_name.contains(QString("STAT_INFO_%1") .arg(i)))
@@ -541,7 +545,7 @@ void MainWindow::update_sidebar()
                 QString depth;
                 if (!p_ptr->depth) depth = "Town";
                 else depth = QString("%1' (L%2)").arg(p_ptr->depth * 50).arg(p_ptr->depth);
-                this_lbl->setText(color_string(depth, TERM_WHITE));
+                this_lbl->setText(color_string(depth, SBAR_NORMAL));
                 continue;
             }
             if (this_name.operator ==("FEELING"))
@@ -577,18 +581,42 @@ void MainWindow::update_sidebar()
 
     QList<int> monsters = get_visible_monsters();
 
-    for (int i = 0; i < monsters.size(), i < SIDEBAR_MON_MAX; i++)
+    for (int i = 0; i < monsters.size(); i++)
     {
+        if (i >= SIDEBAR_MON_MAX) break;
+
         int m_idx = monsters.at(i);
 
         display_mon(sidebar_mon, i, m_idx);
-
-
     }
 
     sidebar_mon->resizeColumnToContents(0);
+}
 
+// show all the sidebar labels
+void MainWindow::show_sidebar()
+{
+    // Update the player sidebar info
+    QList<QLabel *> lbl_list = sidebar_widget->findChildren<QLabel *>();
 
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+        this_lbl->show();
+    }
+}
+
+//Hide all the labels
+void MainWindow::hide_sidebar()
+{
+    // Update the player sidebar info
+    QList<QLabel *> lbl_list = sidebar_widget->findChildren<QLabel *>();
+
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+        this_lbl->hide();
+    }
 }
 
 /*

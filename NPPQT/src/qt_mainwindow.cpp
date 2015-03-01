@@ -1273,38 +1273,11 @@ MainWindow::MainWindow()
     create_sidebar();
 
     splitter->addWidget(graphics_view);
-
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 100);
 
     lay1->addWidget(splitter);
 
-#ifdef TESTING
-    QHBoxLayout *lay2 = new QHBoxLayout;
-    lay1->addLayout(lay2);
-
-    QPushButton *b1 = new QPushButton("Find player");
-    lay2->addWidget(b1);
-    connect(b1, SIGNAL(clicked()), this, SLOT(slot_find_player()));
-
-    QPushButton *b2 = new QPushButton("Redraw");
-    lay2->addWidget(b2);
-    connect(b2, SIGNAL(clicked()), this, SLOT(slot_redraw()));
-
-    /*
-    QPushButton *b3 = new QPushButton("Zoom out");
-    lay2->addWidget(b3);
-    connect(b3, SIGNAL(clicked()), this, SLOT(slot_zoom_out()));
-
-    QPushButton *b4 = new QPushButton("Zoom in");
-    lay2->addWidget(b4);
-    connect(b4, SIGNAL(clicked()), this, SLOT(slot_zoom_in()));
-    */
-
-    QPushButton *b5 = new QPushButton("Test something");
-    lay2->addWidget(b5);
-    connect(b5, SIGNAL(clicked()), this, SLOT(slot_something()));
-#endif  // TESTING
     create_actions();
     update_file_menu_game_inactive();
     create_menus();
@@ -1390,7 +1363,6 @@ void MainWindow::update_messages()
 }
 
 
-
 void MainWindow::close_game_death()
 {
     save_and_close();
@@ -1413,8 +1385,6 @@ void MainWindow::save_and_close()
 
     message_area->clear();
 
-    update_sidebar();
-    hide_statusbar();
 
     cursor->setVisible(false);
     destroy_tiles();
@@ -1864,6 +1834,10 @@ void MainWindow::update_file_menu_game_active()
     view_home_inven->setEnabled(TRUE);
     view_scores->setEnabled(TRUE);
     view_kill_count->setEnabled(TRUE);
+
+    show_sidebar();
+    show_statusbar();
+
 }
 
 // Activates and de-activates certain file_menu commands when a game is ended.
@@ -1893,6 +1867,9 @@ void MainWindow::update_file_menu_game_inactive()
     view_home_inven->setEnabled(FALSE);
     view_scores->setEnabled(FALSE);
     view_kill_count->setEnabled(FALSE);
+
+    hide_sidebar();
+    hide_statusbar();
 
 }
 
@@ -2378,7 +2355,8 @@ void MainWindow::launch_birth(bool quick_start)
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.
         message(QString("Welcome %1") .arg(op_ptr->full_name));
-    } else
+    }
+    else
     {
         cleanup_npp_games();
         character_loaded = false;

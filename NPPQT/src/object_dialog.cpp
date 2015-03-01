@@ -560,13 +560,6 @@ void ObjectDialog::button_click()
         // We aren't repeating the previous command
         p_ptr->player_previous_command_wipe();
 
-        // We are planning to close the dialog so we can see the screen
-        if (item_command_info[i].onscreen_action)
-        {
-            this->hide();
-            p_ptr->in_menu = FALSE;
-        }
-
         process_command(o_idx, item_command_info[i].object_command);
 
         break;

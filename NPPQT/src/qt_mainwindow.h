@@ -101,14 +101,18 @@ public:
     bool check_disturb();
     void create_sidebar();
     void update_sidebar();
+    void hide_sidebar();
+    void show_sidebar();
     void close_game_death();
     void update_titlebar();
     void create_titlebar();
     void create_statusbar();
     void update_statusbar();
+    void hide_statusbar();
+    void show_statusbar();
     void create_targetbar();
     void update_targetbar(int toolbar);
-    void hide_statusbar();
+
 
 
 protected:

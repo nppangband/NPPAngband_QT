@@ -24,7 +24,7 @@
 // Update and display the appropriate icons on the statusbar;
 void MainWindow::update_statusbar(void)
 {
-    status_bar->setVisible(TRUE);
+
     if (p_ptr->word_recall) recall->setVisible(TRUE);
     else recall->setVisible(FALSE);
 
@@ -650,5 +650,12 @@ void MainWindow::create_statusbar(void)
 
 void MainWindow::hide_statusbar(void)
 {
+    if (status_bar == NULL) return;
     status_bar->setVisible(FALSE);
 }
+
+void MainWindow::show_statusbar(void)
+{
+    status_bar->setVisible(TRUE);
+}
+
