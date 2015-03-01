@@ -1257,6 +1257,9 @@ MainWindow::MainWindow()
 
     lay1->addWidget(message_area);
 
+    // Set up all the folder directories
+    create_directories();
+
     QSplitter *splitter = new QSplitter;
 
     sidebar_widget = new QWidget;
@@ -1286,7 +1289,6 @@ MainWindow::MainWindow()
     create_directories();
     create_signals();
     (void)statusBar();
-
     read_settings();
     init_scene();
     set_graphic_mode(use_graphics);
@@ -1642,7 +1644,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_Q:
         {
-            if (!using_mods)        do_cmd_spike();
+            if (shift_key)          do_cmd_spike();
+            else if (!using_mods)   do_cmd_quest_desc();
             break;
         }
         case Qt::Key_R:

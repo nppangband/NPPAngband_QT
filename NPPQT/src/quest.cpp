@@ -444,6 +444,29 @@ QString describe_quest(s16b level, int mode)
     return(buf);
 }
 
+/*
+ * Display the current quest (if any)
+ */
+void do_cmd_quest_desc(void)
+{
+    QString quest_desc;
+
+    /* Check if you're on a quest */
+    if (guild_quest_level() > 0)
+    {
+        /* Completed quest */
+        if (guild_quest_complete())
+        {
+            quest_desc = "Collect your reward at the guild!";
+        }
+        else quest_desc = describe_quest(guild_quest_level(), QMODE_FULL);
+    }
+    /* No quest at all */
+    else quest_desc = "You are not currently undertaking a quest.";
+
+    pop_up_message_box(quest_desc);
+}
+
 
 /*
  * A simplified version of object_similar, for guild quest rewards.

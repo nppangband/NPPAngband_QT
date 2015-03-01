@@ -533,6 +533,7 @@ extern bool beam_chain(int gf_type, int dam, int max_hits, int decrement);
 extern QString plural_aux(QString name);
 extern int quest_collection_num(quest_type *q_ptr);
 extern QString describe_quest(s16b level, int mode);
+extern void do_cmd_quest_desc(void);
 extern void add_reward_gold(void);
 extern QString get_title(void);
 extern QString get_rep_guild(void);

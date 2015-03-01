@@ -22,6 +22,7 @@
 #include "tilebag.h"
 #include <src/player_screen.h>
 #include <src/utilities.h>
+#include <src/help.h>
 
 // Taken from 32 bit colors in defines.h
 #define SBAR_NORMAL "#00FF00"
@@ -42,6 +43,7 @@ void MainWindow::create_sidebar()
     QLabel *hp_label = new QLabel;
     hp_label->setText(color_string("HP", SBAR_NORMAL));
     player_info->addWidget(hp_label, row, 0, Qt::AlignLeft);
+    hp_label->setToolTip(get_help_topic("character_info", "Hit Points"));
     QLabel *hp_info = new QLabel;
     hp_info->setObjectName("HP");
     player_info->addWidget(hp_info, row++, 1, Qt::AlignRight);
@@ -51,24 +53,47 @@ void MainWindow::create_sidebar()
     sp_label->setText(color_string("SP", SBAR_NORMAL));
     player_info->addWidget(sp_label, row, 0, Qt::AlignLeft);
     sp_label->setObjectName("SP_LABEL");
+    sp_label->setToolTip(get_help_topic("character_info", "Spell Points"));
     QLabel *sp_info = new QLabel;
     sp_info->setObjectName("SP_INFO");
     player_info->addWidget(sp_info, row++, 1, Qt::AlignRight);
     sp_label->hide();
     sp_info->hide();
 
-    // Experience
-    QLabel *exp_label = new QLabel;
-    exp_label->setText(color_string("EXP", SBAR_NORMAL));
-    exp_label->setObjectName("EXP_LABEL");
-    player_info->addWidget(exp_label, row, 0, Qt::AlignLeft);
-    QLabel *exp_info = new QLabel;
-    exp_info->setObjectName("EXP_INFO");
-    player_info->addWidget(exp_info, row++, 1, Qt::AlignRight);
+    // Current Experience
+    QLabel *exp_cur_label = new QLabel;
+    exp_cur_label->setText(color_string("CUR EXP ", SBAR_NORMAL));
+    exp_cur_label->setObjectName("EXP_CUR_LABEL");
+    exp_cur_label->setToolTip(get_help_topic("character_info", "Player Current Experience"));
+    player_info->addWidget(exp_cur_label, row, 0, Qt::AlignLeft);
+    QLabel *exp_cur_info = new QLabel;
+    exp_cur_info->setObjectName("EXP_CUR_INFO");
+    player_info->addWidget(exp_cur_info, row++, 1, Qt::AlignRight);
+
+    // Max Experience
+    QLabel *exp_max_label = new QLabel;
+    exp_max_label->setText(color_string("MAX EXP", SBAR_NORMAL));
+    exp_max_label->setObjectName("EXP_MAX_LABEL");
+    exp_max_label->setToolTip(get_help_topic("character_info", "Player Maximum Experience"));
+    player_info->addWidget(exp_max_label, row, 0, Qt::AlignLeft);
+    QLabel *exp_max_info = new QLabel;
+    exp_max_info->setObjectName("EXP_MAX_INFO");
+    player_info->addWidget(exp_max_info, row++, 1, Qt::AlignRight);
+
+    // Next Level
+    QLabel *exp_next_label = new QLabel;
+    exp_next_label->setText(color_string("EXP", SBAR_NORMAL));
+    exp_next_label->setObjectName("EXP_NEXT_LABEL");
+    exp_next_label->setToolTip(get_help_topic("character_info", "Player Experience Advance"));
+    player_info->addWidget(exp_next_label, row, 0, Qt::AlignLeft);
+    QLabel *exp_next_info = new QLabel;
+    exp_next_info->setObjectName("EXP_NEXT_INFO");
+    player_info->addWidget(exp_next_info, row++, 1, Qt::AlignRight);
 
     // gold
     QLabel *gold_label = new QLabel;
     gold_label->setText(color_string("GOLD", SBAR_GOLD));
+    gold_label->setToolTip(get_help_topic("character_info", "Gold"));
     player_info->addWidget(gold_label, row, 0, Qt::AlignLeft);
     QLabel *gold_info = new QLabel;
     gold_info->setObjectName("GOLD");
@@ -80,6 +105,7 @@ void MainWindow::create_sidebar()
         QLabel *this_label = new QLabel;
         QString label_name = (QString("STAT_LABEL_%1") .arg(i));
         this_label->setObjectName(label_name);
+        this_label->setToolTip(stat_entry(i));
         player_info->addWidget(this_label, row, 0, Qt::AlignLeft);
         QLabel *stat_info = new QLabel;
         stat_info->setObjectName(QString("STAT_INFO_%1") .arg(i));
@@ -89,6 +115,7 @@ void MainWindow::create_sidebar()
     // speed
     QLabel *speed_info = new QLabel;
     speed_info->setObjectName("SPEED");
+    gold_label->setToolTip(get_help_topic("character_info", "Speed"));
     player_info->addWidget(speed_info, row++, 0, 1, 2, Qt::AlignLeft);
 
     // depth
@@ -494,32 +521,106 @@ void MainWindow::update_sidebar()
                 else if (this_lbl->isVisible()) this_lbl->hide();
                 continue;
             }
-
-            if (this_name.operator ==("EXP_LABEL"))
+            if (this_name.operator ==("EXP_CUR_LABEL"))
             {
-                bool max_lev = (p_ptr->lev == z_info->max_level);
+
                 QColor this_color;
                 QString this_text;
                 if (p_ptr->exp < p_ptr->max_exp)
                 {
                     this_color = SBAR_DRAINED;
-                    this_text = (max_lev ? "Exp " : "Next ");
+                    this_text = "Cur Exp";
                 }
                 else
                 {
                     this_color = SBAR_NORMAL;
-                    this_text = (max_lev ? "EXP " : "NEXT ");
+                    this_text = "CUR EXP";
                 }
                 this_lbl->setText(color_string(this_text, this_color));
                 continue;
             }
-            if (this_name.operator ==("EXP_INFO"))
+            if (this_name.operator ==("EXP_CUR_INFO"))
             {
-                bool max_lev = (p_ptr->lev == z_info->max_level);
+
+                QColor this_color;
+                QString this_text = number_to_formatted_string(p_ptr->exp);
+
+                if (p_ptr->exp < p_ptr->max_exp) this_color = SBAR_DRAINED;
+                else this_color = SBAR_NORMAL;
+
+                this_lbl->setText(color_string(this_text, this_color));
+                continue;
+            }
+            if (this_name.operator ==("EXP_MAX_LABEL"))
+            {
+                if (p_ptr->exp == p_ptr->max_exp)
+                {
+                    if (this_lbl->isVisible()) this_lbl->hide();
+                    continue;
+                }
+
+                if (!this_lbl->isVisible()) this_lbl->show();
+
+                QColor this_color = SBAR_NORMAL;
+                QString this_text = "Max Esp";
+                this_lbl->setText(color_string(this_text, this_color));
+                continue;
+            }
+            if (this_name.operator ==("EXP_MAX_INFO"))
+            {
+                if (p_ptr->exp == p_ptr->max_exp)
+                {
+                    if (this_lbl->isVisible()) this_lbl->hide();
+                    continue;
+                }
+
+                if (!this_lbl->isVisible()) this_lbl->show();
+
+                QColor this_color = SBAR_NORMAL;
+
+                QString this_text = number_to_formatted_string(p_ptr->max_exp);
+
+                this_lbl->setText(color_string(this_text, this_color));
+                continue;
+            }
+            if (this_name.operator ==("EXP_NEXT_LABEL"))
+            {
+                if (p_ptr->lev == z_info->max_level)
+                {
+                    if (this_lbl->isVisible()) this_lbl->hide();
+                    continue;
+                }
+
+                if (!this_lbl->isVisible()) this_lbl->show();
+
+                QColor this_color;
+                QString this_text;
+                if (p_ptr->exp < p_ptr->max_exp)
+                {
+                    this_color = SBAR_DRAINED;
+                    this_text = "Next Level";
+                }
+                else
+                {
+                    this_color = SBAR_NORMAL;
+                    this_text = "NEXT LEVEL";
+                }
+                this_lbl->setText(color_string(this_text, this_color));
+                continue;
+            }
+            if (this_name.operator ==("EXP_NEXT_INFO"))
+            {
+                if (p_ptr->lev == z_info->max_level)
+                {
+                    if (this_lbl->isVisible()) this_lbl->hide();
+                    continue;
+                }
+
+                if (!this_lbl->isVisible()) this_lbl->show();
+
                 QColor this_color;
 
-                s32b xp = p_ptr->exp;
-                if (!max_lev) xp = (get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L) - p_ptr->exp;
+                s32b xp = (get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L) - p_ptr->exp;
 
                 QString this_text = number_to_formatted_string(xp);
 
@@ -565,6 +666,7 @@ void MainWindow::update_sidebar()
                 {
                     if (this_lbl->isVisible()) this_lbl->show();
                     this_lbl->setText(color_string(quest, attr));
+                    this_lbl->setToolTip(describe_quest(guild_quest_level(), QMODE_FULL));
                 }
                 continue;
             }
