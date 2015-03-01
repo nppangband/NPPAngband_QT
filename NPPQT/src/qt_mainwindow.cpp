@@ -1282,7 +1282,7 @@ MainWindow::MainWindow()
     lay1->addWidget(splitter);
 
     create_actions();
-    update_file_menu_game_inactive();
+
     create_menus();
     create_toolbars();
     select_font();
@@ -1292,6 +1292,8 @@ MainWindow::MainWindow()
     read_settings();
     init_scene();
     set_graphic_mode(use_graphics);
+
+    update_file_menu_game_inactive();
 
     setWindowFilePath(QString());
 }
@@ -1644,6 +1646,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         }
         case Qt::Key_Q:
         {
+            if (ctrl_key && alt_key)do_cmd_suicide();
             if (shift_key)          do_cmd_spike();
             else if (!using_mods)   do_cmd_quest_desc();
             break;

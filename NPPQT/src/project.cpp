@@ -1260,7 +1260,7 @@ void take_hit(int dam, QString kb_str)
         /* Hack -- bell on first notice */
         if (old_chp > warning)
         {
-            message(QString("Low hitpoint warning!"));
+            bell(QString("Low hitpoint warning!"));
         }
 
         /* Message */

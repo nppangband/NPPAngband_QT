@@ -47,6 +47,7 @@ class StoreDialog : public NPPDialog
 private:
     void add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col);
     void add_help_label(QGridLayout *lay, QString id, int row, int col);
+    void update_header();
 
 public:
     int store_idx;
@@ -60,6 +61,9 @@ public:
     QWidget *quest_area;
     QLabel  *quest_status;
     QLabel  *quest_picture;
+
+    QLabel *header_weight1;
+    QLabel *header_weight2;
 
 
     bool home;

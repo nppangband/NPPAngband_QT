@@ -662,7 +662,8 @@ static void wr_extra(void)
     // Record wizard mode;
     if (p_ptr->is_wizard) wr_byte(TRUE);
     else wr_byte(FALSE);
-    wr_byte(0);
+
+    wr_byte(p_ptr->terminated);
 
     /* Write death */
     wr_byte(p_ptr->is_dead);

@@ -1178,8 +1178,10 @@ static int rd_extra(void)
     rd_byte(&dummy_byte);
     if (dummy_byte == TRUE) p_ptr->is_wizard = TRUE;
     else p_ptr->is_wizard = FALSE;
-    strip_bytes(1);
 
+    /* Note "retirement */
+    rd_byte(&tmp8u);
+    p_ptr->terminated = tmp8u;
 
     /* Read "death" */
     rd_byte(&tmp8u);
@@ -2467,7 +2469,7 @@ bool load_player(void)
     {
         /*note, add or_true to the arg wizard if statement to resurrect character*/
         /* Cheat death (unless the character retired) */
-        if (p_ptr->is_wizard)
+        if ((p_ptr->is_wizard) && (!p_ptr->terminated))
         {
             /*heal the player*/
             hp_player(2000);

@@ -236,3 +236,4 @@ void player_death(void)
 
     PlayerDeathDialog();
 }
+

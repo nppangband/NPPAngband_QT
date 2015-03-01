@@ -17,7 +17,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 #include "src/npp.h"
-
+#include <QApplication>
 
 /*
  * Hack -- Make a (relevant?) sound
@@ -27,4 +27,14 @@ void sound(int val)
     /* No sound */
     //TODO process sounds
 
+}
+
+
+void bell(QString this_message)
+{
+    QApplication::beep();
+    if (this_message.length())
+    {
+         pop_up_message_box(this_message);
+    }
 }

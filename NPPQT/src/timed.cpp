@@ -406,14 +406,14 @@ bool set_stun(int v)
             /* Heavy stun */
             case 2:
             {
-                message(QString("You have been heavily stunned."));
+                bell(QString("You have been heavily stunned."));
                 break;
             }
 
             /* Knocked out */
             case 3:
             {
-                message(QString("You have been knocked out."));
+                bell(QString("You have been knocked out."));
                 break;
             }
         }
@@ -625,7 +625,7 @@ bool set_cut(int v)
             /* Mortal wound */
             case 7:
             {
-                message(QString("You have been given a mortal wound."));
+                bell(QString("You have been given a mortal wound."));
                 break;
             }
         }
@@ -789,7 +789,7 @@ bool set_food(int v)
             /* Weak */
             case 1:
             {
-                message(QString("You are still weak."));
+                bell(QString("You are still weak."));
                 break;
             }
 
@@ -835,14 +835,14 @@ bool set_food(int v)
             /* Fainting / Starving */
             case 0:
             {
-                message(QString("You are getting faint from hunger!"));
+                bell(QString("You are getting faint from hunger!"));
                 break;
             }
 
             /* Weak */
             case 1:
             {
-                message(QString("You are getting weak from hunger!"));
+                bell(QString("You are getting weak from hunger!"));
                 break;
             }
 

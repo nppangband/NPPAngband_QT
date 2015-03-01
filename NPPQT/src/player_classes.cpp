@@ -250,7 +250,7 @@ void player_type::player_type_wipe()
     died_from.clear();
     history.clear();
     total_winner = panic_save = 0;
-    is_dead = player_turn = is_wizard = FALSE;
+    is_dead = terminated = player_turn = is_wizard = FALSE;
     playing =  in_store = in_menu = message_append = leaving_level = autosave = FALSE;
     create_stair = cur_map_hgt = cur_map_wid = FALSE;
     total_weight = 0;

@@ -168,3 +168,41 @@ void do_cmd_write_note(void)
 
     write_note(note, p_ptr->depth);
 }
+
+
+void do_cmd_suicide(void)
+{
+    /* Verify Retirement */
+    if (p_ptr->total_winner)
+    {
+        /* Verify */
+        if (!get_check(QString("Do you want to retire? "))) return;
+    }
+
+    else
+    {
+        /* Verify */
+        if (!get_check("Do you really want to terminate this character? ")) return;
+
+        QString answer = get_string("Character Termnation Verification", "Please verify by typing the '@' sign:", NULL);
+        if (!answer.contains("@")) return;
+    }
+
+    /* Commit suicide */
+    p_ptr->is_dead = TRUE;
+    p_ptr->terminated = TRUE;
+
+    /* Stop playing */
+    p_ptr->playing = FALSE;
+
+    /* Leaving */
+    p_ptr->leaving_level = TRUE;
+
+    /* Cause of death */
+    if (p_ptr->total_winner) p_ptr->died_from = QString("Ripe Old Age");
+    else p_ptr->died_from = QString("Quitting");
+
+    // To get the game to notice
+    player_death_close_game();
+
+}

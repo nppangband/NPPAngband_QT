@@ -20,7 +20,7 @@
 #include "nppdialog.h"
 #include "storedialog.h"
 #include "src/cmds.h"
-
+#include <QPushButton>
 
 /*
  * Check if action permissible here.
@@ -979,20 +979,15 @@ void do_cmd_open(void)
 
     int y, x;
 
+    int num_doors = count_feats(&y, &x, FS_OPEN);
+    int num_chests = count_chests(&y, &x, FALSE);
+
     // Nothing to open
-    if (!count_feats(&y, &x, FS_OPEN)) return;
+    if(!num_doors && !num_chests) return;
 
     /* Easy Open */
     if (easy_open)
     {
-        int num_doors, num_chests;
-
-        /* Count closed doors */
-        num_doors = count_feats(&y, &x, FS_OPEN);
-
-        /* Count chests (locked) */
-        num_chests = count_chests(&y, &x, FALSE);
-
         /* See if only one target */
         if ((num_doors + num_chests) == 1)
         {
@@ -2244,6 +2239,95 @@ void command_rest(cmd_arg args)
     handle_stuff();
 
     process_player_energy(BASE_ENERGY_MOVE);
+}
+
+void RestDialog::on_clicked()
+{
+    QObject *obj = QObject::sender();
+    choice = obj->property("choice").toInt();
+    this->accept();
+}
+
+void RestDialog::keyPressEvent(QKeyEvent *event)
+{
+    QString txt = event->text();
+
+    // Handle escape key
+    if (event->key() == Qt::Key_Escape)
+    {
+        this->reject();
+        return;
+    }
+
+    if (txt.at(0).isLetter())
+    {
+        QList<QPushButton *> list = this->findChildren<QPushButton *>();
+        for (int i = 0; i < list.size(); i++)
+        {
+            if (list.at(i)->text().startsWith(txt))
+            {
+                list.at(i)->click();
+                return;
+            }
+        }
+    }
+
+}
+
+RestDialog::RestDialog(int *_choice)
+{
+    choice = *_choice = 0;
+
+    QVBoxLayout *lay1 = new QVBoxLayout;
+    this->setLayout(lay1);
+    //lay1->setContentsMargins(0, 0, 0, 0);
+
+    QLabel *lb = new QLabel("Pick the rest type");
+    lb->setStyleSheet("font-weight: bold;");
+    lay1->addWidget(lb);
+
+    struct
+    {
+        QString name;
+        int value;
+    } choices[] =
+    {
+        {"Complete", REST_COMPLETE},
+        {"Hit points and Spell points", REST_BOTH_SP_HP},
+        {"Hit points", REST_HP},
+        {"Spell points", REST_SP},
+        {"Rest Turncount", REST_TURNCOUNT},
+        {"", 0}
+    };
+
+    for (int i = 0; !choices[i].name.isEmpty(); i++) {
+        QString lb = number_to_letter(i);
+        lb += ") ";
+        lb += choices[i].name;
+        QPushButton *btn = new QPushButton(lb);
+        btn->setProperty("choice", choices[i].value);
+        btn->setStyleSheet("text-align: left");
+        connect(btn, SIGNAL(clicked()), this, SLOT(on_clicked()));
+
+        lay1->addWidget(btn);
+    }
+
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    lay1->addWidget(buttons);
+
+    this->exec();
+
+    *_choice = choice;
+
+    if (choice == REST_TURNCOUNT)
+    {
+        int repeats = get_quantity(QString("Enter rest turncount"), 9999, 1, FALSE);
+
+        if (!repeats) *_choice = 0;
+
+        p_ptr->player_args.repeats = repeats;
+    }
 }
 
 void do_cmd_rest(void)

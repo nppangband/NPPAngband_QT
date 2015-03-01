@@ -776,6 +776,8 @@ extern bool store_overflow(int this_store);
 
 // sound.cpp
 extern void sound(int val);
+extern void bell(QString this_message);
+
 
 //tables.cpp
 extern const byte moria_class_level_adj[MORIA_MAX_CLASS][MORIA_MAX_LEV_ADJ];

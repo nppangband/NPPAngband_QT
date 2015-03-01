@@ -67,6 +67,7 @@ static struct command_desc list_commands[] =
     {"Spike A Door", "shift-q"},
     {"Swap Weapon", "W (shift-w)"},
     {"Take Off Item", "CTRL-W"},
+    {"Terminate Character", "(CTRL + ALT)-Q"},
     {"Throw Item", "k"},
     {"Tunnel (set direction later)", "ALT-O"},
     {"Uninscribe Item", "}"},

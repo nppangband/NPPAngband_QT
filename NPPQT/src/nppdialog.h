@@ -28,18 +28,6 @@ public slots:
 
 };
 
-class RestDialog: public QDialog
-{
-    Q_OBJECT
-public:
-    int choice;
-    QLineEdit *turns_edit;
 
-    RestDialog(int *_choice);
-
-    void keyPressEvent(QKeyEvent *event);
-public slots:
-    void on_clicked();
-};
 
 #endif // NPPDIALOG_H

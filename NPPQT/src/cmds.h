@@ -86,6 +86,21 @@ public:
 
 };
 
+class RestDialog: public QDialog
+{
+    Q_OBJECT
+public:
+    int choice;
+
+    RestDialog(int *_choice);
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
+
+public slots:
+    void on_clicked();
+};
+
 
 
 // cmd_actions.cpp
@@ -123,7 +138,7 @@ extern void command_hold(cmd_arg args);
 extern void do_cmd_hold();
 
 
-// cmd_misc.cpp
+// cmd_traps.cpp
 extern bool make_monster_trap(void);
 extern void py_set_trap(int y, int x);
 extern bool py_modify_trap(int y, int x);
@@ -162,6 +177,7 @@ extern void do_cmd_feeling(void);
 extern void do_cmd_repeat(void);
 extern void do_cmd_look(void);
 extern void do_cmd_write_note(void);
+extern void do_cmd_suicide(void);
 
 // cmd_pickup.cpp
 extern bool put_object_in_inventory(object_type *o_ptr);

@@ -1036,7 +1036,7 @@ static void process_world(void)
             /* Get the feature name */
             QString name = feature_desc(feat, TRUE, TRUE);
 
-            message(QString("You are drowning in %1!") .arg(name));
+            bell(QString("You are drowning in %1!") .arg(name));
 
             /* Apply the blow */
             take_hit(dam, "drowning");

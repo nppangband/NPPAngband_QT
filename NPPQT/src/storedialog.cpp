@@ -56,6 +56,29 @@ void StoreDialog::add_help_label(QGridLayout *lay, QString id, int row, int col)
     lay->addWidget(help_button, row, col);
 }
 
+void StoreDialog::update_header()
+{
+    //max capactity in ounces
+    u16b max_capacity = normal_speed_weight_limit();
+
+    u32b weight_percent = p_ptr->total_weight * 100 / max_capacity;
+
+    header_weight1->setText((QString("<b><big>Burden: %1 lbs (%2% capacity)</big></b>")
+                             .arg(formatted_weight_string(p_ptr->total_weight)) .arg(weight_percent)));
+    if (p_ptr->total_weight > max_capacity)
+    {
+        int overweight = p_ptr->total_weight - max_capacity;
+        header_weight2->setText(QString("(%1 lbs overweight)")
+                        .arg((formatted_weight_string(overweight))));
+    }
+    else if (p_ptr->total_weight < max_capacity)
+    {
+        int underweight = max_capacity - p_ptr->total_weight;
+        header_weight2->setText(QString("(%1 lbs underweight)")
+                        .arg(formatted_weight_string(underweight)));
+    }
+}
+
 StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 {
     store_idx = _store;
@@ -105,6 +128,12 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     {
         lay3->addWidget(new QLabel("<b>Your home</b>"));
     }
+    lay3->addStretch(1);
+
+    header_weight1 = new QLabel();
+    header_weight2 = new QLabel();
+    lay3->addWidget(header_weight1);
+    update_header();
 
     lay3->addStretch(1);
 
@@ -138,6 +167,10 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     mode_label = new QLabel("");
     lay6->addWidget(mode_label);
     mode_label->setStyleSheet("font-weight: bold;");
+
+
+    lay6->addStretch(1);
+    lay6->addWidget(header_weight2);
 
     set_mode(SMODE_DEFAULT);
 
@@ -1088,6 +1121,7 @@ void StoreDialog::reset_all()
     reset_quest_status();
     reset_gold();
     update_message_area(message_area, 3);
+    update_header();
 
     ui_request_size_update(inven_tab);
     ui_request_size_update(equip_tab);

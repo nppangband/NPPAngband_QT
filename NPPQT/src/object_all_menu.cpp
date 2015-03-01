@@ -262,8 +262,8 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons)
     //Build the header
     header_main = new QLabel("<b><h2>Object Menu</b></h2>");
     header_main->setAlignment(Qt::AlignCenter);
-    header_weight1 = new QLabel("Weight 1");
-    header_weight2 = new QLabel("Weight 2");
+    header_weight1 = new QLabel;
+    header_weight2 = new QLabel;
     main_layout->addWidget(header_main);
     main_layout->addWidget(header_weight1);
     main_layout->addWidget(header_weight2);

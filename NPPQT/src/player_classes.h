@@ -421,6 +421,7 @@ public:
     u16b total_winner;		/* Total winner */
     u16b panic_save;		/* Panic save */
 
+    bool terminated;        // Player game was deliberately ended.
     bool is_dead;			/* Player is dead */
     bool player_turn;      /* It is the player's turn to move */
     bool is_wizard;			/* Player is in wizard mode */

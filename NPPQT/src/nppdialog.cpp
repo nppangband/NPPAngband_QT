@@ -11,108 +11,7 @@
 #include "npp.h"
 #include "player_command.h"
 
-void RestDialog::on_clicked()
-{
-    QObject *obj = QObject::sender();
-    int value = obj->property("choice").toInt();
-    if (value != REST_TURNCOUNT) choice = value;
-    else {
-        value = turns_edit->text().toInt();
-        if (value < 0 || value > 9999) {
-            pop_up_message_box("Invalid turns value", QMessageBox::Critical);
-            return;
-        }
-        choice = REST_TURNCOUNT;
-        p_ptr->player_args.repeats = value;
-    }
-    this->accept();
-}
 
-void RestDialog::keyPressEvent(QKeyEvent *event)
-{
-    QString txt = event->text();
-
-    if (txt.length() > 0) {
-        QChar chr = txt.toLower().at(0);
-
-        if (chr.isDigit()) {
-            turns_edit->setFocus();
-            turns_edit->setText(chr);
-            QPushButton *btn = this->findChild<QPushButton *>("turns");
-            btn->setDefault(true);
-            return;
-        }
-
-        if (chr.isLetter()) {
-            QList<QPushButton *> list = this->findChildren<QPushButton *>();
-            txt = chr;
-            txt += ") ";
-            for (int i = 0; i < list.size(); i++) {
-                if (list.at(i)->text().startsWith(txt)) {
-                    list.at(i)->click();
-                    return;
-                }
-            }
-        }
-    }
-
-    QDialog::keyPressEvent(event);
-}
-
-RestDialog::RestDialog(int *_choice)
-{
-    choice = *_choice = 0;
-
-    QVBoxLayout *lay1 = new QVBoxLayout;
-    this->setLayout(lay1);
-    //lay1->setContentsMargins(0, 0, 0, 0);
-
-    QLabel *lb = new QLabel("Pick the rest type");
-    lb->setStyleSheet("font-weight: bold;");
-    lay1->addWidget(lb);
-
-    struct {
-        QString name;
-        int value;
-    } choices[] = {
-      {"Complete", REST_COMPLETE},
-      {"Hit points and Spell points", REST_BOTH_SP_HP},
-      {"Hit points", REST_HP},
-      {"Spell points", REST_SP},
-      {"", 0}
-    };
-
-    for (int i = 0; !choices[i].name.isEmpty(); i++) {
-        QString lb = number_to_letter(i);
-        lb += ") ";
-        lb += choices[i].name;
-        QPushButton *btn = new QPushButton(lb);
-        btn->setProperty("choice", choices[i].value);
-        btn->setStyleSheet("text-align: left");
-        connect(btn, SIGNAL(clicked()), this, SLOT(on_clicked()));
-
-        lay1->addWidget(btn);
-    }
-
-    QHBoxLayout *lay2 = new QHBoxLayout;
-    lay2->setContentsMargins(0, 0, 0, 0);
-    lay1->addLayout(lay2); 
-
-    turns_edit = new QLineEdit;
-    turns_edit->setValidator(new QIntValidator(0, 9999));
-    lay2->addWidget(turns_edit, 1);
-
-    QPushButton *btn2 = new QPushButton("e) Turns");
-    btn2->setObjectName("turns");
-    lay2->addWidget(btn2);
-    btn2->setStyleSheet("text-align: left");
-    btn2->setProperty("choice", REST_TURNCOUNT);
-    connect(btn2, SIGNAL(clicked()), this, SLOT(on_clicked()));
-
-    this->exec();
-
-    *_choice = choice;
-}
 
 NPPDialog::NPPDialog(QWidget *parent, int _padding, qreal _max_ratio) :
     QDialog(parent)
@@ -121,7 +20,7 @@ NPPDialog::NPPDialog(QWidget *parent, int _padding, qreal _max_ratio) :
     max_ratio = _max_ratio;
 
     scrollArea = new QScrollArea;
-    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidgetResizable(TRUE);
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QVBoxLayout *layout = new QVBoxLayout;
