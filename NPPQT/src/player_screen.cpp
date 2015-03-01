@@ -157,7 +157,6 @@ void make_standard_label(QLabel *this_label, QString title, byte preset_color)
     this_label->clear();
     this_label->setText(QString("<b>%1</b>") .arg(color_string(title, preset_color)));
     this_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-
 }
 
 static void make_ability_graph(QLabel *this_label, int min, int max, int value)

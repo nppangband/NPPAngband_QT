@@ -98,7 +98,8 @@ SOURCES +=  src/qt_main.cpp\
             src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-            src/wizard_mode.cpp
+            src/wizard_mode.cpp \
+    src/qt_sidebar.cpp
 
 
 HEADERS  += src/qt_mainwindow.h\

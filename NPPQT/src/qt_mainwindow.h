@@ -76,7 +76,9 @@ public:
     QToolBar *target_toolbar;
     QToolBar *status_bar;
 
-    QTableWidget *sidebar;
+    QWidget *sidebar_widget;
+    QVBoxLayout *sidebar;
+    QTableWidget *sidebar_mon;
 
     MainWindow();
 

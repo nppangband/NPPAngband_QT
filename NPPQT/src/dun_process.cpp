@@ -994,9 +994,9 @@ static void process_world(void)
     }
 
     /* Occasionally have the ghost give a challenge */
-    if (p_ptr->game_turn % 500)
+    if (!(p_ptr->game_turn % 2500))
     {
-        if (one_in_(50)) ghost_challenge();
+        ghost_challenge();
     }
 
     /* Put out fire if necessary */

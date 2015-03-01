@@ -135,25 +135,7 @@ enum
  */
 #define ANGBAND_TERM_MAX 8
 
-/* Sidebar types */
-#define SIDEBAR_RACE		0
-#define SIDEBAR_TITLE		1
-#define SIDEBAR_CLASS		2
-#define SIDEBAR_LEVEL		3
-#define SIDEBAR_XP			4
-#define SIDEBAR_GOLD		5
-#define SIDEBAR_EQUIPPY		6
-#define SIDEBAR_STAT_MIN	7
-#define SIDEBAR_STAT_MAX	8
-#define SIDEBAR_AC			9
-#define SIDEBAR_HP			10
-#define SIDEBAR_MANA		11
-#define SIDEBAR_MON_MIN		12
-#define SIDEBAR_MON_MAX		13
-#define SIDEBAR_SPEED		14
-#define SIDEBAR_DEPTH		15
-#define SIDEBAR_QUEST		16
-#define SIDEBAR_FEELING		17
+
 
 #define SIDEBAR_MAX_TYPES	18
 

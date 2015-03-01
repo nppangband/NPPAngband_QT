@@ -2913,6 +2913,8 @@ QString format_quest_indicator(byte *attr)
 {
     QString dest;
 
+    dest.clear();
+
     /* Get the current quest, if any */
     quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
 
