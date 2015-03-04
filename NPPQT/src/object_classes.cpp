@@ -346,12 +346,20 @@ bool object_type::is_known_artifact()
 }
 
 /*
- * Artifacts use the "art_num" field
+ * An object designed specifically for a quest
  */
-bool object_type::is_quest_artifact()
+bool object_type::is_quest_object()
 {
-    if (!is_artifact()) return (FALSE);
     if(ident & (IDENT_QUEST)) return (TRUE);
+    return (FALSE);
+}
+
+/*
+ * Is an object a mimic?
+ */
+bool object_type::is_mimic()
+{
+    if (mimic_r_idx) return (TRUE);
     return (FALSE);
 }
 

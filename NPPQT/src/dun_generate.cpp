@@ -2661,7 +2661,7 @@ static void build_type_nest(int y0, int x0)
                 {
                     object_type *o_ptr = &o_list[dungeon_info[y][x].object_idx];
 
-                    if (o_ptr->mimic_r_idx)
+                    if (o_ptr->is_mimic())
                     {
                         o_ptr->ident |= (IDENT_QUEST);
 
@@ -2919,7 +2919,7 @@ static void build_type_pit(int y0, int x0)
                 {
                     object_type *o_ptr = &o_list[dungeon_info[y][x].object_idx];
 
-                    if (o_ptr->mimic_r_idx)
+                    if (o_ptr->is_mimic())
                     {
                         o_ptr->ident |= (IDENT_QUEST);
 
@@ -7739,7 +7739,7 @@ static bool build_themed_level(void)
             /* Skip dead objects */
             if (!o_ptr->k_idx) continue;
 
-            if (!o_ptr->mimic_r_idx) continue;
+            if (!o_ptr->is_mimic()) continue;
 
             /* Mark it as a questor */
             o_ptr->ident |= (IDENT_QUEST);

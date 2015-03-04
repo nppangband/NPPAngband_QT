@@ -466,7 +466,8 @@ static s16b chest_check(int y, int x, bool check_locked)
         if (o_ptr->tval != TV_CHEST) continue;
 
         /* Don't count special quest items */
-        if (o_ptr->is_quest_artifact()) continue;
+        if (o_ptr->is_mimic()) continue;
+        if (o_ptr->is_quest_object()) continue;
 
         /* Handle the option to check if it is locked*/
         if (check_locked)
@@ -510,10 +511,9 @@ int count_chests(int *y, int *x, bool trapped)
         o_ptr = &o_list[o_idx];
 
         /* Hack - Don't open mimic chests */
-        if (o_ptr->mimic_r_idx) continue;
-
         /* Don't count special quest items */
-        if (o_ptr->is_quest_artifact()) continue;
+        if (o_ptr->is_mimic()) continue;
+        if (o_ptr->is_quest_object()) continue;
 
         /* No (known) traps here */
         if (trapped &&
@@ -787,7 +787,10 @@ static bool do_cmd_open_chest(int y, int x, s16b o_idx)
         return (FALSE);
     }
 
-    if (o_ptr->is_quest_artifact())
+    // Paranoia - should never happen
+    if (o_ptr->is_mimic()) return (FALSE);
+
+    if (o_ptr->is_quest_object())
     {
         message("This chest cannot be opened!");
         return (FALSE);
@@ -1500,8 +1503,8 @@ void do_search(void)
 
                     /* Skip non-trapped chests */
                     if (!chest_traps[o_ptr->pval]) continue;
-
-                    if (o_ptr->is_quest_artifact()) continue;
+                    if (o_ptr->is_mimic()) continue;
+                    if (o_ptr->is_quest_object()) continue;
 
                     /* Identify once */
                     if (!object_known_p(o_ptr))

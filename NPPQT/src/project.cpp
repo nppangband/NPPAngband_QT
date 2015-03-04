@@ -3557,7 +3557,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
             case GF_KILL_DOOR:
             {
                 /* Chests are noticed only if trapped or locked, and not special ches items */
-                if ((o_ptr->tval == TV_CHEST) && !o_ptr->is_quest_artifact())
+                if ((o_ptr->tval == TV_CHEST) && !o_ptr->is_quest_object() && !o_ptr->is_mimic())
                 {
                     /* Disarm/Unlock traps */
                     if (o_ptr->pval > 0)
@@ -3680,7 +3680,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
             }
 
             /* The mimics cover is blown */
-            else if (o_ptr->mimic_r_idx)
+            else if (o_ptr->is_mimic())
             {
                 reveal_mimic(this_o_idx, o_ptr->marked);
             }

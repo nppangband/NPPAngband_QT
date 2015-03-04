@@ -2065,7 +2065,7 @@ static s16b get_mimic_k_idx(int r_idx)
 
 
 /* Place an mimic object in the dungeon */
-static bool place_mimic_object(int y, int x, int r_idx)
+static bool place_mimic_object(int y, int x, int r_idx, byte mp_flags)
 {
 
     s16b k_idx = get_mimic_k_idx(r_idx);
@@ -2095,6 +2095,9 @@ static bool place_mimic_object(int y, int x, int r_idx)
 
     /* Mark it as a mimic */
     o_ptr->mimic_r_idx = r_idx;
+
+    // Mark it as a quest monster if necessary
+    if (mp_flags & (MPLACE_OVERRIDE)) o_ptr->ident |= IDENT_QUEST;
 
     return (drop_near(o_ptr, 0, y, x));
 }
@@ -2715,7 +2718,7 @@ static bool place_monster_one(int y, int x, int r_idx, byte mp_flags)
     if (!(mp_flags & (MPLACE_NO_MIMIC)) &&
         (r_ptr->flags1 & (RF1_CHAR_MIMIC)))
     {
-        return (place_mimic_object(y, x, r_idx));
+        return (place_mimic_object(y, x, r_idx, mp_flags));
     }
 
     /* Require empty space */
@@ -3012,10 +3015,10 @@ void reveal_mimic(int o_idx, bool message)
     /* Get the object */
     object_type *o_ptr = &o_list[o_idx];
 
-    bool questor = o_ptr->is_quest_artifact();
+    bool questor = o_ptr->is_quest_object();
 
     /* Paranoia */
-    if (!o_ptr->mimic_r_idx) return;
+    if (!o_ptr->is_mimic()) return;
 
     /* If we fail to to place the mimic, return */
     if (!place_mimic_near(o_ptr->iy, o_ptr->ix, o_ptr->mimic_r_idx, message, questor)) return;

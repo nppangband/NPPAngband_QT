@@ -71,7 +71,7 @@ s16b wield_slot_ammo(object_type *o_ptr)
     object_type *j_ptr;
 
     /* Never pick up mimics */
-    if (o_ptr->mimic_r_idx) return (QUIVER_END);
+    if (o_ptr->is_mimic()) return (QUIVER_END);
 
     /* If the ammo is inscribed with a slot number, we'll try to put it in */
     /* that slot, if possible. */
@@ -109,10 +109,10 @@ s16b wield_slot_ammo(object_type *o_ptr)
 s16b wield_slot(object_type *o_ptr)
 {
     /*Hack - don't allow quest items to be worn*/
-    if(o_ptr->is_quest_artifact()) return (-1);
+    if(o_ptr->is_quest_object()) return (-1);
 
     /* Hack - Don't wield mimic objects */
-    if (o_ptr->mimic_r_idx) return (-1);
+    if (o_ptr->is_mimic()) return (-1);
 
     /* Slot for equipment */
     switch (o_ptr->tval)
@@ -499,7 +499,7 @@ void wield_item(object_type *o_ptr, int item, int slot)
     }
 
     /* Hack - Don't wield mimic objects */
-    if (o_ptr->mimic_r_idx) return;
+    if (o_ptr->is_mimic()) return;
 
     /* Get local object */
     i_ptr = &object_type_body;
@@ -1053,7 +1053,7 @@ void compact_objects(int size)
             if ((k_ptr->k_level > cur_lev) && (k_ptr->squelch != SQUELCH_ALWAYS)) continue;
 
             /* Hack - don't compact mimics */
-            if (o_ptr->mimic_r_idx) continue;
+            if (o_ptr->is_mimic()) continue;
 
             /* Monster */
             if (o_ptr->held_m_idx)
@@ -1739,8 +1739,8 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
     if (o_ptr->k_idx != j_ptr->k_idx) return (FALSE);
 
     /* Hack - mimic objects aren't similar*/
-    if (o_ptr->mimic_r_idx) return (FALSE);
-    if (j_ptr->mimic_r_idx) return (FALSE);
+    if (o_ptr->is_mimic()) return (FALSE);
+    if (j_ptr->is_mimic()) return (FALSE);
 
     /* Analyze the items */
     switch (o_ptr->tval)
@@ -1885,7 +1885,7 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
     }
 
     /* Hack -- Mimics never stack */
-    if ((o_ptr->mimic_r_idx) || (j_ptr->mimic_r_idx))
+    if ((o_ptr->is_mimic()) || (j_ptr->is_mimic()))
     {
         return (FALSE);
     }
@@ -3384,7 +3384,7 @@ s16b quiver_carry(object_type *o_ptr)
     if (!o_ptr->k_idx) return (-1);
 
     /* Hack - Don't pick up mimic objects */
-    if (o_ptr->mimic_r_idx) return (-1);
+    if (o_ptr->is_mimic()) return (-1);
 
     /* Must be ammo. */
     if (!o_ptr->is_ammo() && !is_throwing_weapon(o_ptr)) return (-1);
@@ -3565,7 +3565,7 @@ s16b inven_carry(object_type *o_ptr)
     object_type *j_ptr;
 
     /* Never pick up mimics */
-    if (o_ptr->mimic_r_idx) return (-1);
+    if (o_ptr->is_mimic()) return (-1);
 
     /* Check for combining */
     for (j = 0; j < INVEN_PACK; j++)

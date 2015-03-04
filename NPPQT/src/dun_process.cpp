@@ -434,7 +434,7 @@ static void process_mimics(void)
         if (!o_ptr->k_idx) continue;
 
         /* Only work with the mimic objects */
-        if (!o_ptr->mimic_r_idx) continue;
+        if (!o_ptr->is_mimic()) continue;
 
         r_ptr = &r_info[o_ptr->mimic_r_idx];
 

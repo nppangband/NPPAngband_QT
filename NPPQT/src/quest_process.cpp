@@ -69,10 +69,10 @@ static int count_quest_monsters(const quest_type *q_ptr)
         if (!o_ptr->k_idx) continue;
 
         /* Only work with the mimic objects */
-        if (!o_ptr->mimic_r_idx) continue;
+        if (!o_ptr->is_mimic()) continue;
 
         /* Mimic is waiting to turn into a quest monster */
-        if (o_ptr->is_quest_artifact()) cur_quest_monsters++;
+        if (o_ptr->is_quest_object() && o_ptr->is_mimic()) cur_quest_monsters++;
     }
 
     return (cur_quest_monsters);
@@ -437,7 +437,7 @@ static int count_labrynth_objects(void)
         if (!o_ptr->k_idx) continue;
 
         /* Count the quest objects */
-        if (o_ptr->is_quest_artifact())
+        if (o_ptr->is_quest_object())
         {
             item_count += o_ptr->number;
         }

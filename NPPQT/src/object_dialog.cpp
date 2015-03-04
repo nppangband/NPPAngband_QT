@@ -76,7 +76,7 @@ bool ObjectDialog::should_add_wield(object_type *o_ptr, s16b item_slot)
 
     if (!item_is_available(item_slot, NULL, USE_INVEN | USE_FLOOR)) return (FALSE);
     if (!obj_can_wear(o_ptr)) return (FALSE);
-    if (o_ptr->is_quest_artifact()) return (FALSE);
+    if (o_ptr->is_quest_object()) return (FALSE);
 
     return (TRUE);
 }

@@ -593,7 +593,7 @@ void command_wield(cmd_arg args)
     }
 
     /*Hack - don't allow quest items to be worn*/
-    if(o_ptr->is_quest_artifact())
+    if(o_ptr->is_quest_object())
     {
         pop_up_message_box("You cannot wield quest items.");
         return;

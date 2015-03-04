@@ -1148,8 +1148,7 @@ static bool holding_quest_artifact(const monster_type *m_ptr)
         next_o_idx = o_ptr->next_o_idx;
 
         /*Monster is holding a quest item*/
-        if(o_ptr->is_quest_artifact()) return (TRUE);
-
+        if(o_ptr->is_quest_object() && o_ptr->art_num) return (TRUE);
     }
 
     /*didn't find one*/

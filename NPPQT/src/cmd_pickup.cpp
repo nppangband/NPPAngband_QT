@@ -165,7 +165,7 @@ bool put_object_in_inventory(object_type *o_ptr)
 	if (slot < 0) return (FALSE);
 
 	/* Update the quest counter */
-    if (o_ptr->is_quest_artifact())
+    if (o_ptr->is_quest_object())
 	{
 		p_ptr->notice |= (PN_QUEST_REMAIN);
 		p_ptr->redraw |= (PR_QUEST_ST);
@@ -399,7 +399,7 @@ void py_pickup_gold(void)
 		if (o_ptr->tval != TV_GOLD) continue;
 
 		/* Never pick up mimics */
-		if (o_ptr->mimic_r_idx) continue;
+        if (o_ptr->is_mimic()) continue;
 
 		gold = (long)o_ptr->pval * o_ptr->number;
 
@@ -467,7 +467,7 @@ void py_pickup(bool pickup)
 	/*
 	 * As a precaution, first, check for mimics, and reveal them.
 	 * This is important, as IDENT_QUEST can be either a quest mimic monster,
-	 * or a quest object to be picked up.  o_ptr->mimic_r_idx distinguishes it
+     * or a quest object to be picked up.  o_ptr->is_mimic() distinguishes it
 	 * as a mimic.
 	 */
     for (this_o_idx = dungeon_info[py][px].object_idx; this_o_idx; this_o_idx = next_o_idx)
@@ -480,7 +480,7 @@ void py_pickup(bool pickup)
 		next_o_idx = o_ptr->next_o_idx;
 
 		/* Only work with the mimic objects */
-		if (!o_ptr->mimic_r_idx) continue;
+        if (!o_ptr->is_mimic()) continue;
 
 		reveal_mimic(this_o_idx, TRUE);
 	}
@@ -511,7 +511,7 @@ void py_pickup(bool pickup)
         if ((!o_ptr->is_ammo()) && (!is_throwing_weapon(o_ptr))) continue;
 
 		/* Hack - Don't pick up mimic objects */
-		if (o_ptr->mimic_r_idx) continue;
+        if (o_ptr->is_mimic()) continue;
 
 		/* Possibly pickup throwing weapons */
         if (o_ptr->use_verify[AUTO_WIELD_QUIVER]) do_continue = FALSE;
@@ -548,7 +548,7 @@ void py_pickup(bool pickup)
 		if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP) continue;
 
 		/* Hack - Don't pick up mimic objects */
-		if (o_ptr->mimic_r_idx) continue;
+        if (o_ptr->is_mimic()) continue;
 
 		/* Put it in the quiver */
 		if (put_object_in_inventory(o_ptr))
@@ -585,7 +585,7 @@ void py_pickup(bool pickup)
 		if (do_continue) continue;
 
 		/* Hack - Don't pick up mimic objects */
-		if (o_ptr->mimic_r_idx) continue;
+        if (o_ptr->is_mimic()) continue;
 
 		/* Put it in the quiver */
 		if (put_object_in_inventory(o_ptr))
@@ -620,7 +620,7 @@ void py_pickup(bool pickup)
 			if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP) continue;
 
 			/* Hack - Don't pick up mimic objects */
-			if (o_ptr->mimic_r_idx) continue;
+            if (o_ptr->is_mimic()) continue;
 
             /* Player doesn't want to pickup item  */
             if (!get_item_allow(-this_o_idx, VERIFY_PICKUP)) continue;
