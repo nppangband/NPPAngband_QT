@@ -573,8 +573,9 @@ static void get_money(void)
 /*
  * This fleshes out a full player based on the choices currently made,
  * and so is called whenever things like race or class are chosen.
+ * The variable "full" should be false when loading a previous character.
  */
-void generate_player()
+void generate_player(bool full)
 {
     /* Set sex according to p_ptr->sex */
     sp_ptr = &sex_info[p_ptr->psex];
@@ -600,6 +601,8 @@ void generate_player()
 
     /* Pre-calculate level 1 hitdice */
     p_ptr->player_hp[0] = p_ptr->hitdie;
+
+    if (!full) return;
 
     /* Roll for age/height/weight */
     get_ahw();

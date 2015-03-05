@@ -36,7 +36,7 @@ void PlayerDeathDialog::death_home_inven(void)
     display_home_inventory();
 }
 
-void PlayerDeathDialog::death_messsages(void)
+void PlayerDeathDialog::death_messages(void)
 {
     display_message_log();
 }

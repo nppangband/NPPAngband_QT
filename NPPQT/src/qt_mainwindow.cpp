@@ -2348,7 +2348,6 @@ void MainWindow::launch_birth(bool quick_start)
 {
     PlayerBirth *dlg = new PlayerBirth(quick_start);
 
-
     if (p_ptr->game_turn)
     {
         update_file_menu_game_active();

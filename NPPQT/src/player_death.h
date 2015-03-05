@@ -18,7 +18,7 @@ public:
 private slots:
     void death_info(void);
     void death_home_inven(void);
-    void death_messsages(void);
+    void death_messages(void);
     void death_file_dump(void);
     void death_scores(void);
     void death_examine(void);

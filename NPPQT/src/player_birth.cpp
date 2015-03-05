@@ -644,7 +644,7 @@ void PlayerBirth::point_button_chosen()
     if (birth_point_based) return;
 
     birth_point_based = TRUE;
-    generate_player();
+    generate_player(TRUE);
     reset_stats();
     generate_stats();
     update_character(TRUE, FALSE);
@@ -896,7 +896,7 @@ void PlayerBirth::update_character(bool new_player, bool needs_stat_update)
     p_ptr->pclass = cur_class;
     p_ptr->psex = cur_gender;
 
-    if (new_player) generate_player();
+    if (new_player) generate_player(TRUE);
 
     if (needs_stat_update)
     {
@@ -941,6 +941,7 @@ void PlayerBirth::setup_character()
         {
             stats[i] = p_ptr->stat_birth[i];
         }
+        generate_player(FALSE);
 
     }
     else
@@ -948,7 +949,7 @@ void PlayerBirth::setup_character()
         p_ptr->prace = cur_race = 0;
         p_ptr->pclass = cur_class = 0;
         p_ptr->psex = cur_gender = 0;
-        generate_player();
+        generate_player(TRUE);
         if (birth_point_based)
         {
             reset_stats();
@@ -1009,7 +1010,6 @@ PlayerBirth::PlayerBirth(bool quickstart)
     hlay_choices->addLayout(vlay_help_area, 1);
     add_info_boxes(vlay_help_area);
     vlay_help_area->addStretch(1);
-
 
 
     QVBoxLayout *vlay_stats_info_area = new QVBoxLayout;
