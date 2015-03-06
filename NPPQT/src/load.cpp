@@ -467,12 +467,12 @@ static bool rd_monster_races(void)
         /* Hack - allow for new monsters from a modified monster list to appear in a current game. */
 
         /* In case of a monster entry that wasn't a unique is now made a unique.*/
-        if (r_ptr->flags1 & (RF1_UNIQUE))
+        if (!(r_ptr->flags1 & (RF1_UNIQUE)))
         {
-            if (r_ptr->max_num > 1) r_ptr->max_num = 1;
+            r_ptr->max_num = 100;
         }
         /* Not a unique, but a new monster entry in the current game. */
-        else if (r_ptr->max_num == 0) r_ptr->max_num = 100;
+        else if (r_ptr->max_num >1) r_ptr->max_num = 1;
     }
 
     return (TRUE);
@@ -2038,13 +2038,9 @@ static int rd_savefile(void)
         // Read the object kind verify bool array
         for (int i = 0; i < VERIFY_MAX; i++)
         {
-
             rd_byte(&tmp8u);
             k_ptr->use_verify[i] = tmp8u;
         }
-
-
-
     }
     if (arg_fiddle) pop_up_message_box("Loaded Object Memory");
 
@@ -2389,8 +2385,14 @@ static bool load_memory(void)
     /* Read the number of saved ego-item types */
     rd_u16b(&tmp16u);
 
+    /* Incompatible save files */
+    if (tmp16u > z_info->e_max)
+    {
+        return (FALSE);
+    }
+
     /* Read ego-item squelch settings */
-    for (i = 0; i < z_info->e_max; i++)
+    for (i = 0; i < tmp16u; i++)
     {
         ego_item_type *e_ptr = &e_info[i];
 

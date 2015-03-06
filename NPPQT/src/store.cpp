@@ -902,7 +902,7 @@ bool do_service_fireproof(byte choice, u32b price)
     k_ptr = &k_info[o_ptr->k_idx];
 
     /*Adjust the price for the book and the number of books*/
-    price += (k_ptr->cost * 6);
+    price += (k_ptr->cost * 50);
     price *= o_ptr->number;
 
     /*Too expensive*/

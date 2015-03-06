@@ -710,10 +710,10 @@ static void cast_spell(cmd_arg args)
     if (s_ptr->smana > p_ptr->csp)
     {
         /* Warning */
-        message(QString("You do not have enough mana to %1 this %2.") .arg(verb) .arg(noun));
+        QString prompt = (QString("You do not have enough mana to %1 this %2.<br>Attempt it anyway?") .arg(verb) .arg(noun));
 
         /* Verify */
-        if (!get_check("Attempt it anyway? ")) return;
+        if (!get_check(prompt)) return;
     }
 
     //Find the book, and verify its use if necessary

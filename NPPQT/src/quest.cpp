@@ -2475,6 +2475,8 @@ bool guild_purchase(int choice)
     if (one_in_(5)) q_info[GUILD_QUEST_SLOT].q_flags |= (QFLAG_GREATER_VAULT_QUEST);
     else q_info[GUILD_QUEST_SLOT].q_flags &= ~(QFLAG_GREATER_VAULT_QUEST);
 
+    p_ptr->redraw |= PR_SIDEBAR;
+
     return (TRUE);
 }
 

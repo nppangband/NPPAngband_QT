@@ -237,6 +237,9 @@ static void wr_monster_lore(int r_idx)
     /* Count spells */
     wr_byte(l_ptr->ranged);
 
+    /* Count blows of each type */
+    for (int i = 0; i < MONSTER_BLOW_MAX; i++) wr_byte(l_ptr->blows[i]);
+
     /* Memorize flags */
     wr_u32b(l_ptr->r_l_flags1);
     wr_u32b(l_ptr->r_l_flags2);
@@ -246,9 +249,6 @@ static void wr_monster_lore(int r_idx)
     wr_u32b(l_ptr->r_l_flags6);
     wr_u32b(l_ptr->r_l_flags7);
     wr_u32b(l_ptr->r_l_native);
-
-    /* Monster limit per level */
-
 
     /* Later (?) */
     wr_byte(0);

@@ -299,6 +299,8 @@ DisplayScores::DisplayScores(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
+    resize(QSize(width() * 2, height() * 4 / 3));
+
     setLayout(main_layout);
     setWindowTitle("Player Scores");
 
@@ -429,6 +431,8 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     buttons.setStandardButtons(QDialogButtonBox::Close);
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
+
+    resize(QSize(width() * 3 / 2, height() * 4 / 3));
 
     setLayout(main_layout);
     setWindowTitle(QString("Monster Kill Count"));
