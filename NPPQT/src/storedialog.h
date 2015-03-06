@@ -105,8 +105,7 @@ public slots:
     void item_click();
     void service_click();
     void quest_click();
-    void sell_click();
-    void buy_click();
+    void buy_sell_click();
     void exam_click();
     void wield_click();
     void takeoff_click();

@@ -259,6 +259,7 @@ bool set_timed(int idx, int v, bool notify)
     /* Update the visuals, as appropriate. */
     p_ptr->update |= effect->flag_update;
     p_ptr->redraw |= (effect->flag_redraw);
+    p_ptr->redraw |= (PR_STATUSBAR);
 
     /* Handle stuff */
     handle_stuff();

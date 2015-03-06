@@ -61,9 +61,6 @@ void update_message_area(QTextEdit *message_area, int max_messages)
     {
         QString this_message = message_list[i].message;
 
-        //make some space between the next message
-        if (next_message.length())next_message.prepend("  ");
-
         if (message_list[i].repeats > 1)
         {
            this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
@@ -74,7 +71,11 @@ void update_message_area(QTextEdit *message_area, int max_messages)
         // See if the next message should go before this one.
         if ((i+1) < message_list.size())
         {
-            if (message_list[i+1].append) continue;
+            if (message_list[i+1].append)
+            {
+                next_message.prepend("  ");
+                continue;
+            }
         }
 
         message_area->moveCursor(QTextCursor::Start);

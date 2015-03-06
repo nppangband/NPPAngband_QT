@@ -28,7 +28,7 @@ void do_cmd_quest(void)
         }
         else
         {
-            QString q_out = describe_quest(guild_quest_level(), QMODE_FULL);
+            QString q_out = describe_quest(guild_quest_level());
 
             message(q_out);
         }

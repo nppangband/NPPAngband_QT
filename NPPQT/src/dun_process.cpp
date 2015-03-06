@@ -1305,8 +1305,7 @@ static void process_world(void)
     if (o_ptr->tval == TV_LIGHT)
     {
         /* Hack -- Use some fuel (except on artifacts) */
-        if (!o_ptr->is_artifact() && (o_ptr->timeout > 0) &&
-            !(dungeon_info[p_ptr->py][p_ptr->px].cave_info & (CAVE_GLOW | CAVE_HALO)))
+        if (!o_ptr->is_artifact() && (o_ptr->timeout > 0))
         {
             /* Decrease life-span */
             o_ptr->timeout--;

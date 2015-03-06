@@ -2518,11 +2518,14 @@ bool load_player(void)
     // We are done with the file
     save_file.close();
 
-    if (!load_scores()) return (FALSE);
-    if (!load_memory()) return (FALSE);
-
     /* Success */
     return (TRUE);
+}
+
+void load_memory_scores(void)
+{
+    (void)load_scores();
+    (void)load_memory();
 }
 
 /*

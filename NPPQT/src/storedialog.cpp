@@ -40,7 +40,7 @@ static void clear_grid(QGridLayout *lay)
 void StoreDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col)
 {
     // Add the weight
-    QString weight_printout = (formatted_weight_string(o_ptr->weight * o_ptr->number));
+    QString weight_printout = (formatted_weight_string(o_ptr->weight));
     weight_printout.append(" lbs");
     QLabel *weight = new QLabel(weight_printout);
     weight->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -110,6 +110,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     if (guild)
     {
         QString title = QString("<b>The Adventurer's Guild</b>   - ");
+        setWindowTitle(title);
         title.append(get_rep_guild());
         QLabel *guild_intro = new QLabel(title);
         lay3->addWidget(guild_intro);
@@ -119,6 +120,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
         owner_type *ot_ptr = &b_info[(store_idx * z_info->b_max) + store[store_idx].owner];
         int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
         QString shop_name = f_info[feat].f_name;
+        setWindowTitle(shop_name);
         QString msg = QString("<b>%1</b> - %2 (%3)").arg(shop_name).arg(ot_ptr->owner_name)
                 .arg(ot_ptr->max_cost);
         QLabel *store_info = new QLabel(msg);
@@ -137,16 +139,9 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 
     lay3->addStretch(1);
 
-    QPushButton *btn_buy = new QPushButton(home ? "Retrieve (F2)": "Buy (F2)");
+    QPushButton *btn_buy = new QPushButton(home ? "Retrieve/Stash (F2)": "Buy/Sell (F2)");
     lay3->addWidget(btn_buy);
-    connect(btn_buy, SIGNAL(clicked()), this, SLOT(buy_click()));
-
-    if (!guild)
-    {
-        QPushButton *btn_sell = new QPushButton(home ? "Stash (F3)": "Sell (F3)");
-        lay3->addWidget(btn_sell);
-        connect(btn_sell, SIGNAL(clicked()), this, SLOT(sell_click()));
-    }
+    connect(btn_buy, SIGNAL(clicked()), this, SLOT(buy_sell_click()));
 
     QPushButton *btn_toggle = new QPushButton("Toggle inven/equip (F4)");
     lay3->addWidget(btn_toggle);
@@ -300,7 +295,7 @@ void StoreDialog::reset_quest_status()
     // First take care of the quest status label
     quest_area->show();
     quest_status->setText(QString("<big>%1</big>")
-                 .arg(describe_quest(guild_quest_level(), QMODE_FULL)));
+                 .arg(describe_quest(guild_quest_level())));
 
     quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
 
@@ -336,7 +331,7 @@ void StoreDialog::exam_click()
     set_mode(SMODE_EXAMINE);
 }
 
-void StoreDialog::buy_click()
+void StoreDialog::buy_sell_click()
 {
     set_mode(SMODE_BUY);
 }
@@ -707,7 +702,7 @@ void StoreDialog::set_mode(int _mode)
 {
     mode = _mode;
     QString names[] = {
-        QString(""), QString(home ? "Retrieving": "Buying"), QString(home ? "Stashing": "Selling"),
+        QString(""), QString(home ? "Retrieving/Stashing": "Buying/Selling"), QString(home ? "Stashing": "Selling"),
         QString("Examining")
     };
     QString text = names[mode];
@@ -892,54 +887,66 @@ void StoreDialog::toggle_inven()
 
 void StoreDialog::keyPressEvent(QKeyEvent *event)
 {
-    switch (event->key()) {
-    case Qt::Key_F2:
-        this->buy_click();
-        break;
-    case Qt::Key_F3:
-        if(!guild) this->sell_click();
-        break;
-    case Qt::Key_F4:
-        this->toggle_inven();
-        break;
-    case Qt::Key_F5:
-        this->exam_click();
-        break;
-    case Qt::Key_F6:
-        this->wield_click();
-        break;
-    case Qt::Key_F7:
-        this->takeoff_click();
-        break;
-    default:
-        if (event->text().length() > 0
-                && (event->text().at(0).isLetterOrNumber()))
+    switch (event->key())
+    {
+        case Qt::Key_F2:
         {
-            QString letter = event->text().at(0);
-
-            letter.append(")");
-            QWidget *container = char_tabs->currentWidget();
-            if (letter.at(0).isLower() || letter.at(0).isDigit())
+            this->buy_sell_click();
+            break;
+        }
+        case Qt::Key_F4:
+        {
+            this->toggle_inven();
+            break;
+        }
+        case Qt::Key_F5:
+        {
+            this->exam_click();
+            break;
+        }
+        case Qt::Key_F6:
+        {
+            this->wield_click();
+            break;
+        }
+        case Qt::Key_F7:
+        {
+            this->takeoff_click();
+            break;
+        }
+        default:
+        {
+            if (event->text().length() > 0
+                    && (event->text().at(0).isLetterOrNumber()))
             {
-                container = store_area;
-            }
-            QList<QLabel *> lst = container->findChildren<QLabel *>();
-            for (int i = 0; i < lst.size(); i++)
-            {
-                QString text = lst.at(i)->text();
+                QString letter = event->text().at(0);
 
-                if (text.startsWith(letter))
+                letter.append(")");
+                QWidget *container = char_tabs->currentWidget();
+                if (letter.at(0).isLower() || letter.at(0).isDigit())
                 {
-
-                    QString item_id = lst.at(i)->property("item_id").toString();
-
-                    if (item_id.startsWith('p')) process_item(item_id);
-                    else if (item_id.startsWith('s')) process_service(item_id);
-                    else if (item_id.startsWith('q')) process_quest(item_id);
-                    break;
+                    container = store_area;
                 }
+                QList<QLabel *> lst = container->findChildren<QLabel *>();
+                for (int i = 0; i < lst.size(); i++)
+                {
+                    QString text = lst.at(i)->text();
+
+                    if (text.startsWith(letter, Qt::CaseSensitive))
+                    {
+
+                        QString item_id = lst.at(i)->property("item_id").toString();
+
+                        if (item_id.startsWith('p')) process_item(item_id);
+                        else if (item_id.startsWith('s')) process_service(item_id);
+                        else if (item_id.startsWith('q')) process_quest(item_id);
+                        else if (item_id.startsWith('e')) process_item(item_id);
+                        else if (item_id.startsWith('i')) process_item(item_id);
+                        return;
+                    }
+                }
+            return;
             }
-        return;
         }
         NPPDialog::keyPressEvent(event);
     }
@@ -1007,18 +1014,21 @@ void StoreDialog::process_service(QString id)
 {
     // Make sure we are buying a service.
 
-    int aux_mode = mode;
-    if (aux_mode == SMODE_EXAMINE)
-    {
-        pop_up_message_box("service help TBD");
-        return;
-    }
-
-    set_mode(SMODE_BUY);
     if (!id.startsWith("s")) return;
 
     // Get quest index
     int service = id.mid(1).toInt();
+
+    int aux_mode = mode;
+    if (aux_mode == SMODE_EXAMINE)
+    {
+        QString topic = get_help_topic("store_info", services_info[service].service_names);
+        pop_up_message_box(topic);
+        return;
+    }
+
+    set_mode(SMODE_BUY);
+
 
     u32b serv_price = price_services(service);
 
@@ -1031,18 +1041,20 @@ void StoreDialog::process_service(QString id)
 
 void StoreDialog::process_quest(QString id)
 {
-    int aux_mode = mode;
-    if (aux_mode == SMODE_EXAMINE)
-    {
-        pop_up_message_box("quest help TBD");
-        return;
-    }
-
-    set_mode(SMODE_BUY);
     if (!id.startsWith("q")) return;
 
     // Get quest index
     int quest_idx = id.mid(1).toInt();
+
+    int aux_mode = mode;
+    if (aux_mode == SMODE_EXAMINE)
+    {
+        QString topic = get_help_topic("store_info", quests_info[quest_idx]);
+        pop_up_message_box(topic);
+        return;
+    }
+
+    set_mode(SMODE_BUY);
 
     p_ptr->message_append_start();
 
@@ -1076,10 +1088,6 @@ void StoreDialog::quest_click()
     process_quest(id);
 }
 
-void StoreDialog::sell_click()
-{
-    set_mode(SMODE_SELL);
-}
 
 bool StoreDialog::do_buy(object_type *o_ptr, int item)
 {
@@ -1207,7 +1215,7 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
     if (buying) verb = tr("buy");
 
     QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
-    QString msg = tr("How many items do you want to %1 of %2?").arg(verb).arg(desc);
+    QString msg = tr("How many of the %2 do you want to %1?").arg(verb).arg(desc);
     question = new QLabel(msg);
     lay1->addWidget(question);
 

@@ -138,6 +138,7 @@ static void remove_ironman_items(void)
 
 void launch_game()
 {
+    load_memory_scores();
 
     /* Flavor the objects */
     flavor_init();
@@ -160,7 +161,6 @@ void launch_game()
     if (!character_dungeon) generate_cave();
 
     // Load tile specifications
-    //init_graphics();
     extract_tiles(false);
 
     /* Character is now "complete" */
@@ -182,7 +182,7 @@ void launch_game()
     if (p_ptr->chp < 0) p_ptr->is_dead = TRUE;
 
     /* Update stuff */
-    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
+    p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS | PU_PLAYER_SCORE);
     p_ptr->update |= (PU_TORCH | PU_UPDATE_VIEW | PU_FORGET_VIEW  | PU_DISTANCE);
 
     handle_stuff();

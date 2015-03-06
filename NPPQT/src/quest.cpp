@@ -186,7 +186,7 @@ int quest_collection_num(quest_type *q_ptr)
  * QMODE_HALF_2 - describes depth of quest
  * QMODE_FULL - describes both quest and depth
  */
-QString describe_quest(s16b level, int mode)
+QString describe_quest(s16b level)
 {
     int q_idx = quest_num(level);
     QString buf;
@@ -233,9 +233,7 @@ QString describe_quest(s16b level, int mode)
         /* The location of the quest */
         where = (QString("at a depth of %1 feet and return to the Guild.") .arg(level * 50));
 
-        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
-        else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
-        else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
+        buf = (QString("%1 %2") .arg(intro) .arg(where));
 
         /*we are done*/
         return (buf);
@@ -259,9 +257,7 @@ QString describe_quest(s16b level, int mode)
         /* The location of the quest */
         where = (QString("at a depth of %1 feet.") .arg(level * 50));
 
-        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
-        else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
-        else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
+        buf = (QString("%1 %2") .arg(intro) .arg(where));
 
         /*we are done*/
         return (buf);
@@ -271,7 +267,7 @@ QString describe_quest(s16b level, int mode)
         int remaining = quest_collection_num(q_ptr) - quest_item_count();
 
         /* Just needs to get the reward */
-        if ((remaining < 1 ) && (mode == QMODE_FULL))
+        if (remaining < 1 )
         {
             return("Collect your reward at the Guild!");
         }
@@ -308,9 +304,7 @@ QString describe_quest(s16b level, int mode)
             where = (QString("at a depth of %1 feet and return to the Guild.") .arg(level * 50));
         }
 
-        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
-        else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
-        else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
+        buf = (QString("%1 %2") .arg(intro) .arg(where));
 
         /*we are done*/
         return(buf);
@@ -373,9 +367,7 @@ QString describe_quest(s16b level, int mode)
         /* The location of the quest */
         where = (QString("at a depth of %1 feet.") .arg(level * 50));
 
-        if (mode == QMODE_FULL)    buf = (QString("%1 %2") .arg(intro) .arg(where));
-        else if (mode == QMODE_HALF_1)  buf = (QString("%1") .arg(intro));
-        else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
+        buf = (QString("%1 %2") .arg(intro) .arg(where));
 
         /*we are done*/
         return(buf);
@@ -433,12 +425,8 @@ QString describe_quest(s16b level, int mode)
     /* The location of the quest */
     where = (QString("at a depth of %1 feet.") .arg(level * 50));
 
-
-
     /* Output */
-    if (mode == QMODE_FULL)    buf = (QString("%1 %2 %3 %4") .arg(intro) .arg(what) .arg(targets) .arg(where));
-    else if (mode == QMODE_HALF_1)  buf = (QString("%1 %2 %3") .arg(intro) .arg(what) .arg(targets));
-    else if (mode == QMODE_HALF_2)  buf = (QString("%1") .arg(where));
+    buf = (QString("%1 %2 %3 %4") .arg(intro) .arg(what) .arg(targets) .arg(where));
 
     /*we are done*/
     return(buf);
@@ -459,7 +447,7 @@ void do_cmd_quest_desc(void)
         {
             quest_desc = "Collect your reward at the guild!";
         }
-        else quest_desc = describe_quest(guild_quest_level(), QMODE_FULL);
+        else quest_desc = describe_quest(guild_quest_level());
     }
     /* No quest at all */
     else quest_desc = "You are not currently undertaking a quest.";
@@ -3118,7 +3106,7 @@ void quest_status_update(void)
         if (q_ptr->q_type ==  QUEST_ARENA_LEVEL) note.append("to kill in the arena.");
         else
         {
-            note = (QString("from the %1") .arg(feeling_themed_level[q_ptr->q_theme]));
+            note.append(QString("from the %1") .arg(feeling_themed_level[q_ptr->q_theme]));
 
             if  (q_ptr->q_type ==  QUEST_THEMED_LEVEL) 	note.append(" stronghold.");
             else if (q_ptr->q_type == QUEST_PIT)	note.append(" pit.");

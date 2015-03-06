@@ -164,6 +164,7 @@ extern void flavor_init(void);
 /* load.cpp */
 extern bool load_player(void);
 extern bool load_gamemode(void);
+extern void load_memory_scores(void);
 
 // mon_attack.cpp
 extern bool make_attack_normal(monster_type *m_ptr);
@@ -532,7 +533,7 @@ extern bool beam_chain(int gf_type, int dam, int max_hits, int decrement);
 /* quest.c */
 extern QString plural_aux(QString name);
 extern int quest_collection_num(quest_type *q_ptr);
-extern QString describe_quest(s16b level, int mode);
+extern QString describe_quest(s16b level);
 extern void do_cmd_quest_desc(void);
 extern void add_reward_gold(void);
 extern QString get_title(void);

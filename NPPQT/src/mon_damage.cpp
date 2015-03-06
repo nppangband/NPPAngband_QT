@@ -938,7 +938,6 @@ static void process_quest_monster_death(int i, int m_idx, bool *writenote)
     if (!(q_ptr->q_flags & (QFLAG_COMPLETED)))
     {
         p_ptr->notice |= PN_QUEST_REMAIN;
-        bell(NULL);
     }
 
     /* Update the quest status */

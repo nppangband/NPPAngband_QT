@@ -666,7 +666,7 @@ void MainWindow::update_sidebar()
                 {
                     if (this_lbl->isVisible()) this_lbl->show();
                     this_lbl->setText(color_string(quest, attr));
-                    this_lbl->setToolTip(describe_quest(guild_quest_level(), QMODE_FULL));
+                    this_lbl->setToolTip(describe_quest(guild_quest_level()));
                 }
                 continue;
             }

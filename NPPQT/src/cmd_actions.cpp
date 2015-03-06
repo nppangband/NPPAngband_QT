@@ -980,10 +980,11 @@ void do_cmd_open(void)
 
     int dir = DIR_UNKNOWN;
 
-    int y, x;
+    int door_y, door_x;
+    int chest_y, chest_x;
 
-    int num_doors = count_feats(&y, &x, FS_OPEN);
-    int num_chests = count_chests(&y, &x, FALSE);
+    int num_doors = count_feats(&door_y, &door_x, FS_OPEN);
+    int num_chests = count_chests(&chest_y, &chest_x, FALSE);
 
     // Nothing to open
     if(!num_doors && !num_chests) return;
@@ -994,7 +995,8 @@ void do_cmd_open(void)
         /* See if only one target */
         if ((num_doors + num_chests) == 1)
         {
-            dir = coords_to_dir(y, x);
+            if (num_doors) dir = coords_to_dir(door_y, door_x);
+            else /* num_chests */ dir = coords_to_dir(chest_y, chest_x);
         }
     }
 
@@ -2004,22 +2006,6 @@ void command_alter(cmd_arg args)
         return;
     }
 
-    /* Tunnel through walls */
-    else if (feat_ff1_match(feat, FF1_DOOR | FF1_CAN_TUNNEL) ==	(FF1_CAN_TUNNEL))
-    {
-        /* Tunnel */
-        command_tunnel(args);
-        return;
-    }
-
-    /* Bash jammed doors */
-    else if (feat_ff1_match(feat, FF1_CAN_BASH))
-    {
-        /* Bash */
-        command_bash(args);
-        return;
-    }
-
     /* Open closed doors */
     else if (feat_ff1_match(feat, FF1_CAN_OPEN))
     {
@@ -2035,6 +2021,22 @@ void command_alter(cmd_arg args)
         /* Open */
         command_disarm(args);
         //Energy burned by function.
+        return;
+    }
+
+    /* Bash jammed doors */
+    else if (feat_ff1_match(feat, FF1_CAN_BASH))
+    {
+        /* Bash */
+        command_bash(args);
+        return;
+    }
+
+    /* Tunnel through walls */
+    else if (feat_ff1_match(feat, FF1_DOOR | FF1_CAN_TUNNEL) ==	(FF1_CAN_TUNNEL))
+    {
+        /* Tunnel */
+        command_tunnel(args);
         return;
     }
 
