@@ -2325,7 +2325,7 @@ void MainWindow::load_file(const QString &file_name)
             if (!character_loaded)
             {
                 save_prev_character();
-                launch_birth(true);
+                launch_birth();
             }
             else
             {

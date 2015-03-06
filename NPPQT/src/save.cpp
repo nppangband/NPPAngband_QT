@@ -214,9 +214,6 @@ static void wr_effect(const effect_type *x_ptr)
  */
 static void wr_monster_lore(int r_idx)
 {
-    int i;
-
-    monster_race *r_ptr = &r_info[r_idx];
     monster_lore *l_ptr = &l_list[r_idx];
 
     /* Count sights/deaths/kills */
@@ -240,10 +237,6 @@ static void wr_monster_lore(int r_idx)
     /* Count spells */
     wr_byte(l_ptr->ranged);
 
-    /* Count blows of each type */
-    for (i = 0; i < MONSTER_BLOW_MAX; i++)
-        wr_byte(l_ptr->blows[i]);
-
     /* Memorize flags */
     wr_u32b(l_ptr->r_l_flags1);
     wr_u32b(l_ptr->r_l_flags2);
@@ -255,7 +248,7 @@ static void wr_monster_lore(int r_idx)
     wr_u32b(l_ptr->r_l_native);
 
     /* Monster limit per level */
-    wr_byte(r_ptr->max_num);
+
 
     /* Later (?) */
     wr_byte(0);
@@ -903,6 +896,11 @@ static void wr_dungeon(void)
 
 
     /*** Dump the monsters ***/
+
+    wr_u16b(z_info->r_max);
+
+    /* Write Monster race info */
+    for (i = 0; i < z_info->r_max; i++) wr_byte(r_info[i].max_num);
 
     /* Total monsters */
     wr_u16b(mon_max);

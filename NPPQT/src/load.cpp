@@ -442,7 +442,41 @@ static int rd_item(object_type *o_ptr)
 }
 
 
+static bool rd_monster_races(void)
+{
+    u16b tmp16u;
 
+    /* Monster Memory */
+    rd_u16b(&tmp16u);
+
+    /* Incompatible save files */
+    if (tmp16u > z_info->r_max)
+    {
+        pop_up_message_box(QString("Too many (%1) monster races!") .arg(tmp16u));
+        return (FALSE);
+    }
+
+    /* Read the available records */
+    for (int i = 0; i < tmp16u; i++)
+    {
+        monster_race *r_ptr = &r_info[i];
+
+        /* Read the "Racial" monster limit per level */
+        rd_byte(&r_ptr->max_num);
+
+        /* Hack - allow for new monsters from a modified monster list to appear in a current game. */
+
+        /* In case of a monster entry that wasn't a unique is now made a unique.*/
+        if (r_ptr->flags1 & (RF1_UNIQUE))
+        {
+            if (r_ptr->max_num > 1) r_ptr->max_num = 1;
+        }
+        /* Not a unique, but a new monster entry in the current game. */
+        else if (r_ptr->max_num == 0) r_ptr->max_num = 100;
+    }
+
+    return (TRUE);
+}
 
 /*
  * Read a monster
@@ -558,8 +592,8 @@ static void rd_monster_lore(int r_idx)
 
     int i;
 
-    monster_race *r_ptr = &r_info[r_idx];
     monster_lore *l_ptr = &l_list[r_idx];
+    monster_race *r_ptr = &r_info[r_idx];
 
     /* Count sights/deaths/kills */
     rd_s16b(&l_ptr->sights);
@@ -594,19 +628,6 @@ static void rd_monster_lore(int r_idx)
     rd_u32b(&l_ptr->r_l_flags6);
     rd_u32b(&l_ptr->r_l_flags7);
     rd_u32b(&l_ptr->r_l_native);
-
-    /* Read the "Racial" monster limit per level */
-    rd_byte(&r_ptr->max_num);
-
-    /* Hack - allow for new monsters from a modified monster list to appear in a current game. */
-
-    /* In case of a monster entry that wasn't a unique is now made a unique.*/
-    if (r_ptr->flags1 & (RF1_UNIQUE))
-    {
-        if (r_ptr->max_num > 1) r_ptr->max_num = 1;
-    }
-    /* Not a unique, but a new monster entry in the current game. */
-    else if (r_ptr->max_num == 0) r_ptr->max_num = 100;
 
     /* Later (?) */
     rd_byte(&tmp8u);
@@ -1828,6 +1849,8 @@ static int rd_dungeon(void)
 
     /*** Monsters ***/
 
+    if (!rd_monster_races()) return (-1);
+
     /* Read the monster count */
     rd_u16b(&limit);
 
@@ -2213,9 +2236,6 @@ static bool load_scores(void)
     /* Okay */
     if (!save_file.open(QIODevice::ReadOnly))
     {
-        /* Message (below) */
-        pop_up_message_box("Cannot open savefile");
-
         return (FALSE);
     }
 
@@ -2231,13 +2251,11 @@ static bool load_scores(void)
 
     if (this_game_mode!= game_mode)
     {
-        pop_up_message_box("invalid scores_file");
         return (FALSE);
     }
 
     if (!older_than(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH + 1))
     {
-        pop_up_message_box("Scores file is from the future.");
         return (FALSE);
     }
 
@@ -2274,9 +2292,6 @@ static bool load_memory(void)
     /* Okay */
     if (!save_file.open(QIODevice::ReadOnly))
     {
-        /* Message (below) */
-        pop_up_message_box("Cannot open savefile");
-
         return (FALSE);
     }
 
@@ -2292,13 +2307,11 @@ static bool load_memory(void)
 
     if (this_game_mode!= game_mode)
     {
-        pop_up_message_box("invalid memory_file");
         return (FALSE);
     }
 
     if (!older_than(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH + 1))
     {
-        pop_up_message_box("Memory file is from the future.");
         return (FALSE);
     }
 
@@ -2309,7 +2322,6 @@ static bool load_memory(void)
     /* Incompatible save files */
     if (tmp16u > z_info->r_max)
     {
-        pop_up_message_box(QString("Too many (%1) monster races!") .arg(tmp16u));
         return (-1);
     }
 
@@ -2326,7 +2338,6 @@ static bool load_memory(void)
     /* Check bounds */
     if (tmp16u > z_info->f_max)
     {
-        pop_up_message_box(QString("Too many (%1) terrain features!") .arg(tmp16u));
         return (FALSE);
     }
 
@@ -2343,7 +2354,6 @@ static bool load_memory(void)
     /* Check bounds */
     if (tmp16u > z_info->art_norm_max)
     {
-        pop_up_message_box(QString("Too many (%1) artifacts!") .arg(tmp16u));
         return (FALSE);
     }
 
@@ -2359,7 +2369,6 @@ static bool load_memory(void)
     /* Incompatible save files */
     if (tmp16u > z_info->k_max)
     {
-        pop_up_message_box(QString("Too many (%1) object kinds!") .arg(tmp16u));
         return (FALSE);
     }
 
