@@ -1653,8 +1653,6 @@ bool store_will_buy(int store_num, object_type *o_ptr)
                 case TV_STAFF:
                 case TV_WAND:
                 case TV_ROD:
-                case TV_SCROLL:
-                case TV_POTION:
                 break;
                 default:
                 return (FALSE);

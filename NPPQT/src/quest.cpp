@@ -360,7 +360,7 @@ QString describe_quest(s16b level)
             }
             else if (q_ptr->q_type == QUEST_NEST)
             {
-                intro.append(QString("%1 next") .arg(mon_theme));
+                intro.append(QString("%1 nest") .arg(mon_theme));
             }
         }
 

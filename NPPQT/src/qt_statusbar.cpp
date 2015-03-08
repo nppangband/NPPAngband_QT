@@ -363,15 +363,15 @@ void MainWindow::update_statusbar(void)
 
         if (is_player_native(p_ptr->py, p_ptr->px))
         {
-            nativity->setText("Native");
+            nativity->setIcon(QIcon(":/icons/lib/icons/native.png"));
             nativity->setToolTip("Player is native to the current terrain, which can offer movement and combat bonuses, and protects the player from terrain damage.");
         }
         else  //TMD_SLOW
         {
+            nativity->setIcon(QIcon(":/icons/lib/icons/non-native.png"));
             QString nativity_message = QString("Player is native to the current terrain, which can impose movement and combat penalties.");
             if (f_info[feat].dam_non_native) nativity_message.append("  THE PLAYER IS TAKING DAMAGE FROM STANDING IN THIS TERRAIN!");
             nativity->setToolTip(nativity_message);
-            nativity->setText("Non-Native");
         }
 
         nativity->setVisible(TRUE);
@@ -636,7 +636,7 @@ void MainWindow::create_statusbar(void)
     call_hourns->setVisible(FALSE);
 
     nativity = new QAction(tr("Native Status"), this);
-    nativity->setText("Native");
+    nativity->setIcon(QIcon(":/icons/lib/icons/native.png"));
     status_bar->addAction(nativity);
     nativity->setVisible(FALSE);
 

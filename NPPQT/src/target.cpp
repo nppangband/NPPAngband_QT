@@ -1104,7 +1104,7 @@ int dir_transitions[10][10] =
  *
  * Return TRUE if a direction was chosen, otherwise return FALSE.
  *
- * The direction "5" is special, and means "use current target".
+ * The direction "5" is special, and means "use current target". Also DIR_TARGET
  *
  * This function tracks and uses the "global direction", and uses
  * that as the "desired direction", if it is set.
@@ -1126,7 +1126,7 @@ bool get_aim_dir(int *dp, bool target_trap)
     color_message(QObject::tr("Entering targetting mode"), TERM_YELLOW);
 
     /* Hack -- auto-target if requested */
-    if (use_old_target && target_okay() && !dir) dir = 5;
+    if (use_old_target && target_okay() && !dir) dir = DIR_TARGET;
 
     /* Ask until satisfied */
     while (!dir)
@@ -1153,7 +1153,7 @@ bool get_aim_dir(int *dp, bool target_trap)
             case 0:
             {
                 /* Mouse aiming */
-                if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = 5;
+                if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = DIR_TARGET;
                 break;
             }
             case Qt::Key_Asterisk:
@@ -1161,14 +1161,14 @@ bool get_aim_dir(int *dp, bool target_trap)
                 /* Set new target, use target if legal */
                 int mode = TARGET_KILL;
                 if (target_trap) mode |= TARGET_TRAP;
-                if (target_set_interactive(mode, -1, -1)) dir = 5;
+                if (target_set_interactive(mode, -1, -1)) dir = DIR_TARGET;
                 break;
             }
             case Qt::Key_copyright:
             case Qt::Key_C:
             {
                 /* Set to closest target */
-                if (target_set_closest(TARGET_KILL)) dir = 5;
+                if (target_set_closest(TARGET_KILL)) dir = DIR_TARGET;
                 break;
             }
             case Qt::Key_Question:
@@ -1184,7 +1184,7 @@ bool get_aim_dir(int *dp, bool target_trap)
             case Qt::Key_NumberSign:
             {
                 /* Use current target, if set and legal */
-                if (target_okay()) dir = 5;
+                if (target_okay()) dir = DIR_TARGET;
                 break;
             }
             default:
@@ -1343,7 +1343,7 @@ bool get_rep_dir(int *dp)
         }
     }
 
-    if (dir == 5) {
+    if (dir == DIR_TARGET) {
         return false;
     }
 
@@ -1373,7 +1373,7 @@ bool confuse_dir(int *dp)
     if (p_ptr->timed[TMD_CONFUSED])
     {
         /* Apply confusion XXX XXX XXX */
-        if ((dir == 5) || (rand_int(100) < 75))
+        if ((dir == DIR_TARGET) || (rand_int(100) < 75))
         {
             /* Random direction */
             dir = ddd[rand_int(8)];

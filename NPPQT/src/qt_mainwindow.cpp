@@ -1585,6 +1585,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
             break;
         }
         case Qt::Key_C:
+        case Qt::Key_0:
         {
             do_cmd_repeat();
             break;

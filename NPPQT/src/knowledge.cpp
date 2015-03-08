@@ -418,9 +418,8 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         kill_count_table->setItem(i, col++, total_kills);
     }
 
-    kill_count_table->setSortingEnabled(TRUE);
+    kill_count_table->setSortingEnabled(FALSE);
     kill_count_table->resizeColumnsToContents();
-    kill_count_table->sortByColumn(3, Qt::DescendingOrder);
     kill_count_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     main_layout->addWidget(kill_count_table);
     kill_count_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -432,7 +431,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    resize(QSize(width() * 3 / 2, height() * 4 / 3));
+    resize(QSize(width(), height() * 4 / 3));
 
     setLayout(main_layout);
     setWindowTitle(QString("Monster Kill Count"));

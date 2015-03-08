@@ -997,7 +997,7 @@ void command_fire(cmd_arg args)
     tx = p_ptr->px + 99 * ddx[dir];
 
     /* Check for "target request" */
-    if ((dir == 5) && target_okay())
+    if ((dir == DIR_TARGET) && target_okay())
     {
         tx = p_ptr->target_col;
         ty = p_ptr->target_row;
@@ -1252,7 +1252,7 @@ void do_cmd_fire_at_nearest(void)
     object_type *j_ptr = &inventory[INVEN_BOW];
 
     /* the direction '5' means 'use the target' */
-    int i, dir = 5, item = -1;
+    int i, dir = DIR_TARGET, item = -1;
 
     /* Make sure we are using a weapon instead of a bow/shovel */
     if (birth_swap_weapons)
@@ -1869,6 +1869,12 @@ void command_throw(cmd_arg args)
     }
 
     if (!get_item_allow(item, VERIFY_THROW)) return;
+
+    // Check for direction if necessary
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_aim_dir(&dir, FALSE)) return;
+    }
 
     p_ptr->message_append_start();
 

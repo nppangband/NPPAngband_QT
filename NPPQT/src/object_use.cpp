@@ -1511,8 +1511,7 @@ static bool use_staff(object_type *o_ptr, bool *ident)
 
         case SV_STAFF_DETECT_GOLD:
         {
-            if (detect(DETECT_RADIUS, DETECT_TREASURE)) *ident = TRUE;
-            if (detect(DETECT_RADIUS, DETECT_GOLD)) *ident = TRUE;
+            if (detect(DETECT_RADIUS, DETECT_ALL_TREASURE)) *ident = TRUE;
             break;
         }
 
@@ -3136,7 +3135,7 @@ void command_use(cmd_arg args)
     bool ident = FALSE;
     bool used = FALSE;
     bool was_aware = o_ptr->is_flavor_known();
-    int dir = 5;
+    int dir = DIR_TARGET;
     int px = p_ptr->px, py = p_ptr->py;
     int snd;
     use_type use;

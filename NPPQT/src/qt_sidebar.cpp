@@ -112,6 +112,15 @@ void MainWindow::create_sidebar()
         player_info->addWidget(stat_info, row++, 1, Qt::AlignRight);
     }
 
+    // Armor Class
+    QLabel *ac_label = new QLabel;
+    ac_label->setText(color_string("AC", SBAR_NORMAL));
+    ac_label->setToolTip(get_help_topic("character_info", "Armor Class"));
+    player_info->addWidget(ac_label, row, 0, Qt::AlignLeft);
+    QLabel *ac_info = new QLabel;
+    ac_info->setObjectName("ARMOR CLASS");
+    player_info->addWidget(ac_info, row++, 1, Qt::AlignRight);
+
     // speed
     QLabel *speed_info = new QLabel;
     speed_info->setObjectName("SPEED");
@@ -634,6 +643,13 @@ void MainWindow::update_sidebar()
             {
                 QString gold = number_to_formatted_string(p_ptr->au);
                 this_lbl->setText(color_string(gold, TERM_GOLD));
+                continue;
+            }
+            if (this_name.operator ==("ARMOR CLASS"))
+            {
+                int known_ac = p_ptr->state.dis_ac + p_ptr->state.dis_to_a;
+                QString ac = number_to_formatted_string(known_ac);
+                this_lbl->setText(color_string(ac, SBAR_NORMAL));
                 continue;
             }
             if (this_name.operator ==("SPEED"))

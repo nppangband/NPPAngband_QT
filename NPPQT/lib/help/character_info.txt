@@ -110,22 +110,24 @@ Max weight is the total weight the player can carry without being slowed.
 The player is slowed when this percentage exceeds 100%
 *******<end>
 
-
+*******Armor Class
+A higher armor class reduces the chance the player being hit by a physical attack.  This includes monster melee attacks, as well as arrows, shots, and bolts.  Usually the character's known armor class is displayed onscreen.  The player's known armor class may vary due to unidentified magical equipment.  Armor class comes from dexterity and equipment.  The format for displaying armor class is: [Intrinsic AC, dexterity and magical bonuses to AC].
+*******<end>
 
 *******Infravision
 Infravision is the ability to see heat sources. Since most of the dungeon is cool or cold, infra-vision will not allow the player to see walls and objects.  Infravision will allow a character  to see any warm-blooded creatures up to a certain distance past the player's light source, even if the players are invisible.  However, many of Angband's creatures are cold-blooded, and will not be detected unless lit up by a light source. All non-human races have innate infra-vision ability.  Humans (including Dúnedain) cannot gain infra-vision unless it is magically enhanced. Infravision does not increase with character level, and is purely dependent on race, magical equipment, and magical items.  1 square = 10 feet.
 *******<end>
 
 *******Speed
-Speed has a dramatic effect on player power and survivability.  Boots, rings, and weapons that hasten you are rare and powerful. In battle, the one that moves faster has a tremendous advantage, as they will sometimes get to attack their opponent multiple  times before their foe gets a turn. There are magical spells that can temporarily speed up or slow down both the player and monsters.  For NPPANgband, the incremental changes in speed have less effect as the extremes are approached.  Normal speed = 1 player turn every 10 game turns.  -7 speed = twice as slow as normal speed  +10 speed = 2x normal speed<br>+20 speed = 3x normal speed<br>+20 speed = 3x normal speed<br>+44 speed = 4x normal speed<br>+70 speed = 4.9x normal speed (maximum achievable speed).  For NPPMoria, Each positive increment doubles player speed.  Each negative increment cuts player speed in half.  (+1)=2x normal speed  (+2)=4x normal speed  (+3)=8x normal speed (-1)= half normal speed.
+Speed has a dramatic effect on player power and survivability.  Boots, rings, and weapons that hasten you are rare and powerful. In battle, the one that moves faster has a tremendous advantage, as they will sometimes get to attack their opponent multiple times before their foe gets a turn. There are magical spells that can temporarily speed up or slow down both the player and monsters.  For NPPANgband, the incremental changes in speed have less effect as the extremes are approached.  Normal speed = 1 player turn every 10 game turns.  -7 speed = twice as slow as normal speed  +10 speed = 2x normal speed<br>+20 speed = 3x normal speed<br>+20 speed = 3x normal speed<br>+44 speed = 4x normal speed<br>+70 speed = 4.9x normal speed (maximum achievable speed).  For NPPMoria, Each positive increment doubles player speed.  Each negative increment cuts player speed in half.  (+1)=2x normal speed  (+2)=4x normal speed  (+3)=8x normal speed (-1)= half normal speed.
 *******<end>
 
 *******Saving Throw
-A Saving Throw is the ability of a character to resist the effects of a spell cast on him by another person/creature.The player gets a saving throw against most monster magical attacks such as fear, paralysis, slowness, blindness, and confusion.  This does not include spells cast on the player by his own stupidity, such as quaffing a nasty potion.  It is based on player race, class, and wisdom.  This ability increases with the level of the character, but then most high level creatures are better at casting spells, so it tends to even out.  Note some monster attacks do not allow a saving throw, so even a perfect saving throw doesn't offer complete protection from all forms of these attacks.
+A Saving Throw is the ability of a character to resist the effects of a spell cast at them.  The player gets a saving throw against most monster magical attacks such as fear, paralysis, slowness, blindness, and confusion.  This does not include spells cast on the player by his own stupidity, such as quaffing a nasty potion.  It is based on player race, class, and wisdom.  This ability increases with the level of the character, but then most high level creatures are better at casting spells, so it tends to even out.  Note some monster attacks do not allow a saving throw, so even a perfect saving throw doesn't offer complete protection from all forms of these attacks.
 *******<end>
 
 *******Stealth
- The ability to move silently about is very useful.  Characters with good stealth can usually surprise their opponents gaining the first blow.  Also, creatures may fail to notice a stealthy character entirely, allowing a player to avoid certain fights.  This skill is based entirely upon race and class, and will never improve unless magically enhanced.  A high stealth can make the player extremely quiet, but the player cannot achieve perfect silence.
+The ability to move silently about is very useful.  Characters with good stealth can usually surprise their opponents gaining the first blow.  Also, creatures may fail to notice a stealthy character entirely, allowing a player to avoid certain fights.  This skill is based entirely upon race and class, and will never improve unless magically enhanced.  A high stealth can make the player extremely quiet, but the player cannot achieve perfect silence.
 *******<end>
 
 *******Fighting Ability

@@ -450,7 +450,7 @@ void py_pickup_gold(void)
  */
 void py_pickup(bool pickup)
 {
-	int py = p_ptr->py;
+    int py = p_ptr->py;
 	int px = p_ptr->px;
 
 	s16b this_o_idx, next_o_idx = 0;
@@ -575,6 +575,8 @@ void py_pickup(bool pickup)
 		/* Get the next object */
 		next_o_idx = o_ptr->next_o_idx;
 
+        if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP) continue;
+
 		/* Object is marked to always pickup */
 		if ((k_info[o_ptr->k_idx].squelch == NO_SQUELCH_ALWAYS_PICKUP)  &&
 			(k_info[o_ptr->k_idx].aware)) do_continue = FALSE;
@@ -617,7 +619,7 @@ void py_pickup(bool pickup)
 			/* Get the next object */
 			next_o_idx = o_ptr->next_o_idx;
 
-			if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP) continue;
+            if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP) continue;
 
 			/* Hack - Don't pick up mimic objects */
             if (o_ptr->is_mimic()) continue;
@@ -962,7 +964,7 @@ int move_player(int dir, int jumping)
 		py_pickup(jumping != always_pickup);
 
 		/* Handle "store doors" */
-		if (cave_shop_bold(y, x))
+        if (cave_shop_bold(y, x))
 		{
 			/* Disturb */
 			disturb(0, 0);

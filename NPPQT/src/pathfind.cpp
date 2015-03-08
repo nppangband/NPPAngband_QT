@@ -105,7 +105,7 @@ bool findpath(int y, int x)
                 {
                     for (dir = 1; dir < 10; dir++)
                     {
-                        if (dir == 5)
+                        if (dir == DIR_TARGET)
                             dir++;
 
                         MARK_DISTANCE(terrain[j - oy + ddy[dir]][i - ox + ddx[dir]], cur_distance);
@@ -142,14 +142,14 @@ bool findpath(int y, int x)
                 break;
         }
 
-        /* Should never happend */
+        /* Should never happen */
         if (dir == 10)
         {
             message("Wtf ?");
             return (FALSE);
         }
 
-        else if (dir == 5)
+        else if (dir == DIR_TARGET)
         {
             message("Heyyy !");
             return (FALSE);

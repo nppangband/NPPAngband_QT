@@ -154,7 +154,7 @@ command_type command_info[] =
     // CMD_ACTIVATE
     {ARG_ITEM, command_use, TRUE,  FALSE, 0},
     // CMD_THROW
-    {ARG_ITEM,command_throw, TRUE,  FALSE, 0},
+    {ARG_ITEM, command_throw, TRUE,  FALSE, 0},
 };
 
 // Prepare a command for processing.
@@ -177,12 +177,15 @@ void process_command(int item, s16b command)
     o_ptr = object_from_item_idx(item);
     args.item = item;
 
+    if (!use_old_target) args.direction = DIR_UNKNOWN;
 
     // Get the direction, if necessary
     if (command_ptr->needs_direction())
     {
+        if (target_okay()) args.direction = DIR_TARGET;
+
         // For objects
-        if (command_ptr->needs_item())
+        else if (command_ptr->needs_item())
         {
             if (!get_aim_dir(&args.direction, FALSE)) return;
         }

@@ -18,6 +18,31 @@
 void launch_store(int store_idx)
 {
     p_ptr->in_store = TRUE;
+    /* Check if we can enter the store */
+    if (birth_no_stores)
+    {
+        pop_up_message_box("The doors are locked.");
+        return;
+    }
+
+    /* See if we are holding a quest item */
+    if (store_idx == STORE_GUILD)
+    {
+        /* Check for outstanding rewards */
+        quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+
+        if ((q_ptr->q_type == QUEST_VAULT) && (!guild_quest_complete()))
+        {
+            /* The artifact has been returned, the quest is a success */
+            if (quest_item_slot() > -1) quest_finished(q_ptr);
+        }
+
+        if ((quest_type_collection(q_ptr)) && (!guild_quest_complete()))
+        {
+            if (quest_item_count() >= quest_collection_num(q_ptr)) quest_finished(q_ptr);
+        }
+    }
+
     StoreDialog *dlg = new StoreDialog(store_idx);
     dlg->exec();
     delete dlg;
@@ -352,6 +377,8 @@ bool StoreDialog::should_offer_quests(void)
 {
     // Only in the guild
     if (store_idx != STORE_GUILD) return (FALSE);
+
+    if (birth_no_quests) return (FALSE);
 
     /* No quest options if they currently have an active one. */
     if (guild_quest_level()) return (FALSE);
@@ -1455,7 +1482,7 @@ StatDialog::StatDialog(int service, byte *stat_selected)
         if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
         {
             QString lower_stat = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
-            lower_stat = color_string(lower_stat, TERM_YELLOW);
+            lower_stat = color_string(lower_stat, TERM_PINK);
             QLabel *stat_reduce = new QLabel(lower_stat);
             stat_reduce->setAlignment(Qt::AlignLeft);
             stat_layout->addWidget(stat_reduce, row, col++);

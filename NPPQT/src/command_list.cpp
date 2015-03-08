@@ -51,7 +51,7 @@ static struct command_desc list_commands[] =
     {"Player Character Screen", "p"},
     {"Quest Desription", "q"},
     {"Quit NPP Games", "CTRL-Q"},
-    {"Repeat Previous Command", "c"},
+    {"Repeat Previous Command", "'c' or '0'"},
     {"Rest Until Fully Healed	", "r"},
     {"Rest To Recover All HP ", "CTRL-R"},
     {"Rest To Recover All SP", "ALT-R"},

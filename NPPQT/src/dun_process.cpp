@@ -73,7 +73,7 @@ static void sense_inventory(void)
         /* Sensing the swap weapon is kind of cheating */
         if (birth_swap_weapons && (i == INVEN_SWAP_WEAPON))	continue;
 
-        /* Skip non-sense machines */
+        /* Skip non-sense checks */
         if (!o_ptr->can_be_pseudo_ided()) continue;
 
         /* It already has a discount or special inscription */

@@ -86,5 +86,7 @@
         <file>lib/icons/target.png</file>
         <file>lib/icons/target-information.png</file>
         <file>lib/icons/target-help.png</file>
+        <file>lib/icons/non-native.png</file>
+        <file>lib/icons/native.png</file>
     </qresource>
 </RCC>

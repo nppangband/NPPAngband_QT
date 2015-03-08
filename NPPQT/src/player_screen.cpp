@@ -926,7 +926,7 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     // Add armor class
     QLabel *label_player_armor = new QLabel;
     make_standard_label(label_player_armor, "ARMOR:", TERM_DARK);
-    //label_player_armor->setToolTip(QString("Known Armor class comes from dexterity and equipment (does not factor in changes from unidentified equipment).<br>The format is: [Intrinsic AC, dexterity and magical bonuses to AC]."));
+    label_player_armor->setToolTip(get_help_topic("character_info", "Armor Class"));
     QLabel *player_armor = new QLabel;
     first_num = p_ptr->state.dis_ac;
     second_num = p_ptr->state.dis_to_a;

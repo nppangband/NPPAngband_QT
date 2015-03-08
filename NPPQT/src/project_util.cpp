@@ -233,7 +233,7 @@ bool project_star(int who, int rad, int y0, int x0, int dam, int typ, u32b flg)
 static void adjust_target(int dir, int y0, int x0, int *y1, int *x1)
 {
     /* If no direction is given, and a target is, use the target. */
-    if ((dir == 5) && target_okay())
+    if ((dir == DIR_TARGET) && target_okay())
     {
         *y1 = p_ptr->target_row;
         *x1 = p_ptr->target_col;
