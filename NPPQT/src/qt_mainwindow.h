@@ -175,7 +175,7 @@ private:
 
     void setup_nppangband();
     void setup_nppmoria();
-    void launch_birth(bool quick_start = false);
+    void launch_birth(bool quick_start);
 
     // Functions that initialize the file menu of the main window.
     void create_actions();

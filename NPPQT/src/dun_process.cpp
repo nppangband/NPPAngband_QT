@@ -39,6 +39,9 @@ static void sense_inventory(void)
 
     QString o_name;
 
+    int base = cp_ptr->sense_base;
+    int divider;
+
 
     /*** Check for "sensing" ***/
 
@@ -47,14 +50,14 @@ static void sense_inventory(void)
 
     if (cp_ptr->flags & CF_PSEUDO_ID_IMPROV)
     {
-        if (0 != rand_int(cp_ptr->sense_base / (plev * plev + cp_ptr->sense_div)))
-            return;
+        divider = (plev * plev) + cp_ptr->sense_div;
     }
     else
     {
-        if (0 != rand_int(cp_ptr->sense_base / (plev + cp_ptr->sense_div)))
-            return;
+        divider = plev + cp_ptr->sense_div;
     }
+
+    if (!one_in_(base/divider)) return;
 
 
     /*** Sense everything ***/

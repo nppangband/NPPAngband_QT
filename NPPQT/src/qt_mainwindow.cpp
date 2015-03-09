@@ -1322,7 +1322,7 @@ void MainWindow::start_game_nppangband()
 {
     setup_nppangband();
 
-    launch_birth();
+    launch_birth(FALSE);
 }
 
 // Prepare to play a game of NPPMoria.
@@ -1330,7 +1330,7 @@ void MainWindow::start_game_nppmoria()
 {
     setup_nppmoria();
 
-    launch_birth();
+    launch_birth(FALSE);
 }
 
 void MainWindow::open_current_savefile()
@@ -2326,7 +2326,7 @@ void MainWindow::load_file(const QString &file_name)
             if (!character_loaded)
             {
                 save_prev_character();
-                launch_birth();
+                launch_birth(TRUE);
             }
             else
             {

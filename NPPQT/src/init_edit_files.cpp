@@ -3584,14 +3584,14 @@ int parse_c_info(QString line_info)
     /* Process 'I' for "Info" (one line only) */
     else if (command == 'I')
     {
-        int mhp, exp, sense_div;
-        long sense_base;
+        int mhp, exp, sense_base;
+        long sense_div;
 
         /* There better be a current pc_ptr */
         if (!pc_ptr) return (PARSE_ERROR_MISSING_RECORD_HEADER);
 
         /* Scan for the values */
-        if (process_3_ints_1_long(line_info, &mhp, &exp, &sense_div, &sense_base)) return (PARSE_ERROR_GENERIC);
+        if (process_3_ints_1_long(line_info, &mhp, &exp, &sense_base, &sense_div)) return (PARSE_ERROR_GENERIC);
 
         /* Save the values */
         pc_ptr->c_mhp = mhp;
