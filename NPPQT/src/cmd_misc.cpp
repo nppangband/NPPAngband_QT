@@ -139,6 +139,17 @@ void do_cmd_repeat(void)
         }
     }
 
+    if (!command_ptr->keep_direction())
+    {
+        p_ptr->command_previous_args.direction = DIR_UNKNOWN;
+    }
+
+    // Get the direction, if necessary
+    if (command_ptr->needs_direction())
+    {
+        if (!get_aim_dir(&p_ptr->command_previous_args.direction, FALSE)) return;
+    }
+
     command_ptr->command_function(p_ptr->command_previous_args);
 }
 

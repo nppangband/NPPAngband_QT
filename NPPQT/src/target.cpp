@@ -1123,10 +1123,10 @@ bool get_aim_dir(int *dp, bool target_trap)
     /* Initialize */
     (*dp) = 0;
 
-    color_message(QObject::tr("Entering targetting mode"), TERM_YELLOW);
-
     /* Hack -- auto-target if requested */
     if (use_old_target && target_okay() && !dir) dir = DIR_TARGET;
+
+    else color_message(QObject::tr("Entering targetting mode"), TERM_YELLOW);
 
     /* Ask until satisfied */
     while (!dir)

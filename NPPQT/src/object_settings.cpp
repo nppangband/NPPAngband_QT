@@ -51,9 +51,9 @@ verify_data verification_data[] =
     {CMD_STUDY, "Confirm Study", "Require confirmation before learning a spell from this book."},
     // VERIFY_CAST
     {CMD_CAST, "Confirm Cast", "Require confirmation before casting a spell from this book."},
-    // VERIFY_SWAP
+    // AUTO_SWAP
     {CMD_SWAP, "Use as Swap Weapon", "Set up this weapon to be wielded with the swap command."},
-    // VERIFY_WIELD_QUIVER
+    // AUTO_WIELD_QUIVER
     {CMD_MAX, "Put in Quiver", "Choose to put throwing weapon in quiver rather than wield.  Automatically put ammunition in the quiver."},
      // VERIFY_ALL
     {CMD_MAX, "Confirm All", "Confirm before all commands using this item."},

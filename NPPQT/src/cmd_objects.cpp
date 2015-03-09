@@ -82,52 +82,6 @@ cmd_arg obj_destroy(object_type *o_ptr, cmd_arg args)
 }
 
 
-cmd_arg obj_wield(object_type *o_ptr, cmd_arg args)
-{
-    args.slot = wield_slot(o_ptr);
-
-    /* Usually if the slot is taken we'll just replace the item in the slot,
-     * but in some cases we need to ask the user which slot they actually
-     * want to replace */
-    if (inventory[args.slot].k_idx)
-    {
-        if (o_ptr->is_ring())
-        {
-            QString q = "Replace which ring? ";
-            QString s = "Error in obj_wield, please report";
-            item_tester_hook = obj_is_ring;
-            if (!get_item(&args.item, q, s, USE_EQUIP))
-            {
-                args.verify = FALSE;
-                return (args);
-            }
-        }
-
-        if (o_ptr->is_ammo() && !object_similar(&inventory[args.slot], o_ptr))
-        {
-            QString q = "Replace which ammunition? ";
-            QString s = "Error in obj_wield, please report";
-            item_tester_hook = obj_is_ammo;
-            if (!get_item(&args.item, q, s, USE_QUIVER))
-            {
-                args.verify = FALSE;
-                return (args);
-            }
-        }
-    }
-
-    /* Hack - Throwing weapons can be wielded in the quiver too. */
-    /* Analyze object's inscription and verify the presence of "@v" */
-    if (is_throwing_weapon(o_ptr) && !IS_QUIVER_SLOT(args.slot) && !o_ptr->inscription.isEmpty())
-    {
-        /* Get the note */
-        QString note = o_ptr->inscription;
-
-        if (note.contains("@v")) args.slot = QUIVER_START;
-    }
-    args.verify = TRUE;
-    return (args);
-}
 
 /*** A universal object handler to avoid repetitive code ***/
 
@@ -172,7 +126,7 @@ static item_act_t item_actions[] =
     obj_can_takeoff, (USE_EQUIP | USE_QUIVER), NULL },
 
     /* ACTION_WIELD */
-    { obj_wield, FALSE, "wield",
+    { NULL, FALSE, "wield",
     "Wear/Wield which item? ", "You have nothing you can wear or wield.",
     obj_can_wear, (USE_INVEN | USE_FLOOR), NULL },
 
@@ -577,10 +531,40 @@ void command_wield(cmd_arg args)
 
     object_type *o_ptr = object_from_item_idx(args.item);
 
+    args.slot = wield_slot(o_ptr);
+
     if (!item_is_available(args.item, NULL, USE_INVEN | USE_FLOOR))
     {
         pop_up_message_box("You do not have that item to wield.");
         return;
+    }
+
+    /* Usually if the slot is taken we'll just replace the item in the slot,
+     * but in some cases we need to ask the user which slot they actually
+     * want to replace */
+    if (inventory[args.slot].k_idx)
+    {
+        if (o_ptr->is_ring())
+        {
+            QString q = "Replace which ring? ";
+            QString s = "Error in obj_wield, please report";
+            item_tester_hook = obj_is_ring;
+            if (!get_item(&args.slot, q, s, USE_EQUIP))
+            {
+                return;
+            }
+        }
+
+        if (o_ptr->is_ammo() && !object_similar(&inventory[args.slot], o_ptr))
+        {
+            QString q = "Replace which ammunition? ";
+            QString s = "Error in obj_wield, please report";
+            item_tester_hook = obj_is_ammo;
+            if (!get_item(&args.slot, q, s, USE_QUIVER))
+            {
+                return;
+            }
+        }
     }
 
     /* Check the slot */

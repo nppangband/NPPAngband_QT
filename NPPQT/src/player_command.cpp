@@ -29,6 +29,16 @@ bool command_type::repeated_command_completed(void)
     return (FALSE);
 }
 
+// See if we should re-use the old direction on a repeated command
+bool command_type::keep_direction(void)
+{
+    if (!needs_direction()) return (FALSE);
+    if (!use_old_target) return (FALSE);
+    if (repeat_num) return (TRUE);
+    if (!target_okay()) return (FALSE);
+    return(TRUE);
+}
+
 // Check if we have a completed command
 bool command_type::needs_direction(void)
 {
@@ -87,7 +97,7 @@ cmd_arg command_type::find_slot(object_type *o_ptr, cmd_arg args, int command)
     return (args);
 }
 
-
+// Targeting for spells and items are handled separately
 command_type command_info[] =
 {   // CMD_NONE
     {0L,            NULL, FALSE, FALSE, 0},
@@ -182,15 +192,7 @@ void process_command(int item, s16b command)
     // Get the direction, if necessary
     if (command_ptr->needs_direction())
     {
-        if (target_okay()) args.direction = DIR_TARGET;
-
-        // For objects
-        else if (command_ptr->needs_item())
-        {
-            if (!get_aim_dir(&args.direction, FALSE)) return;
-        }
-        // For player related directional commands
-        else if (!get_rep_dir(&args.direction)) return;
+        if (!get_aim_dir(&args.direction, FALSE)) return;
     }
 
     // Only for objects

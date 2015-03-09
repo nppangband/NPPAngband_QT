@@ -78,6 +78,7 @@ public:
     u16b repeat_num;                       // Automatic number of repeats.
 
     bool repeated_command_completed(void);
+    bool keep_direction(void);
     bool needs_direction(void);
     bool needs_item(void);
     bool needs_quantity(void);

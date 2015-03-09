@@ -4542,6 +4542,34 @@ object_type *object_from_item_idx(int item)
         return &o_list[0 - item];
 }
 
+/*
+ * Does the given object target a trap?
+ */
+bool obj_aim_trap(object_type *o_ptr)
+{
+    if(!o_ptr->is_aware()) return(FALSE);
+
+    switch (o_ptr->tval)
+    {
+        case TV_WAND:
+        {
+            if (o_ptr->sval == SV_WAND_DISARMING) return (TRUE);
+            if (o_ptr->sval == SV_WAND_TRAP_DOOR_DEST)return (TRUE);
+            return (FALSE);
+        }
+        case TV_ROD:
+        {
+            if (o_ptr->sval == SV_ROD_DISARMING) return (TRUE);
+            return (FALSE);
+        }
+
+        default: /*fall through*/break;
+    }
+
+    /*Oops*/
+    return (FALSE);
+}
+
 
 /*
  * Does the given object need to be aimed?

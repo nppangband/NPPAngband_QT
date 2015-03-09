@@ -1710,16 +1710,6 @@ static bool aim_wand(object_type *o_ptr, bool *ident, int dir)
     /* Special allowance for disarming and traps */
     bool is_disarm = FALSE;
 
-    if ((o_ptr->is_aware()) && ((o_ptr->sval == SV_WAND_DISARMING) ||
-            (o_ptr->sval == SV_WAND_TRAP_DOOR_DEST))) is_disarm = TRUE;
-
-    /* Allow direction to be canceled for free */
-    if (!dir)
-    {
-        if (!get_aim_dir(&dir, is_disarm)) return (FALSE);
-    }
-
-
     /* Not identified yet */
     *ident = FALSE;
 
@@ -2021,7 +2011,6 @@ static bool aim_wand(object_type *o_ptr, bool *ident, int dir)
     return (TRUE);
 }
 
-
 /*
  * Zap a rod
  */
@@ -2275,7 +2264,6 @@ static bool zap_rod(object_type *o_ptr, bool *ident, int dir)
 
     return TRUE;
 }
-
 
 /*
  * Activate a wielded object.  Wielded objects never stack.
@@ -3239,7 +3227,11 @@ void command_use(cmd_arg args)
 
     /* If the item requires a direction, get one (allow canceling) */
     if (obj_needs_aim(o_ptr))
+    {
         dir = args.direction;
+
+        if (!get_aim_dir(&dir, obj_aim_trap(o_ptr))) return;
+    }
 
     p_ptr->message_append_start();
 
