@@ -2090,7 +2090,7 @@ option_entry options[OPT_MAX] =
     {"easy_open",			"Open/Disarm/Close without direction",	TRUE},	/* OPT_easy_open */
     {"easy_alter",			"Open/Disarm doors/traps on movement",	TRUE},	/* OPT_easy_alter */
     {"show_piles",			"Show stacks using special attr/char",	FALSE},	/* OPT_show_piles */
-    {"center_player",		"Center map continuously (very slow)",	FALSE},	/* OPT_center_player */
+    {"center_player",		"Center map continuously",	FALSE},         /* OPT_center_player */
     {"animate_flicker",    	"Shimmer multi-colored things",  		TRUE}, /* OPT_animate_flicker */
     {"hp_changes_color",	"Player color indicates low hit points",FALSE},	/* OPT_hp_changes_color*/
     {"mark_squelch_items",	"Items marked for squelch appear as dot",FALSE},/* OPT_mark_squelch_items */

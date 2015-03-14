@@ -136,6 +136,7 @@ extern void command_bash(cmd_arg args);
 extern void do_cmd_bash(void);
 extern void command_hold(cmd_arg args);
 extern void do_cmd_hold();
+extern void do_cmd_findpath(int y, int x);
 
 
 // cmd_traps.cpp
@@ -200,5 +201,9 @@ extern void command_cast(cmd_arg args);
 extern void do_cmd_cast(int book_choice);
 extern s16b get_spell_from_list(s16b book, s16b spell);
 extern bool obj_can_cast(object_type *o_ptr);
+
+// pathfind.cpp
+extern bool buildpath(int y, int x);
+extern int run_step(int dir);
 
 #endif // CMDS_H

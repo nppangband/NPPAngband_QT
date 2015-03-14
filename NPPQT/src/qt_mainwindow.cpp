@@ -614,22 +614,34 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if (parent->check_disturb()) return;
 
+    bool left_button = (event->button() & Qt::LeftButton);
+    bool right_button = (event->button() & Qt::RightButton);
+    bool middle_button = (event->button() & Qt::MiddleButton);
+
     int old_x = parent->cursor->c_x;
     int old_y = parent->cursor->c_y;
     parent->grids[old_y][old_x]->update();
-    if (parent->ui_mode == UI_MODE_INPUT) {
+    if (parent->ui_mode == UI_MODE_INPUT)
+    {
         parent->input.x = c_x;
         parent->input.y = c_y;
         parent->input.mode = INPUT_MODE_MOUSE;
         parent->ui_mode = UI_MODE_DEFAULT;
         parent->ev_loop.quit();
     }
-    else if (!parent->ev_loop.isRunning()) {
-        parent->cursor->setVisible(true);
-        parent->cursor->moveTo(c_y, c_x);
-        //ui_center(c_y, c_x);
-
-        GridDialog dlg(c_y, c_x);
+    else if (!parent->ev_loop.isRunning())
+    {
+        if (right_button)
+        {
+            parent->cursor->setVisible(true);
+            parent->cursor->moveTo(c_y, c_x);
+            GridDialog dlg(c_y, c_x);
+        }
+        else if (left_button) do_cmd_findpath(c_y, c_x);
+        else if (middle_button)
+        {
+            do_cmd_walk(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x), FALSE);
+        }
     }
 
     QGraphicsItem::mousePressEvent(event);
@@ -1352,7 +1364,15 @@ void MainWindow::save_character()
 
 void MainWindow::save_character_as()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Select a savefile"), npp_dir_save.path(), tr("NPP (*.npp)"));
+    // Start with the current player name
+    QString default_name = "player";
+    if (!op_ptr->full_name.isEmpty())default_name = op_ptr->full_name;
+    QString default_file = npp_dir_save.path();
+    default_file.append("/");
+    default_file.append(default_name);
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Select a savefile"), default_file, tr("NPP (*.npp)"));
+
     if (fileName.isEmpty())
         return;
 
@@ -2018,6 +2038,7 @@ void MainWindow::create_actions()
     connect(help_about_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
     help_command_list = new QAction(tr("&Show Command List"), this);
+    help_command_list->setShortcut(Qt::Key_Question);
     help_command_list->setStatusTip(tr("Show a list of all keybord commands"));
     connect(help_command_list, SIGNAL(triggered()), this, SLOT(command_list()));
 }
@@ -2114,11 +2135,20 @@ void MainWindow::slot_multiplier_clicked(QAction *action)
     }
 }
 
-qreal ui_get_angle(int y1, int x1, int y2, int x2)
+int ui_get_dir_from_slope(int y1, int x1, int y2, int x2)
 {
     QLineF line(ui_get_center(y1, x1), ui_get_center(y2, x2));
     if (line.length() == 0.0) return 0.0;
-    return line.angle();
+    qreal angle = line.angle();
+    if (angle < 22.5) return (6);
+    if (angle < 67.5) return (9);
+    if (angle < 112.5) return (8);
+    if (angle < 157.5) return (7);
+    if (angle < 202.5) return (4);
+    if (angle < 247.5) return (1);
+    if (angle < 292.5) return (2);
+    if (angle < 337.5) return (3);
+    return(6);
 }
 
 QPoint ui_get_center(int y, int x)

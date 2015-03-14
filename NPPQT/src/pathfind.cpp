@@ -3,164 +3,139 @@
 
 
 /****** Pathfinding code ******/
+/*
+ * Build a path from the target location to the
+ * player location.  Borrow the flow code so
+ * terrain can be taken into account.
+ */
 
-/* Maximum size around the player to consider in the pathfinder */
-#define MAX_PF_RADIUS 50
+static u16b path_cost[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
+static bool path_flow[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
-/* Maximum distance to consider in the pathfinder */
-#define MAX_PF_LENGTH 250
-
-
-static int terrain[MAX_PF_RADIUS][MAX_PF_RADIUS];
-char pf_result[MAX_PF_LENGTH];
-int pf_result_index;
-
-static int ox, oy, ex, ey;
-
-static bool is_valid_pf(int y, int x)
+static void clear_path(void)
 {
-    /* Unvisited means allowed */
-    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) return (TRUE);
-
-    /* Require open space */
-    return (cave_passable_bold(y, x));
+    for (int y = 0; y < MAX_DUNGEON_HGT; y++)
+    {
+        for (int x= 0; x < MAX_DUNGEON_HGT; x++)
+        {
+            path_cost[y][x] = 0;
+            path_flow[y][x] = FALSE;
+        }
+    }
 }
 
-static void fill_terrain_info(void)
+byte energy_to_move(int y, int x)
 {
-    int i, j;
+    /*Quick pointer*/
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
 
-    ox = MAX(p_ptr->px - MAX_PF_RADIUS / 2, 0);
-    oy = MAX(p_ptr->py - MAX_PF_RADIUS / 2, 0);
-
-    ex = MIN(p_ptr->px + MAX_PF_RADIUS / 2 - 1, p_ptr->cur_map_wid);
-    ey = MIN(p_ptr->py + MAX_PF_RADIUS / 2 - 1, p_ptr->cur_map_hgt);
-
-    for (i = 0; i < MAX_PF_RADIUS ; i++)
+    /*We have not done this flow yet*/
+    if (!path_cost[y][x])
     {
-        for (j = 0; j < MAX_PF_RADIUS ; j++)
-        {
-            terrain[i][j] = -1;
-        }
+        /* Can't move here */
+        if (!cave_passable_bold(y, x)) return 0;
     }
 
-    for (j = oy; j < ey; j++)
-        for (i = ox; i < ex; i++)
-            if (is_valid_pf(j, i))
-                terrain[j - oy][i - ox] = MAX_PF_LENGTH;
+    /*If a match, return the native movement energy*/
+    if (_feat_ff3_match(f_ptr, p_ptr->state.p_flags_native_with_temp))
+    {
+        return (f_ptr->native_energy_move);
+    }
 
-    terrain[p_ptr->py - oy][p_ptr->px - ox] = 1;
+    /*Not native*/
+    /*don't want to suffer damage while running*/
+    if (f_ptr->dam_non_native) return (0);
+
+    /*Use non-native energy movement*/
+    return(f_ptr->non_native_energy_move);
+
 }
 
-#define MARK_DISTANCE(c,d) if ((c <= MAX_PF_LENGTH) && (c > d)) { c = d; try_again = (TRUE); }
 
-bool findpath(int y, int x)
+bool buildpath(int y, int x)
 {
-    int i, j, dir;
-    bool try_again;
-    int cur_distance;
+    // Can't get there
+    if (!cave_passable_bold(y, x)) return FALSE;
+    //Can't see it
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) return (FALSE);
 
-    fill_terrain_info();
+    //clear the path
+    clear_path();
+    QVector<byte> y_coords;
+    QVector<byte> x_coords;
+    y_coords.clear();
+    x_coords.clear();
 
-    terrain[p_ptr->py - oy][p_ptr->px - ox] = 1;
+    // Start with the final spot.  Try to find the player.
+    y_coords.append(y);
+    x_coords.append(x);
 
-    if ((x >= ox) && (x < ex) && (y >= oy) && (y < ey))
+    for (int i = 0; i < 100; i++)
     {
-        if ((dungeon_info[y][x].monster_idx > 0) && (mon_list[dungeon_info[y][x].monster_idx].ml))
+        QVector<byte> this_y_coords = y_coords;
+        QVector<byte> this_x_coords= x_coords;
+
+        y_coords.clear();
+        x_coords.clear();
+
+        path_cost[y][x] = BASE_ENERGY_MOVE - 25;
+
+        for (int z = 0; z < this_y_coords.size(); z++)
         {
-            terrain[y - oy][x - ox] = MAX_PF_LENGTH;
-        }
+            byte yy = this_y_coords.at(z);
+            byte xx = this_x_coords.at(z);
 
-#if 0
-        else if (terrain[y-oy][x-ox] != MAX_PF_LENGTH)
-        {
-           bell("Target blocked");
-           return (FALSE);
-        }
-#endif
+            int this_cost = path_cost[yy][xx];
 
-        terrain[y - oy][x - ox] = MAX_PF_LENGTH;
-    }
-    else
-    {
-        message("Target out of range.");
-        return (FALSE);
-    }
-
-    /*
-     * And now starts the very naive and very
-     * inefficient pathfinding algorithm
-     */
-    do
-    {
-        try_again = FALSE;
-
-        for (j = oy + 1; j < ey - 1; j++)
-        {
-            for (i = ox + 1; i < ex - 1; i++)
+            /* Look at all adjacent grids */
+            for (int d = 0; d < 8; d++)
             {
-                cur_distance = terrain[j - oy][i - ox] + 1;
+                /* Child location */
+                byte this_y = yy + ddy_ddd[d];
+                byte this_x = xx + ddx_ddd[d];
 
-                if ((cur_distance > 0) && (cur_distance < MAX_PF_LENGTH))
+                // Check bounds and accessability
+                if (!in_bounds(this_y, this_x)) continue;
+                if (!cave_passable_bold(this_y, this_x)) continue;
+
+                // Only known grids
+                if (!(dungeon_info[this_y][this_x].cave_info & (CAVE_MARK))) continue;
+
+                int new_energy = energy_to_move(this_y, this_x);
+                if (!new_energy) continue;
+                int new_cost = this_cost + new_energy;
+
+                // Check if this is a longer path
+                if (path_cost[this_y][this_x])
                 {
-                    for (dir = 1; dir < 10; dir++)
-                    {
-                        if (dir == DIR_TARGET)
-                            dir++;
-
-                        MARK_DISTANCE(terrain[j - oy + ddy[dir]][i - ox + ddx[dir]], cur_distance);
-                    }
+                    if (path_cost[this_y][this_x] <= new_cost) continue;
                 }
+
+                // record the new cost
+                path_cost[this_y][this_x] = new_cost;
+
+                /*Don't store the same grid twice*/
+                if (path_flow[this_y][this_x]) continue;
+
+                path_flow[this_y][this_x] = TRUE;
+
+                y_coords.append(this_y);
+                x_coords.append(this_x);
             }
         }
 
-        if (terrain[y - oy][x - ox] < MAX_PF_LENGTH)
-            try_again = (FALSE);
+        // We are done
+        if (!y_coords.size()) break;
 
-    }
-    while (try_again);
-
-    /* Failure */
-    if (terrain[y - oy][x - ox] == MAX_PF_LENGTH)
-    {
-        message("Target space unreachable.");
-        return (FALSE);
+        // Clear the flagged squares
+        for (int z = 0; z < y_coords.size(); z++)
+        {
+            path_flow[y_coords.at(z)][x_coords.at(z)] = FALSE;
+        }
     }
 
-    /* Success */
-    i = x;
-    j = y;
-
-    pf_result_index = 0;
-
-    while ((i != p_ptr->px) || (j != p_ptr->py))
-    {
-        cur_distance = terrain[j - oy][i - ox] - 1;
-        for (dir = 1; dir < 10; dir++)
-        {
-            if (terrain[j - oy + ddy[dir]][i - ox + ddx[dir]] == cur_distance)
-                break;
-        }
-
-        /* Should never happen */
-        if (dir == 10)
-        {
-            message("Wtf ?");
-            return (FALSE);
-        }
-
-        else if (dir == DIR_TARGET)
-        {
-            message("Heyyy !");
-            return (FALSE);
-        }
-
-        pf_result[pf_result_index++] = '0' + (char)(10 - dir);
-        i += ddx[dir];
-        j += ddy[dir];
-    }
-
-    pf_result_index--;
+    //Never found the player
+    if (!path_cost[p_ptr->py][p_ptr->px]) return (FALSE);
 
     return (TRUE);
 }
@@ -750,6 +725,60 @@ static bool run_test(void)
     return (FALSE);
 }
 
+static int run_with_pathfind(void)
+{
+    int py = p_ptr->py;
+    int px = p_ptr->px;
+
+    int dir = 5;
+
+    // Current player value
+    int lowest_cost = path_cost[py][px];
+
+    // We found where we wanted to be.
+    if (lowest_cost < BASE_ENERGY_MOVE)
+    {
+        disturb(0, 0);
+        return(0);
+    }
+
+    /*
+     * Find the fastest square....  Check nearby grids,prefer straight directions.
+     */
+    for (int i = 0; i < 8; i++)
+    {
+
+        /* Get the location */
+        int y = py + ddy_ddd[i];
+        int x = px + ddx_ddd[i];
+
+        /* Check Bounds */
+        if (!in_bounds(y, x)) continue;
+
+        int this_cost = path_cost[y][x];
+
+        /*Is there a move here?*/
+        if (!this_cost) continue;
+
+        /*Not a better route?*/
+        if (this_cost >= lowest_cost) continue;
+
+        // This is a better route
+        lowest_cost = this_cost;
+
+        dir = ddd[i];
+    }
+
+    //Paranoia - we didn't find a better spot?
+    if (dir == 5)
+    {
+        disturb(0, 0);
+        return(0);
+    }
+
+    return (move_player(dir, FALSE));
+}
+
 /*
  * Take one step along the current "run" path
  *
@@ -758,12 +787,13 @@ static bool run_test(void)
  */
 int run_step(int dir)
 {
-    int x, y;
-
-    int energy = BASE_ENERGY_MOVE;
+    if (p_ptr->running_withpathfind)
+    {
+        return (run_with_pathfind());
+    }
 
     /* Start run */
-    if (dir)
+    else if (dir)
     {
         /* Initialize */
         run_init(dir);
@@ -775,89 +805,17 @@ int run_step(int dir)
     /* Continue run */
     else
     {
-        if (!p_ptr->running_withpathfind)
+        /* Update run */
+        if (run_test())
         {
-            /* Update run */
-            if (run_test())
-            {
-                /* Disturb */
-                disturb(0, 0);
+            /* Disturb */
+            disturb(0, 0);
 
-                /* Done */
-                return 0;
-            }
-        }
-        else
-        {
-            /* Abort if we have finished */
-            if (pf_result_index < 0)
-            {
-                disturb(0, 0);
-                p_ptr->running_withpathfind = FALSE;
-                return 0;
-            }
-
-            /* Abort if we would hit a wall */
-            else if (pf_result_index == 0)
-            {
-                /* Get next step */
-                y = p_ptr->py + ddy[pf_result[pf_result_index] - '0'];
-                x = p_ptr->px + ddx[pf_result[pf_result_index] - '0'];
-
-                /* Known wall */
-                if ((dungeon_info[y][x].cave_info & (CAVE_MARK)) && (!cave_ff1_match(y, x, FF1_FLOOR)))
-                {
-                    disturb(0,0);
-                    p_ptr->running_withpathfind = FALSE;
-                    return 0;
-                }
-            }
-
-            /*
-             * Hack -- walking stick lookahead.
-             *
-             * If the player has computed a path that is going to end up in a wall,
-             * we notice this and convert to a normal run. This allows us to click
-             * on unknown areas to explore the map.
-             *
-             * We have to look ahead two, otherwise we don't know which is the last
-             * direction moved and don't initialise the run properly.
-             */
-            else if (pf_result_index > 0)
-            {
-                /* Get next step */
-                y = p_ptr->py + ddy[pf_result[pf_result_index] - '0'];
-                x = p_ptr->px + ddx[pf_result[pf_result_index] - '0'];
-
-                /* Known wall */
-                if ((dungeon_info[y][x].cave_info & (CAVE_MARK)) && (!cave_ff1_match(y, x, FF1_FLOOR)))
-                {
-                    disturb(0,0);
-                    p_ptr->running_withpathfind = FALSE;
-                    return 0;
-                }
-
-                /* Get step after */
-                y = y + ddy[pf_result[pf_result_index-1] - '0'];
-                x = x + ddx[pf_result[pf_result_index-1] - '0'];
-
-                /* Known wall */
-                if ((dungeon_info[y][x].cave_info & (CAVE_MARK)) && (!cave_ff1_match(y, x, FF1_FLOOR)))
-                {
-                    p_ptr->running_withpathfind = FALSE;
-
-                    run_init(pf_result[pf_result_index] - '0');
-                }
-            }
-
-            p_ptr->run_cur_dir = pf_result[pf_result_index--] - '0';
-
+            /* Done */
+            return 0;
         }
     }
 
-    /* Move the player */
-    energy = move_player(p_ptr->run_cur_dir, FALSE);
-
-    return (energy);
+    return (move_player(p_ptr->run_cur_dir, FALSE));
 }
 

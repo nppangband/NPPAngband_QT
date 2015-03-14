@@ -1707,9 +1707,6 @@ static bool aim_wand(object_type *o_ptr, bool *ident, int dir)
     int sval;
 
 
-    /* Special allowance for disarming and traps */
-    bool is_disarm = FALSE;
-
     /* Not identified yet */
     *ident = FALSE;
 

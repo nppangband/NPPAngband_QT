@@ -1299,7 +1299,8 @@ bool get_rep_dir(int *dp)
     (*dp) = 0;
 
 
-    if (!dir) {
+    if (!dir)
+    {
         color_message(QObject::tr("Enter a direction"), TERM_YELLOW);
     }
 
@@ -1310,42 +1311,22 @@ bool get_rep_dir(int *dp)
 
         if (input.mode == INPUT_MODE_KEY)
         {
-            if (input.key == Qt::Key_Escape) {
-                return false;
-            }
+            if (input.key == Qt::Key_Escape) return false;
 
             dir = target_dir(input);
         }\
         /* Check mouse coordinates */
         else if (input.mode == INPUT_MODE_MOUSE)
         {
-            {
-                int y = input.y;
-                int x = input.x;
 
-                /* Calculate approximate angle */
-                qreal angle = ui_get_angle(p_ptr->py, p_ptr->px, y, x);
-
-                if (angle < 22.5) dir = 6;
-                else if (angle < 67.5) dir = 9;
-                else if (angle < 112.5) dir = 8;
-                else if (angle < 157.5) dir = 7;
-                else if (angle < 202.5) dir = 4;
-                else if (angle < 247.5) dir = 1;
-                else if (angle < 292.5) dir = 2;
-                else if (angle < 337.5) dir = 3;
-                else dir = 6;
-            }
-        }
-
-        if (!dir) {
-            color_message("Illegal direction", TERM_ORANGE);
+            /* Calculate approximate angle */
+            dir = ui_get_dir_from_slope(p_ptr->py, p_ptr->px, input.y, input.x);
         }
     }
 
-    if (dir == DIR_TARGET) {
-        return false;
-    }
+    if (!dir) color_message("Illegal direction", TERM_ORANGE);
+
+    if (dir == DIR_TARGET) return false;
 
     /* Save desired direction */
     p_ptr->player_args.direction = dir;

@@ -1006,7 +1006,7 @@ bool make_attack_normal(monster_type *m_ptr)
                         if ((method != RBM_SLIME) ||
                             (o_ptr->sval < SV_FOOD_MIN_FOOD))
                         {
-                            message(QString("%1 %2 (%3) was eaten!") .arg((o_ptr->number > 1) ? "One of y" : "Y")
+                            message(QString("%1 %2 (%3) was eaten!") .arg((o_ptr->number > 1) ? "One of your" : "Your")
                                             .arg(o_name) .arg(index_to_label(i)));
                         }
 

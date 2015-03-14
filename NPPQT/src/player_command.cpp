@@ -79,7 +79,7 @@ bool command_type::is_special(void)
 // Update needed every time ARG_NUMBER is added to table below.
 QString command_type::prompt(int command)
 {
-    QString return_string = QString("Please enter an amount");
+    QString return_string = QString("Please enter an amount ");
     if (command == CMD_DROP) return_string.append("to drop.");
     else if (command == CMD_DESTROY) return_string.append("to destroy.");
     else return_string.append(".");

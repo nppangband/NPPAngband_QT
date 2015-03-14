@@ -3219,14 +3219,15 @@ static void update_flow_full(byte which_flow, u32b elem_flag)
                 if ((cave_cost[which_flow][y2][x2] > 0) &&
                          (cave_cost[which_flow][y2][x2] <= new_cave_cost)) continue;
 
+
+                /* Store cost at this location */
+                cave_cost[which_flow][y2][x2] = new_cave_cost;
+
                 /*Don't store the same grid twice*/
                 if (dungeon_info[y2][x2].cave_info & (CAVE_FLOW)) continue;
 
                 /*mark that we stored this grid for the next cycle*/
                 dungeon_info[y2][x2].cave_info |= (CAVE_FLOW);
-
-                /* Store cost at this location */
-                cave_cost[which_flow][y2][x2] = new_cave_cost;
 
                 /* Store this grid in the flow table */
                 flow_table[next_cycle][0][grid_count] = y2;
@@ -5112,6 +5113,8 @@ void disturb(int stop_search, int unused_flag)
 
         /* Calculate torch radius */
         p_ptr->update |= (PU_TORCH);
+
+        p_ptr->running_withpathfind = FALSE;
     }
 
     /* Cancel repeated commands */

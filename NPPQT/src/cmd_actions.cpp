@@ -2922,5 +2922,34 @@ void do_cmd_hold()
     args.wipe();
 
     command_hold(args);
+}
+
+//Run using pathfind to a specific spot
+void do_cmd_findpath(int y, int x)
+{
+    if (!character_dungeon) return;
+
+    // If running fails, at least try a direction
+    if (!buildpath(y, x))
+    {
+        do_cmd_walk(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, y, x), FALSE);
+        return;
+    }
+
+    cmd_arg args;
+    args.wipe();
+
+    args.direction = 0;
+    p_ptr->player_command_wipe();
+    p_ptr->command_current = CMD_RUNNING;
+    p_ptr->running_withpathfind = TRUE;
+
+    command_type *command_ptr = &command_info[CMD_RUNNING];
+    p_ptr->player_args.repeats = command_ptr->repeat_num;
+
+    //So we know we are running with pathfind
+    args.verify = FALSE;
+
+    command_run(args);
 
 }

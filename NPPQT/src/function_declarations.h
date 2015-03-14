@@ -417,8 +417,6 @@ extern void stack_histories(object_type *o_ptr, const object_type *j_ptr);
 extern int quiver_space_per_unit(object_type *o_ptr);
 extern bool obj_can_wear(object_type *o_ptr);
 
-/* pathfind.cpp */
-extern int run_step(int dir);
 
 /* player_attack.cpp */
 extern bool test_hit(int chance, int ac, int vis);
@@ -628,7 +626,7 @@ extern QFont ui_current_font();
 extern void ui_animate_accomplishment(int y, int x, int gf_type);
 extern QPixmap ui_make_blank();
 extern void ui_animate_victory(int y, int x);
-extern qreal ui_get_angle(int y1, int x1, int y2, int x2);
+extern int ui_get_dir_from_slope(int y1, int x1, int y2, int x2);
 extern QPoint ui_get_center(int y, int x);
 extern void ui_update_sidebar();
 extern void ui_update_statusbar();
