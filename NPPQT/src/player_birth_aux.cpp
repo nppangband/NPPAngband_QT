@@ -86,12 +86,7 @@ static void recalculate_stats(void)
     update_hp_sp();
 }
 
-QString format_stat(s16b value)
-{
-    QString text;
-    if (value > 0) text.append('+');
-    return QString("<b>%1%2</b>").arg(text).arg(value);
-}
+
 
 void reset_stats(void)
 {

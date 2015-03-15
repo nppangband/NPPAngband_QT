@@ -881,6 +881,7 @@ extern QString number_to_formatted_string(s32b number);
 extern bool is_a_vowel(QChar single_letter);
 extern bool begins_with_vowel(QString line);
 extern QString capitalize_first(QString line);
+extern QString format_stat(s16b value);
 extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMessageBox::Information);
 extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);

@@ -119,7 +119,7 @@ Infravision is the ability to see heat sources. Since most of the dungeon is coo
 *******<end>
 
 *******Speed
-Speed has a dramatic effect on player power and survivability.  Boots, rings, and weapons that hasten you are rare and powerful. In battle, the one that moves faster has a tremendous advantage, as they will sometimes get to attack their opponent multiple times before their foe gets a turn. There are magical spells that can temporarily speed up or slow down both the player and monsters.  For NPPANgband, the incremental changes in speed have less effect as the extremes are approached.  Normal speed = 1 player turn every 10 game turns.  -7 speed = twice as slow as normal speed  +10 speed = 2x normal speed<br>+20 speed = 3x normal speed<br>+20 speed = 3x normal speed<br>+44 speed = 4x normal speed<br>+70 speed = 4.9x normal speed (maximum achievable speed).  For NPPMoria, Each positive increment doubles player speed.  Each negative increment cuts player speed in half.  (+1)=2x normal speed  (+2)=4x normal speed  (+3)=8x normal speed (-1)= half normal speed.
+Speed has a dramatic effect on player power and survivability.  Boots, rings, and weapons that hasten you are rare and powerful. In battle, the one that moves faster has a tremendous advantage, as they will sometimes get to attack their opponent multiple times before their foe gets a turn. There are magical spells that can temporarily speed up or slow down both the player and monsters.  For NPPANgband, the incremental changes in speed have less effect as the extremes are approached.  Normal speed = 1 player turn every 10 game turns.  -7 speed = twice as slow as normal speed  +10 speed = 2x normal speed<br>+20 speed = 3x normal speed<br>+20 speed = 3x normal speed<br>+44 speed = 4x normal speed<br>+70 speed = 4.9x normal speed (maximum achievable speed).  For NPPMoria, Each positive increment doubles player speed.  Each negative increment cuts player speed in half.  (+1)=2x normal speed  (+2)=4x normal speed  (+3)=8x normal speed (-1)= half normal speed.  On the character screen, base speed is displayed without the temporary effects.  On the sidebar, temporary hasting and slowing are factored in.
 *******<end>
 
 *******Saving Throw
@@ -150,4 +150,26 @@ Disarming is the ability to remove traps safely, and also includes picking locks
 Magic Device ability is used in determining if the player has sucessfully activated an object, or used a wand, rod, or staff.  Spell users such as mages, druids and priests are therefore much better at using a magical device than say a warrior.  It is based on player race, class, intelligence, and level.  Object or atifact level also factors into the equation of whether the object has been sucessfully used.
 ******<end>
 
+*******Melee
+Known Melee statistics comes from strength, dexterity, player class, and equipment (does not factor in changes from unidentified equipment).  x(number attacks), [damage dice, damage sides], (known-to-hit-adj., known-to-damage-adj).  Examine weapon for more detailed information.
+******<end>
 
+*******Critical Hit
+Critic hit represent the percent chance of extra damage from a well placed strike.  The chance is based on weapon weight, player melee skill, and to-hit bonus.
+******<end>
+
+*******Shooting Stats
+Known shooting statistics comes from dexterity, player class, and equipment (does not factor in changes from unidentified equipment).<br>Format is: x(num shots) x(damage multiplier), [damage dice, damage sides], (known-to-hit-adj., known-to-damage-adj).<br>Examine bow or ammunition for more detailed information.
+******<end>
+
+*******Search Frequency
+Searching Frequency is affected by player equipment race, class and level.  The chance of searching each player turn at normal speed.
+******<end>
+
+*******Search Chance
+Chance of searching is affected by player equipment race, class and level.  Percent chance of, if searching, noticing any hidden doors or traps that are within 10 feet of player.  Also affects how quickly the player gets a feeling about the level they are on.
+******<end>
+
+*******Tunneling
+The chance of successful tunneling is based on player strength, weapon weight, and equipment bonuses.  Improves chance of sucessfully tunneling through a walls.  The actual chance of success depends on the terrain into which the player is tunneling.
+******<end>

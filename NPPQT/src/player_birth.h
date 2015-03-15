@@ -139,7 +139,7 @@ extern void roll_player(void);
 extern bool has_prev_character();
 extern void save_prev_character();
 extern void load_prev_character();
-extern QString format_stat(s16b value);
+
 
 extern int points_spent;
 extern int stats[A_MAX];

@@ -272,8 +272,79 @@ void PlayerScreenInfo::update_char_screen(void)
 
         QString this_name = this_lbl->objectName();
 
+        QString first_num_string;
+        QString second_num_string;
+        s32b first_num;
+        s32b second_num;
+
         //Not a named label
         if (!this_name.length()) continue;
+
+        // Update all of the stats
+        for (int i = 0; i < A_MAX; i++)
+        {
+            if (this_name.contains(QString("st_base_%1") .arg(i)))
+            {
+                QString base_num = (QString("<b>%1 </b>") .arg(p_ptr->stat_base_max[i]));
+                base_num = color_string(base_num, TERM_BLUE);
+                this_lbl->setText(base_num);
+
+                continue;
+            }
+
+            if (this_name.contains(QString("st_race_%1") .arg(i)))
+            {
+                QString race_num = format_stat(rp_ptr->r_adj[i]);
+                race_num.append(" ");
+                race_num = color_string(race_num, (rp_ptr->r_adj[i] < 0 ? TERM_RED : TERM_BLUE));
+                this_lbl->setText(race_num);
+                continue;
+            }
+            if (this_name.contains(QString("st_class_%1") .arg(i)))
+            {
+                QString class_num = format_stat(cp_ptr->c_adj[i]);
+                class_num.append(" ");
+                class_num = color_string(class_num, (cp_ptr->c_adj[i] < 0 ? TERM_RED : TERM_BLUE));
+                this_lbl->setText(class_num);
+                continue;
+            }
+            if (this_name.contains(QString("st_equip_%1") .arg(i)))
+            {
+                int equip = p_ptr->state.stat_equip[i];
+
+                QString equip_num = format_stat(equip);
+                equip_num.append(" ");
+                equip_num = color_string(equip_num, (equip < 0 ? TERM_RED : TERM_BLUE));
+                this_lbl->setText(equip_num);
+                continue;
+            }
+            if (this_name.contains(QString("st_quest_%1") .arg(i)))
+            {
+                QString quest_num = format_stat(p_ptr->stat_quest_add[i]);
+                quest_num.append(" ");
+                quest_num = color_string(quest_num, TERM_BLUE);
+                this_lbl->setText(quest_num);
+                continue;
+            }
+            if (this_name.contains(QString("st_total_%1") .arg(i)))
+            {
+                QString quest_num = format_stat(p_ptr->stat_quest_add[i]);
+                quest_num.append(" ");
+                quest_num = color_string(quest_num, TERM_BLUE);
+                this_lbl->setText(quest_num);
+                continue;
+            }
+            if (this_name.contains(QString("st_reduce_%1") .arg(i)))
+            {
+                bool need_display = FALSE;
+                if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i]) need_display = TRUE;
+                QString lower_stat = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
+                if (!need_display) lower_stat = "       ";
+                lower_stat = color_string(lower_stat, TERM_RED);
+                this_lbl->setText(lower_stat);
+                continue;
+            }
+        }
 
         if (this_name.operator ==("PLYR_Name"))
         {
@@ -444,7 +515,6 @@ void PlayerScreenInfo::update_char_screen(void)
             s32b exp_needed = advance - p_ptr->exp;
             QString exp_output = number_to_formatted_string(exp_needed);
             QString exp_advance = (QString("The total experience needed for the next level is %1") .arg(number_to_formatted_string(advance)));
-
             this_lbl->setText(color_string(QString("<b>%1</b>") .arg(exp_output), TERM_BLUE));
             this_lbl->setToolTip(exp_advance);
             continue;
@@ -468,6 +538,148 @@ void PlayerScreenInfo::update_char_screen(void)
         {
             int pct = (p_ptr->total_weight * 100) / normal_speed_weight_limit();
             this_lbl->setText(color_string(QString("<b>%1%</b>") .arg(pct), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("BASE_Speed"))
+        {
+
+            // Undo temporary effects
+            if (p_ptr->searching) first_num += (game_mode == GAME_NPPMORIA ? 1 : 10);
+            if (p_ptr->timed[TMD_FAST]) first_num -= (game_mode == GAME_NPPMORIA ? 1 : 10);
+            if (p_ptr->timed[TMD_SLOW]) first_num += (game_mode == GAME_NPPMORIA ? 1 : 10);
+            // Speed is different in the different games
+            if (game_mode == GAME_NPPMORIA)
+            {
+                first_num_string = moria_speed_labels(first_num);
+                second_num = analyze_speed_bonuses(first_num, TERM_BLUE);
+
+            }
+            else
+            {
+                second_num = analyze_speed_bonuses(first_num, TERM_BLUE);
+                if (first_num > 110)
+                {
+                    first_num_string = (QString("Fast (%1)") .arg(first_num - 110));
+                    first_num_string.prepend("+");
+                }
+                else if (first_num < 110)
+                {
+                    first_num_string = (QString("Slow (%1)") .arg(110 - first_num));
+                }
+                else first_num_string = "Normal";
+            }
+            this_lbl->setText(color_string(first_num_string, second_num));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_AC"))
+        {
+            first_num = p_ptr->state.dis_ac;
+            second_num = p_ptr->state.dis_to_a;
+            first_num_string.setNum(first_num);
+            second_num_string.setNum(second_num);
+            if (second_num < 0) second_num_string.prepend("-");
+            else second_num_string.prepend("+");
+            this_lbl->setText(color_string((QString("[%1, %2]") .arg(first_num_string) .arg(second_num_string)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_MELEE"))
+        {
+            first_num = p_ptr->state.dis_to_h;
+            second_num = p_ptr->state.dis_to_d;
+
+            object_type *o_ptr = &inventory[INVEN_WIELD];
+            QString dd; ;
+            QString ds;
+            dd.setNum(o_ptr->dd);
+            ds.setNum(o_ptr->ds);
+            // Player is punching monsters
+            if (!o_ptr->tval)
+            {
+                dd.setNum(1);
+                ds.setNum(1);
+            }
+            else if (object_known_p(o_ptr))
+            {
+                first_num += o_ptr->to_h;
+                second_num += o_ptr->to_d;
+            }
+            first_num_string.setNum(first_num);
+            second_num_string.setNum(second_num);
+            if (first_num < 0) first_num_string.prepend("-");
+            else first_num_string.prepend("+");
+            if (second_num < 0) second_num_string.prepend("-");
+            else second_num_string.prepend("+");
+            this_lbl->setText(color_string((QString("x(%1) [%2d%3] (%4, %5)") .arg(p_ptr->state.num_blow) .arg(dd) .arg(ds) .arg(first_num_string) .arg(second_num_string)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("HIT_Critical"))
+        {
+            object_type *o_ptr = &inventory[INVEN_WIELD];
+            first_num = critical_hit_chance(o_ptr, p_ptr->state, TRUE) /  (CRIT_HIT_CHANCE / 100);
+            first_num_string.setNum(first_num);
+            this_lbl->setText(color_string((QString("%1 %") .arg(first_num_string)), TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("SHOOTING_Stats"))
+        {
+            object_type *o_ptr;
+            object_type object_type_body;
+            object_type_body.object_wipe();
+            //Make sure we are factoring in the bow and not a swap weapon
+            if (birth_swap_weapons)
+            {
+                if (inventory[INVEN_MAIN_WEAPON].tval == TV_BOW) o_ptr = &inventory[INVEN_MAIN_WEAPON];
+
+                /* A bow is not wielded, just set up a "dummy, blank" object and point to that */
+                else o_ptr = &object_type_body;
+            }
+            else o_ptr = &inventory[INVEN_BOW];
+
+            first_num = p_ptr->state.dis_to_h;
+            second_num = 0;
+            s32b mult = p_ptr->state.ammo_mult;
+            if (object_known_p(o_ptr))
+            {
+                first_num += o_ptr->to_h;
+                second_num += o_ptr->to_d;
+            }
+
+            // Factor in Rogue and brigand combat bonuses, if applicable
+            mult += rogue_shot(o_ptr, &first_num, p_ptr->state);
+            mult += brigand_shot(o_ptr, 0L, FALSE, p_ptr->state);
+
+            first_num_string.setNum(first_num);
+            second_num_string.setNum(second_num);
+            if (first_num < 0) first_num_string.prepend("-");
+            else first_num_string.prepend("+");
+            if (second_num < 0) second_num_string.prepend("-");
+            else second_num_string.prepend("+");
+            QString output = (QString("xS(%1) xM(%2) (%3, %4)") .arg(p_ptr->state.num_fire) .arg(mult) .arg(first_num_string) .arg(second_num_string));
+            //No bow
+            if (!mult) output = "---------";
+            this_lbl->setText(color_string(output, TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("SEARCH_Freq"))
+        {
+            if (p_ptr->state.skills[SKILL_SEARCH_CHANCE] > 100) first_num = 100;
+            else first_num = p_ptr->state.skills[SKILL_SEARCH_CHANCE];
+            first_num_string = (QString("%1%") .arg(first_num));
+            this_lbl->setText(color_string(first_num_string, TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("SEARCH_Chance"))
+        {
+            if (p_ptr->state.skills[SKILL_SEARCH_CHANCE] > 100) first_num = 100;
+            else first_num = p_ptr->state.skills[SKILL_SEARCH_CHANCE];
+            first_num_string = (QString("%1%") .arg(first_num));
+            this_lbl->setText(color_string(first_num_string, TERM_BLUE));
+            continue;
+        }
+        if (this_name.operator ==("PLYR_Tunnel"))
+        {
+            first_num_string.setNum(p_ptr->state.skills[SKILL_DIGGING]);
+            this_lbl->setText(color_string(first_num_string, TERM_BLUE));
             continue;
         }
     }
@@ -797,26 +1009,32 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
     make_standard_label(stat_header, "STAT   ", TERM_DARK);
     QLabel *self_header = new QLabel();
     make_standard_label(self_header, " SELF ", TERM_DARK);
-    QLabel *race_adj_header = new QLabel();
-    make_standard_label(race_adj_header, "  RA ", TERM_DARK);
-    race_adj_header->setToolTip("Stat adjustments due to player race");
-    QLabel *class_adj_header = new QLabel();
-    make_standard_label(class_adj_header, "  CA ", TERM_DARK);
-    class_adj_header->setToolTip("Stat adjustments due to player class");
     QLabel *equip_adj_header = new QLabel();
     make_standard_label(equip_adj_header, "  EA ", TERM_DARK);
     equip_adj_header->setToolTip("Stat adjustments due to player equipment");
-    QLabel *reward_adj_header = new QLabel();
-    make_standard_label(reward_adj_header, " QA ", TERM_DARK);
-    reward_adj_header->setToolTip("Stat adjustments due to quest rewards");
     QLabel *total_stat_header = new QLabel();
     make_standard_label(total_stat_header, "  TOTAL STAT", TERM_DARK);
     stat_layout->addWidget(stat_header, row, col++, Qt::AlignLeft);
     stat_layout->addWidget(self_header, row, col++, Qt::AlignLeft);
-    if (birth_maximize) stat_layout->addWidget(race_adj_header, row, col++, Qt::AlignRight);
-    if (birth_maximize) stat_layout->addWidget(class_adj_header, row, col++, Qt::AlignRight);
+    if (birth_maximize)
+    {
+        QLabel *race_adj_header = new QLabel();
+        make_standard_label(race_adj_header, "  RA ", TERM_DARK);
+        race_adj_header->setToolTip("Stat adjustments due to player race");
+        QLabel *class_adj_header = new QLabel();
+        make_standard_label(class_adj_header, "  CA ", TERM_DARK);
+        class_adj_header->setToolTip("Stat adjustments due to player class");
+        stat_layout->addWidget(race_adj_header, row, col++, Qt::AlignRight);
+        stat_layout->addWidget(class_adj_header, row, col++, Qt::AlignRight);
+    }
     stat_layout->addWidget(equip_adj_header, row, col++, Qt::AlignRight);
-    if (!birth_no_quests) stat_layout->addWidget(reward_adj_header, row, col++, Qt::AlignRight);
+    if (!birth_no_quests)
+    {
+        QLabel *reward_adj_header = new QLabel();
+        make_standard_label(reward_adj_header, " QA ", TERM_DARK);
+        reward_adj_header->setToolTip("Stat adjustments due to quest rewards");
+        stat_layout->addWidget(reward_adj_header, row, col++, Qt::AlignRight);
+    }
     stat_layout->addWidget(total_stat_header, row, col++, Qt::AlignLeft);
 
     row++;
@@ -834,32 +1052,38 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
 
         QLabel *self_label = new QLabel();
         make_standard_label(self_label, (QString("%1 ") .arg(p_ptr->stat_base_max[i])), TERM_BLUE);
+        self_label->setObjectName(QString("st_base_%1") .arg(i));
         stat_layout->addWidget(self_label, row, col++, Qt::AlignLeft);
 
         if (birth_maximize)
         {
             QLabel *race_adj = new QLabel();
             make_standard_label(race_adj, (QString("%1 ") .arg(rp_ptr->r_adj[i])), TERM_BLUE);
+            race_adj->setObjectName(QString("st_race_%1") .arg(i));
             stat_layout->addWidget(race_adj, row, col++, Qt::AlignRight);
 
             QLabel *class_adj = new QLabel();
             make_standard_label(class_adj, (QString("%1 ") .arg(cp_ptr->c_adj[i])), TERM_BLUE);
+            class_adj->setObjectName(QString("st_class_%1") .arg(i));
             stat_layout->addWidget(class_adj, row, col++, Qt::AlignRight);
         }
 
         QLabel *equip_adj = new QLabel();
         make_standard_label(equip_adj, (QString("%1 ") .arg(p_ptr->state.stat_equip[i])), TERM_BLUE);
+        equip_adj->setObjectName(QString("st_equip_%1") .arg(i));
         stat_layout->addWidget(equip_adj, row, col++, Qt::AlignRight);
 
         if (!birth_no_quests)
         {
             QLabel *quest_adj = new QLabel();
             make_standard_label(quest_adj, (QString("%1 ") .arg(p_ptr->stat_quest_add[i])), TERM_BLUE);
+            quest_adj->setObjectName(QString("st_quest_%1") .arg(i));
             stat_layout->addWidget(quest_adj, row, col++, Qt::AlignRight);
         }
 
         QLabel *stat_total = new QLabel();
         make_standard_label(stat_total, (QString("  %1 ") .arg(cnv_stat(p_ptr->state.stat_loaded_max[i]))), TERM_BLUE);
+        stat_total->setObjectName(QString("st_total_%1") .arg(i));
         stat_layout->addWidget(stat_total, row, col++, Qt::AlignLeft);
 
         //Display reduced stat if necessary
@@ -868,7 +1092,8 @@ void PlayerScreenInfo::char_stat_info(QGridLayout *stat_layout)
         QString lower_stat = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
         if (!need_display) lower_stat = "       ";
         QLabel *stat_reduce = new QLabel();
-        make_standard_label(stat_reduce, lower_stat, need_display ? TERM_RED : TERM_BLUE);
+        make_standard_label(stat_reduce, lower_stat, TERM_RED);
+        stat_reduce->setObjectName(QString("st_reduce_%1") .arg(i));
         stat_layout->addWidget(stat_reduce, row++, col++, Qt::AlignRight);
     }
 }
@@ -890,7 +1115,7 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     // Add Speed
     QLabel *label_player_speed = new QLabel;
     make_standard_label(label_player_speed, "SPEED:", TERM_DARK);
-    label_player_speed->setToolTip(QString("Player rate of speed, without any temporary effects.  This has a dramatic effect on player power and survivability."));
+    label_player_speed->setToolTip(get_help_topic("character_info", "Speed"));
     QLabel *player_speed = new QLabel;
     first_num = p_ptr->state.p_speed;
     // Undo temporary effects
@@ -920,6 +1145,7 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     }
 
     make_standard_label(player_speed, first_num_string, second_num);
+    player_speed->setObjectName("BASE_Speed");
     return_layout->addWidget(label_player_speed, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_speed, row++, col+1, Qt::AlignRight);
 
@@ -935,13 +1161,14 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     if (second_num < 0) second_num_string.prepend("-");
     else second_num_string.prepend("+");
     make_standard_label(player_armor, (QString("[%1, %2]") .arg(first_num_string) .arg(second_num_string)), TERM_BLUE);
+    player_armor->setObjectName("PLYR_AC");
     return_layout->addWidget(label_player_armor, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_armor, row++, col+1, Qt::AlignRight);
 
     // Melee Weapon Stats
     QLabel *label_player_melee = new QLabel;
     make_standard_label(label_player_melee, "MELEE:", TERM_DARK);
-    //label_player_melee->setToolTip(QString("Known Melee statistics comes from strength, dexterity, player class, and equipment (does not factor in changes from unidentified equipment).<br>x(number attacks), [damage dice, damage sides], (known-to-hit-adj., known-to-damage-adj).<br>Examine weapon for more detailed information."));
+    label_player_melee->setToolTip(get_help_topic("character_info", "Melee"));
     QLabel *player_melee = new QLabel;
     first_num = p_ptr->state.dis_to_h;
     second_num = p_ptr->state.dis_to_d;
@@ -975,18 +1202,19 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     // Add critical hit %
     QLabel *label_player_crit_hit = new QLabel;
     make_standard_label(label_player_crit_hit, "CRIT. HIT %:", TERM_DARK);
+    label_player_crit_hit->setToolTip(get_help_topic("character_info", "Critical Hit"));
     QLabel *player_crit_hit = new QLabel;
     first_num = critical_hit_chance(o_ptr, p_ptr->state, TRUE) /  (CRIT_HIT_CHANCE / 100);
     first_num_string.setNum(first_num);
     make_standard_label(player_crit_hit, (QString("%1 %") .arg(first_num_string)), TERM_BLUE);
-    label_player_crit_hit->setToolTip(QString("Percent chance of extra damage , based on weapon weight, player melee skill, and to-hit bonus"));
+    player_crit_hit->setObjectName("HIT_Critical");
     return_layout->addWidget(label_player_crit_hit, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_crit_hit, row++, col+1, Qt::AlignRight);
 
     //Shooting weapon stats
     QLabel *label_player_shoot = new QLabel;
     make_standard_label(label_player_shoot, "SHOOT:", TERM_DARK);
-    label_player_shoot->setToolTip(QString("Known shooting statistics comes from dexterity, player class, and equipment (does not factor in changes from unidentified equipment).<br>Format is: x(num shots) x(damage multiplier), [damage dice, damage sides], (known-to-hit-adj., known-to-damage-adj).<br>Examine bow or ammunition for more detailed information."));
+    label_player_shoot->setToolTip(get_help_topic("character_info", "Shooting Stats"));
     QLabel *player_shoot = new QLabel;
 
     //Make sure we are factoring in the bow and not a swap weapon
@@ -1022,39 +1250,43 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     //No bow
     if (!mult) output = "---------";
     make_standard_label(player_shoot, output, TERM_BLUE);
+    player_shoot->setObjectName("SHOOTING_Stats");
     return_layout->addWidget(label_player_shoot, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_shoot, row++, col+1, Qt::AlignRight);
 
     // Searching frequency - frequency is inverted
     QLabel *label_player_search_freq = new QLabel;
     make_standard_label(label_player_search_freq, "SEARCH FREQ:", TERM_DARK);
-    label_player_search_freq->setToolTip(QString("Affected by player equipment race, class and level.<br>Chance of searching each player turn."));
+    label_player_search_freq->setToolTip(get_help_topic("character_info", "Search Frequency"));
     QLabel *player_search_freq = new QLabel;
     if (p_ptr->state.skills[SKILL_SEARCH_FREQUENCY] > SEARCH_CHANCE_MAX) first_num_string = "1 in 1";
     else first_num_string = (QString("1 in %1") .arg(SEARCH_CHANCE_MAX - p_ptr->state.skills[SKILL_SEARCH_FREQUENCY]));
     make_standard_label(player_search_freq, first_num_string, TERM_BLUE);
+    player_search_freq->setObjectName("SEARCH_Freq");
     return_layout->addWidget(label_player_search_freq, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_search_freq, row++, col+1, Qt::AlignRight);
 
     // Searching chance
     QLabel *label_player_search_chance = new QLabel;
     make_standard_label(label_player_search_chance, "SEARCH CHANCE:", TERM_DARK);
-    label_player_search_chance->setToolTip(QString("Affected by player equipment race, class and level.<br>Percent chance of, if searching, noticing any hidden doors or traps that are within 10 feet of player.<br>Also affects how quickly the player gets a feeling about the level they are on."));
+    label_player_search_chance->setToolTip(get_help_topic("character_info", "Search Chance"));
     QLabel *player_search_chance = new QLabel;
     if (p_ptr->state.skills[SKILL_SEARCH_CHANCE] > 100) first_num = 100;
     else first_num = p_ptr->state.skills[SKILL_SEARCH_CHANCE];
     first_num_string = (QString("%1%") .arg(first_num));
     make_standard_label(player_search_chance, first_num_string, TERM_BLUE);
+    player_search_chance->setObjectName("SEARCH_Chance");
     return_layout->addWidget(label_player_search_chance, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_search_chance, row++, col+1, Qt::AlignRight);
 
     //Digging
     QLabel *label_player_dig = new QLabel;
     make_standard_label(label_player_dig, "TUNNEL:", TERM_DARK);
-    label_player_dig->setToolTip(QString("Based on player strength, weapon weight, and equipment bonuses.<br>Improves chance of sucessfully tunneling through a walls.<br>Actual chance of success depends on the terrain into which the player is tunneling."));
+    label_player_dig->setToolTip(get_help_topic("character_info", "Tunneling"));
     QLabel *player_dig = new QLabel;
     first_num_string.setNum(p_ptr->state.skills[SKILL_DIGGING]);
     make_standard_label(player_dig, first_num_string, TERM_BLUE);
+    player_dig->setObjectName("PLYR_Tunnel");
     return_layout->addWidget(label_player_dig, row, col, Qt::AlignLeft);
     return_layout->addWidget(player_dig, row++, col+1, Qt::AlignRight);
 

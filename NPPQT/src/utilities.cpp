@@ -220,7 +220,13 @@ QString capitalize_first(QString line)
     first = first.toTitleCase();
     line[0] = first;
     return (line);
+}
 
+QString format_stat(s16b value)
+{
+    QString text;
+    if (value > 0) text.append('+');
+    return QString("<b>%1%2</b>").arg(text).arg(value);
 }
 
 void pop_up_message_box(QString message, QMessageBox::Icon the_icon)

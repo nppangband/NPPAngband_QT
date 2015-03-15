@@ -953,6 +953,8 @@ void command_browse(cmd_arg arg)
 // Browse the available spellbooks
 void do_cmd_browse(int book_choice)
 {
+    if (!p_ptr->can_cast()) return;
+
     int spell;
     QString prompt = QString("Press OK when done browsing.");
     int mode = BOOK_BROWSE;
