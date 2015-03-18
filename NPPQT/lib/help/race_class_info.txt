@@ -6,12 +6,13 @@ There are many different races that you can choose from, most representing the s
 A flexible and adaptive race, humans are found all over Middle-Earth, from desert Harad to icy Horodwaith.  The human is the base character.  All other races are compared to them.  Humans are average or below average at everything.  They have no special adjustments to stats, no intrinsic abilities, and no special strengths or weaknesses.  This, combined with their solid hitpoints, makes them flexible but not powerful adventurers.
 *******<end>
 
-*******Half-Elf
-Half-elves are the descendants of Elves and Humans.  Half-elves tend to be smarter and more dexterous than a human,  but not as wise or strong.  Half-elves are slightly better at magic, disarming, saving throws, stealth, bows and searching, but they are are somewhat weak at melee.  Half-elves have their dexterity sustained, and are native to forest terrain.
-*******<end>
 
 *******Elf
 Known as the Elder Race, and as the First-Born, Elves are famed for their knowledge and craftsmanship.  They tend to be smarter and more dexterous than either humans or half-elves, but not as wise or strong.  Elves are better at searching, disarming, perception, stealth, and magic, but they somewhat weak in melee.  They are fond of bows, somewhat weak in melee, and have some infravision.  Elves are resistant to attacks involving bright light, and have their dexterity sustained, and are to forest terrain.
+*******<end>
+
+*******Half-Elf
+Half-elves are the descendants of Elves and Humans.  Half-elves tend to be smarter and more dexterous than a human,  but not as wise or strong.  Half-elves are slightly better at magic, disarming, saving throws, stealth, bows and searching, but they are are somewhat weak at melee.  Half-elves have their dexterity sustained, and are native to forest terrain.
 *******<end>
 
 *******Hobbit / Halfling
@@ -39,8 +40,7 @@ The Dúnedain are a race of hardy men from the West.  This elder race surpasses t
 *******<end>
 
 *******High-Elf
-High-Elves are descended from those among the Elves who heard and answered the call from the Valar at the very beginning of time, before the sun and moon were made, and lived in the Blessed Realm for long ages before returning to mortal lands.  They are masters of all abilities, and are agile and intelligent, although their wisdom is a little suspect.  No other race is quite as good at
-magic, and none is so skilled with missile weapons.  High-elves are able to see the unseen, have good infravision, and have innate resistance to light. However, having lived so long and learnt so much, it is very hard for them gain levels.
+High-Elves are descended from those among the Elves who heard and answered the call from the Valar at the very beginning of time, before the sun and moon were made, and lived in the Blessed Realm for long ages before returning to mortal lands.  They are masters of all abilities, and are agile and intelligent, although their wisdom is a little suspect.  No other race is quite as good at magic, and none is so skilled with missile weapons.  High-elves are able to see the unseen, have good infravision, and have innate resistance to light. However, having lived so long and learnt so much, it is very hard for them gain levels.
 *******<end>
 
 *******Kobold

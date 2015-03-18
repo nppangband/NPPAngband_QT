@@ -147,8 +147,7 @@ Make one spellbook invulnerable to fire attacks.
 *******<end>
 			
 ********Defer Quest Reward			
-Elect not to receive a quest reward in exchange for a slightly
-improved chance at better chices of quest rewards the next time you complete a quest.  If multiple quest rewards are deferred, the chance of better quest rewards increases.  All quest rewards are chosen randomly, so deferring the reward is not a guarantee of better choices.
+Elect not to receive a quest reward in exchange for a slightly improved chance at better chices of quest rewards the next time you complete a quest.  If multiple quest rewards are deferred, the chance of better quest rewards increases.  All quest rewards are chosen randomly, so deferring the reward is not a guarantee of better choices.
 *******<end>
 
 *********Create Artifact Quest Reward
@@ -161,7 +160,8 @@ Permanently increases your max hit points by 25.
 *******<end>
 	
 ********Permanent Stat Increase Reward			
-Permanently increase a stat by 1.  This is the equvilent to wearing a ring of <stat>  (+1), without using an inventory slot. *******<end>
+Permanently increase a stat by 1.  This is the equvilent to wearing a ring of <stat>  (+1), without using an inventory slot.
+*******<end>
 	
 ********Permanent Stats Augmentation Reward			
 Permanently increase all of your stats by 1.  This is the equvilent to wearing six rings of <stat>  (+1), without using any inventory slots.
@@ -170,8 +170,7 @@ Permanently increase all of your stats by 1.  This is the equvilent to wearing s
 ********Monster or Unique Quest
 This is the most common quest. The player is assigned to go to a specified depth and kill a certain number of monsters, or a specific unique monster. The creatures are usually out-of-depth for that level.  The number of monsters to kill varies each quest.
 
-Unlike fixed quests, it is not mandatory to complete the quest in order to win the game.  A player can choose to dive right past the designated quest level, or leave and return to a quest level. Leaving an optional quest level without killing the required number of creatures can result in a failed quest. Completing a monster quest increased player fame by 10.  Failing a monster 
-quest reduces total player fame by 55%.
+Unlike fixed quests, it is not mandatory to complete the quest in order to win the game.  A player can choose to dive right past the designated quest level, or leave and return to a quest level. Leaving an optional quest level without killing the required number of creatures can result in a failed quest. Completing a monster quest increased player fame by 10.  Failing a monster quest reduces total player fame by 55%.
 *******<end>
 
 
@@ -188,19 +187,16 @@ fame by 55%.
   
 
 ********Pit or Nest Quest
-This quest is to go to a specified depth and kill or destroy every creature in a monster pit or nest.  A monster pit/nest has 95 creatures of a given theme.  Since there are so many like creatures bunched so closely together, a creature from inside one of these special pits/nests will not attempt to summon more 
-creatures to the battle.  This type of quest tends to be more difficult than a monster or unique quest.  
+This quest is to go to a specified depth and kill or destroy every creature in a monster pit or nest.  A monster pit/nest has 95 creatures of a given theme.  Since there are so many like creatures bunched so closely together, a creature from inside one of these special pits/nests will not attempt to summon more creatures to the battle.  This type of quest tends to be more difficult than a monster or unique quest.  
 
 Voluntarily leaving a Pit/Nest quest level before all 95 creatures are killed results in immediate quest failure.  Completing a Pit or Next quest increases player fame by 10 + 10d2.  Failing a monster quest reduces total player fame by 35%.  In addition to the guild quest reward, 5 monsters in the pit/next are holding an aditional good item.
 *******<end>
 
 
 ********Level Quest
-This quest is a more difficult version of the Monster Pit/Nest quests.  Instead of 95 creatures in a pit or nest, the entire level is full of 200 or more monsters of a particular theme.  Since there are so many like creatures bunched 
-so closely together, a creature from inside one of these themed levels only summon other creatures already on the level in battle.  
+This quest is a more difficult version of the Monster Pit/Nest quests.  Instead of 95 creatures in a pit or nest, the entire level is full of 200 or more monsters of a particular theme.  Since there are so many like creatures bunched so closely together, a creature from inside one of these themed levels only summon other creatures already on the level in battle.  
 
-Voluntarily leaving a themed level results in immediate quest failure. Completing a Themed Level Quest increases player fame by 15 + 10d2.  Failing a themed level quest reduces total 
-player fame by 35%.  In addition to the guild quest reward, many of the monsters on the level are holding an aditional good item.
+Voluntarily leaving a themed level results in immediate quest failure. Completing a Themed Level Quest increases player fame by 15 + 10d2.  Failing a themed level quest reduces total player fame by 35%.  In addition to the guild quest reward, many of the monsters on the level are holding an aditional good item.
 *******<end>
 
 
@@ -227,8 +223,7 @@ This quest is to go to a specified depth, retrieve an artifact and return it to 
 You will most likely need some form of tunneling, such as a digging tool or a magic source of stone-to-mud, 
 to gain access to the vault.   
 
-Voluntarily leaving a level without the quest artifact results in immediate quest failure.  Completing an Artifact Quest increases player fame by 50.  Failing an artifact quest reduces total 
-player fame by 50%.
+Voluntarily leaving a level without the quest artifact results in immediate quest failure.  Completing an Artifact Quest increases player fame by 50.  Failing an artifact quest reduces total player fame by 50%.
 *******<end>
 
 ********Arena Quest

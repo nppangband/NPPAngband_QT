@@ -119,7 +119,23 @@ Infravision is the ability to see heat sources. Since most of the dungeon is coo
 *******<end>
 
 *******Speed
-Speed has a dramatic effect on player power and survivability.  Boots, rings, and weapons that hasten you are rare and powerful. In battle, the one that moves faster has a tremendous advantage, as they will sometimes get to attack their opponent multiple times before their foe gets a turn. There are magical spells that can temporarily speed up or slow down both the player and monsters.  For NPPANgband, the incremental changes in speed have less effect as the extremes are approached.  Normal speed = 1 player turn every 10 game turns.  -7 speed = twice as slow as normal speed  +10 speed = 2x normal speed<br>+20 speed = 3x normal speed<br>+20 speed = 3x normal speed<br>+44 speed = 4x normal speed<br>+70 speed = 4.9x normal speed (maximum achievable speed).  For NPPMoria, Each positive increment doubles player speed.  Each negative increment cuts player speed in half.  (+1)=2x normal speed  (+2)=4x normal speed  (+3)=8x normal speed (-1)= half normal speed.  On the character screen, base speed is displayed without the temporary effects.  On the sidebar, temporary hasting and slowing are factored in.
+Speed has a dramatic effect on player power and survivability.  Boots, rings, and weapons that hasten you are rare and powerful. In battle, the one that moves faster has a tremendous advantage, as they will sometimes get to attack their opponent multiple times before their foe gets a turn. There are magical spells that can temporarily speed up or slow down both the player and monsters.  
+
+For NPPAngband, the incremental changes in speed have less effect as the extremes are approached.  
+Normal speed = 1 player turn every 10 game turns.  
+-7 speed = twice as slow as normal speed  
++10 speed = 2x normal speed
++20 speed = 3x normal speed
++44 speed = 4x normal speed
++70 speed = 4.9x normal speed (maximum achievable speed).  
+
+For NPPMoria, Each positive increment doubles player speed.  Each negative increment cuts player speed in half.  
+(+1)=2x normal speed  
+(+2)=4x normal speed  
+(+3)=8x normal speed 
+(-1)= half normal speed.
+
+On the character screen, base speed is displayed without the temporary effects.  On the sidebar, temporary hasting and slowing are factored in.
 *******<end>
 
 *******Saving Throw
@@ -159,8 +175,11 @@ Critic hit represent the percent chance of extra damage from a well placed strik
 ******<end>
 
 *******Shooting Stats
-Known shooting statistics comes from dexterity, player class, and equipment (does not factor in changes from unidentified equipment).<br>Format is: x(num shots) x(damage multiplier), [damage dice, damage sides], (known-to-hit-adj., known-to-damage-adj).<br>Examine bow or ammunition for more detailed information.
+Known shooting statistics comes from dexterity, player class, and equipment (does not factor in changes from unidentified equipment).  The format is: x(num shots) x(damage multiplier), [damage dice, damage sides], (known-to-hit-adj., known-to-damage-adj).  Examine bow or ammunition for more detailed information.
 ******<end>
+
+*******Searching
+Searching affects the chance of searching each player turn, as well as the percent chance of noticing any hidden doors or traps that are within 10 feet of player while searching.  Also affects how quickly the player gets a feeling about the level they are on.
 
 *******Search Frequency
 Searching Frequency is affected by player equipment race, class and level.  The chance of searching each player turn at normal speed.
@@ -172,4 +191,195 @@ Chance of searching is affected by player equipment race, class and level.  Perc
 
 *******Tunneling
 The chance of successful tunneling is based on player strength, weapon weight, and equipment bonuses.  Improves chance of sucessfully tunneling through a walls.  The actual chance of success depends on the terrain into which the player is tunneling.
+******<end>
+
+*******Extra Blows
+Extra blows increases the number of player attacks the player has during per one melee round.
+******<end>
+
+*******Extra Shots
+Reduces the amount of time it takes the player to fire ammunition from a bow, crossbow, or sling.
++1 = 1/2 of a player turn
++2 = 1/3 of a player turn etc.
+******<end>
+
+*******Extra Might
+Increases the damage multiplier for ammunition fired from a bow, crossbow, or sling.
+******<end>
+
+
+*******Acid Immunity
+Acid immunity means acid based spells do not damage the player or the player's equipment and inventory.
+******<end>
+
+*******Lightning Immunity
+Lightning immunity means lightning based spells do not damage the player or the player's inventory.
+******<end>
+
+*******Fire Immunity
+Fire immunity means fire based spells do not damage the player or the player's inventory.
+******<end>
+
+*******Cold Immunity
+Cold immunity means cold or ice based spells do not damage the player or the player's inventory.
+******<end>
+
+*******Poison Immunity
+Poison immunity means poison based spells do not damage the player.
+******<end>
+
+*******Resist Acid
+Acid attacks have a maximum damage of 1,600 hp, and can harm player inventory and equipment.  Having temporary or permanent resistance divides damage by 3, and helps protect equipment and inventory.  Having both permanent and temporary resist divides damage by 9, and gives further protection to equipment and inventory.
+******<end>
+
+*******Resist Electricity
+Electricity attacks have a maximum damage of 1,600 hp, and can destroy rings, wands, and rods in the player inventory.  Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.  Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory.
+******<end>
+
+*******Resist Fire
+Fire attacks have a maximum damage of 1,600 hp, and can destroy wearable equipment, destroy spellbooks, chests, staffs, and scrolls in the player inventory.  Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.  Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory.
+******<end>
+
+*******Resist Cold
+Ice and Cold attacks have a maximum damage of 1,600 hp, and can destroy potions, flasks, and bottles in the player inventory.  Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.  Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory.
+******<end>
+
+*******Resist Poison
+Poison attacks have a maximum damage of 800 hp, and can pioson the player inventory.  Having temporary or permanent resistance divides damage by 3, and prevents the player from being poisoned.  Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory.
+******<end>
+
+*******Resist Blindness
+Resist blindness prevents the player from being blinded.  Blindness prevents the player from seeing, reading scrolls and casting spells.
+******<end>
+
+*******Resist Confusion
+Confusion attacks have a maximum damage of 400, and can cause the player to be confused.  Resist confusion prevents the player from being confused, and reduces damage from confusion attacks by between 28 and 58 percent (damage=(damage*5)/(6+1d6))
+******<end>
+
+*******Resist Nexus
+Nexus attacks have a maximum damage of 450, and can cause the player to be teleported or teleported off the level, or the player can permanently have two of their stats switched.  Resist nexus prevents the nexus side effects, and reduces damage from nexus spells by between 14 and 50 percent (damage=(damage*6)/(6+1d6))
+******<end>
+
+*******Resist Nether
+Nether attacks have a maximum damage of 450, and can drain the player's experience.  Resist nether prevents prevents experience drain from nether and chaos attacks, and reduces damage from nether spells by between 14 and 50 percent (damage=(damage*6)/(6+1d6))
+******<end>
+
+*******Resist Chaos
+Chaos attacks have a maximum damage of 500, can polymorph nearby creatures, can drain the player's experience, and causes them to hallucinate and become confused.  Resist chaos prevents the hallucination side effect, the confusion side efffect from chaos and confusion attacks, the experience drain side effect from nether or chaos attacks, and reduces damage from chaos spells by between 14 and 50 percent  (damage=(damage*6)/(6+1d6))
+******<end>
+
+*******Resist Disenchantment
+Disenchantment attacks have a maximum damage of 500, and can reduce the bonus to-hit, to damage, and armor class qualities of player equiment.  Resist disenchantment protects the player's equipment from disenchantment, and reduces damage from disenchantment spells by between 14 and 50 percent (damage=(damage*6)/(6+1d6))
+******<end>
+
+*******Resist Sound
+Sound attacks have a maximum damage of 500 and cause cuts on the player.  Resist sound protects the player from being stunned by sound attacks, and reduces damage from sound attacks by between 28 and 58 percent (damage=(damage*5)/(6+1d6))
+******<end>
+
+*******Resist Shards
+Shard attacks have a maximum damage of 500 and can stun on the player.  Resist shards protects the player from cuts by shard attacks, and reduces damage from shard attacks by between 14 and 50 percent (damage=(damage*6)/(6+1d6))
+******<end>
+
+*******Resist Light
+Light attacks have a maximum damage of 400 and can blind on the player.  Resist light protects the player from being blinded by light attacks, and reduces damage from light attacks by between 42 and 67 percent--damage=(damage*4)/(6+1d6)
+******<end>
+
+*******Resist Darkness
+Darkness attacks have a maximum damage of 400 and can blind on the player.  Resist darkness protects the player from being blinded by darkness attacks, and reduces damage from darkness attacks by between 42 and 67 percent (damage=(damage*4)/(6+1d6))
+******<end>
+
+*******Resist Fear
+Fear attacks prevents the player from making melee attacks.  Resist fear prevents the player from becoming afraid.
+******<end>
+
+*******See Invisible
+See Invisible allows the player to see invisible creatures that are within line of sight.
+******<end>
+
+*******Free Action
+Free Action prevents the player from being paralyzed, slowed, or slept.  If the player is heavily stunned, free action does not prevent them from passing out.
+******<end>
+
+*******Telepathy
+Allows the player to sense creatures with an active mind.  Telepathy works even if the creatures are out of line of sight, or the player is blind.  Telepathy does not sense 'mindless' creatures.
+******<end>
+
+*******Hold Life
+Hold life helps prevent the player from getting their experience drained.  Experience can sometimes still be drained, however with hold life the amount of experience drained is muhc smaller.
+******<end>
+
+*******Permanent Light
+An item with permanent Light increases the player's light radius by 1 while worn.
+******<end>
+
+*******Regeneration
+Regeneration doubles the rate at which a player heals, however it greatly increases the rate of player food consumption.  At normal speed, the rate of food consumption is quadrupled.
+******<end>
+
+*******Slow Digestion
+Slow Digestion reduces the rate of player food consumption.  At normal speed, the rate of food consumption is cut in half.
+******<end>
+
+*******Feather Falling
+Feather Falling prevents injury when the player hits a trap that causes them to fall.
+******<end>
+
+*******Teleportation
+Teleportation causes the player to have a 1% chance of being randomly teleported every game turn at normal speed.  Items that randomlly teleport the player are almost always cursed, and cannot be removed without first having the curse removed.
+******<end>
+
+*******Aggravation
+Aggravation wakes up all monsters who are able to sense the player.  Aggravation negates all player stealth.
+******<end>
+
+*******Cursed Items
+Once worn, a cursed item cannot be taken off until the curse is broken.  An item that is permanently cursed cannot be removed once wielded.
+******<end>
+
+*******Drain Experience
+Causes the player's experience to be drained by one point on 10% of player turns at normal speed, and cannot be prevented by hold life.  Experience loss is to both current experience and maximum experience.
+******<end>
+
+*******Native Lava
+Being native to lava allows the player to be on lava terrains without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through lava terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Ice
+Being native to ice allows the player to be on icy terrains without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through icy terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Oil
+Being native to oily terrains allows the player to stand on them without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through oily terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Fire
+Being native to fiery terrainsallows the player to stand on fiery terrains without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through fiery terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Sand
+Being native to sandy terrains allows the player to stand on them without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through sandy terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Forest
+Being native to forest terrains allows the player to stand on them without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through forest terrains., and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Water
+Being native to watery terrains allows the player to stand on them without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through watery terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Acid
+Being native to acidic terrains allows the player to be stand on them without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through acidic terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Mud
+Being native to muddy terrains allows the player to stand on them without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through muddy terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Boiling Mud
+The player becomes native to boiling mud by being native to both lava and mud.  This allows the player to stand on boiling mud terrains without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through boiling mud terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Native Boiling Water
+The player becomes native to boiling mud by being native to both lava and water.  This allows the player to stand on boiling water terrains without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through biling water terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
 ******<end>

@@ -4,8 +4,7 @@ If turned on, you will always be prompted to select an item off the floor, even 
 *******<end>
 
 *******carry_query_flag
-The game gives you a menu of items on the floor to pick up, after
-any objects marked for automatic pickup have been picked up.
+The game gives you a menu of items on the floor to pick up, after any objects marked for automatic pickup have been picked up.
 *******<end>  
 
 *******use_old_target
@@ -49,8 +48,7 @@ As monsters cast spells, they learn which spells the player resists.  With this 
 *******<end>
 
 ********hp_changes_color
-As a player's hitpoints drops, the color of the player changes 
-as a warning. 90-100% of max hp - White.  70-89% - Yellow.  50-69% - Orange.  30-49% - Light Red.  Less than 30% of max hp - Red.
+As a player's hitpoints drops, the color of the player changes as a warning. 90-100% of max hp - White.  70-89% - Yellow.  50-69% - Orange.  30-49% - Light Red.  Less than 30% of max hp - Red.
 *******<end>
 
 ********hilight_player
@@ -74,18 +72,15 @@ If the option "view_special_light" is also on, floor grids that are only lit by 
 *******<end>
 
 ********view_bright_lighte
-This option causes special colors to be used for non "viewable" grids in certain situations (see "view_granite_lite" and "view_special_lite"). When this option is set, floor grids which are normally drawn in "white" but which are not currently "viewable" by the player are instead drawn in "dark gray".  This makes the "viewable" grids to appear "brighter" than the others,
-allowing the player to easily determine which floor grids are in "line of sight".  Turning this option off will slightly increase the speed of the game.
+This option causes special colors to be used for non "viewable" grids in certain situations (see "view_granite_lite" and "view_special_lite"). When this option is set, floor grids which are normally drawn in "white" but which are not currently "viewable" by the player are instead drawn in "dark gray".  This makes the "viewable" grids to appear "brighter" than the others, allowing the player to easily determine which floor grids are in "line of sight".  Turning this option off will slightly increase the speed of the game.
 *******<end>
 
 ********view_granite_light
-This option activates a special color scheme for all "wall" grids which are normally drawn in "white" (as walls and rubble normally are).  When the player is blind, we use "dark gray", else if the grid is torch-lit, we use "yellow" (or "white") depending on the "view_yellow_lite" option, else if the "view_bright_lite" option is set, and the grid is not in line of sight, or the grid is dark, or the grid is only "partially" lit, then we use "gray", 
-otherwise we use the normal "white".  Turning this option off will slightly increase the speed of the game.
+This option activates a special color scheme for all "wall" grids which are normally drawn in "white" (as walls and rubble normally are).  When the player is blind, we use "dark gray", else if the grid is torch-lit, we use "yellow" (or "white") depending on the "view_yellow_lite" option, else if the "view_bright_lite" option is set, and the grid is not in line of sight, or the grid is dark, or the grid is only "partially" lit, then we use "gray", otherwise we use the normal "white".  Turning this option off will slightly increase the speed of the game.
 *******<end>
 
 ********view_special_light
-This option activates a special color scheme for all "floor" grids which are normally drawn in "white" (as they normally are).  When the player is blind, we use "dark gray", else if the grid is torch-lit, we use "yellow" (or "white") depending on the view_yellow_lite" option, else if the grid is "dark", we use  dark gray", else if the "view_bright_lite" option is set, and the grid is not in line of sight, we use "gray", otherwise we use the normal "white".  Turning this option off will slightly increase
-the speed of the game.
+This option activates a special color scheme for all "floor" grids which are normally drawn in "white" (as they normally are).  When the player is blind, we use "dark gray", else if the grid is torch-lit, we use "yellow" (or "white") depending on the view_yellow_lite" option, else if the grid is "dark", we use  dark gray", else if the "view_bright_lite" option is set, and the grid is not in line of sight, we use "gray", otherwise we use the normal "white".  Turning this option off will slightly increase the speed of the game.
 *******<end>
 
 *******view_perma_grids
@@ -145,8 +140,7 @@ All levels will be generated as small levels, giving you less space to explore, 
 *******<end>
 
 *******birth_ironman
-Ironman Play:  "Go down into the dungeon.  Return with Morgoth's Crown or not at all."  In Ironman mode, you can never go up any staircase, and can never return to the surface by any means, until victorious.  If by accident you do, you must immediately return to the dungeon.  Some forms of Ironman play require that you visit no stores before going into the dungeon, or that you must use a down staircase as soon as you see it ("crash-dive ironman"), but they are variants on the basic theme.  There are
-certain objects available in ironman mode that are not available in a regular game.
+Ironman Play:  "Go down into the dungeon.  Return with Morgoth's Crown or not at all."  In Ironman mode, you can never go up any staircase, and can never return to the surface by any means, until victorious.  If by accident you do, you must immediately return to the dungeon.  Some forms of Ironman play require that you visit no stores before going into the dungeon, or that you must use a down staircase as soon as you see it ("crash-dive ironman"), but they are variants on the basic theme.  There are certain objects available in ironman mode that are not available in a regular game.
 *******<end>
 
 *******birth_no_stores

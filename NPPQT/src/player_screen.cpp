@@ -1446,11 +1446,11 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
                     return_layout->addWidget(immune_label, row, col, Qt::AlignCenter);
 
                     // Too messy to inlude in player_flag_table
-                    if (pfr_ptr->extra_flag == TR2_RES_ACID) immune_label->setToolTip(QString("Acid immunity means acid based spells do not damage the player or the player's equipment and inventory."));
-                    else if (pfr_ptr->extra_flag == TR2_IM_ELEC) immune_label->setToolTip(QString("Lightning immunity means lightning based spells do not damage the player or the player's inventory."));
-                    else if (pfr_ptr->extra_flag == TR2_IM_FIRE) immune_label->setToolTip(QString("Fire immunity means fire based spells do not damage the player or the player's inventory."));
-                    else if (pfr_ptr->extra_flag == TR2_IM_COLD) immune_label->setToolTip(QString("Cold immunity means cold or ice based spells do not damage the player or the player's inventory."));
-                    else if (pfr_ptr->extra_flag == TR2_IM_POIS) immune_label->setToolTip(QString("Poison immunity means poison based spells do not damage the player."));
+                    if (pfr_ptr->extra_flag == TR2_RES_ACID) immune_label->setToolTip(get_help_topic("character_info", "Acid Immunity"));
+                    else if (pfr_ptr->extra_flag == TR2_IM_ELEC) immune_label->setToolTip(get_help_topic("character_info", "Lightning Immunity"));
+                    else if (pfr_ptr->extra_flag == TR2_IM_FIRE) immune_label->setToolTip(get_help_topic("character_info", "Fire Immunity"));
+                    else if (pfr_ptr->extra_flag == TR2_IM_COLD) immune_label->setToolTip(get_help_topic("character_info", "Cold Immunity"));
+                    else if (pfr_ptr->extra_flag == TR2_IM_POIS) immune_label->setToolTip(get_help_topic("character_info", "Poison Immunity"));
 
                     did_immunity = TRUE;
                     continue;
@@ -1718,51 +1718,51 @@ void PlayerScreenDialog::equip_flag_info(QGridLayout *return_layout, int flag_se
         if (pfr_ptr->set == 2)
         {
             // Too messy to include in the charts
-            if (pfr_ptr->this_flag == TR2_RES_ACID) line_label->setToolTip(QString("Acid attacks have a maximum damage of 1,600 hp, and can harm player inventory and equipment.<br>Having temporary or permanent resistance divides damage by 3, and helps protect equipment and inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to equipment and inventory."));
-            else if (pfr_ptr->this_flag == TR2_RES_ELEC) line_label->setToolTip(QString("Electricity attacks have a maximum damage of 1,600 hp, and can destroy rings, wands, and rods in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->this_flag == TR2_RES_FIRE) line_label->setToolTip(QString("Fire attacks have a maximum damage of 1,600 hp, and can destroy wearable equipment, destroy spellbooks, chests, staffs, and scrolls in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->this_flag == TR2_RES_COLD) line_label->setToolTip(QString("Ice and Cold attacks have a maximum damage of 1,600 hp, and can destroy potions, flasks, and bottles in the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and helps protect player inventory.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->this_flag == TR2_RES_POIS) line_label->setToolTip(QString("Poison attacks have a maximum damage of 800 hp, and can pioson the player inventory.<br>Having temporary or permanent resistance divides damage by 3, and prevents the player from being poisoned.<br>Having both permanent and temporary resist divides damage by 9, and gives further protection to player inventory."));
-            else if (pfr_ptr->this_flag == TR2_RES_BLIND) line_label->setToolTip(QString("Resist blindness prevents the player from being blinded.<br>Blindness prevents the player from seeing, reading scrolls and casting spells."));
-            else if (pfr_ptr->this_flag == TR2_RES_CONFU) line_label->setToolTip(QString("Confusion attacks have a maximum damage of 400, and can cause the player to be confused.<br>Resist confusion prevents the player from being confused, and reduces damage from confusion attacks by between 28 and 58 percent--damage=(damage*5)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_NEXUS) line_label->setToolTip(QString("Nexus attacks have a maximum damage of 450, and can cause the player to be teleported or teleported off the level, or the player can permanently have two of their stats switched.<br>Resist nexus prevents the nexus side effects, and reduces damage from nexus spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_NETHR) line_label->setToolTip(QString("Nether attacks have a maximum damage of 450, and can drain the player's experience.<br>Resist nether prevents prevents experience drain from nether and chaos attacks, and reduces damage from nether spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_CHAOS) line_label->setToolTip(QString("Chaos attacks have a maximum damage of 500, can polymorph nearby creatures, can drain the player's experience, and causes them to hallucinate and become confused.<br>Resist chaos prevents the hallucination side effect, the confusion side efffect from chaos and confusion attacks, the experience drain side effect from nether or chaos attacks, and reduces damage from chaos spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_DISEN) line_label->setToolTip(QString("Disenchantment attacks have a maximum damage of 500, and can reduce the bonus to-hit, to damage, and armor class qualities of player equiment.<br>Resist disenchantment protects the player's equipment from disenchantment, and reduces damage from disenchantment spells by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_SOUND) line_label->setToolTip(QString("Sound attacks have a maximum damage of 500 and cause cuts on the player.<br>Resist sound protects the player from being stunned by sound attacks, and reduces damage from sound attacks by between 28 and 58 percent--damage=(damage*5)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_SHARD) line_label->setToolTip(QString("Shard attacks have a maximum damage of 500 and can stun on the player.<br>Resist shards protects the player from cuts by shard attacks, and reduces damage from shard attacks by between 14 and 50 percent--damage=(damage*6)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_LIGHT) line_label->setToolTip(QString("Light attacks have a maximum damage of 400 and can blind on the player.<br>Resist light protects the player from being blinded by light attacks, and reduces damage from light attacks by between 42 and 67 percent--damage=(damage*4)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_DARK) line_label->setToolTip(QString("Darkness attacks have a maximum damage of 400 and can blind on the player.<br>Resist darkness protects the player from being blinded by darkness attacks, and reduces damage from darkness attacks by between 42 and 67 percent--damage=(damage*4)/(6+1d6)"));
-            else if (pfr_ptr->this_flag == TR2_RES_FEAR) line_label->setToolTip(QString("Fear attacks prevents the player from making melee attacks.<br>Resist fear prevents the player from becoming afraid."));
+            if (pfr_ptr->this_flag == TR2_RES_ACID) line_label->setToolTip(get_help_topic("character_info", "Resist Acid"));
+            else if (pfr_ptr->this_flag == TR2_RES_ELEC) line_label->setToolTip(get_help_topic("character_info", "Resist Electricity"));
+            else if (pfr_ptr->this_flag == TR2_RES_FIRE) line_label->setToolTip(get_help_topic("character_info", "Resist Fire"));
+            else if (pfr_ptr->this_flag == TR2_RES_COLD) line_label->setToolTip(get_help_topic("character_info", "Resist Cold"));
+            else if (pfr_ptr->this_flag == TR2_RES_POIS) line_label->setToolTip(get_help_topic("character_info", "Resist Poison"));
+            else if (pfr_ptr->this_flag == TR2_RES_BLIND) line_label->setToolTip(get_help_topic("character_info", "Resist Blindness"));
+            else if (pfr_ptr->this_flag == TR2_RES_CONFU) line_label->setToolTip(get_help_topic("character_info", "Resist Confusion"));
+            else if (pfr_ptr->this_flag == TR2_RES_NEXUS) line_label->setToolTip(get_help_topic("character_info", "Resist Nexus"));
+            else if (pfr_ptr->this_flag == TR2_RES_NETHR) line_label->setToolTip(get_help_topic("character_info", "Resist Nether"));
+            else if (pfr_ptr->this_flag == TR2_RES_CHAOS) line_label->setToolTip(get_help_topic("character_info", "Resist Chaos"));
+            else if (pfr_ptr->this_flag == TR2_RES_DISEN) line_label->setToolTip(get_help_topic("character_info", "Resist Disenchantment"));
+            else if (pfr_ptr->this_flag == TR2_RES_SOUND) line_label->setToolTip(get_help_topic("character_info", "Resist Sound"));
+            else if (pfr_ptr->this_flag == TR2_RES_SHARD) line_label->setToolTip(get_help_topic("character_info", "Resist Shards"));
+            else if (pfr_ptr->this_flag == TR2_RES_LIGHT) line_label->setToolTip(get_help_topic("character_info", "Resist Light"));
+            else if (pfr_ptr->this_flag == TR2_RES_DARK) line_label->setToolTip(get_help_topic("character_info", "Resist Darkness"));
+            else if (pfr_ptr->this_flag == TR2_RES_FEAR) line_label->setToolTip(get_help_topic("character_info", "Resist Fear"));
         }
         else if (pfr_ptr->set == 3)
         {
-            if (pfr_ptr->this_flag == TR3_SEE_INVIS) line_label->setToolTip(QString("Allows the player to see invisible creatures that are within line of sight."));
-            else if (pfr_ptr->this_flag == TR3_FREE_ACT) line_label->setToolTip(QString("Prevents the player from being paralyzed, slowed, or slept.<br>If the player is heavily stunned, free action does not prevent them from passing out."));
-            else if (pfr_ptr->this_flag == TR3_TELEPATHY) line_label->setToolTip(QString("Allows the player to sense creatures with an active mind.<br>Telepathy works even if the creatures are out of line of sight, or the player is blind.<br>Telepathy does not sense 'mindless' creatures."));
-            else if (pfr_ptr->this_flag == TR3_HOLD_LIFE) line_label->setToolTip(QString("Protects the player from getting their experience drained.<br>Experience may sometimes be drained, however on those occasions the amount of experience drain is greatly reduced."));
-            else if (pfr_ptr->this_flag == TR3_LIGHT) line_label->setToolTip(QString("Increases the player's light radius by 1 while being worn."));
-            else if (pfr_ptr->this_flag == TR3_REGEN) line_label->setToolTip(QString("Doubles the rate at which a player heals, however it greatly increases the rate of player food consumption.<br>At normal speed, the rate of food consumption is quadrupled."));
-            else if (pfr_ptr->this_flag == TR3_SLOW_DIGEST) line_label->setToolTip(QString("Slows the rate of player food consumption.<br>At normal speed, the rate of food consumption is cut in half."));
-            else if (pfr_ptr->this_flag == TR3_FEATHER) line_label->setToolTip(QString("Prevents injury when the player hits a trap that causes them to fall."));
-            else if (pfr_ptr->this_flag == TR3_TELEPORT) line_label->setToolTip(QString("Causes the player to have a 1% chance of being randomly teleported every game turn at normal speed."));
-            else if (pfr_ptr->this_flag == TR3_AGGRAVATE) line_label->setToolTip(QString("Wakes up all monsters who are able to sense the player.<br>Aggravation negates all player stealth."));
-            else if (pfr_ptr->this_flag == TR3_CURSE_ALL) line_label->setToolTip(QString("Once worn, a cursed item cannot be taken off until the curse is broken.<br>An item that is permanently cursed cannot be removed once wielded."));
-            else if (pfr_ptr->this_flag == TR3_DRAIN_EXP) line_label->setToolTip(QString("Causes the player's experience to be drained by one point on 10% of player turns at normal speed, and cannot be prevented by hold life.<br>Experience loss is to both current experience and maximum experience."));
+            if (pfr_ptr->this_flag == TR3_SEE_INVIS) line_label->setToolTip(get_help_topic("character_info", "See Invisible"));
+            else if (pfr_ptr->this_flag == TR3_FREE_ACT) line_label->setToolTip(get_help_topic("character_info", "Free Action"));
+            else if (pfr_ptr->this_flag == TR3_TELEPATHY) line_label->setToolTip(get_help_topic("character_info", "Telepathy"));
+            else if (pfr_ptr->this_flag == TR3_HOLD_LIFE) line_label->setToolTip(get_help_topic("character_info", "Hold Life"));
+            else if (pfr_ptr->this_flag == TR3_LIGHT) line_label->setToolTip(get_help_topic("character_info", "Permanent Light"));
+            else if (pfr_ptr->this_flag == TR3_REGEN) line_label->setToolTip(get_help_topic("character_info", "Regeneration"));
+            else if (pfr_ptr->this_flag == TR3_SLOW_DIGEST) line_label->setToolTip(get_help_topic("character_info", "Slow Digestion"));
+            else if (pfr_ptr->this_flag == TR3_FEATHER) line_label->setToolTip(get_help_topic("character_info", "Feather Falling"));
+            else if (pfr_ptr->this_flag == TR3_TELEPORT) line_label->setToolTip(get_help_topic("character_info", "Teleportation"));
+            else if (pfr_ptr->this_flag == TR3_AGGRAVATE) line_label->setToolTip(get_help_topic("character_info", "Aggravation"));
+            else if (pfr_ptr->this_flag == TR3_CURSE_ALL) line_label->setToolTip(get_help_topic("character_info", "Cursed Items"));
+            else if (pfr_ptr->this_flag == TR3_DRAIN_EXP) line_label->setToolTip(get_help_topic("character_info", "Drain Experience"));
         }
         else if (pfr_ptr->set == 4)
         {
-            if (pfr_ptr->this_flag == TN1_NATIVE_LAVA) line_label->setToolTip(QString("Being native allows the player to be on lava terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through lava terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_ICE) line_label->setToolTip(QString("Being native allows the player to be on icy terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through icy terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_OIL) line_label->setToolTip(QString("Being native allows the player to be on oily terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through oily terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_FIRE) line_label->setToolTip(QString("Being native allows the player to be on fiery terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through fiery terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_SAND) line_label->setToolTip(QString("Being native allows the player to be on sandy terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through sandy terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_FOREST) line_label->setToolTip(QString("Being native allows the player to be in forest terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through forest terrains., and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_WATER) line_label->setToolTip(QString("Being native allows the player to be on watery terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through watery terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_ACID) line_label->setToolTip(QString("Being native allows the player to be on acidic terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through acidic terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_MUD) line_label->setToolTip(QString("Being native allows the player to be on muddy terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through muddy terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_BMUD) line_label->setToolTip(QString("The player becomes native to boiling mud by being native to both lava and mud.<br>Being native allows the player to be on boiling mud terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through boiling mud terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_BWATER) line_label->setToolTip(QString("The player becomes native to boiling mud by being native to both lava and water.<br>Being native allows the player to be on boiling water terrains without taking any damage, and affects the player's stealth.<br>It allows the player to move more efficiently through biling water terrains, and gives the player a bonus to-hit in combat.<br>Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances."));
+            if (pfr_ptr->this_flag == TN1_NATIVE_LAVA) line_label->setToolTip(get_help_topic("character_info", "Native Lava"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_ICE) line_label->setToolTip(get_help_topic("character_info", "Native Ice"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_OIL) line_label->setToolTip(get_help_topic("character_info", "Native Oil"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_FIRE) line_label->setToolTip(get_help_topic("character_info", "Native Fire"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_SAND) line_label->setToolTip(get_help_topic("character_info", "Native Sand"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_FOREST) line_label->setToolTip(get_help_topic("character_info", "Native Forest"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_WATER) line_label->setToolTip(get_help_topic("character_info", "Native Water"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_ACID) line_label->setToolTip(get_help_topic("character_info", "Native Mud"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_MUD) line_label->setToolTip(get_help_topic("character_info", "Native Mud"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_BMUD) line_label->setToolTip(get_help_topic("character_info", "Native Boiling Mud"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_BWATER) line_label->setToolTip(get_help_topic("character_info", "Native Boiling Water"));
         }
         return_layout->addWidget(line_label, row++, 0, Qt::AlignLeft);
     }
@@ -1866,18 +1866,14 @@ void PlayerScreenDialog::equip_modifier_info(QGridLayout *return_layout)
         if (pfr_ptr->set == 1)
         {
             // Too messy to include in the charts
-            if (pfr_ptr->this_flag == TR1_INFRA) line_label->setToolTip(QString("Infravision allows the player to see warm blooded creatures, even invisible creatures, outside of their light radius.<br>One square = 10 feet."));
-            else if (pfr_ptr->this_flag == TR1_STEALTH) line_label->setToolTip(QString("Stealth determines how much noise the player makes while in the dungeon.<br>Sleeping creatures will take longer to wake up when the player has high stealth.<br>Wielding an item that aggravates completely eliminates all player stealth."));
-            else if (pfr_ptr->this_flag == TR1_SEARCH) line_label->setToolTip(QString("Searching affects the chance of searching each player turn, as well as the percent chance of noticing any hidden doors or traps that are within 10 feet of player while searching.<br>Also affects how quickly the player gets a feeling about the level they are on."));
-            else if (pfr_ptr->this_flag == TR1_SPEED)
-            {
-                if (game_mode == GAME_NPPANGBAND) line_label->setToolTip(QString("Player rate of speed has a dramatic effect on player power and survivability.<br>The incremental changes in speed are reduced as the extremes are approached.<br>Normal speed = 1 player turn every 10 game turns<br>-7 speed = twice as slow as normal speed<br>+10 speed = 2x normal speed<br>+20 speed = 3x normal speed<br>+20 speed = 3x normal speed<br>+44 speed = 4x normal speed<br>+70 speed = 4.9x normal speed (maximum achievable speed)"));
-                else line_label->setToolTip(QString("Player rate of speed has a dramatic effect on player power and survivability.<br>Each positive increment doubles player speed.<br>Each negative increment cuts player speed in half.<br>(+1)=2x normal speed<br>(+2)=4x normal speed<br>(+3)=8x normal speed<"));
-            }
-            else if (pfr_ptr->this_flag == TR1_TUNNEL) line_label->setToolTip(QString("Improves or reduces the chance of sucessfully tunneling through a walls.<br>Actual chance of success depends on the terrain into which the player is tunneling."));
-            else if (pfr_ptr->this_flag == TR1_BLOWS) line_label->setToolTip(QString("Increases the number of player attacks the player has during per player turn."));
-            else if (pfr_ptr->this_flag == TR1_SHOTS) line_label->setToolTip(QString("Reduces the amount of time it takes the player to fire ammunition from a bow, crossbow, or sling.<br>+1 = 1/2 of a player turn<br>+2 = 1/3 of a player turn etc."));
-            else if (pfr_ptr->this_flag == TR1_MIGHT) line_label->setToolTip(QString("Increases the damage multiplier for ammunition fired from a bow, crossbow, or sling."));
+            if (pfr_ptr->this_flag == TR1_INFRA)        line_label->setToolTip(get_help_topic("character_info", "Infravision"));
+            else if (pfr_ptr->this_flag == TR1_STEALTH) line_label->setToolTip(get_help_topic("character_info", "Stealth"));
+            else if (pfr_ptr->this_flag == TR1_SEARCH)  line_label->setToolTip(get_help_topic("character_info", "Searching"));
+            else if (pfr_ptr->this_flag == TR1_SPEED)   line_label->setToolTip(get_help_topic("character_info", "Speed"));
+            else if (pfr_ptr->this_flag == TR1_TUNNEL)  line_label->setToolTip(get_help_topic("character_info", "Tunneling"));
+            else if (pfr_ptr->this_flag == TR1_BLOWS)   line_label->setToolTip(get_help_topic("character_info", "Extra Blows"));
+            else if (pfr_ptr->this_flag == TR1_SHOTS)   line_label->setToolTip(get_help_topic("character_info", "Extra Shots"));
+            else if (pfr_ptr->this_flag == TR1_MIGHT)   line_label->setToolTip(get_help_topic("character_info", "Extra Might"));
         }
         return_layout->addWidget(line_label, row++, 0, Qt::AlignLeft);
     }
