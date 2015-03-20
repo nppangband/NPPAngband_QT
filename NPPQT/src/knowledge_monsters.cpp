@@ -223,7 +223,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     QHBoxLayout *mon_knowledge_hlay = new QHBoxLayout;
     main_layout->addLayout(mon_knowledge_hlay);
 
-        // To track the monster race info button
+    // To track the monster race info button
     mon_button_group = new QButtonGroup;
     mon_button_group->setExclusive(FALSE);
 
@@ -238,6 +238,10 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     monster_table = new QTableWidget(0, 6, this);
     monster_table->setAlternatingRowColors(FALSE);
 
+    qtablewidget_add_palette(monster_table);
+    qtablewidget_add_palette(mon_group_table);
+
+
     do_spoiler = FALSE;
 
     int row = 0;
@@ -249,7 +253,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     QTableWidgetItem *symbol_header = new QTableWidgetItem("Symbol");
     symbol_header->setTextAlignment(Qt::AlignCenter);
     monster_table->setHorizontalHeaderItem(col++, symbol_header);
-    QTableWidgetItem *depth_header = new QTableWidgetItem("Native Depth");
+    QTableWidgetItem *depth_header = new QTableWidgetItem("Native Level");
     depth_header->setTextAlignment(Qt::AlignRight);
     monster_table->setHorizontalHeaderItem(col++, depth_header);
     QTableWidgetItem *kills_header = new QTableWidgetItem("Total Kills");
@@ -314,36 +318,38 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
             pix = pix.scaled(32, 32);
             mon_ltr->setIcon(pix);
         }
+        mon_ltr->setData(Qt::ForegroundRole, r_ptr->d_color);
         mon_ltr->setTextAlignment(Qt::AlignCenter);
         monster_table->setItem(row, col++, mon_ltr);
 
         // dungeon depth
-        QString mon_level = (QString("%1'") .arg(r_ptr->level * 50));
-        if (!r_ptr->level) mon_level.append(" (Town)");
-        QTableWidgetItem *mon_lvl = new QTableWidgetItem(mon_level);
+        QTableWidgetItem *mon_lvl = new QTableWidgetItem();
+        mon_lvl->setData(Qt::DisplayRole, r_ptr->level);
         mon_lvl->setTextAlignment(Qt::AlignRight);
         monster_table->setItem(row, col++, mon_lvl);
 
         // Monster Kills
-        QTableWidgetItem *total_kills = new QTableWidgetItem(QString("%1") .arg(l_ptr->pkills));
+        QTableWidgetItem *total_kills = new QTableWidgetItem();
+
         if (r_ptr->is_unique())
         {
             if (!l_ptr->pkills) total_kills->setText("Alive");
             else total_kills->setText("Dead");
         }
+        else total_kills->setData(Qt::DisplayRole, l_ptr->pkills);
         total_kills->setTextAlignment(Qt::AlignRight);
         monster_table->setItem(row, col++, total_kills);
 
         // Mon info
         QPushButton *new_button = new QPushButton();
-        new_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        new_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(new_button);
+        new_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         monster_table->setCellWidget(row, col++, new_button);
         mon_button_group->addButton(new_button, i);
 
         // r_idx
-        QString this_r_idx = (QString("%1") .arg(i));
-        QTableWidgetItem *mon_r_idx = new QTableWidgetItem(this_r_idx);
+        QTableWidgetItem *mon_r_idx = new QTableWidgetItem();
+        mon_r_idx->setData(Qt::DisplayRole, i);
         mon_r_idx->setTextAlignment(Qt::AlignRight);
         monster_table->setItem(row, col++, mon_r_idx);
 
@@ -411,7 +417,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     //Flter for the first monster group.
     filter_rows(0,0);
 
-    resize(QSize(width() * 3 / 2, height() * 4 / 3));
+    resize(QSize(width() * 7 / 4, height() * 4 / 3));
     updateGeometry();
 
     setLayout(main_layout);

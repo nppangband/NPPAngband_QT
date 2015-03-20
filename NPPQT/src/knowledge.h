@@ -215,6 +215,8 @@ extern void display_player_scores(void);
 extern void display_mon_kill_count(void);
 extern void make_object_fake(object_type *o_ptr, int k_idx);
 extern void apply_magic_fake(object_type *o_ptr);
+extern void qtablewidget_add_palette(QTableWidget *this_tablewidget);
+extern void qpushbutton_dark_background(QPushButton *this_pushbutton);
 
 
 #endif // KNOWLEDGE_H

@@ -1176,12 +1176,15 @@ static bool wr_scores(void)
 }
 
 /*
- * Write the player scores
+ * Write the player memory
  */
 static bool wr_memory(void)
 {
     u16b tmp16u;
     int i;
+
+    // Don't save wizard memory
+    if (p_ptr->is_wizard) return TRUE;
 
     QString memory_filename = QString("memory.npp");
 

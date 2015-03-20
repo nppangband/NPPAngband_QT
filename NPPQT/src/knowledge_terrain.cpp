@@ -241,8 +241,8 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
         terrain_button_group->addButton(new_button, i);
 
         // f_idx
-        QString this_f_idx = (QString("%1") .arg(i));
-        QTableWidgetItem *f_idx = new QTableWidgetItem(this_f_idx);
+        QTableWidgetItem *f_idx = new QTableWidgetItem(i);
+        f_idx->setData(Qt::DisplayRole, i);
         f_idx->setTextAlignment(Qt::AlignRight);
         terrain_table->setItem(row, col++, f_idx);
 
@@ -293,7 +293,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    //Filter for the first monster group.
+    //Filter for the first terrain group.
     filter_rows(0,0);
 
     // This table starts out too small. It needs to be made bigger.

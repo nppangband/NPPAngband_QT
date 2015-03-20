@@ -25,7 +25,21 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 
+void qtablewidget_add_palette(QTableWidget *this_tablewidget)
+{
+    QPalette this_palette;
+    this_palette.setColor(QPalette::Base, defined_colors[TERM_DARK]);
+    QBrush this_brush(defined_colors[TERM_WHITE]);
+    this_palette.setBrush(QPalette::Text, this_brush);
 
+    this_tablewidget->setPalette(this_palette);
+}
+
+void qpushbutton_dark_background(QPushButton *this_pushbutton)
+{
+    this_pushbutton->setStyleSheet("background-color: rgb(0, 0, 0)");
+    this_pushbutton->setAutoFillBackground(TRUE);
+}
 
 
 DisplayNotesFile::DisplayNotesFile(void)
@@ -157,7 +171,7 @@ DisplayScores::DisplayScores(void)
     {
         score_list.append(player_scores_list[i]);
     }
-    if (!p_ptr->is_wizard)
+    if (!p_ptr->is_wizard && !p_ptr->is_dead)
     {
         high_score player_current = build_score("Still Alive");
         player_current.death_how = QString("nobody (yet)!");
@@ -181,7 +195,6 @@ DisplayScores::DisplayScores(void)
         }
     }
 
-
     int col = 0;
 
     //Set up the headers
@@ -197,7 +210,7 @@ DisplayScores::DisplayScores(void)
     QTableWidgetItem *killed_by_header = new QTableWidgetItem("Killed By");
     killed_by_header->setTextAlignment(Qt::AlignLeft);
     scores_table->setHorizontalHeaderItem(col++, killed_by_header);
-    QTableWidgetItem *level_header = new QTableWidgetItem("Level");
+    QTableWidgetItem *level_header = new QTableWidgetItem("Player Level");
     level_header->setTextAlignment(Qt::AlignRight);
     scores_table->setHorizontalHeaderItem(col++, level_header);
     QTableWidgetItem *exp_header = new QTableWidgetItem("Experience");
@@ -221,7 +234,8 @@ DisplayScores::DisplayScores(void)
         scores_table->insertRow(i);
 
         // Score
-        QTableWidgetItem *score = new QTableWidgetItem(QString("%1") .arg(score_ptr->score));
+        QTableWidgetItem *score = new QTableWidgetItem;
+        score->setData(Qt::DisplayRole, score_ptr->score);
         score->setTextAlignment(Qt::AlignRight);
         scores_table->setItem(i, col++, score);
 
@@ -238,45 +252,35 @@ DisplayScores::DisplayScores(void)
         QString died_by = (QString(" %1 ") .arg(score_ptr->death_how));
         if (score_ptr->cur_depth)
         {
-            died_by.append(QString("on dungeon level %1 ") .arg(score_ptr->cur_depth * 50));
+            died_by.append(QString("on dungeon level %1 ") .arg(score_ptr->cur_depth));
         }
         else died_by.append("in the town ");
 
-        if (score_ptr->cur_depth != score_ptr->max_depth)
-        {
-            died_by.append(QString(" (Max Depth %1) ") .arg(score_ptr->max_depth));
-        }
         QTableWidgetItem *killed_by = new QTableWidgetItem(died_by);
         killed_by->setTextAlignment(Qt::AlignLeft);
         scores_table->setItem(i, col++, killed_by);
 
         // Player level
-        QString level_str = (QString("%1") .arg(score_ptr->cur_level));
-        if (score_ptr->max_level != score_ptr->cur_level)
-        {
-            level_str.append(QString("  Max Level %1") .arg(score_ptr->max_level));
-        }
-        QTableWidgetItem *level = new QTableWidgetItem(level_str);
+        QTableWidgetItem *level = new QTableWidgetItem();
+        level->setData(Qt::DisplayRole, score_ptr->cur_level);
         level->setTextAlignment(Qt::AlignRight);
         scores_table->setItem(i, col++, level);
 
         // Player Experience
-        QString experience = (QString("%1  ").arg(score_ptr->cur_exp));
-        if (score_ptr->max_exp != score_ptr->cur_exp)
-        {
-            experience.append(color_string((QString("  Max Exp %1  ") .arg(score_ptr->max_exp)), TERM_BLUE));
-        }
-        QTableWidgetItem *exp = new QTableWidgetItem(QString("%1") .arg(experience));
+        QTableWidgetItem *exp = new QTableWidgetItem();
+        exp->setData(Qt::DisplayRole, score_ptr->cur_exp);
         exp->setTextAlignment(Qt::AlignRight);
         scores_table->setItem(i, col++, exp);
 
         // Turns
-        QTableWidgetItem *turns = new QTableWidgetItem(QString("%1") .arg(score_ptr->turns));
+        QTableWidgetItem *turns = new QTableWidgetItem();
+        turns->setData(Qt::DisplayRole, score_ptr->turns);
         turns->setTextAlignment(Qt::AlignRight);
         scores_table->setItem(i, col++, turns);
 
         // Fame
-        QTableWidgetItem *fame = new QTableWidgetItem(QString("%1") .arg(score_ptr->fame));
+        QTableWidgetItem *fame = new QTableWidgetItem();
+        fame->setData(Qt::DisplayRole, score_ptr->fame);
         fame->setTextAlignment(Qt::AlignRight);
         scores_table->setItem(i, col++, fame);
 
@@ -375,7 +379,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     QTableWidgetItem *symbol_header = new QTableWidgetItem("Symbol");
     symbol_header->setTextAlignment(Qt::AlignCenter);
     kill_count_table->setHorizontalHeaderItem(col++, symbol_header);
-    QTableWidgetItem *depth_header = new QTableWidgetItem("Native Depth");
+    QTableWidgetItem *depth_header = new QTableWidgetItem("Native Level");
     depth_header->setTextAlignment(Qt::AlignRight);
     kill_count_table->setHorizontalHeaderItem(col++, depth_header);
     QTableWidgetItem *kills_header = new QTableWidgetItem("Total Kills");
@@ -406,19 +410,20 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         kill_count_table->setItem(i, col++, mon_ltr);
 
         // dungeon depth
-        QString mon_level = (QString("%1'") .arg(r_ptr->level * 50));
-        if (!r_ptr->level) mon_level = QString("Town");
-        QTableWidgetItem *mon_lvl = new QTableWidgetItem(mon_level);
+        QTableWidgetItem *mon_lvl = new QTableWidgetItem();
+        mon_lvl->setData(Qt::DisplayRole, (r_ptr->level));
         mon_lvl->setTextAlignment(Qt::AlignRight);
         kill_count_table->setItem(i, col++, mon_lvl);
 
         // Monster Kills
-        QTableWidgetItem *total_kills = new QTableWidgetItem(QString("%1") .arg(mk_ptr->total_kills));
+        QTableWidgetItem *total_kills = new QTableWidgetItem();
+        total_kills->setData(Qt::DisplayRole, mk_ptr->total_kills);
         total_kills->setTextAlignment(Qt::AlignRight);
         kill_count_table->setItem(i, col++, total_kills);
     }
 
-    kill_count_table->setSortingEnabled(FALSE);
+    kill_count_table->setSortingEnabled(TRUE);
+    kill_count_table->sortByColumn(3, Qt::DescendingOrder);
     kill_count_table->resizeColumnsToContents();
     kill_count_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     main_layout->addWidget(kill_count_table);

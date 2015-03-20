@@ -778,8 +778,8 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         object_settings_group->addButton(settings_button, i);
 
         // k_idx
-        QString this_k_idx = (QString("%1") .arg(i));
-        QTableWidgetItem *k_idx = new QTableWidgetItem(this_k_idx);
+        QTableWidgetItem *k_idx = new QTableWidgetItem();
+        k_idx->setData(Qt::DisplayRole, i);
         k_idx->setTextAlignment(Qt::AlignRight);
         object_table->setItem(row, col++, k_idx);
 
@@ -1008,7 +1008,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
         kind->setTextAlignment(Qt::AlignLeft);
         ego_item_table->setItem(row, col++, kind);
 
-        // EgoSquelch status
+        // Ego Squelch status
         QString squelch_st = QString("FALSE");
         if (e_ptr->squelch) squelch_st = QString("TRUE");
         QTableWidgetItem *squelch = new QTableWidgetItem(squelch_st);
@@ -1281,7 +1281,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
 
         row++;
 
-        // Now make sure the object type is added to the table.
+        // Now make sure the artifact type is added to the table.
         artifact_group_info[artifact_matches_group(i)] = TRUE;
     }
 

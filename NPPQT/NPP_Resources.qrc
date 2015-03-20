@@ -88,5 +88,6 @@
         <file>lib/icons/target-help.png</file>
         <file>lib/icons/non-native.png</file>
         <file>lib/icons/native.png</file>
+        <file>lib/icons/help_dark.png</file>
     </qresource>
 </RCC>
