@@ -208,6 +208,8 @@ bool ObjectDialog::should_add_activate(object_type *o_ptr, s16b item_slot)
 {
     if (!obj_can_activate(o_ptr)) return (FALSE);
     if (birth_swap_weapons && item_slot == INVEN_SWAP_WEAPON) return (FALSE);
+    if (item_slot < INVEN_WIELD) return (FALSE);
+    if (item_slot > INVEN_TOTAL) return (FALSE);
     return (TRUE);
 }
 

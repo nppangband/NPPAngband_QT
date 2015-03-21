@@ -305,7 +305,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         if (r_ptr->is_player_ghost()) this_mon_race.append(" [G]");
         else if (r_ptr->is_unique()) this_mon_race.append(" [U]");
         QTableWidgetItem *race = new QTableWidgetItem(this_mon_race);
-
         race->setTextAlignment(Qt::AlignLeft);
         monster_table->setItem(row, col++, race);
 

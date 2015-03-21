@@ -350,6 +350,7 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
         if ((a_ptr->sval + a_ptr->tval) == 0) return;
         o_ptr = &object_type_body;
         make_fake_artifact(o_ptr, o_idx);
+        k_ptr = &k_info[o_ptr->k_idx];
     }
 
     squelch_type = squelch_type_of(o_ptr);

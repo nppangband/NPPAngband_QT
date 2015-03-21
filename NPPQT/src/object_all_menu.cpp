@@ -21,6 +21,7 @@
 #include <QButtonGroup>
 #include <QKeyEvent>
 #include <QDialogButtonBox>
+#include <QScrollArea>
 
 /*
  *
@@ -297,7 +298,6 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons)
     update_floor_list(floor_list, FALSE, do_buttons);
     floor_vlay->addLayout(floor_list);
     floor_vlay->addStretch(1);
-
 
     // Add the list of inventory
     QVBoxLayout *inven_vlay = new QVBoxLayout;

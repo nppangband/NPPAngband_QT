@@ -89,5 +89,6 @@
         <file>lib/icons/non-native.png</file>
         <file>lib/icons/native.png</file>
         <file>lib/icons/help_dark.png</file>
+        <file>lib/icons/settings_dark.png</file>
     </qresource>
 </RCC>

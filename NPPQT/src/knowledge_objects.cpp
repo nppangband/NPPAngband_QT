@@ -612,9 +612,8 @@ void DisplayObjectKnowledge::settings_press(int k_idx)
 
         // Update the label
         object_kind *k_ptr = &k_info[k_idx];
-        QString squelch_st = QString(squelch_status[k_ptr->squelch]);
-        this->object_table->item(i, 2)->setText(squelch_st);
-        this->object_table->item(i, 2)->setTextColor(squelch_status_color[k_ptr->squelch]);
+        this->object_table->item(i, 2)->setData(Qt::DisplayRole, squelch_status[k_ptr->squelch]);
+        this->object_table->item(i, 2)->setData(Qt::ForegroundRole, defined_colors[squelch_status_color[k_ptr->squelch]]);
 
     }
 }
@@ -681,6 +680,9 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
 
     object_table = new QTableWidget(0, 6, this);
     object_table->setAlternatingRowColors(FALSE);
+
+    qtablewidget_add_palette(object_group_table);
+    qtablewidget_add_palette(object_table);
 
     do_spoiler = FALSE;
 
@@ -752,28 +754,28 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
             pix = pix.scaled(32, 32);
             kind_ltr->setIcon(pix);
         }
-        else kind_ltr->setTextColor(k_ptr->d_color);
+        kind_ltr->setData(Qt::ForegroundRole, object_type_attr(i));
         kind_ltr->setTextAlignment(Qt::AlignCenter);
         object_table->setItem(row, col++, kind_ltr);
 
         // Squelch status
-        QString squelch_st = QString(squelch_status[k_ptr->squelch]);
-        QTableWidgetItem *squelch = new QTableWidgetItem(squelch_st);
-        squelch->setTextColor(squelch_status_color[k_ptr->squelch]);
+        QTableWidgetItem *squelch = new QTableWidgetItem();
+        squelch->setData(Qt::DisplayRole, squelch_status[k_ptr->squelch]);
+        squelch->setData(Qt::ForegroundRole, defined_colors[squelch_status_color[k_ptr->squelch]]);
         squelch->setTextAlignment(Qt::AlignLeft);
         object_table->setItem(row, col++, squelch);
 
         // object info
         QPushButton *info_button = new QPushButton();
-        info_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        info_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(info_button);
+        info_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         object_table->setCellWidget(row, col++, info_button);
         object_button_group->addButton(info_button, i);
 
         // object settings
         QPushButton *settings_button = new QPushButton();
-        settings_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
-        settings_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(settings_button);
+        settings_button->setIcon(QIcon(":/icons/lib/icons/settings_dark.png"));
         object_table->setCellWidget(row, col++, settings_button);
         object_settings_group->addButton(settings_button, i);
 
@@ -895,9 +897,15 @@ void DisplayEgoItemKnowledge::settings_press(int e_idx)
         ego_ptr->squelch = !ego_ptr->squelch;
 
         // Update the label
-        QString squelch_st = QString("TRUE");
-        if (!ego_ptr->squelch) squelch_st = QString("FALSE");
-        this->ego_item_table->item(i, 1)->setText(squelch_st);
+        QString squelch_st = QString("FALSE");
+        QColor squelch_color = defined_colors[TERM_GREEN];
+        if (ego_ptr->squelch)
+        {
+            squelch_st = QString("TRUE");
+            squelch_color = defined_colors[TERM_RED];
+        }
+        this->ego_item_table->item(i, 1)->setData(Qt::DisplayRole, squelch_st);
+        this->ego_item_table->item(i, 1)->setData(Qt::ForegroundRole, squelch_color);
     }
 }
 
@@ -964,6 +972,9 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     ego_item_table = new QTableWidget(0, 5, this);
     ego_item_table->setAlternatingRowColors(FALSE);
 
+    qtablewidget_add_palette(ego_item_group_table);
+    qtablewidget_add_palette(ego_item_table);
+
     do_spoiler = FALSE;
 
     int row = 0;
@@ -973,7 +984,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     obj_header->setTextAlignment(Qt::AlignLeft);
     ego_item_table->setHorizontalHeaderItem(col++, obj_header);
     QTableWidgetItem *squelch_header = new QTableWidgetItem("Squelch Setting");
-    squelch_header->setTextAlignment(Qt::AlignLeft);
+    squelch_header->setTextAlignment(Qt::AlignCenter);
     ego_item_table->setHorizontalHeaderItem(col++, squelch_header);
     QTableWidgetItem *info_header = new QTableWidgetItem("Info");
     info_header->setTextAlignment(Qt::AlignCenter);
@@ -1010,22 +1021,29 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
 
         // Ego Squelch status
         QString squelch_st = QString("FALSE");
-        if (e_ptr->squelch) squelch_st = QString("TRUE");
-        QTableWidgetItem *squelch = new QTableWidgetItem(squelch_st);
-        squelch->setTextAlignment(Qt::AlignLeft);
+        QColor squelch_color = defined_colors[TERM_GREEN];
+        if (e_ptr->squelch)
+        {
+            squelch_st = QString("TRUE");
+            squelch_color = defined_colors[TERM_RED];
+        }
+        QTableWidgetItem *squelch = new QTableWidgetItem();
+        squelch->setData(Qt::DisplayRole, squelch_st);
+        squelch->setData(Qt::ForegroundRole, squelch_color);
+        squelch->setTextAlignment(Qt::AlignCenter);
         ego_item_table->setItem(row, col++, squelch);
 
         // Ego info
         QPushButton *info_button = new QPushButton();
-        info_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        info_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(info_button);
+        info_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         ego_item_table->setCellWidget(row, col++, info_button);
         ego_item_button_group->addButton(info_button, i);
 
         // Ego settings
         QPushButton *settings_button = new QPushButton();
-        settings_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
-        settings_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(settings_button);
+        settings_button->setIcon(QIcon(":/icons/lib/icons/settings_dark.png"));
         settings_button->setStatusTip("Toggle Squelch Status");
         ego_item_table->setCellWidget(row, col++, settings_button);
         ego_item_squelch_toggle->addButton(settings_button, i);
@@ -1099,7 +1117,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     filter_rows(0,0);
 
     // This table starts out too small. It needs to be made bigger.
-    resize(QSize(width() * 10 / 7, height() * 4 / 3));
+    resize(QSize(width() * 19 / 14, height() * 4 / 3));
 
     setLayout(main_layout);
     setWindowTitle(tr("Ego Item Knowledge"));
@@ -1213,6 +1231,9 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     artifact_table = new QTableWidget(0, 4, this);
     artifact_table->setAlternatingRowColors(FALSE);
 
+    qtablewidget_add_palette(artifact_group_table);
+    qtablewidget_add_palette(artifact_table);
+
     do_spoiler = FALSE;
 
     int row = 0;
@@ -1253,23 +1274,26 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
         artifact_table->insertRow(row);
         col = 0;
 
+        int k_idx = lookup_kind(a_ptr->tval, a_ptr->sval);
+
         // artifact kind
         QString this_art = get_artifact_display_name(i);
         QTableWidgetItem *art_kind = new QTableWidgetItem(this_art);
+        art_kind->setData(Qt::ForegroundRole, object_type_attr(k_idx));
         art_kind->setTextAlignment(Qt::AlignLeft);
         artifact_table->setItem(row, col++, art_kind);
 
         // artifact info
         QPushButton *info_button = new QPushButton();
-        info_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        info_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(info_button);
+        info_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         artifact_table->setCellWidget(row, col++, info_button);
         artifact_button_group->addButton(info_button, i);
 
         // artifact settings
         QPushButton *settings_button = new QPushButton();
-        settings_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
-        settings_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(settings_button);
+        settings_button->setIcon(QIcon(":/icons/lib/icons/settings_dark.png"));
         artifact_table->setCellWidget(row, col++, settings_button);
         artifact_settings_group->addButton(settings_button, i);
 
@@ -1338,7 +1362,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     filter_rows(0,0);
 
     // This table starts out too small. It needs to be made bigger.
-    resize(QSize(width() * 10 / 7, height() * 4 / 3));
+    resize(QSize(width() * 18 / 14, height() * 4 / 3));
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Knowledge"));

@@ -373,6 +373,8 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     kill_count_table = new QTableWidget(0, 4, this);
     kill_count_table->setAlternatingRowColors(FALSE);
 
+    qtablewidget_add_palette(kill_count_table);
+
     QTableWidgetItem *race_header = new QTableWidgetItem("Monster Race");
     race_header->setTextAlignment(Qt::AlignLeft);
     kill_count_table->setHorizontalHeaderItem(col++, race_header);
@@ -402,16 +404,22 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         race->setTextAlignment(Qt::AlignLeft);
         kill_count_table->setItem(i, col++, race);
 
-        // Symbol
+        // Symbol (or tile if tiles are used)
         QString mon_symbol = (QString("'%1'") .arg(r_ptr->d_char));
         QTableWidgetItem *mon_ltr = new QTableWidgetItem(mon_symbol);
-        mon_ltr->setTextColor(r_ptr->d_color);
+        if (use_graphics)
+        {
+            QPixmap pix = ui_get_tile(r_ptr->tile_id);
+            pix = pix.scaled(32, 32);
+            mon_ltr->setIcon(pix);
+        }
+        mon_ltr->setData(Qt::ForegroundRole, r_ptr->d_color);
         mon_ltr->setTextAlignment(Qt::AlignCenter);
         kill_count_table->setItem(i, col++, mon_ltr);
 
         // dungeon depth
         QTableWidgetItem *mon_lvl = new QTableWidgetItem();
-        mon_lvl->setData(Qt::DisplayRole, (r_ptr->level));
+        mon_lvl->setData(Qt::DisplayRole, r_ptr->level);
         mon_lvl->setTextAlignment(Qt::AlignRight);
         kill_count_table->setItem(i, col++, mon_lvl);
 
@@ -436,7 +444,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    resize(QSize(width(), height() * 4 / 3));
+    resize(QSize(width()* 10 / 9, height() * 4 / 3));
 
     setLayout(main_layout);
     setWindowTitle(QString("Monster Kill Count"));
