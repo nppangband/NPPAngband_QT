@@ -56,6 +56,7 @@ private:
     void update_active_tabs();
 
     bool no_objects();
+    int start_tab;
 
     // Layouts and labels
     QVBoxLayout *floor_vlay;

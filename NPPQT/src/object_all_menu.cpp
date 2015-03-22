@@ -236,19 +236,28 @@ void AllObjectsDialog::hide_or_show_tabs()
     }
 
     update_active_tabs();
-    if (current_tab == TAB_FLOOR && allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
+
+    if (start_tab == TAB_FLOOR && allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
+    else if (start_tab == TAB_INVEN && allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
+    else if (start_tab == TAB_EQUIP && allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
+    else if (current_tab == TAB_FLOOR && allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
     else if (current_tab == TAB_INVEN && allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
     else if (current_tab == TAB_EQUIP && allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
     else if (allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
     else if (allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
     else if (allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
     else object_tabs->setCurrentIndex(0);
+
+    // Only use the start tab once
+    start_tab = TABS_MAX;
 }
 
 
 AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 {
     confirm_tabs();
+
+    start_tab = start_screen;
 
     // Handle no available objects.
     if (no_objects())
