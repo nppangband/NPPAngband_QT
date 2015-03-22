@@ -1997,7 +1997,7 @@ PlayerScreenDialog::PlayerScreenDialog(void)
 
 
 
-void do_cmd_player_screen()
+void do_cmd_character_screen()
 {
     PlayerScreenDialog();
 }

@@ -572,7 +572,14 @@ bool target_set_interactive(int mode, int x, int y)
                     done = TRUE;
                     break;
                 }
-
+                case Qt::Key_copyright:
+                case Qt::Key_C:
+                case Qt::Key_Comma:
+                {
+                    /* Set to closest target */
+                    if (target_set_closest(TARGET_KILL)) done = TRUE;
+                    break;
+                }
                 case Qt::Key_Space:
                 case Qt::Key_Plus:
                 {
@@ -755,6 +762,14 @@ bool target_set_interactive(int mode, int x, int y)
                 {
                     color_message(QObject::tr("Exiting interactive mode"), TERM_SKY_BLUE);
                     done = TRUE;
+                    break;
+                }
+                case Qt::Key_copyright:
+                case Qt::Key_C:
+                case Qt::Key_Comma:
+                {
+                    /* Set to closest target */
+                    if (target_set_closest(TARGET_KILL)) done = TRUE;
                     break;
                 }
                 case Qt::Key_Exclam:
@@ -1166,6 +1181,7 @@ bool get_aim_dir(int *dp, bool target_trap)
             }
             case Qt::Key_copyright:
             case Qt::Key_C:
+            case Qt::Key_Comma:
             {
                 /* Set to closest target */
                 if (target_set_closest(TARGET_KILL)) dir = DIR_TARGET;

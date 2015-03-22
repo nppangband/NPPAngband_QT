@@ -51,7 +51,7 @@ private:
 };
 
 extern QString stat_entry(int stat);
-extern void do_cmd_player_screen(void);
+extern void do_cmd_character_screen(void);
 extern QString moria_speed_labels(int speed);
 extern byte analyze_speed_bonuses(int speed, byte default_attr);
 extern void make_standard_label(QLabel *this_label, QString title, byte preset_color);
