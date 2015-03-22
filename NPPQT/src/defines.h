@@ -858,10 +858,23 @@ enum
 /*
  * Available graphic modes
  */
-#define GRAPHICS_NONE			0
-#define GRAPHICS_ORIGINAL		1
-#define GRAPHICS_DAVID_GERVAIS	2
-#define GRAPHICS_PSEUDO			3
+enum
+{
+    GRAPHICS_NONE = 0,
+    GRAPHICS_ORIGINAL,
+    GRAPHICS_DAVID_GERVAIS,
+    GRAPHICS_PSEUDO,
+};
+
+/*
+ * Available graphic modes
+ */
+enum
+{
+    KEYSET_NEW = 0,
+    KEYSET_ANGBAND,
+    KEYSET_ROGUE,
+};
 
 /*
  * Information for "do_cmd_options()".

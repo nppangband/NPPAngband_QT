@@ -215,4 +215,6 @@ public slots:
     void do_timeout();
 };
 
+extern QPixmap colorize_pix(QPixmap src, QColor color);
+
 #endif // EMITTER_H

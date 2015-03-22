@@ -180,7 +180,6 @@ static item_act_t item_actions[] =
     "Destroy which item? ", "You have nothing to destroy.",
     NULL, (USE_INVEN | USE_FLOOR | USE_EQUIP | USE_QUIVER), NULL },
 
-
     /* ACTION_USE_ITEM */
    { NULL, TRUE, "use",
     "Use which item? ", "You have no items to use.",
@@ -1331,6 +1330,18 @@ void do_cmd_destroy(void)
     command_destroy(args);
 }
 
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_activate(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_ACTIVATE);
+
+    command_use(args);
+}
 
 /*
  * Handle the user command to destroy an item
@@ -1345,17 +1356,93 @@ void do_cmd_use_item(void)
     command_use(args);
 }
 
-
 /*
  * Handle the user command to destroy an item
  */
-void do_cmd_activate(void)
+void do_cmd_aim_wand(void)
 {
     // Paranoia
     if (!p_ptr->playing) return;
 
-    cmd_arg args = select_item(ACTION_ACTIVATE);
+    cmd_arg args = select_item(ACTION_AIM_WAND);
 
     command_use(args);
 }
 
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_use_staff(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_USE_STAFF);
+
+    command_use(args);
+}
+
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_zap_rod(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_ZAP_ROD);
+
+    command_use(args);
+}
+
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_eat_food(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_EAT_FOOD);
+
+    command_use(args);
+}
+
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_quaff_potion(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_QUAFF_POTION);
+
+    command_use(args);
+}
+
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_read_scroll(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_READ_SCROLL);
+
+    command_use(args);
+}
+
+/*
+ * Handle the user command to destroy an item
+ */
+void do_cmd_refill(void)
+{
+    // Paranoia
+    if (!p_ptr->playing) return;
+
+    cmd_arg args = select_item(ACTION_REFILL);
+
+    command_use(args);
+}

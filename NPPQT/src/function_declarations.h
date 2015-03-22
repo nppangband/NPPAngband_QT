@@ -264,7 +264,7 @@ extern bool race_similar_breaths(monster_race *r_ptr, monster_race *r2_ptr);
 extern bool race_similar_monsters(int m_idx, int m2y, int m2x);
 
 // object_all_menu.cpp
-extern void do_cmd_all_objects(void);
+extern void do_cmd_all_objects(int start_screen);
 
 /* object_desc.c */
 extern QString strip_name(int k_idx);
@@ -583,27 +583,19 @@ extern void process_guild_quests(void);
 // qt_mainwindow.cpp
 #define TOOLBAR_TARGETTING 1
 #define TOOLBAR_TARGETTING_INTERACTIVE 2
-extern void ui_toolbar_show(int toolbar);
-extern void ui_toolbar_hide(int toolbar);
-extern QString rect_to_string(QRect rect);
+
+
+
+extern QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size);
+
+
+
+
+// qt_ui_functions.cpp
 extern QRect visible_dungeon();
 extern bool panel_contains(int y, int x);
-extern void ui_redraw_grid(int y, int x);
-extern void ui_redraw_all();
-extern void ui_ensure(int y, int x);
-extern bool ui_modify_panel(int y, int x);
-extern bool ui_adjust_panel(int y, int x);
-extern bool ui_change_panel(int dir);
-extern void ui_center(int y, int x);
-extern void ui_player_moved();
-extern QSize ui_grid_size();
-extern QPixmap rotate_pix(QPixmap src, qreal angle);
-extern QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size);
-extern QPixmap darken_pix(QPixmap src);
-extern QPixmap colorize_pix(QPixmap src, QColor color);
-extern QPixmap colorize_pix2(QPixmap src, QColor color);
-extern QPixmap colorize_pix3(QPixmap src, QColor color);
-extern QPixmap gray_pix(QPixmap src);
+extern void ui_toolbar_show(int toolbar);
+extern void ui_toolbar_hide(int toolbar);
 extern UserInput ui_get_input();
 extern bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x);
 extern void ui_destroy_path();
@@ -634,6 +626,15 @@ extern void ui_update_titlebar();
 extern void ui_update_messages();
 extern QWidget *ui_main_window();
 extern void player_death_close_game(void);
+extern void ui_redraw_grid(int y, int x);
+extern void ui_redraw_all();
+extern void ui_ensure(int y, int x);
+extern bool ui_modify_panel(int y, int x);
+extern bool ui_adjust_panel(int y, int x);
+extern bool ui_change_panel(int dir);
+extern void ui_center(int y, int x);
+extern void ui_player_moved();
+extern QSize ui_grid_size();
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

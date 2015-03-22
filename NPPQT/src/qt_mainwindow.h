@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QTextEdit>
 #include <QGraphicsView>
+#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QDir>
 #include <QPainter>
@@ -89,6 +90,7 @@ public:
     void calculate_cell_size();
     void destroy_tiles();
     void set_graphic_mode(int mode);
+    void set_keymap_mode(int mode);
     void redraw();
     void update_cursor();
     void force_redraw();
@@ -147,6 +149,9 @@ private slots:
 
     void slot_targetting_button();
 
+    void slot_simplified_keyset() {set_keymap_mode(KEYSET_NEW);}
+    void slot_angband_keyset() {set_keymap_mode(KEYSET_ANGBAND);}
+    void slot_rogue_keyset() {set_keymap_mode(KEYSET_ROGUE);}
     void slot_multiplier_clicked(QAction *);
 
     // Functions to make sure the available menu commands are appropriate to the situation.
@@ -221,11 +226,15 @@ private:
     //Command for the settings menu
     QAction *options_act;
     QAction *bigtile_act;
+    QActionGroup *tiles_choice;
     QAction *ascii_mode_act;
     QAction *dvg_mode_act;
     QAction *old_tiles_act;
     QAction *pseudo_ascii_act;
     QAction *fontselect_act;
+    QAction *keymap_new;
+    QAction *keymap_angband;
+    QAction *keymap_rogue;
 
     //Commmands for the knowledge menu
     QAction *view_monster_knowledge;
@@ -315,8 +324,6 @@ private:
 
 };
 
-QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p);
-
 extern MainWindow *main_window;
 
 class PackageDialog: public NPPDialog
@@ -334,6 +341,39 @@ public slots:
     void find_pak();
     void find_folder();
     void do_accept();
+};
+
+class DungeonGrid: public QGraphicsItem
+{
+public:
+    DungeonGrid(int _x, int _y, MainWindow *_parent);
+
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    QPainterPath shape() const;
+
+    void cellSizeChanged();
+
+    MainWindow *parent;
+    int c_x, c_y;
+};
+
+class DungeonCursor: public QGraphicsItem
+{
+public:
+    MainWindow *parent;
+    int c_x, c_y;
+
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    QPainterPath shape() const;
+
+    DungeonCursor(MainWindow *_parent);
+    void moveTo(int y, int x);
+
+    void cellSizeChanged();
 };
 
 #endif

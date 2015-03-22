@@ -1,11 +1,24 @@
-//#include <QtWidgets>
-#include <QHash>
+/* File: qt_mainwindow.cpp */
+
+/*
+ * Copyright (c) 2014 Jeff Greene, Diego Gonzalez
+ *
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 3, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
+ */
+
+
 #include <QTextStream>
-#include <QGraphicsItem>
 #include <QGraphicsRectItem>
-#include <QGridLayout>
 #include <QHeaderView>
-#include <QLabel>
 #include <QGraphicsScale>
 #include <QFileDialog>
 #include <QToolButton>
@@ -29,7 +42,7 @@
 #include "src/utilities.h"
 #include "src/knowledge.h"
 #include "src/help.h"
-#include "emitter.h"
+#include "src/emitter.h"
 #include "griddialog.h"
 #include "package.h"
 #include "tilebag.h"
@@ -40,356 +53,30 @@ MainWindow *main_window = 0;
 
 #define FONT_EXTRA 4
 
-
-
-
-
-
-void ui_request_size_update(QWidget *widget)
+static QPixmap gray_pix(QPixmap src)
 {
-    QObjectList lst = widget->children();
-    for (int i = 0; i < lst.size(); i++) {
-        QObject *obj = lst.at(i);
-        if (obj->isWidgetType()) {
-            ui_request_size_update((QWidget *)obj);
+    QImage img = src.toImage();
+    for (int x = 0; x < img.width(); x++) {
+        for (int y = 0; y < img.height(); y++) {
+            QColor col = QColor(img.pixel(x, y)).darker();
+            int gray = qGray(col.rgb());
+            img.setPixel(x, y, qRgb(gray, gray, gray));
         }
     }
-
-    widget->updateGeometry();
-
-    if (widget->layout()) {
-        widget->layout()->invalidate();
-    }
-}
-
-QSize ui_estimate_table_size(QTableWidget *table, bool horiz, bool vert, int padding)
-{
-    QSize final(padding, padding);
-    int w = 0, h = 0;
-
-    if (horiz) {
-        w += table->verticalHeader()->width();
-        for (int i = 0; i < table->columnCount(); i++) {
-            if (table->isColumnHidden(i)) continue;
-            w += table->columnWidth(i);
-        }
-    }
-
-    if (vert) {
-        h += table->horizontalHeader()->height();
-        for (int i = 0; i < table->rowCount(); i++) {
-            if (table->isRowHidden(i)) continue;
-            h += table->rowHeight(i);
-        }
-    }
-
-    final += QSize(w, h);
-    return final;
-}
-
-void ui_resize_to_contents(QWidget *widget)
-{
-    ui_request_size_update(widget);
-    QCoreApplication::processEvents();
-    widget->resize(widget->sizeHint());
-}
-
-QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
-{
-    p += item->pos().toPoint();
-    QPoint p2(p.x() / main_window->cell_wid, p.y() / main_window->cell_hgt);
-    return p2;
-}
-
-bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x)
-{
-    if (path_n < 1) return false;
-
-    QPen pen(QColor("yellow"));
-
-    for (int i = 0; i < path_n; i++) {
-        int y = GRID_Y(path_g[i]);
-        int x = GRID_X(path_g[i]);        
-
-        // Don't touch the cursor
-        if (y == cur_tar_y && x == cur_tar_x) continue;
-
-        QGraphicsRectItem *item = main_window->dungeon_scene->addRect(
-                    x * main_window->cell_wid, y * main_window->cell_hgt,
-                    main_window->cell_wid - 1, main_window->cell_hgt - 1, pen, Qt::NoBrush);
-
-        item->setOpacity(1);
-        item->setZValue(90);
-
-        main_window->path_items.append(item);
-    }
-
-    return true;
-}
-
-void ui_destroy_path()
-{
-    for (int i = 0; i < main_window->path_items.size(); i++) {
-        QGraphicsItem *item = main_window->path_items.at(i);
-        main_window->dungeon_scene->removeItem(item);
-        delete item;
-    }
-    main_window->path_items.clear();
-    main_window->force_redraw();
-}
-
-QString rect_to_string(QRect rect)
-{
-    return QString("%1:%2 (%3x%4)").arg(rect.x()).arg(rect.y()).arg(rect.width()).arg(rect.height());
-}
-
-QRect visible_dungeon()
-{
-    QGraphicsView *view = main_window->graphics_view;
-    QRectF rect1 = view->mapToScene(view->viewport()->geometry()).boundingRect();
-    QRect rect2(floor(rect1.x() / main_window->cell_wid),
-                floor(rect1.y() / main_window->cell_hgt),
-                ceil(rect1.width() / main_window->cell_wid),
-                ceil(rect1.height() / main_window->cell_hgt));
-    QRect rect3(0, 0, p_ptr->cur_map_wid, p_ptr->cur_map_hgt);
-    rect2 = rect2.intersected(rect3);
-    return rect2;
-}
-
-class DungeonGrid: public QGraphicsItem
-{
-public:
-    DungeonGrid(int _x, int _y, MainWindow *_parent);
-
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    QPainterPath shape() const;
-
-    void cellSizeChanged();
-
-    MainWindow *parent;
-    int c_x, c_y;
-};
-
-class DungeonCursor: public QGraphicsItem
-{    
-public:
-    MainWindow *parent;
-    int c_x, c_y;
-
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    QPainterPath shape() const;
-
-    DungeonCursor(MainWindow *_parent);
-    void moveTo(int y, int x);
-
-    void cellSizeChanged();
-};
-
-UserInput ui_get_input()
-{
-    // Avoid reentrant calls
-    if (main_window->ev_loop.isRunning()) {
-        UserInput temp;
-        temp.mode = INPUT_MODE_NONE;
-        temp.key = 0;
-        temp.x = temp.y = -1;
-        temp.text.clear();
-        return temp;
-    }
-
-    main_window->ui_mode = UI_MODE_INPUT;
-
-    main_window->input.mode = INPUT_MODE_NONE;
-
-    main_window->cursor->update();
-
-    main_window->ev_loop.exec();
-
-    main_window->ui_mode = UI_MODE_DEFAULT;
-
-    main_window->cursor->update();
-
-    if (main_window->input.mode == INPUT_MODE_KEY)
-    {
-        main_window->input.x = main_window->input.y = -1;
-    }
-    else
-    {
-        main_window->input.key = 0;
-        main_window->input.text.clear();
-    }
-
-    return main_window->input;
-}
-
-void ui_player_moved()
-{
-    if (!character_dungeon) return;
-    main_window->update_cursor();
-
-    int py = p_ptr->py;
-    int px = p_ptr->px;
-
-    if (center_player && !p_ptr->is_running())
-    {
-        ui_center(py, px);
-        return;
-    }
-
-    QRect vis = visible_dungeon();
-    if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
-            || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
-            || px < vis.x() + PANEL_CHANGE_OFFSET_X
-            || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
-    {
-        ui_center(py, px);
-    }
-}
-
-QSize ui_grid_size()
-{
-    return QSize(main_window->cell_wid, main_window->cell_hgt);
+    return QPixmap::fromImage(img);
 }
 
 
-QPixmap colorize_pix3(QPixmap src, QColor color)
+static QPixmap darken_pix(QPixmap src)
 {
     QImage img = src.toImage();
     QPainter p(&img);
-    p.setCompositionMode(QPainter::CompositionMode_Overlay);
-    p.fillRect(img.rect(), color);
-    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    p.drawPixmap(0, 0, src);
-    return QPixmap::fromImage(img);
-}
-
-QPixmap rotate_pix(QPixmap src, qreal angle)
-{
-    QImage img(src.width(), src.height(), QImage::Format_ARGB32);
-    for (int x = 0; x < src.width(); x++) {
-        for (int y = 0; y < src.height(); y++) {
-            img.setPixel(x, y, QColor(0, 0, 0, 0).rgba());
-        }
-    }
-    QPainter p(&img);
-    p.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
-    QTransform tra;
-    tra.translate(src.width() / 2, src.height() / 2);
-    tra.rotate(-angle);
-    tra.translate(-src.width() / 2, -src.height() / 2);
-    p.setTransform(tra);
-    p.drawPixmap(QPointF(0, 0), src);
-    return QPixmap::fromImage(img);
-}
-
-QPixmap ui_get_tile(QString tile_id, TileBag *tileset)
-{
-    // Build a transparent 1x1 pixmap
-    if (tile_id.isEmpty()) return ui_make_blank();
-
-    if (!tileset) tileset = current_tiles;
-
-    if (!tileset) return ui_make_blank();
-
-    QPixmap pix = tileset->get_tile(tile_id);
-
-    if (pix.width() == 1) return pix;
-
-    int w = 32;
-    int h = 32;
-
-    if (w != pix.width() || h != pix.height()) {
-        pix = pix.scaled(w, h);
-    }
-
+    p.setCompositionMode(QPainter::CompositionMode_HardLight);
+    p.fillRect(img.rect(), QColor("#444"));
+    QPixmap pix = QPixmap::fromImage(img);
     return pix;
 }
 
-
-void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
-{
-    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
-    main_window->dungeon_scene->addItem(ball);
-    ball->start();
-    main_window->wait_animation();
-}
-
-void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
-{
-    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
-    main_window->dungeon_scene->addItem(arc);
-    arc->start();
-    main_window->wait_animation();
-}
-
-void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
-{
-    BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
-    main_window->dungeon_scene->addItem(beam);
-    beam->start();
-    main_window->wait_animation();
-}
-
-void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
-{
-    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
-    main_window->dungeon_scene->addItem(bolt);
-    bolt->start();
-    main_window->wait_animation();
-}
-
-void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
-{
-    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
-    main_window->dungeon_scene->addItem(bolt);
-    bolt->start();
-    main_window->wait_animation();
-}
-
-void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
-{
-    StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
-    main_window->dungeon_scene->addItem(star);
-    star->start();
-    main_window->wait_animation();
-}
-
-void MainWindow::slot_find_player()
-{
-    if (!character_dungeon) return;
-
-    ui_center(p_ptr->py, p_ptr->px);
-    update_cursor();
-}
-
-QPixmap ui_make_blank()
-{
-    QImage img(1, 1, QImage::Format_ARGB32);
-    img.setPixel(0, 0, qRgba(0, 0, 0, 0));
-    return QPixmap::fromImage(img);
-}
-
-void ui_animate_accomplishment(int y, int x, int gf_type)
-{
-    u32b flg = PROJECT_PASS;
-
-    BallAnimation *b1 = new BallAnimation(QPointF(x, y), 3, gf_type, flg);
-    main_window->dungeon_scene->addItem(b1);
-    b1->setZValue(1000);
-
-    HaloAnimation *h1 = new HaloAnimation(y, x);
-    main_window->dungeon_scene->addItem(h1);
-    h1->setZValue(900);
-
-    b1->start();
-    h1->start();
-
-    main_window->wait_animation(2);
-}
 
 void MainWindow::slot_redraw()
 {
@@ -601,10 +288,6 @@ void DungeonCursor::cellSizeChanged()
     prepareGeometryChange();
 }
 
-QFont ui_current_font()
-{
-    return main_window->cur_font;
-}
 
 void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -814,7 +497,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     painter->save();
 
-    if (use_graphics) {
+    if (use_graphics)
+    {
         // Draw background tile
         QString key1 = d_ptr->dun_tile;
 
@@ -951,59 +635,7 @@ QPixmap MainWindow::apply_shade(QString tile_id, QPixmap tile, QString shade_id)
     return pix;
 }
 
-QPixmap gray_pix(QPixmap src)
-{
-    QImage img = src.toImage();
-    for (int x = 0; x < img.width(); x++) {
-        for (int y = 0; y < img.height(); y++) {
-            QColor col = QColor(img.pixel(x, y)).darker();
-            int gray = qGray(col.rgb());
-            img.setPixel(x, y, qRgb(gray, gray, gray));
-        }
-    }
-    return QPixmap::fromImage(img);
-}
 
-QPixmap colorize_pix(QPixmap src, QColor color)
-{
-    QImage img = src.toImage();
-    QPainter p(&img);
-    p.setCompositionMode(QPainter::CompositionMode_HardLight);
-    p.fillRect(img.rect(), color);
-    QPixmap pix = QPixmap::fromImage(img);
-    return pix;
-}
-
-QPixmap colorize_pix2(QPixmap src, QColor color)
-{
-    QImage img(src.width(), src.height(), QImage::Format_ARGB32);
-    QPainter p(&img);
-    p.fillRect(img.rect(), color);
-    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    p.drawPixmap(QPoint(0, 0), src);
-    QPixmap pix = QPixmap::fromImage(img);
-    return pix;
-}
-
-QPixmap darken_pix(QPixmap src)
-{
-    QImage img = src.toImage();
-    QPainter p(&img);
-    p.setCompositionMode(QPainter::CompositionMode_HardLight);
-    p.fillRect(img.rect(), QColor("#444"));
-    QPixmap pix = QPixmap::fromImage(img);
-    return pix;    
-}
-
-QPixmap lighten_pix(QPixmap src)
-{
-    QImage img = src.toImage();
-    QPainter p(&img);
-    p.setCompositionMode(QPainter::CompositionMode_HardLight);
-    p.fillRect(img.rect(), QColor("#999"));
-    QPixmap pix = QPixmap::fromImage(img);
-    return pix;
-}
 
 void MainWindow::destroy_tiles()
 {    
@@ -1052,28 +684,45 @@ void MainWindow::set_graphic_mode(int mode)
     int cx = -1;
 
     // Remember the center of the view
-    if (character_dungeon) {
+    if (character_dungeon)
+    {
         QRect vis = visible_dungeon();
         cy = vis.y() + vis.height() / 2;
         cx = vis.x() + vis.width() / 2;
     }
 
-    switch (mode) {
-    case GRAPHICS_DAVID_GERVAIS:
-        tile_hgt = 32;
-        tile_wid = 32;
-        current_tiles = tiles_32x32;
-        break;    
-    case GRAPHICS_ORIGINAL:
-        tile_hgt = 8;
-        tile_wid = 8;
-        current_tiles = tiles_8x8;
-        break;
-    default:
-        tile_hgt = 0;
-        tile_wid = 0;
-        current_tiles = 0;
-        break;
+    switch (mode)
+    {
+        case GRAPHICS_DAVID_GERVAIS:
+        {
+            tile_hgt = 32;
+            tile_wid = 32;
+            current_tiles = tiles_32x32;
+            ascii_mode_act->setChecked(FALSE);
+            dvg_mode_act->setChecked(TRUE);
+            old_tiles_act->setChecked(FALSE);
+            break;
+        }
+        case GRAPHICS_ORIGINAL:
+        {
+            tile_hgt = 8;
+            tile_wid = 8;
+            current_tiles = tiles_8x8;
+            ascii_mode_act->setChecked(FALSE);
+            dvg_mode_act->setChecked(FALSE);
+            old_tiles_act->setChecked(TRUE);
+            break;
+        }
+        default: //GRAPHICS_NONE:
+        {
+            tile_hgt = 0;
+            tile_wid = 0;
+            current_tiles = 0;
+            ascii_mode_act->setChecked(TRUE);
+            dvg_mode_act->setChecked(FALSE);
+            old_tiles_act->setChecked(FALSE);
+            break;
+        }
     }
 
     use_graphics = mode;
@@ -1086,6 +735,30 @@ void MainWindow::set_graphic_mode(int mode)
     if (cy != -1 && cx != -1) {
         ui_redraw_all();
         ui_center(cy, cx);
+    }
+}
+
+void MainWindow::set_keymap_mode(int mode)
+{
+    which_keyset = mode;
+
+    if (mode == KEYSET_ANGBAND)
+    {
+        keymap_new->setChecked(FALSE);
+        keymap_angband->setChecked(TRUE);
+        keymap_rogue->setChecked(FALSE);
+    }
+    else if (mode == KEYSET_ROGUE)
+    {
+        keymap_new->setChecked(FALSE);
+        keymap_angband->setChecked(FALSE);
+        keymap_rogue->setChecked(TRUE);
+    }
+    else // (mode == KEYSET_NEW)
+    {
+        keymap_new->setChecked(TRUE);
+        keymap_angband->setChecked(FALSE);
+        keymap_rogue->setChecked(FALSE);
     }
 }
 
@@ -1206,33 +879,6 @@ QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size)
     return QPixmap::fromImage(img);
 }
 
-void ui_update_sidebar()
-{
-    main_window->update_sidebar();
-}
-
-void ui_update_statusbar()
-{
-    main_window->update_statusbar();
-}
-
-void ui_update_titlebar()
-{
-    main_window->update_titlebar();
-}
-
-void ui_update_messages()
-{
-    main_window->update_messages();
-}
-
-
-
-QWidget *ui_main_window()
-{
-    return main_window;
-}
-
 
 
 // The main function - intitalize the main window and set the menus.
@@ -1242,6 +888,7 @@ MainWindow::MainWindow()
     if (!main_window) main_window = this;
 
     anim_depth = 0;
+    which_keyset = KEYSET_NEW;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -1304,6 +951,7 @@ MainWindow::MainWindow()
     read_settings();
     init_scene();
     set_graphic_mode(use_graphics);
+    set_keymap_mode(which_keyset);
 
     update_file_menu_game_inactive();
 
@@ -1415,17 +1063,6 @@ void MainWindow::save_and_close()
     redraw();
 }
 
-void ui_show_cursor(int y, int x)
-{
-    if (y < 0 || x < 0) {
-        main_window->update_cursor();
-    }
-    else {
-        main_window->cursor->moveTo(y, x);
-        main_window->cursor->setVisible(true);
-    }
-}
-
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)
@@ -1436,21 +1073,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     }
 
     return QObject::eventFilter(obj, event);
-}
-
-static void process_mov_key(int dir, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
-{
-    if (!character_dungeon) return;
-    (void)meta_key;
-
-    // Flip pickup
-    if (ctrl_key && alt_key) do_cmd_walk(dir, TRUE);
-    else if (ctrl_key && shift_key) do_cmd_tunnel_dir(dir);
-    else if (ctrl_key) do_cmd_run(dir);
-    else if (alt_key) do_cmd_alter(dir);
-    else if (shift_key) ui_change_panel(dir);
-    else if (meta_key) do_cmd_tunnel_dir(dir);
-    else do_cmd_walk(dir, FALSE);
 }
 
 bool MainWindow::check_disturb()
@@ -1472,13 +1094,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
 
     if (check_disturb()) return;
 
-    // TODO PLAYTESTING
-    debug_rarities();
-
     QString keystring = which_key->text();
 
     // Go to special key handling
-    if (ui_mode == UI_MODE_INPUT) {
+    if (ui_mode == UI_MODE_INPUT)
+    {
         input.key = which_key->key();
         input.text = keystring;
         input.mode = INPUT_MODE_KEY;
@@ -1493,262 +1113,21 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     bool ctrl_key = modifiers.testFlag(Qt::ControlModifier);
     bool alt_key = modifiers.testFlag(Qt::AltModifier);
     bool meta_key = modifiers.testFlag(Qt::MetaModifier);
-    bool using_mods = FALSE;
 
-    if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))    using_mods = shift_key = TRUE;
-    if (QApplication::queryKeyboardModifiers() & (Qt::ControlModifier))  using_mods = ctrl_key = TRUE;
-    if (QApplication::queryKeyboardModifiers() & (Qt::AltModifier))      using_mods = alt_key = TRUE;
-    if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     using_mods = meta_key = TRUE;
-
-    // EXPERIMENTAL - Detect shift modifiers with keypad
-    // VERY IMPORTANT: We assume that the numlock key is alwasy pressed (normally)
-    // because the code needed to tell us that exactly is very very platform dependent
-    if (!shift_key && modifiers.testFlag(Qt::KeypadModifier))
+    if (which_keyset == KEYSET_NEW)
     {
-        Qt::Key code = Qt::Key(which_key->key());
-
-        QList<Qt::Key> lNumPadKeys = QList<Qt::Key>() << Qt::Key_Insert
-            << Qt::Key_End << Qt::Key_Down << Qt::Key_PageDown
-            << Qt::Key_Left << Qt::Key_Clear << Qt::Key_Right
-            << Qt::Key_Home << Qt::Key_Up << Qt::Key_PageUp
-            << Qt::Key_Delete;
-
-        if (lNumPadKeys.contains(code)) using_mods = shift_key = TRUE;
+        commands_new_keyset(which_key, shift_key, alt_key, ctrl_key, meta_key);
     }
-
-    // Normal mode
-    switch (which_key->key())
+    else if (which_keyset == KEYSET_ANGBAND)
     {
-        // ESCAPE
-        case Qt::Key_Escape:
-        {
-            ui_center(p_ptr->py, p_ptr->px);
-            break;
-        }
-
-        // Move down
-        case Qt::Key_2:
-        case Qt::Key_Down:
-        case Qt::Key_B:
-        {
-            process_mov_key(2, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-
-        // Move up
-        case Qt::Key_8:
-        case Qt::Key_Up:
-        case Qt::Key_Y:
-        {
-            process_mov_key(8, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-
-        // Move left
-        case Qt::Key_4:
-        case Qt::Key_Left:
-        case Qt::Key_G:
-        {
-            process_mov_key(4, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-        // Move right
-        case Qt::Key_6:
-        case Qt::Key_Right:
-        case Qt::Key_J:
-        {
-            process_mov_key(6, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-        // Move diagonally left and up
-        case Qt::Key_7:
-        case Qt::Key_T:
-        case Qt::Key_Home:
-        {
-            process_mov_key(7, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-        // Move diagonally right and up
-        case Qt::Key_9:
-        case Qt::Key_U:
-        case Qt::Key_PageUp:
-        {
-            process_mov_key(9, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-        // Move diagonally left and down
-        case Qt::Key_1:
-        case Qt::Key_V:
-        case Qt::Key_End:
-        {
-            process_mov_key(1, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-        // Move diagonally right and down
-        case Qt::Key_3:
-        case Qt::Key_N:
-        case Qt::Key_PageDown:
-        {
-            process_mov_key(3, shift_key, alt_key, ctrl_key, meta_key);
-            break;
-        }
-        case Qt::Key_5:
-        case Qt::Key_H:
-        {
-            do_cmd_hold();
-            break;
-        }
-        case Qt::Key_A:
-        {
-            if (ctrl_key)           do_cmd_wizard_mode();
-            else if (!using_mods)   do_cmd_activate();
-            break;
-        }
-        case Qt::Key_C:
-        case Qt::Key_0:
-        {
-            do_cmd_repeat();
-            break;
-        }
-        case Qt::Key_D:
-        {
-            if (alt_key)            do_cmd_bash();
-            if (shift_key)          do_cmd_close();
-            else if (!using_mods)   do_cmd_open();
-            break;
-        }
-        case Qt::Key_E:
-        {
-            if (!using_mods)        do_cmd_use_item();
-            break;
-        }
-        case Qt::Key_F:
-        {
-            if (alt_key)            do_cmd_feeling();
-            else if (shift_key)     do_cmd_fire_at_nearest();
-            else if (!using_mods)   do_cmd_fire();
-            break;
-        }
-        case Qt::Key_I:
-        {
-            if (shift_key)          do_cmd_examine();
-            else if (!using_mods)   do_cmd_all_objects();
-            break;
-        }
-        case Qt::Key_K:
-        {
-            if (!using_mods)        do_cmd_throw();
-            break;
-        }
-        case Qt::Key_L:
-        {
-            if (shift_key)          do_cmd_refuel();
-            else if (!using_mods)   do_cmd_look();
-            break;
-        }
-        case Qt::Key_M:
-        {
-            if (shift_key)          do_cmd_study(-1);
-            else if (ctrl_key)      do_cmd_browse(-1);
-            else if (!using_mods)   do_cmd_cast(-1);
-            break;
-        }
-        case Qt::Key_O:
-        {
-            if (alt_key)            do_cmd_tunnel();
-            else if (shift_key)     do_cmd_make_trap();
-            else if (!using_mods)   do_cmd_disarm();
-            break;
-        }
-        case Qt::Key_P:
-        {
-            if (!using_mods)        do_cmd_player_screen();
-            break;
-        }
-        case Qt::Key_Q:
-        {
-            if (ctrl_key && alt_key)do_cmd_suicide();
-            if (shift_key)          do_cmd_spike();
-            else if (!using_mods)   do_cmd_quest_desc();
-            break;
-        }
-        case Qt::Key_R:
-        {
-            if (alt_key && ctrl_key)do_cmd_rest_specific(REST_BOTH_SP_HP);
-            else if (ctrl_key)      do_cmd_rest_specific(REST_HP);
-            else if (alt_key)       do_cmd_rest_specific(REST_SP);
-            else if (shift_key)     do_cmd_rest();
-            else if (!using_mods)   do_cmd_rest_specific(REST_COMPLETE);
-            break;
-        }
-        case Qt::Key_S:
-        {
-            if (shift_key)          do_cmd_toggle_search();
-            else if (!using_mods)   do_cmd_search();
-            break;
-        }
-        case Qt::Key_W:
-        {
-            if (ctrl_key)           do_cmd_takeoff();
-            else if (shift_key)     do_cmd_swap_weapon();
-            else if (!using_mods)   do_cmd_wield();
-            break;
-        }
-        case Qt::Key_X:
-        {
-            if (!using_mods)        do_cmd_destroy();
-            break;
-        }
-        case Qt::Key_Z:
-        {
-            if (!using_mods)        do_cmd_alter(DIR_UNKNOWN);
-            break;
-        }
-        case Qt::Key_BraceLeft:
-        {
-            do_cmd_inscribe();
-            break;
-        }
-        case Qt::Key_BraceRight:
-        {
-            do_cmd_uninscribe();
-            break;
-        }
-        case Qt::Key_Greater:
-        {
-            do_cmd_go_down();
-            break;
-        }
-        case Qt::Key_Less:
-        {
-            do_cmd_go_up();
-            break;
-        }
-        case Qt::Key_Period:
-        {
-            do_cmd_run(DIR_UNKNOWN);
-            break;
-        }
-        case Qt::Key_Plus:
-        {
-            do_cmd_pickup();
-            break;
-        }
-        case Qt::Key_Minus:
-        {
-            do_cmd_drop();
-            break;
-        }
-        case Qt::Key_Colon:
-        {
-            do_cmd_write_note();
-            break;
-        }
-        default:
-        {
-            break;
-        }
+        commands_angband_keyset(which_key, shift_key, alt_key, ctrl_key, meta_key);
     }
+    else if (which_keyset == KEYSET_ROGUE)
+    {
+        commands_roguelike_keyset(which_key, shift_key, alt_key, ctrl_key, meta_key);
+    }
+    else pop_up_message_box("invalid keyset");
+
     handle_stuff();
 }
 
@@ -1961,6 +1340,18 @@ void MainWindow::create_actions()
     options_act->setIcon(QIcon(":/icons/lib/icons/options.png"));
     connect(options_act, SIGNAL(triggered()), this, SLOT(options_dialog()));
 
+    keymap_new = new QAction(tr("Simplified Command Set"), this);
+    keymap_new->setStatusTip(tr("Use simplified keyset to enter commands (recommended for players new to Angband and variants"));
+    connect(keymap_new, SIGNAL(triggered()), this, SLOT(slot_simplified_keyset()));
+
+    keymap_angband = new QAction(tr("Angband Command Set"), this);
+    keymap_angband->setStatusTip(tr("Use the classic Angband keyset to enter commands"));
+    connect(keymap_angband, SIGNAL(triggered()), this, SLOT(slot_angband_keyset()));
+
+    keymap_rogue = new QAction(tr("Roguelike Command Set"), this);
+    keymap_rogue->setStatusTip(tr("Use the roguelike keyset to enter commands"));
+    connect(keymap_rogue, SIGNAL(triggered()), this, SLOT(slot_rogue_keyset()));
+
     ascii_mode_act = new QAction(tr("Ascii graphics"), this);
     ascii_mode_act->setStatusTip(tr("Set the graphics to ascii mode."));
     connect(ascii_mode_act, SIGNAL(triggered()), this, SLOT(set_ascii()));
@@ -1969,8 +1360,8 @@ void MainWindow::create_actions()
     dvg_mode_act->setStatusTip(tr("Set the graphics to David Gervais tiles mode."));
     connect(dvg_mode_act, SIGNAL(triggered()), this, SLOT(set_dvg()));
 
-    old_tiles_act = new QAction(tr("Old tiles"), this);
-    old_tiles_act->setStatusTip(tr("Set the graphics to old tiles mode."));
+    old_tiles_act = new QAction(tr("8x8 tiles"), this);
+    old_tiles_act->setStatusTip(tr("Set the graphics to 8x8 tiles mode."));
     connect(old_tiles_act, SIGNAL(triggered()), this, SLOT(set_old_tiles()));
 
     pseudo_ascii_act = new QAction(tr("Pseudo-Ascii monsters"), this);
@@ -2047,6 +1438,7 @@ void MainWindow::set_dvg()
 {
     set_graphic_mode(GRAPHICS_DAVID_GERVAIS);
     ui_redraw_all();
+
 }
 
 void MainWindow::set_old_tiles()
@@ -2057,7 +1449,7 @@ void MainWindow::set_old_tiles()
 
 void MainWindow::set_ascii()
 {
-    set_graphic_mode(0);
+    set_graphic_mode(GRAPHICS_NONE);
     ui_redraw_all();
 }
 
@@ -2135,30 +1527,6 @@ void MainWindow::slot_multiplier_clicked(QAction *action)
     }
 }
 
-int ui_get_dir_from_slope(int y1, int x1, int y2, int x2)
-{
-    QLineF line(ui_get_center(y1, x1), ui_get_center(y2, x2));
-    if (line.length() == 0.0) return 0.0;
-    qreal angle = line.angle();
-    if (angle < 22.5) return (6);
-    if (angle < 67.5) return (9);
-    if (angle < 112.5) return (8);
-    if (angle < 157.5) return (7);
-    if (angle < 202.5) return (4);
-    if (angle < 247.5) return (1);
-    if (angle < 292.5) return (2);
-    if (angle < 337.5) return (3);
-    return(6);
-}
-
-QPoint ui_get_center(int y, int x)
-{
-    x *= main_window->cell_wid;
-    y *= main_window->cell_hgt;
-    x += main_window->cell_wid / 2;
-    y += main_window->cell_hgt / 2;
-    return QPoint(x, y);
-}
 
 //Actually add the QActions intialized in create_actions to the menu
 void MainWindow::create_menus()
@@ -2186,10 +1554,32 @@ void MainWindow::create_menus()
     settings = menuBar()->addMenu(tr("&Settings"));
     settings->addAction(options_act);
     settings->addAction(fontselect_act);
-    settings->addAction(ascii_mode_act);
-    settings->addAction(dvg_mode_act);
-    settings->addAction(old_tiles_act);
+
+    QMenu *choose_keymap = settings->addMenu("Choose Keyset");
+    choose_keymap->addAction(keymap_new);
+    choose_keymap->addAction(keymap_angband);
+    choose_keymap->addAction(keymap_rogue);
+    keymap_new->setCheckable(TRUE);
+    keymap_angband->setCheckable(TRUE);
+    keymap_rogue->setCheckable(TRUE);
+    keymap_new->setChecked(TRUE);
+
+    menuBar()->addSeparator();
+
+    //Tileset options
+    QMenu *choose_tile_set = settings->addMenu("Choose Tile Set");
+    choose_tile_set->addAction(ascii_mode_act);
+    choose_tile_set->addAction(dvg_mode_act);
+    choose_tile_set->addAction(old_tiles_act);
     settings->addAction(pseudo_ascii_act);
+    tiles_choice = new QActionGroup(this);
+    tiles_choice->addAction(ascii_mode_act);
+    tiles_choice->addAction(dvg_mode_act);
+    tiles_choice->addAction(old_tiles_act);
+    ascii_mode_act->setCheckable(TRUE);
+    ascii_mode_act->setChecked(TRUE);
+    dvg_mode_act->setCheckable(TRUE);
+    old_tiles_act->setCheckable(TRUE);
 
     QMenu *submenu = settings->addMenu(tr("Tile multiplier"));
     multipliers = new QActionGroup(this);
@@ -2217,6 +1607,7 @@ void MainWindow::create_menus()
         if (i == 0) act->setChecked(true);
     }
     connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
+
 
     QAction *act = settings->addAction(tr("Create tile package"));
     connect(act, SIGNAL(triggered()), this, SLOT(do_create_package()));
@@ -2301,6 +1692,7 @@ void MainWindow::read_settings()
     do_pseudo_ascii = settings.value("pseudo_ascii", false).toBool();
     pseudo_ascii_act->setChecked(do_pseudo_ascii);
     use_graphics = settings.value("use_graphics", 0).toInt();
+    which_keyset = settings.value("which_keyset", 0).toInt();
     current_multiplier = settings.value("tile_multiplier", "1:1").toString();
     QAction *act = this->findChild<QAction *>(current_multiplier);
     if (act) {
@@ -2326,6 +1718,7 @@ void MainWindow::write_settings()
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
+    settings.setValue("which_keyset", which_keyset);
     settings.setValue("tile_multiplier", current_multiplier);
 }
 
@@ -2461,93 +1854,5 @@ void MainWindow::update_recent_savefiles()
 QString MainWindow::stripped_name(const QString &full_file_name)
 {
     return QFileInfo(full_file_name).fileName();
-}
-
-// determine of a dungeon square is onscreen at present
-bool panel_contains(int y, int x)
-{
-    return main_window->panel_contains(y, x);
-}
-
-void ui_ensure(int y, int x)
-{
-    main_window->graphics_view->ensureVisible(QRectF(x * main_window->cell_wid,
-                                                     y * main_window->cell_hgt,
-                                                     main_window->cell_wid, main_window->cell_hgt));
-}
-
-bool ui_modify_panel(int y, int x)
-{
-    QRect vis = visible_dungeon();
-
-    if (y < 0) y = 0;
-    if (y >= p_ptr->cur_map_hgt) y = p_ptr->cur_map_hgt - 1;
-
-    if (x < 0) x = 0;
-    if (x >= p_ptr->cur_map_wid) x = p_ptr->cur_map_wid - 1;
-
-    if (y == vis.y() && x == vis.x()) return false;
-
-    main_window->graphics_view->verticalScrollBar()->setValue(y * main_window->cell_hgt);    
-    main_window->graphics_view->horizontalScrollBar()->setValue(x * main_window->cell_wid);
-
-    return true;
-}
-
-bool ui_adjust_panel(int y, int x)
-{
-    QRect vis = visible_dungeon();
-
-    int y2 = vis.y();
-    int x2 = vis.x();
-
-    while (y < y2) y2 -= vis.height() / 2;
-    while (y >= y2 + vis.height()) y2 += vis.height() / 2;
-
-    while (x < x2) x2 -= vis.width() / 2;
-    while (x >= x2 + vis.width()) x2 += vis.width() / 2;
-
-    return ui_modify_panel(y2, x2);
-}
-
-bool ui_change_panel(int dir)
-{
-    QRect vis = visible_dungeon();
-
-    int y = vis.y() + ddy[dir] * vis.height() / 2;
-    int x = vis.x() + ddx[dir] * vis.width() / 2;
-
-    return ui_modify_panel(y, x);
-}
-
-void ui_center(int y, int x)
-{
-    main_window->graphics_view->centerOn(x * main_window->cell_wid, y * main_window->cell_hgt);
-}
-
-void ui_redraw_grid(int y, int x)
-{
-    DungeonGrid *g_ptr = main_window->grids[y][x];
-    g_ptr->setVisible(true);
-    g_ptr->update(g_ptr->boundingRect());
-}
-
-void ui_redraw_all()
-{
-    main_window->redraw();
-}
-
-void player_death_close_game(void)
-{
-    player_death();
-    main_window->close_game_death();
-}
-
-void ui_animate_detection(int y, int x, int rad)
-{
-    DetectionAnimation *anim = new DetectionAnimation(y, x, rad);
-    main_window->dungeon_scene->addItem(anim);
-    anim->start();
-    main_window->wait_animation();
 }
 

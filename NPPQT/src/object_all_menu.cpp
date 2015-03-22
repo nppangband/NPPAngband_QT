@@ -246,7 +246,7 @@ void AllObjectsDialog::hide_or_show_tabs()
 }
 
 
-AllObjectsDialog::AllObjectsDialog(bool do_buttons)
+AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 {
     confirm_tabs();
 
@@ -367,10 +367,10 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons)
 }
 
 
-void do_cmd_all_objects(void)
+void do_cmd_all_objects(int start_screen)
 {
     p_ptr->in_menu = TRUE;
-    AllObjectsDialog(TRUE);
+    AllObjectsDialog(TRUE, start_screen);
     p_ptr->in_menu = FALSE;
     p_ptr->message_append_stop();
 }

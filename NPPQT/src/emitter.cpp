@@ -10,7 +10,66 @@
 
 qreal delay = 1.4; // delay per pixel
 
-QPointF mulp(QPointF a, QPointF b)
+
+static QPixmap colorize_pix2(QPixmap src, QColor color)
+{
+    QImage img(src.width(), src.height(), QImage::Format_ARGB32);
+    QPainter p(&img);
+    p.fillRect(img.rect(), color);
+    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    p.drawPixmap(QPoint(0, 0), src);
+    QPixmap pix = QPixmap::fromImage(img);
+    return pix;
+}
+
+QPixmap colorize_pix(QPixmap src, QColor color)
+{
+    QImage img = src.toImage();
+    QPainter p(&img);
+    p.setCompositionMode(QPainter::CompositionMode_HardLight);
+    p.fillRect(img.rect(), color);
+    QPixmap pix = QPixmap::fromImage(img);
+    return pix;
+}
+
+static QPixmap colorize_pix3(QPixmap src, QColor color)
+{
+    QImage img = src.toImage();
+    QPainter p(&img);
+    p.setCompositionMode(QPainter::CompositionMode_Overlay);
+    p.fillRect(img.rect(), color);
+    p.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    p.drawPixmap(0, 0, src);
+    return QPixmap::fromImage(img);
+}
+
+static QPixmap rotate_pix(QPixmap src, qreal angle)
+{
+    QImage img(src.width(), src.height(), QImage::Format_ARGB32);
+    for (int x = 0; x < src.width(); x++) {
+        for (int y = 0; y < src.height(); y++) {
+            img.setPixel(x, y, QColor(0, 0, 0, 0).rgba());
+        }
+    }
+    QPainter p(&img);
+    p.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing);
+    QTransform tra;
+    tra.translate(src.width() / 2, src.height() / 2);
+    tra.rotate(-angle);
+    tra.translate(-src.width() / 2, -src.height() / 2);
+    p.setTransform(tra);
+    p.drawPixmap(QPointF(0, 0), src);
+    return QPixmap::fromImage(img);
+}
+
+static QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
+{
+    p += item->pos().toPoint();
+    QPoint p2(p.x() / main_window->cell_wid, p.y() / main_window->cell_hgt);
+    return p2;
+}
+
+static QPointF mulp(QPointF a, QPointF b)
 {
     return QPointF(a.x() * b.x(), a.y() * b.y());
 }

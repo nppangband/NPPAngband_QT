@@ -85,7 +85,7 @@ protected:
 
 
 public:
-    explicit AllObjectsDialog(bool do_buttons);
+    explicit AllObjectsDialog(bool do_buttons, int start_screen);
     void update_dialog();
     void close_dialog();
 

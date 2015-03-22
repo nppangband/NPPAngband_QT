@@ -15,6 +15,7 @@ SOURCES +=  src/qt_main.cpp\
             src/qt_mainwindow.cpp\
             src/qt_sidebar.cpp \
             src/qt_statusbar.cpp \
+            src/qt_ui_functions.cpp \
             src/qt_target_toolbar.cpp \
             src/calcs.cpp \
             src/cmd_actions.cpp \
@@ -99,7 +100,8 @@ SOURCES +=  src/qt_main.cpp\
             src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-            src/wizard_mode.cpp
+            src/wizard_mode.cpp \
+
 
 
 HEADERS  += src/qt_mainwindow.h\

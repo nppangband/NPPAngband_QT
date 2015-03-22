@@ -28,7 +28,7 @@ QChar summon_kin_type;		/* Hack -- See summon_specific() */
 
 monster_type *summoner; 	/*Track the current summoner*/
 
-
+int which_keyset;       //  Use new, rogue, or angband keyset
 int use_graphics;		/* The "graphics" mode is enabled */
 
 s16b image_count;  		/* Grids until next random image    */

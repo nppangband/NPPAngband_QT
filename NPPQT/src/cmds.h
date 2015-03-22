@@ -172,6 +172,13 @@ extern void command_destroy(cmd_arg args);
 extern void do_cmd_destroy(void);
 extern void do_cmd_activate(void);
 extern void do_cmd_use_item(void);
+extern void do_cmd_aim_wand(void);
+extern void do_cmd_use_staff(void);
+extern void do_cmd_zap_rod(void);
+extern void do_cmd_eat_food(void);
+extern void do_cmd_quaff_potion(void);
+extern void do_cmd_read_scroll(void);
+extern void do_cmd_refill(void);
 
 // cmd_misc.cpp
 extern void do_cmd_feeling(void);

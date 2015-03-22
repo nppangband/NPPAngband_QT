@@ -2556,6 +2556,9 @@ void do_cmd_walk(int dir, bool jumping)
 {
     if (!character_dungeon) return;
 
+    /* Get a direction (or abort) */
+    if (!dir && !get_rep_dir(&dir)) return;
+
     cmd_arg args;
     args.wipe();
 
@@ -2893,9 +2896,6 @@ void command_hold(cmd_arg args)
     {
         /* Disturb */
         disturb(0, 0);
-
-        /* Hack -- enter store */
-        //p_ptr->command_new = '_';
 
         int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
         int store_idx = f_info[feat].f_power;
