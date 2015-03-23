@@ -322,6 +322,8 @@ private:
     QAction *view_grid_contents;
     QAction *target_help;
 
+
+
 };
 
 extern MainWindow *main_window;
@@ -375,5 +377,7 @@ public:
 
     void cellSizeChanged();
 };
+
+extern QVector<s16b> sidebar_monsters;
 
 #endif

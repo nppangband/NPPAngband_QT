@@ -146,8 +146,6 @@ extern dungeon_type dungeon_info[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 extern u16b cave_cost[MAX_FLOWS][MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 extern int cost_at_center[MAX_FLOWS];
 
-extern int sidebar_details[SIDEBAR_MAX_TYPES];
-extern int sidebar_monsters[SIDEBAR_MONSTER_MAX];
 
 extern u16b quest_indicator_timer;
 extern byte quest_indicator_complete;

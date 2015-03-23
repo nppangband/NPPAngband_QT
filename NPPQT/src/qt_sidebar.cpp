@@ -31,6 +31,7 @@
 
 #define SIDEBAR_MON_MAX     15
 
+QVector<s16b> sidebar_monsters;
 
 void MainWindow::create_sidebar()
 {
@@ -185,32 +186,6 @@ void MainWindow::create_sidebar()
 
 }
 
-
-
-bool my_less_than(const int &i1, const int &i2)
-{
-    return mon_list[i1].cdis < mon_list[i2].cdis;
-}
-
-QList<int> get_visible_monsters()
-{
-    QList<int> items;
-
-    for (int y = p_ptr->py - MAX_SIGHT; y <= p_ptr->py + MAX_SIGHT; y++) {
-        for (int x = p_ptr->px - MAX_SIGHT; x <= p_ptr->px + MAX_SIGHT; x++) {
-            if (!in_bounds(y, x)) continue;
-            int m_idx = dungeon_info[y][x].monster_idx;
-            if (m_idx < 1) continue;
-            monster_type *m_ptr = mon_list + m_idx;
-            if (!m_ptr->ml) continue;
-            items.append(m_idx);
-        }
-    }
-
-    qSort(items.begin(), items.end(), my_less_than);
-
-    return items;
-}
 
 static void display_mon(QTableWidget *sidebar_mon, int row, int m_idx)
 {
@@ -442,6 +417,169 @@ static int player_sp_attr(void)
     return attr;
 }
 
+static /* Figure out which monsters to display in the sidebar */
+void update_mon_sidebar_list(void)
+{
+    monster_type *m_ptr;
+    monster_type *m2_ptr;
+    monster_race *r_ptr;
+    monster_race *r2_ptr;
+    int i;
+
+    QVector<s16b> adjacent_monsters;
+    QVector<s16b> line_of_sight_monsters;
+    QVector<s16b> visible_monsters;
+
+    sidebar_monsters.clear();
+    adjacent_monsters.clear();
+    line_of_sight_monsters.clear();
+    visible_monsters.clear();
+
+    // Clear the list
+    for (i = 1; i < mon_max; i++) mon_list[i].sidebar = FALSE;
+
+    /* First list the targeted monster, if there is one */
+    if (p_ptr->health_who)
+    {
+        /* Must be visible */
+        if (mon_list[p_ptr->health_who].ml)
+        {
+            sidebar_monsters.append(p_ptr->health_who);
+
+            /* We are tracking this one */
+            mon_list[p_ptr->health_who].sidebar = TRUE;
+        }
+    }
+
+    /* Scan the list of monsters on the level */
+    for (i = 1; i < mon_max; i++)
+    {
+        m_ptr = &mon_list[i];
+        r_ptr = &r_info[m_ptr->r_idx];
+
+        /* Ignore dead monsters */
+        if (!m_ptr->r_idx) continue;
+
+        /* Only consider visible monsters */
+        if (!m_ptr->ml) continue;
+
+        /* Hack - ignore lurkers and trappers */
+        if (r_ptr->d_char == '.') continue;
+
+        /* Already recorded target monster */
+        if (i == p_ptr->health_who) continue;
+
+        /* Now decide which list to include them in first adjacent monsters*/
+        if ((GET_SQUARE((p_ptr->py - m_ptr->fy)) + GET_SQUARE((p_ptr->px - m_ptr->fx))) < 2)
+        {
+            adjacent_monsters.append(i);
+            continue;
+        }
+        /* Projectable ones next */
+        if (m_ptr->project)
+        {
+            line_of_sight_monsters.append(i);
+            continue;
+        }
+
+        /* Visible, not projectable last */
+        visible_monsters.append(i);
+    }
+
+    /* Sort the lists by monster power using bubble sort */
+    /*  First do adjacent monsters */
+    for (i = 0; i < adjacent_monsters.size(); i++)
+    {
+        for (int j = i + 1; j < adjacent_monsters.size(); j++)
+        {
+            m_ptr = &mon_list[adjacent_monsters[i]];
+            r_ptr = &r_info[m_ptr->r_idx];
+            m2_ptr = &mon_list[adjacent_monsters[j]];
+            r2_ptr = &r_info[m2_ptr->r_idx];
+
+            if (r_ptr->mon_power < r2_ptr->mon_power)
+            {
+                int temp = adjacent_monsters[i];
+                adjacent_monsters[i] = adjacent_monsters[j];
+                adjacent_monsters[j] = temp;
+            }
+        }
+    }
+
+    /* Now add them to the list */
+    for (i = 0; i < adjacent_monsters.size(); i++)
+    {
+        sidebar_monsters.append(adjacent_monsters[i]);
+
+        /* We are tracking this one */
+        mon_list[adjacent_monsters[i]].sidebar = TRUE;
+
+        /* paranoia - would only happen if SIDEBAR_MONSTER_MAX was less than 10*/
+        if (sidebar_monsters.size() >= SIDEBAR_MONSTER_MAX) return;
+    }
+
+    /*  Next do projectable monsters */
+    for (i = 0; i < line_of_sight_monsters.size(); i++)
+    {
+        for (int j = i + 1; j < line_of_sight_monsters.size(); j++)
+        {
+            m_ptr = &mon_list[line_of_sight_monsters[i]];
+            r_ptr = &r_info[m_ptr->r_idx];
+            m2_ptr = &mon_list[line_of_sight_monsters[j]];
+            r2_ptr = &r_info[m2_ptr->r_idx];
+
+            if (r_ptr->mon_power < r2_ptr->mon_power)
+            {
+                int temp = line_of_sight_monsters[i];
+                line_of_sight_monsters[i] = line_of_sight_monsters[j];
+                line_of_sight_monsters[j] = temp;
+            }
+        }
+    }
+
+    /* Now add them to the list */
+    for (i = 0; i < line_of_sight_monsters.size(); i++)
+    {
+        sidebar_monsters.append(line_of_sight_monsters[i]);
+
+        /* We are tracking this one */
+        mon_list[line_of_sight_monsters[i]].sidebar = TRUE;
+
+        /* Check to see if the list is full */
+        if (sidebar_monsters.size() >= SIDEBAR_MONSTER_MAX) return;
+    }
+
+    /*  Finally to other viewable monsters monsters */
+    for (i = 0; i < visible_monsters.size(); i++)
+    {
+        for (int j = i + 1; j < visible_monsters.size(); j++)
+        {
+            m_ptr = &mon_list[visible_monsters[i]];
+            r_ptr = &r_info[m_ptr->r_idx];
+            m2_ptr = &mon_list[visible_monsters[j]];
+            r2_ptr = &r_info[m2_ptr->r_idx];
+
+            if (r_ptr->mon_power < r2_ptr->mon_power)
+            {
+                int temp = visible_monsters[i];
+                visible_monsters[i] = visible_monsters[j];
+                visible_monsters[j] = temp;
+            }
+        }
+    }
+
+    /* Now add them to the list */
+    for (i = 0; i < visible_monsters.size(); i++)
+    {
+        sidebar_monsters.append(visible_monsters[i]);
+
+        /* We are tracking this one */
+        mon_list[visible_monsters[i]].sidebar = TRUE;
+
+        /* Check to see if the list is full */
+        if (sidebar_monsters.size() >= SIDEBAR_MONSTER_MAX) return;
+    }
+}
 
 
 void MainWindow::update_sidebar()
@@ -691,21 +829,16 @@ void MainWindow::update_sidebar()
 
 
     // MONSTERS
-
     for (int i = 0; i < SIDEBAR_MON_MAX; i++)
     {
         sidebar_mon->setRowHidden(i, true);
     }
 
-    QList<int> monsters = get_visible_monsters();
+    update_mon_sidebar_list();
 
-    for (int i = 0; i < monsters.size(); i++)
+    for (int i = 0; i < sidebar_monsters.size(); i++)
     {
-        if (i >= SIDEBAR_MON_MAX) break;
-
-        int m_idx = monsters.at(i);
-
-        display_mon(sidebar_mon, i, m_idx);
+       display_mon(sidebar_mon, i, sidebar_monsters.at(i));
     }
 
     sidebar_mon->resizeColumnToContents(0);
@@ -770,10 +903,12 @@ void MainWindow::update_titlebar()
     QString str("NPPGames");
 
     if (character_dungeon) {
-        if (game_mode == GAME_NPPANGBAND) {
+        if (game_mode == GAME_NPPANGBAND)
+        {
             str = "NPPAngband";
         }
-        else {
+        else
+        {
             str = "NPPMoria";
         }
 
@@ -798,3 +933,4 @@ void MainWindow::update_titlebar()
 
     this->setWindowTitle(str);
 }
+
