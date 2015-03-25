@@ -57,6 +57,8 @@ void update_message_area(QTextEdit *message_area, int max_messages)
     QString next_message;
     next_message.clear();
 
+    message_area->setFont(ui_current_font());
+
     for (int i = 0; i < message_list.size(); i++)
     {
         QString this_message = message_list[i].message;
@@ -78,9 +80,12 @@ void update_message_area(QTextEdit *message_area, int max_messages)
             }
         }
 
+        // Add a linebreak if needed.
+        if (num_messages) next_message.append("\n");
+
         message_area->moveCursor(QTextCursor::Start);
         message_area->setTextColor(message_list[i].msg_color);
-        message_area->insertPlainText(QString("%1\n") .arg(next_message));
+        message_area->insertPlainText(QString("%1") .arg(next_message));
 
         next_message.clear();
 
@@ -101,6 +106,8 @@ void update_message_area(QLabel *message_label, int max_messages)
 
     QString output;
     output.clear();
+
+    message_label->setFont(ui_current_font());
 
     for (int i = 0; i < message_list.size(); i++)
     {

@@ -820,6 +820,7 @@ void MainWindow::redraw()
     //ui_center(p_ptr->py, p_ptr->px);
     update_cursor();
     force_redraw(); // Hack -- Force full redraw
+    update_messages();
 }
 
 bool MainWindow::panel_contains(int y, int x)
@@ -909,7 +910,6 @@ MainWindow::MainWindow()
     message_dock = new QDockWidget;
     message_area = new QTextEdit;
     message_area->setReadOnly(true);
-    message_area->setMaximumHeight(80);
     message_area->setStyleSheet("background-color: black;");
 
     message_dock->setWidget(message_area);
