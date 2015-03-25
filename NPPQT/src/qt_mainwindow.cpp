@@ -31,6 +31,7 @@
 #include <QToolBar>
 #include <QStatusBar>
 #include <QScrollBar>
+#include <QDockWidget>
 
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
@@ -729,7 +730,7 @@ void MainWindow::set_graphic_mode(int mode)
     calculate_cell_size();
     destroy_tiles();
     if (character_dungeon) extract_tiles(false);
-    update_sidebar();
+    update_sidebar_all();
 
     // Recenter the view
     if (cy != -1 && cx != -1) {
@@ -903,23 +904,24 @@ MainWindow::MainWindow()
     graphics_view = new QGraphicsView(dungeon_scene);
     graphics_view->installEventFilter(this);
 
-    QWidget *central = new QWidget;
-    setCentralWidget(central);
+    setCentralWidget(graphics_view);
 
-    QVBoxLayout *lay1 = new QVBoxLayout;
-    central->setLayout(lay1);
-
+    message_dock = new QDockWidget;
     message_area = new QTextEdit;
     message_area->setReadOnly(true);
     message_area->setMaximumHeight(80);
     message_area->setStyleSheet("background-color: black;");
 
-    lay1->addWidget(message_area);
+    message_dock->setWidget(message_area);
+    message_dock->setAllowedAreas(Qt::TopDockWidgetArea);
+    message_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+
+    addDockWidget(Qt::TopDockWidgetArea, message_dock);
+
 
     // Set up all the folder directories
     create_directories();
 
-    QSplitter *splitter = new QSplitter;
 
     sidebar_widget = new QWidget;
     QPalette this_pal;
@@ -927,18 +929,18 @@ MainWindow::MainWindow()
     sidebar_widget->setAutoFillBackground(TRUE);
     sidebar_widget->setPalette(this_pal);
 
-    sidebar = new QVBoxLayout;
-    sidebar_widget->setLayout(sidebar);
-    sidebar->setContentsMargins(0, 0, 0, 0);
-    splitter->addWidget(sidebar_widget);
+    sidebar_vlay = new QVBoxLayout;
+    sidebar_widget->setLayout(sidebar_vlay);
 
     create_sidebar();
 
-    splitter->addWidget(graphics_view);
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 100);
+    sidebar_dock = new QDockWidget;
+    sidebar_dock->setAllowedAreas(Qt::LeftDockWidgetArea);
+    sidebar_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    sidebar_dock->setWidget(sidebar_widget);
 
-    lay1->addWidget(splitter);
+    addDockWidget(Qt::LeftDockWidgetArea, sidebar_dock);
+
 
     create_actions();
 
@@ -1171,9 +1173,9 @@ void MainWindow::options_dialog()
     OptionsDialog *dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
-    p_ptr->redraw |= (PR_MAP | PR_STATUS);
+    p_ptr->redraw |= (PR_MAP | PR_SIDEBAR);
     handle_stuff();
-    ui_update_sidebar();
+    ui_update_sidebar_all();
 }
 
 void MainWindow::fontselect_dialog()
@@ -1457,7 +1459,7 @@ void MainWindow::set_pseudo_ascii()
 {
     do_pseudo_ascii = pseudo_ascii_act->isChecked();
     ui_redraw_all();
-    update_sidebar();
+    update_sidebar_all();
 }
 
 void MainWindow::display_monster_info()

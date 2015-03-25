@@ -1278,8 +1278,7 @@ void command_destroy(cmd_arg args)
 
         p_ptr->update |= (PU_PLAYER_SCORE);
 
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_RESIST | PR_EXP |
-                          PR_STATS | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_STATUSBAR | PR_SIDEBAR | PR_ITEMLIST);
 
         /* Done */
         return;

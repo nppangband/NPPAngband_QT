@@ -295,7 +295,7 @@ static bool mon_set_timed(int m_idx, int idx, int v, u16b flag)
     }
 
     /*possibly update the monster health bar*/
-    if ((p_ptr->health_who == m_idx)  || (m_ptr->sidebar))p_ptr->redraw |= (PR_HEALTH);
+    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
     if ((idx == MON_TMD_FAST) || (idx == MON_TMD_SLOW))
     {
@@ -502,7 +502,7 @@ void check_experience(void)
 
     /* Redraw experience and score */
     p_ptr->update |= (PU_PLAYER_SCORE);
-    p_ptr->redraw |= (PR_EXP);
+    p_ptr->redraw |= (PR_SIDEBAR);
 
     /* Handle stuff */
     handle_stuff();
@@ -518,7 +518,7 @@ void check_experience(void)
         p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
         /* Redraw some stuff */
-        p_ptr->redraw |= (PR_LEV | PR_TITLE | PR_MONSTER);
+        p_ptr->redraw |= (PR_TITLEBAR | PR_MONSTER);
 
         /* Handle stuff */
         handle_stuff();
@@ -552,17 +552,14 @@ void check_experience(void)
 
                    /* Write message */
                    write_note(buf,  p_ptr->depth);
-
             }
-
-
         }
 
         /* Update some stuff */
         p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
         /* Redraw some stuff */
-        p_ptr->redraw |= (PR_LEV | PR_TITLE | PR_EXP | PR_MONSTER);
+        p_ptr->redraw |= (PR_SIDEBAR | PR_MONSTER);
 
         /* Handle stuff */
         handle_stuff();
@@ -580,7 +577,7 @@ void check_experience(void)
         p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
         /* Redraw some stuff */
-        p_ptr->redraw |= (PR_LEV | PR_TITLE);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
         /* Handle stuff */
         handle_stuff();
@@ -906,7 +903,7 @@ static void process_quest_monster_death(int i, int m_idx, bool *writenote)
         if (m_ptr->mflag & (MFLAG_QUEST))
         {
             q_ptr->q_num_killed++;
-            p_ptr->redraw |= (PR_QUEST_ST);
+            p_ptr->redraw |= (PR_SIDEBAR);
             p_ptr->notice |= PN_QUEST_REMAIN;
         }
         return;
@@ -941,7 +938,7 @@ static void process_quest_monster_death(int i, int m_idx, bool *writenote)
     }
 
     /* Update the quest status */
-    p_ptr->redraw |= (PR_QUEST_ST);
+    p_ptr->redraw |= (PR_SIDEBAR);
 }
 
 /*
@@ -1096,7 +1093,7 @@ void monster_death(int m_idx, int who)
         ui_animate_accomplishment(p_ptr->py, p_ptr->px, GF_DISP_ALL);
 
         /* Redraw the status */
-        p_ptr->redraw |= (PR_QUEST_ST);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
         return;
     }
@@ -1118,7 +1115,7 @@ void monster_death(int m_idx, int who)
         p_ptr->total_winner = TRUE;
 
         /* Redraw the "title" */
-        p_ptr->redraw |= (PR_TITLE);
+        p_ptr->redraw |= (PR_TITLEBAR);
 
         p_ptr->q_fame += 500;
         altered_inventory_counter += 200;
@@ -1225,7 +1222,7 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
     s32b new_exp, new_exp_frac;
 
     /* Redraw (later) if needed */
-    if ((p_ptr->health_who == m_idx) || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
     /* Allow the debugging of damage done. */
     if ((dam > 0) && (cheat_know))

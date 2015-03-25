@@ -201,7 +201,7 @@ static void regenhp(int percent)
     if (old_chp != p_ptr->chp)
     {
         /* Redraw */
-        p_ptr->redraw |= (PR_HP);
+        p_ptr->redraw |= (PR_SIDEBAR);
     }
 }
 
@@ -244,7 +244,7 @@ static void regenmana(int percent)
     if (old_csp != p_ptr->csp)
     {
         /* Redraw */
-        p_ptr->redraw |= (PR_MANA);
+        p_ptr->redraw |= (PR_SIDEBAR);
     }
 }
 
@@ -1446,7 +1446,7 @@ static void process_world(void)
             do_cmd_feeling();
 
             /* Update the level indicator */
-            p_ptr->redraw |= (PR_DEPTH | PR_FEELING);
+            p_ptr->redraw |= (PR_SIDEBAR);
 
             /* Disturb */
             disturb(0, 0);
@@ -1747,7 +1747,7 @@ void change_player_level(void)
         {
             q_info[i].q_flags |= (QFLAG_STARTED);
 
-            p_ptr->redraw = (PR_QUEST_ST);
+            p_ptr->redraw = (PR_SIDEBAR);
             break;
         }
     }
@@ -1879,7 +1879,7 @@ void process_player_energy_aux(byte energy_used)
     if ((quest_indicator_timer > 0) && (--quest_indicator_timer == 0))
     {
         quest_indicator_complete = FALSE;
-        p_ptr->redraw |= (PR_QUEST_ST);
+        p_ptr->redraw |= (PR_SIDEBAR);
     }
 
     /* Shimmer monsters if needed */
@@ -1934,7 +1934,7 @@ void process_player_energy_aux(byte energy_used)
     }
 
     /* Redraw visual indicator of temporary element brand */
-    if (p_ptr->timed[TMD_SLAY_ELEM]) p_ptr->redraw |= (PR_RESIST);
+    if (p_ptr->timed[TMD_SLAY_ELEM]) p_ptr->redraw |= (PR_STATUSBAR);
 
     /* Repair "mark" flags */
     if (repair_mflag_mark)
@@ -2058,7 +2058,5 @@ void process_player_energy(byte energy_used)
     command_ptr->command_function(p_ptr->player_args);
 
     /* Redraw the state */
-    p_ptr->redraw |= (PR_STATE);
-
-    handle_stuff();
+    p_ptr->redraw |= (PR_STATUSBAR);
 }

@@ -1529,7 +1529,7 @@ void update_mon(int m_idx, bool full)
             light_spot(fy, fx);
 
             /* Update health bar as needed */
-            if ((p_ptr->health_who == m_idx)  || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH | PR_MON_MANA);
+            p_ptr->redraw |= (PR_MON_HEALTH);
 
             /* Hack -- Count "fresh" sightings */
             if (l_ptr->sights < MAX_SHORT) l_ptr->sights++;
@@ -1568,7 +1568,7 @@ void update_mon(int m_idx, bool full)
             light_spot(fy, fx);
 
             /* Update health bar as needed */
-            if ((p_ptr->health_who == m_idx)  || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH | PR_MON_MANA);
+            p_ptr->redraw |= (PR_MON_HEALTH);
 
             /* Disturb on visibility change */
             if (disturb_move)
@@ -2240,7 +2240,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
     else if (m1 < 0)
     {
         /* Check if we need to update the statusline */
-        if (player_terrain_changed(y1, x1, y2, x2)) p_ptr->redraw |= (PR_STATUS);
+        if (player_terrain_changed(y1, x1, y2, x2)) p_ptr->redraw |= (PR_STATUSBAR);
 
         /* Move player */
         p_ptr->py = y2;
@@ -2259,7 +2259,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y2][x2].feat);
 
         /* Update the trap detection status */
-        p_ptr->redraw |= (PR_DTRAP | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_ITEMLIST);
 
         /* Update the panel */
         p_ptr->update |= (PU_PANEL | PU_STEALTH);
@@ -2300,7 +2300,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
     else if (m2 < 0)
     {
         /* Check if we need to update the statusline */
-        if (player_terrain_changed(y1, x1, y2, x2)) p_ptr->redraw |= (PR_STATUS);
+        if (player_terrain_changed(y1, x1, y2, x2)) p_ptr->redraw |= (PR_STATUSBAR);
 
         /* Move player */
         p_ptr->py = y1;
@@ -2319,7 +2319,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y1][x1].feat);
 
         /* Update the trap detection status, itemlist and monlist */
-        p_ptr->redraw |= (PR_DTRAP | PR_ITEMLIST | PR_MONLIST);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_ITEMLIST | PR_MONLIST);
 
         /* Update the panel and player stealth */
         p_ptr->update |= (PU_PANEL | PU_STEALTH);

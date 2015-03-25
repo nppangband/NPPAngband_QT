@@ -521,7 +521,7 @@ bool detect(int dist, u16b detect_checks)
         refresh = TRUE;
 
         /* Update the detect statusline */
-        p_ptr->redraw |= (PR_DTRAP);
+        p_ptr->redraw |= (PR_STATUSBAR);
     }
 
     /* Some detects need the map re-drawn. */

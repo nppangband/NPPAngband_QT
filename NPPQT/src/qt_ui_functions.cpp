@@ -298,16 +298,24 @@ void ui_animate_accomplishment(int y, int x, int gf_type)
     main_window->wait_animation(2);
 }
 
-
 QFont ui_current_font()
 {
     return main_window->cur_font;
 }
 
-
-void ui_update_sidebar()
+void ui_update_sidebar_all()
 {
-    main_window->update_sidebar();
+    main_window->update_sidebar_all();
+}
+
+void ui_update_sidebar_player()
+{
+    main_window->update_sidebar_player();
+}
+
+void ui_update_sidebar_mon()
+{
+    main_window->update_sidebar_mon();
 }
 
 void ui_update_statusbar()

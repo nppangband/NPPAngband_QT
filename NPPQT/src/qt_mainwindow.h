@@ -72,13 +72,15 @@ public:
 
     DungeonCursor *cursor;
 
+    QDockWidget *message_dock;
+    QDockWidget *sidebar_dock;
     QTextEdit *message_area;
 
     QToolBar *target_toolbar;
     QToolBar *status_bar;
 
     QWidget *sidebar_widget;
-    QVBoxLayout *sidebar;
+    QVBoxLayout *sidebar_vlay;
     QTableWidget *sidebar_mon;
 
     MainWindow();
@@ -102,7 +104,9 @@ public:
     void animation_done();
     bool check_disturb();
     void create_sidebar();
-    void update_sidebar();
+    void update_sidebar_player();
+    void update_sidebar_mon();
+    void update_sidebar_all() {update_sidebar_mon(); update_sidebar_player();}
     void hide_sidebar();
     void show_sidebar();
     void close_game_death();

@@ -1208,7 +1208,7 @@ void take_hit(int dam, QString kb_str)
     p_ptr->chp -= dam;
 
     /* Display the hitpoints */
-    p_ptr->redraw |= (PR_HP);
+    p_ptr->redraw |= (PR_SIDEBAR);
 
     /* Dead player */
     if (p_ptr->chp < 0)
@@ -4447,7 +4447,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
             if (m_ptr->hp > m_ptr->maxhp) m_ptr->hp = m_ptr->maxhp;
 
             /* Redraw (later) if needed */
-            if ((p_ptr->health_who == mon_idx)  || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+            if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
             /*monster was at full hp to begin*/
             if (!healed)
@@ -4688,7 +4688,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
                 if (m_ptr->hp > m_ptr->maxhp) m_ptr->hp = m_ptr->maxhp;
 
                 /* Redraw (later) if needed */
-                if ((p_ptr->health_who == mon_idx)  || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+                if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
                 /*monster was at full hp to begin*/
                 if (!healed)
@@ -5138,7 +5138,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
             /* Hack -- Get the new monster name */
             m_name = monster_desc(m_ptr, 0);
 
-            if ((p_ptr->health_who == mon_idx) || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+            if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
         }
     }
 
@@ -5203,7 +5203,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
         else stun_note = MON_MSG_RESIST;
 
         /*possibly update the monster health bar*/
-        if ((p_ptr->health_who == mon_idx) || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
     }
 
@@ -5232,7 +5232,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
         else if (r_ptr->flags4 & (RF4_BRTH_CONFU)) conf_note = MON_MSG_RESIST;
         else conf_note =  MON_MSG_RESIST_SOMEWHAT;
 
-        if (p_ptr->health_who == mon_idx) p_ptr->redraw |= (PR_HEALTH);
+        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
     }
 
     /*Slowing*/
@@ -5291,7 +5291,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
     if (who != SOURCE_PLAYER)
     {
         /* Redraw (later) if needed */
-        if ((p_ptr->health_who == mon_idx) || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
         /* Wake the monster up, no message */
         wake_monster_attack(m_ptr, (timed_flag | MON_TMD_FLG_NOMESSAGE));

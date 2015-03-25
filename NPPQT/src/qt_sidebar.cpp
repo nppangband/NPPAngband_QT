@@ -39,7 +39,7 @@ void MainWindow::create_sidebar()
 
     // Hitpoints
     QGridLayout *player_info = new QGridLayout;
-    sidebar->addLayout(player_info);
+    sidebar_vlay->addLayout(player_info);
 
     QLabel *hp_label = new QLabel;
     hp_label->setText(color_string("HP", SBAR_NORMAL));
@@ -159,7 +159,7 @@ void MainWindow::create_sidebar()
     sidebar_mon->setMinimumSize(metrics.width("MMMMMMMMMMMMMMMMMM"), 10);
     sidebar_mon->setEditTriggers(0);
 
-    sidebar->addWidget(sidebar_mon);
+    sidebar_vlay->addWidget(sidebar_mon);
 
 
     for (row = 0; row < SIDEBAR_MON_MAX; row++)
@@ -183,6 +183,7 @@ void MainWindow::create_sidebar()
         sidebar_mon->setRowHidden(row, true);
     }
 
+    sidebar_vlay->addStretch(1);
 
 }
 
@@ -582,7 +583,7 @@ void update_mon_sidebar_list(void)
 }
 
 
-void MainWindow::update_sidebar()
+void MainWindow::update_sidebar_player()
 {
     if (!p_ptr->playing) return;
 
@@ -826,6 +827,10 @@ void MainWindow::update_sidebar()
             }
         }
     }
+}
+
+void MainWindow::update_sidebar_mon()
+{
 
 
     // MONSTERS
@@ -855,6 +860,13 @@ void MainWindow::show_sidebar()
         QLabel *this_lbl = lbl_list.at(x);
         this_lbl->show();
     }
+
+    QList<QTableWidget *> tbl_list = sidebar_widget->findChildren<QTableWidget *>();
+    for (int x = 0; x < tbl_list.size(); x++)
+    {
+        QTableWidget *this_tbl = tbl_list.at(x);
+        this_tbl->show();
+    }
 }
 
 //Hide all the labels
@@ -867,6 +879,13 @@ void MainWindow::hide_sidebar()
     {
         QLabel *this_lbl = lbl_list.at(x);
         this_lbl->hide();
+    }
+
+    QList<QTableWidget *> tbl_list = sidebar_widget->findChildren<QTableWidget *>();
+    for (int x = 0; x < tbl_list.size(); x++)
+    {
+        QTableWidget *this_tbl = tbl_list.at(x);
+        this_tbl->hide();
     }
 }
 

@@ -47,7 +47,7 @@ bool hp_player(int num)
         }
 
         /* Redraw */
-        p_ptr->redraw |= (PR_HP);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
         /* Heal 0-4 */
         if (num < 5)
@@ -433,7 +433,7 @@ bool inc_stat(int stat)
         p_ptr->update |= (PU_BONUS);
 
         /* Redisplay the stats later */
-        p_ptr->redraw |= (PR_STATS);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
         /* Success */
         return (TRUE);
@@ -557,7 +557,7 @@ bool dec_stat(int stat, int amount,bool permanent)
         p_ptr->update |= (PU_BONUS);
 
         /* Redisplay the stats later */
-        p_ptr->redraw |= (PR_STATS);
+        p_ptr->redraw |= (PR_SIDEBAR);
     }
 
     /* Done */
@@ -580,7 +580,7 @@ bool res_stat(int stat)
         p_ptr->update |= (PU_BONUS);
 
         /* Redisplay the stats later */
-        p_ptr->redraw |= (PR_STATS);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
         /* Success */
         return (TRUE);
@@ -738,7 +738,7 @@ void do_perm_stat_boost(int stat)
     p_ptr->update |= (PU_BONUS);
 
     /* Redisplay the stats later */
-    p_ptr->redraw |= (PR_STATS);
+    p_ptr->redraw |= (PR_SIDEBAR);
 }
 
 /*
@@ -850,11 +850,9 @@ static void cave_temp_room_light(void)
                 wake_monster_attack(m_ptr, MON_TMD_FLG_NOTIFY);
 
                 /*possibly update the monster health bar*/
-                if ((p_ptr->health_who == m_idx)  || (m_ptr->sidebar))
-                    p_ptr->redraw |= (PR_HEALTH);
+                if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
             }
         }
-
     }
 
     /* None left */
@@ -1094,7 +1092,7 @@ void mass_aggravate_monsters(int who)
         }
 
         /*possibly update the monster health bar*/
-        if ((p_ptr->health_who == i)  || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
     }
 
     /* If it just woke up, update the monster list */
@@ -2009,7 +2007,7 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
 
     /* Update the health bar */
-    p_ptr->redraw |= (PR_HEALTH | PR_MON_MANA);
+    p_ptr->redraw |= (PR_MON_HEALTH);
 
     /* Redraw map and Window Stuff */
     p_ptr->redraw |= (PR_MAP | PR_MONLIST | PR_ITEMLIST);
@@ -2431,7 +2429,7 @@ int do_ident_item(int item, object_type *o_ptr)
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS | PU_PLAYER_SCORE);
 
-    p_ptr->redraw |= (PR_EXP | PR_STATS | PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_SIDEBAR | PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -3803,7 +3801,7 @@ bool set_recall(void)
     }
 
     /* Redraw status line */
-    p_ptr->redraw = PR_STATUS;
+    p_ptr->redraw = PR_STATUSBAR;
     handle_stuff();
 
     return (TRUE);

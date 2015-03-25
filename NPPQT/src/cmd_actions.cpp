@@ -1537,12 +1537,6 @@ void do_cmd_toggle_search(void)
     {
         /* Clear the searching flag */
         p_ptr->searching = FALSE;
-
-        /* Recalculate bonuses */
-        p_ptr->update |= (PU_BONUS);
-
-        /* Redraw the state */
-        p_ptr->redraw |= (PR_STATE);
     }
 
     /* Start searching */
@@ -1550,15 +1544,15 @@ void do_cmd_toggle_search(void)
     {
         /* Set the searching flag */
         p_ptr->searching = TRUE;
-
-        /* Update stuff */
-        p_ptr->update |= (PU_BONUS);
-
-        /* Redraw stuff */
-        p_ptr->redraw |= (PR_STATE | PR_SPEED | PR_STATUS);
     }
 
-    redraw_stuff();
+    /* Recalculate bonuses */
+    p_ptr->update |= (PU_BONUS);
+
+    /* Redraw the state */
+    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
+
+    handle_stuff();
 }
 
 void command_search(cmd_arg args)

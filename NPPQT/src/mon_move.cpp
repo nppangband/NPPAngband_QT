@@ -2602,8 +2602,8 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
         }
 
         /*possibly update the monster health bar*/
-        if ((p_ptr->health_who == dungeon_info[m_ptr->fy][m_ptr->fx].monster_idx)  || (m_ptr->sidebar))
-                    p_ptr->redraw |= (PR_HEALTH);
+        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+
     }
 
     /* Feature is not a wall */

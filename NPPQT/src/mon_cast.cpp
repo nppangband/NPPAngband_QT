@@ -1050,7 +1050,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
     m_ptr->mana -= manacost;
 
     /* Redraw (later) if needed */
-    if (p_ptr->health_who == m_idx) p_ptr->redraw |= (PR_MON_MANA);
+    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
     /*Monsters marked as aggressive don't stay that way permanently.  */
     if (m_ptr->mflag & (MFLAG_AGGRESSIVE))
@@ -2921,15 +2921,13 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
 
 
             /* Redraw (later) if needed */
-            if (((p_ptr->health_who == m_idx) && (m_ptr->ml)) ||  (m_ptr->sidebar))
-                p_ptr->redraw |= (PR_HEALTH);
+            if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
             /* Cancel fear */
             if (m_ptr->m_timed[MON_TMD_FEAR])
             {
                 /* Cancel fear */
                 mon_clear_timed(m_idx, MON_TMD_FEAR , tmd_flag);
-
             }
 
             /* Recalculate combat range later */
@@ -2966,7 +2964,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             }
 
             /* Redraw (later) if needed */
-            if ((p_ptr->health_who == m_idx)  || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+            if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
             break;
         }
@@ -3186,7 +3184,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 }
 
                 /* Redraw mana */
-                p_ptr->redraw |= (PR_MANA);
+                p_ptr->redraw |= (PR_SIDEBAR);
 
                 /* Replenish monster mana */
                 if (m_ptr->mana < r_ptr->mana)
@@ -3203,7 +3201,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                     }
 
                     /* Redraw (later) if needed */
-                    if (p_ptr->health_who == m_idx) p_ptr->redraw |= (PR_MON_MANA);
+                    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
                 }
 
@@ -3215,7 +3213,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                     if (m_ptr->hp > m_ptr->maxhp) m_ptr->hp = m_ptr->maxhp;
 
                     /* Redraw (later) if needed */
-                    if ((p_ptr->health_who == m_idx)  || (m_ptr->sidebar)) p_ptr->redraw |= (PR_HEALTH);
+                    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
                     /* Special message */
                     if (seen)

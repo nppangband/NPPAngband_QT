@@ -635,52 +635,40 @@ enum
 /*
  * Bit flags for the "p_ptr->redraw" variable
  */
-#define PR_UNUSED0  	0x00000001L
-#define PR_TITLE		0x00000002L	/* Display Title */
-#define PR_LEV			0x00000004L	/* Display Level */
-#define PR_EXP			0x00000008L	/* Display Experience */
-#define PR_STATS		0x00000010L	/* Display Stats */
-#define PR_ARMOR		0x00000020L	/* Display Armor */
-#define PR_HP			0x00000040L	/* Display Hitpoints */
-#define PR_MANA			0x00000080L	/* Display Mana */
-#define PR_GOLD			0x00000100L	/* Display Gold */
-#define PR_DEPTH		0x00000200L	/* Display Depth */
-#define PR_QUEST_ST		0x00000400L	/* Display quest status */
-#define PR_HEALTH		0x00000800L	/* Display Monster Health Bar */
-#define PR_FEELING		0x00001000L	/* Display Level Feeling */
+#define PR_XXX1         0x00000001L
+#define PR_SIDEBAR		0x00000002L	/* Update the sidebar */
+#define PR_MON_HEALTH	0x00000004L	/* Display Monster Health Bar */
+#define PR_STATUSBAR	0x00000008L	// Update the statusbar
+#define PR_TITLEBAR     0x00000010L // Update the titlebar
+#define PR_XXX3         0x00000020L
+#define PR_XXX4			0x00000040L
+#define PR_XXX5			0x00000080L
+#define PR_XXX6			0x00000100L
+#define PR_XXX7         0x00000200L
+#define PR_XXX8 		0x00000400L
+#define PR_XXX9     	0x00000800L
+#define PR_XX10 		0x00001000L
 #define PR_OBJECT		0x00002000L	/* Display object recall */
 #define PR_MONSTER		0x00004000L	/* Display monster recall */
-#define PR_MON_MANA		0x00008000L	/* Display Monster Mana Bar */
+#define PR_XX11 		0x00008000L
 #define PR_MESSAGE		0x00010000L	/* Display messages */
 #define PR_EQUIP		0x00020000L	/* Display equip/inven */
 #define PR_INVEN		0x00040000L	/* Display inven/equip */
-#define PR_STATE		0x00080000L	/* Display Extra (State) */
-#define PR_STATUS		0x00100000L	/* Display Status */
-#define PR_SPEED		0x00200000L	/* Display Extra (Speed) */
-#define PR_STUDY		0x00400000L	/* Display Extra (Study) */
-#define PR_RESIST		0X00800000L	/* Display Resistances */
+#define PR_XX14         0x00080000L
+#define PR_XX13         0x00100000L
+#define PR_XX12         0x00200000L
+#define PR_XX15         0x00400000L
+#define PR_XX16         0X00800000L
 #define PR_UNUSED1      0x01000000L
-#define PR_DTRAP		0x02000000L /* Trap Detection Indicator */
+#define PR_XX17 		0x02000000L
 #define PR_ITEMLIST     0x04000000L /* Display item list */
 #define PR_MAP			0x08000000L	/* Display Map */
 #define PR_MONLIST		0x10000000L	/* Display monster list */
 #define PR_FEATURE		0x20000000L	/* Display feature */
-#define PR_PLAYER_NATIVE 0x40000000L	/* Returns whether the terrain is native or not */
+#define PR_XX18         0x40000000L	/
 #define PR_UNUSED2		0x80000000L	/* Unused */
-/* xxx (many) */
-/* Display Sidebar Info */
-#define PR_SIDEBAR \
-    (PR_TITLE | PR_STATS | PR_LEV | PR_MONLIST | PR_MON_MANA |\
-     PR_EXP | PR_GOLD | PR_ARMOR | PR_HP | PR_FEELING | \
-     PR_MANA | PR_DEPTH | PR_HEALTH | PR_SPEED | PR_QUEST_ST)
 
-/* Display Statusbar */
-#define PR_STATUSBAR \
-    (PR_STATUS | PR_STATE | PR_STUDY | PR_DTRAP | PR_RESIST | PR_PLAYER_NATIVE)
 
-/* Display Titlebar */
-#define PR_TITLEBAR \
-    (PR_LEV | PR_TITLE)
 
 /* Display Extra Info */
 #define PR_MESSAGEBOX \

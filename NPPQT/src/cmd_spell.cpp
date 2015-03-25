@@ -514,7 +514,7 @@ static void spell_learn(int spell)
     }
 
     /* Redraw Study Status */
-    p_ptr->redraw |= (PR_STUDY | PR_OBJECT);
+    p_ptr->redraw |= (PR_STATUSBAR | PR_OBJECT);
 }
 
 /*
@@ -790,7 +790,7 @@ static void cast_spell(cmd_arg args)
     }
 
     /* Redraw mana */
-    p_ptr->redraw |= (PR_MANA);
+    p_ptr->redraw |= (PR_SIDEBAR);
 
     process_player_energy(BASE_ENERGY_MOVE);
 }

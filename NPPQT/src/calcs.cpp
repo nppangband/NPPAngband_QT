@@ -313,7 +313,7 @@ void calc_spells(void)
         }
 
         /* Redraw Study Status */
-        p_ptr->redraw |= (PR_STUDY | PR_OBJECT);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_OBJECT);
     }
 
 }
@@ -435,7 +435,7 @@ static void calc_mana(void)
         }
 
         /* Display mana later */
-        p_ptr->redraw |= (PR_MANA);
+        p_ptr->redraw |= (PR_SIDEBAR);
     }
 
     /* Hack -- handle "xtra" mode */
@@ -528,7 +528,7 @@ static void calc_hitpoints(void)
         p_ptr->chp_frac = 0;
 
         /* Display hp later */
-        p_ptr->redraw |= (PR_HP);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
     }
 }
@@ -1782,7 +1782,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (new_state->stat_loaded_max[i] != old_stat_loaded_max[i])
         {
             /* Redisplay the stats later */
-            p_ptr->redraw |= (PR_STATS);
+            p_ptr->redraw |= (PR_SIDEBAR);
 
         }
 
@@ -1790,7 +1790,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (new_state->stat_loaded_cur[i] != old_stat_loaded_cur[i])
         {
             /* Redisplay the stats later */
-            p_ptr->redraw |= (PR_STATS);
+            p_ptr->redraw |= (PR_SIDEBAR);
 
         }
 
@@ -1844,14 +1844,14 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (new_state->p_speed != old_speed)
     {
         /* Redraw speed */
-        p_ptr->redraw |= (PR_SPEED | PR_STATUS);
+        p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
     }
 
     /* Redraw armor (if needed) */
     if ((new_state->dis_ac != old_dis_ac) || (new_state->dis_to_a != old_dis_to_a))
     {
         /* Redraw */
-        p_ptr->redraw |= (PR_ARMOR);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
     }
 
@@ -2063,8 +2063,17 @@ void redraw_stuff(void)
     {
         if (!p_ptr->is_resting() && !p_ptr->is_running())
         {
-            ui_update_sidebar();
+            ui_update_sidebar_player();
             p_ptr->redraw &= ~(PR_SIDEBAR);
+        }
+    }
+
+    if (p_ptr->redraw & (PR_MON_HEALTH))
+    {
+        if (!p_ptr->is_resting() && !p_ptr->is_running())
+        {
+            ui_update_sidebar_mon();
+            p_ptr->redraw &= ~(PR_MON_HEALTH);
         }
     }
 

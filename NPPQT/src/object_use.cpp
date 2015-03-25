@@ -488,7 +488,7 @@ static bool quaff_potion(object_type *o_ptr, bool *ident)
             {
                 p_ptr->csp /= 2;
                 message(QString("Your feel your head cloud up."));
-                p_ptr->redraw |= (PR_MANA);
+                p_ptr->redraw |= (PR_SIDEBAR);
                 *ident = TRUE;
             }
             break;
@@ -779,7 +779,7 @@ static bool quaff_potion(object_type *o_ptr, bool *ident)
                 p_ptr->csp = p_ptr->msp;
                 p_ptr->csp_frac = 0;
                 message(QString("Your feel your head clear."));
-                p_ptr->redraw |= (PR_MANA);
+                p_ptr->redraw |= (PR_SIDEBAR);
                 *ident = TRUE;
             }
             break;
@@ -1587,7 +1587,7 @@ static bool use_staff(object_type *o_ptr, bool *ident)
                 p_ptr->csp_frac = 0;
                 *ident = TRUE;
                 message(QString("Your feel your head clear."));
-                p_ptr->redraw |= (PR_MANA);
+                p_ptr->redraw |= (PR_SIDEBAR);
             }
             break;
         }

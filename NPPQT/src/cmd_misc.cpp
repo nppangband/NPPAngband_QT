@@ -110,7 +110,7 @@ void do_cmd_feeling(void)
     else message(QString(do_cmd_feeling_text[feeling]));
 
     /* Redraw the feeling indicator */
-    p_ptr->redraw |= (PR_FEELING);
+    p_ptr->redraw |= (PR_SIDEBAR);
 }
 
 

@@ -551,8 +551,7 @@ static s16b process_monster(monster_type *m_ptr)
     if (m_ptr->using_flow == NEED_FLOW) find_best_flow(m_ptr);
 
     /* Hack -- Always redraw the current target monster health bar */
-    if ((p_ptr->health_who == dungeon_info[m_ptr->fy][m_ptr->fx].monster_idx)  || (m_ptr->sidebar))
-        p_ptr->redraw |= (PR_HEALTH | PR_MON_MANA);
+    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
 
     /* Attempt to multiply if able to and allowed */
     if ((r_ptr->flags2 & (RF2_MULTIPLY)) &&
@@ -1080,8 +1079,8 @@ static void recover_monster(monster_type *m_ptr)
     }
 
     /* Hack -- Update the health and mana bar (always) */
-    if ((p_ptr->health_who == m_idx)  || (m_ptr->sidebar))
-        p_ptr->redraw |= (PR_HEALTH | PR_MON_MANA);
+    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+
 
 }
 

@@ -649,7 +649,7 @@ void process_greater_vault_quest(void)
     int i;
 
     /* Update the turn count */
-    p_ptr->redraw |= (PR_QUEST_ST);
+    p_ptr->redraw |= (PR_SIDEBAR);
 
     if (quest_time_remaining() >= 1)
     {
@@ -691,7 +691,7 @@ void process_greater_vault_quest(void)
     quest_indicator_complete = TRUE;
 
     /* Redraw the status */
-    p_ptr->redraw |= (PR_QUEST_ST);
+    p_ptr->redraw |= (PR_SIDEBAR);
 
     /* Mark the quest as finished, write the note */
     quest_finished(q_ptr);

@@ -110,19 +110,19 @@ static timed_effect effects[] =
     /* TMD_OPP_ACID */
     { "You feel resistant to acid!", "You are no longer resistant to acid.",
             "You feel more resistant to acid!", "You feel less resistant to acid.",
-            PR_STATUS, 0, 0, MSG_RES_ACID, FALSE  },
+            PR_STATUSBAR, 0, 0, MSG_RES_ACID, FALSE  },
     /* TMD_OPP_ELEC */
     { "You feel resistant to electricity!", "You are no longer resistant to electricity.",
             "You feel more resistant to electricity!", "You feel less resistant to electricity.",
-            PR_STATUS, 0, 0, MSG_RES_ELEC, FALSE  },
+            PR_STATUSBAR, 0, 0, MSG_RES_ELEC, FALSE  },
     /* TMD_OPP_FIRE */
     { "You feel resistant to fire!", "You are no longer resistant to fire.",
             "You feel more resistant to fire!", "You feel less resistant to fire.",
-            PR_STATUS, 0, 0, MSG_RES_FIRE, FALSE  },
+            PR_STATUSBAR, 0, 0, MSG_RES_FIRE, FALSE  },
     /* TMD_OPP_COLD */
     { "You feel resistant to cold!", "You are no longer resistant to cold.",
             "You feel more resistant to cold!", "You feel less resistant to cold.",
-            PR_STATUS, 0, 0, MSG_RES_COLD, FALSE  },
+            PR_STATUSBAR, 0, 0, MSG_RES_COLD, FALSE  },
     /* TMD_OPP_POIS */
     { "You feel resistant to poison!", "You are no longer resistant to poison.",
             "You feel more resistant to poison!", "You feel less resistant to poison.",
@@ -130,7 +130,7 @@ static timed_effect effects[] =
     /* TMD_FLYING */
     { "You take flight!", "Your mystic wings disappear.",
             NULL, NULL,
-            (PR_RESIST | PR_STATUS), PU_STEALTH, 0, 0, FALSE  },
+            (PR_STATUSBAR), PU_STEALTH, 0, 0, FALSE  },
     /* TMD_NAT_LAVA */
     { "You feel native to lava terrains!", "You no longer feel native to lava terrains.",
             NULL, NULL,
@@ -158,7 +158,7 @@ static timed_effect effects[] =
     /* TMD_SLAY_ELEM */
     { "Your weapon glows with many colors!", "Your weapon returns to normal.",
             NULL, NULL,
-            PR_RESIST, 0, 0, 0, FALSE  },
+            PR_STATUSBAR, 0, 0, 0, FALSE  },
     /* TMD_CALL_HOURNS */
     { "You try to awake the trees around you!", "The trees are asleep now.",
             NULL, NULL,
@@ -455,7 +455,7 @@ bool set_stun(int v)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw the "stun" */
-    p_ptr->redraw |= (PR_STATUS);
+    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
 
     /* Handle stuff */
     handle_stuff();
@@ -667,7 +667,7 @@ bool set_cut(int v)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw the "cut" */
-    p_ptr->redraw |= (PR_STATUS);
+    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
 
     /* Handle stuff */
     handle_stuff();
@@ -886,7 +886,7 @@ bool set_food(int v)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw hunger */
-    p_ptr->redraw |= (PR_STATUS|PR_HP);
+    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
 
     /* Handle stuff */
     handle_stuff();

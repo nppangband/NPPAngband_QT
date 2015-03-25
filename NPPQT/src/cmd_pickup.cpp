@@ -168,7 +168,7 @@ bool put_object_in_inventory(object_type *o_ptr)
     if (o_ptr->is_quest_object())
 	{
 		p_ptr->notice |= (PN_QUEST_REMAIN);
-		p_ptr->redraw |= (PR_QUEST_ST);
+        p_ptr->redraw |= (PR_SIDEBAR);
 	}
 
 	/* Get the object again */
@@ -422,7 +422,7 @@ void py_pickup_gold(void)
 
         /* Redraw gold and update player score */
         p_ptr->update |= (PU_PLAYER_SCORE);
-		p_ptr->redraw |= (PR_GOLD);
+        p_ptr->redraw |= (PR_SIDEBAR);
 
 		/* Delete the gold */
 		delete_object_idx(this_o_idx);
@@ -903,7 +903,7 @@ int move_player(int dir, int jumping)
         new_dtrap = ((dungeon_info[y][x].cave_info & (CAVE_DTRAP)) != 0);
 
 		/* Note the change in the detect status */
-		if (old_dtrap != new_dtrap) p_ptr->redraw |= (PR_DTRAP);
+        if (old_dtrap != new_dtrap) p_ptr->redraw |= (PR_STATUSBAR);
 
 		/* Disturb player if the player is about to leave the area */
 		if (disturb_detect &&
