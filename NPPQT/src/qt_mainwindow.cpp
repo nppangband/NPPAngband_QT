@@ -1109,6 +1109,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         return;
     }
 
+    // Just a modifier was pressed, wait for a keypress
+    if (!keystring.length()) return;
+
     Qt::KeyboardModifiers modifiers = which_key->modifiers();
 
     bool shift_key = modifiers.testFlag(Qt::ShiftModifier);
@@ -1116,17 +1119,19 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     bool alt_key = modifiers.testFlag(Qt::AltModifier);
     bool meta_key = modifiers.testFlag(Qt::MetaModifier);
 
+    int key_press = which_key->key();
+
     if (which_keyset == KEYSET_NEW)
     {
-        commands_new_keyset(which_key, shift_key, alt_key, ctrl_key, meta_key);
+        commands_new_keyset(key_press, shift_key, alt_key, ctrl_key, meta_key);
     }
     else if (which_keyset == KEYSET_ANGBAND)
     {
-        commands_angband_keyset(which_key, shift_key, alt_key, ctrl_key, meta_key);
+        commands_angband_keyset(key_press, shift_key, alt_key, ctrl_key, meta_key);
     }
     else if (which_keyset == KEYSET_ROGUE)
     {
-        commands_roguelike_keyset(which_key, shift_key, alt_key, ctrl_key, meta_key);
+        commands_roguelike_keyset(key_press, shift_key, alt_key, ctrl_key, meta_key);
     }
     else pop_up_message_box("invalid keyset");
 

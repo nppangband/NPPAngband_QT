@@ -473,13 +473,13 @@ static void process_mov_key(int dir, bool shift_key, bool alt_key, bool ctrl_key
     else do_cmd_walk(dir, FALSE);
 }
 
-void commands_new_keyset(QKeyEvent* which_key, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
+void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
 {
     bool using_mods = FALSE;
     if (shift_key || alt_key || ctrl_key || meta_key) using_mods = TRUE;
 
     // Normal mode
-    switch (which_key->key())
+    switch (key_press)
     {
         // ESCAPE
         case Qt::Key_Escape:
@@ -721,13 +721,13 @@ void commands_new_keyset(QKeyEvent* which_key, bool shift_key, bool alt_key, boo
     }
 }
 
-void commands_angband_keyset(QKeyEvent* which_key, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
+void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
 {
     bool using_mods = FALSE;
     if (shift_key || alt_key || ctrl_key || meta_key) using_mods = TRUE;
 
     // Normal mode
-    switch (which_key->key())
+    switch (key_press)
     {
         // ESCAPE
         case Qt::Key_Escape:
@@ -1012,13 +1012,13 @@ void commands_angband_keyset(QKeyEvent* which_key, bool shift_key, bool alt_key,
     }
 }
 
-void commands_roguelike_keyset(QKeyEvent* which_key, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
+void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
 {
     bool using_mods = FALSE;
     if (shift_key || alt_key || ctrl_key || meta_key) using_mods = TRUE;
 
     // Normal mode
-    switch (which_key->key())
+    switch (key_press)
     {
         // ESCAPE
         case Qt::Key_Escape:

@@ -155,9 +155,7 @@ void MainWindow::create_sidebar()
     sidebar_mon->horizontalHeader()->setVisible(false);
     sidebar_mon->setShowGrid(false);
     sidebar_mon->setStyleSheet(QString("background-color: black; color: %1;").arg(SBAR_NORMAL));
-    QFontMetrics metrics(sidebar_mon->font());
-    sidebar_mon->setMinimumSize(metrics.width("MMMMMMMMMMMMMMMMMM"), 10);
-    sidebar_mon->setEditTriggers(0);
+    sidebar_mon->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     sidebar_vlay->addWidget(sidebar_mon);
 

@@ -25,6 +25,8 @@ struct player_flag_record
 
 class PlayerScreenInfo : public QDialog
 {
+    Q_OBJECT
+
 public:
     void update_char_screen(void);
     void char_basic_info(QGridLayout *return_layout);
@@ -33,6 +35,9 @@ public:
     void char_stat_info(QGridLayout *stat_layout);
     void char_combat_info(QGridLayout *return_layout);
     void char_ability_info(QGridLayout *return_layout);
+
+public slots:
+    void name_change(void);
 };
 
 

@@ -21,6 +21,7 @@
 #include <src/knowledge.h>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QHeaderView>
 
 /*
  * The label of the group who collects miscellaneous features.
@@ -178,6 +179,12 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     terrain_table = new QTableWidget(0, 4, this);
     terrain_table->setAlternatingRowColors(FALSE);
 
+    qtablewidget_add_palette(terrain_group_table);
+    qtablewidget_add_palette(terrain_table);
+
+    terrain_group_table->verticalHeader()->setVisible(FALSE);
+    terrain_table->verticalHeader()->setVisible(FALSE);
+
     do_spoiler = FALSE;
 
     int row = 0;
@@ -229,14 +236,14 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
             pix = pix.scaled(32, 32);
             feat_ltr->setIcon(pix);
         }
-        else feat_ltr->setTextColor(f_ptr->d_color);
+        feat_ltr->setData(Qt::ForegroundRole, f_ptr->d_color);
         feat_ltr->setTextAlignment(Qt::AlignCenter);
         terrain_table->setItem(row, col++, feat_ltr);
 
         // feature info
         QPushButton *new_button = new QPushButton();
-        new_button->setIcon(QIcon(":/icons/lib/icons/help.png"));
-        new_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        qpushbutton_dark_background(new_button);
+        new_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         terrain_table->setCellWidget(row, col++, new_button);
         terrain_button_group->addButton(new_button, i);
 

@@ -21,6 +21,7 @@
 #include <src/knowledge.h>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QHeaderView>
 
 /*
  * Description of each monster group.
@@ -241,6 +242,8 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     qtablewidget_add_palette(monster_table);
     qtablewidget_add_palette(mon_group_table);
 
+    mon_group_table->verticalHeader()->setVisible(FALSE);
+    monster_table->verticalHeader()->setVisible(FALSE);
 
     do_spoiler = FALSE;
 

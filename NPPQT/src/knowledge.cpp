@@ -24,6 +24,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QDialogButtonBox>
+#include <QHeaderView>
 
 void qtablewidget_add_palette(QTableWidget *this_tablewidget)
 {
@@ -200,6 +201,8 @@ DisplayScores::DisplayScores(void)
     //Set up the headers
     scores_table = new QTableWidget(0, 8, this);
     scores_table->setAlternatingRowColors(TRUE);
+
+    scores_table->verticalHeader()->setVisible(false);
 
     QTableWidgetItem *score_header = new QTableWidgetItem("Player Score");
     score_header->setTextAlignment(Qt::AlignRight);

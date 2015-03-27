@@ -24,6 +24,7 @@
 #include <src/object_settings.h>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <QHeaderView>
 
 static QString squelch_status[SQUELCH_OPT_MAX] =
 {
@@ -684,6 +685,9 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     qtablewidget_add_palette(object_group_table);
     qtablewidget_add_palette(object_table);
 
+    object_group_table->verticalHeader()->setVisible(FALSE);
+    object_table->verticalHeader()->setVisible(FALSE);
+
     do_spoiler = FALSE;
 
     int row = 0;
@@ -975,6 +979,9 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     qtablewidget_add_palette(ego_item_group_table);
     qtablewidget_add_palette(ego_item_table);
 
+    ego_item_group_table->verticalHeader()->setVisible(FALSE);
+    ego_item_table->verticalHeader()->setVisible(FALSE);
+
     do_spoiler = FALSE;
 
     int row = 0;
@@ -1233,6 +1240,9 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
 
     qtablewidget_add_palette(artifact_group_table);
     qtablewidget_add_palette(artifact_table);
+
+    artifact_group_table->verticalHeader()->setVisible(FALSE);
+    artifact_table->verticalHeader()->setVisible(FALSE);
 
     do_spoiler = FALSE;
 

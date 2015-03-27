@@ -16,11 +16,13 @@
 
 #include <src/player_screen.h>
 #include <src/help.h>
+#include <src/utilities.h>
 #include <QDialogButtonBox>
 #include <QPixmap>
 #include <QPainter>
 #include <QPlainTextEdit>
 #include <QList>
+#include <QPushButton>
 
 // The null line is there to prevent crashes as the data is read;
 static struct player_flag_record player_resist_table[] =
@@ -260,6 +262,30 @@ QString stat_entry(int stat)
     if (stat < A_STR) return ("invalid stat");
 
     return(get_help_topic("character_info", stat_names_full[stat]));
+}
+
+void PlayerScreenInfo::name_change(void)
+{
+    QString new_name = get_string("Please enter a new name for your character.", "Enter new name", op_ptr->full_name);
+
+    if (!new_name.length()) return;
+
+    op_ptr->full_name = new_name;
+
+    // Update the new name
+    QList<QLabel *> lbl_list = this->findChildren<QLabel *>();
+    for (int i = 0; i < lbl_list.size(); i++)
+    {
+        QLabel *this_lbl = lbl_list.at(i);
+
+        QString this_name = this_lbl->objectName();
+
+        if (this_name.operator ==("PLYR_Name"))
+        {
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(op_ptr->full_name), TERM_BLUE));
+            return;
+        }
+    }
 }
 
 // Go through all the labels and update the ones that show data.
@@ -692,8 +718,12 @@ void PlayerScreenInfo::char_basic_info(QGridLayout *return_layout)
     int col = 0;
 
     // Add basic name
-    QLabel *label_player_name = new QLabel;
-    make_standard_label(label_player_name, "NAME:", TERM_DARK);
+    QPushButton *label_player_name = new QPushButton("NAME:");
+    QPalette pushbutton_palette;
+    pushbutton_palette.setColor(QPalette::ButtonText, defined_colors[TERM_DARK]);
+    label_player_name->setPalette(pushbutton_palette);
+    label_player_name->setToolTip("Press to change player name");
+    connect(label_player_name, SIGNAL(clicked()), this, SLOT(name_change()));
     QLabel *player_name = new QLabel;
     make_standard_label(player_name, op_ptr->full_name, TERM_BLUE);
     player_name->setObjectName("PLYR_Name");
