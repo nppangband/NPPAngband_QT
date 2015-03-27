@@ -30,7 +30,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
     lay2->setColumnStretch(3, 1);
 
-    QFont font = ui_current_font();
+    QFont font = ui_main_window_font();
 
     int col = 0;
     int row = 0;

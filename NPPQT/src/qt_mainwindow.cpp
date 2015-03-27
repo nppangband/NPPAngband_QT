@@ -560,7 +560,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             }
 
             if (do_shadow) {
-                QPixmap pix = pseudo_ascii(square_char, square_color, parent->cur_font,
+                QPixmap pix = pseudo_ascii(square_char, square_color, parent->font_main_window,
                                            QSizeF(parent->cell_wid, parent->cell_hgt));
                 painter->drawPixmap(pix.rect(), pix, pix.rect());
                 done_fg = true;
@@ -570,7 +570,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     // Go ascii?
     if (!done_fg && (!empty || !done_bg)) {
-        painter->setFont(parent->cur_font);
+        painter->setFont(parent->font_main_window);
         painter->setPen(square_color);
         painter->drawText(QRectF(0, 0, parent->cell_wid, parent->cell_hgt),
                           Qt::AlignCenter, QString(square_char));
@@ -763,10 +763,10 @@ void MainWindow::set_keymap_mode(int mode)
     }
 }
 
-void MainWindow::set_font(QFont newFont)
+void MainWindow::set_font_main_window(QFont newFont)
 {
-    cur_font = newFont;
-    QFontMetrics metrics(cur_font);
+    font_main_window = newFont;
+    QFontMetrics metrics(font_main_window);
     font_hgt = metrics.height() + FONT_EXTRA;
     font_wid = metrics.width('M') + FONT_EXTRA;
 
@@ -775,9 +775,15 @@ void MainWindow::set_font(QFont newFont)
     destroy_tiles();
 }
 
+void MainWindow::set_font_message_window(QFont newFont)
+{
+    font_message_window = newFont;
+    ui_update_messages();
+}
+
 void MainWindow::init_scene()
 {
-    QFontMetrics metrics(cur_font);
+    QFontMetrics metrics(font_main_window);
 
     font_hgt = metrics.height() + FONT_EXTRA;
     font_wid = metrics.width('M') + FONT_EXTRA;
@@ -1183,14 +1189,26 @@ void MainWindow::options_dialog()
     ui_update_sidebar_all();
 }
 
-void MainWindow::fontselect_dialog()
+void MainWindow::font_dialog_main_window()
 {
     bool selected;
-    QFont font = QFontDialog::getFont( &selected, cur_font, this );
+    QFont font = QFontDialog::getFont( &selected, font_main_window, this );
 
     if (selected)
     {
-        set_font(font);
+        set_font_main_window(font);
+        redraw();
+    }
+}
+
+void MainWindow::font_dialog_message_window()
+{
+    bool selected;
+    QFont font = QFontDialog::getFont( &selected, font_message_window, this );
+
+    if (selected)
+    {
+        set_font_message_window(font);
         redraw();
     }
 }
@@ -1382,9 +1400,13 @@ void MainWindow::create_actions()
     bigtile_act->setChecked(use_bigtile);
     bigtile_act->setStatusTip(tr("Doubles the width of each dungeon square."));
 
-    fontselect_act = new QAction(tr("Fonts"), this);
-    fontselect_act->setStatusTip(tr("Change the window font or font size."));
-    connect(fontselect_act, SIGNAL(triggered()), this, SLOT(fontselect_dialog()));
+    font_main_select_act = new QAction(tr("Main Window Font"), this);
+    font_main_select_act->setStatusTip(tr("Change the font or font size for the main window."));
+    connect(font_main_select_act, SIGNAL(triggered()), this, SLOT(font_dialog_main_window()));
+
+    font_messages_select_act = new QAction(tr("Message Window Font"), this);
+    font_messages_select_act->setStatusTip(tr("Change the font or font size for the message window."));
+    connect(font_messages_select_act, SIGNAL(triggered()), this, SLOT(font_dialog_message_window()));
 
     view_monster_knowledge = new QAction(tr("View Monster Knowledge"), this);
     view_monster_knowledge->setStatusTip(tr("View all information the character knows about the monsters."));
@@ -1560,7 +1582,10 @@ void MainWindow::create_menus()
 
     settings = menuBar()->addMenu(tr("&Settings"));
     settings->addAction(options_act);
-    settings->addAction(fontselect_act);
+
+    QMenu *choose_fonts = settings->addMenu("Choose Fonts");
+    choose_fonts->addAction(font_main_select_act);
+    choose_fonts->addAction(font_messages_select_act);
 
     QMenu *choose_keymap = settings->addMenu("Choose Keyset");
     choose_keymap->addAction(keymap_new);
@@ -1675,13 +1700,14 @@ void MainWindow::select_font()
         {
             font_database.addApplicationFont(family);
             if (have_font) continue;
-            cur_font = QFont(family);
+            font_main_window = QFont(family);
+            font_message_window = QFont(family);
             have_font = TRUE;
         }
     }
 
-    cur_font.setPointSize(12);
-    //  Figure out - this sets the font for everything setFont(cur_font);
+    font_main_window.setPointSize(12);
+    font_message_window.setPointSize(12);
 }
 
 
@@ -1707,8 +1733,10 @@ void MainWindow::read_settings()
         slot_multiplier_clicked(act);
     }
 
-    QString load_font = settings.value("current_font", cur_font ).toString();
-    cur_font.fromString(load_font);    
+    QString load_font = settings.value("font_window_main", font_main_window ).toString();
+    font_main_window.fromString(load_font);
+    load_font = settings.value("font_window_messages", font_message_window ).toString();
+    font_message_window.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     update_recent_savefiles();
@@ -1721,7 +1749,8 @@ void MainWindow::write_settings()
     settings.setValue("mainWindowGeometry", saveGeometry());
     settings.setValue("recentFiles", recent_savefiles);
     settings.setValue("set_bigtile", bigtile_act->isChecked());
-    settings.setValue("current_font", cur_font.toString());
+    settings.setValue("font_window_main", font_main_window.toString());
+    settings.setValue("font_message_window", font_message_window.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);

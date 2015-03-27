@@ -108,7 +108,7 @@ void MainWindow::update_statusbar(void)
         int height = pix.height();
         int width = pix.width();
         QPen pen = QPen(Qt::black, 4);
-        QFont font = ui_current_font();
+        QFont font = ui_main_window_font();
         font.setPointSize(height/5);
         font.setBold(TRUE);
         painter.setFont(font);
@@ -149,7 +149,7 @@ void MainWindow::update_statusbar(void)
         int height = pix.height();
         int width = pix.width();
         QPen pen = QPen(Qt::black, 4);
-        QFont font = ui_current_font();
+        QFont font = ui_main_window_font();
         font.setPointSize(height/5);
         font.setBold(TRUE);
         painter.setFont(font);
@@ -218,7 +218,7 @@ void MainWindow::update_statusbar(void)
             int height = pix.height();
             int width = pix.width();
             QPen pen = QPen(Qt::black, 4);
-            QFont font = ui_current_font();
+            QFont font = ui_main_window_font();
             font.setPointSize(height/4);
             font.setBold(TRUE);
             painter.setFont(font);
@@ -240,7 +240,7 @@ void MainWindow::update_statusbar(void)
         int height = pix.height();
         int width = pix.width();
         QPen pen = QPen(Qt::white, 4);
-        QFont font = ui_current_font();
+        QFont font = ui_main_window_font();
         font.setPointSize(height/3);
         font.setBold(TRUE);
         painter.setFont(font);

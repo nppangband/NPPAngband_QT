@@ -57,7 +57,7 @@ void update_message_area(QTextEdit *message_area, int max_messages)
     QString next_message;
     next_message.clear();
 
-    message_area->setFont(ui_current_font());
+    message_area->setFont(ui_message_window_font());
 
     for (int i = 0; i < message_list.size(); i++)
     {
@@ -107,7 +107,7 @@ void update_message_area(QLabel *message_label, int max_messages)
     QString output;
     output.clear();
 
-    message_label->setFont(ui_current_font());
+    message_label->setFont(ui_message_window_font());
 
     for (int i = 0; i < message_list.size(); i++)
     {

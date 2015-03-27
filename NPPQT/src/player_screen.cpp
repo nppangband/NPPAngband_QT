@@ -163,7 +163,7 @@ void make_standard_label(QLabel *this_label, QString title, byte preset_color)
 
 static void make_ability_graph(QLabel *this_label, int min, int max, int value)
 {
-    QFontMetrics metrics(ui_current_font());
+    QFontMetrics metrics(ui_main_window_font());
     QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMM");
     this_size.setHeight(this_size.height() *2/ 3);
     QPixmap this_img(this_size);

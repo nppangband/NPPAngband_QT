@@ -50,7 +50,7 @@ DisplayNotesFile::DisplayNotesFile(void)
 
     main_layout->addLayout(notes_info);
 
-    QFontMetrics metrics(ui_current_font());
+    QFontMetrics metrics(ui_main_window_font());
     QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMMMMM");
 
     int row = 0;

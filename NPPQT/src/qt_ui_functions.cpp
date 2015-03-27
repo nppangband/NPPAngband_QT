@@ -298,9 +298,14 @@ void ui_animate_accomplishment(int y, int x, int gf_type)
     main_window->wait_animation(2);
 }
 
-QFont ui_current_font()
+QFont ui_main_window_font()
 {
-    return main_window->cur_font;
+    return main_window->font_main_window;
+}
+
+QFont ui_message_window_font()
+{
+    return main_window->font_message_window;
 }
 
 void ui_update_sidebar_all()

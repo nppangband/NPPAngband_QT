@@ -55,7 +55,8 @@ public:
 
     DungeonGrid *grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
-    QFont cur_font;
+    QFont font_main_window;
+    QFont font_message_window;
     int font_hgt, font_wid;
     int tile_hgt, tile_wid;
     int cell_hgt, cell_wid;
@@ -88,7 +89,8 @@ public:
     void update_messages(void);
     QPoint get_target(u32b flags);
     void init_scene();
-    void set_font(QFont newFont);
+    void set_font_main_window(QFont newFont);
+    void set_font_message_window(QFont newFont);
     void calculate_cell_size();
     void destroy_tiles();
     void set_graphic_mode(int mode);
@@ -141,7 +143,8 @@ private slots:
     void about();
     void command_list();
     void options_dialog();
-    void fontselect_dialog();
+    void font_dialog_main_window();
+    void font_dialog_message_window();
 
     void slot_find_player();
     void slot_redraw();
@@ -235,7 +238,8 @@ private:
     QAction *dvg_mode_act;
     QAction *old_tiles_act;
     QAction *pseudo_ascii_act;
-    QAction *fontselect_act;
+    QAction *font_main_select_act;
+    QAction *font_messages_select_act;
     QAction *keymap_new;
     QAction *keymap_angband;
     QAction *keymap_rogue;

@@ -343,7 +343,7 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
             pix = main_window->get_tile(key);
         }
         else {
-            pix = pseudo_ascii(chr, col, main_window->cur_font,
+            pix = pseudo_ascii(chr, col, ui_main_window_font(),
                                QSizeF(main_window->cell_wid + 10,
                                       main_window->cell_hgt + 10));
         }
