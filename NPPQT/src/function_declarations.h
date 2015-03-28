@@ -179,13 +179,14 @@ extern void color_message(QString msg, QColor msg_color);
 //mon_cast.cpp
 extern int choose_ranged_attack(int m_idx, int *tar_y, int *tar_x);
 extern bool cave_exist_mon(const monster_race *r_ptr, int y, int x, bool occupied_ok, bool damage_ok, bool can_dig);
-bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px);
+extern bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px);
 
 
 //mon_classes.cpp
 
 // mon_info.cpp
-void describe_monster(int r_idx, bool spoilers, QString extra_message);
+extern QString get_monster_description(int r_idx, bool spoilers, QString extra_message);
+extern void describe_monster(int r_idx, bool spoilers, QString extra_message);
 
 
 // mon_damage.cpp
@@ -616,6 +617,7 @@ extern QSize ui_estimate_table_size(QTableWidget *table, bool horiz = true, bool
                                     int padding = 30);
 extern QFont ui_main_window_font();
 extern QFont ui_message_window_font();
+extern QFont ui_sidebar_window_font();
 extern void ui_animate_accomplishment(int y, int x, int gf_type);
 extern QPixmap ui_make_blank();
 extern void ui_animate_victory(int y, int x);

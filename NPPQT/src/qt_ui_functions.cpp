@@ -308,6 +308,11 @@ QFont ui_message_window_font()
     return main_window->font_message_window;
 }
 
+QFont ui_sidebar_window_font()
+{
+    return main_window->font_sidebar_window;
+}
+
 void ui_update_sidebar_all()
 {
     main_window->update_sidebar_all();

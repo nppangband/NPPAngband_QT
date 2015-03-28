@@ -4,6 +4,7 @@
 #include <QList>
 #include <QMainWindow>
 #include <QTextEdit>
+#include <QVBoxLayout>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
@@ -35,7 +36,6 @@ class DungeonGrid;
 class DungeonCursor;
 class QTextEdit;
 class QLineEdit;
-class QTableWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -57,6 +57,7 @@ public:
 
     QFont font_main_window;
     QFont font_message_window;
+    QFont font_sidebar_window;
     int font_hgt, font_wid;
     int tile_hgt, tile_wid;
     int cell_hgt, cell_wid;
@@ -82,7 +83,8 @@ public:
 
     QWidget *sidebar_widget;
     QVBoxLayout *sidebar_vlay;
-    QTableWidget *sidebar_mon;
+    QVBoxLayout *player_info_vlay;
+    QVBoxLayout *mon_health_vlay;
 
     MainWindow();
 
@@ -91,6 +93,7 @@ public:
     void init_scene();
     void set_font_main_window(QFont newFont);
     void set_font_message_window(QFont newFont);
+    void set_font_sidebar_window(QFont newFont);
     void calculate_cell_size();
     void destroy_tiles();
     void set_graphic_mode(int mode);
@@ -106,8 +109,10 @@ public:
     void animation_done();
     bool check_disturb();
     void create_sidebar();
+    void update_sidebar_font();
     void update_sidebar_player();
     void update_sidebar_mon();
+    void sidebar_display_mon(int m_idx);
     void update_sidebar_all() {update_sidebar_mon(); update_sidebar_player();}
     void hide_sidebar();
     void show_sidebar();
@@ -145,6 +150,7 @@ private slots:
     void options_dialog();
     void font_dialog_main_window();
     void font_dialog_message_window();
+    void font_dialog_sidebar_window();
 
     void slot_find_player();
     void slot_redraw();
@@ -240,6 +246,7 @@ private:
     QAction *pseudo_ascii_act;
     QAction *font_main_select_act;
     QAction *font_messages_select_act;
+    QAction *font_sidebar_select_act;
     QAction *keymap_new;
     QAction *keymap_angband;
     QAction *keymap_rogue;

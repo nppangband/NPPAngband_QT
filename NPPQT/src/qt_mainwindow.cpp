@@ -781,6 +781,12 @@ void MainWindow::set_font_message_window(QFont newFont)
     ui_update_messages();
 }
 
+void MainWindow::set_font_sidebar_window(QFont newFont)
+{
+    font_sidebar_window = newFont;
+    update_sidebar_font();
+}
+
 void MainWindow::init_scene()
 {
     QFontMetrics metrics(font_main_window);
@@ -827,6 +833,7 @@ void MainWindow::redraw()
     update_cursor();
     force_redraw(); // Hack -- Force full redraw
     update_messages();
+    update_sidebar_all();
 }
 
 bool MainWindow::panel_contains(int y, int x)
@@ -1209,7 +1216,17 @@ void MainWindow::font_dialog_message_window()
     if (selected)
     {
         set_font_message_window(font);
-        redraw();
+    }
+}
+
+void MainWindow::font_dialog_sidebar_window()
+{
+    bool selected;
+    QFont font = QFontDialog::getFont( &selected, font_sidebar_window, this );
+
+    if (selected)
+    {
+        set_font_sidebar_window(font);
     }
 }
 
@@ -1266,6 +1283,7 @@ void MainWindow::update_file_menu_game_active()
     view_scores->setEnabled(TRUE);
     view_kill_count->setEnabled(TRUE);
 
+    update_sidebar_font();
     show_sidebar();
     show_statusbar();
 
@@ -1407,6 +1425,10 @@ void MainWindow::create_actions()
     font_messages_select_act = new QAction(tr("Message Window Font"), this);
     font_messages_select_act->setStatusTip(tr("Change the font or font size for the message window."));
     connect(font_messages_select_act, SIGNAL(triggered()), this, SLOT(font_dialog_message_window()));
+
+    font_sidebar_select_act = new QAction(tr("Sidebar Window Font"), this);
+    font_sidebar_select_act->setStatusTip(tr("Change the font or font size for the sidebar window."));
+    connect(font_sidebar_select_act, SIGNAL(triggered()), this, SLOT(font_dialog_sidebar_window()));
 
     view_monster_knowledge = new QAction(tr("View Monster Knowledge"), this);
     view_monster_knowledge->setStatusTip(tr("View all information the character knows about the monsters."));
@@ -1586,6 +1608,7 @@ void MainWindow::create_menus()
     QMenu *choose_fonts = settings->addMenu("Choose Fonts");
     choose_fonts->addAction(font_main_select_act);
     choose_fonts->addAction(font_messages_select_act);
+    choose_fonts->addAction(font_sidebar_select_act);
 
     QMenu *choose_keymap = settings->addMenu("Choose Keyset");
     choose_keymap->addAction(keymap_new);
@@ -1702,12 +1725,14 @@ void MainWindow::select_font()
             if (have_font) continue;
             font_main_window = QFont(family);
             font_message_window = QFont(family);
+            font_sidebar_window = QFont(family);
             have_font = TRUE;
         }
     }
 
     font_main_window.setPointSize(12);
     font_message_window.setPointSize(12);
+    font_sidebar_window.setPointSize(12);
 }
 
 
@@ -1737,6 +1762,8 @@ void MainWindow::read_settings()
     font_main_window.fromString(load_font);
     load_font = settings.value("font_window_messages", font_message_window ).toString();
     font_message_window.fromString(load_font);
+    load_font = settings.value("font_window_sidebar", font_sidebar_window ).toString();
+    font_sidebar_window.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     update_recent_savefiles();
@@ -1750,7 +1777,8 @@ void MainWindow::write_settings()
     settings.setValue("recentFiles", recent_savefiles);
     settings.setValue("set_bigtile", bigtile_act->isChecked());
     settings.setValue("font_window_main", font_main_window.toString());
-    settings.setValue("font_message_window", font_message_window.toString());
+    settings.setValue("font_window_messages", font_message_window.toString());
+    settings.setValue("font_window_sidebar", font_sidebar_window.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);

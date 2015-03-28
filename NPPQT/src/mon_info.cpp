@@ -1711,7 +1711,7 @@ static void cheat_monster_lore(int r_idx, monster_lore *l_ptr)
 
 /*
  */
-void describe_monster(int r_idx, bool spoilers, QString extra_message)
+QString get_monster_description(int r_idx, bool spoilers, QString extra_message)
 {
     monster_lore lore;
     QString output;
@@ -1809,9 +1809,14 @@ void describe_monster(int r_idx, bool spoilers, QString extra_message)
         output.append(QString("%1  <br><br>") .arg(extra_message));
     }
 
-    /* Finally, display it */
-    display_info_window(DISPLAY_INFO_MONSTER, r_idx, output);
+    return (output);
 }
 
 
+void describe_monster(int r_idx, bool spoilers, QString extra_message)
+{
+    QString output = get_monster_description(r_idx, spoilers, extra_message);
 
+    /* Finally, display it */
+    display_info_window(DISPLAY_INFO_MONSTER, r_idx, output);
+}

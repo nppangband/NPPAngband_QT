@@ -17,7 +17,6 @@
 
 #include <src/qt_mainwindow.h>
 #include <src/npp.h>
-#include <QTableWidget>
 #include <QHeaderView>
 #include "tilebag.h"
 #include <src/player_screen.h>
@@ -35,29 +34,39 @@ QVector<s16b> sidebar_monsters;
 
 void MainWindow::create_sidebar()
 {
-    int row = 0;
+    player_info_vlay = new QVBoxLayout();
+    mon_health_vlay = new QVBoxLayout();
+
+    sidebar_vlay->addLayout(player_info_vlay);
+    sidebar_vlay->addLayout(mon_health_vlay);
+    sidebar_vlay->addStretch(1);
+
+
+    QHBoxLayout *player_info_hlay = new QHBoxLayout;
+    player_info_vlay->addLayout(player_info_hlay);
+    QVBoxLayout *player_info_labels = new QVBoxLayout;
+    QVBoxLayout *player_info_data = new QVBoxLayout;
+    player_info_hlay->addLayout(player_info_labels);
+    player_info_hlay->addLayout(player_info_data);
 
     // Hitpoints
-    QGridLayout *player_info = new QGridLayout;
-    sidebar_vlay->addLayout(player_info);
-
     QLabel *hp_label = new QLabel;
     hp_label->setText(color_string("HP", SBAR_NORMAL));
-    player_info->addWidget(hp_label, row, 0, Qt::AlignLeft);
+    player_info_labels->addWidget(hp_label, Qt::AlignLeft);
     hp_label->setToolTip(get_help_topic("character_info", "Hit Points"));
     QLabel *hp_info = new QLabel;
     hp_info->setObjectName("HP");
-    player_info->addWidget(hp_info, row++, 1, Qt::AlignRight);
+    player_info_data->addWidget(hp_info, Qt::AlignRight);
 
     // SpellPoints
     QLabel *sp_label = new QLabel;
     sp_label->setText(color_string("SP", SBAR_NORMAL));
-    player_info->addWidget(sp_label, row, 0, Qt::AlignLeft);
+    player_info_labels->addWidget(sp_label, Qt::AlignLeft);
     sp_label->setObjectName("SP_LABEL");
     sp_label->setToolTip(get_help_topic("character_info", "Spell Points"));
     QLabel *sp_info = new QLabel;
     sp_info->setObjectName("SP_INFO");
-    player_info->addWidget(sp_info, row++, 1, Qt::AlignRight);
+    player_info_data->addWidget(sp_info, Qt::AlignRight);
     sp_label->hide();
     sp_info->hide();
 
@@ -66,39 +75,39 @@ void MainWindow::create_sidebar()
     exp_cur_label->setText(color_string("CUR EXP ", SBAR_NORMAL));
     exp_cur_label->setObjectName("EXP_CUR_LABEL");
     exp_cur_label->setToolTip(get_help_topic("character_info", "Player Current Experience"));
-    player_info->addWidget(exp_cur_label, row, 0, Qt::AlignLeft);
+    player_info_labels->addWidget(exp_cur_label, Qt::AlignLeft);
     QLabel *exp_cur_info = new QLabel;
     exp_cur_info->setObjectName("EXP_CUR_INFO");
-    player_info->addWidget(exp_cur_info, row++, 1, Qt::AlignRight);
+    player_info_data->addWidget(exp_cur_info, Qt::AlignRight);
 
     // Max Experience
     QLabel *exp_max_label = new QLabel;
     exp_max_label->setText(color_string("MAX EXP", SBAR_NORMAL));
     exp_max_label->setObjectName("EXP_MAX_LABEL");
     exp_max_label->setToolTip(get_help_topic("character_info", "Player Maximum Experience"));
-    player_info->addWidget(exp_max_label, row, 0, Qt::AlignLeft);
+    player_info_labels->addWidget(exp_max_label, Qt::AlignLeft);
     QLabel *exp_max_info = new QLabel;
     exp_max_info->setObjectName("EXP_MAX_INFO");
-    player_info->addWidget(exp_max_info, row++, 1, Qt::AlignRight);
+    player_info_data->addWidget(exp_max_info, Qt::AlignRight);
 
     // Next Level
     QLabel *exp_next_label = new QLabel;
     exp_next_label->setText(color_string("EXP", SBAR_NORMAL));
     exp_next_label->setObjectName("EXP_NEXT_LABEL");
     exp_next_label->setToolTip(get_help_topic("character_info", "Player Experience Advance"));
-    player_info->addWidget(exp_next_label, row, 0, Qt::AlignLeft);
+    player_info_labels->addWidget(exp_next_label, Qt::AlignLeft);
     QLabel *exp_next_info = new QLabel;
     exp_next_info->setObjectName("EXP_NEXT_INFO");
-    player_info->addWidget(exp_next_info, row++, 1, Qt::AlignRight);
+    player_info_data->addWidget(exp_next_info, Qt::AlignRight);
 
     // gold
     QLabel *gold_label = new QLabel;
     gold_label->setText(color_string("GOLD", SBAR_GOLD));
     gold_label->setToolTip(get_help_topic("character_info", "Gold"));
-    player_info->addWidget(gold_label, row, 0, Qt::AlignLeft);
+    player_info_labels->addWidget(gold_label, Qt::AlignLeft);
     QLabel *gold_info = new QLabel;
     gold_info->setObjectName("GOLD");
-    player_info->addWidget(gold_info, row++, 1, Qt::AlignRight);
+    player_info_data->addWidget(gold_info, Qt::AlignRight);
 
     // stats
     for (int i = 0; i < A_MAX; i++)
@@ -107,165 +116,45 @@ void MainWindow::create_sidebar()
         QString label_name = (QString("STAT_LABEL_%1") .arg(i));
         this_label->setObjectName(label_name);
         this_label->setToolTip(stat_entry(i));
-        player_info->addWidget(this_label, row, 0, Qt::AlignLeft);
+        player_info_labels->addWidget(this_label, Qt::AlignLeft);
         QLabel *stat_info = new QLabel;
         stat_info->setObjectName(QString("STAT_INFO_%1") .arg(i));
-        player_info->addWidget(stat_info, row++, 1, Qt::AlignRight);
+        player_info_data->addWidget(stat_info, Qt::AlignRight);
     }
 
     // Armor Class
     QLabel *ac_label = new QLabel;
     ac_label->setText(color_string("AC", SBAR_NORMAL));
     ac_label->setToolTip(get_help_topic("character_info", "Armor Class"));
-    player_info->addWidget(ac_label, row, 0, Qt::AlignLeft);
+    player_info_labels->addWidget(ac_label, Qt::AlignLeft);
     QLabel *ac_info = new QLabel;
     ac_info->setObjectName("ARMOR CLASS");
-    player_info->addWidget(ac_info, row++, 1, Qt::AlignRight);
+    player_info_data->addWidget(ac_info, Qt::AlignRight);
 
     // speed
     QLabel *speed_info = new QLabel;
     speed_info->setObjectName("SPEED");
     gold_label->setToolTip(get_help_topic("character_info", "Speed"));
-    player_info->addWidget(speed_info, row++, 0, 1, 2, Qt::AlignLeft);
+    player_info_vlay->addWidget(speed_info, Qt::AlignLeft);
 
     // depth
     QLabel *depth_info = new QLabel;
     depth_info->setObjectName("DEPTH");
-    player_info->addWidget(depth_info, row++, 0, 1, 2, Qt::AlignLeft);
+    player_info_vlay->addWidget(depth_info, Qt::AlignLeft);
 
     // feeling
     QLabel *feeling_info = new QLabel;
     feeling_info->setObjectName("FEELING");
-    player_info->addWidget(feeling_info, row++, 0, 1, 2, Qt::AlignLeft);
+    player_info_vlay->addWidget(feeling_info, Qt::AlignLeft);
 
     // quest
     QLabel *quest_info = new QLabel;
     quest_info->setObjectName("QUEST");
-    player_info->addWidget(quest_info, row++, 0, 1, 2, Qt::AlignLeft);
+    player_info_vlay->addWidget(quest_info, Qt::AlignLeft);
 
-    sidebar_mon = new QTableWidget;
-
-    QPalette this_pal;
-    this_pal.setColor(QPalette::Background, Qt::black);
-    sidebar_mon->setAutoFillBackground(TRUE);
-    sidebar_mon->setPalette(this_pal);
-
-    sidebar_mon->insertColumn(0);
-    sidebar_mon->verticalHeader()->setVisible(false);
-    sidebar_mon->horizontalHeader()->setVisible(false);
-    sidebar_mon->setShowGrid(false);
-    sidebar_mon->setStyleSheet(QString("background-color: black; color: %1;").arg(SBAR_NORMAL));
-    sidebar_mon->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    sidebar_vlay->addWidget(sidebar_mon);
-
-
-    for (row = 0; row < SIDEBAR_MON_MAX; row++)
-    {
-        QWidget *wid = new QWidget;
-        QGridLayout *lay = new QGridLayout;
-        lay->setContentsMargins(2, 2, 2, 2);
-        wid->setLayout(lay);
-        QLabel *lb = new QLabel("");
-        lb->setObjectName("tile");
-        lay->addWidget(lb, 0, 0);
-        lb = new QLabel("");
-        lb->setObjectName("name");
-        lb->setAlignment(Qt::AlignRight);
-        lay->addWidget(lb, 0, 1);
-        lb = new QLabel("");
-        lb->setObjectName("health");
-        lay->addWidget(lb, 1, 0, 1, 2);
-        sidebar_mon->insertRow(row);
-        sidebar_mon->setCellWidget(row, 0, wid);
-        sidebar_mon->setRowHidden(row, true);
-    }
-
-    sidebar_vlay->addStretch(1);
 
 }
 
-
-static void display_mon(QTableWidget *sidebar_mon, int row, int m_idx)
-{
-    monster_type *m_ptr = mon_list + m_idx;
-    monster_race *r_ptr = r_info + m_ptr->r_idx;
-
-    QWidget *wid;
-    wid = sidebar_mon->cellWidget(row, 0);
-    QLabel *lb = wid->findChild<QLabel *>("tile");
-
-    if (use_graphics && !main_window->do_pseudo_ascii)
-    {
-        QPixmap pix = current_tiles->get_tile(r_ptr->tile_id);
-        pix = pix.scaled(24, 24);
-        lb->setPixmap(pix);
-    }
-    else
-    {
-        lb->setText(r_ptr->d_char);
-        lb->setStyleSheet(QString("color: %1;").arg(r_ptr->d_color.name()));
-    }
-
-    lb = wid->findChild<QLabel *>("name");
-    lb->setText(r_ptr->r_name_short);
-
-    int w = 100;
-    int h = 6;
-    QImage img(w, h, QImage::Format_ARGB32);
-    QPainter p(&img);
-    p.fillRect(0, 0, w, h, "black");
-
-    int h2 = h;
-    if (r_ptr->mana > 0) h2 = h / 2;
-
-    if (m_ptr->maxhp > 0)
-    {
-        int w2 = w * m_ptr->hp / m_ptr->maxhp;
-        w2 = MAX(w2, 1);
-        int n = m_ptr->hp * 100 / m_ptr->maxhp;
-        QString color("#00FF00");
-        if (n <= 50) color = "red";
-        else if (n < 100) color = "yellow";
-        else if (m_ptr->m_timed[MON_TMD_SLEEP] > 0) color = "#000077";
-        p.fillRect(0, 0, w2, h2, color);
-    }
-
-    if (r_ptr->mana > 0)
-    {
-        int w2 = w * m_ptr->mana / r_ptr->mana;
-        w2 = MAX(w2, 1);
-        p.fillRect(0, h2, w2, h2, "purple");
-    }
-
-    //Note monster conditions  - this doesn't work -  text comes out far too big.
-    /*QString status;
-    status.clear();
-    if (m_ptr->m_timed[MON_TMD_CONF]) status.append("C");
-    if (m_ptr->m_timed[MON_TMD_STUN]) status.append("s");
-    if (m_ptr->m_timed[MON_TMD_SLEEP])status.append("Z");
-    if (m_ptr->m_timed[MON_TMD_FEAR])status.append("A");
-    if ((m_ptr->m_timed[MON_TMD_FAST]) && (!m_ptr->m_timed[MON_TMD_SLOW])) status.append("H");
-    else if ((m_ptr->m_timed[MON_TMD_SLOW]) && (!m_ptr->m_timed[MON_TMD_FAST])) status.append("S");
-
-    if (status.length())
-    {
-        QFont font = ui_current_font();
-        font.setPointSize(h);
-        p.setFont(font);
-        p.setPen(QPen(Qt::white, 1));
-        p.setOpacity(1);
-        QRect rectangle = QRect(0,0,w,h);
-        p.drawText(0,0,w,h, Qt::AlignLeft | Qt::AlignTop, status, &rectangle);
-    }*/
-
-    lb = wid->findChild<QLabel *>("health");
-    lb->setPixmap(QPixmap::fromImage(img));
-
-    sidebar_mon->setRowHidden(row, false);
-    sidebar_mon->setRowHeight(row, wid->sizeHint().height() + 4);
-
-}
 
 
 /*
@@ -580,6 +469,22 @@ void update_mon_sidebar_list(void)
     }
 }
 
+void MainWindow::update_sidebar_font()
+{
+    if (!p_ptr->playing) return;
+
+    // Update the player sidebar info
+    QList<QLabel *> lbl_list = sidebar_widget->findChildren<QLabel *>();
+    {
+        for (int x = 0; x < lbl_list.size(); x++)
+        {
+            QLabel *this_lbl = lbl_list.at(x);
+
+            this_lbl->setFont(font_sidebar_window);
+        }
+    }
+}
+
 
 void MainWindow::update_sidebar_player()
 {
@@ -619,6 +524,7 @@ void MainWindow::update_sidebar_player()
                     }
 
                     this_lbl->setText(color_string(stat_string, this_color));
+
                     continue;
                 }
                 if (this_name.contains(QString("STAT_INFO_%1") .arg(i)))
@@ -629,6 +535,7 @@ void MainWindow::update_sidebar_player()
                     QString stat_string = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
 
                     this_lbl->setText(color_string(stat_string, this_color));
+                    this_lbl->setAlignment(Qt::AlignRight);
                     continue;
                 }
             }
@@ -640,6 +547,7 @@ void MainWindow::update_sidebar_player()
                 int this_color = player_hp_attr();
 
                 this_lbl->setText(color_string(hp, this_color));
+                this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }
 
@@ -663,6 +571,7 @@ void MainWindow::update_sidebar_player()
                     int this_color = player_sp_attr();
                     QString sp = QString("%1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
                     this_lbl->setText(color_string(sp, this_color));
+                    this_lbl->setAlignment(Qt::AlignRight);
                 }
                 else if (this_lbl->isVisible()) this_lbl->hide();
                 continue;
@@ -695,6 +604,7 @@ void MainWindow::update_sidebar_player()
                 else this_color = SBAR_NORMAL;
 
                 this_lbl->setText(color_string(this_text, this_color));
+                this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }
             if (this_name.operator ==("EXP_MAX_LABEL"))
@@ -727,6 +637,7 @@ void MainWindow::update_sidebar_player()
                 QString this_text = number_to_formatted_string(p_ptr->max_exp);
 
                 this_lbl->setText(color_string(this_text, this_color));
+                this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }
             if (this_name.operator ==("EXP_NEXT_LABEL"))
@@ -774,12 +685,14 @@ void MainWindow::update_sidebar_player()
                 else this_color = SBAR_NORMAL;
 
                 this_lbl->setText(color_string(this_text, this_color));
+                this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }
             if (this_name.operator ==("GOLD"))
             {
                 QString gold = number_to_formatted_string(p_ptr->au);
                 this_lbl->setText(color_string(gold, TERM_GOLD));
+                this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }
             if (this_name.operator ==("ARMOR CLASS"))
@@ -787,6 +700,7 @@ void MainWindow::update_sidebar_player()
                 int known_ac = p_ptr->state.dis_ac + p_ptr->state.dis_to_a;
                 QString ac = number_to_formatted_string(known_ac);
                 this_lbl->setText(color_string(ac, SBAR_NORMAL));
+                this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }
             if (this_name.operator ==("SPEED"))
@@ -827,24 +741,141 @@ void MainWindow::update_sidebar_player()
     }
 }
 
-void MainWindow::update_sidebar_mon()
+
+void MainWindow::sidebar_display_mon(int m_idx)
 {
+    monster_type *m_ptr = mon_list + m_idx;
+    monster_race *r_ptr = r_info + m_ptr->r_idx;
 
+    QString monster_name = color_string(QString("'%1'  %2") .arg(r_ptr->d_char) .arg(r_ptr->r_name_short), r_ptr->d_color);
 
-    // MONSTERS
-    for (int i = 0; i < SIDEBAR_MON_MAX; i++)
+    QLabel *mon_name = new QLabel(monster_name);
+
+    if (use_graphics)
     {
-        sidebar_mon->setRowHidden(i, true);
+        QPixmap pix = ui_get_tile(r_ptr->tile_id);
+        pix = pix.scaled(cell_wid, cell_hgt);
+        mon_name->setPixmap(pix);
+    }
+    mon_name->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    mon_name->setAlignment(Qt::AlignLeft);
+    mon_name->setToolTip(get_monster_description(m_ptr->r_idx, FALSE, NULL));
+    mon_name->setFont(font_sidebar_window);
+
+    mon_health_vlay->addWidget(mon_name);
+
+    QLabel *mon_health = new QLabel;
+    mon_health->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+    QSize label_size = mon_name->sizeHint();
+
+    label_size.setWidth(sidebar_widget->width());
+
+    int w = label_size.width();
+    int h = label_size.height() * 3 / 4;
+    QPixmap mon_health_bar(w, h);
+
+    QPainter painter(&mon_health_bar);
+    mon_health_bar.fill(Qt::black);
+
+    int h2 = h;
+    if (r_ptr->mana) h2 = h / 2;
+
+    if (m_ptr->maxhp)
+    {
+        int w2 = w * m_ptr->hp / m_ptr->maxhp;
+        w2 = MAX(w2, 1);
+        int n = m_ptr->hp * 100 / m_ptr->maxhp;
+        QString color("#00FF00");
+        if (n <= 50) color = "red";
+        else if (n < 100) color = "yellow";
+        else if (m_ptr->m_timed[MON_TMD_SLEEP] > 0) color = "#000077";
+        painter.fillRect(0, 0, w2, h2, color);
     }
 
+    if (r_ptr->mana)
+    {
+        int w2 = w * m_ptr->mana / r_ptr->mana;
+        w2 = MAX(w2, 1);
+        painter.fillRect(0, h2, w2, h2, "purple");
+    }
+
+    mon_health->setPixmap(mon_health_bar);
+
+
+    QString status;
+    QString tooltip;
+    status.clear();
+    tooltip.clear();
+
+    if (m_ptr->m_timed[MON_TMD_CONF])
+    {
+        status.append("C");
+        tooltip.append("Confused");
+    }
+    if (m_ptr->m_timed[MON_TMD_STUN])
+    {
+        status.append("s");
+        if(tooltip.length()) tooltip.append(", ");
+        tooltip.append("Stunned");
+    }
+    if (m_ptr->m_timed[MON_TMD_SLEEP])
+    {
+        status.append("Z");
+        if(tooltip.length()) tooltip.append(", ");
+        tooltip.append("Asleep");
+    }
+    if (m_ptr->m_timed[MON_TMD_FEAR])
+    {
+        status.append("A");
+        if(tooltip.length()) tooltip.append(", ");
+        tooltip.append("Afraid");
+    }
+    if ((m_ptr->m_timed[MON_TMD_FAST]) && (!m_ptr->m_timed[MON_TMD_SLOW]))
+    {
+        status.append("H");
+        if(tooltip.length()) tooltip.append(", ");
+        tooltip.append("Hasted");
+    }
+    else if ((m_ptr->m_timed[MON_TMD_SLOW]) && (!m_ptr->m_timed[MON_TMD_FAST]))
+    {
+        status.append("S");
+        if(tooltip.length()) tooltip.append(", ");
+        tooltip.append("Slowed");
+    }
+
+    if (status.length())
+    {
+        QFont font = ui_main_window_font();
+        font.setPointSize(h);
+        painter.setFont(font);
+        painter.setPen(QPen(Qt::white, 1));
+        painter.setOpacity(1);
+        QRect rectangle = QRect(0,0,w,h);
+        painter.drawText(0,0,w,h, Qt::AlignLeft, status, &rectangle);
+    }
+    mon_health->setToolTip(tooltip);
+
+    mon_health_vlay->addWidget(mon_health);
+}
+
+
+void MainWindow::update_sidebar_mon()
+{
     update_mon_sidebar_list();
+
+    // Clear all the old data
+    QLayoutItem *item;
+    while ((item = mon_health_vlay->takeAt(0)) != 0)
+    {
+        QWidget *wid = item->widget();
+        if (wid) delete wid;
+        delete item;
+    }
 
     for (int i = 0; i < sidebar_monsters.size(); i++)
     {
-       display_mon(sidebar_mon, i, sidebar_monsters.at(i));
+       sidebar_display_mon(sidebar_monsters.at(i));
     }
-
-    sidebar_mon->resizeColumnToContents(0);
 }
 
 // show all the sidebar labels
@@ -858,13 +889,6 @@ void MainWindow::show_sidebar()
         QLabel *this_lbl = lbl_list.at(x);
         this_lbl->show();
     }
-
-    QList<QTableWidget *> tbl_list = sidebar_widget->findChildren<QTableWidget *>();
-    for (int x = 0; x < tbl_list.size(); x++)
-    {
-        QTableWidget *this_tbl = tbl_list.at(x);
-        this_tbl->show();
-    }
 }
 
 //Hide all the labels
@@ -877,13 +901,6 @@ void MainWindow::hide_sidebar()
     {
         QLabel *this_lbl = lbl_list.at(x);
         this_lbl->hide();
-    }
-
-    QList<QTableWidget *> tbl_list = sidebar_widget->findChildren<QTableWidget *>();
-    for (int x = 0; x < tbl_list.size(); x++)
-    {
-        QTableWidget *this_tbl = tbl_list.at(x);
-        this_tbl->hide();
     }
 }
 
