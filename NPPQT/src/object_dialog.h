@@ -116,7 +116,7 @@ public:
     void update_equip_list(QGridLayout *lay, bool label, bool buttons);
     void update_quiver_list(QGridLayout *lay, bool label, bool buttons);
 
-    public slots:
+public slots:
     void button_click();
 
     //  These should be replaced by real functions

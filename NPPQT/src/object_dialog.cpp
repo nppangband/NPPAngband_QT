@@ -691,8 +691,10 @@ void ObjectDialog::update_equip_list(QGridLayout *lay, bool label, bool buttons)
 
         int col = 0;
 
+        QString equip_use = (QString("<b><big>%1:</big></b>") .arg(mention_use(i)));
+
         if (label) add_letter_label(lay, QChar('e'), i, row, col++);
-        add_plain_label(lay, mention_use(i), row, col++);
+        add_plain_label(lay, equip_use, row, col++);
         if (o_ptr->k_idx)
         {
 
@@ -729,8 +731,10 @@ void ObjectDialog::update_quiver_list(QGridLayout *lay, bool label, bool buttons
 
         int col = 0;
 
+        QString quiver_use = (QString("<b><big>%1:</big></b>") .arg(mention_use(i)));
+
         if (label) add_letter_label(lay, QChar('e'), i, row, col++);
-        add_plain_label(lay, mention_use(i), row, col++);
+        add_plain_label(lay, quiver_use, row, col++);
 
         add_object_label(lay, o_ptr, QChar('e'), i, row, col++);
         add_weight_label(lay, o_ptr, row, col++);

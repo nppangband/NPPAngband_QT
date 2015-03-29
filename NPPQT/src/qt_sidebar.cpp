@@ -770,12 +770,13 @@ void MainWindow::sidebar_display_mon(int m_idx)
 
     label_size.setWidth(sidebar_widget->width());
 
-    int w = label_size.width();
-    int h = label_size.height() * 3 / 4;
+    int w = label_size.width() * 9/10;
+    int h = label_size.height() * 4 / 5;
     QPixmap mon_health_bar(w, h);
 
     QPainter painter(&mon_health_bar);
-    mon_health_bar.fill(Qt::black);
+    QPen pen;
+    mon_health_bar.fill(Qt::darkGray);
 
     int h2 = h;
     if (r_ptr->mana) h2 = h / 2;
@@ -798,9 +799,6 @@ void MainWindow::sidebar_display_mon(int m_idx)
         w2 = MAX(w2, 1);
         painter.fillRect(0, h2, w2, h2, "purple");
     }
-
-    mon_health->setPixmap(mon_health_bar);
-
 
     QString status;
     QString tooltip;
@@ -845,8 +843,8 @@ void MainWindow::sidebar_display_mon(int m_idx)
 
     if (status.length())
     {
-        QFont font = ui_main_window_font();
-        font.setPointSize(h);
+        QFont font = ui_sidebar_window_font();
+        font.setPointSize(h * 2 / 3);
         painter.setFont(font);
         painter.setPen(QPen(Qt::white, 1));
         painter.setOpacity(1);
@@ -854,6 +852,8 @@ void MainWindow::sidebar_display_mon(int m_idx)
         painter.drawText(0,0,w,h, Qt::AlignLeft, status, &rectangle);
     }
     mon_health->setToolTip(tooltip);
+
+    mon_health->setPixmap(mon_health_bar);
 
     mon_health_vlay->addWidget(mon_health);
 }

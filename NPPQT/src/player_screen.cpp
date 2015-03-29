@@ -23,6 +23,7 @@
 #include <QPlainTextEdit>
 #include <QList>
 #include <QPushButton>
+#include <QScrollArea>
 
 // The null line is there to prevent crashes as the data is read;
 static struct player_flag_record player_resist_table[] =
@@ -163,8 +164,11 @@ void make_standard_label(QLabel *this_label, QString title, byte preset_color)
 
 static void make_ability_graph(QLabel *this_label, int min, int max, int value)
 {
-    QFontMetrics metrics(ui_main_window_font());
-    QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMM");
+    QFont this_font = ui_message_window_font();
+    this_font.setPointSize(12);
+
+    QFontMetrics metrics(this_font);
+    QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMM");
     this_size.setHeight(this_size.height() *2/ 3);
     QPixmap this_img(this_size);
     QPainter paint(&this_img);
@@ -1916,6 +1920,13 @@ void PlayerScreenDialog::equip_modifier_info(QGridLayout *return_layout)
 PlayerScreenDialog::PlayerScreenDialog(void)
 {
     QVBoxLayout *main_layout = new QVBoxLayout;
+
+    QScrollArea *scroll_area = new QScrollArea;
+    scroll_area->setWidgetResizable(TRUE);
+    scroll_area->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    main_layout->addWidget(scroll_area);
+    main_layout->setContentsMargins(0,0,0,0);
 
     // Title Box
     QVBoxLayout *title_line = new QVBoxLayout;

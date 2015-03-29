@@ -21,7 +21,7 @@
 #include <QButtonGroup>
 #include <QKeyEvent>
 #include <QDialogButtonBox>
-#include <QScrollArea>
+
 
 /*
  *
@@ -222,11 +222,11 @@ void AllObjectsDialog::hide_or_show_tabs()
 
     object_tabs->clear();
 
-    if (allow_floor) object_tabs->addTab(floor_tab, "&Floor Items");
-    if (allow_inven) object_tabs->addTab(inven_tab, "&Inventory");
+    if (allow_floor) object_tabs->addTab(scroll_floor, "&Floor Items");
+    if (allow_inven) object_tabs->addTab(scroll_inven, "&Inventory");
     if (allow_equip || allow_quiver)
     {
-        object_tabs->addTab(equip_tab, "&Equipment");
+        object_tabs->addTab(scroll_equip, "&Equipment");
         if (allow_equip) header_equip->show();
         else header_equip->hide();
         if (allow_quiver) header_quiver->show();
@@ -293,13 +293,15 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     // Set up the tabs
     object_tabs = new QTabWidget;
     main_layout->addWidget(object_tabs);
-    floor_tab = new QWidget;
-    inven_tab = new QWidget;
-    equip_tab = new QWidget;
 
     // Add the list of floor items
     QVBoxLayout *floor_vlay = new QVBoxLayout;
+    floor_tab = new QWidget;
+    scroll_floor = new QScrollArea;
+    floor_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     floor_tab->setLayout(floor_vlay);
+    scroll_floor->setWidget(floor_tab);
+    scroll_floor->setWidgetResizable(TRUE);
     header_floor = new QLabel(QString("<b><h1>Floor Items</b></h1>"));
     header_floor->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
     floor_vlay->addWidget(header_floor);
@@ -310,7 +312,12 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 
     // Add the list of inventory
     QVBoxLayout *inven_vlay = new QVBoxLayout;
+    inven_tab = new QWidget;
+    scroll_inven = new QScrollArea;
+    inven_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     inven_tab->setLayout(inven_vlay);
+    scroll_inven->setWidget(inven_tab);
+    scroll_inven->setWidgetResizable(TRUE);
     header_inven = new QLabel(QString("<b><h1>Inventory</b></h1>"));
     header_inven->setAlignment(Qt::AlignCenter | Qt::AlignTop);
     inven_vlay->addWidget(header_inven);
@@ -321,8 +328,13 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 
     // Add the equipment
     QVBoxLayout *equip_and_quiver_vlay = new QVBoxLayout;
-    QVBoxLayout *equip_vlay = new QVBoxLayout;
+    equip_tab = new QWidget;
+    scroll_equip = new QScrollArea;
+    equip_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     equip_tab->setLayout(equip_and_quiver_vlay);
+    scroll_equip->setWidget(equip_tab);
+    scroll_equip->setWidgetResizable(TRUE);
+    QVBoxLayout *equip_vlay = new QVBoxLayout;
     equip_and_quiver_vlay->addLayout(equip_vlay);
     header_equip = new QLabel(QString("<b><h1>Equipment</b></h1>"));
     header_equip->setAlignment(Qt::AlignCenter | Qt::AlignTop);
@@ -347,8 +359,6 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     quiver_vlay->addLayout(quiver_list);
     equip_and_quiver_vlay->addStretch(1);
 
-    main_layout->addStretch(1);
-
     QDialogButtonBox *buttons = new QDialogButtonBox();
     QPushButton *button_left = new QPushButton();
     button_left->setText("<");
@@ -365,9 +375,10 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 
 
     main_layout->addWidget(buttons);
-    main_layout->addStretch(1);
 
     hide_or_show_tabs();
+
+    resize(QSize(width() * 3 / 2, height() * 2));
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Menu"));

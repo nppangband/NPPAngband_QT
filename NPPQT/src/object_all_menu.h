@@ -7,6 +7,7 @@
 #include <src/object_dialog.h> //includes npp.h and player_command.h
 #include "src/utilities.h"
 #include <QLabel>
+#include <QScrollArea>
 
 
 
@@ -41,6 +42,10 @@ private:
     QWidget *floor_tab;
     QWidget *inven_tab;
     QWidget *equip_tab;
+
+    QScrollArea *scroll_floor;
+    QScrollArea *scroll_inven;
+    QScrollArea *scroll_equip;
 
     bool allow_floor;
     bool allow_inven;

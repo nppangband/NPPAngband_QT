@@ -50,8 +50,12 @@ DisplayNotesFile::DisplayNotesFile(void)
 
     main_layout->addLayout(notes_info);
 
-    QFontMetrics metrics(ui_main_window_font());
-    QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMMMMM");
+    QFont this_font = ui_message_window_font();
+
+    this_font.setPointSize(12);
+
+    QFontMetrics metrics(this_font);
+    QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMMMMMMM");
 
     int row = 0;
     int col = 0;
@@ -60,8 +64,6 @@ DisplayNotesFile::DisplayNotesFile(void)
     QLabel *header_depth = new QLabel("<b>  <u>DUNGEON DEPTH</u>  </b>");
     QLabel *header_level = new QLabel("<b>  <u>PLAYER LEVEL</u>  </b>");
     QLabel *header_event = new QLabel("<b>  <u>EVENT</u>  </b>");
-    header_event->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    header_event->setMinimumWidth(this_size.width() * 2);
     notes_info->addWidget(header_turn, row, col++, Qt::AlignRight);
     notes_info->addWidget(header_depth, row, col++, Qt::AlignRight);
     notes_info->addWidget(header_level, row, col++, Qt::AlignRight);

@@ -1283,7 +1283,7 @@ void MainWindow::update_file_menu_game_active()
     view_scores->setEnabled(TRUE);
     view_kill_count->setEnabled(TRUE);
 
-    update_sidebar_font();
+
     show_sidebar();
     show_statusbar();
 
@@ -1822,6 +1822,7 @@ void MainWindow::load_file(const QString &file_name)
                 ui_player_moved();
                 graphics_view->setFocus();
                 redraw();
+                update_sidebar_font();
             }
         }
     }
@@ -1844,6 +1845,7 @@ void MainWindow::launch_birth(bool quick_start)
         ui_player_moved();
         graphics_view->setFocus();
         redraw();
+        update_sidebar_font();
 
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.
