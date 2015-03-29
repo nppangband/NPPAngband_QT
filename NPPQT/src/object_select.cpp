@@ -164,23 +164,22 @@ void ObjectSelectDialog::floor_items_count(int mode, int sq_y, int sq_x)
 // Make the tab for the widget
 void ObjectSelectDialog::build_floor_tab()
 {
-    QVBoxLayout *vlay = new QVBoxLayout;
-
-    QWidget *aux = new QWidget;
-    vlay->addWidget(aux);
-
-    vlay->addStretch(1);
+    QVBoxLayout *vlay_floor = new QVBoxLayout;
+    floor_tab = new QWidget;
+    scroll_floor = new QScrollArea;
+    floor_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    floor_tab->setLayout(vlay_floor);
+    scroll_floor->setWidget(floor_tab);
+    scroll_floor->setWidgetResizable(TRUE);
 
     QGridLayout *object_layout = new QGridLayout;
-    aux->setLayout(object_layout);
-
-    // Only column 0 can resize
-    //object_layout->setColumnStretch(0, 100);
+    vlay_floor->addLayout(object_layout);
+    vlay_floor->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("Floor Items");
-    QLabel *weight_header = new QLabel("Weight");
-    QLabel *help_header = new QLabel("info");
+    QLabel *object_header = new QLabel("<b><big>Floor Items</big></b>");
+    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
+    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -189,7 +188,6 @@ void ObjectSelectDialog::build_floor_tab()
     object_layout->addWidget(object_header, 0, 0);
     object_layout->addWidget(weight_header, 0, 1);
     object_layout->addWidget(help_header, 0, 2);
-
 
     // Make a button for each object.
     for (int i = 0; i < floor_items.size(); i++)
@@ -212,8 +210,6 @@ void ObjectSelectDialog::build_floor_tab()
         // Add a object settings button
         add_settings(object_layout, -item, (i+1), col++);
     }
-
-    floor_tab->setLayout(vlay);
 }
 
 void ObjectSelectDialog::inven_items_count(int mode)
@@ -241,22 +237,22 @@ void ObjectSelectDialog::inven_items_count(int mode)
 
 void ObjectSelectDialog::build_inven_tab()
 {
-    QVBoxLayout *vlay = new QVBoxLayout;
-
-    QWidget *aux = new QWidget;
-    vlay->addWidget(aux);
-
-    vlay->addStretch(1);
+    QVBoxLayout *vlay_inven = new QVBoxLayout;
+    inven_tab = new QWidget;
+    scroll_inven = new QScrollArea;
+    inven_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    inven_tab->setLayout(vlay_inven);
+    scroll_inven->setWidget(inven_tab);
+    scroll_inven->setWidgetResizable(TRUE);
 
     QGridLayout *object_layout = new QGridLayout;
-    aux->setLayout(object_layout);
-
-    //object_layout->setColumnStretch(0, 100);
+    vlay_inven->addLayout(object_layout);
+    vlay_inven->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("Inventory Items");
-    QLabel *weight_header = new QLabel("Weight");
-    QLabel *help_header = new QLabel("info");
+    QLabel *object_header = new QLabel("<b><big>Inventory Items</big></b>");
+    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
+    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -288,7 +284,6 @@ void ObjectSelectDialog::build_inven_tab()
         add_settings(object_layout, item, (i+1), col++);
     }
 
-    inven_tab->setLayout(vlay);
 }
 
 void ObjectSelectDialog::equip_items_count(int mode)
@@ -315,22 +310,22 @@ void ObjectSelectDialog::equip_items_count(int mode)
 
 void ObjectSelectDialog::build_equip_tab()
 {
-    QVBoxLayout *vlay = new QVBoxLayout;
-
-    QWidget *aux = new QWidget;
-    vlay->addWidget(aux);
-
-    vlay->addStretch(1);
+    QVBoxLayout *vlay_equip = new QVBoxLayout;
+    equip_tab = new QWidget;
+    scroll_equip = new QScrollArea;
+    equip_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    equip_tab->setLayout(vlay_equip);
+    scroll_equip->setWidget(equip_tab);
+    scroll_equip->setWidgetResizable(TRUE);
 
     QGridLayout *object_layout = new QGridLayout;
-    aux->setLayout(object_layout);
-
-    //object_layout->setColumnStretch(0, 100);
+    vlay_equip->addLayout(object_layout);
+    vlay_equip->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("Equipment Items");
-    QLabel *weight_header = new QLabel("Weight");
-    QLabel *help_header = new QLabel("info");
+    QLabel *object_header = new QLabel("<b><big>Equipment Items</big></b>");
+    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
+    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -361,8 +356,6 @@ void ObjectSelectDialog::build_equip_tab()
         // Add a object settings button
         add_settings(object_layout, item, (i+1), col++);
     }
-
-    equip_tab->setLayout(vlay);
 }
 
 void ObjectSelectDialog::quiver_items_count(int mode)
@@ -392,22 +385,22 @@ void ObjectSelectDialog::quiver_items_count(int mode)
 
 void ObjectSelectDialog::build_quiver_tab()
 {
-    QVBoxLayout *vlay = new QVBoxLayout;
-
-    QWidget *aux = new QWidget;
-    vlay->addWidget(aux);
-
-    vlay->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    QVBoxLayout *vlay_quiver = new QVBoxLayout;
+    quiver_tab = new QWidget;
+    scroll_quiver = new QScrollArea;
+    quiver_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    quiver_tab->setLayout(vlay_quiver);
+    scroll_quiver->setWidget(quiver_tab);
+    scroll_quiver->setWidgetResizable(TRUE);
 
     QGridLayout *object_layout = new QGridLayout;
-    aux->setLayout(object_layout);
-
-    //object_layout->setColumnStretch(0, 100);
+    vlay_quiver->addLayout(object_layout);
+    vlay_quiver->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("Quiver Items");
-    QLabel *weight_header = new QLabel("Weight");
-    QLabel *help_header = new QLabel("info");
+    QLabel *object_header = new QLabel("<b><big>Quiver Items</big></b>");
+    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
+    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -438,8 +431,6 @@ void ObjectSelectDialog::build_quiver_tab()
         // Add a object settings button
         add_settings(object_layout, item, (i+1), col++);
     }
-
-    quiver_tab->setLayout(vlay);
 }
 
 
@@ -499,10 +490,6 @@ byte ObjectSelectDialog::find_starting_tab(int mode)
 ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool *success, bool *cancelled, int sq_y, int sq_x)
 {
     object_tabs = new QTabWidget;
-    floor_tab = new QWidget;
-    inven_tab = new QWidget;
-    equip_tab = new QWidget;
-    quiver_tab = new QWidget;
 
     main_prompt = new QLabel(QString("<b><big>%1</big></b>") .arg(prompt));
     main_prompt->setAlignment(Qt::AlignCenter);
@@ -537,30 +524,29 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     if (allow_floor)
     {
         build_floor_tab();
-        object_tabs->addTab(floor_tab, "&Floor Items");
+        object_tabs->addTab(scroll_floor, "&Floor Items");
         tab_order.append(TAB_FLOOR);
     }
     if (allow_inven)
     {
         build_inven_tab();
-        object_tabs->addTab(inven_tab, "&Inventory");
+        object_tabs->addTab(scroll_inven, "&Inventory");
         tab_order.append(TAB_INVEN);
     }
     if (allow_equip)
     {
         build_equip_tab();
-        object_tabs->addTab(equip_tab, "&Equipment");
+        object_tabs->addTab(scroll_equip, "&Equipment");
         tab_order.append(TAB_EQUIP);
     }
     if (allow_quiver)
     {
         build_quiver_tab();
-        object_tabs->addTab(quiver_tab, "&Quiver");
+        object_tabs->addTab(scroll_quiver, "&Quiver");
         tab_order.append(TAB_QUIVER);
     }
 
     connect(object_select_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
-
 
     QDialogButtonBox *buttons = new QDialogButtonBox();
     QPushButton *button_left = new QPushButton();
@@ -587,6 +573,8 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     main_layout->addWidget(buttons);
     setLayout(main_layout);
     setWindowTitle(tr("Object Selection Menu"));
+
+    resize(QSize(width() * 6 / 5, height() * 3 / 2));
 
     if (!this->exec())
     {

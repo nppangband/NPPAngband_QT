@@ -6,6 +6,7 @@
 #include <QDialogButtonBox>
 #include <QButtonGroup>
 #include <QKeyEvent>
+#include <QScrollArea>
 
 
 // The numbered order of the tabs
@@ -46,6 +47,12 @@ private:
     QWidget *equip_tab;
     QWidget *quiver_tab;
     QLabel *main_prompt;
+
+    QScrollArea *scroll_floor;
+    QScrollArea *scroll_inven;
+    QScrollArea *scroll_equip;
+    QScrollArea *scroll_quiver;
+
 
     QButtonGroup *object_select_group;
 
