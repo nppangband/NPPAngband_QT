@@ -419,7 +419,9 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     //Flter for the first monster group.
     filter_rows(0,0);
 
-    resize(QSize(width() * 7 / 4, height() * 4 / 3));
+    QSize this_size = QSize(width()* 7 / 4, height() * 4 / 3);
+
+    resize(ui_max_widget_size(this_size));
     updateGeometry();
 
     setLayout(main_layout);

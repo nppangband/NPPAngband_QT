@@ -303,8 +303,9 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     //Filter for the first terrain group.
     filter_rows(0,0);
 
-    // This table starts out too small. It needs to be made bigger.
-    resize(QSize(width() * 9 / 8, height() * 4 / 3));
+    QSize this_size = QSize(width()* 9 / 8, height() * 4 / 3);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     setLayout(main_layout);
     setWindowTitle(tr("Terrain Knowledge"));

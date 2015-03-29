@@ -841,8 +841,9 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     //Filter for the first object group.
     filter_rows(0,0);
 
-    // This table starts out too small. It needs to be made bigger.
-    resize(QSize(width() * 10 / 7, height() * 4 / 3));
+    QSize this_size = QSize(width()* 10 / 7, height() * 4 / 3);
+
+    resize(ui_max_widget_size(this_size));
     updateGeometry();
 
     setLayout(main_layout);
@@ -1123,8 +1124,10 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     //Filter for the first ego group.
     filter_rows(0,0);
 
-    // This table starts out too small. It needs to be made bigger.
-    resize(QSize(width() * 19 / 14, height() * 4 / 3));
+    QSize this_size = QSize(width()* 19 / 14, height() * 4 / 3);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
+
 
     setLayout(main_layout);
     setWindowTitle(tr("Ego Item Knowledge"));
@@ -1371,8 +1374,9 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     //Filter for the first monster group.
     filter_rows(0,0);
 
-    // This table starts out too small. It needs to be made bigger.
-    resize(QSize(width() * 18 / 14, height() * 4 / 3));
+    QSize this_size = QSize(width()* 7 / 7, height() * 4 / 3);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     setLayout(main_layout);
     setWindowTitle(tr("Object Knowledge"));

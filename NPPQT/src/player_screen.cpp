@@ -1919,14 +1919,16 @@ void PlayerScreenDialog::equip_modifier_info(QGridLayout *return_layout)
 
 PlayerScreenDialog::PlayerScreenDialog(void)
 {
+    //Set up the main scroll bar
+    QVBoxLayout *top_layout = new QVBoxLayout;
     QVBoxLayout *main_layout = new QVBoxLayout;
-
-    QScrollArea *scroll_area = new QScrollArea;
-    scroll_area->setWidgetResizable(TRUE);
-    scroll_area->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    main_layout->addWidget(scroll_area);
-    main_layout->setContentsMargins(0,0,0,0);
+    QWidget *top_widget = new QWidget;
+    QScrollArea *scroll_box = new QScrollArea;
+    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    top_widget->setLayout(main_layout);
+    scroll_box->setWidget(top_widget);
+    scroll_box->setWidgetResizable(TRUE);
+    top_layout->addWidget(scroll_box);
 
     // Title Box
     QVBoxLayout *title_line = new QVBoxLayout;
@@ -1935,11 +1937,9 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     title_line->addWidget(main_prompt, Qt::AlignCenter);
     main_layout->addStretch(1);
 
-
     // Char info line
     QHBoxLayout *char_info = new QHBoxLayout;
     main_layout->addLayout(char_info);
-
 
     QVBoxLayout *vlay_basic = new QVBoxLayout;
     char_info->addLayout(vlay_basic);
@@ -2030,8 +2030,12 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    setLayout(main_layout);
+    setLayout(top_layout);
     setWindowTitle(tr("Player Information"));
+
+    QSize this_size = QSize(width() * 21 / 8, height() * 5 / 3);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     this->exec();
 }

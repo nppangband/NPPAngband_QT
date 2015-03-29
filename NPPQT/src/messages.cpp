@@ -42,8 +42,8 @@ DisplayMessages::DisplayMessages(void)
     setLayout(main_layout);
     setWindowTitle(tr("Messages"));
 
-    resize(QSize(width() * 4 / 3, height() * 3 / 2));
-
+    QSize this_size = QSize(width()* 4 / 3, height() * 3 / 2);
+    resize(ui_max_widget_size(this_size));
     updateGeometry();
 
     this->exec();

@@ -18,6 +18,7 @@
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QTableWidget>
+#include <QDesktopWidget>
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
 #include "emitter.h"
@@ -473,5 +474,20 @@ void ui_show_cursor(int y, int x)
         main_window->cursor->moveTo(y, x);
         main_window->cursor->setVisible(true);
     }
+}
+
+// Use the deisred widget screen, unless it is too big for the screen
+QSize ui_max_widget_size(QSize this_size)
+{
+    QDesktopWidget dummy_widget;
+    QRect main_screen_size = dummy_widget.screenGeometry(dummy_widget.primaryScreen());
+
+    QSize return_size = main_screen_size.size();
+
+    return_size.setWidth(MIN(this_size.width(), (return_size.width() * 9 / 10)));
+    return_size.setHeight(MIN(this_size.height(), (return_size.height() * 17 / 20)));
+
+    return (return_size);
+
 }
 

@@ -23,6 +23,7 @@
 #include <QList>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QScrollArea>
 
 int points_spent;
 int stats[A_MAX];
@@ -971,7 +972,16 @@ PlayerBirth::PlayerBirth(bool quickstart)
     quick_start = quickstart;
     hold_update = FALSE;
 
+    //Set up the main scroll bar
+    QVBoxLayout *top_layout = new QVBoxLayout;
     QVBoxLayout *main_layout = new QVBoxLayout;
+    QWidget *top_widget = new QWidget;
+    QScrollArea *scroll_box = new QScrollArea;
+    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    top_widget->setLayout(main_layout);
+    scroll_box->setWidget(top_widget);
+    scroll_box->setWidgetResizable(TRUE);
+    top_layout->addWidget(scroll_box);
 
     // Setup the character, only after hlay choices are completed
     setup_character();
@@ -1060,8 +1070,11 @@ PlayerBirth::PlayerBirth(bool quickstart)
     connect(buttons, SIGNAL(accepted()), this, SLOT(accept_char()));
     main_layout->addWidget(buttons);
 
+    setLayout(top_layout);
 
-    setLayout(main_layout);
+    QSize this_size = QSize(width() * 21 / 8, height() * 5 / 3);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     this->exec();
 }

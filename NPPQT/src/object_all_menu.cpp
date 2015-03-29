@@ -266,8 +266,16 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
         return;
     }
 
-    // Set up the main layout
+    //Set up the main scroll bar
+    QVBoxLayout *top_layout = new QVBoxLayout;
     QVBoxLayout *main_layout = new QVBoxLayout;
+    QWidget *top_widget = new QWidget;
+    QScrollArea *scroll_box = new QScrollArea;
+    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    top_widget->setLayout(main_layout);
+    scroll_box->setWidget(top_widget);
+    scroll_box->setWidgetResizable(TRUE);
+    top_layout->addWidget(scroll_box);
 
     //Build the header
     header_main = new QLabel("<b><h2>Object Menu</b></h2>");
@@ -373,15 +381,16 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     buttons->addButton(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
 
-
     main_layout->addWidget(buttons);
 
     hide_or_show_tabs();
 
-    resize(QSize(width() * 3 / 2, height() * 2));
-
-    setLayout(main_layout);
+    setLayout(top_layout);
     setWindowTitle(tr("Object Menu"));
+
+    QSize this_size = QSize(width() * 3 / 2, height() * 5 / 2);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     this->exec();
 }

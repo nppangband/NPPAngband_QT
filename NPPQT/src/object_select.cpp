@@ -574,7 +574,9 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     setLayout(main_layout);
     setWindowTitle(tr("Object Selection Menu"));
 
-    resize(QSize(width() * 6 / 5, height() * 3 / 2));
+    QSize this_size = QSize(width()* 19 / 14, height() * 4 / 3);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     if (!this->exec())
     {

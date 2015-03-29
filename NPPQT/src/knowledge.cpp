@@ -308,7 +308,10 @@ DisplayScores::DisplayScores(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    resize(QSize(width() * 2, height() * 4 / 3));
+    QSize this_size = QSize(width()* 2, height() * 2);
+
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     setLayout(main_layout);
     setWindowTitle("Player Scores");
@@ -449,7 +452,10 @@ DisplayMonKillCount::DisplayMonKillCount(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    resize(QSize(width()* 10 / 9, height() * 4 / 3));
+    QSize this_size = QSize(width()* 10 / 9, height() * 2);
+
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     setLayout(main_layout);
     setWindowTitle(QString("Monster Kill Count"));

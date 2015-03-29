@@ -601,6 +601,7 @@ extern UserInput ui_get_input();
 extern bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x);
 extern void ui_destroy_path();
 extern void ui_show_cursor(int y, int x);
+extern QSize ui_max_widget_size(QSize this_size);
 extern void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg);
 extern void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg);
 extern void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr);
