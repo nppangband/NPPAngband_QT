@@ -39,6 +39,7 @@
 #include "src/optionsdialog.h"
 #include <src/command_list.h>
 #include <src/player_command.h>
+#include <src/object_all_menu.h>
 #include "src/player_birth.h"
 #include "src/utilities.h"
 #include "src/knowledge.h"
@@ -301,6 +302,8 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
     bool left_button = (event->button() & Qt::LeftButton);
     bool right_button = (event->button() & Qt::RightButton);
     bool middle_button = (event->button() & Qt::MiddleButton);
+    bool extra1 = (event->button() & Qt::XButton1);
+    bool extra2 = (event->button() & Qt::XButton2);
 
     int old_x = parent->cursor->c_x;
     int old_y = parent->cursor->c_y;
@@ -326,7 +329,16 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         {
             do_cmd_walk(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x), FALSE);
         }
+        else if (extra1)
+        {
+            do_cmd_all_objects(TAB_INVEN);
+        }
+        else if (extra2)
+        {
+            do_cmd_character_screen();
+        }
     }
+
 
     QGraphicsItem::mousePressEvent(event);
 }
@@ -1413,11 +1425,6 @@ void MainWindow::create_actions()
     pseudo_ascii_act->setStatusTip(tr("Set the monsters graphics to pseudo-ascii."));
     connect(pseudo_ascii_act, SIGNAL(changed()), this, SLOT(set_pseudo_ascii()));
 
-    bigtile_act = new QAction(tr("Use Bigtile"), this);
-    bigtile_act->setCheckable(true);
-    bigtile_act->setChecked(use_bigtile);
-    bigtile_act->setStatusTip(tr("Doubles the width of each dungeon square."));
-
     font_main_select_act = new QAction(tr("Main Window Font"), this);
     font_main_select_act->setStatusTip(tr("Change the font or font size for the main window."));
     connect(font_main_select_act, SIGNAL(triggered()), this, SLOT(font_dialog_main_window()));
@@ -1571,9 +1578,10 @@ void MainWindow::slot_multiplier_clicked(QAction *action)
 {
     if (action) current_multiplier = action->objectName();
     QList<QString> parts = current_multiplier.split(":");
-    if (parts.size() == 2) {
-        int x = parts.at(1).toInt();
-        int y = parts.at(0).toInt();
+    if (parts.size() == 2)
+    {
+        qreal x = parts.at(1).toFloat();
+        qreal y = parts.at(0).toFloat();
         graphics_view->setTransform(QTransform::fromScale(x, y));
     }
 }
@@ -1640,21 +1648,27 @@ void MainWindow::create_menus()
     multipliers = new QActionGroup(this);
     QString items[] = {
       QString("1:1"),
+      QString("1.25:1.25"),
+      QString("1.5:1.5"),
+      QString("1.75:1.75"),
       QString("2:1"),
       QString("2:2"),
-      QString("3:1"),
+      QString("2.5:2.5"),
       QString("3:3"),
       QString("4:2"),
       QString("4:4"),
+      QString("5:5"),
       QString("6:3"),
       QString("6:6"),
+      QString("7:7"),
       QString("8:4"),
       QString("8:8"),
-      QString("16:8"),
-      QString("16:16"),
+      QString("10:5"),
+      QString("10:10"),
       QString("")
     };
-    for (int i = 0; !items[i].isEmpty(); i++) {
+    for (int i = 0; !items[i].isEmpty(); i++)
+    {
         QAction *act = submenu->addAction(items[i]);
         act->setObjectName(items[i]);
         act->setCheckable(true);
@@ -1745,15 +1759,14 @@ void MainWindow::read_settings()
 
     restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     recent_savefiles = settings.value("recentFiles").toStringList();
-    bool bigtile_setting = settings.value("set_bigtile", TRUE).toBool();
-    bigtile_act->setChecked((bigtile_setting));
     do_pseudo_ascii = settings.value("pseudo_ascii", false).toBool();
     pseudo_ascii_act->setChecked(do_pseudo_ascii);
     use_graphics = settings.value("use_graphics", 0).toInt();
     which_keyset = settings.value("which_keyset", 0).toInt();
     current_multiplier = settings.value("tile_multiplier", "1:1").toString();
     QAction *act = this->findChild<QAction *>(current_multiplier);
-    if (act) {
+    if (act)
+    {
         act->setChecked(true);
         slot_multiplier_clicked(act);
     }
@@ -1772,10 +1785,8 @@ void MainWindow::read_settings()
 void MainWindow::write_settings()
 {
     QSettings settings("NPPGames", "NPPQT");
-
     settings.setValue("mainWindowGeometry", saveGeometry());
     settings.setValue("recentFiles", recent_savefiles);
-    settings.setValue("set_bigtile", bigtile_act->isChecked());
     settings.setValue("font_window_main", font_main_window.toString());
     settings.setValue("font_window_messages", font_message_window.toString());
     settings.setValue("font_window_sidebar", font_sidebar_window.toString());

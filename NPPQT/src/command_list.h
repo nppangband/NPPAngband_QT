@@ -23,8 +23,7 @@ private:
     void add_dir_keyboard(QVBoxLayout *return_layout, bool keyboard);
     void add_dir_commands(QGridLayout *return_layout);
     void add_keyboard_commands(QGridLayout *return_layout);
-
-
+    void add_mouse_commands(QVBoxLayout *return_layout);
 };
 
 extern void do_cmd_command_list(void);

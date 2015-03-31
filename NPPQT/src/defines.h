@@ -108,16 +108,11 @@ enum
  */
 #define PANEL_HGT	11
 
-/*since dungeon generation uses PANEL wid to generate dungeons,
- *the width there can't be dependent on bigtile mode.
- */
-
-#define PANEL_WID_FIXED	33
 /*
  * Number of grids in each panel (horizontally)
  * Must be a multiple of BLOCK_WID
  */
-#define PANEL_WID	(use_bigtile ? 16 : PANEL_WID_FIXED)
+#define PANEL_WID	33
 
 
 //In some of the QT files, this is defined.  In some it isn't.
@@ -976,7 +971,7 @@ enum
 // Same colors in tables.c, usable in HTML format
 #define    COLOR24BIT_DARK          #000000
 #define    COLOR24BIT_L_DARK        #606060
-#define    COLOR24BIT_SLATE         '#808080'
+#define    COLOR24BIT_SLATE         #808080
 #define    COLOR24BIT_SLATE_GRAY    #708090
 #define    COLOR24BIT_TAUPE         #8B8589
 #define    COLOR24BIT_WHITE         #FFFFFF

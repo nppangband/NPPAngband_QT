@@ -271,7 +271,7 @@ static byte ponder_dungeon_size(void)
 {
     /* Get real dungeon size in panels */
     int hgt = (p_ptr->cur_map_hgt / PANEL_HGT);
-    int wid = (p_ptr->cur_map_wid / PANEL_WID_FIXED);
+    int wid = (p_ptr->cur_map_wid / PANEL_WID);
 
     /* Paranoia. Check limits */
     if (hgt > 6) hgt = 6;
@@ -10940,7 +10940,7 @@ static bool cave_gen(void)
              * height/width
              */
             l = randint(MAX_DUNGEON_HGT / (PANEL_HGT));
-            m = randint(MAX_DUNGEON_WID / (PANEL_WID_FIXED));
+            m = randint(MAX_DUNGEON_WID / (PANEL_WID));
 
             /* Make 2 panels the minimum size */
             if (l < 2) l = 2;
@@ -10958,7 +10958,7 @@ static bool cave_gen(void)
              * of 2 to 6 of panel hgt & width
              */
             p_ptr->cur_map_hgt = l * (PANEL_HGT);
-            p_ptr->cur_map_wid = m * (PANEL_WID_FIXED);
+            p_ptr->cur_map_wid = m * (PANEL_WID);
 
             /* Exit if less than normal dungeon */
             if ((p_ptr->cur_map_hgt < MAX_DUNGEON_HGT) ||
@@ -11449,7 +11449,7 @@ static void town_gen(void)
 
     /* Restrict to single-screen size */
     p_ptr->cur_map_hgt = (2 * PANEL_HGT);
-    p_ptr->cur_map_wid = (2 * PANEL_WID_FIXED);
+    p_ptr->cur_map_wid = (2 * PANEL_WID);
 
     /* Day time */
     if ((p_ptr->game_turn % (10L * TOWN_DAWN)) < ((10L * TOWN_DAWN) / 2))

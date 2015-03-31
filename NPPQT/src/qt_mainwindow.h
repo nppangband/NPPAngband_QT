@@ -238,7 +238,6 @@ private:
 
     //Command for the settings menu
     QAction *options_act;
-    QAction *bigtile_act;
     QActionGroup *tiles_choice;
     QAction *ascii_mode_act;
     QAction *dvg_mode_act;
@@ -273,7 +272,6 @@ private:
 
     // information about the main window
     QFontDatabase font_database;
-    bool use_bigtile;
 
     QActionGroup *multipliers;
 

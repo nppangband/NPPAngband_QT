@@ -134,7 +134,7 @@ void MainWindow::create_sidebar()
     // speed
     QLabel *speed_info = new QLabel;
     speed_info->setObjectName("SPEED");
-    gold_label->setToolTip(get_help_topic("character_info", "Speed"));
+    speed_info->setToolTip(get_help_topic("character_info", "Speed"));
     player_info_vlay->addWidget(speed_info, Qt::AlignLeft);
 
     // depth

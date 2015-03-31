@@ -292,6 +292,9 @@ void CommandList::add_keyboard_commands(QGridLayout *return_layout)
 
         row++;
     }
+
+    QLabel *dummy = new QLabel("   ");
+    return_layout->addWidget(dummy, row, 0);
 }
 
 
@@ -407,6 +410,39 @@ void CommandList::add_dir_keyboard(QVBoxLayout *return_layout, bool keyboard)
     return_layout->addStretch(1);
 }
 
+static struct command_desc list_commands_mouse[] =
+{
+    {"Left Click on a known dungeon square to run to that spot.", NULL},
+    {"Middle Click on any dungeon square to walk one square in that direction.", NULL},
+    {"Right click on a dungeon square ot learn about the contents of that square", NULL},
+    {"Click Extra Button 1 to bring up the object handling dialog", NULL},
+    {"Click Extra Button 2 to bring up the character screen dialog", NULL},
+
+    // The null entry at the end is essential for initializing the table of groups.
+    {NULL, NULL},
+};
+
+
+void CommandList::add_mouse_commands(QVBoxLayout *return_layout)
+{
+    int x = 0;
+
+    while (TRUE)
+    {
+        command_desc *cmd_ptr = &list_commands_mouse[x++];
+
+        // Null pointer means we are done
+        if (!cmd_ptr->command_title.length()) break;
+
+        QLabel *this_title = new QLabel();
+        make_standard_label(this_title, QString(cmd_ptr->command_title), TERM_BLUE);
+        return_layout->addWidget(this_title, Qt::AlignLeft);
+    }
+
+    QLabel *dummy = new QLabel("   ");
+    return_layout->addWidget(dummy, x, 0);
+}
+
 CommandList::CommandList(void)
 {
 
@@ -441,6 +477,14 @@ CommandList::CommandList(void)
     QGridLayout *glay_key_commands = new QGridLayout;
     add_keyboard_commands(glay_key_commands);
     main_layout->addLayout(glay_key_commands);
+
+    QLabel *mouse_prompt = new QLabel(QString("<h2>Mouse Commands</h2>"));
+    main_layout->addWidget(mouse_prompt, Qt::AlignCenter);
+
+    QVBoxLayout *vlay_mouse_commands = new QVBoxLayout;
+    add_mouse_commands(vlay_mouse_commands);
+    main_layout->addLayout(vlay_mouse_commands);
+    top_across->addStretch(1);
 
     QDialogButtonBox buttons;
     buttons.setStandardButtons(QDialogButtonBox::Ok);
