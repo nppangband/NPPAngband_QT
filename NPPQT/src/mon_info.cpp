@@ -1307,7 +1307,7 @@ static QString describe_monster_kills(int r_idx, const monster_lore *l_ptr)
         /* Some kills past lives */
         else if (l_ptr->tkills)
         {
-            output.append(QString("and your ancestors have exterminated at least %d of the creatures.  ") .arg(l_ptr->tkills));
+            output.append(QString("and your ancestors have exterminated at least %1 of the creatures.  ") .arg(l_ptr->tkills));
         }
 
         /* No kills */

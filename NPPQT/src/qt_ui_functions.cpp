@@ -322,33 +322,37 @@ void ui_update_sidebar_all()
 void ui_update_sidebar_player()
 {
     main_window->update_sidebar_player();
+    p_ptr->redraw &= ~(PR_SIDEBAR_PL);
 }
 
 void ui_update_sidebar_mon()
 {
     main_window->update_sidebar_mon();
+    p_ptr->redraw &= ~(PR_SIDEBAR_MON);
 }
 
 void ui_update_statusbar()
 {
     main_window->update_statusbar();
+    p_ptr->redraw &= ~(PR_STATUSBAR);
 }
 
 void ui_update_titlebar()
 {
     main_window->update_titlebar();
+    p_ptr->redraw &= ~(PR_TITLEBAR);
 }
 
 void ui_update_messages()
 {
     main_window->update_messages();
+    p_ptr->redraw &= ~(PR_MESSAGE);
 }
 
-
-
-QWidget *ui_main_window()
+void ui_update_monlist()
 {
-    return main_window;
+    main_window->win_mon_list_update();
+    p_ptr->redraw &= ~(PR_WIN_MONLIST);
 }
 
 
@@ -449,6 +453,9 @@ void ui_redraw_grid(int y, int x)
 void ui_redraw_all()
 {
     main_window->redraw();
+
+    // This redraws most things.
+    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_MESSAGE | PR_WIN_MONLIST);
 }
 
 void player_death_close_game(void)

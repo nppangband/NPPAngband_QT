@@ -168,7 +168,7 @@ bool put_object_in_inventory(object_type *o_ptr)
     if (o_ptr->is_quest_object())
 	{
 		p_ptr->notice |= (PN_QUEST_REMAIN);
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
 	}
 
 	/* Get the object again */
@@ -421,8 +421,7 @@ void py_pickup_gold(void)
 		p_ptr->au += gold;
 
         /* Redraw gold and update player score */
-        p_ptr->update |= (PU_PLAYER_SCORE);
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
 
 		/* Delete the gold */
 		delete_object_idx(this_o_idx);

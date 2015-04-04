@@ -1550,7 +1550,7 @@ void do_cmd_toggle_search(void)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw the state */
-    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_STATUSBAR);
 
     handle_stuff();
 }
@@ -2217,7 +2217,7 @@ void command_rest(cmd_arg args)
 {
     if (!p_ptr->is_resting())
     {
-        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
     }
 
     p_ptr->player_previous_command_update(CMD_RESTING, args);
@@ -2231,7 +2231,7 @@ void command_rest(cmd_arg args)
     if (p_ptr->should_stop_resting())
     {
         disturb(0, 0);
-        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
     }
 
     /* Handle stuff */
@@ -2734,7 +2734,7 @@ static bool do_cmd_bash_aux(int y, int x)
         name = feature_desc(feat, TRUE, TRUE);
 
         /* Format the killer string */
-        kb_str = "bashing %s" + name;
+        kb_str = "bashing " + name;
 
         /* Take the hit */
         take_terrain_hit(f_info[feat].dam_non_native, feat, kb_str);

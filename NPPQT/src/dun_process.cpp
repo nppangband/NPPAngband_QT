@@ -201,7 +201,7 @@ static void regenhp(int percent)
     if (old_chp != p_ptr->chp)
     {
         /* Redraw */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 }
 
@@ -244,7 +244,7 @@ static void regenmana(int percent)
     if (old_csp != p_ptr->csp)
     {
         /* Redraw */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 }
 
@@ -826,8 +826,6 @@ static void do_animation(void)
         if (!(r_ptr->flags1 & (RF1_ATTR_MULTI))) continue;
 
         m_ptr->m_color = add_preset_color(multi_hued_color(r_ptr));
-
-        p_ptr->redraw |= (PR_MONLIST);
 
         light_spot(m_ptr->fy, m_ptr->fx);
     }
@@ -1446,7 +1444,7 @@ static void process_world(void)
             do_cmd_feeling();
 
             /* Update the level indicator */
-            p_ptr->redraw |= (PR_SIDEBAR);
+            p_ptr->redraw |= (PR_SIDEBAR_PL);
 
             /* Disturb */
             disturb(0, 0);
@@ -1698,10 +1696,10 @@ void change_player_level(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_DISTANCE);
 
     /* Redraw dungeon */
-    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR | PR_MAP);
+    p_ptr->redraw |= (PR_SIDEBAR_ALL | PR_STATUSBAR | PR_MAP);
 
     /* Redraw "statusy" things */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_MONSTER | PR_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_MONSTER | PR_WIN_MONLIST | PR_ITEMLIST);
 
     /* Update stuff */
     update_stuff();
@@ -1719,18 +1717,6 @@ void change_player_level(void)
 
     p_ptr->message_append_stop();
 
-    /* Notice stuff */
-    notice_stuff();
-
-    /* Update stuff */
-    update_stuff();
-
-    /* Redraw stuff */
-    redraw_stuff();
-
-    /* Handle delayed death */
-    if (p_ptr->is_dead) return;
-
     /* Check quests */
     for (i = 0; i < z_info->q_max; i++)
     {
@@ -1747,10 +1733,22 @@ void change_player_level(void)
         {
             q_info[i].q_flags |= (QFLAG_STARTED);
 
-            p_ptr->redraw = (PR_SIDEBAR);
+            p_ptr->redraw = (PR_SIDEBAR_PL);
             break;
         }
     }
+
+    /* Notice stuff */
+    notice_stuff();
+
+    /* Update stuff */
+    update_stuff();
+
+    /* Redraw stuff */
+    redraw_stuff();
+
+    /* Handle delayed death */
+    if (p_ptr->is_dead) return;
 
     /* Announce (or repeat) the feeling */
     if (p_ptr->depth && (do_feeling)) do_cmd_feeling();
@@ -1879,7 +1877,7 @@ void process_player_energy_aux(byte energy_used)
     if ((quest_indicator_timer > 0) && (--quest_indicator_timer == 0))
     {
         quest_indicator_complete = FALSE;
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 
     /* Shimmer monsters if needed */
@@ -2041,7 +2039,7 @@ void process_player_energy(byte energy_used)
         if (p_ptr->should_stop_resting())
         {
             disturb(0,0);
-            p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
+            p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
             return;
         }
     }

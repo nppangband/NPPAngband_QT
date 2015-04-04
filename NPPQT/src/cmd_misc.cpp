@@ -110,7 +110,7 @@ void do_cmd_feeling(void)
     else message(QString(do_cmd_feeling_text[feeling]));
 
     /* Redraw the feeling indicator */
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 }
 
 
@@ -164,7 +164,7 @@ void do_cmd_look(void)
     if (target_set_interactive(TARGET_LOOK, -1, -1))
     {
         message("Target Selected.");
-        p_ptr->redraw |= (PR_MONLIST);
+        p_ptr->redraw |= (PR_SIDEBAR_MON);
         redraw_stuff();
     }
 }

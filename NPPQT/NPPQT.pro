@@ -14,6 +14,7 @@ TARGET = NPPGAMES
 SOURCES +=  src/qt_main.cpp\
             src/qt_mainwindow.cpp\
             src/qt_commands.cpp\
+            src/qt_win_mon_list.cpp\
             src/qt_sidebar.cpp \
             src/qt_statusbar.cpp \
             src/qt_target_toolbar.cpp \
@@ -99,7 +100,7 @@ SOURCES +=  src/qt_main.cpp\
             src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-            src/wizard_mode.cpp \
+            src/wizard_mode.cpp
 
 
 
@@ -149,7 +150,8 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/user_macros.h \
             src/utilities.h \
-            src/wizard_mode.h
+            src/wizard_mode.h \
+
 
 
 RESOURCES += \

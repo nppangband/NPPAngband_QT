@@ -2842,7 +2842,7 @@ void do_cmd_reward(int this_store, cmd_arg args)
 
     /* The quest is over */
     guild_quest_wipe(TRUE);
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 }
 
 
@@ -2957,7 +2957,7 @@ void do_cmd_sell(int this_store, cmd_arg args)
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA | PU_PLAYER_SCORE);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_SIDEBAR | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_SIDEBAR_PL | PR_ITEMLIST);
 
     /* Get the "apparent" value */
     dummy = object_value(&sold_item) * amt;

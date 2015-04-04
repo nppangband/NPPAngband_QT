@@ -872,6 +872,9 @@ void MainWindow::update_sidebar_mon()
         delete item;
     }
 
+    //Halluc
+    if (p_ptr->timed[TMD_IMAGE]) return;
+
     for (int i = 0; i < sidebar_monsters.size(); i++)
     {
        sidebar_display_mon(sidebar_monsters.at(i));
@@ -936,7 +939,8 @@ void MainWindow::update_titlebar()
 {
     QString str("NPPGames");
 
-    if (character_dungeon) {
+    if (character_dungeon)
+    {
         if (game_mode == GAME_NPPANGBAND)
         {
             str = "NPPAngband";

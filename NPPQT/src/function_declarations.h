@@ -591,7 +591,6 @@ extern QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size);
 
 
 
-
 // qt_ui_functions.cpp
 extern QRect visible_dungeon();
 extern bool panel_contains(int y, int x);
@@ -630,7 +629,7 @@ extern void ui_update_sidebar_mon();
 extern void ui_update_statusbar();
 extern void ui_update_titlebar();
 extern void ui_update_messages();
-extern QWidget *ui_main_window();
+extern void ui_update_monlist();
 extern void player_death_close_game(void);
 extern void ui_redraw_grid(int y, int x);
 extern void ui_redraw_all();

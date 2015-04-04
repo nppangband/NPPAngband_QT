@@ -2563,8 +2563,6 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
     QString m_name;
 
     bool seen = FALSE;
-    bool fear = FALSE;
-    bool death = TRUE;
 
     bool confused = m_ptr->m_timed[MON_TMD_CONF];
 
@@ -2576,6 +2574,12 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
 
     /* Get the monster name/poss */
     m_name = monster_desc(m_ptr, 0);
+
+    /* Monster is frightened */
+    if (seen)
+    {
+        message(QString("%1 panics!")  .arg(capitalize_first(m_name)));
+    }
 
     /* Feature can't be passed */
     if (!cave_passable_bold(y, x))
@@ -2600,23 +2604,12 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
         {
             mon_inc_timed(m_ptr->get_mon_idx(), MON_TMD_STUN, 3, MON_TMD_FLG_NOTIFY);
         }
-
-        /*possibly update the monster health bar*/
-        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
-
     }
 
     /* Feature is not a wall */
     else
     {
         /* No changes */
-    }
-
-
-    /* Monster is frightened */
-    if ((!death) && (fear) && (seen))
-    {
-        message(QString("%1 panics!")  .arg(capitalize_first(m_name)));
     }
 }
 

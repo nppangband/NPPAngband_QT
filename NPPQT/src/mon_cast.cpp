@@ -1050,7 +1050,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
     m_ptr->mana -= manacost;
 
     /* Redraw (later) if needed */
-    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+    if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
     /*Monsters marked as aggressive don't stay that way permanently.  */
     if (m_ptr->mflag & (MFLAG_AGGRESSIVE))
@@ -2921,7 +2921,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
 
 
             /* Redraw (later) if needed */
-            if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+            if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
             /* Cancel fear */
             if (m_ptr->m_timed[MON_TMD_FEAR])
@@ -2964,7 +2964,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
             }
 
             /* Redraw (later) if needed */
-            if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+            if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
             break;
         }
@@ -3184,7 +3184,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                 }
 
                 /* Redraw mana */
-                p_ptr->redraw |= (PR_SIDEBAR);
+                p_ptr->redraw |= (PR_SIDEBAR_MON);
 
                 /* Replenish monster mana */
                 if (m_ptr->mana < r_ptr->mana)
@@ -3201,7 +3201,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                     }
 
                     /* Redraw (later) if needed */
-                    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+                    if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
                 }
 
@@ -3213,7 +3213,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
                     if (m_ptr->hp > m_ptr->maxhp) m_ptr->hp = m_ptr->maxhp;
 
                     /* Redraw (later) if needed */
-                    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+                    if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
                     /* Special message */
                     if (seen)

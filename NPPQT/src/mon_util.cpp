@@ -197,14 +197,13 @@ void delete_monster_idx(int i)
         delete_object_idx(this_o_idx);
     }
 
+    if (m_ptr->ml) p_ptr->redraw |= PR_WIN_MONLIST;
 
     /* Wipe the Monster */
     m_ptr->monster_wipe();
 
     /* Count monsters */
     mon_cnt--;
-
-    p_ptr->redraw |= PR_MONLIST;
 
     /* Visual update */
     light_spot(y, x);
@@ -856,58 +855,6 @@ s16b get_mon_num(int level, int y, int x, byte mp_flags)
     return (table[i].index);
 }
 
-/*
- * Helper function for display monlist.  Prints the number of creatures, followed
- * by either a singular or plural version of the race name as appropriate.
- */
-static QString get_mon_name(int r_idx, int in_los)
-{
-    /* Get monster race and name */
-    monster_race *r_ptr = &r_info[r_idx];
-
-    QString race_name, output_name;
-
-    /* Player ghosts get special markings */
-    if (r_ptr->flags2 & (RF2_PLAYER_GHOST))
-    {
-        /* Get the ghost name. */
-        race_name =  player_ghost_name;
-
-        race_name.append("[G] ");
-    }
-
-    /* Unique names don't have a number */
-    else if (r_ptr->flags1 & (RF1_UNIQUE))
-    {
-        race_name = monster_desc_race(r_idx);
-
-        race_name.append("[U] ");
-    }
-
-    /* Get the monster race name for normal races*/
-    else
-    {
-        race_name = monster_desc_race(r_idx);
-
-        output_name = (QString("%1") .arg(in_los));
-        output_name = output_name.rightJustified(3, ' ');
-        output_name.append(' ');
-
-        /* Make it plural, if needed. */
-        if (in_los > 1)
-        {
-            race_name = plural_aux(race_name);
-        }
-    }
-
-    /* Mix the quantity and the header. */
-    output_name.append(race_name);
-
-    return (output_name);
-}
-
-
-
 
 /*
  * Build a string describing a monster in some way.
@@ -1354,6 +1301,9 @@ void update_mon(int m_idx, bool full)
     /* Seen at all */
     bool is_visible = FALSE;
 
+    bool old_ml = m_ptr->ml;
+    bool old_project = m_ptr->project;
+
     /* Seen by vision */
     bool easy = FALSE;
 
@@ -1385,12 +1335,12 @@ void update_mon(int m_idx, bool full)
     /* Detected */
     if (m_ptr->mflag & (MFLAG_MARK)) is_visible = TRUE;
 
+    /* Update projectable status */
+    m_ptr->project = FALSE;
+
     /* Nearby */
     if (d <= MAX_SIGHT)
     {
-        /* Update projectable status */
-        m_ptr->project = FALSE;
-
         if (m_ptr->cdis < MAX_SIGHT)
         {
             if(projectable(py, px, fy, fx, PROJECT_NONE))
@@ -1513,7 +1463,6 @@ void update_mon(int m_idx, bool full)
         }
     }
 
-
     /* The monster is now visible */
     if (is_visible)
     {
@@ -1529,7 +1478,7 @@ void update_mon(int m_idx, bool full)
             light_spot(fy, fx);
 
             /* Update health bar as needed */
-            p_ptr->redraw |= (PR_MON_HEALTH);
+            p_ptr->redraw |= (PR_SIDEBAR_MON);
 
             /* Hack -- Count "fresh" sightings */
             if (l_ptr->sights < MAX_SHORT) l_ptr->sights++;
@@ -1544,14 +1493,8 @@ void update_mon(int m_idx, bool full)
                 if (!(m_ptr->mflag & (MFLAG_TOWN)) || (p_ptr->lev < 10))
                 {
                     disturb(1, 0);
-
-
                 }
             }
-
-            /* Window stuff */
-            p_ptr->redraw |= PR_MONLIST;
-
         }
     }
 
@@ -1568,7 +1511,7 @@ void update_mon(int m_idx, bool full)
             light_spot(fy, fx);
 
             /* Update health bar as needed */
-            p_ptr->redraw |= (PR_MON_HEALTH);
+            p_ptr->redraw |= (PR_SIDEBAR_MON);
 
             /* Disturb on visibility change */
             if (disturb_move)
@@ -1579,10 +1522,6 @@ void update_mon(int m_idx, bool full)
                     disturb(1, 0);
                 }
             }
-
-            /* Window stuff */
-            p_ptr->redraw |= PR_MONLIST;
-
         }
     }
 
@@ -1625,13 +1564,12 @@ void update_mon(int m_idx, bool full)
                 {
                     disturb(1, 0);
                 }
-
-                /* Re-draw monster list window */
-                p_ptr->redraw |= PR_MONLIST;
             }
-
         }
     }
+
+    if (old_ml != m_ptr->ml) p_ptr->redraw |= PR_WIN_MONLIST;
+    if (old_project != m_ptr->project) p_ptr->redraw |= PR_WIN_MONLIST;
 }
 
 
@@ -2291,9 +2229,6 @@ void monster_swap(int y1, int x1, int y2, int x2)
 
         /* Try to hide the monster */
         monster_hide(m_ptr);
-
-        /* Redraw monster list */
-        p_ptr->redraw |= (PR_MONLIST);
     }
 
     /* Player 2 */
@@ -2318,8 +2253,8 @@ void monster_swap(int y1, int x1, int y2, int x2)
         /*Automatically track the feature the player is on unless player is tracking a feature*/
         if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y1][x1].feat);
 
-        /* Update the trap detection status, itemlist and monlist */
-        p_ptr->redraw |= (PR_STATUSBAR | PR_ITEMLIST | PR_MONLIST);
+        /* Update the trap detection status, itemlist */
+        p_ptr->redraw |= (PR_STATUSBAR | PR_ITEMLIST);
 
         /* Update the panel and player stealth */
         p_ptr->update |= (PU_PANEL | PU_STEALTH);
@@ -2427,7 +2362,7 @@ void monster_hide(monster_type *m_ptr)
         m_ptr->mflag |= (MFLAG_HIDE);
 
          /* Update 'monster list' window */
-        p_ptr->redraw |= PR_MONLIST;
+        p_ptr->redraw |= PR_WIN_MONLIST;
 
         /* Update the graphics of the monster */
         if (character_dungeon)
@@ -2510,7 +2445,7 @@ void monster_unhide(monster_type *m_ptr)
     }
 
     /* Update 'monster list' window */
-    p_ptr->redraw |= PR_MONLIST;
+    p_ptr->redraw |= PR_WIN_MONLIST;
 }
 
 

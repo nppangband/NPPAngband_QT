@@ -790,7 +790,7 @@ static void cast_spell(cmd_arg args)
     }
 
     /* Redraw mana */
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     process_player_energy(BASE_ENERGY_MOVE);
 }
@@ -828,7 +828,9 @@ void do_cmd_cast(int book_choice)
         /* Restrict the choices */
         item_tester_hook = obj_can_cast;
 
-        if (!get_item(&book_choice, q, s, (USE_INVEN | USE_FLOOR)))
+        int item;
+
+        if (!get_item(&item, q, s, (USE_INVEN | USE_FLOOR)))
         {
             /*clear the restriction*/
             item_tester_hook = NULL;
@@ -837,6 +839,10 @@ void do_cmd_cast(int book_choice)
 
         /*clear the restriction*/
         item_tester_hook = NULL;
+
+        object_type *o_ptr = object_from_item_idx(item);
+
+        book_choice = o_ptr->sval;
     }
 
     QString prompt = (QString("Please select a %1 to %2.") .arg(noun) .arg(verb));

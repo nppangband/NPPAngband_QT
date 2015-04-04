@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef QT_MAINWINDOW_H
+#define QT_MAINWINDOW_H
 
 #include <QList>
 #include <QMainWindow>
@@ -13,10 +13,12 @@
 #include <QImage>
 #include <QFontDatabase>
 #include <QKeyEvent>
+#include <QTableWidget>
 #include <QActionGroup>
 #include <QEventLoop>
 #include <QLineEdit>
 #include <QTextEdit>
+#include <QMenuBar>
 #include "defines.h"
 #include "structures.h"
 #include "nppdialog.h"
@@ -63,6 +65,8 @@ public:
     int cell_hgt, cell_wid;
     QString current_multiplier;
     bool do_pseudo_ascii;
+
+
 
     // Scaled tiles
     QHash<QString,QPixmap> tiles;
@@ -188,7 +192,6 @@ private slots:
     void display_scores();
     void display_kill_count();
 
-
 private:
 
     void setup_nppangband();
@@ -219,13 +222,12 @@ private:
     QStringList recent_savefiles;
     QAction *recent_savefile_actions[MAX_RECENT_SAVEFILES];
 
-
-
     //  Holds the actual commands for the file menu and toolbar.
     QMenu *file_menu;
     QMenu *recent_files_menu;
     QMenu *settings;
     QMenu *knowledge;
+    QMenu *win_menu;
     QMenu *help_menu;
     QToolBar *file_toolbar;
     QAction *new_game_nppangband;
@@ -262,6 +264,8 @@ private:
     QAction *view_scores;
     QAction *view_kill_count;
 
+    // Commands for the additional windows
+    QAction *win_mon_list;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -335,6 +339,28 @@ private:
     QAction *view_grid_contents;
     QAction *target_help;
 
+// Monster list window
+private:
+    bool show_mon_list;
+    QWidget *window_mon_list;
+    QVBoxLayout *mon_list_vlay;
+    QTableWidget *mon_list_area;
+    QMenuBar *mon_list_menubar;
+    QToolBar *mon_list_toolbar;
+    QAction *mon_list_set_font;
+    QFont font_win_mon_list;
+    QMenu *mon_win_settings;
+    void win_mon_list_create();
+    void win_mon_list_destroy();
+    void win_mon_list_wipe();
+    void set_font_win_mon_list(QFont newFont);
+
+public:
+    void win_mon_list_update();
+
+private slots:
+    void win_mon_list_font();
+    void toggle_win_mon_list();
 
 
 };
@@ -390,6 +416,8 @@ public:
 
     void cellSizeChanged();
 };
+
+
 
 extern QVector<s16b> sidebar_monsters;
 

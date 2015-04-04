@@ -649,7 +649,7 @@ void process_greater_vault_quest(void)
     int i;
 
     /* Update the turn count */
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     if (quest_time_remaining() >= 1)
     {
@@ -691,7 +691,7 @@ void process_greater_vault_quest(void)
     quest_indicator_complete = TRUE;
 
     /* Redraw the status */
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     /* Mark the quest as finished, write the note */
     quest_finished(q_ptr);
@@ -744,7 +744,7 @@ void process_greater_vault_quest(void)
         delete_monster_idx(i);
 
         /* Update monster list window */
-        p_ptr->redraw |= PR_MONLIST;
+        p_ptr->redraw |= PR_WIN_MONLIST;
     }
 
 }

@@ -108,7 +108,7 @@ void MainWindow::animation_done()
 {
     if (--anim_depth < 1) {
         if (!anim_loop.isRunning()) qDebug("Anim loop isn't running");
-        //qDebug("Quitting %d", anim_depth);
+        //qDebug("Quitting %1", anim_depth);
         anim_loop.quit();
         anim_depth = 0;
         // MEGA HACK - Process some pending events (not user input) to (hopefully) avoid strange behavior
@@ -846,6 +846,7 @@ void MainWindow::redraw()
     force_redraw(); // Hack -- Force full redraw
     update_messages();
     update_sidebar_all();
+    win_mon_list_update();
 }
 
 bool MainWindow::panel_contains(int y, int x)
@@ -916,6 +917,8 @@ MainWindow::MainWindow()
 
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
+    show_mon_list = FALSE;
+    character_dungeon = character_generated = character_loaded = FALSE;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -947,7 +950,6 @@ MainWindow::MainWindow()
     // Set up all the folder directories
     create_directories();
 
-
     sidebar_widget = new QWidget;
     QPalette this_pal;
     this_pal.setColor(QPalette::Background, Qt::black);
@@ -972,7 +974,6 @@ MainWindow::MainWindow()
     create_menus();
     create_toolbars();
     select_font();
-    create_directories();
     create_signals();
     (void)statusBar();
     read_settings();
@@ -1075,6 +1076,9 @@ void MainWindow::save_and_close()
 
     set_current_savefile("");
 
+    // Wipe the extra windows
+    win_mon_list_wipe();
+
     character_loaded = character_dungeon = character_generated = false;
 
     update_file_menu_game_inactive();
@@ -1083,7 +1087,6 @@ void MainWindow::save_and_close()
     cleanup_npp_games();
 
     message_area->clear();
-
 
     cursor->setVisible(false);
     destroy_tiles();
@@ -1175,7 +1178,8 @@ bool MainWindow::running_command()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (running_command()) {
+    if (running_command())
+    {
         event->ignore();
         return;
     }
@@ -1185,7 +1189,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
         save_character();
         pop_up_message_box("Game saved");
     }
+    // We don't need to set settings for these
+    delete message_dock;
+    delete sidebar_dock;
+
     write_settings();
+
+    // Take out the additional windows
+    win_mon_list_destroy();
+
     event->accept();
 }
 
@@ -1203,9 +1215,8 @@ void MainWindow::options_dialog()
     OptionsDialog *dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
-    p_ptr->redraw |= (PR_MAP | PR_SIDEBAR);
+    p_ptr->redraw |= (PR_MAP);
     handle_stuff();
-    ui_update_sidebar_all();
 }
 
 void MainWindow::font_dialog_main_window()
@@ -1294,7 +1305,6 @@ void MainWindow::update_file_menu_game_active()
     view_home_inven->setEnabled(TRUE);
     view_scores->setEnabled(TRUE);
     view_kill_count->setEnabled(TRUE);
-
 
     show_sidebar();
     show_statusbar();
@@ -1478,6 +1488,10 @@ void MainWindow::create_actions()
     view_kill_count->setStatusTip(tr("View the number of kills sorted by monster race."));
     connect(view_kill_count, SIGNAL(triggered()), this, SLOT(display_kill_count()));
 
+    win_mon_list = new QAction(tr("Show Monster List Window"), this);
+    win_mon_list->setStatusTip(tr("Displays a list of all visible monsters."));
+    connect(win_mon_list, SIGNAL(triggered()), this, SLOT(toggle_win_mon_list()));
+
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
     connect(help_about, SIGNAL(triggered()), this, SLOT(about()));
@@ -1567,6 +1581,7 @@ void MainWindow::display_kill_count()
 {
     display_mon_kill_count();
 }
+
 
 //  Set's up many of the keystrokes and commands used during the game.
 void MainWindow::create_signals()
@@ -1697,6 +1712,10 @@ void MainWindow::create_menus()
     knowledge->addAction(view_scores);
     knowledge->addAction(view_kill_count);
 
+
+    win_menu = menuBar()->addMenu(tr("&Windows"));
+    win_menu->addAction(win_mon_list);
+
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
     help_menu->addAction(help_about);
@@ -1740,6 +1759,7 @@ void MainWindow::select_font()
             font_main_window = QFont(family);
             font_message_window = QFont(family);
             font_sidebar_window = QFont(family);
+            font_win_mon_list = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1747,6 +1767,7 @@ void MainWindow::select_font()
     font_main_window.setPointSize(12);
     font_message_window.setPointSize(12);
     font_sidebar_window.setPointSize(12);
+    font_win_mon_list.setPointSize(12);
 }
 
 
@@ -1777,7 +1798,18 @@ void MainWindow::read_settings()
     font_message_window.fromString(load_font);
     load_font = settings.value("font_window_sidebar", font_sidebar_window ).toString();
     font_sidebar_window.fromString(load_font);
+    load_font = settings.value("font_window_mon_list", font_win_mon_list ).toString();
+    font_win_mon_list.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
+
+    show_mon_list = settings.value("show_mon_list_window", false).toBool();
+    if (show_mon_list)
+    {
+        show_mon_list = FALSE; //hack
+        toggle_win_mon_list();
+        window_mon_list->restoreGeometry(settings.value("winMonListGeometry").toByteArray());
+        window_mon_list->show();
+    }
 
     update_recent_savefiles();
 }
@@ -1790,11 +1822,17 @@ void MainWindow::write_settings()
     settings.setValue("font_window_main", font_main_window.toString());
     settings.setValue("font_window_messages", font_message_window.toString());
     settings.setValue("font_window_sidebar", font_sidebar_window.toString());
+    settings.setValue("font_window_mon_list", font_win_mon_list.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
     settings.setValue("which_keyset", which_keyset);
     settings.setValue("tile_multiplier", current_multiplier);
+    settings.setValue("show_mon_list_window", show_mon_list);
+    if (show_mon_list)
+    {
+        settings.setValue("winMonListGeometry", window_mon_list->saveGeometry());
+    }
 }
 
 

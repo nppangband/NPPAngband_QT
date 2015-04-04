@@ -233,7 +233,6 @@ void process_player(void)
         write_note(note, p_ptr->depth);
 
         g_vault_name.clear();
-        p_ptr->redraw |= (PR_SIDEBAR);
     }
 
     /* Some quests aren't finished by killing monsters */
@@ -288,7 +287,7 @@ void process_player(void)
 
     if (guild_quest_active())
     {
-        if (quest_slot_timed(GUILD_QUEST_SLOT))	p_ptr->redraw |= (PR_SIDEBAR);
+        if (quest_slot_timed(GUILD_QUEST_SLOT))	p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 
     /* Notice stuff (if needed) */

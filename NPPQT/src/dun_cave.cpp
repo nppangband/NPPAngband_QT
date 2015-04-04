@@ -3560,7 +3560,7 @@ void wiz_light(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP | PR_WIN_MONLIST | PR_ITEMLIST);
 
 }
 
@@ -3602,7 +3602,7 @@ void wiz_dark(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_MAP | PR_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP | PR_MAP | PR_WIN_MONLIST | PR_ITEMLIST);
 
 }
 
@@ -3700,7 +3700,7 @@ void town_illuminate(bool daytime)
     p_ptr->redraw |= (PR_MAP);
 
     /* Window stuff */
-    p_ptr->redraw |= (PR_MONLIST | PR_MAP | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_WIN_MONLIST | PR_MAP | PR_ITEMLIST);
 }
 
 
@@ -5036,7 +5036,7 @@ void health_track(int m_idx)
     p_ptr->health_who = m_idx;
 
     /* Redraw (later) */
-    p_ptr->redraw |= (PR_MON_HEALTH);
+    p_ptr->redraw |= (PR_SIDEBAR_MON);
 }
 
 
@@ -5102,7 +5102,7 @@ void disturb(int stop_search, int unused_flag)
     if (p_ptr->is_resting())
     {
         /* Redraw the state (later) */
-        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
     }
 
     /* Cancel running */
@@ -5133,7 +5133,7 @@ void disturb(int stop_search, int unused_flag)
         p_ptr->update |= (PU_BONUS);
 
         /* Redraw the state */
-        p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL | PR_STATUSBAR);
     }
 
     light_spot(p_ptr->py, p_ptr->px);

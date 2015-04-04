@@ -2238,7 +2238,7 @@ void quest_finished(quest_type *q_ptr)
     int j;
 
     q_ptr->q_flags |= (QFLAG_COMPLETED);
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     if (quest_no_down_stairs(q_ptr))
     {
@@ -2475,7 +2475,7 @@ bool guild_purchase(int choice)
     if (one_in_(5)) q_info[GUILD_QUEST_SLOT].q_flags |= (QFLAG_GREATER_VAULT_QUEST);
     else q_info[GUILD_QUEST_SLOT].q_flags &= ~(QFLAG_GREATER_VAULT_QUEST);
 
-    p_ptr->redraw |= PR_SIDEBAR;
+    p_ptr->redraw |= PR_SIDEBAR_PL;
 
     return (TRUE);
 }
@@ -2503,7 +2503,7 @@ byte quest_check(int lev)
         }
     }
 
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     /* Nope */
     return 0;
@@ -2845,7 +2845,7 @@ void quest_fail(void)
     /* Show a special mark for some player turns. Redraw if necessary */
     quest_indicator_timer = 50;
     quest_indicator_complete = FALSE;
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     /* Reputation penalty */
     if (p_ptr->q_fame)
@@ -2880,7 +2880,6 @@ void quest_fail(void)
     /*wipe the quest*/
     guild_quest_wipe(TRUE);
     p_ptr->update |= (PU_PLAYER_SCORE);
-    p_ptr->redraw |= (PR_SIDEBAR);
 
     /* Disturb */
     disturb(0,0);

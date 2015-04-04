@@ -759,7 +759,7 @@ void extract_tiles(bool save)
             QPixmap pix = old_get_tile(k_ptr->tile_32x32_y, k_ptr->tile_32x32_x,
                                        k_ptr->tile_8x8_y, k_ptr->tile_8x8_x);
             QFile tile_file(npp_dir_graf.absoluteFilePath(object_name + ".png"));
-            //if (object_name == "obj_nothing") qDebug("nothing: %d", i);
+            //if (object_name == "obj_nothing") qDebug("nothing: %1", i);
             tile_file.open(QIODevice::WriteOnly);
             pix.save(&tile_file, "PNG");
         }

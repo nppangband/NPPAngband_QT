@@ -66,7 +66,7 @@ static timed_effect effects[] =
     /*TMD_IMAGE*/
     { "You feel drugged!", "You can see clearly again.",
             "You feel more drugged!", "You feel less drugged.",
-            (PR_MAP | PR_MONLIST | PR_ITEMLIST), 0 , 0, MSG_DRUGGED, TRUE },
+            (PR_MAP | PR_ITEMLIST), 0 , 0, MSG_DRUGGED, TRUE },
     /*TMD_POISONED*/
     { "You are poisoned!", "You are no longer poisoned.",
             "You are more poisoned!", "You are less poisoned.",
@@ -455,7 +455,7 @@ bool set_stun(int v)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw the "stun" */
-    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_STATUSBAR);
 
     /* Handle stuff */
     handle_stuff();
@@ -667,7 +667,7 @@ bool set_cut(int v)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw the "cut" */
-    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_STATUSBAR);
 
     /* Handle stuff */
     handle_stuff();
@@ -886,7 +886,7 @@ bool set_food(int v)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw hunger */
-    p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_STATUSBAR);
 
     /* Handle stuff */
     handle_stuff();

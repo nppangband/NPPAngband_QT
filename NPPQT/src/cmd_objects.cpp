@@ -1253,7 +1253,7 @@ void command_destroy(cmd_arg args)
     if (o_ptr->is_artifact())
     {
         /* Message */
-        message(QString("You cannot destroy %s.") .arg(o_name));
+        message(QString("You cannot destroy %1.") .arg(o_name));
 
         /* Don't mark id'ed objects */
         if (o_ptr->is_known()) return;
@@ -1278,7 +1278,7 @@ void command_destroy(cmd_arg args)
 
         p_ptr->update |= (PU_PLAYER_SCORE);
 
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_STATUSBAR | PR_SIDEBAR | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_STATUSBAR | PR_ITEMLIST);
 
         /* Done */
         return;

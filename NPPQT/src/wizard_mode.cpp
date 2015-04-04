@@ -283,9 +283,9 @@ EditCharacterDialog::EditCharacterDialog(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw everything */
-    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR | PR_MAP | PR_INVEN | PR_EQUIP |
+    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_EQUIP |
                       PR_MESSAGE | PR_MONSTER | PR_OBJECT |
-                      PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
+                      PR_ITEMLIST | PR_FEATURE);
 
     handle_stuff();
 }
@@ -588,7 +588,7 @@ MakeMonsterDialog::MakeMonsterDialog(void)
         /* Place it (allow groups) */
         if (place_monster_aux(y, x, i, (MPLACE_GROUP | MPLACE_OVERRIDE | MPLACE_SLEEP))) break;
     }
-    p_ptr->redraw |= (PR_MAP | PR_MONLIST);
+    p_ptr->redraw |= (PR_MAP);
 }
 
 //Helper function to get the complete monster name.
@@ -733,9 +733,9 @@ void WizardModeDialog::wiz_cure_all(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw everything */
-    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR | PR_MAP | PR_INVEN | PR_EQUIP |
+    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_EQUIP |
                       PR_MESSAGE | PR_MONSTER | PR_OBJECT |
-                      PR_MONLIST | PR_ITEMLIST | PR_FEATURE);
+                      PR_ITEMLIST | PR_FEATURE);
 
     handle_stuff();
 }
@@ -1174,7 +1174,7 @@ void WizardModeDialog::wiz_banish(void)
     }
 
     /* Update monster list window */
-    p_ptr->redraw |= PR_MONLIST;
+    p_ptr->redraw |= PR_WIN_MONLIST | PR_SIDEBAR_MON;
 
     handle_stuff();
 

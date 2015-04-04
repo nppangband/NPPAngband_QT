@@ -47,7 +47,7 @@ bool hp_player(int num)
         }
 
         /* Redraw */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
 
         /* Heal 0-4 */
         if (num < 5)
@@ -433,7 +433,7 @@ bool inc_stat(int stat)
         p_ptr->update |= (PU_BONUS);
 
         /* Redisplay the stats later */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
 
         /* Success */
         return (TRUE);
@@ -557,7 +557,7 @@ bool dec_stat(int stat, int amount,bool permanent)
         p_ptr->update |= (PU_BONUS);
 
         /* Redisplay the stats later */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 
     /* Done */
@@ -580,7 +580,7 @@ bool res_stat(int stat)
         p_ptr->update |= (PU_BONUS);
 
         /* Redisplay the stats later */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
 
         /* Success */
         return (TRUE);
@@ -738,7 +738,7 @@ void do_perm_stat_boost(int stat)
     p_ptr->update |= (PU_BONUS);
 
     /* Redisplay the stats later */
-    p_ptr->redraw |= (PR_SIDEBAR);
+    p_ptr->redraw |= (PR_SIDEBAR_PL);
 }
 
 /*
@@ -850,7 +850,7 @@ static void cave_temp_room_light(void)
                 wake_monster_attack(m_ptr, MON_TMD_FLG_NOTIFY);
 
                 /*possibly update the monster health bar*/
-                if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+                if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
             }
         }
     }
@@ -1092,11 +1092,11 @@ void mass_aggravate_monsters(int who)
         }
 
         /*possibly update the monster health bar*/
-        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+        if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
     }
 
     /* If it just woke up, update the monster list */
-    p_ptr->redraw |= PR_MONLIST;
+    p_ptr->redraw |= PR_WIN_MONLIST;
 }
 
 /*
@@ -1398,8 +1398,8 @@ BanishSelectDialog::BanishSelectDialog(void)
         take_hit(randint(4), "the strain of casting Banishment");
     }
 
-    /* Update monster list window */
-    p_ptr->redraw |= PR_MONLIST;
+    /* Update monster list window and sidebar*/
+    p_ptr->redraw |= (PR_SIDEBAR_MON | PR_WIN_MONLIST);
 }
 
 /*
@@ -1450,7 +1450,7 @@ bool mass_banishment(void)
     }
 
     /* Update monster list window */
-    p_ptr->redraw |= PR_MONLIST;
+    p_ptr->redraw |= PR_WIN_MONLIST;
 
     return (result);
 }
@@ -1648,7 +1648,7 @@ void destroy_area(int y1, int x1, int r)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP | PR_WIN_MONLIST | PR_SIDEBAR_MON | PR_ITEMLIST);
 
 }
 
@@ -1926,9 +1926,6 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
                         /* Move the monster */
                         monster_swap(yy, xx, sy, sx);
                     }
-
-                    /* If it just woke up, update the monster list */
-                    p_ptr->redraw |= PR_MONLIST;
                 }
             }
         }
@@ -2007,10 +2004,7 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
 
     /* Update the health bar */
-    p_ptr->redraw |= (PR_MON_HEALTH);
-
-    /* Redraw map and Window Stuff */
-    p_ptr->redraw |= (PR_MAP | PR_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_SIDEBAR_MON | PR_WIN_MONLIST | PR_MAP | PR_ITEMLIST);
 }
 
 
@@ -2052,7 +2046,7 @@ void light_room(int y1, int x1)
     cave_temp_room_light();
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP | PR_ITEMLIST);
 
 }
 
@@ -2429,7 +2423,7 @@ int do_ident_item(int item, object_type *o_ptr)
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS | PU_PLAYER_SCORE);
 
-    p_ptr->redraw |= (PR_SIDEBAR | PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_INVEN | PR_EQUIP | PR_ITEMLIST);
 
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -4501,9 +4495,6 @@ bool read_minds(void)
         }
     }
 
-    /* Update the monster list */
-    p_ptr->redraw |= PR_MONLIST;
-
     /* Show a message if some monsters wake up */
     if (count > 0)
     {
@@ -4982,9 +4973,6 @@ bool steal_powers(int dir)
         message(QString("Unknown attack type!"));
         return (FALSE);
     }
-
-    /* Update the monster list */
-    p_ptr->redraw |= PR_MONLIST;
 
     /* Success */
     return (TRUE);

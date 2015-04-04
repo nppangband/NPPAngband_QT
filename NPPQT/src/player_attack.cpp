@@ -615,7 +615,7 @@ void py_attack(int y, int x)
     wake_monster_attack(m_ptr, MON_TMD_FLG_NOMESSAGE);
 
     /*possibly update the monster health bar*/
-    if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+    if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
     /* Disturb the player */
     disturb(0, 0);
@@ -1771,7 +1771,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
     /* Redraw if necessary*/
     if (used_potion)
     {
-        if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+        if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
     }
 
     /* Handle stuff */

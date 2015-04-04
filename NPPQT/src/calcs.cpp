@@ -435,7 +435,7 @@ static void calc_mana(void)
         }
 
         /* Display mana later */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 
     /* Hack -- handle "xtra" mode */
@@ -528,7 +528,7 @@ static void calc_hitpoints(void)
         p_ptr->chp_frac = 0;
 
         /* Display hp later */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     }
 }
@@ -1782,7 +1782,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (new_state->stat_loaded_max[i] != old_stat_loaded_max[i])
         {
             /* Redisplay the stats later */
-            p_ptr->redraw |= (PR_SIDEBAR);
+            p_ptr->redraw |= (PR_SIDEBAR_PL);
 
         }
 
@@ -1790,7 +1790,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if (new_state->stat_loaded_cur[i] != old_stat_loaded_cur[i])
         {
             /* Redisplay the stats later */
-            p_ptr->redraw |= (PR_SIDEBAR);
+            p_ptr->redraw |= (PR_SIDEBAR_PL);
 
         }
 
@@ -1844,14 +1844,14 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (new_state->p_speed != old_speed)
     {
         /* Redraw speed */
-        p_ptr->redraw |= (PR_SIDEBAR | PR_STATUSBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL | PR_STATUSBAR);
     }
 
     /* Redraw armor (if needed) */
     if ((new_state->dis_ac != old_dis_ac) || (new_state->dis_to_a != old_dis_to_a))
     {
         /* Redraw */
-        p_ptr->redraw |= (PR_SIDEBAR);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
 
     }
 
@@ -2059,55 +2059,34 @@ void redraw_stuff(void)
     /* Character is not ready yet, no screen updates */
     if (!character_generated) return;
 
-    if (p_ptr->redraw & (PR_SIDEBAR))
+    // This needs to go before the others (see ui_redraw_all)
+    if (p_ptr->redraw & (PR_MAP)) ui_redraw_all();
+
+    if (p_ptr->redraw & (PR_SIDEBAR_PL))
     {
         if (!p_ptr->is_resting() && !p_ptr->is_running())
         {
             ui_update_sidebar_player();
-            p_ptr->redraw &= ~(PR_SIDEBAR);
+
         }
     }
 
-    if (p_ptr->redraw & (PR_MON_HEALTH))
+    if (p_ptr->redraw & (PR_SIDEBAR_MON))
     {
         if (!p_ptr->is_resting() && !p_ptr->is_running())
         {
             ui_update_sidebar_mon();
-            p_ptr->redraw &= ~(PR_MON_HEALTH);
         }
     }
 
     if (p_ptr->redraw & (PR_STATUSBAR))
     {
-        if (!p_ptr->is_running())
-        {
-            ui_update_statusbar();
-            p_ptr->redraw &= ~(PR_STATUSBAR);
-        }
+        if (!p_ptr->is_running()) ui_update_statusbar();
     }
 
-    if (p_ptr->redraw & (PR_TITLEBAR))
-    {
-
-        ui_update_statusbar();
-        p_ptr->redraw &= ~(PR_TITLEBAR);
-
-    }
-
-    if (p_ptr->redraw & (PR_MESSAGE))
-    {
-
-        ui_update_messages();
-        p_ptr->redraw &= ~(PR_MESSAGE);
-
-    }
-
-    if (p_ptr->redraw & (PR_MAP))
-    {
-        /* Mark the whole map to be redrawn */        
-        ui_redraw_all();
-        p_ptr->redraw &= ~(PR_MAP);
-    }
+    if (p_ptr->redraw & (PR_TITLEBAR)) ui_update_titlebar();
+    if (p_ptr->redraw & (PR_MESSAGE)) ui_update_messages();
+    if (p_ptr->redraw & (PR_WIN_MONLIST)) ui_update_monlist();
 }
 
 

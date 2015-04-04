@@ -636,8 +636,8 @@ enum
  * Bit flags for the "p_ptr->redraw" variable
  */
 #define PR_XXX1         0x00000001L
-#define PR_SIDEBAR		0x00000002L	/* Update the sidebar */
-#define PR_MON_HEALTH	0x00000004L	/* Display Monster Health Bar */
+#define PR_SIDEBAR_PL	0x00000002L	/* Update the sidebar */
+#define PR_SIDEBAR_MON	0x00000004L	/* Display Monster Health Bar */
 #define PR_STATUSBAR	0x00000008L	// Update the statusbar
 #define PR_TITLEBAR     0x00000010L // Update the titlebar
 #define PR_XXX3         0x00000020L
@@ -663,16 +663,14 @@ enum
 #define PR_XX17 		0x02000000L
 #define PR_ITEMLIST     0x04000000L /* Display item list */
 #define PR_MAP			0x08000000L	/* Display Map */
-#define PR_MONLIST		0x10000000L	/* Display monster list */
+#define PR_WIN_MONLIST	0x10000000L	/* Update Monster List Window */
 #define PR_FEATURE		0x20000000L	/* Display feature */
 #define PR_XX18         0x40000000L	/
 #define PR_UNUSED2		0x80000000L	/* Unused */
 
 
-
-/* Display Extra Info */
-#define PR_MESSAGEBOX \
-    (PR_MESSAGE)
+//Both player and monster sidebar
+#define PR_SIDEBAR_ALL (PR_SIDEBAR_PL | PR_SIDEBAR_MON)
 
 /*
  * Bit flags for the "p_ptr->window" variable (etc)
@@ -687,7 +685,6 @@ enum
 #define PW_OVERHEAD         0x00000080L /* Display overhead view */
 #define PW_MONSTER          0x00000100L /* Display monster recall */
 #define PW_OBJECT           0x00000200L /* Display object recall */
-#define PW_MONLIST          0x00000400L /* Display monster list */
 #define PW_STATUS           0x00000800L /* Display Status */
 #define PW_ITEMLIST	        0x00001000L /* Display item list */
 #define PW_FEATURE		    0x00002000L /* Display feature status */

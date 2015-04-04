@@ -724,7 +724,7 @@ bool make_attack_normal(monster_type *m_ptr)
                                 else m_ptr->hp += heal;
 
                                 /* Redraw (later) if needed */
-                                if (m_ptr->sidebar) p_ptr->redraw |= (PR_MON_HEALTH);
+                                if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
                                 /* Combine / Reorder the pack */
                                 p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -773,7 +773,7 @@ bool make_attack_normal(monster_type *m_ptr)
                         }
 
                         /* Redraw mana */
-                        p_ptr->redraw |= (PR_SIDEBAR);
+                        p_ptr->redraw |= (PR_SIDEBAR_MON);
 
                     }
 
@@ -878,7 +878,7 @@ bool make_attack_normal(monster_type *m_ptr)
 
                         /* Redraw gold and update player score */
                         p_ptr->update |= (PU_PLAYER_SCORE);
-                        p_ptr->redraw |= (PR_SIDEBAR);
+                        p_ptr->redraw |= (PR_SIDEBAR_MON);
 
                         /* Blink away */
                         blinked = TRUE;
