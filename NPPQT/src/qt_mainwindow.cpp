@@ -929,45 +929,49 @@ MainWindow::MainWindow()
 
     current_multiplier = "1:1";
 
+    // Set the main area
     dungeon_scene = new QGraphicsScene;
     graphics_view = new QGraphicsView(dungeon_scene);
     graphics_view->installEventFilter(this);
-
     setCentralWidget(graphics_view);
 
+    // Set up the message area
     message_dock = new QDockWidget;
     message_area = new QTextEdit;
     message_area->setReadOnly(true);
     message_area->setStyleSheet("background-color: black;");
-
     message_dock->setWidget(message_area);
     message_dock->setAllowedAreas(Qt::TopDockWidgetArea);
     message_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-
     addDockWidget(Qt::TopDockWidgetArea, message_dock);
 
 
-    // Set up all the folder directories
-    create_directories();
-
+    // Set up the sidebar area, make it scrollable in case there are alot of monsters
     sidebar_widget = new QWidget;
+    sidebar_dock = new QDockWidget;
+    sidebar_dock->setAllowedAreas(Qt::LeftDockWidgetArea);
+    sidebar_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    sidebar_scroll = new QScrollArea;
     QPalette this_pal;
     this_pal.setColor(QPalette::Background, Qt::black);
     sidebar_widget->setAutoFillBackground(TRUE);
     sidebar_widget->setPalette(this_pal);
+    sidebar_scroll->setPalette(this_pal);
+    sidebar_dock->setWidget(sidebar_scroll);
+    sidebar_scroll->setWidget(sidebar_widget);
+    sidebar_scroll->setWidgetResizable(TRUE);
+    sidebar_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    sidebar_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     sidebar_vlay = new QVBoxLayout;
     sidebar_widget->setLayout(sidebar_vlay);
 
     create_sidebar();
 
-    sidebar_dock = new QDockWidget;
-    sidebar_dock->setAllowedAreas(Qt::LeftDockWidgetArea);
-    sidebar_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    sidebar_dock->setWidget(sidebar_widget);
-
     addDockWidget(Qt::LeftDockWidgetArea, sidebar_dock);
 
+    // Set up all the folder directories
+    create_directories();
 
     create_actions();
 
@@ -1189,7 +1193,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
         save_character();
         pop_up_message_box("Game saved");
     }
-    // We don't need to set settings for these
+
+    // We don't need to set settings for the docks
     delete message_dock;
     delete sidebar_dock;
 

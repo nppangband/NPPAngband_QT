@@ -86,6 +86,7 @@ public:
     QToolBar *status_bar;
 
     QWidget *sidebar_widget;
+    QScrollArea *sidebar_scroll;
     QVBoxLayout *sidebar_vlay;
     QVBoxLayout *player_info_vlay;
     QVBoxLayout *mon_health_vlay;
