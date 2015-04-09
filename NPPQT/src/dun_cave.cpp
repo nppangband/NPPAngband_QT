@@ -3560,7 +3560,7 @@ void wiz_light(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_WIN_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 
 }
 
@@ -3602,7 +3602,7 @@ void wiz_dark(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_MAP | PR_WIN_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP | PR_MAP | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 
 }
 
@@ -3700,7 +3700,7 @@ void town_illuminate(bool daytime)
     p_ptr->redraw |= (PR_MAP);
 
     /* Window stuff */
-    p_ptr->redraw |= (PR_WIN_MONLIST | PR_MAP | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_WIN_MONLIST | PR_MAP |  PR_WIN_OBJLIST);
 }
 
 

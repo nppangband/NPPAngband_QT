@@ -203,8 +203,6 @@ static bool detect_objects_normal(int y, int x)
 
             /* Detect */
             detect = TRUE;
-
-            p_ptr->redraw |= (PR_ITEMLIST);
         }
     }
 
@@ -250,8 +248,6 @@ static bool detect_objects_magic(int y, int x)
         {
             /* Hack -- memorize it */
             o_ptr->mark_object();
-
-            p_ptr->redraw |= (PR_ITEMLIST);
 
             detect = TRUE;
         }

@@ -630,6 +630,7 @@ extern void ui_update_statusbar();
 extern void ui_update_titlebar();
 extern void ui_update_messages();
 extern void ui_update_monlist();
+extern void ui_update_objlist();
 extern void player_death_close_game(void);
 extern void ui_redraw_grid(int y, int x);
 extern void ui_redraw_all();

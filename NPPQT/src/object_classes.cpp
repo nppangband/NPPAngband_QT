@@ -271,6 +271,7 @@ void object_type::mark_object()
 {
     marked = TRUE;
     has_been_seen();
+    if (tval != TV_GOLD) p_ptr->redraw |= (PR_WIN_OBJLIST);
 }
 
 /*

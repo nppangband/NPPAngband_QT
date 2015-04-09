@@ -592,11 +592,11 @@ static void recharge_objects(void)
         p_ptr->notice |= (PN_COMBINE);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_INVEN);
     }
 
     /*** Recharge the ground ***/
-    for (i = 1; i < o_max; i++)
+    for (j = 0, i = 1; i < o_max; i++)
     {
         /* Get the object */
         o_ptr = &o_list[i];
@@ -622,8 +622,13 @@ static void recharge_objects(void)
             /* Boundary control. */
             if (o_ptr->timeout < 0) o_ptr->timeout = 0;
 
+            j++;
+
         }
     }
+
+    /* Notice changes */
+    if (j) p_ptr->redraw |= (PR_WIN_OBJLIST);
 
     /*re-charge rods and artifacts in the home*/
     for (i = 0; i < MAX_INVENTORY_HOME	; ++i)
@@ -1699,7 +1704,7 @@ void change_player_level(void)
     p_ptr->redraw |= (PR_SIDEBAR_ALL | PR_STATUSBAR | PR_MAP);
 
     /* Redraw "statusy" things */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_MONSTER | PR_WIN_MONLIST | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_MONSTER | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 
     /* Update stuff */
     update_stuff();

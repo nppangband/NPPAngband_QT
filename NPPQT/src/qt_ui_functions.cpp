@@ -355,6 +355,13 @@ void ui_update_monlist()
     p_ptr->redraw &= ~(PR_WIN_MONLIST);
 }
 
+void ui_update_objlist()
+{
+    if (p_ptr->is_running()) return;
+    main_window->win_obj_list_update();
+    p_ptr->redraw &= ~(PR_WIN_OBJLIST);
+}
+
 
 int ui_get_dir_from_slope(int y1, int x1, int y2, int x2)
 {
@@ -455,7 +462,7 @@ void ui_redraw_all()
     main_window->redraw();
 
     // This redraws most things.
-    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_MESSAGE | PR_WIN_MONLIST);
+    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_MESSAGE | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 }
 
 void player_death_close_game(void)

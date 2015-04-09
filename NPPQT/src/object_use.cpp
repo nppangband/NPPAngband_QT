@@ -2758,7 +2758,7 @@ static bool activate_object(object_type *o_ptr, int dir)
             else o_ptr->timeout = a_ptr->time;
 
             /* Window stuff */
-            p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+            p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
 
             /* Done */
             return FALSE;
@@ -2986,7 +2986,7 @@ static bool activate_object(object_type *o_ptr, int dir)
         }
 
         /* Window stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
 
         /* Success */
         return FALSE;
@@ -3310,7 +3310,7 @@ void command_use(cmd_arg args)
 
     /* Mark as tried and redisplay */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_OBJECT | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_OBJECT);
 
     /* If there are no more of the item left, then we're done. */
     if (!o_ptr->number)

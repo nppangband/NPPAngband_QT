@@ -2197,7 +2197,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y2][x2].feat);
 
         /* Update the trap detection status */
-        p_ptr->redraw |= (PR_STATUSBAR | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_WIN_OBJLIST);
 
         /* Update the panel */
         p_ptr->update |= (PU_PANEL | PU_STEALTH);
@@ -2254,7 +2254,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y1][x1].feat);
 
         /* Update the trap detection status, itemlist */
-        p_ptr->redraw |= (PR_STATUSBAR | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_STATUSBAR | PR_WIN_OBJLIST);
 
         /* Update the panel and player stealth */
         p_ptr->update |= (PU_PANEL | PU_STEALTH);

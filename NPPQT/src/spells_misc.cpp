@@ -1648,7 +1648,7 @@ void destroy_area(int y1, int x1, int r)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_WIN_MONLIST | PR_SIDEBAR_MON | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP | PR_WIN_MONLIST | PR_SIDEBAR_MON);
 
 }
 
@@ -2004,7 +2004,7 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
 
     /* Update the health bar */
-    p_ptr->redraw |= (PR_SIDEBAR_MON | PR_WIN_MONLIST | PR_MAP | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_SIDEBAR_MON | PR_WIN_MONLIST | PR_MAP);
 }
 
 
@@ -2046,7 +2046,7 @@ void light_room(int y1, int x1)
     cave_temp_room_light();
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_MAP);
 
 }
 
@@ -2313,7 +2313,7 @@ static int remove_curse_aux(bool heavy)
     if (cnt)
     {
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
     }
 
     else message(QString("Nothing happens."));
@@ -2386,7 +2386,7 @@ void identify_object(object_type *o_ptr, bool star_ident)
     /* Extract the flags */
     o_ptr->update_object_flags();
 
-    p_ptr->redraw |= (PR_ITEMLIST);
+    p_ptr->redraw |= (PR_WIN_OBJLIST);
 }
 
 
@@ -2423,7 +2423,7 @@ int do_ident_item(int item, object_type *o_ptr)
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS | PU_PLAYER_SCORE);
 
-    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_INVEN | PR_EQUIP | PR_WIN_OBJLIST);
 
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -3081,7 +3081,7 @@ bool enchant(object_type *o_ptr, int n, int eflag)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP  | PR_ITEMLIST);
+    p_ptr->redraw |= (PR_INVEN | PR_EQUIP  | PR_WIN_OBJLIST);
 
     /* Success */
     return (TRUE);
@@ -3991,7 +3991,7 @@ bool brand_object(object_type *o_ptr, byte brand_type, bool do_enchant)
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
         /* Window stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP  | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_INVEN | PR_EQUIP  | PR_WIN_OBJLIST);
 
         /* Enchant */
         if (do_enchant) enchant(o_ptr, rand_int(3) + 4, ENCH_TOHIT | ENCH_TODAM);

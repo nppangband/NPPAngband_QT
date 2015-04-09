@@ -133,7 +133,7 @@ static bool put_object_in_quiver(object_type *o_ptr)
 	/* Combine / Reorder the pack */
 	p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
-	p_ptr->redraw |= (PR_ITEMLIST | PR_INVEN | PR_EQUIP);
+    p_ptr->redraw |= (PR_WIN_OBJLIST | PR_INVEN | PR_EQUIP);
 
 	notice_stuff();
 	handle_stuff();
@@ -186,7 +186,7 @@ bool put_object_in_inventory(object_type *o_ptr)
 	/* Combine / Reorder the pack */
 	p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
-	p_ptr->redraw |= (PR_ITEMLIST | PR_INVEN | PR_EQUIP);
+    p_ptr->redraw |= (PR_WIN_OBJLIST | PR_INVEN | PR_EQUIP);
 
 	notice_stuff();
 	handle_stuff();
@@ -346,7 +346,7 @@ void do_cmd_pickup_from_pile(bool pickup, bool msg)
 
 	/* Combine / Reorder the pack */
 	p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
-	p_ptr->redraw |= (PR_ITEMLIST | PR_INVEN | PR_EQUIP);
+    p_ptr->redraw |= (PR_WIN_OBJLIST | PR_INVEN | PR_EQUIP);
 
 	/* Just be sure all inventory management is done. */
 	notice_stuff();

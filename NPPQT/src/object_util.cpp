@@ -466,7 +466,8 @@ static int quiver_wield(int item, object_type *o_ptr)
     /* Recalculate bonuses */
     p_ptr->notice |= (PN_SORT_QUIVER);
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+    else p_ptr->redraw |= (PR_EQUIP | PR_WIN_OBJLIST);
 
     /* Reorder the quiver and return the perhaps modified slot */
     return (slot);
@@ -591,7 +592,8 @@ void wield_item(object_type *o_ptr, int item, int slot)
     /* Recalculate bonuses, torch, mana */
     p_ptr->notice |= (PN_SORT_QUIVER);
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+    else p_ptr->redraw |= (PR_EQUIP | PR_WIN_OBJLIST);
 }
 
 
@@ -826,7 +828,7 @@ void delete_object_idx(int o_idx)
         y = j_ptr->iy;
         x = j_ptr->ix;
 
-        p_ptr->redraw |= (PR_ITEMLIST);
+        p_ptr->redraw |= (PR_WIN_OBJLIST);
 
         /* Visual update */
         light_spot(y, x);
@@ -871,7 +873,7 @@ void delete_object(int y, int x)
     /* Objects are gone */
     dungeon_info[y][x].object_idx = 0;
 
-    p_ptr->redraw |= PR_ITEMLIST;
+    p_ptr->redraw |= (PR_WIN_OBJLIST);
 
     /* Visual update */
     light_spot(y, x);
@@ -2341,7 +2343,7 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
         /* Debug */
         if (cheat_hear) message(QString("Breakage (breakage)."));
 
-        p_ptr->redraw |= (PR_ITEMLIST);
+        p_ptr->redraw |= (PR_WIN_OBJLIST);
 
         /* Failure */
         return (FALSE);
@@ -2463,8 +2465,6 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
         /* Debug */
         if (cheat_hear) message(QString("Breakage (no floor space)."));
 
-        p_ptr->redraw |= (PR_ITEMLIST);
-
         /* Failure */
         return (FALSE);
     }
@@ -2517,8 +2517,6 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
         /* Hack -- Preserve artifacts */
         a_info[j_ptr->art_num].a_cur_num = 0;
 
-        p_ptr->redraw |= (PR_ITEMLIST);
-
         /* Failure */
         return (FALSE);
     }
@@ -2541,7 +2539,7 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
         }
     }
 
-    p_ptr->redraw |= (PR_ITEMLIST);
+    p_ptr->redraw |= (PR_WIN_OBJLIST);
 
     return (TRUE);
 }
@@ -2626,7 +2624,7 @@ void inven_item_increase(int item, int num)
         p_ptr->notice |= (PN_COMBINE);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_ITEMLIST);
+        p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
     }
 }
 
@@ -4303,64 +4301,6 @@ s16b lookup_ego(s16b tval, s16b sval, QString ego_title)
 
     /* Oops */
     return (0);
-}
-
-/**
- * Sort comparator for objects using only tval and sval.
- * -1 if o1 should be first
- *  1 if o2 should be first
- *  0 if it doesn't matter
- */
-static int compare(int first_value, int second_value)
-{
-    if (first_value < second_value) return (-1);
-    if (first_value > second_value) return (1);
-    return (0);
-}
-
-
-static int compare_types(const object_type *o1, const object_type *o2)
-{
-    if (o1->tval == o2->tval)
-        return compare(o1->sval, o2->sval);
-    else
-        return compare(o1->tval, o2->tval);
-}
-
-
-/* some handy macros for sorting */
-#define object_is_worthless(o) (k_info[o->k_idx].cost == 0)
-
-
-/**
- * Sort comparator for objects
- * -1 if o1 should be first
- *  1 if o2 should be first
- *  0 if it doesn't matter
- *
- * The sort order is designed with the "list items" command in mind.
- */
-static int compare_items(object_type *o1, object_type *o2)
-{
-    /* known artifacts will sort first */
-    if (o1->is_known_artifact() && o2->is_known_artifact())
-        return compare_types(o1, o2);
-    if (o1->is_known_artifact()) return -1;
-    if (o2->is_known_artifact()) return 1;
-
-    /* unknown objects will sort next */
-    if (!o1->is_flavor_known() && !o2->is_flavor_known())
-        return compare_types(o1, o2);
-    if (!o1->is_flavor_known()) return -1;
-    if (!o2->is_flavor_known()) return 1;
-
-    /* if only one of them is worthless, the other comes first */
-    if (object_is_worthless(o1) && !object_is_worthless(o2)) return 1;
-    if (!object_is_worthless(o1) && object_is_worthless(o2)) return -1;
-
-    /* otherwise, just compare tvals and svals */
-    /* NOTE: arguably there could be a better order than this */
-    return compare_types(o1, o2);
 }
 
 

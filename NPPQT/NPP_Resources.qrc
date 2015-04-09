@@ -90,5 +90,13 @@
         <file>lib/icons/native.png</file>
         <file>lib/icons/help_dark.png</file>
         <file>lib/icons/settings_dark.png</file>
+        <file>lib/icons/arrow-north.png</file>
+        <file>lib/icons/arrow-northeast.png</file>
+        <file>lib/icons/arrow-southeast.png</file>
+        <file>lib/icons/arrow-east.png</file>
+        <file>lib/icons/arrow-southwest.png</file>
+        <file>lib/icons/arrow-west.png</file>
+        <file>lib/icons/arrow-south.png</file>
+        <file>lib/icons/arrow-northwest.png</file>
     </qresource>
 </RCC>

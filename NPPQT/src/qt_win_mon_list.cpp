@@ -37,6 +37,12 @@ public:
     u16b count_sleeping_no_los(void) {return(count_sleeping - count_sleeping_los);}
 };
 
+static bool monster_sort(const monster_vis mv1, const monster_vis mv2)
+{
+    if (mv1.mon_level >= mv2.mon_level) return (TRUE);
+    return (FALSE);
+}
+
 static QString get_mon_quantity(int r_idx, int quantity)
 {
     /* Get monster race and name */
@@ -278,17 +284,8 @@ void MainWindow::win_mon_list_update()
     }
 
     // sort the remainder
-    for (int i = 0; i < vis_mon_list.size(); i++)
-    {
-        for (int j = i+1; j < vis_mon_list.size(); j++)
-        {
-            if (vis_mon_list[i].mon_level >= vis_mon_list[j].mon_level) continue;
+    qSort(vis_mon_list.begin(), vis_mon_list.end(), monster_sort);
 
-            monster_vis temp = vis_mon_list[j];
-            vis_mon_list[j] = vis_mon_list[i];
-            vis_mon_list[i] = temp;
-        }
-    }
 
     int row = 0;
 

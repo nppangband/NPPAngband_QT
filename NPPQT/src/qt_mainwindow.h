@@ -267,6 +267,7 @@ private:
 
     // Commands for the additional windows
     QAction *win_mon_list;
+    QAction *win_obj_list;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -347,7 +348,6 @@ private:
     QVBoxLayout *mon_list_vlay;
     QTableWidget *mon_list_area;
     QMenuBar *mon_list_menubar;
-    QToolBar *mon_list_toolbar;
     QAction *mon_list_set_font;
     QFont font_win_mon_list;
     QMenu *mon_win_settings;
@@ -362,6 +362,28 @@ public:
 private slots:
     void win_mon_list_font();
     void toggle_win_mon_list();
+
+// Object list window
+private:
+    bool show_obj_list;
+    QWidget *window_obj_list;
+    QVBoxLayout *obj_list_vlay;
+    QTableWidget *obj_list_area;
+    QMenuBar *obj_list_menubar;
+    QAction *obj_list_set_font;
+    QFont font_win_obj_list;
+    QMenu *obj_win_settings;
+    void win_obj_list_create();
+    void win_obj_list_destroy();
+    void win_obj_list_wipe();
+    void set_font_win_obj_list(QFont newFont);
+
+public:
+    void win_obj_list_update();
+
+private slots:
+    void win_obj_list_font();
+    void toggle_win_obj_list();
 
 
 };

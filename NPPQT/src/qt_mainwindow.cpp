@@ -847,6 +847,7 @@ void MainWindow::redraw()
     update_messages();
     update_sidebar_all();
     win_mon_list_update();
+    win_obj_list_update();
 }
 
 bool MainWindow::panel_contains(int y, int x)
@@ -917,7 +918,7 @@ MainWindow::MainWindow()
 
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
-    show_mon_list = FALSE;
+    show_obj_list = show_mon_list = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -1082,6 +1083,7 @@ void MainWindow::save_and_close()
 
     // Wipe the extra windows
     win_mon_list_wipe();
+    win_obj_list_wipe();
 
     character_loaded = character_dungeon = character_generated = false;
 
@@ -1202,6 +1204,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     // Take out the additional windows
     win_mon_list_destroy();
+    win_obj_list_destroy();
 
     event->accept();
 }
@@ -1494,8 +1497,12 @@ void MainWindow::create_actions()
     connect(view_kill_count, SIGNAL(triggered()), this, SLOT(display_kill_count()));
 
     win_mon_list = new QAction(tr("Show Monster List Window"), this);
-    win_mon_list->setStatusTip(tr("Displays a list of all visible monsters."));
+    win_mon_list->setStatusTip(tr("Displays a list of all the visible monsters on the level."));
     connect(win_mon_list, SIGNAL(triggered()), this, SLOT(toggle_win_mon_list()));
+
+    win_obj_list = new QAction(tr("Show Object List Window"), this);
+    win_obj_list->setStatusTip(tr("Displays a list of all visible objects on the level."));
+    connect(win_obj_list, SIGNAL(triggered()), this, SLOT(toggle_win_obj_list()));
 
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
@@ -1720,6 +1727,7 @@ void MainWindow::create_menus()
 
     win_menu = menuBar()->addMenu(tr("&Windows"));
     win_menu->addAction(win_mon_list);
+    win_menu->addAction(win_obj_list);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1765,6 +1773,7 @@ void MainWindow::select_font()
             font_message_window = QFont(family);
             font_sidebar_window = QFont(family);
             font_win_mon_list = QFont(family);
+            font_win_obj_list = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1773,6 +1782,7 @@ void MainWindow::select_font()
     font_message_window.setPointSize(12);
     font_sidebar_window.setPointSize(12);
     font_win_mon_list.setPointSize(12);
+    font_win_obj_list.setPointSize(12);
 }
 
 
@@ -1805,15 +1815,26 @@ void MainWindow::read_settings()
     font_sidebar_window.fromString(load_font);
     load_font = settings.value("font_window_mon_list", font_win_mon_list ).toString();
     font_win_mon_list.fromString(load_font);
+    load_font = settings.value("font_window_obj_list", font_win_obj_list ).toString();
+    font_win_obj_list.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
     if (show_mon_list)
     {
-        show_mon_list = FALSE; //hack
+        show_mon_list = FALSE; //hack - so it gets toggled to true
         toggle_win_mon_list();
         window_mon_list->restoreGeometry(settings.value("winMonListGeometry").toByteArray());
         window_mon_list->show();
+    }
+
+    show_obj_list = settings.value("show_obj_list_window", false).toBool();
+    if (show_obj_list)
+    {
+        show_obj_list = FALSE; //hack - so it gets toggled to true
+        toggle_win_obj_list();
+        window_obj_list->restoreGeometry(settings.value("winObjListGeometry").toByteArray());
+        window_obj_list->show();
     }
 
     update_recent_savefiles();
@@ -1828,6 +1849,7 @@ void MainWindow::write_settings()
     settings.setValue("font_window_messages", font_message_window.toString());
     settings.setValue("font_window_sidebar", font_sidebar_window.toString());
     settings.setValue("font_window_mon_list", font_win_mon_list.toString());
+    settings.setValue("font_window_mon_list", font_win_obj_list.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
@@ -1837,6 +1859,11 @@ void MainWindow::write_settings()
     if (show_mon_list)
     {
         settings.setValue("winMonListGeometry", window_mon_list->saveGeometry());
+    }
+    settings.setValue("show_obj_list_window", show_obj_list);
+    if (show_obj_list)
+    {
+        settings.setValue("winObjListGeometry", window_obj_list->saveGeometry());
     }
 }
 

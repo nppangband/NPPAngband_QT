@@ -285,7 +285,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     /* Redraw everything */
     p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_EQUIP |
                       PR_MESSAGE | PR_MONSTER | PR_OBJECT |
-                      PR_ITEMLIST | PR_FEATURE);
+                      PR_WIN_OBJLIST | PR_FEATURE);
 
     handle_stuff();
 }
@@ -735,7 +735,7 @@ void WizardModeDialog::wiz_cure_all(void)
     /* Redraw everything */
     p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_EQUIP |
                       PR_MESSAGE | PR_MONSTER | PR_OBJECT |
-                      PR_ITEMLIST | PR_FEATURE);
+                      PR_WIN_OBJLIST | PR_FEATURE);
 
     handle_stuff();
 }

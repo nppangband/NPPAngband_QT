@@ -2087,6 +2087,7 @@ void redraw_stuff(void)
     if (p_ptr->redraw & (PR_TITLEBAR)) ui_update_titlebar();
     if (p_ptr->redraw & (PR_MESSAGE)) ui_update_messages();
     if (p_ptr->redraw & (PR_WIN_MONLIST)) ui_update_monlist();
+    if (p_ptr->redraw & (PR_WIN_OBJLIST)) ui_update_objlist();
 }
 
 

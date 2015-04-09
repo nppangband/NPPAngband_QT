@@ -661,7 +661,7 @@ enum
 #define PR_XX16         0X00800000L
 #define PR_UNUSED1      0x01000000L
 #define PR_XX17 		0x02000000L
-#define PR_ITEMLIST     0x04000000L /* Display item list */
+#define PR_WIN_OBJLIST  0x04000000L /* Display item list */
 #define PR_MAP			0x08000000L	/* Display Map */
 #define PR_WIN_MONLIST	0x10000000L	/* Update Monster List Window */
 #define PR_FEATURE		0x20000000L	/* Display feature */

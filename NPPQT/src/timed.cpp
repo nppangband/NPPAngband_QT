@@ -66,7 +66,7 @@ static timed_effect effects[] =
     /*TMD_IMAGE*/
     { "You feel drugged!", "You can see clearly again.",
             "You feel more drugged!", "You feel less drugged.",
-            (PR_MAP | PR_ITEMLIST), 0 , 0, MSG_DRUGGED, TRUE },
+            (PR_MAP | PR_WIN_OBJLIST), 0 , 0, MSG_DRUGGED, TRUE },
     /*TMD_POISONED*/
     { "You are poisoned!", "You are no longer poisoned.",
             "You are more poisoned!", "You are less poisoned.",

@@ -20,7 +20,8 @@
 #include "src/npp.h"
 #include "src/utilities.h"
 
-QString sign(int value) {
+QString sign(int value)
+{
     QString s;
     if (value >= 0) {
         s = "+";
