@@ -858,7 +858,7 @@ static QString describe_store(int f_idx)
 /*
  * Display feature information
  */
-void describe_feature(int f_idx, bool spoilers)
+QString get_feature_description(int f_idx, bool spoilers)
 {
     QString output;
     output.clear();
@@ -934,6 +934,16 @@ void describe_feature(int f_idx, bool spoilers)
     output.append(describe_feature_dynamic(f_idx, &lore));
 
     if (f_ptr->f_flags1 & (FF1_SHOP)) output.append(describe_store(f_idx));
+
+    return (output);
+}
+
+/*
+ * Display feature information
+ */
+void describe_feature(int f_idx, bool spoilers)
+{
+    QString output = get_feature_description(f_idx, spoilers);
 
     /* Finally, display it */
     display_info_window(DISPLAY_INFO_FEATURE, f_idx, output);

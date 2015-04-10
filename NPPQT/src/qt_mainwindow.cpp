@@ -919,6 +919,7 @@ MainWindow::MainWindow()
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
     show_obj_list = show_mon_list = FALSE;
+    show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -1084,6 +1085,9 @@ void MainWindow::save_and_close()
     // Wipe the extra windows
     win_mon_list_wipe();
     win_obj_list_wipe();
+    win_mon_recall_wipe();
+    win_obj_recall_wipe();
+    win_feat_recall_wipe();
 
     character_loaded = character_dungeon = character_generated = false;
 
@@ -1205,6 +1209,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     // Take out the additional windows
     win_mon_list_destroy();
     win_obj_list_destroy();
+    win_mon_recall_destroy();
+    win_obj_recall_destroy();
+    win_feat_recall_destroy();
 
     event->accept();
 }
@@ -1504,6 +1511,18 @@ void MainWindow::create_actions()
     win_obj_list->setStatusTip(tr("Displays a list of all visible objects on the level."));
     connect(win_obj_list, SIGNAL(triggered()), this, SLOT(toggle_win_obj_list()));
 
+    win_mon_recall = new QAction(tr("Show Monster Recall Window"), this);
+    win_mon_recall->setStatusTip(tr("Displays all known information about a given monster race."));
+    connect(win_mon_recall, SIGNAL(triggered()), this, SLOT(toggle_win_mon_recall()));
+
+    win_obj_recall = new QAction(tr("Show Object Recall Window"), this);
+    win_obj_recall->setStatusTip(tr("Displays all known information about a given object."));
+    connect(win_obj_recall, SIGNAL(triggered()), this, SLOT(toggle_win_obj_recall()));
+
+    win_feat_recall = new QAction(tr("Show Feature Recall Window"), this);
+    win_feat_recall->setStatusTip(tr("Displays all known information about a given feature."));
+    connect(win_feat_recall, SIGNAL(triggered()), this, SLOT(toggle_win_feat_recall()));
+
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
     connect(help_about, SIGNAL(triggered()), this, SLOT(about()));
@@ -1728,6 +1747,9 @@ void MainWindow::create_menus()
     win_menu = menuBar()->addMenu(tr("&Windows"));
     win_menu->addAction(win_mon_list);
     win_menu->addAction(win_obj_list);
+    win_menu->addAction(win_mon_recall);
+    win_menu->addAction(win_obj_recall);
+    win_menu->addAction(win_feat_recall);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1774,6 +1796,9 @@ void MainWindow::select_font()
             font_sidebar_window = QFont(family);
             font_win_mon_list = QFont(family);
             font_win_obj_list = QFont(family);
+            font_win_mon_recall = QFont(family);
+            font_win_obj_recall = QFont(family);
+            font_win_feat_recall = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1783,6 +1808,9 @@ void MainWindow::select_font()
     font_sidebar_window.setPointSize(12);
     font_win_mon_list.setPointSize(12);
     font_win_obj_list.setPointSize(12);
+    font_win_mon_recall.setPointSize(12);
+    font_win_obj_recall.setPointSize(12);
+    font_win_feat_recall.setPointSize(12);
 }
 
 
@@ -1817,6 +1845,12 @@ void MainWindow::read_settings()
     font_win_mon_list.fromString(load_font);
     load_font = settings.value("font_window_obj_list", font_win_obj_list ).toString();
     font_win_obj_list.fromString(load_font);
+    load_font = settings.value("font_window_mon_recall", font_win_mon_recall ).toString();
+    font_win_mon_recall.fromString(load_font);
+    load_font = settings.value("font_window_obj_recall", font_win_obj_recall ).toString();
+    font_win_obj_recall.fromString(load_font);
+    load_font = settings.value("font_window_feat_recall", font_win_feat_recall ).toString();
+    font_win_feat_recall.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
@@ -1836,6 +1870,30 @@ void MainWindow::read_settings()
         window_obj_list->restoreGeometry(settings.value("winObjListGeometry").toByteArray());
         window_obj_list->show();
     }
+    show_mon_recall = settings.value("show_mon_recall_window", false).toBool();
+    if (show_mon_recall)
+    {
+        show_mon_recall = FALSE; //hack - so it gets toggled to true
+        toggle_win_mon_recall();
+        window_mon_recall->restoreGeometry(settings.value("winMonRecallGeometry").toByteArray());
+        window_mon_recall->show();
+    }
+    show_obj_recall = settings.value("show_obj_recall_window", false).toBool();
+    if (show_obj_recall)
+    {
+        show_obj_recall = FALSE; //hack - so it gets toggled to true
+        toggle_win_obj_recall();
+        window_obj_recall->restoreGeometry(settings.value("winObjRecallGeometry").toByteArray());
+        window_obj_recall->show();
+    }
+    show_feat_recall = settings.value("show_feat_recall_window", false).toBool();
+    if (show_feat_recall)
+    {
+        show_feat_recall = FALSE; //hack - so it gets toggled to true
+        toggle_win_feat_recall();
+        window_feat_recall->restoreGeometry(settings.value("winFeatRecallGeometry").toByteArray());
+        window_feat_recall->show();
+    }
 
     update_recent_savefiles();
 }
@@ -1849,7 +1907,10 @@ void MainWindow::write_settings()
     settings.setValue("font_window_messages", font_message_window.toString());
     settings.setValue("font_window_sidebar", font_sidebar_window.toString());
     settings.setValue("font_window_mon_list", font_win_mon_list.toString());
-    settings.setValue("font_window_mon_list", font_win_obj_list.toString());
+    settings.setValue("font_window_obj_list", font_win_obj_list.toString());
+    settings.setValue("font_window_mon_recall", font_win_mon_recall.toString());
+    settings.setValue("font_window_obj_recall", font_win_obj_recall.toString());
+    settings.setValue("font_window_feat_recall", font_win_feat_recall.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
@@ -1864,6 +1925,21 @@ void MainWindow::write_settings()
     if (show_obj_list)
     {
         settings.setValue("winObjListGeometry", window_obj_list->saveGeometry());
+    }
+    settings.setValue("show_mon_recall_window", show_mon_recall);
+    if (show_mon_recall)
+    {
+        settings.setValue("winMonRecallGeometry", window_mon_recall->saveGeometry());
+    }
+    settings.setValue("show_obj_recall_window", show_obj_recall);
+    if (show_obj_recall)
+    {
+        settings.setValue("winObjRecallGeometry", window_obj_recall->saveGeometry());
+    }
+    settings.setValue("show_feat_recall_window", show_feat_recall);
+    if (show_feat_recall)
+    {
+        settings.setValue("winFeatRecallGeometry", window_feat_recall->saveGeometry());
     }
 }
 

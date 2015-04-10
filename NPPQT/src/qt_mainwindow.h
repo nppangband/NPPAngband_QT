@@ -268,6 +268,9 @@ private:
     // Commands for the additional windows
     QAction *win_mon_list;
     QAction *win_obj_list;
+    QAction *win_mon_recall;
+    QAction *win_obj_recall;
+    QAction *win_feat_recall;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -385,7 +388,71 @@ private slots:
     void win_obj_list_font();
     void toggle_win_obj_list();
 
+// Monster Recall window
+private:
+    bool show_mon_recall;
+    QWidget *window_mon_recall;
+    QVBoxLayout *mon_recall_vlay;
+    QTextEdit *mon_recall_area;
+    QMenuBar *mon_recall_menubar;
+    QAction *mon_recall_set_font;
+    QFont font_win_mon_recall;
+    QMenu *mon_recall_win_settings;
+    void win_mon_recall_create();
+    void win_mon_recall_destroy();
+    void win_mon_recall_wipe();
+    void set_font_win_mon_recall(QFont newFont);
 
+public:
+    void win_mon_recall_update();
+
+private slots:
+    void win_mon_recall_font();
+    void toggle_win_mon_recall();
+
+// Object Recall window
+private:
+    bool show_obj_recall;
+    QWidget *window_obj_recall;
+    QVBoxLayout *obj_recall_vlay;
+    QTextEdit *obj_recall_area;
+    QMenuBar *obj_recall_menubar;
+    QAction *obj_recall_set_font;
+    QFont font_win_obj_recall;
+    QMenu *obj_recall_win_settings;
+    void win_obj_recall_create();
+    void win_obj_recall_destroy();
+    void win_obj_recall_wipe();
+    void set_font_win_obj_recall(QFont newFont);
+
+public:
+    void win_obj_recall_update();
+
+private slots:
+    void win_obj_recall_font();
+    void toggle_win_obj_recall();
+
+// Feature Recall window
+private:
+    bool show_feat_recall;
+    QWidget *window_feat_recall;
+    QVBoxLayout *feat_recall_vlay;
+    QTextEdit *feat_recall_area;
+    QMenuBar *feat_recall_menubar;
+    QAction *feat_recall_set_font;
+    QFont font_win_feat_recall;
+    QMenu *feat_recall_win_settings;
+    void win_feat_recall_create();
+    void win_feat_recall_destroy();
+    void win_feat_recall_wipe();
+    void set_font_win_feat_recall(QFont newFont);
+
+public:
+    void win_feat_recall_update();
+
+private slots:
+    void win_feat_recall_font();
+    void toggle_win_feat_recall();
 };
 
 extern MainWindow *main_window;

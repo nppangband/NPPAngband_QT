@@ -362,6 +362,27 @@ void ui_update_objlist()
     p_ptr->redraw &= ~(PR_WIN_OBJLIST);
 }
 
+void ui_update_mon_recall()
+{
+    if (p_ptr->is_running()) return;
+    main_window->win_mon_recall_update();
+    p_ptr->redraw &= ~(PR_WIN_MON_RECALL);
+}
+
+void ui_update_obj_recall()
+{
+    if (p_ptr->is_running()) return;
+    main_window->win_obj_recall_update();
+    p_ptr->redraw &= ~(PR_WIN_OBJ_RECALL);
+}
+
+void ui_update_feat_recall()
+{
+    if (p_ptr->is_running()) return;
+    main_window->win_feat_recall_update();
+    p_ptr->redraw &= ~(PR_WIN_FEAT_RECALL);
+}
+
 
 int ui_get_dir_from_slope(int y1, int x1, int y2, int x2)
 {

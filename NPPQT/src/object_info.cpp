@@ -1238,7 +1238,7 @@ static QString describe_item_activation(object_type *o_ptr)
     u16b value;
 
     /* Require activation ability */
-    if (!(o_ptr->obj_flags_3 & TR3_ACTIVATE)) return(output);
+    if (!(o_ptr->known_obj_flags_3 & TR3_ACTIVATE)) return(output);
 
     /* Artifact activations */
     if ((o_ptr->art_num) && (o_ptr->art_num < z_info->art_norm_max))
@@ -1603,7 +1603,7 @@ QString screen_out_head(object_type *o_ptr)
 /*
  * Place an item description on the screen.
  */
-void object_info_screen(object_type *o_ptr)
+QString get_object_description(object_type *o_ptr)
 {
     QString output = screen_out_head(o_ptr);
     QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
@@ -1618,14 +1618,6 @@ void object_info_screen(object_type *o_ptr)
     else if (output.isEmpty() && (o_ptr->tval != cp_ptr->spell_book))
     {
         output.append("<br>   This item does not seem to possess any special abilities.");
-    }
-
-    /* Hack -- Browse book */
-    if (o_ptr->tval == cp_ptr->spell_book)
-    {
-        /* Call the aux function */
-        do_cmd_browse(o_ptr->sval);
-        return;
     }
 
     QString buf;
@@ -1670,6 +1662,24 @@ void object_info_screen(object_type *o_ptr)
         if (o_ptr->number > 1)	output.append(QString("They have no value.<br>"));
         else 					output.append(QString("It has no value.<br>"));
     }
+
+    return (output);
+}
+
+/*
+ * Place an item description on the screen.
+ */
+void object_info_screen(object_type *o_ptr)
+{
+    /* Hack -- Browse book */
+    if (o_ptr->tval == cp_ptr->spell_book)
+    {
+        /* Call the aux function */
+        do_cmd_browse(o_ptr->sval);
+        return;
+    }
+
+    QString output = get_object_description(o_ptr);
 
     /* Finally, display it */
     display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);

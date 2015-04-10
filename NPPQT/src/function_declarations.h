@@ -89,6 +89,7 @@ extern s16b x_pop(void);
 extern void process_effects(void);
 
 // dun_feat_info.cpp
+extern QString get_feature_description(int f_idx, bool spoilers);
 extern void describe_feature(int f_idx, bool spoilers);
 
 /* dun_feature.c */
@@ -292,6 +293,7 @@ extern bool obj_can_browse(object_type *o_ptr);
 // object_info.cpp
 extern QString screen_out_head(object_type *o_ptr);
 extern QString object_info_out(object_type *o_ptr, bool extra_info);
+extern QString get_object_description(object_type *o_ptr);
 extern void object_info_screen(object_type *o_ptr);
 extern QString format_object_history(object_type *o_ptr);
 extern bool history_interesting(object_type *o_ptr);
@@ -390,7 +392,6 @@ extern void reduce_charges(object_type *o_ptr, int amt);
 extern s16b lookup_kind(int tval, int sval);
 extern s16b lookup_ego(s16b tval, s16b sval, QString ego_title);
 extern void display_object_idx_recall(s16b o_idx);
-extern void display_object_kind_recall(s16b k_idx);
 extern bool obj_can_refill(object_type *o_ptr);
 extern bool obj_is_chest(object_type *o_ptr);
 extern bool chest_requires_disarming(object_type *o_ptr);
@@ -631,6 +632,9 @@ extern void ui_update_titlebar();
 extern void ui_update_messages();
 extern void ui_update_monlist();
 extern void ui_update_objlist();
+extern void ui_update_mon_recall();
+extern void ui_update_obj_recall();
+extern void ui_update_feat_recall();
 extern void player_death_close_game(void);
 extern void ui_redraw_grid(int y, int x);
 extern void ui_redraw_all();

@@ -313,7 +313,7 @@ void calc_spells(void)
         }
 
         /* Redraw Study Status */
-        p_ptr->redraw |= (PR_STATUSBAR | PR_OBJECT);
+        p_ptr->redraw |= (PR_STATUSBAR);
     }
 
 }
@@ -2067,7 +2067,6 @@ void redraw_stuff(void)
         if (!p_ptr->is_resting() && !p_ptr->is_running())
         {
             ui_update_sidebar_player();
-
         }
     }
 
@@ -2088,6 +2087,9 @@ void redraw_stuff(void)
     if (p_ptr->redraw & (PR_MESSAGE)) ui_update_messages();
     if (p_ptr->redraw & (PR_WIN_MONLIST)) ui_update_monlist();
     if (p_ptr->redraw & (PR_WIN_OBJLIST)) ui_update_objlist();
+    if (p_ptr->redraw & (PR_WIN_MON_RECALL)) ui_update_mon_recall();
+    if (p_ptr->redraw & (PR_WIN_OBJ_RECALL)) ui_update_obj_recall();
+    if (p_ptr->redraw & (PR_WIN_FEAT_RECALL)) ui_update_feat_recall();
 }
 
 

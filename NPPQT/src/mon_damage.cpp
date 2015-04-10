@@ -524,7 +524,7 @@ void check_experience(void)
         p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
         /* Redraw some stuff */
-        p_ptr->redraw |= (PR_TITLEBAR | PR_MONSTER);
+        p_ptr->redraw |= (PR_TITLEBAR | PR_WIN_MON_RECALL);
     }
 
     /* Gain levels while possible */
@@ -560,7 +560,7 @@ void check_experience(void)
         p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
         /* Redraw some stuff */
-        p_ptr->redraw |= (PR_SIDEBAR_PL | PR_MONSTER);
+        p_ptr->redraw |= (PR_SIDEBAR_PL | PR_WIN_MON_RECALL);
     }
 
     /* Gain max levels while possible */

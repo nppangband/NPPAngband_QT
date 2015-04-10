@@ -1704,7 +1704,7 @@ void change_player_level(void)
     p_ptr->redraw |= (PR_SIDEBAR_ALL | PR_STATUSBAR | PR_MAP);
 
     /* Redraw "statusy" things */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_MONSTER | PR_WIN_MONLIST | PR_WIN_OBJLIST);
+    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_WIN_MON_RECALL | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 
     /* Update stuff */
     update_stuff();

@@ -319,7 +319,7 @@ void compact_monsters(int size)
         message(QString("Compacting monsters..."));
 
         /* Redraw map */
-        p_ptr->redraw |= (PR_MAP | PR_MONSTER);
+        p_ptr->redraw |= (PR_MAP | PR_WIN_MON_RECALL);
 
         /* Scan the monster list */
         for (i = 1; i < mon_max; i++)
@@ -1214,7 +1214,7 @@ void lore_do_probe_monster(int m_idx)
     if (p_ptr->monster_race_idx == m_ptr->r_idx)
     {
         /* Window stuff */
-        p_ptr->redraw |= (PR_MONSTER);
+        p_ptr->redraw |= (PR_WIN_MON_RECALL);
     }
 }
 
@@ -2263,7 +2263,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         p_ptr->update |= (PU_UPDATE_VIEW | PU_DISTANCE);
 
         /* Window stuff */
-        p_ptr->redraw |= (PR_MAP | PR_FEATURE);
+        p_ptr->redraw |= (PR_MAP);
     }
 
     /* Redraw */
@@ -2290,9 +2290,6 @@ bool player_place(int y, int x)
 
     /* Hack -- track this feature */
     feature_kind_track(dungeon_info[y][x].feat);
-
-    /* Window stuff */
-    p_ptr->redraw |= (PR_FEATURE);
 
     /* Success */
     return (TRUE);

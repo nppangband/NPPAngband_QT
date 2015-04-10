@@ -54,7 +54,7 @@ void lore_treasure(int m_idx, int num_item, int num_gold)
     if (p_ptr->monster_race_idx == m_ptr->r_idx)
     {
         /* Window stuff */
-        p_ptr->redraw |= (PR_MONSTER);
+        p_ptr->redraw |= (PR_WIN_MON_RECALL);
     }
 }
 

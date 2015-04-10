@@ -134,7 +134,7 @@ static void process_player_aux(void)
             old_ranged = l_ptr->ranged;
 
             /* Window stuff */
-            p_ptr->redraw |= (PR_MONSTER);
+            p_ptr->redraw |= (PR_WIN_MON_RECALL);
 
             /* Window stuff */
             handle_stuff();

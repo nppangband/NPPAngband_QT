@@ -514,7 +514,7 @@ static void spell_learn(int spell)
     }
 
     /* Redraw Study Status */
-    p_ptr->redraw |= (PR_STATUSBAR | PR_OBJECT);
+    p_ptr->redraw |= (PR_STATUSBAR);
 }
 
 /*
@@ -749,9 +749,6 @@ static void cast_spell(cmd_arg args)
 
         /* Gain experience */
         gain_exp(e * s_ptr->slevel);
-
-        /* Redraw object recall */
-        p_ptr->redraw |= (PR_OBJECT);
     }
 
     /* Sufficient mana */

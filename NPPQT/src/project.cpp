@@ -5427,7 +5427,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
     if (p_ptr->monster_race_idx == m_ptr->r_idx)
     {
         /* Window stuff */
-        p_ptr->redraw |= (PR_MONSTER);
+        p_ptr->redraw |= (PR_WIN_MON_RECALL);
     }
 
     /* Track it */

@@ -3933,9 +3933,6 @@ static void cave_set_feat_aux(int y, int x, u16b feat)
         /*Track the new feature*/
         feature_kind_track(dungeon_info[y][x].feat);
 
-        /* Window stuff */
-        p_ptr->redraw |= (PR_FEATURE);
-
         /* Recalculate bonuses */
         p_ptr->update |= (PU_BONUS);
     }
@@ -5045,16 +5042,19 @@ void health_track(int m_idx)
  */
 void track_object(int item)
 {
-    p_ptr->object_idx = item;
     p_ptr->object_kind_idx = 0;
-    p_ptr->redraw |= (PR_OBJECT);
+    if (p_ptr->object_idx == item) return;
+    p_ptr->object_idx = item;
+    p_ptr->redraw |= (PR_WIN_OBJ_RECALL);
 }
 
 void track_object_kind(int k_idx)
 {
     p_ptr->object_idx = 0;
+
+    if (p_ptr->object_kind_idx == k_idx) return;
     p_ptr->object_kind_idx = k_idx;
-    p_ptr->redraw |= (PR_OBJECT);
+    p_ptr->redraw |= (PR_WIN_OBJ_RECALL);
 }
 
 
@@ -5063,11 +5063,13 @@ void track_object_kind(int k_idx)
  */
 void monster_race_track(int r_idx)
 {
+    if (p_ptr->monster_race_idx == r_idx) return;
+
     /* Save this monster ID */
     p_ptr->monster_race_idx = r_idx;
 
     /* Window stuff */
-    p_ptr->redraw |= (PR_MONSTER);
+    p_ptr->redraw |= (PR_WIN_MON_RECALL);
 }
 
 
@@ -5076,11 +5078,13 @@ void monster_race_track(int r_idx)
  */
 void feature_kind_track(int f_idx)
 {
+    if (p_ptr->feature_kind_idx == f_idx) return;
+
     /* Save this object ID */
     p_ptr->feature_kind_idx = f_idx;
 
     /* Window stuff */
-    p_ptr->redraw |= (PR_FEATURE);
+    p_ptr->redraw |= (PR_WIN_FEAT_RECALL);
 }
 
 

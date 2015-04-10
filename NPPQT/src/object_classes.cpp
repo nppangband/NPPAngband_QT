@@ -740,6 +740,14 @@ void object_type::update_object_flags()
     obj_flags_3 = known_obj_flags_3 = k_ptr->k_flags3;
     obj_flags_native = known_obj_flags_native = k_ptr->k_native;
 
+    if (is_known() && is_aware())
+    {
+        known_obj_flags_1 = k_ptr->k_flags1;
+        known_obj_flags_2 = k_ptr->k_flags2;
+        known_obj_flags_3 = k_ptr->k_flags3;
+        known_obj_flags_native = k_ptr->k_native;
+    }
+
     /* Artifact */
     if (art_num)
     {

@@ -14,8 +14,11 @@ TARGET = NPPGAMES
 SOURCES +=  src/qt_main.cpp \
             src/qt_mainwindow.cpp \
             src/qt_commands.cpp  \
+            src/qt_win_feat_recall.cpp \
             src/qt_win_mon_list.cpp \
+            src/qt_win_mon_recall.cpp \
             src/qt_win_obj_list.cpp \
+            src/qt_win_obj_recall.cpp \
             src/qt_sidebar.cpp \
             src/qt_statusbar.cpp \
             src/qt_target_toolbar.cpp \
@@ -102,6 +105,8 @@ SOURCES +=  src/qt_main.cpp \
             src/timed.cpp \
             src/utilities.cpp \
             src/wizard_mode.cpp
+
+
 
 
 

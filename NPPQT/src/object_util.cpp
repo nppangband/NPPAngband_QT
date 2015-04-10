@@ -4317,27 +4317,6 @@ void display_object_idx_recall(s16b item)
 }
 
 
-/**
- * This draws the Object Recall subwindow when displaying a recalled item kind
- * (e.g. a generic ring of acid or a generic blade of chaos)
- */
-void display_object_kind_recall(s16b k_idx)
-{
-
-    /* Initialize and prepare a fake object; it will be deallocated when we */
-    /* leave the function. */
-    object_type object;
-    object_type *o_ptr = &object;
-    o_ptr->object_wipe();
-    object_prep(o_ptr, k_idx);
-
-    if (k_info[k_idx].aware) o_ptr->ident |= (IDENT_STORE);
-
-    /* draw it */
-    object_info_screen(o_ptr);
-}
-
-
 /*
  * An "item_tester_hook" for refilling lanterns and torches
  */

@@ -648,24 +648,24 @@ enum
 #define PR_XXX8 		0x00000400L
 #define PR_XXX9     	0x00000800L
 #define PR_XX10 		0x00001000L
-#define PR_OBJECT		0x00002000L	/* Display object recall */
-#define PR_MONSTER		0x00004000L	/* Display monster recall */
+#define PR_XX16 		0x00002000L
+#define PR_XXX2         0x00004000L
 #define PR_XX11 		0x00008000L
 #define PR_MESSAGE		0x00010000L	/* Display messages */
 #define PR_EQUIP		0x00020000L	/* Display equip/inven */
 #define PR_INVEN		0x00040000L	/* Display inven/equip */
-#define PR_XX14         0x00080000L
-#define PR_XX13         0x00100000L
-#define PR_XX12         0x00200000L
-#define PR_XX15         0x00400000L
-#define PR_XX16         0X00800000L
+#define PR_WIN_OBJLIST  0x00080000L /* Display item list */
+#define PR_WIN_MONLIST  0x00100000L /* Update Monster List Window */
+#define PR_WIN_MON_RECALL 0x00200000L /* Monster recall Window */
+#define PR_WIN_OBJ_RECALL  0x00400000L // Object Recall Window
+#define PR_WIN_FEAT_RECALL 0X00800000L // Feature Recall Window
 #define PR_UNUSED1      0x01000000L
 #define PR_XX17 		0x02000000L
-#define PR_WIN_OBJLIST  0x04000000L /* Display item list */
+#define PR_XX14         0x04000000L
 #define PR_MAP			0x08000000L	/* Display Map */
-#define PR_WIN_MONLIST	0x10000000L	/* Update Monster List Window */
-#define PR_FEATURE		0x20000000L	/* Display feature */
-#define PR_XX18         0x40000000L	/
+#define PR_XX13         0x10000000L
+#define PR_XX12 		0x20000000L
+#define PR_XX18         0x40000000L
 #define PR_UNUSED2		0x80000000L	/* Unused */
 
 
@@ -683,11 +683,7 @@ enum
 #define PW_MAP              0x00000020L /* Display dungeon map */
 #define PW_MESSAGE          0x00000040L /* Display messages */
 #define PW_OVERHEAD         0x00000080L /* Display overhead view */
-#define PW_MONSTER          0x00000100L /* Display monster recall */
-#define PW_OBJECT           0x00000200L /* Display object recall */
 #define PW_STATUS           0x00000800L /* Display Status */
-#define PW_ITEMLIST	        0x00001000L /* Display item list */
-#define PW_FEATURE		    0x00002000L /* Display feature status */
 
 
 #define PW_MAX_FLAGS		14

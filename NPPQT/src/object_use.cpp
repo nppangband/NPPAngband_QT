@@ -3280,7 +3280,7 @@ void command_use(cmd_arg args)
     object_tried(o_ptr);
 
     /* Combine / Reorder the pack (later) */
-    p_ptr->notice |= (PN_COMBINE | PN_REORDER);
+    p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Window stuff */
     p_ptr->window |= (PW_INVEN | PW_EQUIP);
@@ -3307,10 +3307,6 @@ void command_use(cmd_arg args)
         process_player_energy(BASE_ENERGY_MOVE);
         return;
     }
-
-    /* Mark as tried and redisplay */
-    p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_OBJECT);
 
     /* If there are no more of the item left, then we're done. */
     if (!o_ptr->number)

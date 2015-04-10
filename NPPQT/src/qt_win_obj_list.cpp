@@ -471,10 +471,10 @@ void MainWindow::win_obj_list_create()
     obj_list_vlay->addWidget(obj_list_area);
     obj_list_menubar = new QMenuBar;
     obj_list_vlay->setMenuBar(obj_list_menubar);
-    window_obj_list->setWindowTitle("Viewable Monster List");
+    window_obj_list->setWindowTitle("Viewable Object List");
     obj_win_settings = obj_list_menubar->addMenu(tr("&Settings"));
-    obj_list_set_font = new QAction(tr("Set Monster List Font"), this);
-    obj_list_set_font->setStatusTip(tr("Set the font for the Monster List."));
+    obj_list_set_font = new QAction(tr("Set Object List Font"), this);
+    obj_list_set_font->setStatusTip(tr("Set the font for the Object List."));
     connect(obj_list_set_font, SIGNAL(triggered()), this, SLOT(win_obj_list_font()));
     obj_win_settings->addAction(obj_list_set_font);
 
@@ -502,6 +502,6 @@ void MainWindow::toggle_win_obj_list()
     {
         win_obj_list_destroy();
         show_obj_list = FALSE;
-        win_obj_list->setText("Show Monster List Window");
+        win_obj_list->setText("Show Object List Window");
     }
 }

@@ -35,7 +35,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     int col = 0;
     int row = 0;
     int m_idx = d_ptr->monster_idx;
-    if (m_idx > 0 && mon_list[m_idx].ml && !drugged) {
+    if (m_idx > 0 && mon_list[m_idx].ml && !drugged)
+    {
         ++n;
 
         monster_type *m_ptr = mon_list + m_idx;
@@ -64,16 +65,28 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         lay2->addWidget(btn1, row, col++);
         connect(btn1, SIGNAL(clicked()), this, SLOT(item_click()));
 
+        monster_race_track(m_ptr->r_idx);
+
         ++row;
     }
 
     int o_idx = d_ptr->object_idx;
-    while (o_idx && !drugged) {
+
+    bool tracked_item = FALSE;
+
+    while (o_idx && !drugged)
+    {
         object_type *o_ptr = o_list + o_idx;
         int cur_o_idx = o_idx;
         o_idx = o_ptr->next_o_idx;
 
         if (!o_ptr->marked) continue;
+
+        if (!tracked_item)
+        {
+            track_object(-cur_o_idx);
+            tracked_item = TRUE;
+        }
 
         ++n;
 
@@ -112,7 +125,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         ++row;
     }
 
-    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN)) {
+    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN))
+    {
         ++n;
 
         col = 0;
@@ -141,6 +155,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         connect(btn1, SIGNAL(clicked()), this, SLOT(item_click()));
 
         ++row;
+
+        feature_kind_track(feat);
     }
 
     int x_idx = d_ptr->effect_idx;
@@ -199,6 +215,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     connect(btn_close, SIGNAL(clicked()), this, SLOT(reject()));
 
     this->clientSizeUpdated();
+
+    handle_stuff();
 
     if (n > 0) {
         (this->findChildren<QPushButton *>().at(0))->setFocus();

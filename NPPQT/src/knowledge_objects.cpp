@@ -338,6 +338,10 @@ void make_object_fake(object_type *o_ptr, int k_idx)
     /* Add minimum bonuses so the descriptions don't look strange. */
     apply_magic_fake(o_ptr);
 
+    /* Update the object recall window */
+    track_object_kind(k_idx);
+    handle_stuff();
+
     /* Hack -- its in the store */
     if (k_info[k_idx].aware) o_ptr->ident |= (IDENT_STORE);
 
