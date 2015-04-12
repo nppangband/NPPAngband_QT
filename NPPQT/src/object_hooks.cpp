@@ -30,7 +30,7 @@ bool item_tester_hook_wieldable_ided_weapon(object_type *o_ptr)
         case TV_HAFTED:
         case TV_POLEARM:
         {
-            if (object_known_p(o_ptr)) return (TRUE);
+            if (o_ptr->is_known()) return (TRUE);
             else return (FALSE);
         }
     }
@@ -96,7 +96,7 @@ bool item_tester_hook_ided_weapon(object_type *o_ptr)
         case TV_ARROW:
         case TV_SHOT:
         {
-            if (object_known_p(o_ptr)) return (TRUE);
+            if (o_ptr->is_known()) return (TRUE);
             else return (FALSE);
         }
     }
@@ -124,7 +124,7 @@ bool item_tester_hook_ided_armour(object_type *o_ptr)
         case TV_BOOTS:
         case TV_GLOVES:
         {
-            if (object_known_p(o_ptr)) return (TRUE);
+            if (o_ptr->is_known()) return (TRUE);
             else return (FALSE);
         }
     }
@@ -170,7 +170,7 @@ bool item_tester_hook_ided_ammo(object_type *o_ptr)
         case TV_ARROW:
         case TV_SHOT:
         {
-            if (object_known_p(o_ptr)) return (TRUE);
+            if (o_ptr->is_known()) return (TRUE);
             else return FALSE;
         }
     }

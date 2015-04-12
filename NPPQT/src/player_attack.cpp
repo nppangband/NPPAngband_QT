@@ -370,7 +370,7 @@ int critical_shot_chance(object_type *o_ptr, player_state a_state, bool is_throw
     /* Extract "shot" power */
     if (id_only)
     {
-        i += o_ptr->weight + (a_state.dis_to_h + (object_known_p(o_ptr) ? o_ptr->to_h : 0)) * 3;
+        i += o_ptr->weight + (a_state.dis_to_h + (o_ptr->is_known() ? o_ptr->to_h : 0)) * 3;
     }
 
     else i += o_ptr->weight + (a_state.to_h + o_ptr->to_h) * 3;
@@ -482,7 +482,7 @@ static int breakage_chance(const object_type *o_ptr)
     return (10);
 }
 
-int critical_hit_chance(const object_type *o_ptr, player_state a_state, bool id_only)
+int critical_hit_chance(object_type *o_ptr, player_state a_state, bool id_only)
 {
     int i = o_ptr->weight + (p_ptr->state.to_h + o_ptr->to_h) * 3;
     i += a_state.skills[SKILL_TO_HIT_MELEE] * 2;
@@ -490,7 +490,7 @@ int critical_hit_chance(const object_type *o_ptr, player_state a_state, bool id_
     /* Re-do depending on the known variable */
     if (id_only)
     {
-        i = o_ptr->weight + (p_ptr->state.dis_to_h + (object_known_p(o_ptr) ? o_ptr->to_h : 0)) * 3;
+        i = o_ptr->weight + (p_ptr->state.dis_to_h + (o_ptr->is_known() ? o_ptr->to_h : 0)) * 3;
         i += a_state.skills[SKILL_TO_HIT_MELEE] * 2;
     }
 
@@ -502,7 +502,7 @@ int critical_hit_chance(const object_type *o_ptr, player_state a_state, bool id_
  *
  * Factor in weapon weight, total plusses, player level.
  */
-int critical_hit_check(const object_type *o_ptr, int *dd, int *plus)
+int critical_hit_check(object_type *o_ptr, int *dd, int *plus)
 {
     int i = critical_hit_chance(o_ptr, p_ptr->state, FALSE);
 
@@ -1780,7 +1780,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
     return (used_potion);
 }
 
-int weapon_throw_adjust(const object_type *o_ptr, u32b f3, int *plus, bool id_only)
+int weapon_throw_adjust(object_type *o_ptr, u32b f3, int *plus, bool id_only)
 {
     int mult = 1;
 
@@ -1790,7 +1790,7 @@ int weapon_throw_adjust(const object_type *o_ptr, u32b f3, int *plus, bool id_on
     /* Double the damage for throwing weapons */
     mult *= 2;
 
-    if ((!id_only) || object_known_p(o_ptr))
+    if ((!id_only) || o_ptr->is_known())
     {
         /* Perfectly balanced weapons do even more damage. */
         if (o_ptr->ident & IDENT_PERFECT_BALANCE) mult *= 2;

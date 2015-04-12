@@ -87,7 +87,7 @@ static void sense_inventory(void)
         if (o_ptr->ident & (IDENT_SENSE)) continue;
 
         /* It is known, no information needed */
-        if (object_known_p(o_ptr)) continue;
+        if (o_ptr->is_known()) continue;
 
         /* 80% failure on inventory items */
         if ((i < INVEN_WIELD) && (0 != rand_int(5))) continue;

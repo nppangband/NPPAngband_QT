@@ -2501,7 +2501,7 @@ int do_ident_item(int item, object_type *o_ptr)
 
 static bool item_tester_unknown(object_type *o_ptr)
 {
-    if (object_known_p(o_ptr))
+    if (o_ptr->is_known())
         return FALSE;
     else
         return TRUE;
@@ -4347,7 +4347,7 @@ void identify_and_squelch_pack(void)
         if (!o_ptr->k_idx) continue;
 
         /* Ignore known objects */
-        if (object_known_p(o_ptr)) continue;
+        if (o_ptr->is_known()) continue;
 
         /* Identify it */
         (void)do_ident_item(item, o_ptr);
@@ -4365,7 +4365,7 @@ void identify_and_squelch_pack(void)
             if (!o_ptr->k_idx) break;
 
             /* Ignore known objects */
-            if (object_known_p(o_ptr)) break;
+            if (o_ptr->is_known()) break;
 
             /* Identify it and get the squelch setting */
             squelch = do_ident_item(item, o_ptr);

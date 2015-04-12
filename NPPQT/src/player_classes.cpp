@@ -100,7 +100,6 @@ void player_other::player_other_wipe()
 {            
     full_name.clear();
     for (int i = 0; i < OPT_MAX; i++) op_ptr->opt[i] = options[i].normal;
-    for (int i = 0; i < ANGBAND_TERM_MAX; i++) op_ptr->window_flag[i] = 0L;
     hitpoint_warn = delay_factor = 0;
 }
 

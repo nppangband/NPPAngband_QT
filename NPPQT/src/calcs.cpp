@@ -1236,7 +1236,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if ((!id_only) || o_ptr->is_known()) new_state->to_a += o_ptr->to_a;
 
         /* Apply the mental bonuses to armor class, if known */
-        if (object_known_p(o_ptr)) new_state->dis_to_a += o_ptr->to_a;
+        if (o_ptr->is_known()) new_state->dis_to_a += o_ptr->to_a;
 
         /* Hack -- do not apply "weapon" bonuses */
         if (i == INVEN_WIELD) continue;
@@ -1252,8 +1252,11 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         }
 
         /* Apply the mental bonuses to hit/damage, if known */
-        if (object_known_p(o_ptr)) new_state->dis_to_h += o_ptr->to_h;
-        if (object_known_p(o_ptr)) new_state->dis_to_d += o_ptr->to_d;
+        if (o_ptr->is_known())
+        {
+            new_state->dis_to_h += o_ptr->to_h;
+            new_state->dis_to_d += o_ptr->to_d;
+        }
 
         new_state->p_flags_native_with_temp |= fn;
         new_state->p_flags_native_no_temp |= fn;
@@ -2084,12 +2087,13 @@ void redraw_stuff(void)
     }
 
     if (p_ptr->redraw & (PR_TITLEBAR)) ui_update_titlebar();
-    if (p_ptr->redraw & (PR_MESSAGE)) ui_update_messages();
+    if (p_ptr->redraw & (PR_MESSAGES)) ui_update_messages();
     if (p_ptr->redraw & (PR_WIN_MONLIST)) ui_update_monlist();
     if (p_ptr->redraw & (PR_WIN_OBJLIST)) ui_update_objlist();
     if (p_ptr->redraw & (PR_WIN_MON_RECALL)) ui_update_mon_recall();
     if (p_ptr->redraw & (PR_WIN_OBJ_RECALL)) ui_update_obj_recall();
     if (p_ptr->redraw & (PR_WIN_FEAT_RECALL)) ui_update_feat_recall();
+    if (p_ptr->redraw & (PR_WIN_MESSAGES)) ui_update_message_window();
 }
 
 

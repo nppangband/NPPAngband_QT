@@ -411,13 +411,10 @@ static int wr_randomizer(void)
  */
 static void wr_options(void)
 {
-    int i, k;
+    int i;
 
     u32b flag[8];
     u32b mask[8];
-    u32b window_flag[ANGBAND_TERM_MAX];
-    u32b window_mask[ANGBAND_TERM_MAX];
-
 
     /*** Oops ***/
 
@@ -472,34 +469,8 @@ static void wr_options(void)
     /* Dump the masks */
     for (i = 0; i < 8; i++) wr_u32b(mask[i]);
 
-
-    /*** Window options ***/
-
-    /* Reset */
-    for (i = 0; i < ANGBAND_TERM_MAX; i++)
-    {
-        /* Flags */
-        window_flag[i] = op_ptr->window_flag[i];
-
-        /* Mask */
-        window_mask[i] = 0L;
-
-        /* Build the mask */
-        for (k = 0; k < 32; k++)
-        {
-            /* Set mask */
-            if (!window_flag_desc[k].isEmpty())
-            {
-                window_mask[i] |= (1L << k);
-            }
-        }
-    }
-
-    /* Dump the flags */
-    for (i = 0; i < ANGBAND_TERM_MAX; i++) wr_u32b(window_flag[i]);
-
-    /* Dump the masks */
-    for (i = 0; i < ANGBAND_TERM_MAX; i++) wr_u32b(window_mask[i]);
+    // Old ANGBAND_TERM_MAX window flags info
+    for (i = 0; i < 64; i++) wr_byte(0);
 }
 
 

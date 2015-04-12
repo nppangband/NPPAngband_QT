@@ -271,6 +271,7 @@ private:
     QAction *win_mon_recall;
     QAction *win_obj_recall;
     QAction *win_feat_recall;
+    QAction *win_messages;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -453,6 +454,28 @@ public:
 private slots:
     void win_feat_recall_font();
     void toggle_win_feat_recall();
+
+// Messages window
+private:
+    bool show_messages_win;
+    QWidget *window_messages;
+    QVBoxLayout *win_messages_vlay;
+    QTextEdit *win_messages_area;
+    QMenuBar *win_messages_menubar;
+    QAction *win_messages_set_font;
+    QFont font_win_messages;
+    QMenu *messages_win_settings;
+    void win_messages_create();
+    void win_messages_destroy();
+    void win_messages_wipe();
+    void set_font_win_messages(QFont newFont);
+
+public:
+    void win_messages_update();
+
+private slots:
+    void win_messages_font();
+    void toggle_win_messages();
 };
 
 extern MainWindow *main_window;

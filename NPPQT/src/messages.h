@@ -29,7 +29,7 @@ public:
 
 extern QVector<message_type> message_list;
 
-extern void update_message_area(QTextEdit *message_area, int max_messages);
+extern void update_message_area(QTextEdit *message_area, int max_messages, QFont message_font);
 extern void update_message_area(QLabel *message_label, int max_messages);
 extern void display_message_log(void);
 

@@ -845,6 +845,7 @@ void MainWindow::redraw()
     update_cursor();
     force_redraw(); // Hack -- Force full redraw
     update_messages();
+    win_messages_update();
     update_sidebar_all();
     win_mon_list_update();
     win_obj_list_update();
@@ -918,7 +919,7 @@ MainWindow::MainWindow()
 
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
-    show_obj_list = show_mon_list = FALSE;
+    show_obj_list = show_mon_list = show_messages_win = FALSE;
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
 
@@ -1063,7 +1064,7 @@ void MainWindow::save_character_as()
 
 void MainWindow::update_messages()
 {
-    update_message_area(message_area, 3);
+    update_message_area(message_area, 3, font_message_window);
 
     message_area->moveCursor(QTextCursor::End);
 }
@@ -1088,6 +1089,7 @@ void MainWindow::save_and_close()
     win_mon_recall_wipe();
     win_obj_recall_wipe();
     win_feat_recall_wipe();
+    win_messages_wipe();
 
     character_loaded = character_dungeon = character_generated = false;
 
@@ -1212,6 +1214,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_mon_recall_destroy();
     win_obj_recall_destroy();
     win_feat_recall_destroy();
+    win_messages_destroy();
 
     event->accept();
 }
@@ -1519,9 +1522,13 @@ void MainWindow::create_actions()
     win_obj_recall->setStatusTip(tr("Displays all known information about a given object."));
     connect(win_obj_recall, SIGNAL(triggered()), this, SLOT(toggle_win_obj_recall()));
 
-    win_feat_recall = new QAction(tr("Show Feature Recall Window"), this);
+    win_feat_recall = new QAction(tr("Show Message Display Window"), this);
     win_feat_recall->setStatusTip(tr("Displays all known information about a given feature."));
     connect(win_feat_recall, SIGNAL(triggered()), this, SLOT(toggle_win_feat_recall()));
+
+    win_messages = new QAction(tr("Show Message Window"), this);
+    win_messages->setStatusTip(tr("Displays all recent messages."));
+    connect(win_messages, SIGNAL(triggered()), this, SLOT(toggle_win_messages()));
 
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
@@ -1750,6 +1757,7 @@ void MainWindow::create_menus()
     win_menu->addAction(win_mon_recall);
     win_menu->addAction(win_obj_recall);
     win_menu->addAction(win_feat_recall);
+    win_menu->addAction(win_messages);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1799,6 +1807,7 @@ void MainWindow::select_font()
             font_win_mon_recall = QFont(family);
             font_win_obj_recall = QFont(family);
             font_win_feat_recall = QFont(family);
+            font_win_messages = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1811,6 +1820,7 @@ void MainWindow::select_font()
     font_win_mon_recall.setPointSize(12);
     font_win_obj_recall.setPointSize(12);
     font_win_feat_recall.setPointSize(12);
+    font_win_messages.setPointSize(12);
 }
 
 
@@ -1851,6 +1861,8 @@ void MainWindow::read_settings()
     font_win_obj_recall.fromString(load_font);
     load_font = settings.value("font_window_feat_recall", font_win_feat_recall ).toString();
     font_win_feat_recall.fromString(load_font);
+    load_font = settings.value("font_window_messages", font_win_messages ).toString();
+    font_win_messages.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
@@ -1894,6 +1906,14 @@ void MainWindow::read_settings()
         window_feat_recall->restoreGeometry(settings.value("winFeatRecallGeometry").toByteArray());
         window_feat_recall->show();
     }
+    show_messages_win = settings.value("show_messages_window", false).toBool();
+    if (show_messages_win)
+    {
+        show_messages_win = FALSE; //hack - so it gets toggled to true
+        toggle_win_messages();
+        window_messages->restoreGeometry(settings.value("winMessagesGeometry").toByteArray());
+        window_messages->show();
+    }
 
     update_recent_savefiles();
 }
@@ -1911,6 +1931,7 @@ void MainWindow::write_settings()
     settings.setValue("font_window_mon_recall", font_win_mon_recall.toString());
     settings.setValue("font_window_obj_recall", font_win_obj_recall.toString());
     settings.setValue("font_window_feat_recall", font_win_feat_recall.toString());
+    settings.setValue("font_window_messages", font_win_messages.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
@@ -1940,6 +1961,11 @@ void MainWindow::write_settings()
     if (show_feat_recall)
     {
         settings.setValue("winFeatRecallGeometry", window_feat_recall->saveGeometry());
+    }
+    settings.setValue("show_messages_window", show_messages_win);
+    if (show_messages_win)
+    {
+        settings.setValue("winMessagesGeometry", window_messages->saveGeometry());
     }
 }
 

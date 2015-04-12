@@ -628,7 +628,7 @@ void PlayerScreenInfo::update_char_screen(void)
                 dd.setNum(1);
                 ds.setNum(1);
             }
-            else if (object_known_p(o_ptr))
+            else if (o_ptr->is_known())
             {
                 first_num += o_ptr->to_h;
                 second_num += o_ptr->to_d;
@@ -668,7 +668,7 @@ void PlayerScreenInfo::update_char_screen(void)
             first_num = p_ptr->state.dis_to_h;
             second_num = 0;
             s32b mult = p_ptr->state.ammo_mult;
-            if (object_known_p(o_ptr))
+            if (o_ptr->is_known())
             {
                 first_num += o_ptr->to_h;
                 second_num += o_ptr->to_d;
@@ -1218,7 +1218,7 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
         dd.setNum(1);
         ds.setNum(1);
     }
-    else if (object_known_p(o_ptr))
+    else if (o_ptr->is_known())
     {
         first_num += o_ptr->to_h;
         second_num += o_ptr->to_d;
@@ -1264,7 +1264,7 @@ void PlayerScreenInfo::char_combat_info(QGridLayout *return_layout)
     first_num = p_ptr->state.dis_to_h;
     second_num = 0;
     mult = p_ptr->state.ammo_mult;
-    if (object_known_p(o_ptr))
+    if (o_ptr->is_known())
     {
         first_num += o_ptr->to_h;
         second_num += o_ptr->to_d;

@@ -346,7 +346,7 @@ void ui_update_titlebar()
 void ui_update_messages()
 {
     main_window->update_messages();
-    p_ptr->redraw &= ~(PR_MESSAGE);
+    p_ptr->redraw &= ~(PR_MESSAGES);
 }
 
 void ui_update_monlist()
@@ -381,6 +381,12 @@ void ui_update_feat_recall()
     if (p_ptr->is_running()) return;
     main_window->win_feat_recall_update();
     p_ptr->redraw &= ~(PR_WIN_FEAT_RECALL);
+}
+
+void ui_update_message_window()
+{
+    main_window->win_messages_update();
+    p_ptr->redraw &= ~(PR_WIN_MESSAGES);
 }
 
 
@@ -483,7 +489,7 @@ void ui_redraw_all()
     main_window->redraw();
 
     // This redraws most things.
-    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_MESSAGE | PR_WIN_MONLIST | PR_WIN_OBJLIST);
+    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_MESSAGES | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 }
 
 void player_death_close_game(void)

@@ -811,7 +811,7 @@ bool squelch_item_ok(object_type *o_ptr)
     if ((k_ptr->squelch == SQUELCH_ALWAYS) && k_ptr->aware) return (TRUE);
 
     /* Apply quality squelch if possible */
-    if (object_known_p(o_ptr) && (squelch_itemp(o_ptr, 0, TRUE) == SQUELCH_YES)) return TRUE;
+    if (o_ptr->is_known() && (squelch_itemp(o_ptr, 0, TRUE) == SQUELCH_YES)) return TRUE;
 
     /* Don't squelch */
     return (FALSE);

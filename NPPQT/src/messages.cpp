@@ -33,7 +33,7 @@ DisplayMessages::DisplayMessages(void)
     message_area->setReadOnly(true);
     message_area->setStyleSheet("background-color: black;");
 
-    update_message_area(message_area, 400);
+    update_message_area(message_area, 400, ui_message_window_font());
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
@@ -49,7 +49,7 @@ DisplayMessages::DisplayMessages(void)
     this->exec();
 }
 
-void update_message_area(QTextEdit *message_area, int max_messages)
+void update_message_area(QTextEdit *message_area, int max_messages, QFont message_font)
 {
     int num_messages = 0;
 
@@ -57,7 +57,7 @@ void update_message_area(QTextEdit *message_area, int max_messages)
     QString next_message;
     next_message.clear();
 
-    message_area->setFont(ui_message_window_font());
+    message_area->setFont(message_font);
 
     for (int i = 0; i < message_list.size(); i++)
     {
@@ -197,7 +197,7 @@ static void add_message_to_vector(QString msg, QColor which_color)
         message_list.prepend(message_body);
     }
 
-    p_ptr->redraw |= PR_MESSAGE;
+    p_ptr->redraw |= (PR_MESSAGES | PR_WIN_MESSAGES);
 
     redraw_stuff();
 }

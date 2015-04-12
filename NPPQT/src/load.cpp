@@ -845,9 +845,6 @@ static void rd_options(void)
 
     u32b flag[8];
     u32b mask[8];
-    u32b window_flag[ANGBAND_TERM_MAX];
-    u32b window_mask[ANGBAND_TERM_MAX];
-
 
     /*** Oops ***/
 
@@ -906,41 +903,8 @@ static void rd_options(void)
         }
     }
 
-
-    /*** Window Options ***/
-
-    /* Read the window flags */
-    for (n = 0; n < ANGBAND_TERM_MAX; n++)
-    {
-        rd_u32b(&window_flag[n]);
-    }
-
-    /* Read the window masks */
-    for (n = 0; n < ANGBAND_TERM_MAX; n++)
-    {
-        rd_u32b(&window_mask[n]);
-    }
-
-    /* Analyze the options */
-    for (n = 0; n < ANGBAND_TERM_MAX; n++)
-    {
-        /* Analyze the options */
-        for (i = 0; i < 32; i++)
-        {
-            /* Process valid flags */
-            if (!window_flag_desc[i].isEmpty())
-            {
-                /* Blank invalid flags */
-                if (!(window_mask[n] & (1L << i)))
-                {
-                    window_flag[n] &= ~(1L << i);
-                }
-            }
-        }
-    }
-
-    /* Set up the subwindows These will be stored in qt mainwindow*/
-    //subwindows_set_flags(window_flag, ANGBAND_TERM_MAX);
+    // Old ANGBAND_TERM_MAX window flags info
+    strip_bytes(64);
 
 }
 

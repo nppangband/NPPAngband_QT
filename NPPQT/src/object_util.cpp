@@ -1147,7 +1147,7 @@ void wipe_o_list(void)
         if (!character_dungeon || birth_preserve)
         {
             /* Hack -- Preserve unknown artifacts */
-            if (o_ptr->is_artifact() && !object_known_p(o_ptr))
+            if (o_ptr->is_artifact() && !o_ptr->is_known())
             {
                 /* Mega-Hack -- Preserve the artifact */
                 a_info[o_ptr->art_num].a_cur_num = 0;
@@ -1279,7 +1279,7 @@ int count_floor_items(int y, int x, bool pickup_only)
             if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP)
             {
                 /* Only known items */
-                if (object_known_p(o_ptr)) continue;
+                if (o_ptr->is_known()) continue;
             }
         }
 
@@ -1655,7 +1655,7 @@ s32b object_value(object_type *o_ptr)
     s32b value;
 
     /* Unknown items -- acquire a base value */
-    if (object_known_p(o_ptr))
+    if (o_ptr->is_known())
     {
         /* Broken items -- worthless */
         if (o_ptr->is_broken()) return (0L);
@@ -1770,9 +1770,9 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
         {
             /* Require either knowledge or known empty for both wands and staffs. */
             if ((!(o_ptr->ident & (IDENT_EMPTY)) &&
-                            !object_known_p(o_ptr)) ||
+                            !o_ptr->is_known()) ||
                             (!(j_ptr->ident & (IDENT_EMPTY)) &&
-                            !object_known_p(j_ptr))) return (FALSE);
+                            !j_ptr->is_known())) return (FALSE);
 
             /* Wand/Staffs charges combine in NPPangband.  */
 
@@ -1814,7 +1814,7 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
         case TV_DRUID_BOOK:
         {
             /* Require both items to be known */
-            if (!object_known_p(o_ptr) || !object_known_p(j_ptr)) return (FALSE);
+            if (!o_ptr->is_known() || !j_ptr->is_known()) return (FALSE);
 
             /* Fall through */
         }
@@ -1825,7 +1825,7 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
         case TV_SHOT:
         {
             /* Require identical knowledge of both items */
-            if (object_known_p(o_ptr) != object_known_p(j_ptr)) return (FALSE);
+            if (o_ptr->is_known() != j_ptr->is_known()) return (FALSE);
 
             /* Require identical "bonuses" */
             if (o_ptr->to_h != j_ptr->to_h) return (FALSE);
@@ -1872,7 +1872,7 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
         default:
         {
             /* Require knowledge */
-            if (!object_known_p(o_ptr) || !object_known_p(j_ptr)) return (FALSE);
+            if (!o_ptr->is_known() || !j_ptr->is_known()) return (FALSE);
 
             /* Probably okay */
             break;
@@ -1984,7 +1984,7 @@ void object_absorb(object_type *o_ptr, object_type *j_ptr)
     o_ptr->number = ((total < MAX_STACK_SIZE) ? total : (MAX_STACK_SIZE - 1));
 
     /* Hack -- Blend "known" status */
-    if (object_known_p(j_ptr)) object_known(o_ptr);
+    if (j_ptr->is_known()) object_known(o_ptr);
 
     /* Hack -- Blend store status */
     if (j_ptr->ident & (IDENT_STORE)) o_ptr->ident |= (IDENT_STORE);
@@ -2572,7 +2572,7 @@ void inven_item_describe(int item)
 
     QString o_name;
 
-    if (o_ptr->is_artifact() && object_known_p(o_ptr))
+    if (o_ptr->is_artifact() && o_ptr->is_known())
     {
         /* Get a description */
         o_name = object_desc(o_ptr, ODESC_FULL);
@@ -2876,8 +2876,8 @@ int sort_quiver(int slot)
             if (i_ptr->sval > j_ptr->sval) continue;
 
             /* Unidentified objects always come last */
-            if (!object_known_p(i_ptr)) continue;
-            if (!object_known_p(j_ptr)) break;
+            if (!i_ptr->is_known()) continue;
+            if (!j_ptr->is_known()) break;
 
             /* Objects sort by decreasing value */
             if (i_value > ammo_info[j].value) break;
@@ -3209,7 +3209,7 @@ void floor_item_charges(int item)
     if ((o_ptr->tval != TV_STAFF) && (o_ptr->tval != TV_WAND)) return;
 
     /* Require known item */
-    if (!object_known_p(o_ptr)) return;
+    if (!o_ptr->is_known()) return;
 
     /* Print a message */
     message(QString("There are %1 charge%2 remaining.") .arg(o_ptr->pval) .arg((o_ptr->pval != 1) ? "s" : ""));
@@ -3473,8 +3473,8 @@ s16b quiver_carry(object_type *o_ptr)
             if (o_ptr->sval > j_ptr->sval) continue;
 
             /* Unidentified objects always come last */
-            if (!object_known_p(o_ptr)) continue;
-            if (!object_known_p(j_ptr)) break;
+            if (!o_ptr->is_known()) continue;
+            if (!j_ptr->is_known()) break;
 
             /* Determine the "value" of the pack item */
             j_value = object_value(j_ptr);
@@ -3651,8 +3651,8 @@ s16b inven_carry(object_type *o_ptr)
             if (o_ptr->sval > j_ptr->sval) continue;
 
             /* Unidentified objects always come last */
-            if (!object_known_p(o_ptr)) continue;
-            if (!object_known_p(j_ptr)) break;
+            if (!o_ptr->is_known()) continue;
+            if (!j_ptr->is_known()) break;
 
             /* Lites sort by decreasing fuel */
             if (o_ptr->tval == TV_LIGHT)
@@ -4089,8 +4089,8 @@ void reorder_pack(void)
             if (o_ptr->sval > j_ptr->sval) continue;
 
             /* Unidentified objects always come last */
-            if (!object_known_p(o_ptr)) continue;
-            if (!object_known_p(j_ptr)) break;
+            if (!o_ptr->is_known()) continue;
+            if (!j_ptr->is_known()) break;
 
             /* Lites sort by decreasing fuel */
             if (o_ptr->tval == TV_LIGHT)
@@ -4359,7 +4359,7 @@ bool chest_requires_disarming(object_type *o_ptr)
     if (!o_ptr->is_chest()) return FALSE;
 
     /* We don't know if it is trapped or not */
-    if (!object_known_p(o_ptr)) return FALSE;
+    if (!o_ptr->is_known()) return FALSE;
 
     /* Already disarmed. */
     if (o_ptr->pval <= 0) return FALSE;

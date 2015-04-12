@@ -488,7 +488,7 @@ static QString obj_desc_combat(object_type *o_ptr,  QString buf, bool spoil)
         case TV_DIGGING:
         {
             /* Only display the real damage dice if the combat stats are known */
-            if ((spoil) || (object_known_p(o_ptr)))
+            if ((spoil) || o_ptr->is_known())
                 buf.append(QString(" (%1d%2)") .arg(o_ptr->dd)  .arg(o_ptr->ds));
             else buf.append(QString(" (%1d%2)") .arg(k_ptr->dd)  .arg(k_ptr->ds));
             break;
@@ -508,7 +508,7 @@ static QString obj_desc_combat(object_type *o_ptr,  QString buf, bool spoil)
 
 
     /* Show weapon bonuses */
-    if (spoil || object_known_p(o_ptr))
+    if (spoil || o_ptr->is_known())
     {
         if (obj_desc_show_weapon(o_ptr) || o_ptr->to_d || o_ptr->to_h)
         {
@@ -527,7 +527,7 @@ static QString obj_desc_combat(object_type *o_ptr,  QString buf, bool spoil)
 
 
     /* Show armor bonuses */
-    if (spoil || object_known_p(o_ptr))
+    if (spoil || o_ptr->is_known())
     {
         if (obj_desc_show_armor(o_ptr))
             buf.append(QString(" [%1,%2]").arg(sign(o_ptr->ac)).arg(sign(o_ptr->to_a)));
@@ -586,7 +586,7 @@ static QString obj_desc_charges(object_type *o_ptr, QString buf)
     bool aware = o_ptr->is_flavor_known() || (o_ptr->ident & IDENT_STORE);
 
     /* See if the object is "known" */
-    bool known = (object_known_p(o_ptr) ? TRUE : FALSE);
+    bool known = o_ptr->is_known();
 
     /* Wands and Staffs have charges */
     if (aware && known && (o_ptr->tval == TV_STAFF || o_ptr->tval == TV_WAND))

@@ -15,6 +15,7 @@ SOURCES +=  src/qt_main.cpp \
             src/qt_mainwindow.cpp \
             src/qt_commands.cpp  \
             src/qt_win_feat_recall.cpp \
+            src/qt_win_messages.cpp \
             src/qt_win_mon_list.cpp \
             src/qt_win_mon_recall.cpp \
             src/qt_win_obj_list.cpp \
@@ -110,6 +111,7 @@ SOURCES +=  src/qt_main.cpp \
 
 
 
+
 HEADERS  += src/qt_mainwindow.h\
             src/npp.h\
             src/defines.h\
@@ -156,7 +158,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/tilebag.h \
             src/user_macros.h \
             src/utilities.h \
-            src/wizard_mode.h \
+            src/wizard_mode.h
 
 
 

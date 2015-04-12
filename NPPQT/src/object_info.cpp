@@ -410,7 +410,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
 
     if (!extra_info) return (output);
 
-    if (object_known_p(o_ptr))
+    if (o_ptr->is_known())
     {
         dd = o_ptr->dd;
         ds = o_ptr->ds;
@@ -421,7 +421,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
         dd = k_ptr->dd;
         ds = k_ptr->ds;
     }
-    plus = object_state.dis_to_d + (object_known_p(o_ptr) ? o_ptr->to_d : 0);
+    plus = object_state.dis_to_d + (o_ptr->is_known() ? o_ptr->to_d : 0);
     crit_hit_percent = critical_hit_chance(o_ptr, object_state, TRUE) / (CRIT_HIT_CHANCE / 100);
     average = (dd * ds) / 2 + plus;
 
@@ -642,7 +642,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
     mult = object_state.ammo_mult;
     dd = j_ptr->dd;
     ds = j_ptr->ds;
-    plus = (object_known_p(o_ptr) ? o_ptr->to_d : 0) + (object_known_p(j_ptr) ? j_ptr->to_d : 0);
+    plus = (o_ptr->is_known() ? o_ptr->to_d : 0) + (j_ptr->is_known() ? j_ptr->to_d : 0);
 
     /* Check for extra damage with a sling for a rogue */
     mult += rogue_shot(j_ptr, &plus, object_state);
@@ -738,7 +738,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
 
     mult = object_state.ammo_mult;
 
-    if (object_known_p(o_ptr))
+    if (o_ptr->is_known())
     {
         dd = o_ptr->dd;
         ds = o_ptr->ds;
@@ -749,7 +749,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
         dd = k_ptr->dd;
         ds = k_ptr->ds;
     }
-    plus = (object_known_p(o_ptr) ? o_ptr->to_d : 0) + (object_known_p(j_ptr) ? j_ptr->to_d : 0);
+    plus = (o_ptr->is_known() ? o_ptr->to_d : 0) + (j_ptr->is_known() ? j_ptr->to_d : 0);
 
     /* Check for extra damage with a sling for a rogue */
     mult += rogue_shot(o_ptr, &plus, object_state);
@@ -895,7 +895,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
 
     if (!extra_info) return (output);
 
-    if (object_known_p(o_ptr))
+    if (o_ptr->is_known())
     {
         dd = o_ptr->dd;
         ds = o_ptr->ds;
@@ -906,7 +906,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
         dd = k_ptr->dd;
         ds = k_ptr->ds;
     }
-    plus = (object_known_p(o_ptr) ? o_ptr->to_d : 0) + p_ptr->state.dis_to_d; ;
+    plus = (o_ptr->is_known() ? o_ptr->to_d : 0) + p_ptr->state.dis_to_d; ;
 
     /* Apply the throwing weapon bonus. */
     mult = weapon_throw_adjust(o_ptr, f3, &plus, TRUE);
@@ -1134,7 +1134,7 @@ static QString describe_misc_magic(object_type *o_ptr, u32b f3)
     {
         if (f3 & (TR3_PERMA_CURSE)) bad[bc++] = "is permanently cursed";
         else if (f3 & (TR3_HEAVY_CURSE)) bad[bc++] = "is heavily cursed";
-        else if (object_known_p(o_ptr)) bad[bc++] = "is cursed";
+        else if (o_ptr->is_known()) bad[bc++] = "is cursed";
     }
 
     /* Describe */
@@ -1531,7 +1531,7 @@ QString object_info_out(object_type *o_ptr,  bool extra_info)
     output.append(describe_throwing_weapon(o_ptr, o_ptr->known_obj_flags_1, o_ptr->known_obj_flags_3, extra_info));
 
     /* Unknown extra powers (artifact) */
-    if (object_known_p(o_ptr) && (!(o_ptr->ident & IDENT_MENTAL)) &&
+    if (o_ptr->is_known() && (!(o_ptr->ident & IDENT_MENTAL)) &&
         (o_ptr->has_hidden_powers() || o_ptr->is_artifact()))
     {
         output.append("<br>It might have hidden powers.");

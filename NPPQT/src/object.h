@@ -1386,16 +1386,6 @@ enum
 
 
 
-/*
- * Determine if a given inventory item is "known"
- * Test One -- Check for special "known" tag
- * Test Two -- Check for "Easy Know" + "Aware"
- */
-#define object_known_p(T) \
-    (((T)->ident & (IDENT_KNOWN)) || \
-     ((k_info[(T)->k_idx].k_flags3 & (TR3_EASY_KNOW)) && \
-      k_info[(T)->k_idx].aware))
-
  /*
   * Determine if the attr and char should consider the item's flavor
   *

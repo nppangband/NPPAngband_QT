@@ -284,7 +284,7 @@ EditCharacterDialog::EditCharacterDialog(void)
 
     /* Redraw everything */
     p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_EQUIP |
-                      PR_MESSAGE | PR_WIN_MON_RECALL | PR_WIN_OBJ_RECALL |
+                      PR_MESSAGES | PR_WIN_MON_RECALL | PR_WIN_OBJ_RECALL | PR_WIN_MESSAGES |
                       PR_WIN_OBJLIST | PR_WIN_FEAT_RECALL);
 
     handle_stuff();
@@ -734,7 +734,7 @@ void WizardModeDialog::wiz_cure_all(void)
 
     /* Redraw everything */
     p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_EQUIP |
-                      PR_MESSAGE | PR_WIN_MON_RECALL | PR_WIN_OBJ_RECALL |
+                      PR_MESSAGES | PR_WIN_MON_RECALL | PR_WIN_OBJ_RECALL |  PR_WIN_MESSAGES |
                       PR_WIN_OBJLIST | PR_WIN_FEAT_RECALL);
 
     handle_stuff();

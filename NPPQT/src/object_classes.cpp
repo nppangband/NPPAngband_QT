@@ -233,7 +233,11 @@ bool object_type::is_easy_know()
  */
 bool object_type::is_known()
 {
-    if (is_easy_know()) return (TRUE);
+    if (is_easy_know())
+    {
+        object_kind *k_ptr = &k_info[k_idx];
+        if (k_ptr->aware) return (TRUE);
+    }
     if (ident & (IDENT_KNOWN)) return (TRUE);
     if (ident & (IDENT_STORE)) return (TRUE);
     return (FALSE);
@@ -735,12 +739,12 @@ void object_type::update_object_flags()
     object_kind *k_ptr = &k_info[k_idx];
 
     /* Base object */
-    obj_flags_1 = known_obj_flags_1 = k_ptr->k_flags1;
-    obj_flags_2 = known_obj_flags_2 = k_ptr->k_flags2;
-    obj_flags_3 = known_obj_flags_3 = k_ptr->k_flags3;
-    obj_flags_native = known_obj_flags_native = k_ptr->k_native;
+    obj_flags_1 = k_ptr->k_flags1;
+    obj_flags_2 = k_ptr->k_flags2;
+    obj_flags_3 = k_ptr->k_flags3;
+    obj_flags_native = k_ptr->k_native;
 
-    if (is_known() && is_aware())
+    if (is_known())
     {
         known_obj_flags_1 = k_ptr->k_flags1;
         known_obj_flags_2 = k_ptr->k_flags2;
@@ -758,8 +762,13 @@ void object_type::update_object_flags()
         obj_flags_3 |= a_ptr->a_flags3;
         obj_flags_native |= a_ptr->a_native;
 
-        known_obj_flags_1 = (a_ptr->a_flags1 & (TR1_PVAL_MASK));
-        known_obj_flags_3 = (a_ptr->a_flags3 & (TR3_IGNORE_MASK));
+        if (is_known())
+        {
+            known_obj_flags_1 = (a_ptr->a_flags1 & (TR1_PVAL_MASK));
+            known_obj_flags_3 = (a_ptr->a_flags3 & (TR3_IGNORE_MASK));
+        }
+
+
     }
 
     /* Ego-item */
@@ -772,8 +781,11 @@ void object_type::update_object_flags()
         obj_flags_3 |= e_ptr->e_flags3;
         obj_flags_native |= e_ptr->e_native;
 
-        known_obj_flags_1 = (e_ptr->e_flags1 & (TR1_PVAL_MASK));
-        known_obj_flags_3 = (e_ptr->e_flags3 & (TR3_IGNORE_MASK));
+        if (is_known())
+        {
+            known_obj_flags_1 = (e_ptr->e_flags1 & (TR1_PVAL_MASK));
+            known_obj_flags_3 = (e_ptr->e_flags3 & (TR3_IGNORE_MASK));
+        }
     }
 
     /*hack - chests use xtra1 to store the theme, don't give additional powers to chests*/

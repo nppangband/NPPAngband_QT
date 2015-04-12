@@ -651,7 +651,7 @@ enum
 #define PR_XX16 		0x00002000L
 #define PR_XXX2         0x00004000L
 #define PR_XX11 		0x00008000L
-#define PR_MESSAGE		0x00010000L	/* Display messages */
+#define PR_MESSAGES		0x00010000L	// Display messages
 #define PR_EQUIP		0x00020000L	/* Display equip/inven */
 #define PR_INVEN		0x00040000L	/* Display inven/equip */
 #define PR_WIN_OBJLIST  0x00080000L /* Display item list */
@@ -659,7 +659,7 @@ enum
 #define PR_WIN_MON_RECALL 0x00200000L /* Monster recall Window */
 #define PR_WIN_OBJ_RECALL  0x00400000L // Object Recall Window
 #define PR_WIN_FEAT_RECALL 0X00800000L // Feature Recall Window
-#define PR_UNUSED1      0x01000000L
+#define PR_WIN_MESSAGES 0x01000000L // Update message window
 #define PR_XX17 		0x02000000L
 #define PR_XX14         0x04000000L
 #define PR_MAP			0x08000000L	/* Display Map */
@@ -681,7 +681,6 @@ enum
 #define PW_PLAYER_1         0x00000008L /* Display player (extra) */
 #define PW_PLAYER_2         0x00000010L /* Display player (compact) */
 #define PW_MAP              0x00000020L /* Display dungeon map */
-#define PW_MESSAGE          0x00000040L /* Display messages */
 #define PW_OVERHEAD         0x00000080L /* Display overhead view */
 #define PW_STATUS           0x00000800L /* Display Status */
 

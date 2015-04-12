@@ -125,16 +125,7 @@ enum
 
 
 
-/*
- * Maximum amount of Angband windows.
- */
-#define ANGBAND_TERM_MAX 8
-
-
-
-#define SIDEBAR_MAX_TYPES	18
-
-#define SIDEBAR_MONSTER_MAX	25
+#define SIDEBAR_MONSTER_MAX	15
 
 /*
  * There is a 1/160 chance per round of creating a new monster

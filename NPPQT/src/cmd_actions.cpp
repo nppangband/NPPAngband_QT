@@ -517,7 +517,7 @@ int count_chests(int *y, int *x, bool trapped)
 
         /* No (known) traps here */
         if (trapped &&
-            (!object_known_p(o_ptr) ||
+            (!o_ptr->is_known() ||
              (o_ptr->pval < 0) ||
              !chest_traps[o_ptr->pval]))
         {
@@ -1041,7 +1041,7 @@ static bool do_cmd_disarm_chest(int y, int x, s16b o_idx)
     if (j < 2) j = 2;
 
     /* Must find the trap first. */
-    if (!object_known_p(o_ptr))
+    if (!o_ptr->is_known())
     {
         message("I don't see any traps.");
     }
@@ -1509,7 +1509,7 @@ void do_search(void)
                     if (o_ptr->is_quest_object()) continue;
 
                     /* Identify once */
-                    if (!object_known_p(o_ptr))
+                    if (!o_ptr->is_known())
                     {
                         /* Message */
                         message(QString("You have discovered a trap on the chest!"));
