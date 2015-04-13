@@ -921,6 +921,7 @@ MainWindow::MainWindow()
     which_keyset = KEYSET_NEW;
     show_obj_list = show_mon_list = show_messages_win = FALSE;
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
+    show_char_info_basic = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -1090,8 +1091,9 @@ void MainWindow::save_and_close()
     win_obj_recall_wipe();
     win_feat_recall_wipe();
     win_messages_wipe();
+    win_char_info_basic_wipe();
 
-    character_loaded = character_dungeon = character_generated = false;
+    character_loaded = character_dungeon = character_generated = FALSE;
 
     update_file_menu_game_inactive();
 
@@ -1215,6 +1217,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_obj_recall_destroy();
     win_feat_recall_destroy();
     win_messages_destroy();
+    win_char_info_basic_destroy();
 
     event->accept();
 }
@@ -1530,6 +1533,10 @@ void MainWindow::create_actions()
     win_messages->setStatusTip(tr("Displays all recent messages."));
     connect(win_messages, SIGNAL(triggered()), this, SLOT(toggle_win_messages()));
 
+    win_char_basic = new QAction(tr("Show Basic Character Information"), this);
+    win_char_basic->setStatusTip(tr("Display basic character information."));
+    connect(win_char_basic, SIGNAL(triggered()), this, SLOT(toggle_win_char_info_frame()));
+
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
     connect(help_about, SIGNAL(triggered()), this, SLOT(about()));
@@ -1750,7 +1757,6 @@ void MainWindow::create_menus()
     knowledge->addAction(view_scores);
     knowledge->addAction(view_kill_count);
 
-
     win_menu = menuBar()->addMenu(tr("&Windows"));
     win_menu->addAction(win_mon_list);
     win_menu->addAction(win_obj_list);
@@ -1758,6 +1764,7 @@ void MainWindow::create_menus()
     win_menu->addAction(win_obj_recall);
     win_menu->addAction(win_feat_recall);
     win_menu->addAction(win_messages);
+    win_menu->addAction(win_char_basic);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1808,6 +1815,7 @@ void MainWindow::select_font()
             font_win_obj_recall = QFont(family);
             font_win_feat_recall = QFont(family);
             font_win_messages = QFont(family);
+            font_char_basic_info = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1821,6 +1829,7 @@ void MainWindow::select_font()
     font_win_obj_recall.setPointSize(12);
     font_win_feat_recall.setPointSize(12);
     font_win_messages.setPointSize(12);
+    font_char_basic_info.setPointSize(12);
 }
 
 
@@ -1863,6 +1872,8 @@ void MainWindow::read_settings()
     font_win_feat_recall.fromString(load_font);
     load_font = settings.value("font_window_messages", font_win_messages ).toString();
     font_win_messages.fromString(load_font);
+    load_font = settings.value("font_char_basic", font_char_basic_info ).toString();
+    font_char_basic_info.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
@@ -1914,6 +1925,14 @@ void MainWindow::read_settings()
         window_messages->restoreGeometry(settings.value("winMessagesGeometry").toByteArray());
         window_messages->show();
     }
+    show_char_info_basic = settings.value("window_char_info_basic", false).toBool();
+    if (show_char_info_basic)
+    {
+        show_char_info_basic = FALSE; //hack - so it gets toggled to true
+        toggle_win_char_info_frame();
+        window_char_info_basic->restoreGeometry(settings.value("winCharBasicGeometry").toByteArray());
+        window_char_info_basic->show();
+    }
 
     update_recent_savefiles();
 }
@@ -1932,6 +1951,7 @@ void MainWindow::write_settings()
     settings.setValue("font_window_obj_recall", font_win_obj_recall.toString());
     settings.setValue("font_window_feat_recall", font_win_feat_recall.toString());
     settings.setValue("font_window_messages", font_win_messages.toString());
+    settings.setValue("font_char_basic", font_char_basic_info.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
@@ -1966,6 +1986,11 @@ void MainWindow::write_settings()
     if (show_messages_win)
     {
         settings.setValue("winMessagesGeometry", window_messages->saveGeometry());
+    }
+    settings.setValue("show_char_basic_window", show_char_info_basic);
+    if (show_char_info_basic)
+    {
+        settings.setValue("winCharBasicGeometry", window_char_info_basic->saveGeometry());
     }
 }
 
@@ -2006,6 +2031,9 @@ void MainWindow::load_file(const QString &file_name)
                 graphics_view->setFocus();
                 redraw();
                 update_sidebar_font();
+
+                // Now that we have a character, fill in the char info window
+                if (show_char_info_basic) create_win_char_info();
             }
         }
     }
@@ -2029,6 +2057,7 @@ void MainWindow::launch_birth(bool quick_start)
         graphics_view->setFocus();
         redraw();
         update_sidebar_font();
+        if (show_char_info_basic) create_win_char_info();
 
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.

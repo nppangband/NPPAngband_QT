@@ -1264,7 +1264,7 @@ void process_entities(void)
         {
             p_ptr->player_turn = TRUE;
             /* Let the character take a turn */
-            process_player();    
+            process_player();
             return;
         }
     }

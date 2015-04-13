@@ -636,6 +636,9 @@ extern void ui_update_mon_recall();
 extern void ui_update_obj_recall();
 extern void ui_update_feat_recall();
 extern void ui_update_message_window();
+extern void ui_update_char_basic_window();
+extern void ui_update_char_score();
+extern void ui_update_char_turncount();
 extern void player_death_close_game(void);
 extern void ui_redraw_grid(int y, int x);
 extern void ui_redraw_all();
@@ -917,6 +920,7 @@ extern void write_note(QString note, s16b depth);
 extern QString find_roman_numeral(QString full_name);
 extern QString int_to_roman(int n);
 extern int roman_to_int(QString roman);
+extern void clear_layout(QLayout* layout);
 
 // widard_mode.cpp
 extern bool make_fake_artifact(object_type *o_ptr, byte art_num);

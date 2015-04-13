@@ -43,7 +43,7 @@ public:
 
 
 
-class PlayerBirth : public PlayerScreenInfo
+class PlayerBirth : public QDialog
 {
     Q_OBJECT
 
@@ -54,9 +54,15 @@ public:
 
 private:
     void setup_character();
+    void char_name_label(QGridLayout *return_layout);
 
     // try not to update the character more than once each action
     bool hold_update;
+
+    QWidget *top_widget;
+    QGridLayout *glay_char_basic;
+    QGridLayout *glay_char_data;
+    QGridLayout *glay_ability_info;
 
 
     //Option checkboxes

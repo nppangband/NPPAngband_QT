@@ -211,6 +211,8 @@ void process_player(void)
         py_pickup_gold();
     }
 
+    p_ptr->redraw |= (PR_TURNCOUNT);
+
     /*** Clean up ***/
 
     /* hack - check for secret squares */

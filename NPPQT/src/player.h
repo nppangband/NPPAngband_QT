@@ -635,38 +635,38 @@ enum
 /*
  * Bit flags for the "p_ptr->redraw" variable
  */
-#define PR_XXX1         0x00000001L
-#define PR_SIDEBAR_PL	0x00000002L	/* Update the sidebar */
-#define PR_SIDEBAR_MON	0x00000004L	/* Display Monster Health Bar */
-#define PR_STATUSBAR	0x00000008L	// Update the statusbar
-#define PR_TITLEBAR     0x00000010L // Update the titlebar
-#define PR_XXX3         0x00000020L
-#define PR_XXX4			0x00000040L
-#define PR_XXX5			0x00000080L
-#define PR_XXX6			0x00000100L
-#define PR_XXX7         0x00000200L
-#define PR_XXX8 		0x00000400L
-#define PR_XXX9     	0x00000800L
-#define PR_XX10 		0x00001000L
-#define PR_XX16 		0x00002000L
-#define PR_XXX2         0x00004000L
-#define PR_XX11 		0x00008000L
-#define PR_MESSAGES		0x00010000L	// Display messages
-#define PR_EQUIP		0x00020000L	/* Display equip/inven */
-#define PR_INVEN		0x00040000L	/* Display inven/equip */
-#define PR_WIN_OBJLIST  0x00080000L /* Display item list */
-#define PR_WIN_MONLIST  0x00100000L /* Update Monster List Window */
-#define PR_WIN_MON_RECALL 0x00200000L /* Monster recall Window */
-#define PR_WIN_OBJ_RECALL  0x00400000L // Object Recall Window
-#define PR_WIN_FEAT_RECALL 0X00800000L // Feature Recall Window
-#define PR_WIN_MESSAGES 0x01000000L // Update message window
-#define PR_XX17 		0x02000000L
-#define PR_XX14         0x04000000L
-#define PR_MAP			0x08000000L	/* Display Map */
-#define PR_XX13         0x10000000L
-#define PR_XX12 		0x20000000L
-#define PR_XX18         0x40000000L
-#define PR_UNUSED2		0x80000000L	/* Unused */
+#define PR_XXX1             0x00000001L
+#define PR_SIDEBAR_PL       0x00000002L	/* Update the sidebar */
+#define PR_SIDEBAR_MON      0x00000004L	/* Display Monster Health Bar */
+#define PR_STATUSBAR        0x00000008L	// Update the statusbar
+#define PR_TITLEBAR         0x00000010L // Update the titlebar
+#define PR_XXX3             0x00000020L
+#define PR_XXX4             0x00000040L
+#define PR_PLYR_SCORE       0x00000080L // Update only player score
+#define PR_TURNCOUNT        0x00000100L // Update only the turncount
+#define PR_XXX7             0x00000200L
+#define PR_XXX8             0x00000400L
+#define PR_XXX9             0x00000800L
+#define PR_XX10             0x00001000L
+#define PR_XX16             0x00002000L
+#define PR_XXX2             0x00004000L
+#define PR_XX11             0x00008000L
+#define PR_MESSAGES         0x00010000L	// Display messages
+#define PR_EQUIP            0x00020000L	/* Display equip/inven */
+#define PR_INVEN            0x00040000L	/* Display inven/equip */
+#define PR_WIN_OBJLIST      0x00080000L /* Display item list */
+#define PR_WIN_MONLIST      0x00100000L /* Update Monster List Window */
+#define PR_WIN_MON_RECALL   0x00200000L /* Monster recall Window */
+#define PR_WIN_OBJ_RECALL   0x00400000L // Object Recall Window
+#define PR_WIN_FEAT_RECALL  0X00800000L // Feature Recall Window
+#define PR_WIN_MESSAGES     0x01000000L // Update message window
+#define PR_WIN_CHAR_BASIC   0x02000000L // Update basic character window
+#define PR_XX14             0x04000000L
+#define PR_MAP              0x08000000L	/* Display Map */
+#define PR_XX13             0x10000000L
+#define PR_XX12             0x20000000L
+#define PR_XX18             0x40000000L
+#define PR_UNUSED2          0x80000000L	/* Unused */
 
 
 //Both player and monster sidebar
@@ -677,7 +677,6 @@ enum
  */
 #define PW_INVEN            0x00000001L /* Display inven/equip */
 #define PW_EQUIP            0x00000002L /* Display equip/inven */
-#define PW_PLAYER_0         0x00000004L /* Display player (basic) */
 #define PW_PLAYER_1         0x00000008L /* Display player (extra) */
 #define PW_PLAYER_2         0x00000010L /* Display player (compact) */
 #define PW_MAP              0x00000020L /* Display dungeon map */

@@ -170,4 +170,5 @@ void enter_score(QString date_death)
 void update_player_score(void)
 {
     p_ptr->current_score = total_points();
+    p_ptr->redraw |= (PR_PLYR_SCORE);
 }

@@ -272,6 +272,7 @@ private:
     QAction *win_obj_recall;
     QAction *win_feat_recall;
     QAction *win_messages;
+    QAction *win_char_basic;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -476,6 +477,33 @@ public:
 private slots:
     void win_messages_font();
     void toggle_win_messages();
+
+
+// Character Information window
+private:
+    bool show_char_info_basic;
+    QWidget *window_char_info_basic;
+    QVBoxLayout *main_vlay;
+    QMenuBar *char_info_basic_menubar;
+    QAction *char_info_basic_font;
+    QFont font_char_basic_info;
+    QMenu *char_info_basic_settings;
+    void win_char_info_basic_create();
+    void win_char_info_basic_destroy();
+    void win_char_info_basic_wipe();
+    void set_font_char_info_basic(QFont newFont);
+    void name_change_pushbutton(QGridLayout *return_layout);
+    void create_win_char_info();
+
+public:
+    void win_char_info_basic_update();
+    void win_char_info_score();
+    void win_char_info_turncount();
+
+private slots:
+    void win_char_info_basic_font();
+    void toggle_win_char_info_frame();
+    void name_change(void);
 };
 
 extern MainWindow *main_window;

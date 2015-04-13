@@ -609,8 +609,7 @@ static void calc_torch(void)
     /* Notice changes in the "lite radius" */
 
     /* Update the visuals */
-    p_ptr->update |= (PU_UPDATE_VIEW);
-    p_ptr->update |= (PU_MONSTERS);
+    p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
 }
 
 
@@ -2065,10 +2064,20 @@ void redraw_stuff(void)
     // This needs to go before the others (see ui_redraw_all)
     if (p_ptr->redraw & (PR_MAP)) ui_redraw_all();
 
+    if (p_ptr->redraw & (PR_EQUIP))
+    {
+        p_ptr->redraw |= (PR_WIN_CHAR_BASIC);
+    }
+    if (p_ptr->redraw & (PR_INVEN))
+    {
+        p_ptr->redraw |= (PR_WIN_CHAR_BASIC);
+    }
+
     if (p_ptr->redraw & (PR_SIDEBAR_PL))
     {
         if (!p_ptr->is_resting() && !p_ptr->is_running())
         {
+            p_ptr->redraw |= (PR_WIN_CHAR_BASIC);
             ui_update_sidebar_player();
         }
     }
@@ -2083,10 +2092,18 @@ void redraw_stuff(void)
 
     if (p_ptr->redraw & (PR_STATUSBAR))
     {
-        if (!p_ptr->is_running()) ui_update_statusbar();
+        if (!p_ptr->is_running())
+        {
+            p_ptr->redraw |= (PR_WIN_CHAR_BASIC);
+            ui_update_statusbar();
+        }
     }
 
-    if (p_ptr->redraw & (PR_TITLEBAR)) ui_update_titlebar();
+    if (p_ptr->redraw & (PR_TITLEBAR))
+    {
+        p_ptr->redraw |= (PR_WIN_CHAR_BASIC);
+        ui_update_titlebar();
+    }
     if (p_ptr->redraw & (PR_MESSAGES)) ui_update_messages();
     if (p_ptr->redraw & (PR_WIN_MONLIST)) ui_update_monlist();
     if (p_ptr->redraw & (PR_WIN_OBJLIST)) ui_update_objlist();
@@ -2094,6 +2111,11 @@ void redraw_stuff(void)
     if (p_ptr->redraw & (PR_WIN_OBJ_RECALL)) ui_update_obj_recall();
     if (p_ptr->redraw & (PR_WIN_FEAT_RECALL)) ui_update_feat_recall();
     if (p_ptr->redraw & (PR_WIN_MESSAGES)) ui_update_message_window();
+
+    // This should come before PR_PLYR_SCORE and PR_TURNCOUNT
+    if (p_ptr->redraw & (PR_WIN_CHAR_BASIC)) ui_update_char_basic_window();
+    if (p_ptr->redraw & (PR_PLYR_SCORE)) ui_update_char_score();
+    if (p_ptr->redraw & (PR_TURNCOUNT)) ui_update_char_turncount();
 }
 
 

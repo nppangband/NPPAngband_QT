@@ -389,6 +389,27 @@ void ui_update_message_window()
     p_ptr->redraw &= ~(PR_WIN_MESSAGES);
 }
 
+void ui_update_char_basic_window()
+{
+    if (p_ptr->is_running() || p_ptr->is_resting()) return;
+    main_window->win_char_info_basic_update();
+    p_ptr->redraw &= ~(PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
+}
+
+void ui_update_char_score()
+{
+    if (p_ptr->is_running() || p_ptr->is_resting()) return;
+    main_window->win_char_info_score();
+    p_ptr->redraw &= ~(PR_PLYR_SCORE);
+}
+
+void ui_update_char_turncount()
+{
+    if (p_ptr->is_running() || p_ptr->is_resting()) return;
+    main_window->win_char_info_turncount();
+    p_ptr->redraw &= ~(PR_TURNCOUNT);
+}
+
 
 int ui_get_dir_from_slope(int y1, int x1, int y2, int x2)
 {

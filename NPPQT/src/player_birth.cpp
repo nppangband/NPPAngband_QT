@@ -174,6 +174,12 @@ void PlayerBirth::update_stats_info()
                 else this_lbl->hide();
                 continue;
             }
+            // Update the player history
+            if (this_name.operator ==("PLYR_Hist"))
+            {
+                this_lbl->setText(color_string(QString("<b>%1</b>") .arg(p_ptr->history), TERM_BLUE));
+                continue;
+            }
         }
     }
 
@@ -826,6 +832,13 @@ void PlayerBirth::random_all(void)
     update_character(TRUE, TRUE);
 };
 
+void PlayerBirth::char_name_label(QGridLayout *return_layout)
+{
+    QLabel *player_name = new QLabel;
+    make_standard_label(player_name, "NAME:", TERM_DARK);
+    return_layout->addWidget(player_name, 0, 0, Qt::AlignLeft);
+}
+
 // Add player names, buttons, and gender
 void PlayerBirth::add_genders(QVBoxLayout *return_layout)
 {
@@ -918,7 +931,7 @@ void PlayerBirth::update_character(bool new_player, bool needs_stat_update)
 void PlayerBirth::update_screen(void)
 {
     update_stats_info();
-    update_char_screen();
+    update_char_screen(top_widget);
 }
 
 
@@ -963,6 +976,7 @@ void PlayerBirth::setup_character()
     calc_bonuses(inventory, &p_ptr->state, false);
     calc_stealth();
 
+
 }
 
 
@@ -975,7 +989,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     //Set up the main scroll bar
     QVBoxLayout *top_layout = new QVBoxLayout;
     QVBoxLayout *main_layout = new QVBoxLayout;
-    QWidget *top_widget = new QWidget;
+    top_widget = new QWidget;
     QScrollArea *scroll_box = new QScrollArea;
     top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     top_widget->setLayout(main_layout);
@@ -1021,17 +1035,19 @@ PlayerBirth::PlayerBirth(bool quickstart)
     add_info_boxes(vlay_help_area);
     vlay_help_area->addStretch(1);
 
-
     QVBoxLayout *vlay_stats_info_area = new QVBoxLayout;
     hlay_choices->addLayout(vlay_stats_info_area);
     add_stat_boxes(vlay_stats_info_area);
     vlay_stats_info_area->addStretch(1);
 
+
+
     QHBoxLayout *hlay_info = new QHBoxLayout;
     main_layout->addLayout(hlay_info);
 
     QVBoxLayout *vlay_char_basic = new QVBoxLayout;
-    QGridLayout *glay_char_basic = new QGridLayout;
+    glay_char_basic = new QGridLayout;
+    char_name_label(glay_char_basic);
     char_basic_info(glay_char_basic);
     vlay_char_basic->addLayout(glay_char_basic);
     vlay_char_basic->addStretch(1);
@@ -1039,7 +1055,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     hlay_info->addStretch(1);
 
     QVBoxLayout *vlay_char_data = new QVBoxLayout;
-    QGridLayout *glay_char_data = new QGridLayout;
+    glay_char_data = new QGridLayout;
     char_basic_data(glay_char_data);
     vlay_char_data->addLayout(glay_char_data);
     vlay_char_data->addStretch(1);
@@ -1047,7 +1063,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     hlay_info->addStretch(1);
 
     QVBoxLayout *vlay_ability_info = new QVBoxLayout;
-    QGridLayout *glay_ability_info = new QGridLayout;
+    glay_ability_info = new QGridLayout;
     char_ability_info(glay_ability_info);
     vlay_ability_info->addLayout(glay_ability_info);
     vlay_ability_info->addStretch(1);
@@ -1063,6 +1079,18 @@ PlayerBirth::PlayerBirth(bool quickstart)
     vlay_stats_current = new QVBoxLayout;
     hlay_info->addLayout(vlay_stats_current);
     add_stat_results();
+
+    // Add player history
+    QVBoxLayout *history_box = new QVBoxLayout;
+    main_layout->addStretch(1);
+    main_layout->addLayout(history_box);
+    QLabel *history = new QLabel();
+    make_standard_label(history, (QString("<b>%1</b>") .arg(p_ptr->history)), TERM_BLUE);
+    history->setObjectName("PLYR_Hist");
+    history_box->addWidget(history);
+    main_layout->addStretch(1);
+
+    update_char_screen(top_widget);
 
     //Add a close button on the right side
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
