@@ -396,6 +396,13 @@ void ui_update_char_basic_window()
     p_ptr->redraw &= ~(PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
 }
 
+void ui_update_char_equip_window()
+{
+    if (p_ptr->is_running() || p_ptr->is_resting()) return;
+    main_window->win_char_info_equip_update();
+    p_ptr->redraw &= ~(PR_WIN_CHAR_EQUIP);
+}
+
 void ui_update_char_score()
 {
     if (p_ptr->is_running() || p_ptr->is_resting()) return;

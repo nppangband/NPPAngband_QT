@@ -44,17 +44,27 @@ void MainWindow::name_change_pushbutton(QGridLayout *return_layout)
     return_layout->addWidget(label_player_name, 0, 0, Qt::AlignLeft);
 }
 
+void MainWindow::update_label_basic_font()
+{
+    QList<QLabel *> lbl_list = window_char_info_basic->findChildren<QLabel *>();
+    for (int i = 0; i < lbl_list.size(); i++)
+    {
+        QLabel *this_lbl = lbl_list.at(i);
+        this_lbl->setFont(font_char_basic_info);
+    }
+}
 
 void MainWindow::set_font_char_info_basic(QFont newFont)
 {
     font_char_basic_info = newFont;
-    win_char_info_basic_update();
+    update_label_basic_font();
+
 }
 
 void MainWindow::win_char_info_basic_font()
 {
     bool selected;
-    QFont font = QFontDialog::getFont( &selected, font_char_basic_info, this );
+    QFont font = QFontDialog::getFont( &selected, font_char_basic_info, this);
 
     if (selected)
     {
@@ -67,7 +77,7 @@ void MainWindow::win_char_info_basic_wipe()
 {
     if (!show_char_info_basic) return;
     if (!character_generated) return;
-    clear_layout(main_vlay);
+    clear_layout(main_vlay_char_basic);
 }
 
 // Just update the score
@@ -137,7 +147,7 @@ void MainWindow::create_win_char_info()
 
     QHBoxLayout *char_info_basic_hlay = new QHBoxLayout;
 
-    main_vlay->addLayout(char_info_basic_hlay);
+    main_vlay_char_basic->addLayout(char_info_basic_hlay);
 
     QVBoxLayout *vlay_basic = new QVBoxLayout;
     char_info_basic_hlay->addLayout(vlay_basic);
@@ -163,14 +173,14 @@ void MainWindow::create_win_char_info()
 
     // Add player history
     // Title Box
-    main_vlay->addStretch(1);
+    main_vlay_char_basic->addStretch(1);
     QLabel *history = new QLabel();
     make_standard_label(history, p_ptr->history, TERM_BLUE);
-    main_vlay->addWidget(history);
-    main_vlay->addStretch(1);
+    main_vlay_char_basic->addWidget(history);
+    main_vlay_char_basic->addStretch(1);
 
     QHBoxLayout *char_info_other_hlay = new QHBoxLayout;
-    main_vlay->addLayout(char_info_other_hlay);
+    main_vlay_char_basic->addLayout(char_info_other_hlay);
 
     QVBoxLayout *vlay_combat_info = new QVBoxLayout;
     char_info_other_hlay->addLayout(vlay_combat_info);
@@ -194,6 +204,7 @@ void MainWindow::create_win_char_info()
     vlay_stat_info->addStretch(1);
 
     update_char_screen(window_char_info_basic);
+    update_label_basic_font();
 }
 
 /*
@@ -204,11 +215,11 @@ void MainWindow::create_win_char_info()
 void MainWindow::win_char_info_basic_create()
 {
     window_char_info_basic = new QWidget();
-    main_vlay = new QVBoxLayout;
-    window_char_info_basic->setLayout(main_vlay);
+    main_vlay_char_basic = new QVBoxLayout;
+    window_char_info_basic->setLayout(main_vlay_char_basic);
 
     char_info_basic_menubar = new QMenuBar;
-    main_vlay->setMenuBar(char_info_basic_menubar);
+    main_vlay_char_basic->setMenuBar(char_info_basic_menubar);
     window_char_info_basic->setWindowTitle("Character Information - Basic");
     char_info_basic_settings = char_info_basic_menubar->addMenu(tr("&Settings"));
     char_info_basic_font = new QAction(tr("Set Basic Character Screen Font"), this);
@@ -232,7 +243,7 @@ void MainWindow::toggle_win_char_info_frame()
     {
         win_char_info_basic_create();
         show_char_info_basic = TRUE;
-        if (character_generated) create_win_char_info();
+        create_win_char_info();
         win_char_basic->setText("Hide Basic Character Information");
         window_char_info_basic->show();
     }

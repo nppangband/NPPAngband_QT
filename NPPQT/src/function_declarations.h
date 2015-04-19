@@ -637,6 +637,7 @@ extern void ui_update_obj_recall();
 extern void ui_update_feat_recall();
 extern void ui_update_message_window();
 extern void ui_update_char_basic_window();
+extern void ui_update_char_equip_window();
 extern void ui_update_char_score();
 extern void ui_update_char_turncount();
 extern void player_death_close_game(void);
