@@ -17,10 +17,13 @@
 
 #include <src/npp.h>
 #include <src/object_all_menu.h>
+#include <src/object_settings.h>
 #include <src/messages.h>
+#include <src/player_command.h>
 #include <QButtonGroup>
 #include <QKeyEvent>
 #include <QDialogButtonBox>
+#include <QPushButton>
 
 
 /*
@@ -30,6 +33,78 @@
  *
  *
  */
+
+// Determine if the objects dialog needs redrawing
+static bool command_needs_reset(int command)
+{
+    switch (command)
+    {
+        case CMD_TAKEOFF:
+        case CMD_WIELD:
+        case CMD_ITEM_USE:
+        case CMD_SWAP:
+        case CMD_REFUEL:
+        case CMD_FIRE:
+        case CMD_FIRE_NEAR:
+        case CMD_DROP:
+        case CMD_PICKUP:
+        case CMD_CAST:
+        case CMD_DESTROY:
+        case CMD_INSCRIBE:
+        case CMD_UNINSCRIBE:
+        case CMD_ACTIVATE:
+        case CMD_THROW:
+        {
+            return (TRUE);
+        }
+        default: break;
+    }
+    return (FALSE);
+}
+
+
+void AllObjectsDialog::button_click()
+{
+    QString item_id = QObject::sender()->objectName();
+
+    bool ok;
+
+    int splitter = item_id.indexOf("_");
+
+    QString command_string = item_id;
+
+    command_string.truncate(splitter);
+    item_id.remove(0, splitter+1);
+
+    int item_num = item_id.toInt(&ok, 10);
+    // Paranoia
+    if (!ok) return;
+    int command_num = command_string.toInt(&ok, 10);
+    // Paranoia
+    if (!ok) return;
+
+    p_ptr->message_append_start();
+
+    // Hack = Special handling for object settings
+    if (command_num == CMD_SETTINGS)
+    {
+        object_settings(item_num);
+        return;
+    }
+
+    // We aren't repeating the previous command
+    p_ptr->player_previous_command_wipe();
+
+    bool reset = command_needs_reset(command_num);
+
+    if (reset) this->close();
+
+    process_command(item_num, command_num);
+    p_ptr->message_append_stop();
+
+    if (reset) do_cmd_all_objects(current_tab);
+    else update_dialog();
+}
 
 void AllObjectsDialog::move_left()
 {
@@ -157,7 +232,21 @@ void AllObjectsDialog::close_dialog()
 {
     p_ptr->message_append_stop();
     this->reject();
+}
 
+void AllObjectsDialog::link_pushbuttons()
+{
+    QList<QPushButton *> pushbutton_list = this->findChildren<QPushButton *>();
+
+    for (int i = 0; i < pushbutton_list.size(); i++)
+    {
+        QPushButton *this_button = pushbutton_list.at(i);
+
+        // Just the objects
+        if (!this_button->objectName().length()) continue;
+
+        connect(this_button, SIGNAL(pressed()), this, SLOT(button_click()));
+    }
 }
 
 void AllObjectsDialog::update_dialog()
@@ -178,15 +267,20 @@ void AllObjectsDialog::update_dialog()
     update_equip_list(equip_list, FALSE, TRUE);
     update_quiver_list(quiver_list, FALSE, TRUE);
     hide_or_show_tabs();
+    link_pushbuttons();
     update_message_area(message_area, 3);
 }
 
 void AllObjectsDialog::update_active_tabs()
 {
-    floor_tab_idx = object_tabs->indexOf(floor_tab);
-    inven_tab_idx = object_tabs->indexOf(inven_tab);
-    equip_tab_idx = object_tabs->indexOf(equip_tab);
+    floor_tab_idx = object_tabs->indexOf(scroll_floor);
+    inven_tab_idx = object_tabs->indexOf(scroll_inven);
+    equip_tab_idx = object_tabs->indexOf(scroll_equip);
+
+
 }
+
+
 
 /*
  * Figure out which tabs to show or hide.  Try to keep
@@ -205,8 +299,6 @@ void AllObjectsDialog::hide_or_show_tabs()
     int active_tab = object_tabs->currentIndex();
 
     update_active_tabs();
-
-    int current_tab = TABS_MAX;
 
     // Fine the current active tab.
     if (active_tab < 0) current_tab = TAB_INVEN;
@@ -248,6 +340,14 @@ void AllObjectsDialog::hide_or_show_tabs()
     else if (allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
     else object_tabs->setCurrentIndex(0);
 
+    // Re-record the current tab;
+    active_tab = object_tabs->currentIndex();
+    if (active_tab < 0) current_tab = TAB_INVEN;
+    else if (floor_tab_idx == active_tab) current_tab = TAB_FLOOR;
+    else if (inven_tab_idx == active_tab) current_tab = TAB_INVEN;
+    else if (equip_tab_idx == active_tab) current_tab = TAB_EQUIP;
+
+
     // Only use the start tab once
     start_tab = TABS_MAX;
 }
@@ -269,8 +369,8 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     //Set up the main scroll bar
     QVBoxLayout *top_layout = new QVBoxLayout;
     QVBoxLayout *main_layout = new QVBoxLayout;
-    QWidget *top_widget = new QWidget;
-    QScrollArea *scroll_box = new QScrollArea;
+    top_widget = new QWidget;
+    scroll_box = new QScrollArea;
     top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     top_widget->setLayout(main_layout);
     scroll_box->setWidget(top_widget);
@@ -388,6 +488,8 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     setLayout(top_layout);
     setWindowTitle(tr("Object Menu"));
 
+    link_pushbuttons();
+
     QSize this_size = QSize(width() * 3 / 2, height() * 5 / 2);
     resize(ui_max_widget_size(this_size));
     updateGeometry();
@@ -398,9 +500,7 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 
 void do_cmd_all_objects(int start_screen)
 {
-    p_ptr->in_menu = TRUE;
     AllObjectsDialog(TRUE, start_screen);
-    p_ptr->in_menu = FALSE;
     p_ptr->message_append_stop();
 }
 

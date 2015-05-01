@@ -1097,7 +1097,7 @@ bool make_attack_normal(monster_type *m_ptr)
                         }
 
                         /* Redraw stuff */
-                        p_ptr->redraw |= (PR_EQUIP);
+                        p_ptr->redraw |= (PR_WIN_EQUIPMENT);
                     }
 
                     break;

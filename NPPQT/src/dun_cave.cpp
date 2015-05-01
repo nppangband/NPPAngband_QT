@@ -5124,9 +5124,6 @@ void disturb(int stop_search, int unused_flag)
     /* Cancel repeated commands */
     p_ptr->player_command_wipe();
 
-    // Signal to terminate menu
-    p_ptr->in_menu = FALSE;
-
     /* Cancel searching if requested */
     if (stop_search && p_ptr->searching)
     {

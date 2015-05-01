@@ -165,6 +165,8 @@ command_type command_info[] =
     {ARG_ITEM, command_use, TRUE,  FALSE, 0},
     // CMD_THROW
     {ARG_ITEM, command_throw, TRUE,  FALSE, 0},
+    // CMD_SETTINGS - not handled here
+    {ARG_SPECIAL, NULL, FALSE,  FALSE, 0},
 };
 
 // Prepare a command for processing.
@@ -210,12 +212,15 @@ void process_command(int item, s16b command)
     // resting needs special handling
     if (command_ptr->is_special())
     {
-        if (command == CMD_RESTING) RestDialog(&args.choice);
-        //no choice made
-        if (!args.choice) return;
-        if (args.choice == REST_TURNCOUNT)
+        if (command == CMD_RESTING)
         {
-            args.repeats = get_quantity(QString("Enter rest turncount"), 9999, 0, FALSE);
+            RestDialog(&args.choice);
+            //no choice made
+            if (!args.choice) return;
+            if (args.choice == REST_TURNCOUNT)
+            {
+                args.repeats = get_quantity(QString("Enter rest turncount"), 9999, 0, FALSE);
+            }
         }
     }
 

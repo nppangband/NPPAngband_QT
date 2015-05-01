@@ -921,8 +921,9 @@ MainWindow::MainWindow()
     which_keyset = KEYSET_NEW;
     show_obj_list = show_mon_list = show_messages_win = FALSE;
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
-    show_char_info_basic = show_char_info_equip = FALSE;
+    show_char_info_basic = show_char_info_equip = show_char_equipment = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
+    equip_show_buttons = TRUE;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -1093,6 +1094,7 @@ void MainWindow::save_and_close()
     win_messages_wipe();
     win_char_info_basic_wipe();
     win_char_info_equip_wipe();
+    win_char_equipment_wipe();
 
     character_loaded = character_dungeon = character_generated = FALSE;
 
@@ -1220,6 +1222,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_messages_destroy();
     win_char_info_basic_destroy();
     win_char_info_equip_destroy();
+    win_char_equipment_destroy();
 
     event->accept();
 }
@@ -1539,9 +1542,13 @@ void MainWindow::create_actions()
     win_char_basic->setStatusTip(tr("Display basic character information."));
     connect(win_char_basic, SIGNAL(triggered()), this, SLOT(toggle_win_char_info_frame()));
 
-    win_char_equip = new QAction(tr("Show Character Equipment Information"), this);
-    win_char_equip->setStatusTip(tr("Display character equipment resistance and stat modifier information."));
-    connect(win_char_equip, SIGNAL(triggered()), this, SLOT(toggle_win_char_equip_frame()));
+    win_char_equip_info = new QAction(tr("Show Character Equipment Information"), this);
+    win_char_equip_info->setStatusTip(tr("Display character equipment resistance and stat modifier information."));
+    connect(win_char_equip_info, SIGNAL(triggered()), this, SLOT(toggle_win_char_equip_frame()));
+
+    win_char_equipment = new QAction(tr("Show Character Equipment Screen"), this);
+    win_char_equipment->setStatusTip(tr("Display character equipment screen."));
+    connect(win_char_equipment, SIGNAL(triggered()), this, SLOT(toggle_win_char_equipment_frame()));
 
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
@@ -1771,7 +1778,8 @@ void MainWindow::create_menus()
     win_menu->addAction(win_feat_recall);
     win_menu->addAction(win_messages);
     win_menu->addAction(win_char_basic);
-    win_menu->addAction(win_char_equip);
+    win_menu->addAction(win_char_equip_info);
+    win_menu->addAction(win_char_equipment);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1824,6 +1832,7 @@ void MainWindow::select_font()
             font_win_messages = QFont(family);
             font_char_basic_info = QFont(family);
             font_char_equip_info = QFont(family);
+            font_char_equipment = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1839,6 +1848,7 @@ void MainWindow::select_font()
     font_win_messages.setPointSize(12);
     font_char_basic_info.setPointSize(12);
     font_char_equip_info.setPointSize(12);
+    font_char_equipment.setPointSize(12);
 }
 
 
@@ -1883,8 +1893,10 @@ void MainWindow::read_settings()
     font_win_messages.fromString(load_font);
     load_font = settings.value("font_char_basic", font_char_basic_info ).toString();
     font_char_basic_info.fromString(load_font);
-    load_font = settings.value("font_char_equip", font_char_equip_info ).toString();
+    load_font = settings.value("font_char_equip_info", font_char_equip_info ).toString();
     font_char_equip_info.fromString(load_font);
+    load_font = settings.value("font_char_equipment", font_char_equipment ).toString();
+    font_char_equipment.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
@@ -1944,13 +1956,22 @@ void MainWindow::read_settings()
         window_char_info_basic->restoreGeometry(settings.value("winCharBasicGeometry").toByteArray());
         window_char_info_basic->show();
     }
-    show_char_info_equip = settings.value("show_char_equip_window", false).toBool();
+    show_char_info_equip = settings.value("show_char_equip_info_window", false).toBool();
     if (show_char_info_equip)
     {
         show_char_info_equip = FALSE; //hack - so it gets toggled to true
         toggle_win_char_equip_frame();
         window_char_info_equip->restoreGeometry(settings.value("winCharEquipGeometry").toByteArray());
         window_char_info_equip->show();
+    }
+    show_char_equipment = settings.value("show_char_equipment_window", false).toBool();
+    if (show_char_equipment)
+    {
+        show_char_equipment = FALSE; //hack - so it gets toggled to true
+        toggle_win_char_equipment_frame();
+        window_char_equipment->restoreGeometry(settings.value("winCharEquipmentGeometry").toByteArray());
+        window_char_equipment->show();
+        equip_show_buttons = settings.value("show_equip_window_buttons", false).toBool();
     }
 
     update_recent_savefiles();
@@ -1971,7 +1992,8 @@ void MainWindow::write_settings()
     settings.setValue("font_window_feat_recall", font_win_feat_recall.toString());
     settings.setValue("font_window_messages", font_win_messages.toString());
     settings.setValue("font_char_basic", font_char_basic_info.toString());
-    settings.setValue("font_char_equip", font_char_equip_info.toString());
+    settings.setValue("font_char_equip_info", font_char_equip_info.toString());
+    settings.setValue("font_char_equipment", font_char_equipment.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
@@ -2012,10 +2034,16 @@ void MainWindow::write_settings()
     {
         settings.setValue("winCharBasicGeometry", window_char_info_basic->saveGeometry());
     }
-    settings.setValue("show_char_equip_window", show_char_info_equip);
+    settings.setValue("show_char_equip_info_window", show_char_info_equip);
     if (show_char_info_equip)
     {
         settings.setValue("winCharEquipGeometry", window_char_info_equip->saveGeometry());
+    }
+    settings.setValue("show_char_equipment_window", show_char_equipment);
+    if (show_char_equipment)
+    {
+        settings.setValue("winCharEquipmentGeometry", window_char_equipment->saveGeometry());
+        settings.setValue("show_equip_window_buttons", equip_show_buttons);
     }
 }
 
@@ -2059,7 +2087,8 @@ void MainWindow::load_file(const QString &file_name)
 
                 // Now that we have a character, fill in the char info window
                 if (show_char_info_basic) create_win_char_info();
-                if (show_char_info_equip) create_win_char_equip();
+                if (show_char_info_equip) create_win_char_equip_info();
+                if (show_char_equipment) create_win_char_equipment();
             }
         }
     }
@@ -2084,7 +2113,8 @@ void MainWindow::launch_birth(bool quick_start)
         redraw();
         update_sidebar_font();
         if (show_char_info_basic) create_win_char_info();
-        if (show_char_info_equip) create_win_char_equip();
+        if (show_char_info_equip) create_win_char_equip_info();
+        if (show_char_equipment) create_win_char_equipment();
 
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.

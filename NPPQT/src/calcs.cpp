@@ -2064,9 +2064,10 @@ void redraw_stuff(void)
     // This needs to go before the others (see ui_redraw_all)
     if (p_ptr->redraw & (PR_MAP)) ui_redraw_all();
 
-    if (p_ptr->redraw & (PR_EQUIP))
+    if (p_ptr->redraw & (PR_WIN_EQUIPMENT))
     {
-        p_ptr->redraw |= (PR_WIN_CHAR_BASIC | PR_WIN_CHAR_EQUIP);
+        p_ptr->redraw |= (PR_WIN_CHAR_BASIC | PR_WIN_CHAR_EQUIP_INFO);
+        ui_update_char_equipment_window();
     }
     if (p_ptr->redraw & (PR_INVEN))
     {
@@ -2117,7 +2118,7 @@ void redraw_stuff(void)
     if (p_ptr->redraw & (PR_PLYR_SCORE)) ui_update_char_score();
     if (p_ptr->redraw & (PR_TURNCOUNT)) ui_update_char_turncount();
 
-    if (p_ptr->redraw & (PR_WIN_CHAR_EQUIP)) ui_update_char_equip_window();
+    if (p_ptr->redraw & (PR_WIN_CHAR_EQUIP_INFO)) ui_update_char_equip_info_window();
 }
 
 

@@ -2758,7 +2758,7 @@ static bool activate_object(object_type *o_ptr, int dir)
             else o_ptr->timeout = a_ptr->time;
 
             /* Window stuff */
-            p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+            p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
 
             /* Done */
             return FALSE;
@@ -2986,7 +2986,7 @@ static bool activate_object(object_type *o_ptr, int dir)
         }
 
         /* Window stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
 
         /* Success */
         return FALSE;
@@ -3032,7 +3032,7 @@ static bool activate_object(object_type *o_ptr, int dir)
         }
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_EQUIP);
+        p_ptr->redraw |= (PR_WIN_EQUIPMENT);
 
         /* Success */
         return FALSE;
@@ -3283,7 +3283,7 @@ void command_use(cmd_arg args)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Window stuff */
-    p_ptr->window |= (PW_INVEN | PW_EQUIP);
+    p_ptr->window |= (PW_INVEN | PR_WIN_EQUIPMENT);
 
     /* Handle first-time use */
     if (ident)

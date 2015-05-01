@@ -21,6 +21,7 @@
 #include <QMenuBar>
 #include "defines.h"
 #include "structures.h"
+#include "src/object_dialog.h"
 #include "nppdialog.h"
 #include "src/cmds.h"
 
@@ -273,7 +274,8 @@ private:
     QAction *win_feat_recall;
     QAction *win_messages;
     QAction *win_char_basic;
-    QAction *win_char_equip;
+    QAction *win_char_equip_info;
+    QAction *win_char_equipment;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -507,11 +509,11 @@ private slots:
     void toggle_win_char_info_frame();
     void name_change(void);
 
-// Character Equipment window
+// Character Equipment Information window
 private:
     bool show_char_info_equip;
     QWidget *window_char_info_equip;
-    QVBoxLayout *main_vlay_char_equip;
+    QVBoxLayout *main_vlay_char_equip_info;
     QMenuBar *char_info_equip_menubar;
     QAction *char_info_equip_font;
     QFont font_char_equip_info;
@@ -519,9 +521,9 @@ private:
     void win_char_info_equip_create();
     void win_char_info_equip_destroy();
     void win_char_info_equip_wipe();
-    void update_label_equip_font();
+    void update_label_equip_info_font();
     void set_font_char_info_equip(QFont newFont);
-    void create_win_char_equip();
+    void create_win_char_equip_info();
     QWidget *resist_widget;
     QWidget *ability_widget;
     QWidget *equip_widget;
@@ -537,6 +539,37 @@ public:
 private slots:
     void win_char_info_equip_font();
     void toggle_win_char_equip_frame();
+
+// Character Equipment window
+private:
+    bool show_char_equipment;
+    QWidget *window_char_equipment;
+    QVBoxLayout *main_vlay_equipment;
+    QMenuBar *char_equipment_menubar;
+    QAction *char_equipment_font;
+    QAction *char_equipment_buttons;
+    QFont font_char_equipment;
+    QMenu *char_equipment_settings;
+    void win_char_equipment_create();
+    void win_char_equipment_destroy();
+    void win_char_equipment_wipe();
+    void update_label_equipment_font();
+    void set_font_char_equipment(QFont newFont);
+    void create_win_char_equipment();
+    void equip_link_pushbuttons();
+    bool equip_show_buttons;
+
+    QGridLayout *equip_list;
+    QGridLayout *quiver_list;
+
+public:
+    void win_char_equipment_update();
+
+private slots:
+    void win_char_equipment_font();
+    void toggle_equip_show_buttons();
+    void toggle_win_char_equipment_frame();
+    void equip_button_click();
 };
 
 extern MainWindow *main_window;

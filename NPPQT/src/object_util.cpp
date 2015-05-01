@@ -466,8 +466,8 @@ static int quiver_wield(int item, object_type *o_ptr)
     /* Recalculate bonuses */
     p_ptr->notice |= (PN_SORT_QUIVER);
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
-    else p_ptr->redraw |= (PR_EQUIP | PR_WIN_OBJLIST);
+    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    else p_ptr->redraw |= (PR_WIN_EQUIPMENT | PR_WIN_OBJLIST);
 
     /* Reorder the quiver and return the perhaps modified slot */
     return (slot);
@@ -592,8 +592,8 @@ void wield_item(object_type *o_ptr, int item, int slot)
     /* Recalculate bonuses, torch, mana */
     p_ptr->notice |= (PN_SORT_QUIVER);
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
-    else p_ptr->redraw |= (PR_EQUIP | PR_WIN_OBJLIST);
+    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    else p_ptr->redraw |= (PR_WIN_EQUIPMENT | PR_WIN_OBJLIST);
 }
 
 
@@ -2624,7 +2624,7 @@ void inven_item_increase(int item, int num)
         p_ptr->notice |= (PN_COMBINE);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
     }
 }
 
@@ -3035,7 +3035,7 @@ int sort_quiver(int slot)
         }
 
         /* Window stuff */
-        p_ptr->window |= (PW_EQUIP);
+        p_ptr->window |= (PR_WIN_EQUIPMENT);
 
         /* Message */
         if (!slot) message(QString("You reorganize your quiver."));
@@ -3153,7 +3153,7 @@ void inven_item_optimize(int item)
     else
     {
         p_ptr->equip_cnt--;
-        p_ptr->redraw |= PR_EQUIP;
+        p_ptr->redraw |= PR_WIN_EQUIPMENT;
         limit = item >= QUIVER_START ? QUIVER_END : 0;
     }
 
@@ -3416,7 +3416,7 @@ s16b quiver_carry(object_type *o_ptr)
             p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
             /* Redraw stuff */
-            p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+            p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
 
             /* Save quiver size */
             save_quiver_size();
@@ -3528,7 +3528,7 @@ s16b quiver_carry(object_type *o_ptr)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
 
     /* Save quiver size */
     save_quiver_size();
@@ -3710,7 +3710,7 @@ s16b inven_carry(object_type *o_ptr)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
 
     /* Save quiver size */
     save_quiver_size();
@@ -4017,7 +4017,7 @@ void combine_quiver(void)
     if (flag)
     {
         /* Window stuff */
-        p_ptr->window |= (PW_EQUIP);
+        p_ptr->window |= (PR_WIN_EQUIPMENT);
 
         /* Message */
         message(QString("You combine your quiver."));

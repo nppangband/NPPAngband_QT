@@ -21,7 +21,7 @@
 
 
 
-void MainWindow::update_label_equip_font()
+void MainWindow::update_label_equip_info_font()
 {
     QList<QLabel *> lbl_list = window_char_info_equip->findChildren<QLabel *>();
     for (int i = 0; i < lbl_list.size(); i++)
@@ -34,7 +34,7 @@ void MainWindow::update_label_equip_font()
 void MainWindow::set_font_char_info_equip(QFont newFont)
 {
     font_char_equip_info = newFont;
-    update_label_equip_font();
+    update_label_equip_info_font();
 
 }
 
@@ -54,7 +54,7 @@ void MainWindow::win_char_info_equip_wipe()
 {
     if (!show_char_info_equip) return;
     if (!character_generated) return;
-    clear_layout(main_vlay_char_equip);
+    clear_layout(main_vlay_char_equip_info);
 }
 
 
@@ -68,14 +68,14 @@ void MainWindow::win_char_info_equip_update()
     equip_modifier_info_update(equip_widget, equip_mods, font_char_equip_info);
 }
 
-void MainWindow::create_win_char_equip()
+void MainWindow::create_win_char_equip_info()
 {
     if (!character_generated) return;
     if (!show_char_info_equip) return;
 
     // Object Info
     QGridLayout *equip_info = new QGridLayout;
-    main_vlay_char_equip->addLayout(equip_info);
+    main_vlay_char_equip_info->addLayout(equip_info);
 
     QVBoxLayout *resist_vlay = new QVBoxLayout;
     QVBoxLayout *ability_vlay = new QVBoxLayout;
@@ -125,7 +125,6 @@ void MainWindow::create_win_char_equip()
     equip_modifier_info(equip_widget, equip_mods, font_char_equip_info);
 
     win_char_info_equip_update();
-    update_label_equip_font();
 }
 
 /*
@@ -136,11 +135,11 @@ void MainWindow::create_win_char_equip()
 void MainWindow::win_char_info_equip_create()
 {
     window_char_info_equip = new QWidget();
-    main_vlay_char_equip = new QVBoxLayout;
-    window_char_info_equip->setLayout(main_vlay_char_equip);
+    main_vlay_char_equip_info = new QVBoxLayout;
+    window_char_info_equip->setLayout(main_vlay_char_equip_info);
 
     char_info_equip_menubar = new QMenuBar;
-    main_vlay_char_equip->setMenuBar(char_info_equip_menubar);
+    main_vlay_char_equip_info->setMenuBar(char_info_equip_menubar);
     window_char_info_equip->setWindowTitle("Character Equipment Information");
     char_info_equip_settings = char_info_equip_menubar->addMenu(tr("&Settings"));
     char_info_equip_font = new QAction(tr("Set Basic Character Screen Font"), this);
@@ -164,8 +163,8 @@ void MainWindow::toggle_win_char_equip_frame()
     {
         win_char_info_equip_create();
         show_char_info_equip = TRUE;
-        create_win_char_equip();
-        win_char_equip->setText("Hide Character Equipment Information");
+        create_win_char_equip_info();
+        win_char_equip_info->setText("Hide Character Equipment Information");
         window_char_info_equip->show();
     }
     else
@@ -173,8 +172,9 @@ void MainWindow::toggle_win_char_equip_frame()
     {
         win_char_info_equip_destroy();
         show_char_info_equip = FALSE;
-        win_char_equip->setText("Show Character Equipment Information");
+        win_char_equip_info->setText("Show Character Equipment Information");
     }
 }
+
 
 

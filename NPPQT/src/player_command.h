@@ -63,6 +63,7 @@ enum
     CMD_UNINSCRIBE,
     CMD_ACTIVATE,
     CMD_THROW,
+    CMD_SETTINGS,
     CMD_MAX
 };
 

@@ -156,7 +156,7 @@ static void sense_inventory(void)
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_EQUIP);
+        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
     }
 }
 
@@ -542,7 +542,7 @@ static void recharge_objects(void)
     if (j)
     {
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_EQUIP);
+        p_ptr->redraw |= (PR_WIN_EQUIPMENT);
     }
 
     /* Recharge rods */
@@ -1320,7 +1320,7 @@ static void process_world(void)
             if ((o_ptr->timeout < 100) || (!(o_ptr->timeout % 100)))
             {
                 /* Redraw stuff */
-                p_ptr->redraw |= (PR_EQUIP);
+                p_ptr->redraw |= (PR_WIN_EQUIPMENT);
             }
 
             /* Hack -- Special treatment when blind */
@@ -1704,7 +1704,7 @@ void change_player_level(void)
     p_ptr->redraw |= (PR_SIDEBAR_ALL | PR_STATUSBAR | PR_MAP);
 
     /* Redraw "statusy" things */
-    p_ptr->redraw |= (PR_INVEN | PR_EQUIP | PR_WIN_MON_RECALL | PR_WIN_MONLIST | PR_WIN_OBJLIST);
+    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT | PR_WIN_MON_RECALL | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 
     /* Update stuff */
     update_stuff();

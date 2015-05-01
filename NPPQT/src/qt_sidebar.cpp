@@ -436,13 +436,12 @@ void MainWindow::update_sidebar_font()
 
     // Update the player sidebar info
     QList<QLabel *> lbl_list = sidebar_widget->findChildren<QLabel *>();
-    {
-        for (int x = 0; x < lbl_list.size(); x++)
-        {
-            QLabel *this_lbl = lbl_list.at(x);
 
-            this_lbl->setFont(font_sidebar_window);
-        }
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+
+        this_lbl->setFont(font_sidebar_window);
     }
 }
 

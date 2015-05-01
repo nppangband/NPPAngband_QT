@@ -7,6 +7,8 @@
 #include <QButtonGroup>
 #include <QKeyEvent>
 #include <QScrollArea>
+#include <QDialog>
+#include <QLabel>
 
 
 // The numbered order of the tabs
@@ -22,7 +24,7 @@ class QTabWidget;
 
 
 
-class ObjectSelectDialog : public ObjectDialog
+class ObjectSelectDialog : public QDialog
 {
     Q_OBJECT
 

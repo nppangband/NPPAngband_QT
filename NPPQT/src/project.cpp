@@ -662,7 +662,7 @@ bool apply_disenchant(int mode)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_EQUIP);
+    p_ptr->redraw |= (PR_WIN_EQUIPMENT);
 
     /* Notice */
     return (TRUE);
@@ -2096,7 +2096,7 @@ static int minus_ac(void)
     p_ptr->update |= (PU_BONUS);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_EQUIP);
+    p_ptr->redraw |= (PR_WIN_EQUIPMENT);
 
     /* Item was damaged */
     return (TRUE);

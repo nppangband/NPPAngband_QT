@@ -127,6 +127,15 @@ void ui_destroy_path()
     main_window->force_redraw();
 }
 
+void ui_activate_main_window()
+{
+    QFlags<Qt::WindowState> win_flags = main_window->windowState();
+
+    win_flags |= Qt::WindowActive;
+
+    main_window->setWindowState(win_flags);
+}
+
 UserInput ui_get_input()
 {
     // Avoid reentrant calls
@@ -396,11 +405,18 @@ void ui_update_char_basic_window()
     p_ptr->redraw &= ~(PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
 }
 
-void ui_update_char_equip_window()
+void ui_update_char_equip_info_window()
 {
     if (p_ptr->is_running() || p_ptr->is_resting()) return;
     main_window->win_char_info_equip_update();
-    p_ptr->redraw &= ~(PR_WIN_CHAR_EQUIP);
+    p_ptr->redraw &= ~(PR_WIN_CHAR_EQUIP_INFO);
+}
+
+void ui_update_char_equipment_window()
+{
+    if (p_ptr->is_running() || p_ptr->is_resting()) return;
+    main_window->win_char_equipment_update();
+    p_ptr->redraw &= ~(PR_WIN_EQUIPMENT);
 }
 
 void ui_update_char_score()

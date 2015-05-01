@@ -20,58 +20,17 @@
 #include <src/player_command.h>
 #include <src/object_select.h>
 #include <src/object_settings.h>
+#include <QPushButton>
 
 
-item_command item_command_info[ITEM_MAX] =
-{
-    // ITEM_EXAMINE
-    {'a', CMD_EXAMINE, FALSE},
-    // ITEM_TAKEOFF
-    {'b', CMD_TAKEOFF, FALSE},
-     // ITEM_WIELD
-    {'c', CMD_WIELD, FALSE},
-    // ITEM_SWAP
-    {'d', CMD_SWAP, FALSE},
-    // _ITEM_USE
-    {'e', CMD_ITEM_USE, TRUE},
-    // ITEM_REFILL
-    {'f', CMD_REFUEL, FALSE},
-    // ITEM_FIRE
-    {'g', CMD_FIRE, TRUE},
-    // ITEM_FIRE_NEAR
-    {'h', CMD_FIRE_NEAR, TRUE},
-    // ITEM_DROP
-    {'i', CMD_DROP, FALSE},
-    // ITEM_PICKUP
-    {'j', CMD_PICKUP, FALSE},
-    // ITEM_BROWSE
-    {'k', CMD_BROWSE, FALSE},
-    // ITEM_STUDY
-    {'l', CMD_STUDY, FALSE},
-    // ITEM_CAST
-    {'m', CMD_CAST, TRUE},
-    // ITEM_DESTROY
-    {'n', CMD_DESTROY, FALSE},
-    // ITEM_INSCRIBE
-    {'o', CMD_INSCRIBE, FALSE},
-    // ITEM_UNINSCRIBE
-    {'p', CMD_UNINSCRIBE, FALSE},
-    // ITEM_ACIVATE
-    {'q', CMD_ACTIVATE, TRUE},
-    // ITEM_THROW
-    {'r', CMD_THROW, TRUE},
-    // ITEM_EXAMINE
-    {'s', CMD_MAX, FALSE}, //requires special handling
-};
-
-bool ObjectDialog::should_add_takeoff(object_type *o_ptr, s16b item_slot)
+bool should_add_takeoff(object_type *o_ptr, s16b item_slot)
 {
     if (!item_is_available(item_slot, NULL, USE_EQUIP | USE_QUIVER)) return (FALSE);
     if (o_ptr->is_known_cursed()) return (FALSE);
     return (TRUE);
 }
 
-bool ObjectDialog::should_add_wield(object_type *o_ptr, s16b item_slot)
+bool should_add_wield(object_type *o_ptr, s16b item_slot)
 {
 
     if (!item_is_available(item_slot, NULL, USE_INVEN | USE_FLOOR)) return (FALSE);
@@ -81,7 +40,7 @@ bool ObjectDialog::should_add_wield(object_type *o_ptr, s16b item_slot)
     return (TRUE);
 }
 
-bool ObjectDialog::should_add_swap(object_type *o_ptr, s16b item_slot)
+bool should_add_swap(object_type *o_ptr, s16b item_slot)
 {
     if (!birth_swap_weapons) return (FALSE);
     if (!obj_can_wear(o_ptr)) return (FALSE);
@@ -91,14 +50,14 @@ bool ObjectDialog::should_add_swap(object_type *o_ptr, s16b item_slot)
         if(o_ptr->is_cursed()) return FALSE;
         if (game_mode == GAME_NPPANGBAND) return (FALSE);
         //GAME_NPPMORIA
-        if ((item_slot == ITEM_WIELD) || (item_slot == ITEM_SWAP)) return TRUE;
+        if ((item_slot == INVEN_MAIN_WEAPON) || (item_slot == INVEN_SWAP_WEAPON)) return TRUE;
         return (FALSE);
     }
     if (!o_ptr->use_verify[AUTO_SWAP]) return FALSE;
     return TRUE;
 }
 
-bool ObjectDialog::should_add_use(object_type *o_ptr, s16b item_slot)
+bool should_add_use(object_type *o_ptr, s16b item_slot)
 {
     (void)item_slot;
 
@@ -119,7 +78,7 @@ bool ObjectDialog::should_add_use(object_type *o_ptr, s16b item_slot)
     return (TRUE);
 }
 
-bool ObjectDialog::should_add_fire(object_type *o_ptr, s16b item_slot)
+bool should_add_fire(object_type *o_ptr, s16b item_slot)
 {
     // Only add add
     if (ammo_can_fire(o_ptr, item_slot))
@@ -130,20 +89,20 @@ bool ObjectDialog::should_add_fire(object_type *o_ptr, s16b item_slot)
     return (FALSE);
 }
 
-bool ObjectDialog::should_add_refill(object_type *o_ptr, s16b item_slot)
+bool should_add_refill(object_type *o_ptr, s16b item_slot)
 {
     if (!item_is_available(item_slot, NULL, USE_INVEN | USE_FLOOR)) return (FALSE);
     return (obj_can_refill(o_ptr));
 }
 
-bool ObjectDialog::should_add_fire_near(object_type *o_ptr, s16b item_slot)
+bool should_add_fire_near(object_type *o_ptr, s16b item_slot)
 {
     if (!ammo_can_fire(o_ptr, item_slot)) return (FALSE);
 
     return (monster_target_exists());
 }
 
-bool ObjectDialog::should_add_drop(object_type *o_ptr, s16b item_slot)
+bool should_add_drop(object_type *o_ptr, s16b item_slot)
 {
     // On the floor
     if (!item_is_available(item_slot, NULL, USE_INVEN | USE_EQUIP | USE_QUIVER)) return (FALSE);
@@ -158,7 +117,7 @@ bool ObjectDialog::should_add_drop(object_type *o_ptr, s16b item_slot)
 
 }
 
-bool ObjectDialog::should_add_pickup(object_type *o_ptr, s16b item_slot)
+bool should_add_pickup(object_type *o_ptr, s16b item_slot)
 {
     (void)o_ptr;
     // Not the floor
@@ -170,7 +129,7 @@ bool ObjectDialog::should_add_pickup(object_type *o_ptr, s16b item_slot)
     return (TRUE);
 }
 
-bool ObjectDialog::should_add_browse(object_type *o_ptr, s16b item_slot)
+bool should_add_browse(object_type *o_ptr, s16b item_slot)
 {
     (void)item_slot;
     if (!o_ptr->is_spellbook()) return (FALSE);
@@ -180,31 +139,31 @@ bool ObjectDialog::should_add_browse(object_type *o_ptr, s16b item_slot)
     return (TRUE);
 }
 
-bool ObjectDialog::should_add_study(object_type *o_ptr, s16b item_slot)
+bool should_add_study(object_type *o_ptr, s16b item_slot)
 {
     if (!should_add_browse(o_ptr, item_slot)) return (FALSE);
     return (player_can_use_book(o_ptr, FALSE));
 }
 
-bool ObjectDialog::should_add_cast(object_type *o_ptr, s16b item_slot)
+bool should_add_cast(object_type *o_ptr, s16b item_slot)
 {
     if (!should_add_browse(o_ptr, item_slot)) return (FALSE);
     return (player_can_use_book(o_ptr, TRUE));
 }
 
-bool ObjectDialog::should_add_destroy(object_type *o_ptr, s16b item_slot)
+bool should_add_destroy(object_type *o_ptr, s16b item_slot)
 {
     if (!item_is_available(item_slot, NULL, USE_FLOOR | USE_INVEN)) return (FALSE);
     return (!o_ptr->is_known_artifact());
 }
 
-bool ObjectDialog::should_add_uninscribe(object_type *o_ptr, s16b item_slot)
+bool should_add_uninscribe(object_type *o_ptr, s16b item_slot)
 {
     (void)item_slot;
     return (o_ptr->has_inscription());
 }
 
-bool ObjectDialog::should_add_activate(object_type *o_ptr, s16b item_slot)
+bool should_add_activate(object_type *o_ptr, s16b item_slot)
 {
     if (!obj_can_activate(o_ptr)) return (FALSE);
     if (birth_swap_weapons && item_slot == INVEN_SWAP_WEAPON) return (FALSE);
@@ -213,7 +172,7 @@ bool ObjectDialog::should_add_activate(object_type *o_ptr, s16b item_slot)
     return (TRUE);
 }
 
-bool ObjectDialog::should_add_throw(object_type *o_ptr, s16b item_slot)
+bool should_add_throw(object_type *o_ptr, s16b item_slot)
 {
     // On the floor
     if (!item_is_available(item_slot, NULL, USE_FLOOR | USE_INVEN | USE_QUIVER)) return (FALSE);
@@ -224,56 +183,52 @@ bool ObjectDialog::should_add_throw(object_type *o_ptr, s16b item_slot)
     return (TRUE);
 }
 
-void ObjectDialog::add_settings(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_settings(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_SETTINGS].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_SETTINGS) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/settings.png"));
     new_button->setObjectName(id);
     new_button->setToolTip("Object Settings");
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_examine(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_examine(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_EXAMINE].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_EXAMINE) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/look.png"));
     new_button->setObjectName(id);
     new_button->setToolTip("Examine");
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_takeoff(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_takeoff(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_TAKEOFF].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_TAKEOFF) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/takeoff.png"));
     new_button->setObjectName(id);
     new_button->setToolTip("Take Off");
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
 
-void ObjectDialog::add_wield(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_wield(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_WIELD].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_WIELD) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/wield.png"));
     new_button->setToolTip("Wield");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_use(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_use(QGridLayout *lay, s16b item_slot, int row, int col)
 {
     object_type *o_ptr = object_from_item_idx(item_slot);
 
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_USE].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_ITEM_USE) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     if (o_ptr->tval == TV_SCROLL)
     {
@@ -321,168 +276,153 @@ void ObjectDialog::add_use(QGridLayout *lay, s16b item_slot, int row, int col)
         new_button->setToolTip("Eat Food");
     }
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
 
-void ObjectDialog::add_swap(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_swap(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_SWAP].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_SWAP) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/swap.png"));
     new_button->setToolTip("Swap");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_refill(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_refill(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_REFILL].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_REFUEL) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/refill.png"));
     new_button->setToolTip("Refill");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_fire(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_fire(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_FIRE].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_FIRE) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/fire.png"));
     new_button->setToolTip("Fire");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_fire_near(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_fire_near(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_FIRE_NEAR].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_FIRE_NEAR) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/fire_near.png"));
     new_button->setToolTip("Fire At Closest Target");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_drop(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_drop(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_DROP].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_DROP) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/drop.png"));
     new_button->setToolTip("Drop");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_pickup(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_pickup(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_PICKUP].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_PICKUP) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/pickup.png"));
     new_button->setToolTip("Pick Up");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_browse(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_browse(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_BROWSE].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_BROWSE) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/browse.png"));
     new_button->setToolTip("Browse");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_study(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_study(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_STUDY].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_STUDY) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/study.png"));
     new_button->setToolTip("Study");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_cast(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_cast(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_CAST].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_CAST) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/cast.png"));
     QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
     QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
     new_button->setToolTip(QString("%1 a %2") .arg(verb) .arg(capitalize_first(noun)));
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_destroy(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_destroy(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_DESTROY].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_DESTROY) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/destroy.png"));
     new_button->setToolTip("Destroy");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_inscribe(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_inscribe(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_INSCRIBE].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_INSCRIBE) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/inscribe.png"));
     new_button->setToolTip("Inscribe");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_uninscribe(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_uninscribe(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_UNINSCRIBE].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_UNINSCRIBE) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/uninscribe.png"));
     new_button->setToolTip("Uninscribe");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_activate(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_activate(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_ACTIVATE].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_ACTIVATE) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/activate.png"));
     new_button->setToolTip("Activate");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::add_throw(QGridLayout *lay, s16b item_slot, int row, int col)
+void add_throw(QGridLayout *lay, s16b item_slot, int row, int col)
 {
-    QString id = (QString("%1%2") .arg(item_command_info[ITEM_THROW].action_char) .arg(item_slot));
+    QString id = (QString("%1_%2") .arg(CMD_THROW) .arg(item_slot));
     QPushButton *new_button = new QPushButton;
     new_button->setIcon(QIcon(":/icons/lib/icons/throw.png"));
     new_button->setToolTip("Throw");
     new_button->setObjectName(id);
-    connect(new_button, SIGNAL(clicked()), this, SLOT(button_click()));
     lay->addWidget(new_button, row, col);
 }
 
-void ObjectDialog::do_buttons(QGridLayout *lay, object_type *o_ptr, s16b item_slot, s16b row, s16b col)
+void do_buttons(QGridLayout *lay, object_type *o_ptr, s16b item_slot, s16b row, s16b col)
 {
     add_settings(lay, item_slot, row, col++);
     add_examine(lay, item_slot, row, col++);
@@ -506,76 +446,10 @@ void ObjectDialog::do_buttons(QGridLayout *lay, object_type *o_ptr, s16b item_sl
 }
 
 
-/*
- *  Generic functions to be
- * used across all object dialog boxes.
- */
-void ObjectDialog::clear_grid_layout(QGridLayout *lay)
-{
-    QLayoutItem *item;
-    while ((item = lay->takeAt(0)) != 0)
-    {
-        QWidget *wid = item->widget();
-        if (wid) delete wid;
-        delete item;
-    }
-}
 
 
 
-s16b ObjectDialog::idx_from_click(QString id)
-{
-    int o_idx = id.mid(1).toInt();
-    s16b value = (s16b)o_idx;
-    return (value);
-}
-
-/*
- * Receive a button click.  Figure out
- * which command it is, and then process
- * it.
- */
-
-void ObjectDialog::button_click()
-{
-    QString id = QObject::sender()->objectName();
-    int o_idx = idx_from_click(id);
-
-    QChar index = id[0];
-
-    p_ptr->message_append_start();
-
-    // Hack = Special handling for object settings
-    if (operator==(index, item_command_info[ITEM_SETTINGS].action_char))
-    {
-        s16b this_idx = (s16b)o_idx;
-        object_settings(this_idx);
-        return;
-    }
-
-    // Search for the matching command
-    for (int i = 0; i < ITEM_MAX; i++)
-    {
-        QChar check = item_command_info[i].action_char;
-        if (operator!=(check, index)) continue;
-
-        // We aren't repeating the previous command
-        p_ptr->player_previous_command_wipe();
-
-        process_command(o_idx, item_command_info[i].object_command);
-
-        break;
-    }
-
-    p_ptr->message_append_stop();
-    // Do we need to update or delete the dialog?
-    if (p_ptr->in_menu)update_dialog();
-    else close_dialog();
-}
-
-
-
-void ObjectDialog::add_plain_label(QGridLayout *lay, QString label, int row, int col)
+void add_plain_label(QGridLayout *lay, QString label, int row, int col)
 {
     QLabel *lb = new QLabel(label);
     lb->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -583,7 +457,7 @@ void ObjectDialog::add_plain_label(QGridLayout *lay, QString label, int row, int
 }
 
 
-void ObjectDialog::add_letter_label(QGridLayout *lay, QChar location, int label_num, int row, int col)
+void add_letter_label(QGridLayout *lay, QChar location, int label_num, int row, int col)
 {
     QString id = (QString("%1%2") .arg(location) .arg(label_num));
 
@@ -592,7 +466,7 @@ void ObjectDialog::add_letter_label(QGridLayout *lay, QChar location, int label_
     lay->addWidget(lb, row, col);
 }
 
-void ObjectDialog::add_object_label(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col)
+void add_object_label(QGridLayout *lay, object_type *o_ptr, QChar location, s16b item_slot, int row, int col)
 {
     QString desc = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
     QString style = QString("color: %1;").arg(get_object_color(o_ptr).name());
@@ -605,7 +479,7 @@ void ObjectDialog::add_object_label(QGridLayout *lay, object_type *o_ptr, QChar 
     lay->addWidget(object_label, row, col);
 }
 
-void ObjectDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col)
+void add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col)
 {
     // Add the weight
     QString weight_printout = (formatted_weight_string(o_ptr->weight * o_ptr->number));
@@ -620,11 +494,11 @@ void ObjectDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int ro
  * Floor Layout
  *
  */
-void ObjectDialog::update_floor_list(QGridLayout *lay, bool label, bool buttons)
+void update_floor_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(lay);
+    clear_layout(lay);
 
     s16b this_o_idx, next_o_idx = 0;
 
@@ -649,11 +523,11 @@ void ObjectDialog::update_floor_list(QGridLayout *lay, bool label, bool buttons)
  * INVENTORY TAB
  *
  */
-void ObjectDialog::update_inven_list(QGridLayout *lay, bool label, bool buttons)
+void update_inven_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(lay);
+    clear_layout(lay);
 
     for (int i = 0; i < INVEN_MAX_PACK; i++)
     {
@@ -676,11 +550,11 @@ void ObjectDialog::update_inven_list(QGridLayout *lay, bool label, bool buttons)
  * EQUIPMENT TAB
  *
  */
-void ObjectDialog::update_equip_list(QGridLayout *lay, bool label, bool buttons)
+void update_equip_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(lay);
+    clear_layout(lay);
 
     for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
     {
@@ -714,11 +588,11 @@ void ObjectDialog::update_equip_list(QGridLayout *lay, bool label, bool buttons)
 }
 
 
-void ObjectDialog::update_quiver_list(QGridLayout *lay, bool label, bool buttons)
+void update_quiver_list(QGridLayout *lay, bool label, bool buttons)
 {
     int row = 0;
 
-    clear_grid_layout(lay);
+    clear_layout(lay);
 
     for (int i = QUIVER_START; i < QUIVER_END; i++)
     {

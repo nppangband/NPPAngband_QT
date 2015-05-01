@@ -8,6 +8,7 @@
 #include "src/utilities.h"
 #include <QLabel>
 #include <QScrollArea>
+#include <QTabWidget>
 
 
 
@@ -21,7 +22,7 @@ enum
     TABS_MAX
 };
 
-class AllObjectsDialog : public ObjectDialog
+class AllObjectsDialog : public QDialog
 {
     Q_OBJECT
 private:
@@ -37,12 +38,13 @@ private:
     // Message area
     QLabel *message_area;
 
-
+    QWidget *top_widget;
     QTabWidget *object_tabs;
     QWidget *floor_tab;
     QWidget *inven_tab;
     QWidget *equip_tab;
 
+    QScrollArea *scroll_box;
     QScrollArea *scroll_floor;
     QScrollArea *scroll_inven;
     QScrollArea *scroll_equip;
@@ -59,9 +61,11 @@ private:
     void confirm_tabs();
     void hide_or_show_tabs();
     void update_active_tabs();
+    void link_pushbuttons();
 
     bool no_objects();
     int start_tab;
+    int current_tab;
 
     // Layouts and labels
     QVBoxLayout *floor_vlay;
@@ -85,6 +89,7 @@ private slots:
 
     void move_left(void);
     void move_right(void);
+    void button_click(void);
 
 protected:
     void keyPressEvent(QKeyEvent* which_key);
