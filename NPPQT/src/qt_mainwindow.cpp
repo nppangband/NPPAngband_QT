@@ -821,34 +821,36 @@ void MainWindow::init_scene()
     dungeon_scene->addItem(cursor);
 }
 
-void MainWindow::redraw()
-{    
+void MainWindow::redraw_screen()
+{
     // Important. No dungeon yet
     if (!character_dungeon) {
         if (graphics_view) force_redraw();
         return;
     }
 
-    // TODO PLAYTESTING. DONT REMOVE YET
-    //wiz_light();
-
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
 
-    for (int y = 0; y < p_ptr->cur_map_hgt; y++) {
-        for (int x = 0; x < p_ptr->cur_map_wid; x++) {
+    for (int y = 0; y < p_ptr->cur_map_hgt; y++)
+    {
+        for (int x = 0; x < p_ptr->cur_map_wid; x++)
+        {
             light_spot(y, x);
         }
     }
+}
 
-    //ui_center(p_ptr->py, p_ptr->px);
+void MainWindow::redraw_all()
+{    
+    redraw_screen();
     update_cursor();
     force_redraw(); // Hack -- Force full redraw
-    update_messages();
-    win_messages_update();
-    update_sidebar_all();
-    win_mon_list_update();
-    win_obj_list_update();
+
+    p_ptr->redraw |= (PR_MESSAGES | PR_WIN_MESSAGES | PR_SIDEBAR_ALL | PR_WIN_OBJLIST | PR_WIN_MONLIST);
+    p_ptr->redraw |= (PR_WIN_CHAR_BASIC | PR_WIN_CHAR_EQUIP_INFO | PR_WIN_EQUIPMENT);
+
+    redraw_stuff();
 }
 
 bool MainWindow::panel_contains(int y, int x)
@@ -921,9 +923,9 @@ MainWindow::MainWindow()
     which_keyset = KEYSET_NEW;
     show_obj_list = show_mon_list = show_messages_win = FALSE;
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
-    show_char_info_basic = show_char_info_equip = show_char_equipment = FALSE;
+    show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
-    equip_show_buttons = TRUE;
+    equip_show_buttons = inven_show_buttons = TRUE;
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -1095,6 +1097,7 @@ void MainWindow::save_and_close()
     win_char_info_basic_wipe();
     win_char_info_equip_wipe();
     win_char_equipment_wipe();
+    win_char_inventory_wipe();
 
     character_loaded = character_dungeon = character_generated = FALSE;
 
@@ -1107,7 +1110,7 @@ void MainWindow::save_and_close()
 
     cursor->setVisible(false);
     destroy_tiles();
-    redraw();
+    redraw_all();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -1223,6 +1226,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_char_info_basic_destroy();
     win_char_info_equip_destroy();
     win_char_equipment_destroy();
+    win_char_inventory_destroy();
 
     event->accept();
 }
@@ -1253,7 +1257,7 @@ void MainWindow::font_dialog_main_window()
     if (selected)
     {
         set_font_main_window(font);
-        redraw();
+        redraw_screen();
     }
 }
 
@@ -1530,7 +1534,7 @@ void MainWindow::create_actions()
     win_obj_recall->setStatusTip(tr("Displays all known information about a given object."));
     connect(win_obj_recall, SIGNAL(triggered()), this, SLOT(toggle_win_obj_recall()));
 
-    win_feat_recall = new QAction(tr("Show Message Display Window"), this);
+    win_feat_recall = new QAction(tr("Show Feature Recall Window"), this);
     win_feat_recall->setStatusTip(tr("Displays all known information about a given feature."));
     connect(win_feat_recall, SIGNAL(triggered()), this, SLOT(toggle_win_feat_recall()));
 
@@ -1549,6 +1553,10 @@ void MainWindow::create_actions()
     win_char_equipment = new QAction(tr("Show Character Equipment Screen"), this);
     win_char_equipment->setStatusTip(tr("Display character equipment screen."));
     connect(win_char_equipment, SIGNAL(triggered()), this, SLOT(toggle_win_char_equipment_frame()));
+
+    win_char_inventory = new QAction(tr("Show Character Inventory Screen"), this);
+    win_char_inventory->setStatusTip(tr("Display character Inventory screen."));
+    connect(win_char_inventory, SIGNAL(triggered()), this, SLOT(toggle_win_char_inventory_frame()));
 
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
@@ -1780,6 +1788,7 @@ void MainWindow::create_menus()
     win_menu->addAction(win_char_basic);
     win_menu->addAction(win_char_equip_info);
     win_menu->addAction(win_char_equipment);
+    win_menu->addAction(win_char_inventory);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1833,6 +1842,7 @@ void MainWindow::select_font()
             font_char_basic_info = QFont(family);
             font_char_equip_info = QFont(family);
             font_char_equipment = QFont(family);
+            font_char_inventory = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1849,6 +1859,7 @@ void MainWindow::select_font()
     font_char_basic_info.setPointSize(12);
     font_char_equip_info.setPointSize(12);
     font_char_equipment.setPointSize(12);
+    font_char_inventory.setPointSize(12);
 }
 
 
@@ -1897,6 +1908,8 @@ void MainWindow::read_settings()
     font_char_equip_info.fromString(load_font);
     load_font = settings.value("font_char_equipment", font_char_equipment ).toString();
     font_char_equipment.fromString(load_font);
+    load_font = settings.value("font_char_inventory", font_char_inventory ).toString();
+    font_char_inventory.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
@@ -1973,6 +1986,15 @@ void MainWindow::read_settings()
         window_char_equipment->show();
         equip_show_buttons = settings.value("show_equip_window_buttons", false).toBool();
     }
+    show_char_inventory = settings.value("show_char_inventory_window", false).toBool();
+    if (show_char_inventory)
+    {
+        show_char_inventory = FALSE; //hack - so it gets toggled to true
+        toggle_win_char_inventory_frame();
+        window_char_inventory->restoreGeometry(settings.value("winCharInventoryGeometry").toByteArray());
+        window_char_inventory->show();
+        inven_show_buttons = settings.value("show_inven_window_buttons", false).toBool();
+    }
 
     update_recent_savefiles();
 }
@@ -1994,6 +2016,7 @@ void MainWindow::write_settings()
     settings.setValue("font_char_basic", font_char_basic_info.toString());
     settings.setValue("font_char_equip_info", font_char_equip_info.toString());
     settings.setValue("font_char_equipment", font_char_equipment.toString());
+    settings.setValue("font_char_inventory", font_char_inventory.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
@@ -2045,6 +2068,12 @@ void MainWindow::write_settings()
         settings.setValue("winCharEquipmentGeometry", window_char_equipment->saveGeometry());
         settings.setValue("show_equip_window_buttons", equip_show_buttons);
     }
+    settings.setValue("show_char_inventory_window", show_char_inventory);
+    if (show_char_inventory)
+    {
+        settings.setValue("winCharInventoryGeometry", window_char_inventory->saveGeometry());
+        settings.setValue("show_inven_window_buttons", inven_show_buttons);
+    }
 }
 
 
@@ -2082,13 +2111,19 @@ void MainWindow::load_file(const QString &file_name)
                 launch_game();
                 ui_player_moved();
                 graphics_view->setFocus();
-                redraw();
+                redraw_all();
                 update_sidebar_font();
 
                 // Now that we have a character, fill in the char info window
                 if (show_char_info_basic) create_win_char_info();
                 if (show_char_info_equip) create_win_char_equip_info();
                 if (show_char_equipment) create_win_char_equipment();
+                if (show_char_inventory) create_win_char_inventory();
+
+                //hack - draw everything
+                p_ptr->player_turn = TRUE;
+                redraw_stuff();
+                p_ptr->player_turn = FALSE;
             }
         }
     }
@@ -2110,15 +2145,21 @@ void MainWindow::launch_birth(bool quick_start)
         save_character();
         ui_player_moved();
         graphics_view->setFocus();
-        redraw();
+        redraw_all();
         update_sidebar_font();
         if (show_char_info_basic) create_win_char_info();
         if (show_char_info_equip) create_win_char_equip_info();
         if (show_char_equipment) create_win_char_equipment();
+        if (show_char_inventory) create_win_char_inventory();
 
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.
         message(QString("Welcome %1") .arg(op_ptr->full_name));
+
+        //hack - draw everything
+        p_ptr->player_turn = TRUE;
+        redraw_stuff();
+        p_ptr->player_turn = FALSE;
     }
     else
     {

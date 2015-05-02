@@ -292,6 +292,9 @@ void process_player(void)
         if (quest_slot_timed(GUILD_QUEST_SLOT))	p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 
+    // Finally, update certain onscreen information before it becomes the player turn
+    p_ptr->player_turn = TRUE;
+
     /* Notice stuff (if needed) */
     notice_stuff();
 

@@ -234,6 +234,11 @@ void player_death(void)
     death_knowledge();
     enter_score(long_day);
 
+    // Hack - update everything onscreen
+    p_ptr->player_turn = TRUE;
+    redraw_stuff();
+    p_ptr->player_turn = FALSE;
+
     PlayerDeathDialog();
 }
 

@@ -3602,8 +3602,7 @@ void wiz_dark(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw map */
-    p_ptr->redraw |= (PR_MAP | PR_MAP | PR_WIN_MONLIST | PR_WIN_OBJLIST);
-
+    p_ptr->redraw |= (PR_MAP | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 }
 
 

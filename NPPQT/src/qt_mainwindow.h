@@ -104,7 +104,8 @@ public:
     void destroy_tiles();
     void set_graphic_mode(int mode);
     void set_keymap_mode(int mode);
-    void redraw();
+    void redraw_screen();
+    void redraw_all();
     void update_cursor();
     void force_redraw();
     bool panel_contains(int y, int x);    
@@ -276,6 +277,7 @@ private:
     QAction *win_char_basic;
     QAction *win_char_equip_info;
     QAction *win_char_equipment;
+    QAction *win_char_inventory;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -570,6 +572,36 @@ private slots:
     void toggle_equip_show_buttons();
     void toggle_win_char_equipment_frame();
     void equip_button_click();
+
+// Character Inventory window
+private:
+    bool show_char_inventory;
+    QWidget *window_char_inventory;
+    QVBoxLayout *main_vlay_inventory;
+    QMenuBar *char_inventory_menubar;
+    QAction *char_inventory_font;
+    QAction *char_inventory_buttons;
+    QFont font_char_inventory;
+    QMenu *char_inventory_settings;
+    void win_char_inventory_create();
+    void win_char_inventory_destroy();
+    void win_char_inventory_wipe();
+    void update_label_inventory_font();
+    void set_font_char_inventory(QFont newFont);
+    void create_win_char_inventory();
+    void inven_link_pushbuttons();
+    bool inven_show_buttons;
+
+    QGridLayout *inven_list;
+
+public:
+    void win_char_inventory_update();
+
+private slots:
+    void win_char_inventory_font();
+    void toggle_inven_show_buttons();
+    void toggle_win_char_inventory_frame();
+    void inven_button_click();
 };
 
 extern MainWindow *main_window;

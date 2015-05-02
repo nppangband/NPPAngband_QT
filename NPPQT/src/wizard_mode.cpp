@@ -283,7 +283,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw everything */
-    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_WIN_EQUIPMENT |
+    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_WIN_INVENTORY | PR_WIN_EQUIPMENT |
                       PR_MESSAGES | PR_WIN_MON_RECALL | PR_WIN_OBJ_RECALL | PR_WIN_MESSAGES |
                       PR_WIN_OBJLIST | PR_WIN_FEAT_RECALL);
 
@@ -733,7 +733,7 @@ void WizardModeDialog::wiz_cure_all(void)
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
     /* Redraw everything */
-    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_INVEN | PR_WIN_EQUIPMENT |
+    p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL | PR_MAP | PR_WIN_INVENTORY | PR_WIN_EQUIPMENT |
                       PR_MESSAGES | PR_WIN_MON_RECALL | PR_WIN_OBJ_RECALL |  PR_WIN_MESSAGES |
                       PR_WIN_OBJLIST | PR_WIN_FEAT_RECALL);
 

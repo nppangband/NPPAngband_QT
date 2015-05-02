@@ -652,8 +652,8 @@ enum
 #define PR_XXX2             0x00004000L
 #define PR_XX11             0x00008000L
 #define PR_MESSAGES         0x00010000L	// Display messages
-#define PR_WIN_EQUIPMENT    0x00020000L	/* Display equipment window */
-#define PR_INVEN            0x00040000L	/* Display inven/equip */
+#define PR_WIN_EQUIPMENT    0x00020000L	/* Display equipment and quiver window */
+#define PR_WIN_INVENTORY    0x00040000L	/* Display inventory */
 #define PR_WIN_OBJLIST      0x00080000L /* Display item list */
 #define PR_WIN_MONLIST      0x00100000L /* Update Monster List Window */
 #define PR_WIN_MON_RECALL   0x00200000L /* Monster recall Window */
@@ -675,7 +675,6 @@ enum
 /*
  * Bit flags for the "p_ptr->window" variable (etc)
  */
-#define PW_INVEN            0x00000001L /* Display inven/equip */
 #define PW_MAP              0x00000020L /* Display dungeon map */
 #define PW_OVERHEAD         0x00000080L /* Display overhead view */
 #define PW_STATUS           0x00000800L /* Display Status */

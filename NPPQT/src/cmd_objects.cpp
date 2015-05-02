@@ -358,7 +358,7 @@ void command_uninscribe(cmd_arg args)
     }
 
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 }
 
 /*
@@ -441,7 +441,7 @@ void command_inscribe(cmd_arg args)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
 }
 
@@ -765,7 +765,7 @@ static void refill_lamp(object_type *j_ptr, object_type *o_ptr, int item)
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN);
+        p_ptr->redraw |= (PR_WIN_INVENTORY);
     }
 
     /* Refilled from a flask */
@@ -1039,7 +1039,7 @@ static void swap_weapons(void)
 
     /* Recalculate bonuses, torch, mana */
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
     process_player_energy(BASE_ENERGY_MOVE);
 }
@@ -1083,7 +1083,7 @@ static void wield_swap_weapon(void)
 
         /* Recalculate bonuses, torch, mana */
         p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
         /* We are done */
         process_player_energy(BASE_ENERGY_MOVE);
@@ -1278,7 +1278,7 @@ void command_destroy(cmd_arg args)
 
         p_ptr->update |= (PU_PLAYER_SCORE);
 
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT | PR_STATUSBAR);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT | PR_STATUSBAR);
 
         /* Done */
         return;

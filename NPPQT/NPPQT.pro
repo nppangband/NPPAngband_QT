@@ -17,6 +17,7 @@ SOURCES +=  src/qt_main.cpp \
             src/qt_win_char_equipment.cpp \
             src/qt_win_char_info_equip.cpp \
             src/qt_win_char_info_basic.cpp \
+            src/qt_win_char_inventory.cpp \
             src/qt_win_feat_recall.cpp \
             src/qt_win_messages.cpp \
             src/qt_win_mon_list.cpp \

@@ -730,7 +730,7 @@ bool make_attack_normal(monster_type *m_ptr)
                                 p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
                                 /* Redraw stuff */
-                                p_ptr->redraw |= (PR_INVEN);
+                                p_ptr->redraw |= (PR_WIN_INVENTORY);
 
                                 /* not more than one inventory
                                  * slot effected. */

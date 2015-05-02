@@ -1765,7 +1765,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
         p_ptr->notice |= (PN_COMBINE | PN_REORDER);
 
         /* Window stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
     }
 
     /* Redraw if necessary*/

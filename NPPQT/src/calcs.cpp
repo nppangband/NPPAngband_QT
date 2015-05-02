@@ -2061,17 +2061,17 @@ void redraw_stuff(void)
     /* Character is not ready yet, no screen updates */
     if (!character_generated) return;
 
-    // This needs to go before the others (see ui_redraw_all)
-    if (p_ptr->redraw & (PR_MAP)) ui_redraw_all();
+    if (p_ptr->redraw & (PR_MAP)) ui_redraw_map();
 
     if (p_ptr->redraw & (PR_WIN_EQUIPMENT))
     {
         p_ptr->redraw |= (PR_WIN_CHAR_BASIC | PR_WIN_CHAR_EQUIP_INFO);
         ui_update_char_equipment_window();
     }
-    if (p_ptr->redraw & (PR_INVEN))
+    if (p_ptr->redraw & (PR_WIN_INVENTORY))
     {
         p_ptr->redraw |= (PR_WIN_CHAR_BASIC);
+        ui_update_char_inventory_window();
     }
 
     if (p_ptr->redraw & (PR_SIDEBAR_PL))

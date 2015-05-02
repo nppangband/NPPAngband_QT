@@ -466,7 +466,7 @@ static int quiver_wield(int item, object_type *o_ptr)
     /* Recalculate bonuses */
     p_ptr->notice |= (PN_SORT_QUIVER);
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    if (item > 0) p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
     else p_ptr->redraw |= (PR_WIN_EQUIPMENT | PR_WIN_OBJLIST);
 
     /* Reorder the quiver and return the perhaps modified slot */
@@ -592,7 +592,7 @@ void wield_item(object_type *o_ptr, int item, int slot)
     /* Recalculate bonuses, torch, mana */
     p_ptr->notice |= (PN_SORT_QUIVER);
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA);
-    if (item > 0) p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    if (item > 0) p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
     else p_ptr->redraw |= (PR_WIN_EQUIPMENT | PR_WIN_OBJLIST);
 }
 
@@ -2624,7 +2624,7 @@ void inven_item_increase(int item, int num)
         p_ptr->notice |= (PN_COMBINE);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
     }
 }
 
@@ -3145,7 +3145,7 @@ void inven_item_optimize(int item)
     if (item < INVEN_WIELD)
     {
         p_ptr->update |= (PU_BONUS);
-        p_ptr->redraw |= PR_INVEN;
+        p_ptr->redraw |= PR_WIN_INVENTORY;
         limit = INVEN_MAX_PACK;
     }
 
@@ -3416,7 +3416,7 @@ s16b quiver_carry(object_type *o_ptr)
             p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
             /* Redraw stuff */
-            p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+            p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
             /* Save quiver size */
             save_quiver_size();
@@ -3528,7 +3528,7 @@ s16b quiver_carry(object_type *o_ptr)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
     /* Save quiver size */
     save_quiver_size();
@@ -3588,7 +3588,7 @@ s16b inven_carry(object_type *o_ptr)
             p_ptr->update |= (PU_BONUS);
 
             /* Redraw stuff */
-            p_ptr->redraw |= PR_INVEN;
+            p_ptr->redraw |= PR_WIN_INVENTORY;
 
             /* Save quiver size */
             save_quiver_size();
@@ -3710,7 +3710,7 @@ s16b inven_carry(object_type *o_ptr)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
     /* Save quiver size */
     save_quiver_size();
@@ -3944,7 +3944,7 @@ void combine_pack(void)
 
                 /* Redraw stuff */
                 p_ptr->update |= (PU_BONUS);
-                p_ptr->redraw |= PR_INVEN;
+                p_ptr->redraw |= PR_WIN_INVENTORY;
 
                 /* Done */
                 break;
@@ -4130,7 +4130,7 @@ void reorder_pack(void)
         inventory[j].object_copy(i_ptr);
 
         /* Redraw stuff */
-        p_ptr->redraw |= PR_INVEN;
+        p_ptr->redraw |= PR_WIN_INVENTORY;
     }
 
     /* Message */

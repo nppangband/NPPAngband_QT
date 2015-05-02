@@ -83,14 +83,14 @@ void AllObjectsDialog::button_click()
     // Paranoia
     if (!ok) return;
 
-    p_ptr->message_append_start();
-
     // Hack = Special handling for object settings
     if (command_num == CMD_SETTINGS)
     {
         object_settings(item_num);
         return;
     }
+
+    p_ptr->message_append_start();
 
     // We aren't repeating the previous command
     p_ptr->player_previous_command_wipe();

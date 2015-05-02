@@ -671,7 +671,7 @@ bool get_item(int *cp, QString pmt, QString str, int mode)
     item_tester_swap = FALSE;
 
     /* Make sure the equipment/inventory windows are up to date */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
     /* Warning if needed */
     if (!success && !cancelled && !str.isEmpty()) message(str);

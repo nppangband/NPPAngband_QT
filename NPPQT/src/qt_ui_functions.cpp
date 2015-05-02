@@ -330,12 +330,14 @@ void ui_update_sidebar_all()
 
 void ui_update_sidebar_player()
 {
+    if (!p_ptr->player_turn) return;
     main_window->update_sidebar_player();
     p_ptr->redraw &= ~(PR_SIDEBAR_PL);
 }
 
 void ui_update_sidebar_mon()
 {
+    if (!p_ptr->player_turn) return;
     main_window->update_sidebar_mon();
     p_ptr->redraw &= ~(PR_SIDEBAR_MON);
 }
@@ -360,12 +362,15 @@ void ui_update_messages()
 
 void ui_update_monlist()
 {
+    if (!p_ptr->player_turn) return;
+    if (p_ptr->is_running()) return;
     main_window->win_mon_list_update();
     p_ptr->redraw &= ~(PR_WIN_MONLIST);
 }
 
 void ui_update_objlist()
 {
+    if (!p_ptr->player_turn) return;
     if (p_ptr->is_running()) return;
     main_window->win_obj_list_update();
     p_ptr->redraw &= ~(PR_WIN_OBJLIST);
@@ -400,6 +405,7 @@ void ui_update_message_window()
 
 void ui_update_char_basic_window()
 {
+    if (!p_ptr->player_turn) return;
     if (p_ptr->is_running() || p_ptr->is_resting()) return;
     main_window->win_char_info_basic_update();
     p_ptr->redraw &= ~(PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
@@ -407,6 +413,7 @@ void ui_update_char_basic_window()
 
 void ui_update_char_equip_info_window()
 {
+    if (!p_ptr->player_turn) return;
     if (p_ptr->is_running() || p_ptr->is_resting()) return;
     main_window->win_char_info_equip_update();
     p_ptr->redraw &= ~(PR_WIN_CHAR_EQUIP_INFO);
@@ -414,9 +421,18 @@ void ui_update_char_equip_info_window()
 
 void ui_update_char_equipment_window()
 {
+    if (!p_ptr->player_turn) return;
     if (p_ptr->is_running() || p_ptr->is_resting()) return;
     main_window->win_char_equipment_update();
     p_ptr->redraw &= ~(PR_WIN_EQUIPMENT);
+}
+
+void ui_update_char_inventory_window()
+{
+    if (!p_ptr->player_turn) return;
+    if (p_ptr->is_running() || p_ptr->is_resting()) return;
+    main_window->win_char_inventory_update();
+    p_ptr->redraw &= ~(PR_WIN_INVENTORY);
 }
 
 void ui_update_char_score()
@@ -530,10 +546,16 @@ void ui_redraw_grid(int y, int x)
 
 void ui_redraw_all()
 {
-    main_window->redraw();
+    main_window->redraw_all();
+    p_ptr->redraw &= ~(PR_MESSAGES | PR_WIN_MESSAGES | PR_WIN_MONLIST | PR_WIN_OBJLIST);
+    p_ptr->redraw &= ~(PR_WIN_EQUIPMENT | PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
+    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
+}
 
-    // This redraws most things.
-    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_MESSAGES | PR_WIN_MONLIST | PR_WIN_OBJLIST);
+void ui_redraw_map()
+{
+    main_window->redraw_screen();
+    p_ptr->redraw &= ~(PR_MAP);
 }
 
 void player_death_close_game(void)

@@ -776,7 +776,7 @@ void identify_pack(void)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
 }
 
@@ -2313,7 +2313,7 @@ static int remove_curse_aux(bool heavy)
     if (cnt)
     {
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
     }
 
     else message(QString("Nothing happens."));
@@ -2423,7 +2423,7 @@ int do_ident_item(int item, object_type *o_ptr)
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS | PU_PLAYER_SCORE);
 
-    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_INVEN | PR_WIN_EQUIPMENT | PR_WIN_OBJLIST);
+    p_ptr->redraw |= (PR_SIDEBAR_PL | PR_WIN_INVENTORY | PR_WIN_EQUIPMENT | PR_WIN_OBJLIST);
 
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -2907,7 +2907,7 @@ bool recharge(int num, bool cannot_fail, int percent)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN);
+    p_ptr->redraw |= (PR_WIN_INVENTORY);
 
     /* Something was done */
     return (TRUE);
@@ -3081,7 +3081,7 @@ bool enchant(object_type *o_ptr, int n, int eflag)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT  | PR_WIN_OBJLIST);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT  | PR_WIN_OBJLIST);
 
     /* Success */
     return (TRUE);
@@ -3855,7 +3855,7 @@ bool curse_armor(void)
         p_ptr->update |= (PU_BONUS | PU_MANA);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
     }
 
@@ -3923,7 +3923,7 @@ bool curse_weapon(void)
         p_ptr->update |= (PU_BONUS | PU_MANA);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
     }
 
@@ -3991,7 +3991,7 @@ bool brand_object(object_type *o_ptr, byte brand_type, bool do_enchant)
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
         /* Window stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT  | PR_WIN_OBJLIST);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT  | PR_WIN_OBJLIST);
 
         /* Enchant */
         if (do_enchant) enchant(o_ptr, rand_int(3) + 4, ENCH_TOHIT | ENCH_TODAM);

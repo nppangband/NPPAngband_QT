@@ -35,10 +35,10 @@ public:
 
 static bool compare_types(const object_type *o_ptr, const object_type *j_ptr)
 {
-    if (o_ptr->tval < j_ptr->tval) return (TRUE);
-    if (o_ptr->tval > j_ptr->tval) return (FALSE);
-    if (o_ptr->sval < j_ptr->sval) return (TRUE);
-    return (FALSE);
+    if (o_ptr->tval < j_ptr->tval) return (FALSE);
+    if (o_ptr->tval > j_ptr->tval) return (TRUE);
+    if (o_ptr->sval < j_ptr->sval) return (FALSE);
+    return (TRUE);
 }
 
 /* some handy macros for sorting */
@@ -57,18 +57,18 @@ static bool compare_items(const object_vis ov1, const object_vis ov2)
     /* known artifacts will sort first */
     if (o1->is_known_artifact() && o2->is_known_artifact())
         return compare_types(o1, o2);
-    if (o1->is_known_artifact()) return TRUE;
-    if (o2->is_known_artifact()) return FALSE;
+    if (o1->is_known_artifact()) return FALSE;
+    if (o2->is_known_artifact()) return TRUE;
 
     /* unknown objects will sort next */
     if (!o1->is_flavor_known() && !o2->is_flavor_known())
         return compare_types(o1, o2);
-    if (!o1->is_flavor_known()) return TRUE;
-    if (!o2->is_flavor_known()) return FALSE;
+    if (!o1->is_flavor_known()) return FALSE;
+    if (!o2->is_flavor_known()) return TRUE;
 
     /* if only one of them is worthless, the other comes first */
-    if (object_is_worthless(o1) && !object_is_worthless(o2)) return FALSE;
-    if (!object_is_worthless(o1) && object_is_worthless(o2)) return TRUE;
+    if (object_is_worthless(o1) && !object_is_worthless(o2)) return TRUE;
+    if (!object_is_worthless(o1) && object_is_worthless(o2)) return FALSE;
 
     /* otherwise, just compare tvals and svals */
     /* NOTE: arguably there could be a better order than this */
@@ -224,7 +224,7 @@ void MainWindow::win_obj_list_update()
         }
     }
 
-    /* Note no visible monsters at all */
+    /* Note no visible objects */
     if (!vis_obj_list.size())
     {
         obj_list_area->insertRow(0);
@@ -239,7 +239,7 @@ void MainWindow::win_obj_list_update()
         }
         else
         {
-            QTableWidgetItem *header1 = new QTableWidgetItem("You see no monsters.");
+            QTableWidgetItem *header1 = new QTableWidgetItem("You see no objects.");
             header1->setTextColor(defined_colors[TERM_WHITE]);
             header1->setTextAlignment(Qt::AlignLeft);
             header1->setFont(font_win_obj_list);

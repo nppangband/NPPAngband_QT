@@ -1262,7 +1262,6 @@ void process_entities(void)
         /* This is the character */
         else if (idx < 0)
         {
-            p_ptr->player_turn = TRUE;
             /* Let the character take a turn */
             process_player();
             return;

@@ -41,14 +41,14 @@ void MainWindow::equip_button_click()
     // Paranoia
     if (!ok) return;
 
-    p_ptr->message_append_start();
-
     // Hack = Special handling for object settings
     if (command_num == CMD_SETTINGS)
     {
         object_settings(item_num);
         return;
     }
+
+    p_ptr->message_append_start();
 
     // We aren't repeating the previous command
     p_ptr->player_previous_command_wipe();
@@ -133,7 +133,7 @@ void MainWindow::win_char_equipment_update()
 
     update_equip_list(equip_list, FALSE, equip_show_buttons);
     update_quiver_list(quiver_list, FALSE, equip_show_buttons);
-    equip_link_pushbuttons();
+    if (equip_show_buttons) equip_link_pushbuttons();
 }
 
 void MainWindow::create_win_char_equipment()
@@ -145,7 +145,6 @@ void MainWindow::create_win_char_equipment()
     QVBoxLayout *equip_vlay = new QVBoxLayout;
     main_vlay_equipment->addLayout(equip_vlay);
     QLabel *header_equip = new QLabel(QString("<b><h1>Equipment</b></h1>"));
-    header_equip->setObjectName("preserve");
     equip_vlay->addWidget(header_equip, Qt::AlignCenter);
     equip_list = new QGridLayout;
 
@@ -154,20 +153,18 @@ void MainWindow::create_win_char_equipment()
     // Add a space
     QLabel *empty_space = new QLabel;
     empty_space->setText(" ");
-    empty_space->setObjectName("preserve");
     main_vlay_equipment->addWidget(empty_space);
 
     // Add the quiver
     QVBoxLayout *quiver_vlay = new QVBoxLayout;
     main_vlay_equipment->addLayout(quiver_vlay);
     QLabel *header_quiver = new QLabel(QString("<b><h1>Quiver</b></h1>"));
-    header_quiver->setObjectName("preserve");
     quiver_vlay->addWidget(header_quiver, Qt::AlignCenter);
     quiver_list = new QGridLayout;
     quiver_vlay->addLayout(quiver_list);
-    main_vlay_equipment->addStretch(1);
 
     win_char_equipment_update();
+    main_vlay_equipment->addStretch(1);
 
 
 }
@@ -191,7 +188,8 @@ void MainWindow::win_char_equipment_create()
     char_equipment_font->setStatusTip(tr("Set the font for the Equipment screen."));
     connect(char_equipment_font, SIGNAL(triggered()), this, SLOT(win_char_equipment_font()));
     char_equipment_settings->addAction(char_equipment_font);
-    char_equipment_buttons = new QAction(tr("Hide Command Buttons"), this);
+    char_equipment_buttons = new QAction(tr("Show Command Buttons"), this);
+    if (equip_show_buttons) char_equipment_buttons->setText("Hide Command Buttons");
     char_equipment_buttons->setStatusTip(tr("Displays or hides the command buttons."));
     connect(char_equipment_buttons, SIGNAL(triggered()), this, SLOT(toggle_equip_show_buttons()));
     char_equipment_settings->addAction(char_equipment_buttons);

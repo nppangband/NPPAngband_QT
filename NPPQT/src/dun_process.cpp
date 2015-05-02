@@ -156,7 +156,7 @@ static void sense_inventory(void)
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
     }
 }
 
@@ -592,7 +592,7 @@ static void recharge_objects(void)
         p_ptr->notice |= (PN_COMBINE);
 
         /* Redraw stuff */
-        p_ptr->redraw |= (PR_INVEN);
+        p_ptr->redraw |= (PR_WIN_INVENTORY);
     }
 
     /*** Recharge the ground ***/
@@ -1704,7 +1704,7 @@ void change_player_level(void)
     p_ptr->redraw |= (PR_SIDEBAR_ALL | PR_STATUSBAR | PR_MAP);
 
     /* Redraw "statusy" things */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT | PR_WIN_MON_RECALL | PR_WIN_MONLIST | PR_WIN_OBJLIST);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT | PR_WIN_MON_RECALL | PR_WIN_MONLIST | PR_WIN_OBJLIST);
 
     /* Update stuff */
     update_stuff();
@@ -1770,6 +1770,9 @@ static void process_game_turns(void)
     /* Main loop */
     while (TRUE)
     {
+        /* Count game turns */
+        p_ptr->game_turn++;
+
         /* Hack -- Compact the monster list occasionally */
         if (mon_cnt + 32 > z_info->m_max) compact_monsters(64);
 
@@ -1820,8 +1823,7 @@ static void process_game_turns(void)
         if (p_ptr->is_dead) return;
         if (p_ptr->leaving_level) change_player_level();
 
-        /* Count game turns */
-        p_ptr->game_turn++;
+
     }
 }
 

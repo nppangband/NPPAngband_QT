@@ -2957,7 +2957,7 @@ void do_cmd_sell(int this_store, cmd_arg args)
     p_ptr->update |= (PU_BONUS | PU_TORCH | PU_MANA | PU_PLAYER_SCORE);
 
     /* Redraw stuff */
-    p_ptr->redraw |= (PR_INVEN | PR_WIN_EQUIPMENT | PR_SIDEBAR_PL | PR_WIN_OBJLIST);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT | PR_SIDEBAR_PL | PR_WIN_OBJLIST);
 
     /* Get the "apparent" value */
     dummy = object_value(&sold_item) * amt;

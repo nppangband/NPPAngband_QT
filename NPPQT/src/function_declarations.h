@@ -625,6 +625,7 @@ extern QPixmap ui_make_blank();
 extern void ui_animate_victory(int y, int x);
 extern int ui_get_dir_from_slope(int y1, int x1, int y2, int x2);
 extern QPoint ui_get_center(int y, int x);
+extern void ui_redraw_map();
 extern void ui_update_sidebar_all();
 extern void ui_update_sidebar_player();
 extern void ui_update_sidebar_mon();
@@ -640,6 +641,7 @@ extern void ui_update_message_window();
 extern void ui_update_char_basic_window();
 extern void ui_update_char_equip_info_window();
 extern void ui_update_char_equipment_window();
+extern void ui_update_char_inventory_window();
 extern void ui_update_char_score();
 extern void ui_update_char_turncount();
 extern void player_death_close_game(void);
@@ -924,6 +926,7 @@ extern QString find_roman_numeral(QString full_name);
 extern QString int_to_roman(int n);
 extern int roman_to_int(QString roman);
 extern void clear_layout(QLayout* layout);
+
 
 // widard_mode.cpp
 extern bool make_fake_artifact(object_type *o_ptr, byte art_num);
