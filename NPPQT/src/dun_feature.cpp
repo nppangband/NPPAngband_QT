@@ -388,7 +388,7 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc)
             x_ptr->x_flags &= ~(EF1_HIDDEN);
 
             /* Memorize */
-            dungeon_info[y][x].cave_info |= (CAVE_MARK);
+            dungeon_info[y][x].mark_square();
 
             /*Light it up*/
             light_spot(y, x);

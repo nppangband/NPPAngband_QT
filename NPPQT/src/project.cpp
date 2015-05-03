@@ -3302,7 +3302,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                     (EF1_HIDDEN))))
             {
                 /* Forget */
-                dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
+                dungeon_info[y][x].cave_info &= ~(CAVE_MARK | CAVE_EXPLORED);
 
                 /* Redraw */
                 light_spot(y, x);

@@ -578,7 +578,8 @@ void update_equip_list(QGridLayout *lay, bool label, bool buttons)
         }
         else
         {
-            add_plain_label(lay, QString("(nothing)"), row, col++);
+            QLabel *nothing_label = new QLabel("(nothing)");
+            lay->addWidget(nothing_label, row, col++, Qt::AlignLeft);
         }
 
         ++row;

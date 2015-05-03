@@ -107,6 +107,7 @@ void player_type::player_command_wipe()
 {
     command_current = CMD_NONE;
     player_args.wipe();
+    p_ptr->running_withpathfind = FALSE;
 }
 
 void player_type::player_previous_command_wipe()

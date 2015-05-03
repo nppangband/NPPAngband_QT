@@ -2945,5 +2945,4 @@ void do_cmd_findpath(int y, int x)
     args.verify = FALSE;
 
     command_run(args);
-
 }

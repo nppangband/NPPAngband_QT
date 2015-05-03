@@ -787,7 +787,7 @@ int move_player(int dir, int jumping)
 			/* Tell the player */
             message(QString("You feel %1 blocking your way.").arg(name));
 
-            dungeon_info[y][x].cave_info |= (CAVE_MARK);
+            dungeon_info[y][x].mark_square();
 
 			light_spot(y, x);
 
@@ -814,7 +814,7 @@ int move_player(int dir, int jumping)
 		if (!cave_flag_bold(y, x, CAVE_MARK))
 		{
 			/* Remember */
-            dungeon_info[y][x].cave_info |= (CAVE_MARK);
+            dungeon_info[y][x].mark_square();
 
 			/* Redraw */
 			light_spot(y, x);
@@ -864,7 +864,7 @@ int move_player(int dir, int jumping)
 		if (!cave_flag_bold(y, x, CAVE_MARK))
 		{
 			/* Remember */
-            dungeon_info[y][x].cave_info |= (CAVE_MARK);
+            dungeon_info[y][x].mark_square();
 
 			/* Redraw */
 			light_spot(y, x);
@@ -1006,7 +1006,7 @@ int move_player(int dir, int jumping)
 			/* Tell the player */
             message(QString("You feel you are in %1.").arg(name));
 
-            dungeon_info[y][x].cave_info |= (CAVE_MARK);
+            dungeon_info[y][x].mark_square();
 
 			light_spot(y, x);
 		}

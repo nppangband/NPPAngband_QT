@@ -60,6 +60,11 @@ public:
 
     u32b ui_flags;
 
+    u16b path_cost;
+    bool path_flow;
+
+    void clear_path_flow();
+
     bool has_object();
     bool has_effect();
     bool has_monster();
@@ -69,6 +74,8 @@ public:
     bool has_visible_monster();
 
     bool has_visible_artifact();
+
+    void mark_square();
 
     // All variables above should be included in this method.
     void dungeon_square_wipe();

@@ -1354,7 +1354,7 @@ void note_spot(int y, int x)
                 _feat_ff2_match(f_ptr, FF2_ATTR_LIGHT)))
             {
                 /* Memorize */
-                dungeon_info[y][x].cave_info |= (CAVE_MARK);
+                dungeon_info[y][x].mark_square();
             }
 
             /* Hack -- Emulate the REMEMBER flag for certain effects */
@@ -1381,7 +1381,7 @@ void note_spot(int y, int x)
                             EF1_GLYPH))) continue;
 
                     /* Remember the grid */
-                    dungeon_info[y][x].cave_info |= (CAVE_MARK);
+                    dungeon_info[y][x].mark_square();
 
                     /* Done */
                     break;
@@ -1394,7 +1394,7 @@ void note_spot(int y, int x)
         else
         {
             /* Memorize */
-            dungeon_info[y][x].cave_info |= (CAVE_MARK);
+            dungeon_info[y][x].mark_square();
         }
     }
 }
@@ -1749,10 +1749,8 @@ int vinfo_init(void)
     int queue_tail = 0;
     vinfo_type *queue[VINFO_MAX_GRIDS*2];
 
-
     /* Make hack */
     hack = ZNEW(vinfo_hack);
-
 
     /* Analyze grids */
     for (y = 0; y <= MAX_SIGHT; ++y)
@@ -2238,7 +2236,7 @@ void update_view(void)
                         info = FAST_CAVE_INFO(g);
 
                         info |= (CAVE_VIEW);
-                        info |= (CAVE_SEEN);
+                        info |= (CAVE_SEEN | CAVE_EXPLORED);
 
                         /* Save cave info */
                         FAST_CAVE_INFO(g) = info;
@@ -2269,14 +2267,14 @@ void update_view(void)
     if (0 < radius)
     {
         /* Mark as "CAVE_SEEN" */
-        info |= (CAVE_SEEN);
+        info |= (CAVE_SEEN | CAVE_EXPLORED);
     }
 
     /* Perma-lit grid */
     else if (info & (CAVE_GLOW | CAVE_HALO))
     {
         /* Mark as "CAVE_SEEN" */
-        info |= (CAVE_SEEN);
+        info |= (CAVE_SEEN | CAVE_EXPLORED);
     }
 
     /* Save cave info */
@@ -2353,7 +2351,7 @@ void update_view(void)
                         if (p->d < radius)
                         {
                             /* Mark as "CAVE_SEEN" */
-                            info |= (CAVE_SEEN);
+                            info |= (CAVE_SEEN | CAVE_EXPLORED);
 
                             /* Mark as "CAVE_LIGHT" */
                             /* info |= (CAVE_LIGHT); */
@@ -2378,7 +2376,7 @@ void update_view(void)
                                  (dungeon_info[yy][x].cave_info & (CAVE_GLOW))))
                             {
                                 /* Mark as seen */
-                                info |= (CAVE_SEEN);
+                                info |= (CAVE_SEEN | CAVE_EXPLORED);
                             }
 
                         }
@@ -2414,7 +2412,7 @@ void update_view(void)
                         if (p->d < radius)
                         {
                             /* Mark as "CAVE_SEEN" */
-                            info |= (CAVE_SEEN);                            
+                            info |= (CAVE_SEEN | CAVE_EXPLORED);
 
                             /* Mark as "CAVE_LIGHT" */
                             /* info |= (CAVE_LIGHT); */
@@ -2424,7 +2422,7 @@ void update_view(void)
                         else if (info & (CAVE_GLOW | CAVE_HALO))
                         {
                             /* Mark as "CAVE_SEEN" */
-                            info |= (CAVE_SEEN);
+                            info |= (CAVE_SEEN | CAVE_EXPLORED);
                         }
 
                         /* Save in array */
@@ -2966,10 +2964,10 @@ static void update_flow_partial(byte which_flow, u32b elem_flag)
                 cave_cost[which_flow][y2][x2] = new_cave_cost;
 
                 /*Don't store the same grid twice*/
-                if (dungeon_info[y2][x2].cave_info & (CAVE_FLOW)) continue;
+                if (dungeon_info[y2][x2].path_flow) continue;
 
                 /*mark that we stored this grid for the next cycle*/
-                dungeon_info[y2][x2].cave_info |= (CAVE_FLOW);
+                dungeon_info[y2][x2].path_flow = TRUE;
 
                 /* Store this grid in the flow table */
                 flow_table[next_cycle][0][grid_count] = y2;
@@ -2984,7 +2982,7 @@ static void update_flow_partial(byte which_flow, u32b elem_flag)
         for (i = 0; i < grid_count; i++)
         {
             /* Not very legible, but this is using the y and x coordinates from the nest cycle*/
-            dungeon_info[flow_table[next_cycle][0][i]][flow_table[next_cycle][1][i]].cave_info &= ~(CAVE_FLOW);
+            dungeon_info[flow_table[next_cycle][0][i]][flow_table[next_cycle][1][i]].path_flow = FALSE;
         }
 
         /* Swap write and read portions of the table */
@@ -3224,10 +3222,10 @@ static void update_flow_full(byte which_flow, u32b elem_flag)
                 cave_cost[which_flow][y2][x2] = new_cave_cost;
 
                 /*Don't store the same grid twice*/
-                if (dungeon_info[y2][x2].cave_info & (CAVE_FLOW)) continue;
+                if (dungeon_info[y2][x2].path_flow) continue;
 
                 /*mark that we stored this grid for the next cycle*/
-                dungeon_info[y2][x2].cave_info |= (CAVE_FLOW);
+                dungeon_info[y2][x2].path_flow = TRUE;
 
                 /* Store this grid in the flow table */
                 flow_table[next_cycle][0][grid_count] = y2;
@@ -3242,7 +3240,7 @@ static void update_flow_full(byte which_flow, u32b elem_flag)
         for (i = 0; i < grid_count; i++)
         {
             /* Not very legible, but this is using the y and x coordinates from the nest cycle*/
-            dungeon_info[flow_table[next_cycle][0][i]][flow_table[next_cycle][1][i]].cave_info &= ~(CAVE_FLOW);
+            dungeon_info[flow_table[next_cycle][0][i]][flow_table[next_cycle][1][i]].path_flow = FALSE;
         }
 
         /* Swap write and read portions of the table */
@@ -3542,14 +3540,14 @@ void wiz_light(void)
                     if (f_info[dungeon_info[yy][xx].feat].f_flags1 & (FF1_REMEMBER))
                     {
                         /* Memorize the grid */
-                        dungeon_info[yy][xx].cave_info |= (CAVE_MARK);
+                        dungeon_info[yy][xx].mark_square();
                     }
 
                     /* Normally, memorize floors (see above) */
                     if (view_perma_grids && !view_torch_grids)
                     {
                         /* Memorize the grid */
-                        dungeon_info[yy][xx].cave_info |= (CAVE_MARK);
+                        dungeon_info[yy][xx].mark_square();
                     }
                 }
             }
@@ -3579,7 +3577,7 @@ void wiz_dark(void)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             /* Process the grid */
-            dungeon_info[y][x].cave_info &= ~(CAVE_MARK | CAVE_DTRAP);
+            dungeon_info[y][x].cave_info &= ~(CAVE_MARK | CAVE_DTRAP | CAVE_EXPLORED);
         }
     }
 
@@ -3635,7 +3633,7 @@ void town_illuminate(bool daytime)
                 dungeon_info[y][x].cave_info |= (CAVE_GLOW);
 
                 /* Memorize the grid */
-                dungeon_info[y][x].cave_info |= (CAVE_MARK);
+                dungeon_info[y][x].mark_square();
             }
 
             /* Boring grids (light) */
@@ -3647,7 +3645,7 @@ void town_illuminate(bool daytime)
                 /* Hack -- Memorize grids */
                 if (view_perma_grids)
                 {
-                    dungeon_info[y][x].cave_info |= (CAVE_MARK);
+                    dungeon_info[y][x].mark_square();
                 }
             }
 
@@ -3660,7 +3658,7 @@ void town_illuminate(bool daytime)
                 /* Hack -- Forget grids */
                 if (view_perma_grids)
                 {
-                    dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
+                    dungeon_info[y][x].cave_info &= ~(CAVE_MARK | CAVE_EXPLORED);
                 }
             }
         }
@@ -3685,7 +3683,7 @@ void town_illuminate(bool daytime)
                     /* Hack -- Memorize grids */
                     if (view_perma_grids)
                     {
-                        dungeon_info[yy][xx].cave_info |= (CAVE_MARK);
+                        dungeon_info[yy][xx].mark_square();
                     }
                 }
             }
@@ -5117,7 +5115,6 @@ void disturb(int stop_search, int unused_flag)
         /* Calculate torch radius */
         p_ptr->update |= (PU_TORCH);
 
-        p_ptr->running_withpathfind = FALSE;
     }
 
     /* Cancel repeated commands */

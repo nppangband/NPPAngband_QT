@@ -216,7 +216,7 @@ void py_set_trap(int y, int x)
     set_effect_trap_player(FEAT_MTRAP_BASE, y, x);
 
     /* Remember the location */
-    dungeon_info[y][x].cave_info |= (CAVE_MARK);
+    dungeon_info[y][x].mark_square();
 
     /* Notify the player. */
     message(QString("You set a monster trap."));

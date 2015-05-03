@@ -310,7 +310,7 @@
 #define CAVE_HALO		0x0800	/* glowing grid (FF2_GLOW), or adjacent to glowing grid */
 
 #define CAVE_PROJECT	0x1000  /* grid allows projections */
-#define CAVE_FLOW       0x2000  /* temporary flag to mark a square flow to be updated during the next cycle. */
+#define CAVE_EXPLORED   0x2000  /* The player has seen this square, for running */
 #define CAVE_MOVE       0x4000  /* grid allows movement */
 #define CAVE_TEMP       0x8000  /* temporary flag (hard-coded position) */
 

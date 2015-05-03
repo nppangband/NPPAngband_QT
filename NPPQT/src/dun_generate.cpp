@@ -9805,7 +9805,7 @@ static void light_elements(bool show_objects)
                 int xx = x + ddx_ddd[i];
 
                 /* Lite the grid */
-                dungeon_info[yy][xx].cave_info |= (CAVE_GLOW | CAVE_MARK);
+                dungeon_info[yy][xx].cave_info |= (CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
 
                 /* Remember its objects if necessary */
                 if (show_objects)

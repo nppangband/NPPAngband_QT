@@ -9,17 +9,14 @@
  * terrain can be taken into account.
  */
 
-static u16b path_cost[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
-static bool path_flow[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
 static void clear_path(void)
 {
-    for (int y = 0; y < MAX_DUNGEON_HGT; y++)
+    for (int y = 0; y < p_ptr->cur_map_hgt; y++)
     {
-        for (int x= 0; x < MAX_DUNGEON_HGT; x++)
+        for (int x = 0; x < p_ptr->cur_map_wid; x++)
         {
-            path_cost[y][x] = 0;
-            path_flow[y][x] = FALSE;
+            dungeon_info[y][x].clear_path_flow();
         }
     }
 }
@@ -30,7 +27,7 @@ byte energy_to_move(int y, int x)
     feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
 
     /*We have not done this flow yet*/
-    if (!path_cost[y][x])
+    if (!dungeon_info[y][x].path_cost)
     {
         /* Can't move here */
         if (!cave_passable_bold(y, x)) return 0;
@@ -57,7 +54,7 @@ bool buildpath(int y, int x)
     // Can't get there
     if (!cave_passable_bold(y, x)) return FALSE;
     //Can't see it
-    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) return (FALSE);
+    if (!(dungeon_info[y][x].cave_info & (CAVE_EXPLORED))) return (FALSE);
 
     //clear the path
     clear_path();
@@ -70,6 +67,10 @@ bool buildpath(int y, int x)
     y_coords.append(y);
     x_coords.append(x);
 
+    dungeon_type *dun_ptr_target = &dungeon_info[y][x];
+
+    dun_ptr_target->path_cost = BASE_ENERGY_MOVE - 25;
+
     for (int i = 0; i < 100; i++)
     {
         QVector<byte> this_y_coords = y_coords;
@@ -78,64 +79,65 @@ bool buildpath(int y, int x)
         y_coords.clear();
         x_coords.clear();
 
-        path_cost[y][x] = BASE_ENERGY_MOVE - 25;
-
         for (int z = 0; z < this_y_coords.size(); z++)
         {
-            byte yy = this_y_coords.at(z);
-            byte xx = this_x_coords.at(z);
+            int xx = this_x_coords.at(z);
+            int yy = this_y_coords.at(z);
 
-            int this_cost = path_cost[yy][xx];
+            dungeon_type *dun_ptr_square = &dungeon_info[yy][xx];
+
+            int this_cost = dun_ptr_square->path_cost;
 
             /* Look at all adjacent grids */
             for (int d = 0; d < 8; d++)
             {
-                /* Child location */
-                byte this_y = yy + ddy_ddd[d];
-                byte this_x = xx + ddx_ddd[d];
+                int xxx = xx + ddx_ddd[d];
+                int yyy = yy + ddy_ddd[d];
+
+                dungeon_type *dun_ptr_adj = &dungeon_info[yyy][xxx];
 
                 // Check bounds and accessability
-                if (!in_bounds(this_y, this_x)) continue;
-                if (!cave_passable_bold(this_y, this_x)) continue;
+                if (!in_bounds(yyy, xxx)) continue;
+                if (!cave_passable_bold(yyy, xxx)) continue;
 
                 // Only known grids
-                if (!(dungeon_info[this_y][this_x].cave_info & (CAVE_MARK))) continue;
+                if (!(dun_ptr_adj->cave_info & (CAVE_EXPLORED))) continue;
 
-                int new_energy = energy_to_move(this_y, this_x);
+                int new_energy = energy_to_move(yyy, xxx);
                 if (!new_energy) continue;
                 int new_cost = this_cost + new_energy;
 
                 // Check if this is a longer path
-                if (path_cost[this_y][this_x])
+                if (dun_ptr_adj->path_cost)
                 {
-                    if (path_cost[this_y][this_x] <= new_cost) continue;
+                    if (dun_ptr_adj->path_cost <= new_cost) continue;
                 }
 
                 // record the new cost
-                path_cost[this_y][this_x] = new_cost;
+                dun_ptr_adj->path_cost = new_cost;
 
                 /*Don't store the same grid twice*/
-                if (path_flow[this_y][this_x]) continue;
+                if (dun_ptr_adj->path_flow) continue;
 
-                path_flow[this_y][this_x] = TRUE;
+                dun_ptr_adj->path_flow = TRUE;
 
-                y_coords.append(this_y);
-                x_coords.append(this_x);
+                y_coords.append(yyy);
+                x_coords.append(xxx);
             }
         }
-
-        // We are done
-        if (!y_coords.size()) break;
 
         // Clear the flagged squares
         for (int z = 0; z < y_coords.size(); z++)
         {
-            path_flow[y_coords.at(z)][x_coords.at(z)] = FALSE;
+            dungeon_info[y_coords.at(z)][x_coords.at(z)].path_flow = FALSE;
         }
+
+        // We are done
+        if (!y_coords.size()) break;
     }
 
     //Never found the player
-    if (!path_cost[p_ptr->py][p_ptr->px]) return (FALSE);
+    if (!dungeon_info[p_ptr->py][p_ptr->px].path_cost) return (FALSE);
 
     return (TRUE);
 }
@@ -733,7 +735,7 @@ static int run_with_pathfind(void)
     int dir = 5;
 
     // Current player value
-    int lowest_cost = path_cost[py][px];
+    int lowest_cost = dungeon_info[py][px].path_cost;
 
     // We found where we wanted to be.
     if (lowest_cost < BASE_ENERGY_MOVE)
@@ -755,7 +757,7 @@ static int run_with_pathfind(void)
         /* Check Bounds */
         if (!in_bounds(y, x)) continue;
 
-        int this_cost = path_cost[y][x];
+        int this_cost = dungeon_info[y][x].path_cost;
 
         /*Is there a move here?*/
         if (!this_cost) continue;

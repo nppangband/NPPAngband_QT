@@ -1144,11 +1144,13 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
 
     if (check_disturb()) return;
 
+    // TODO PLAYTESTING
+    debug_rarities();
+
     QString keystring = which_key->text();
 
     // Go to special key handling
-    if (ui_mode == UI_MODE_INPUT)
-    {
+    if (ui_mode == UI_MODE_INPUT) {
         input.key = which_key->key();
         input.text = keystring;
         input.mode = INPUT_MODE_KEY;
@@ -1157,29 +1159,45 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         return;
     }
 
-    // Just a modifier was pressed, wait for a keypress
-    if (!keystring.length()) return;
-
-    Qt::KeyboardModifiers modifiers = which_key->modifiers();
+    Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
 
     bool shift_key = modifiers.testFlag(Qt::ShiftModifier);
     bool ctrl_key = modifiers.testFlag(Qt::ControlModifier);
     bool alt_key = modifiers.testFlag(Qt::AltModifier);
     bool meta_key = modifiers.testFlag(Qt::MetaModifier);
 
-    int key_press = which_key->key();
+    if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))    shift_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::ControlModifier))  ctrl_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::AltModifier))      alt_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     meta_key = TRUE;
+
+    // EXPERIMENTAL - Detect shift modifiers with keypad
+    // VERY IMPORTANT: We assume that the numlock key is alwasy pressed (normally)
+    // because the code needed to tell us that exactly is very very platform dependent
+    if (!shift_key && modifiers.testFlag(Qt::KeypadModifier))
+    {
+        Qt::Key code = Qt::Key(which_key->key());
+
+        QList<Qt::Key> lNumPadKeys = QList<Qt::Key>() << Qt::Key_Insert
+            << Qt::Key_End << Qt::Key_Down << Qt::Key_PageDown
+            << Qt::Key_Left << Qt::Key_Clear << Qt::Key_Right
+            << Qt::Key_Home << Qt::Key_Up << Qt::Key_PageUp
+            << Qt::Key_Delete;
+
+        if (lNumPadKeys.contains(code)) shift_key = TRUE;
+    }
 
     if (which_keyset == KEYSET_NEW)
     {
-        commands_new_keyset(key_press, shift_key, alt_key, ctrl_key, meta_key);
+        commands_new_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
     }
     else if (which_keyset == KEYSET_ANGBAND)
     {
-        commands_angband_keyset(key_press, shift_key, alt_key, ctrl_key, meta_key);
+        commands_angband_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
     }
     else if (which_keyset == KEYSET_ROGUE)
     {
-        commands_roguelike_keyset(key_press, shift_key, alt_key, ctrl_key, meta_key);
+        commands_roguelike_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
     }
     else pop_up_message_box("invalid keyset");
 

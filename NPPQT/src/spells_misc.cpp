@@ -894,7 +894,7 @@ static void cave_temp_room_unlite(void)
                 (EF1_HIDDEN))))
         {
             /* Forget the grid */
-            dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
+            dungeon_info[y][x].cave_info &= ~(CAVE_MARK | CAVE_EXPLORED);
         }
     }
 
@@ -1549,7 +1549,7 @@ void destroy_area(int y1, int x1, int r)
             dungeon_info[y][x].cave_info &= ~(CAVE_ROOM);
 
             /* Lose light and knowledge */
-            dungeon_info[y][x].cave_info &= ~(CAVE_GLOW | CAVE_MARK);
+            dungeon_info[y][x].cave_info &= ~(CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
 
             /* Hack -- Notice player affect */
             if (dungeon_info[y][x].monster_idx < 0)
@@ -1724,7 +1724,7 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
             dungeon_info[yy][xx].cave_info &= ~(CAVE_ROOM);
 
             /* Lose light and knowledge */
-            dungeon_info[yy][xx].cave_info &= ~(CAVE_GLOW | CAVE_MARK);
+            dungeon_info[yy][xx].cave_info &= ~(CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
 
             /* Skip the epicenter */
             if (!dx && !dy) continue;

@@ -39,6 +39,17 @@ bool dungeon_type::has_visible_artifact()
     return false;
 }
 
+void dungeon_type::mark_square()
+{
+    cave_info |= (CAVE_MARK | CAVE_EXPLORED);
+}
+
+void dungeon_type::clear_path_flow()
+{
+    path_cost = 0;
+    path_flow = FALSE;
+}
+
 //Verify if the dungeon square has an object on it
 bool dungeon_type::has_object()
 {
@@ -103,10 +114,10 @@ dungeon_type::dungeon_type()
 void dungeon_type::dungeon_square_wipe()
 {
     feat = effect_idx = monster_idx = object_idx = 0;
-    cave_info = 0;
+    path_cost = cave_info = 0;
     special_lighting = obj_special_symbol = 0;
     ui_flags = 0;
-    dtrap = FALSE;
+    path_flow = dtrap = FALSE;
     dun_color = Qt::black;
     dun_char = ' ';
     object_color = Qt::black;

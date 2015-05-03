@@ -1676,7 +1676,7 @@ void change_player_level(void)
             cave_set_feat(p_ptr->py, p_ptr->px, p_ptr->create_stair);
 
             /* Mark the stairs as known */
-            dungeon_info[p_ptr->py][p_ptr->px].cave_info |= (CAVE_MARK);
+            dungeon_info[p_ptr->py][p_ptr->px].mark_square();
         }
 
         /* Cancel the stair request */

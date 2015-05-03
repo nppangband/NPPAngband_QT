@@ -77,7 +77,7 @@ static struct command_desc list_commands_new[] =
     {"Take Off Item", "W (shift-w) or '-'"},
     {"Target Closest", "'*' or ','"},
     {"Terminate Character", "(CTRL + ALT)-Q"},
-    {"Throw Item", " "},
+    {"Throw Item", "L (shift-l"},
     {"Tunnel (set direction later)", "CTRL-O"},
     {"Uninscribe Item", "}"},
     {"Use Item", "e"},
@@ -502,10 +502,10 @@ void do_cmd_command_list(void)
     CommandList();
 }
 
-static void process_mov_key(int dir, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
+static void process_move_key(int dir, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
 {
     if (!character_dungeon) return;
-    (void)meta_key;
+
 
     // Flip pickup
     if (ctrl_key && alt_key) do_cmd_walk(dir, TRUE);
@@ -537,7 +537,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_Down:
         case Qt::Key_B:
         {
-            process_mov_key(2, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(2, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
 
@@ -546,7 +546,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_Up:
         case Qt::Key_Y:
         {
-            process_mov_key(8, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(8, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
 
@@ -555,7 +555,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_Left:
         case Qt::Key_G:
         {
-            process_mov_key(4, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(4, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move right
@@ -563,7 +563,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_Right:
         case Qt::Key_J:
         {
-            process_mov_key(6, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(6, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally left and up
@@ -571,7 +571,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_T:
         case Qt::Key_Home:
         {
-            process_mov_key(7, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(7, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally right and up
@@ -579,7 +579,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_U:
         case Qt::Key_PageUp:
         {
-            process_mov_key(9, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(9, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally left and down
@@ -587,7 +587,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_V:
         case Qt::Key_End:
         {
-            process_mov_key(1, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(1, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally right and down
@@ -595,7 +595,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_N:
         case Qt::Key_PageDown:
         {
-            process_mov_key(3, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(3, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         case Qt::Key_5:
@@ -620,6 +620,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_D:
         {
             if (ctrl_key)           do_cmd_spike();
+            else if (alt_key)       do_cmd_bash();
             else if (shift_key)     do_cmd_disarm();
             else if (!using_mods)   do_cmd_drop();
             break;
@@ -651,6 +652,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_L:
         {
+            if (shift_key)          do_cmd_throw();
             if (!using_mods)        do_cmd_look();
             break;
         }
@@ -758,8 +760,6 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         default:
         {
-            do_cmd_throw();
-            do_cmd_bash();
             break;
         }
     }
@@ -784,7 +784,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         case Qt::Key_2:
         case Qt::Key_Down:
         {
-            process_mov_key(2, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(2, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
 
@@ -792,7 +792,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         case Qt::Key_8:
         case Qt::Key_Up:
         {
-            process_mov_key(8, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(8, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
 
@@ -800,42 +800,42 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         case Qt::Key_4:
         case Qt::Key_Left:
         {
-            process_mov_key(4, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(4, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move right
         case Qt::Key_6:
         case Qt::Key_Right:
         {
-            process_mov_key(6, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(6, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally left and up
         case Qt::Key_7:
         case Qt::Key_Home:
         {
-            process_mov_key(7, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(7, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally right and up
         case Qt::Key_9:
         case Qt::Key_PageUp:
         {
-            process_mov_key(9, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(9, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally left and down
         case Qt::Key_1:
         case Qt::Key_End:
         {
-            process_mov_key(1, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(1, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally right and down
         case Qt::Key_3:
         case Qt::Key_PageDown:
         {
-            process_mov_key(3, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(3, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         case Qt::Key_5:
@@ -1075,7 +1075,7 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_J:
         case Qt::Key_Down:
         {
-            process_mov_key(2, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(2, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
 
@@ -1083,7 +1083,7 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_K:
         case Qt::Key_Up:
         {
-            process_mov_key(8, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(8, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
 
@@ -1091,42 +1091,42 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_Left:
         case Qt::Key_H:
         {
-            process_mov_key(4, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(4, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move right
         case Qt::Key_L:
         case Qt::Key_Right:
         {
-            process_mov_key(6, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(6, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally left and up
         case Qt::Key_Y:
         case Qt::Key_Home:
         {
-            process_mov_key(7, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(7, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally right and up
         case Qt::Key_U:
         case Qt::Key_PageUp:
         {
-            process_mov_key(9, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(9, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally left and down
         case Qt::Key_B:
         case Qt::Key_End:
         {
-            process_mov_key(1, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(1, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         // Move diagonally right and down
         case Qt::Key_N:
         case Qt::Key_PageDown:
         {
-            process_mov_key(3, shift_key, alt_key, ctrl_key, meta_key);
+            process_move_key(3, shift_key, alt_key, ctrl_key, meta_key);
             break;
         }
         case Qt::Key_A:
@@ -1315,10 +1315,6 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         }
         default:
         {
-
-
-
-
             break;
         }
     }
