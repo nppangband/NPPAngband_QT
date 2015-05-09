@@ -55,7 +55,7 @@ void MainWindow::win_feat_recall_update()
     feat_recall_area->setFont(font_win_feat_recall);
     feat_recall_area->moveCursor(QTextCursor::Start);
 
-    QString feat_recall = get_feature_description(p_ptr->feature_kind_idx, FALSE);
+    QString feat_recall = get_feature_description(p_ptr->feature_kind_idx, FALSE, TRUE);
     feat_recall_area->insertHtml(feat_recall);
 
 }

@@ -120,8 +120,6 @@ static QString describe_stats(object_type *o_ptr, u32b f1)
     /* Output end */
     output.append(QString(" by %1.  ") .arg(pval));
 
-    output.append("<br>");
-
     return (output);
 }
 
@@ -160,8 +158,6 @@ static QString describe_secondary(object_type *o_ptr, u32b f1)
 
     /* Output end */
     output.append(QString(" by %1.  ") .arg(pval));
-
-    output.append("<br>");
 
     /* We found something */
     return (output);
@@ -233,8 +229,6 @@ static QString describe_slay(object_type *o_ptr, u32b f1)
         output.append(".  ");
     }
 
-    if (slcnt || excnt) output.append("<br>");
-
     /* We are done here */
     return (output);
 }
@@ -264,8 +258,6 @@ static QString describe_brand(object_type *o_ptr, u32b f1)
     /* Describe brands */
     output.append(output_desc_list("It is branded with ", descs, cnt));
 
-    if (cnt) output.append("<br>");
-
     /* We are done here */
     return (output);
 }
@@ -294,8 +286,6 @@ static QString describe_immune(object_type *o_ptr, u32b f2)
 
     /* Describe immunities */
     output.append(output_desc_list("It provides immunity to ", descs, cnt));
-
-    if (cnt) output.append("<br>");
 
     /* We are done here */
     return (output);
@@ -343,8 +333,6 @@ static QString describe_resist(const object_type *o_ptr, u32b f2, u32b f3)
     /* Describe resistances */
     output.append(output_desc_list("It provides resistance to ", vp, vn));
 
-    if (vn) output.append("<br>");
-
     /* We are done here */
     return (output);
 }
@@ -354,7 +342,7 @@ static QString describe_resist(const object_type *o_ptr, u32b f2, u32b f3)
 /*
  * Describe details of a weapon
  */
-static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
+static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, bool is_real)
 {
     QString output;
     output.clear();
@@ -391,21 +379,24 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info)
     /* Get the player state */
     calc_bonuses(object_inven, & object_state, TRUE);
 
-    /*print out the number of attacks*/
-    if (object_state.num_blow == 1) output.append("   It gives you one attack per turn.  ");
-    else output.append(QString("   It gives you %1 attacks per turn.  ") .arg(object_state.num_blow));
-
-    if (object_state.heavy_wield)
+    if (is_real)
     {
-        output.append("<br>");
-        output.append(color_string("   You have trouble wielding such a heavy weapon.<br>", TERM_RED));
-    }
+        /*print out the number of attacks*/
+        if (object_state.num_blow == 1) output.append("   It gives you one attack per turn.  ");
+        else output.append(QString("   It gives you %1 attacks per turn.  ") .arg(object_state.num_blow));
 
-    /* Message */
-    if (object_state.icky_wield)
-    {
-        output.append("<br>");
-        output.append(color_string("   You do not feel comfortable with this weapon.<br>", TERM_RED));
+        if (object_state.heavy_wield)
+        {
+            output.append("<br>");
+            output.append(color_string("   You have trouble wielding such a heavy weapon.<br>", TERM_RED));
+        }
+
+        /* Message */
+        if (object_state.icky_wield)
+        {
+            output.append("<br>");
+            output.append(color_string("   You do not feel comfortable with this weapon.<br>", TERM_RED));
+        }
     }
 
     if (!extra_info) return (output);
@@ -1043,8 +1034,6 @@ static QString describe_ignores(object_type *o_ptr, u32b f3)
     else
         output.append(output_desc_list("It cannot be harmed by ", list, - n));
 
-    output.append("<br>");
-
     return (output);
 }
 
@@ -1076,8 +1065,6 @@ static QString describe_sustains(object_type *o_ptr, u32b f2)
         output.append("It sustains all your stats.  ");
     else
         output.append(output_desc_list("It sustains your ", list, n));
-
-    if (n)output.append("<br>");
 
     /* We are done here */
     return (output);
@@ -1451,8 +1438,6 @@ static QString describe_nativity(object_type *o_ptr, u32b fn)
     /* Describe nativities */
     output.append(output_desc_list("It makes you native to terrains made of ", vp, vn));
 
-    if(vn) output.append("<br>");
-
     /* We are done here */
     return (output);
 }
@@ -1491,8 +1476,6 @@ static QString describe_activation(object_type *o_ptr, u32b f3)
             /*print it out*/
             output.append(act_desc);
         }
-
-            output.append("<br>");
     }
 
     /* No activation */
@@ -1504,31 +1487,41 @@ static QString describe_activation(object_type *o_ptr, u32b f3)
  * Output object information
  * With extra_info true, it gives information about the weapon attack damage.
  * False is intended for things like character dumps.
+ * is_real tells whether the object if a template or a real in-game weapon.
  */
-QString object_info_out(object_type *o_ptr,  bool extra_info)
+QString object_info_out(object_type *o_ptr,  bool extra_info, bool is_real)
 {
     QString output;
     output.clear();
+    QString next_output;
 
     // Make sure the flags are up-to-date
     o_ptr->update_object_flags();
 
     /* Describe the object */
-    output.append(describe_stats(o_ptr, o_ptr->known_obj_flags_1));
-    output.append(describe_secondary(o_ptr, o_ptr->known_obj_flags_1));
-    output.append(describe_slay(o_ptr, o_ptr->known_obj_flags_1));
-    output.append(describe_brand(o_ptr, o_ptr->known_obj_flags_1));
-    output.append(describe_immune(o_ptr, o_ptr->known_obj_flags_2));
-    output.append(describe_resist(o_ptr, o_ptr->known_obj_flags_2, o_ptr->known_obj_flags_3));
-    output.append(describe_sustains(o_ptr, o_ptr->known_obj_flags_2));
-    output.append(describe_misc_magic(o_ptr, o_ptr->known_obj_flags_3));
-    output.append(describe_nativity(o_ptr, o_ptr->known_obj_flags_native));
-    output.append(describe_activation(o_ptr, o_ptr->known_obj_flags_3));
-    output.append(describe_ignores(o_ptr, o_ptr->known_obj_flags_3));
-    output.append(describe_weapon(o_ptr, o_ptr->known_obj_flags_1, extra_info));
-    output.append(describe_bow_slot(o_ptr, o_ptr->known_obj_flags_3, extra_info));
-    output.append(describe_ammo(o_ptr, o_ptr->known_obj_flags_1, o_ptr->known_obj_flags_3, extra_info));
-    output.append(describe_throwing_weapon(o_ptr, o_ptr->known_obj_flags_1, o_ptr->known_obj_flags_3, extra_info));
+    next_output = describe_stats(o_ptr, o_ptr->known_obj_flags_1);
+    next_output.append(describe_secondary(o_ptr, o_ptr->known_obj_flags_1));
+    next_output.append(describe_slay(o_ptr, o_ptr->known_obj_flags_1));
+    next_output.append(describe_brand(o_ptr, o_ptr->known_obj_flags_1));
+    output = next_output;
+    if (next_output.length()) output.append("<br>");
+    next_output = describe_immune(o_ptr, o_ptr->known_obj_flags_2);
+    next_output.append(describe_resist(o_ptr, o_ptr->known_obj_flags_2, o_ptr->known_obj_flags_3));
+    next_output.append(describe_sustains(o_ptr, o_ptr->known_obj_flags_2));
+    next_output.append(describe_misc_magic(o_ptr, o_ptr->known_obj_flags_3));
+    next_output.append(describe_nativity(o_ptr, o_ptr->known_obj_flags_native));
+    next_output.append(describe_ignores(o_ptr, o_ptr->known_obj_flags_3));
+    output.append(next_output);
+    if (next_output.length()) output.append("<br>");
+    next_output = describe_activation(o_ptr, o_ptr->known_obj_flags_3);
+    output.append(next_output);
+    if (next_output.length()) output.append("<br>");
+    next_output.clear();
+    next_output.append(describe_weapon(o_ptr, o_ptr->known_obj_flags_1, extra_info, is_real));
+    next_output.append(describe_bow_slot(o_ptr, o_ptr->known_obj_flags_3, extra_info));
+    next_output.append(describe_ammo(o_ptr, o_ptr->known_obj_flags_1, o_ptr->known_obj_flags_3, extra_info));
+    next_output.append(describe_throwing_weapon(o_ptr, o_ptr->known_obj_flags_1, o_ptr->known_obj_flags_3, extra_info));
+    output.append(next_output);
 
     /* Unknown extra powers (artifact) */
     if (o_ptr->is_known() && (!(o_ptr->ident & IDENT_MENTAL)) &&
@@ -1609,7 +1602,7 @@ QString get_object_description(object_type *o_ptr)
     QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
 
     /* Dump the info */
-    output.append(object_info_out(o_ptr, TRUE));
+    output.append(object_info_out(o_ptr, TRUE, TRUE));
 
     if (!o_ptr->is_known())
     {
@@ -1860,7 +1853,7 @@ QString identify_random_gen(object_type *o_ptr)
 {
     QString obj_string;
     obj_string.clear();
-    obj_string.append(object_info_out(o_ptr, TRUE));
+    obj_string.append(object_info_out(o_ptr, TRUE, TRUE));
     obj_string.remove(QString("\n"));
     if (history_interesting(o_ptr))
     {

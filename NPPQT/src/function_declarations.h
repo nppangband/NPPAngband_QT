@@ -88,7 +88,7 @@ extern s16b x_pop(void);
 extern void process_effects(void);
 
 // dun_feat_info.cpp
-extern QString get_feature_description(int f_idx, bool spoilers);
+extern QString get_feature_description(int f_idx, bool spoilers, bool include_header);
 extern void describe_feature(int f_idx, bool spoilers);
 
 /* dun_feature.c */
@@ -289,7 +289,7 @@ extern bool obj_can_browse(object_type *o_ptr);
 
 // object_info.cpp
 extern QString screen_out_head(object_type *o_ptr);
-extern QString object_info_out(object_type *o_ptr, bool extra_info);
+extern QString object_info_out(object_type *o_ptr, bool extra_info, bool is_real);
 extern QString get_object_description(object_type *o_ptr);
 extern void object_info_screen(object_type *o_ptr);
 extern QString format_object_history(object_type *o_ptr);
@@ -757,7 +757,11 @@ extern bool steal_powers(int dir);
 extern bool call_huorns(void);
 
 //spoilers.cpp
-void print_monster_spoiler_file(void);
+extern void print_monster_spoiler_file(void);
+extern void print_terrain_spoiler_file(void);
+extern void print_object_spoiler_file(void);
+extern void print_ego_item_spoiler_file(void);
+extern void print_artifact_spoiler_file(void);
 
 //squelch.cpp
 extern void apply_autoinscription(object_type *o_ptr);

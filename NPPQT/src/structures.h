@@ -73,7 +73,7 @@ struct maxima
     u16b ghost_maint_max;
     u16b art_spec_max; /* Max number of special artifacts*/
 
-    u16b art_norm_max; /* Max number for normal artifacts (special - normal)*/
+    u16b art_norm_max; /* Max number for normal artifacts (special + normal)*/
     u16b art_rand_max; /*max number of random artifacts*/
 
     byte max_level;

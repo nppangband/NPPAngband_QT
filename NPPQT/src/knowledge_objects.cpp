@@ -328,7 +328,7 @@ void apply_magic_fake(object_type *o_ptr)
 }
 
 // Make an object just for display purposes.
-void make_object_fake(object_type *o_ptr, int k_idx)
+void make_object_fake(object_type *o_ptr, int k_idx, bool update_tracking)
 {
     o_ptr->object_wipe();
 
@@ -339,8 +339,11 @@ void make_object_fake(object_type *o_ptr, int k_idx)
     apply_magic_fake(o_ptr);
 
     /* Update the object recall window */
-    track_object_kind(k_idx);
-    handle_stuff();
+    if (update_tracking)
+    {
+        track_object_kind(k_idx);
+        handle_stuff();
+    }
 
     /* Hack -- its in the store */
     if (k_info[k_idx].aware) o_ptr->ident |= (IDENT_STORE);
@@ -355,7 +358,7 @@ void make_object_fake(object_type *o_ptr, int k_idx)
     }
 }
 
-static int find_first_ego_match(int e_idx)
+int find_first_ego_match(int e_idx)
 {
     /* Get the actual kind */
     ego_item_type *e_ptr = &e_info[e_idx];
@@ -386,10 +389,12 @@ static int find_first_ego_match(int e_idx)
     return (0);
 }
 
+
+
 /*
  * Describe fake ego item "lore"
  */
-static void desc_ego_fake(int ego_num, QString object_string)
+QString desc_ego_fake(int ego_num, QString object_string, bool display)
 {
     /* Hack: dereference the join */
     QString xtra[10] = { "sustains", "higher resistances", "abilities", "immunities", "stat increases",
@@ -402,22 +407,22 @@ static void desc_ego_fake(int ego_num, QString object_string)
 
         /* List ego flags */
     int k_idx = find_first_ego_match(ego_num);
-    if (!k_idx) return;
+    if (!k_idx) return ("No match");
 
-    make_object_fake(o_ptr, k_idx);
+    make_object_fake(o_ptr, k_idx, TRUE);
     o_ptr->ego_num = ego_num;
     apply_magic_fake(o_ptr);
     o_ptr->xtra2 = 0;
     o_ptr->update_object_flags();
 
-    QString output = color_string(QString("%1 %2<br>") .arg(object_string) .arg(e_ptr->e_name), TERM_BLUE);
+    QString output = color_string(QString("<big><b>%1 %2</b></big><br>") .arg(object_string) .arg(e_ptr->e_name), TERM_BLUE);
 
     if (e_ptr->e_text.length())
     {
         output.append(QString("<br>%1<br>") .arg(e_ptr->e_text));
     }
 
-    output.append(object_info_out(o_ptr, FALSE));
+    output.append(object_info_out(o_ptr, FALSE, FALSE));
 
     if (e_ptr->xtra)
     {
@@ -429,7 +434,9 @@ static void desc_ego_fake(int ego_num, QString object_string)
     if (e_ptr->e_flags3 & (TR3_LIGHT_CURSE)) output.append("It is cursed.");
 
     /* Finally, display it */
-    display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
+    if (display) display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
+
+    return(output);
 }
 
 static QString get_artifact_display_name(int a_idx)
@@ -451,7 +458,7 @@ static QString get_artifact_display_name(int a_idx)
 /*
  * Show artifact lore
  */
-void desc_art_fake(int a_idx)
+static void desc_art_fake(int a_idx)
 {
     object_type *o_ptr;
     object_type object_type_body;
@@ -597,7 +604,7 @@ void DisplayObjectKnowledge::button_press(int k_idx)
     object_type object_type_body;
     object_type *o_ptr = &object_type_body;
 
-    make_object_fake(o_ptr, k_idx);
+    make_object_fake(o_ptr, k_idx, TRUE);
 
     object_info_screen(o_ptr);
 }
@@ -886,7 +893,7 @@ void DisplayEgoItemKnowledge::button_press(int e_idx)
     int row = ego_item_group_table->currentRow();
     QString group_text = this->ego_item_group_table->item(row, 0)->text();
 
-    desc_ego_fake(e_idx, group_text);
+    desc_ego_fake(e_idx, group_text, TRUE);
 }
 
 // Display the object kind settings

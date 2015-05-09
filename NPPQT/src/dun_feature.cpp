@@ -697,7 +697,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
     /* Don't describe if not set off*/
     if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power))
     {
-        message(QString("  The effects of this trap are unknown."));
+        desc = ("  The effects of this trap are unknown.");
         return (desc);
     }
 

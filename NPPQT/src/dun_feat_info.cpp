@@ -133,7 +133,7 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
     else output.append(color_string(" that is found in the dungeon", TERM_L_GREEN));
 
     /* End this sentence */
-    output.append(".");
+    output.append(".  ");
 
     /* More misc info */
     if (f_l_ptr->f_l_flags1 & FF1_DROP)
@@ -141,22 +141,20 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
         output.append("  This");
         /*Describe the feature type*/
         output.append(get_feature_type(f_l_ptr));
-        output.append(" can hold objects.");
+        output.append(" can hold objects.  ");
     }
     if (f_l_ptr->f_l_flags1 & FF1_HAS_GOLD)
     {
         output.append("  This");
         output.append(get_feature_type(f_l_ptr));
-        output.append(" may be hiding treasure.");
+        output.append(" may be hiding treasure.  ");
     }
     if (f_l_ptr->f_l_flags1 & FF1_HAS_ITEM)
     {
         output.append("  This");
         output.append(get_feature_type(f_l_ptr));
-        output.append(" may be hiding an object.");
+        output.append(" may be hiding an object.  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -208,23 +206,21 @@ static QString describe_feature_move_see_cast(int f_idx, const feature_lore *f_l
         /* End */
         output.append(" this");
         output.append(get_feature_type(f_l_ptr));
-        output.append(".");
+        output.append(".  ");
     }
 
     if (f_l_ptr->f_l_flags2 & FF2_CAN_FLY)
     {
         output.append("  Creatures who have the ability to do so can fly over this");
         output.append(get_feature_type(f_l_ptr));
-        output.append(".");
+        output.append(".  ");
     }
     if (f_l_ptr->f_l_flags2 & FF2_COVERED)
     {
         output.append("  Native creatures can hide in this");
         output.append(get_feature_type(f_l_ptr));
-        output.append(".");
+        output.append(".  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -245,8 +241,8 @@ static QString describe_feature_stairs(const feature_lore *f_l_ptr)
     if (f_l_ptr->f_l_flags1 & FF1_LESS)		output.append(color_string("up", TERM_NAVY_BLUE));
     if (f_l_ptr->f_l_flags1 & FF1_MORE)		output.append(color_string("down", TERM_NAVY_BLUE));
 
-    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string("two levels.", TERM_NAVY_BLUE));
-    else output.append(color_string("one level.", TERM_NAVY_BLUE));
+    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string("two levels.  ", TERM_NAVY_BLUE));
+    else output.append(color_string("one level.  ", TERM_NAVY_BLUE));
 
     return(output);
 }
@@ -345,10 +341,8 @@ static QString describe_feature_interaction(int f_idx, const feature_lore *f_l_p
         /* End */
         output.append(" this");
         output.append(get_feature_type(f_l_ptr));
-        output.append(".");
+        output.append(".  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -401,10 +395,8 @@ static QString describe_feature_vulnerabilities(const feature_lore *f_l_ptr)
         }
 
         /* End */
-        output.append(".");
+        output.append(".  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -478,6 +470,7 @@ static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_p
         /*Describe it*/
         output.append("  Until discovered, this feature appears as ");
         output.append(feature_desc(f_ptr->f_mimic, TRUE, FALSE));
+        output.append(".  ");
     }
 
     /* Search the action */
@@ -493,7 +486,7 @@ static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_p
             {
                 output.append(" Discovering this ");
                 output.append(get_feature_type(f_l_ptr));
-                output.append(" reveals a closed door.");
+                output.append(" reveals a closed door.  ");
             }
 
             continue;
@@ -518,6 +511,7 @@ static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_p
         }
 
         output.append(feature_desc(f_ptr->state[i].fs_result, TRUE, FALSE));
+        output.append(".  ");
     }
 
     /*Mention the default if it is different*/
@@ -532,9 +526,8 @@ static QString describe_feature_transitions(int f_idx, const feature_lore *f_l_p
         output.append(get_feature_type(f_l_ptr));
         output.append(" changes to ");
         output.append(feature_desc(f_ptr->defaults, TRUE, FALSE));
+        output.append(".  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -574,7 +567,7 @@ static QString describe_feature_damage(int f_idx, const feature_lore *f_l_ptr)
         output.append(QString(" for %1 damage") .arg(f_ptr->dam_non_native));
     }
 
-    output.append(" who stays on this feature for one turn at normal speed.<br><br>");
+    output.append(" who stays on this feature for one turn at normal speed.  ");
 
     return(output);
 }
@@ -614,7 +607,7 @@ static QString describe_feature_movement_effects(int f_idx, const feature_lore *
 
         }
 
-        output.append(" energy moving into this terrain.");
+        output.append(" energy moving into this terrain.  ");
     }
 
     /*Describe movement by non-native creatures*/
@@ -642,10 +635,8 @@ static QString describe_feature_movement_effects(int f_idx, const feature_lore *
 
         }
 
-        output.append(" energy moving into this terrain.");
+        output.append(" energy moving into this terrain.  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -684,7 +675,7 @@ static QString describe_feature_combat_effects(int f_idx, const feature_lore *f_
 
         }
 
-        output.append(" successful in attacking and defending while fighting in this terrain.");
+        output.append(" successful in attacking and defending while fighting in this terrain.  ");
     }
 
     /*Describe movement by non_native creatures*/
@@ -711,10 +702,8 @@ static QString describe_feature_combat_effects(int f_idx, const feature_lore *f_
 
         }
 
-        output.append(" successful in attacking and defending while fighting in this terrain.");
+        output.append(" successful in attacking and defending while fighting in this terrain.  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -746,10 +735,8 @@ static QString describe_feature_stealth_effects(int f_idx, const feature_lore *f
         if (f_ptr->f_stealth_adj  > 0)  output.append(" improves");
         else output.append(" reduces");
 
-        output.append(" the player's stealth.");
+        output.append(" the player's stealth.  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -780,7 +767,7 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
     if (f_idx == FEAT_WALL_INSCRIPTION)
     {
         output.append("  This wall can cast a spell at the player,");
-        output.append(" or reveal some useful information about the current dungeon level.<br><br>");
+        output.append(" or reveal some useful information about the current dungeon level.  ");
 
         return (output);
     }
@@ -791,14 +778,14 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
     /* Dynamic fire can spread smoke and fire */
     if (_feat_ff3_match(f_ptr, FF3_FIRE))
     {
-        output.append("  This terrain can spread fire and smoke to adjacent terrains.<br><br>");
+        output.append("  This terrain can spread fire and smoke to adjacent terrains.  ");
 
         return (output);
     }
 
     if (f_idx == FEAT_GEYSER)
     {
-        output.append("  The geyser can explode in a burst of boiling water!<br><br>");
+        output.append("  The geyser can explode in a burst of boiling water!  ");
 
         /* Done */
         return (output);
@@ -806,7 +793,7 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
 
     if (f_idx == FEAT_FSOIL_DYNAMIC)
     {
-        output.append("  This feature can slowly spread across the dungeon.<br><br>");
+        output.append("  This feature can slowly spread across the dungeon.  ");
 
         /* Done */
         return (output);
@@ -815,7 +802,7 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
     /* Sniper flowers */
     if (f_idx == FEAT_PUTRID_FLOWER)
     {
-        output.append("  This flower can fire spikes or spit poison at you.<br><br>");
+        output.append("  This flower can fire spikes or spit poison at you.  ");
 
         /* Done */
         return (output);
@@ -824,7 +811,7 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
     /* Silent watchers */
     if (f_idx == FEAT_SILENT_WATCHER)
     {
-        output.append("  The silent watcher can aggravate nearly monsters.<br><br>");
+        output.append("  The silent watcher can aggravate nearly monsters.  ");
 
         /* Done */
         return (output);
@@ -833,12 +820,10 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
     /* Dynamic lava can spread fire */
     if (_feat_ff3_match(f_ptr, TERRAIN_MASK) == (ELEMENT_LAVA))
     {
-        output.append("  This terrain can spread fire to adjacent terrains.");
+        output.append("  This terrain can spread fire to adjacent terrains.  ");
 
         return (output);
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return(output);
 }
@@ -858,10 +843,11 @@ static QString describe_store(int f_idx)
 /*
  * Display feature information
  */
-QString get_feature_description(int f_idx, bool spoilers)
+QString get_feature_description(int f_idx, bool spoilers, bool include_header)
 {
     QString output;
     output.clear();
+    QString latest_output;
 
     feature_lore lore;
 
@@ -877,8 +863,6 @@ QString get_feature_description(int f_idx, bool spoilers)
     {
         // mark savefile as a "cheater"
         p_ptr->is_wizard = TRUE;
-
-        /* XXX XXX XXX */
 
         /* Hack -- save memory */
         COPY(&save_mem, f_l_ptr, feature_lore);
@@ -903,7 +887,7 @@ QString get_feature_description(int f_idx, bool spoilers)
     QString feat_symbol = color_string(f_ptr->d_char, f_ptr->d_color);
 
     /* Print, in colour */
-    output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(feat_symbol) .arg(feat_name));
+    if (include_header) output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(feat_symbol) .arg(feat_name));
 
     /* Describe the movement and level of the monster */
     output.append(describe_feature_basic(f_idx, &lore));
@@ -917,23 +901,38 @@ QString get_feature_description(int f_idx, bool spoilers)
     /* Describe trap */
     if (lore.f_l_flags1 & FF1_TRAP) output.append(describe_feature_trap(f_idx, &lore));
 
-    output.append(describe_feature_interaction(f_idx, &lore));
+    output.append("<br>");
 
-    output.append(describe_feature_vulnerabilities(&lore));
+    latest_output = describe_feature_interaction(f_idx, &lore);
 
-    output.append(describe_feature_transitions(f_idx, &lore));
+    latest_output.append(describe_feature_vulnerabilities(&lore));
 
-    output.append(describe_feature_damage(f_idx, &lore));
+    output.append(latest_output);
+    if (latest_output.length()) output.append("<br>");
 
-    output.append(describe_feature_movement_effects(f_idx, &lore));
+    latest_output = describe_feature_transitions(f_idx, &lore);
 
-    output.append(describe_feature_combat_effects(f_idx, &lore));
+    output.append(latest_output);
+    if (latest_output.length()) output.append("<br>");
 
-    output.append(describe_feature_stealth_effects(f_idx, &lore));
+    latest_output.append(describe_feature_damage(f_idx, &lore));
+
+    latest_output.append(describe_feature_movement_effects(f_idx, &lore));
+
+    latest_output.append(describe_feature_combat_effects(f_idx, &lore));
+
+    latest_output.append(describe_feature_stealth_effects(f_idx, &lore));
+
+    output.append(latest_output);
+    if (latest_output.length()) output.append("<br>");
 
     output.append(describe_feature_dynamic(f_idx, &lore));
 
-    if (f_ptr->f_flags1 & (FF1_SHOP)) output.append(describe_store(f_idx));
+    if (f_ptr->f_flags1 & (FF1_SHOP))
+    {
+        output.append("<br>");
+        output.append(describe_store(f_idx));
+    }
 
     return (output);
 }
@@ -943,7 +942,7 @@ QString get_feature_description(int f_idx, bool spoilers)
  */
 void describe_feature(int f_idx, bool spoilers)
 {
-    QString output = get_feature_description(f_idx, spoilers);
+    QString output = get_feature_description(f_idx, spoilers, TRUE);
 
     /* Finally, display it */
     display_info_window(DISPLAY_INFO_FEATURE, f_idx, output);

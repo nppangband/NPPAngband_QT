@@ -242,11 +242,13 @@ void extract_tiles(void)
 
     QString race_name = to_ascii(p_info[p_ptr->prace].pr_name).toLower();
     QString class_name = to_ascii(c_info[p_ptr->pclass].cl_name).toLower();
-    p_ptr->tile_id = QString("player_%1_%2").arg(race_name).arg(class_name);
 
     if (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)
     {
+        p_ptr->tile_id = QString("player_%1").arg(race_name);
         if (p_ptr->psex == SEX_FEMALE) p_ptr->tile_id.append("_female");
         else p_ptr->tile_id.append("_male");
+        p_ptr->tile_id.append(QString("_%1").arg(class_name));
     }
+    else p_ptr->tile_id = QString("player_%1_%2").arg(race_name).arg(class_name);
 }

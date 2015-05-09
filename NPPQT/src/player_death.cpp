@@ -63,7 +63,11 @@ void PlayerDeathDialog::death_notes(void)
 
 void PlayerDeathDialog::death_spoilers(void)
 {
-    // TODO spoilers
+    print_monster_spoiler_file();
+    print_terrain_spoiler_file();
+    print_object_spoiler_file();
+    print_ego_item_spoiler_file();
+    print_artifact_spoiler_file();
 }
 
 PlayerDeathDialog::PlayerDeathDialog(void)

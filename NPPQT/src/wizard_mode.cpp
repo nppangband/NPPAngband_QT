@@ -1074,6 +1074,10 @@ void WizardModeDialog::wiz_know_all(void)
 void WizardModeDialog::wiz_print_spoilers()
 {
     print_monster_spoiler_file();
+    print_terrain_spoiler_file();
+    print_object_spoiler_file();
+    print_ego_item_spoiler_file();
+    print_artifact_spoiler_file();
     this->accept();
 }
 
