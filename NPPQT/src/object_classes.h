@@ -241,12 +241,6 @@ public:
 
     QString autoinscribe;  //Default inscription for this object
 
-    // Tile mapping
-    byte tile_32x32_y;
-    byte tile_32x32_x;
-    byte tile_8x8_y;
-    byte tile_8x8_x;
-
     u16b flavor;		/* Special object flavor (or zero) */
 
     bool aware;			/* The player is "aware" of the item's effects */
@@ -373,11 +367,6 @@ public:
     QColor d_color;		/* Default flavor color */
     QChar d_char;    /* Default flavor character */
 
-    // Tile mapping
-    byte tile_32x32_y;
-    byte tile_32x32_x;
-    byte tile_8x8_y;
-    byte tile_8x8_x;
     QString tile_id;
 };
 

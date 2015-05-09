@@ -639,63 +639,6 @@ static u16b image_object(void)
     return (TRUE);
 }
 
-/*
- * Specify which of the 32x32 tiles support lighting
- */
-static bool feat_supports_lighting_dvg(u16b feat)
-{
-    /* ALl the walls and floor support lighting*/
-    if (f_info[feat].f_flags1 & (FF1_WALL | FF1_FLOOR))
-    {
-        return TRUE;
-    }
-    /* All water, lava, ice, acid, oil, forest, sand, mud and terrains support lighting*/
-    if (f_info[feat].f_flags3 & (FF3_WATER | FF3_LAVA | FF3_ICE | FF3_ACID |
-                                 FF3_OIL | FF3_FOREST | FF3_SAND | FF3_MUD |
-                                 FF3_FIRE))
-    {
-        return TRUE;
-    }
-
-    /* A couple others */
-    switch (feat)
-    {
-        case FEAT_LESS:
-        case FEAT_MORE:
-        case FEAT_CLOSED_DOOR_WOODEN:
-        case FEAT_OPEN_DOOR_WOODEN:
-        case FEAT_OPEN_DOOR_STEEL:
-        case FEAT_OPEN_DOOR_IRON:
-        case FEAT_RUBBLE:
-        case FEAT_L_ROCK:
-        case FEAT_FLOOR_EARTH:
-        case FEAT_BURNT_S:
-        case FEAT_GLACIER:
-        case FEAT_RUBBLE_OBJ:
-        case FEAT_ROCK:
-        case FEAT_WALL_INSCRIPTION:
-        case FEAT_EARTH:
-        case FEAT_PEBBLES:
-        return (TRUE);
-    }
-
-    return (FALSE);
-}
-
-
-/*
- * Determine whether a tile of the terrain supports lighting
- */
-bool feat_supports_lighting(u16b feat)
-{
-    /* Pseudo graphics and 8x8 doesn't support lighting */
-    if (use_graphics == GRAPHICS_PSEUDO) return FALSE;
-    if (use_graphics == GRAPHICS_ORIGINAL) return FALSE;
-
-    else if (use_graphics == GRAPHICS_DAVID_GERVAIS) return feat_supports_lighting_dvg(feat);
-    return (FALSE);
-}
-
 
 static void special_lighting_floor(dungeon_type *dun_ptr)
 {
@@ -980,10 +923,12 @@ static void map_objects (s16b y, s16b x)
         /* Special stack symbol, unless everything in the pile is squelchable */
         else if (++floor_num > 1)
         {
-            if (use_graphics && current_tiles->has_tile("obj_pile")) {
+            if (use_graphics && current_tiles->has_tile("obj_pile"))
+            {
                 dun_ptr->object_tile = "obj_pile";
             }
-            else {
+            else
+            {
                 dun_ptr->object_tile.clear();
             }
             dun_ptr->object_char = k_info[0].d_char;
@@ -3989,7 +3934,7 @@ void cave_alter_feat(int y, int x, int action)
             if (f_ptr->state[i].fs_action == action)
             {
                 /*Count the number of times this transition has been seen*/
-                if (f_l_ptr->f_l_state[i] < MAX_UCHAR) f_l_ptr->f_l_state[i]++;
+                if (f_l_ptr->f_l_state[i] < UCHAR_MAX) f_l_ptr->f_l_state[i]++;
 
                 /* Done */
                 break;
@@ -4000,7 +3945,7 @@ void cave_alter_feat(int y, int x, int action)
         if ((i >= MAX_FEAT_STATES) && (f_ptr->defaults == newfeat))
         {
             /*Count the number of times this transition has been seen*/
-            if (f_l_ptr->f_l_defaults < MAX_UCHAR) f_l_ptr->f_l_defaults++;
+            if (f_l_ptr->f_l_defaults < UCHAR_MAX) f_l_ptr->f_l_defaults++;
         }
 
     }

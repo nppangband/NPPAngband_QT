@@ -175,7 +175,7 @@ bool DisplayMonsterKnowledge::mon_matches_mon_group(int r_idx, int group)
 // Display the monster info
 void DisplayMonsterKnowledge::button_press(int mon_race)
 {
-    describe_monster(mon_race, do_spoiler, NULL);
+    describe_monster(mon_race, p_ptr->is_wizard, NULL);
 }
 
 void DisplayMonsterKnowledge::filter_rows(int row, int col)
@@ -245,8 +245,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     mon_group_table->verticalHeader()->setVisible(FALSE);
     monster_table->verticalHeader()->setVisible(FALSE);
 
-    do_spoiler = FALSE;
-
     int row = 0;
     int col = 0;
 
@@ -297,7 +295,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         monster_lore *l_ptr = &l_list[i];
 
         // Don't count non-entries
-        if ((!cheat_know) && !l_ptr->sights) continue;
+        if ((!cheat_know) && !l_ptr->sights && !p_ptr->is_wizard) continue;
         if (!r_ptr->r_speed) continue;
 
         monster_table->insertRow(row);

@@ -678,9 +678,9 @@ void add_reward_gold(void)
         while (!make_gold(j_ptr)) continue;
 
         /* Hack - max out the gold, make sure we don't go over the max for s16b; */
-        if ((i_ptr->pval + j_ptr->pval) >= MAX_SHORT)
+        if ((i_ptr->pval + j_ptr->pval) >= SHRT_MAX)
         {
-            i_ptr->pval = MAX_SHORT;
+            i_ptr->pval = SHRT_MAX;
             break;
         }
 

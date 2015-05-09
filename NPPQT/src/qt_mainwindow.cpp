@@ -145,10 +145,12 @@ PackageDialog::PackageDialog(QString _mode)
     int row = 0;
 
     QLabel *lb = new QLabel;
-    if (mode == "create") {
+    if (mode == "create")
+    {
         lb->setText("Create a tile package");
     }
-    else {
+    else
+    {
         lb->setText("Extract tiles from a package");
     }
     lb->setStyleSheet("font-size: 1.5em; font-weight: bold;");
@@ -235,11 +237,13 @@ void PackageDialog::find_pak()
 {
     QString path;
 
-    if (mode == "extract") {
+    if (mode == "extract")
+    {
         path = QFileDialog::getOpenFileName(this, tr("Select a package"), "",
                                             tr("Packages (*.pak)"));
     }
-    else {
+    else
+    {
         path = QFileDialog::getSaveFileName(this, tr("Select a package"), "",
                                             tr("Packages (*.pak)"));
     }
@@ -706,12 +710,24 @@ void MainWindow::set_graphic_mode(int mode)
 
     switch (mode)
     {
+        case GRAPHICS_RAYMOND_GAUSTADNES:
+        {
+            tile_hgt = 64;
+            tile_wid = 64;
+            current_tiles = tiles_64x64;
+            ascii_mode_act->setChecked(FALSE);
+            reg_mode_act->setChecked(TRUE);
+            dvg_mode_act->setChecked(FALSE);
+            old_tiles_act->setChecked(FALSE);
+            break;
+        }
         case GRAPHICS_DAVID_GERVAIS:
         {
             tile_hgt = 32;
             tile_wid = 32;
             current_tiles = tiles_32x32;
             ascii_mode_act->setChecked(FALSE);
+            reg_mode_act->setChecked(FALSE);
             dvg_mode_act->setChecked(TRUE);
             old_tiles_act->setChecked(FALSE);
             break;
@@ -722,6 +738,7 @@ void MainWindow::set_graphic_mode(int mode)
             tile_wid = 8;
             current_tiles = tiles_8x8;
             ascii_mode_act->setChecked(FALSE);
+            reg_mode_act->setChecked(FALSE);
             dvg_mode_act->setChecked(FALSE);
             old_tiles_act->setChecked(TRUE);
             break;
@@ -732,6 +749,7 @@ void MainWindow::set_graphic_mode(int mode)
             tile_wid = 0;
             current_tiles = 0;
             ascii_mode_act->setChecked(TRUE);
+            reg_mode_act->setChecked(FALSE);
             dvg_mode_act->setChecked(FALSE);
             old_tiles_act->setChecked(FALSE);
             break;
@@ -741,7 +759,7 @@ void MainWindow::set_graphic_mode(int mode)
     use_graphics = mode;
     calculate_cell_size();
     destroy_tiles();
-    if (character_dungeon) extract_tiles(false);
+    if (character_dungeon) extract_tiles();
     update_sidebar_all();
 
     // Recenter the view
@@ -1469,6 +1487,10 @@ void MainWindow::create_actions()
     ascii_mode_act->setStatusTip(tr("Set the graphics to ascii mode."));
     connect(ascii_mode_act, SIGNAL(triggered()), this, SLOT(set_ascii()));
 
+    reg_mode_act = new QAction(tr("Raymond Gaustadnes tiles"), this);
+    reg_mode_act->setStatusTip(tr("Set the graphics to Raymond Gaustadnes tiles mode."));
+    connect(reg_mode_act, SIGNAL(triggered()), this, SLOT(set_reg()));
+
     dvg_mode_act = new QAction(tr("David Gervais tiles"), this);
     dvg_mode_act->setStatusTip(tr("Set the graphics to David Gervais tiles mode."));
     connect(dvg_mode_act, SIGNAL(triggered()), this, SLOT(set_dvg()));
@@ -1590,11 +1612,16 @@ void MainWindow::create_actions()
     connect(help_command_list, SIGNAL(triggered()), this, SLOT(command_list()));
 }
 
+void MainWindow::set_reg()
+{
+    set_graphic_mode(GRAPHICS_RAYMOND_GAUSTADNES);
+    ui_redraw_all();
+}
+
 void MainWindow::set_dvg()
 {
     set_graphic_mode(GRAPHICS_DAVID_GERVAIS);
     ui_redraw_all();
-
 }
 
 void MainWindow::set_old_tiles()
@@ -1731,15 +1758,18 @@ void MainWindow::create_menus()
     //Tileset options
     QMenu *choose_tile_set = settings->addMenu("Choose Tile Set");
     choose_tile_set->addAction(ascii_mode_act);
+    choose_tile_set->addAction(reg_mode_act);
     choose_tile_set->addAction(dvg_mode_act);
     choose_tile_set->addAction(old_tiles_act);
     settings->addAction(pseudo_ascii_act);
     tiles_choice = new QActionGroup(this);
     tiles_choice->addAction(ascii_mode_act);
+    tiles_choice->addAction(reg_mode_act);
     tiles_choice->addAction(dvg_mode_act);
     tiles_choice->addAction(old_tiles_act);
     ascii_mode_act->setCheckable(TRUE);
     ascii_mode_act->setChecked(TRUE);
+    reg_mode_act->setCheckable(TRUE);
     dvg_mode_act->setCheckable(TRUE);
     old_tiles_act->setCheckable(TRUE);
 

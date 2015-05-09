@@ -1730,7 +1730,7 @@ bool object_similar(object_type *o_ptr, object_type *j_ptr)
         if (o_name.compare(j_name))
         {
             /* pval is a s16b. Check bounds */
-            if (((long)(o_ptr->pval) + (long)(j_ptr->pval)) <= MAX_SHORT) return (TRUE);
+            if (((long)(o_ptr->pval) + (long)(j_ptr->pval)) <= SHRT_MAX) return (TRUE);
 
             /* Overflow. Don't stack gold */
             else return (FALSE);
@@ -1971,7 +1971,7 @@ void object_absorb(object_type *o_ptr, object_type *j_ptr)
         long gold = (long)(o_ptr->pval) + (long)(j_ptr->pval);
 
         /* Check bounds */
-        if (gold > MAX_SHORT) gold = MAX_SHORT;
+        if (gold > SHRT_MAX) gold = SHRT_MAX;
 
         /* Set the new amount of gold */
         o_ptr->pval = (s16b)gold;

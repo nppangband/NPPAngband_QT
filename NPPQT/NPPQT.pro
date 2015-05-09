@@ -101,6 +101,7 @@ SOURCES +=  src/qt_main.cpp \
             src/sound.cpp \
             src/spells_detect.cpp \
             src/spells_misc.cpp \
+            src/spoilers.cpp \
             src/squelch.cpp \
             src/store.cpp \
             src/storedialog.cpp \

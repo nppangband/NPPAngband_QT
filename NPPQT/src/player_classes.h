@@ -348,11 +348,6 @@ public:
     byte prace;			/* Race index */
     byte pclass;		/* Class index */
 
-    byte tile_32x32_y;
-    byte tile_32x32_x;
-    byte tile_8x8_y;
-    byte tile_8x8_x;
-
     QString tile_id;
 
     byte hitdie;		/* Hit dice (sides) */

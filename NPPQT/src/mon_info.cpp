@@ -37,6 +37,8 @@ static bool know_armour(int r_idx, s32b kills)
 
     s32b level = r_ptr->level;
 
+    if (p_ptr->is_wizard) return (TRUE);
+
     /* Normal monsters */
     if (kills > 304 / (4 + level)) return (TRUE);
 
@@ -62,6 +64,8 @@ static bool know_mana_or_spells(int r_idx)
     s32b level = r_ptr->level;
 
     s32b kills = l_list[r_idx].tkills;
+
+    if (p_ptr->is_wizard) return (TRUE);
 
     /*Hack - always know about ghosts*/
     if (r_ptr->flags2 & (RF2_PLAYER_GHOST)) return (TRUE);
@@ -91,6 +95,8 @@ static bool know_mana_or_spells(int r_idx)
 static bool know_damage(int r_idx, const monster_lore *l_ptr, int i)
 {
     const monster_race *r_ptr = &r_info[r_idx];
+
+    if (p_ptr->is_wizard) return (TRUE);
 
     s32b level = r_ptr->level;
 
@@ -227,7 +233,7 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
         }
 
         /* End */
-        output.append(".<br><br>");
+        output.append(".  ");
     }
 
     /* Collect breaths */
@@ -603,8 +609,6 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
 
     }
 
-
-
     /* Describe spells */
     if (vn)
     {
@@ -703,10 +707,8 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
         }
 
         /* End this sentence */
-        output.append(".");
+        output.append(".  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return (output);
 }
@@ -815,7 +817,7 @@ static QString describe_monster_drop(int r_idx, const monster_lore *l_ptr)
         if (n != 1) output.append("s");
     }
     /* End this sentence */
-    output.append(".<br><br>  ");
+    output.append(".  ");
     return (output);
 
 }
@@ -844,8 +846,8 @@ static QString describe_monster_attack(int r_idx, const monster_lore *l_ptr)
         if (!r_ptr->blow[m].method) continue;
 
         /* Count known attacks */
-        if ((l_ptr->blows[m]) || (l_ptr->sights == MAX_SHORT) ||
-                                  (l_ptr->ranged == MAX_UCHAR)) n++;
+        if ((l_ptr->blows[m]) || (l_ptr->sights == SHRT_MAX) ||
+                                  (l_ptr->ranged == UCHAR_MAX)) n++;
     }
 
     /* Examine (and count) the actual attacks */
@@ -967,8 +969,8 @@ static QString describe_monster_attack(int r_idx, const monster_lore *l_ptr)
             output.append(color_string(q, TERM_RED));
 
             /* Describe damage (if known) */
-            if (d1 && d2 && ((know_damage(r_idx, l_ptr, m)) || (l_ptr->sights == MAX_SHORT) ||
-                                  (l_ptr->ranged == MAX_UCHAR)))
+            if (d1 && d2 && ((know_damage(r_idx, l_ptr, m)) || (l_ptr->sights == SHRT_MAX) ||
+                                  (l_ptr->ranged == UCHAR_MAX)))
             {
                 /* Display the damage */
                 output.append(" with damage");
@@ -998,8 +1000,6 @@ static QString describe_monster_attack(int r_idx, const monster_lore *l_ptr)
     {
         output.append(QString("Nothing is known about %1 attack.  ") .arg(wd_his[msex]));
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
     return (output);
 }
 
@@ -1158,7 +1158,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
         }
 
         /* End */
-        output.append(".<br><br>");
+        output.append(".  ");
     }
 
 
@@ -1223,9 +1223,8 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
             /* Dump */
             output.append(color_string(vp[n], TERM_GOLD));
         }
-
         /* End */
-        output.append(".<br><br>");
+        output.append(".  ");
     }
 
     return (output);
@@ -1238,7 +1237,6 @@ static QString describe_monster_kills(int r_idx, const monster_lore *l_ptr)
     QString output;
     int msex = 0;
 
-    bool out = TRUE;
     output.clear();
 
     /* Extract a gender (if applicable) */
@@ -1280,11 +1278,6 @@ static QString describe_monster_kills(int r_idx, const monster_lore *l_ptr)
         {
             output.append("You have slain this foe.  ");
         }
-        else
-        {
-            /* Alive and never killed us */
-            out = FALSE;
-        }
     }
 
     /* Not unique, but killed us */
@@ -1315,8 +1308,6 @@ static QString describe_monster_kills(int r_idx, const monster_lore *l_ptr)
         {
             output.append(color_string(QString("and %1 is not ever known to have been defeated.  ") .arg(capitalize_first(wd_he[msex])), TERM_RED));
         }
-
-        output.append("<br><br>");
     }
 
     /* Normal monsters */
@@ -1341,9 +1332,6 @@ static QString describe_monster_kills(int r_idx, const monster_lore *l_ptr)
         }
     }
 
-    /* Separate */
-    if (out) output.append("<br>");
-
     return (output);
 }
 
@@ -1360,8 +1348,8 @@ static QString describe_monster_toughness(int r_idx, const monster_lore *l_ptr)
     else if (r_ptr->flags1 & RF1_MALE) msex = 1;
 
     /* Describe monster "toughness" */
-    if ((know_armour(r_idx, l_ptr->tkills)) || (l_ptr->sights == MAX_SHORT) ||
-             (l_ptr->ranged == MAX_UCHAR))
+    if ((know_armour(r_idx, l_ptr->tkills)) || (l_ptr->sights == SHRT_MAX) ||
+             (l_ptr->ranged == UCHAR_MAX))
     {
         /* Armor */
         output.append(QString("%1 has an armor rating of %2") .arg(capitalize_first(wd_he[msex])) .arg(r_ptr->ac));
@@ -1377,8 +1365,6 @@ static QString describe_monster_toughness(int r_idx, const monster_lore *l_ptr)
         {
             output.append(QString(" and a life rating of %1d%2.  ") .arg(r_ptr->hdice) .arg(r_ptr->hside));
         }
-
-        output.append("<br><br>");
     }
 
     return (output);
@@ -1432,7 +1418,7 @@ static QString describe_monster_exp(int r_idx, const monster_lore *l_ptr)
         if ((i == 8) || (i == 11) || (i == 18)) q = "n";
 
         /* Mention the dependance on the player's level */
-        output.append(QString(" for a%1 %2%3 level character.<br><br>") .arg(q) .arg(i) .arg(p));
+        output.append(QString(" for a%1 %2%3 level character.  ") .arg(q) .arg(i) .arg(p));
     }
 
     return (output);
@@ -1473,8 +1459,8 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
         output.append(color_string(" lives in the town", TERM_SLATE));
         old = TRUE;
     }
-    else if ((l_ptr->tkills)  || (l_ptr->sights == MAX_SHORT) ||
-             (l_ptr->ranged == MAX_UCHAR))
+    else if ((l_ptr->tkills)  || (l_ptr->sights == SHRT_MAX) ||
+             (l_ptr->ranged == UCHAR_MAX))
     {
         if (l_ptr->r_l_flags1 & RF1_FORCE_DEPTH) output.append(color_string(" is found", TERM_SLATE));
         else output.append(color_string(" is normally found", TERM_SLATE));
@@ -1545,7 +1531,7 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
 
     /* Do we know how aware it is? */
     if ((((int)l_ptr->wake * (int)l_ptr->wake) > r_ptr->sleep) ||
-        (l_ptr->ignore == MAX_UCHAR) ||
+        (l_ptr->ignore == UCHAR_MAX) ||
         ((r_ptr->sleep == 0) && (l_ptr->tkills >= 10)))
     {
         QString act;
@@ -1621,7 +1607,7 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
         QString vp[16];
 
         /* Intro */
-        output.append(QString("%1 is native to") .arg(capitalize_first(wd_he[msex])));
+        output.append(QString("%1 is native to ") .arg(capitalize_first(wd_he[msex])));
 
         if (l_ptr->r_l_native & (RN1_N_LAVA)) vp[vn++] = "lava";
         if (l_ptr->r_l_native & (RN1_N_ICE)) vp[vn++] = "ice";
@@ -1645,10 +1631,8 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
             else output.append(", ");
         }
 
-        output.append(".");
+        output.append(".  ");
     }
-
-    if (!output.isEmpty()) output.append("<br><br>");
 
     return (output);
 }
@@ -1662,42 +1646,7 @@ static void cheat_monster_lore(int r_idx, monster_lore *l_ptr)
 {
     const monster_race *r_ptr = &r_info[r_idx];
 
-    int i;
-
-    /* Hack -- Maximal kills */
-    l_ptr->tkills = MAX_SHORT;
-
-    /* Hack -- Maximal info */
-    l_ptr->wake = l_ptr->ignore = MAX_UCHAR;
-
-    /* Observe "maximal" attacks */
-    for (i = 0; i < MONSTER_BLOW_MAX; i++)
-    {
-        /* Examine "actual" blows */
-        if (r_ptr->blow[i].effect || r_ptr->blow[i].method)
-        {
-            /* Hack -- maximal observations */
-            l_ptr->blows[i] = MAX_UCHAR;
-        }
-    }
-
-    /* Hack -- maximal drops */
-    l_ptr->drop_gold = l_ptr->drop_item =
-    (((r_ptr->flags1 & RF1_DROP_4D2) ? 8 : 0) +
-     ((r_ptr->flags1 & RF1_DROP_3D2) ? 6 : 0) +
-     ((r_ptr->flags1 & RF1_DROP_2D2) ? 4 : 0) +
-     ((r_ptr->flags1 & RF1_DROP_1D2) ? 2 : 0) +
-     ((r_ptr->flags1 & RF1_DROP_90)  ? 1 : 0) +
-     ((r_ptr->flags1 & RF1_DROP_60)  ? 1 : 0));
-
-    /* Hack -- but only "valid" drops */
-    if (r_ptr->flags1 & RF1_ONLY_GOLD) l_ptr->drop_item = 0;
-    if (r_ptr->flags1 & RF1_ONLY_ITEM) l_ptr->drop_gold = 0;
-
-    /* Hack -- observe many spells */
-    l_ptr->ranged = MAX_UCHAR;
-
-    /* Hack -- know all the flags */
+    /* Know all flags */
     l_ptr->r_l_flags1 = r_ptr->flags1;
     l_ptr->r_l_flags2 = r_ptr->flags2;
     l_ptr->r_l_flags3 = r_ptr->flags3;
@@ -1706,15 +1655,37 @@ static void cheat_monster_lore(int r_idx, monster_lore *l_ptr)
     l_ptr->r_l_flags6 = r_ptr->flags6;
     l_ptr->r_l_flags7 = r_ptr->flags7;
     l_ptr->r_l_native = r_ptr->r_native;
+
+    /* Know max sightings, sleeping habits, spellcasting, and combat blows. */
+    l_ptr->sights = SHRT_MAX;
+    l_ptr->ranged = UCHAR_MAX;
+    for (int i = 0; i < MONSTER_BLOW_MAX; i++)
+    {
+        l_ptr->blows[i] = UCHAR_MAX;
+    }
+    l_ptr->wake = l_ptr->ignore = UCHAR_MAX;
+
+    /* know the treasure drops*/
+    l_ptr->drop_gold = l_ptr->drop_item =
+    (((r_ptr->flags1 & RF1_DROP_4D2) ? 8 : 0) +
+     ((r_ptr->flags1 & RF1_DROP_3D2) ? 6 : 0) +
+     ((r_ptr->flags1 & RF1_DROP_2D2) ? 4 : 0) +
+     ((r_ptr->flags1 & RF1_DROP_1D2) ? 2 : 0) +
+     ((r_ptr->flags1 & RF1_DROP_90)  ? 1 : 0) +
+     ((r_ptr->flags1 & RF1_DROP_60)  ? 1 : 0));
+
+    /* But only "valid" treasure drops */
+    if (r_ptr->flags1 & RF1_ONLY_GOLD) l_ptr->drop_item = 0;
+    if (r_ptr->flags1 & RF1_ONLY_ITEM) l_ptr->drop_gold = 0;
 }
 
 
 /*
  */
-QString get_monster_description(int r_idx, bool spoilers, QString extra_message)
+QString get_monster_description(int r_idx, bool spoilers, QString extra_message, bool include_header)
 {
     monster_lore lore;
-    QString output;
+    QString output, last_output;
     monster_lore save_mem;
     output.clear();
 
@@ -1760,34 +1731,45 @@ QString get_monster_description(int r_idx, bool spoilers, QString extra_message)
     QString mon_symbol = color_string(r_ptr->d_char, r_ptr->d_color);
 
     /* Print, in colour */
-    output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(mon_symbol) .arg(mon_name));
+    if (include_header) output.append(QString("<b><h1><span style='background-color: black;'>'%1'</span> - %2</h1></b><br><br>") .arg(mon_symbol) .arg(mon_name));
 
     /* Show kills of monster vs. player(s) */
-    if (!spoilers)	output.append(describe_monster_kills(r_idx, &lore));
+    if (!spoilers)last_output = describe_monster_kills(r_idx, &lore);
+    output.append(last_output);
+    if (last_output.length()) output.append("<br><br>");
 
     /* Monster description */
-    output.append(describe_monster_desc(r_idx));
+    last_output = describe_monster_desc(r_idx);
 
     /* Describe the movement and level of the monster */
-    output.append(describe_monster_movement(r_idx, &lore));
+    last_output.append(describe_monster_movement(r_idx, &lore));
 
     /* Describe experience */
-    if (!spoilers) output.append(describe_monster_exp(r_idx, &lore));
-
-    /* Describe spells and innate attacks */
-    output.append(describe_monster_spells(r_idx, &lore));
+    if (!spoilers) last_output.append(describe_monster_exp(r_idx, &lore));
 
     /* Describe monster "toughness" */
-    if (!spoilers) output.append(describe_monster_toughness(r_idx, &lore));
+    last_output.append(describe_monster_toughness(r_idx, &lore));
+
+    output.append(last_output);
+    if (last_output.length()) output.append("<br><br>");
+
+    /* Describe spells and innate attacks */
+    last_output = describe_monster_spells(r_idx, &lore);
 
     /* Describe the abilities of the monster */
     output.append(describe_monster_abilities(r_idx, &lore));
 
-    /* Describe the monster drop */
-    output.append(describe_monster_drop(r_idx, &lore));
-
     /* Describe the known attacks */
     output.append(describe_monster_attack(r_idx, &lore));
+
+    output.append(last_output);
+    if (last_output.length()) output.append("<br><br>");
+
+    /* Describe the monster drop */
+    last_output = describe_monster_drop(r_idx, &lore);
+
+    output.append(last_output);
+    if (last_output.length()) output.append("<br><br>");
 
     /* Notice "Quest" monsters */
     if (lore.r_l_flags1 & RF1_QUESTOR)
@@ -1815,7 +1797,7 @@ QString get_monster_description(int r_idx, bool spoilers, QString extra_message)
 
 void describe_monster(int r_idx, bool spoilers, QString extra_message)
 {
-    QString output = get_monster_description(r_idx, spoilers, extra_message);
+    QString output = get_monster_description(r_idx, spoilers, extra_message, TRUE);
 
     /* Finally, display it */
     display_info_window(DISPLAY_INFO_MONSTER, r_idx, output);

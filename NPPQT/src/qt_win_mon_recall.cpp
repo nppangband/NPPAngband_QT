@@ -55,7 +55,7 @@ void MainWindow::win_mon_recall_update()
 
     mon_recall_area->setFont(font_win_mon_recall);
     mon_recall_area->moveCursor(QTextCursor::Start);
-    QString mon_recall = get_monster_description(p_ptr->monster_race_idx, FALSE, NULL);
+    QString mon_recall = get_monster_description(p_ptr->monster_race_idx, FALSE, NULL, TRUE);
     mon_recall_area->insertHtml(mon_recall);
 
 }

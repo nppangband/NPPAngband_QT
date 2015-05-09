@@ -314,16 +314,6 @@ quiver_group_type quiver_group[MAX_QUIVER_GROUPS] =
 };
 
 
-//Various directories used by NPP
-QString NPP_DIR_BASE;
-QString NPP_DIR_BONE;
-QString NPP_DIR_EDIT;
-QString NPP_DIR_HELP;
-QString NPP_DIR_ICON;
-QString NPP_DIR_PREF;
-QString NPP_DIR_SAVE;
-QString NPP_DIR_USER;
-QString NPP_DIR_GRAF;
 
 /*
  * Total Hack -- allow all items to be listed (even empty ones)

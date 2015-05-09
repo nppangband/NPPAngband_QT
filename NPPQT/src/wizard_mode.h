@@ -123,6 +123,7 @@ private slots:
     void wiz_phase_door(void);
     void wiz_teleport(void);
     void wiz_edit_character(void);
+    void wiz_print_spoilers(void);
     void wiz_summon(void);
     void wiz_banish(void);
     void wiz_create_monster(void);

@@ -969,7 +969,7 @@ static void recover_monster(monster_type *m_ptr)
                 {
 
                     /* Hack -- Count the ignores */
-                    if (l_ptr->ignore < MAX_UCHAR)
+                    if (l_ptr->ignore < UCHAR_MAX)
                     {
                         l_ptr->ignore++;
                     }
@@ -1005,7 +1005,7 @@ static void recover_monster(monster_type *m_ptr)
                     add_monster_message(m_name, m_idx, MON_MSG_WAKES_UP);
 
                     /* Hack -- Count the wakings */
-                    if (l_ptr->wake < MAX_UCHAR)
+                    if (l_ptr->wake < UCHAR_MAX)
                     {
                         l_ptr->wake++;
                     }

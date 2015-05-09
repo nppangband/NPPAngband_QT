@@ -719,7 +719,7 @@ void MainWindow::sidebar_display_mon(int m_idx)
     }
     mon_name->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     mon_name->setAlignment(Qt::AlignLeft);
-    mon_name->setToolTip(get_monster_description(m_ptr->r_idx, FALSE, NULL));
+    mon_name->setToolTip(get_monster_description(m_ptr->r_idx, FALSE, NULL, FALSE));
     mon_name->setFont(font_sidebar_window);
 
     mon_health_vlay->addWidget(mon_name);

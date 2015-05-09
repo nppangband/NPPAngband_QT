@@ -867,7 +867,7 @@ bool make_attack_normal(monster_type *m_ptr)
                             object_prep(&o, lookup_kind(TV_GOLD, SV_GOLD_GOLD));
 
                             /* Amount of gold to put in this object */
-                            amt = gold > MAX_PVAL ? MAX_PVAL : gold;
+                            amt = gold > SHRT_MAX ? SHRT_MAX : gold;
                             o.pval = amt;
                             gold -= amt;
 
@@ -1519,7 +1519,7 @@ bool make_attack_normal(monster_type *m_ptr)
             }
 
             /* Handle character death */
-            if (p_ptr->is_dead && (l_ptr->deaths < MAX_SHORT))
+            if (p_ptr->is_dead && (l_ptr->deaths < SHRT_MAX))
             {
                 l_ptr->deaths++;
 
@@ -1634,7 +1634,7 @@ bool make_attack_normal(monster_type *m_ptr)
             if (obvious || dam || (l_ptr->blows[ap_cnt] > 10))
             {
                 /* Count attacks of this type */
-                if (l_ptr->blows[ap_cnt] < MAX_UCHAR)
+                if (l_ptr->blows[ap_cnt] < UCHAR_MAX)
                 {
                     l_ptr->blows[ap_cnt]++;
                 }

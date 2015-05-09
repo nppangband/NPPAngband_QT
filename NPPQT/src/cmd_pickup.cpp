@@ -928,7 +928,7 @@ int move_player(int dir, int jumping)
 			if (!p_ptr->timed[TMD_FLYING])
 			{
 				/*Mark the lore*/
-				if (f_l_ptr->f_l_native_moves < MAX_UCHAR) f_l_ptr->f_l_native_moves ++;
+                if (f_l_ptr->f_l_native_moves < UCHAR_MAX ) f_l_ptr->f_l_native_moves ++;
 
 				/*record the energy*/
                 used_energy = f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].native_energy_move;
@@ -939,7 +939,7 @@ int move_player(int dir, int jumping)
 			if (!p_ptr->timed[TMD_FLYING])
 			{
 				/*Mark the lore*/
-				if (f_l_ptr->f_l_non_native_moves < MAX_UCHAR) f_l_ptr->f_l_non_native_moves ++;
+                if (f_l_ptr->f_l_non_native_moves < UCHAR_MAX ) f_l_ptr->f_l_non_native_moves ++;
 
 				/*record the energy*/
                 used_energy = f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].non_native_energy_move;

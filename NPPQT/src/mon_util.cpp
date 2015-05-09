@@ -1060,9 +1060,6 @@ QString monster_desc(monster_type *m_ptr, int mode)
  * plural_aux function in the quest.c file.  (Changes "wolf" to
  * wolves, etc.....)
  *
- * I am assuming that no monster name is more than 65 characters long,
- * so that "char desc[80];" is sufficiently large for any result, even
- * when the "offscreen" notation is added.
  *
  */
 QString monster_desc_race(int r_idx)
@@ -1148,8 +1145,8 @@ void lore_probe_monster_aux(int r_idx)
     if (one_in_(3)) l_ptr->r_l_native = r_ptr->r_native;
 
     /* Hack -- Increse the sightings, and ranged attacks */
-    if (l_ptr->sights < MAX_SHORT)	l_ptr->sights += (MAX_SHORT - l_ptr->sights) / 100;
-    if (l_ptr->ranged < MAX_UCHAR)	l_ptr->ranged += (MAX_UCHAR - l_ptr->ranged) / 5;
+    if (l_ptr->sights < SHRT_MAX)	l_ptr->sights += (SHRT_MAX - l_ptr->sights) / 100;
+    if (l_ptr->ranged < UCHAR_MAX)	l_ptr->ranged += (UCHAR_MAX - l_ptr->ranged) / 5;
 
     i = randint (3);
     switch (i)
@@ -1163,7 +1160,7 @@ void lore_probe_monster_aux(int r_idx)
                 if (r_ptr->blow[i].effect || r_ptr->blow[i].method)
                 {
                     /* Hack -- increase observations */
-                    l_ptr->blows[i] += (MAX_UCHAR - l_ptr->blows[i]) / 2;
+                    l_ptr->blows[i] += (UCHAR_MAX - l_ptr->blows[i]) / 2;
                 }
             }
             break;
@@ -1172,7 +1169,7 @@ void lore_probe_monster_aux(int r_idx)
         case 2:
         {
             /* Hack -- Maximal info */
-            l_ptr->wake = l_ptr->ignore = MAX_UCHAR;
+            l_ptr->wake = l_ptr->ignore = UCHAR_MAX;
 
             break;
         }
@@ -1481,7 +1478,7 @@ void update_mon(int m_idx, bool full)
             p_ptr->redraw |= (PR_SIDEBAR_MON);
 
             /* Hack -- Count "fresh" sightings */
-            if (l_ptr->sights < MAX_SHORT) l_ptr->sights++;
+            if (l_ptr->sights < SHRT_MAX) l_ptr->sights++;
 
             /* Player knows if it has light */
             if (r_ptr->flags2 & (RF2_HAS_LIGHT)) l_ptr->r_l_flags2 |= RF2_HAS_LIGHT;
@@ -2191,7 +2188,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if (p_ptr->is_dead) return;
 
         /*Note the stealth effect*/
-        if ((player_can_observe()) && (f_l_ptr->f_l_stealth_adj < MAX_UCHAR)) f_l_ptr->f_l_stealth_adj++;
+        if ((player_can_observe()) && (f_l_ptr->f_l_stealth_adj < UCHAR_MAX)) f_l_ptr->f_l_stealth_adj++;
 
         /*Automatically track the feature the player is on unless player is tracking a feature*/
         if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y2][x2].feat);
@@ -2248,7 +2245,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if (p_ptr->is_dead) return;
 
         /*Note the stealth effect*/
-        if ((player_can_observe()) && (f_l_ptr->f_l_stealth_adj < MAX_UCHAR)) f_l_ptr->f_l_stealth_adj++;
+        if ((player_can_observe()) && (f_l_ptr->f_l_stealth_adj < UCHAR_MAX)) f_l_ptr->f_l_stealth_adj++;
 
         /*Automatically track the feature the player is on unless player is tracking a feature*/
         if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y1][x1].feat);
@@ -4305,7 +4302,7 @@ bool add_monster_message(QString mon_name, int m_idx, int msg_code)
             (mon_msg[i].msg_code == msg_code))
         {
             /* Can we increment the counter? */
-            if (mon_msg[i].mon_count < MAX_UCHAR)
+            if (mon_msg[i].mon_count < UCHAR_MAX)
             {
                 /* Stack the message */
                 ++(mon_msg[i].mon_count);

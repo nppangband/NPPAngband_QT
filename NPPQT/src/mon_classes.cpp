@@ -126,7 +126,7 @@ void monster_lore::monster_lore_wipe()
     sights = deaths = pkills = tkills = 0;
     wake = ignore = xtra1 = xtra2 = 0;
     drop_gold = drop_item = 0;
-    ranged = mana = spell_power = xtra3 = 0;
+    ranged = 0;
     for (int i = 0; i < MONSTER_BLOW_MAX; i++) blows[i] = 0;
     r_l_flags1 = r_l_flags2 = r_l_flags3 = r_l_flags4 = 0;
     r_l_flags5 = r_l_flags6 = r_l_flags7 = r_l_native = 0;
@@ -162,7 +162,6 @@ void monster_race::monster_race_wipe()
     d_char = '\0';
     max_num = cur_num = 0;
     tile_id.clear();
-    tile_32x32_y = tile_32x32_x = tile_8x8_y = tile_8x8_x = 0;
 }
 
 bool monster_race::is_unique()

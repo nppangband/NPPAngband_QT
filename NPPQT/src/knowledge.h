@@ -46,8 +46,6 @@ private:
     QVector<bool> monster_group_info;
     QButtonGroup *mon_button_group;
 
-    bool do_spoiler;
-
 private slots:
     // Receives the number of the button pressed.
     void button_press(int mon_race);

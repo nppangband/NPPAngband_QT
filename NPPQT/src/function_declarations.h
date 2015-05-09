@@ -34,7 +34,6 @@ extern bool generic_los(int y1, int x1, int y2, int x2, u16b flg);
 extern bool no_light(void);
 extern bool cave_valid_bold(int y, int x);
 extern byte multi_hued_color(monster_race *r_ptr);
-extern bool feat_supports_lighting(u16b feat);
 extern bool dtrap_edge(int y, int x);
 extern void map_info(s16b y, s16b x);
 extern void note_spot(int y, int x);
@@ -156,8 +155,6 @@ extern void change_player_level(void);
 
 /* init_game.cpp */
 extern void init_player_graf_info();
-extern void clear_graphics();
-extern void init_graphics();
 extern void init_npp_games(void);
 extern void cleanup_npp_games(void);
 extern void flavor_init(void);
@@ -186,7 +183,7 @@ extern bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px);
 //mon_classes.cpp
 
 // mon_info.cpp
-extern QString get_monster_description(int r_idx, bool spoilers, QString extra_message);
+extern QString get_monster_description(int r_idx, bool spoilers, QString extra_message, bool include_header);
 extern void describe_monster(int r_idx, bool spoilers, QString extra_message);
 
 
@@ -759,6 +756,9 @@ extern bool master_elements(int dam, int dir);
 extern bool steal_powers(int dir);
 extern bool call_huorns(void);
 
+//spoilers.cpp
+void print_monster_spoiler_file(void);
+
 //squelch.cpp
 extern void apply_autoinscription(object_type *o_ptr);
 extern void autoinscribe_ground(void);
@@ -917,7 +917,6 @@ extern QString formatted_weight_string(s32b weight);
 extern QString get_player_title(void);
 extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);
-extern void extract_tiles(bool save = true);
 extern void display_info_window(byte mode, int index, QString info, object_type *o_ptr = 0);
 extern QString to_ascii(QString src);
 extern QString cnv_stat(int val);

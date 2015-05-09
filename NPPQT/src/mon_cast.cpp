@@ -4031,28 +4031,28 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         if (attack < 32*4)
         {
         l_ptr->r_l_flags4 |= (1L << (attack - 32*3));
-        if (l_ptr->ranged < MAX_UCHAR) l_ptr->ranged++;
+        if (l_ptr->ranged < UCHAR_MAX) l_ptr->ranged++;
         }
 
         /* Bolt or Ball */
         else if (attack < 32*5)
         {
         l_ptr->r_l_flags5 |= (1L << (attack - 32*4));
-        if (l_ptr->ranged < MAX_UCHAR) l_ptr->ranged++;
+        if (l_ptr->ranged < UCHAR_MAX) l_ptr->ranged++;
         }
 
         /* Special spell */
         else if (attack < 32*6)
         {
         l_ptr->r_l_flags6 |= (1L << (attack - 32*5));
-        if (l_ptr->ranged < MAX_UCHAR) l_ptr->ranged++;
+        if (l_ptr->ranged < UCHAR_MAX) l_ptr->ranged++;
         }
 
         /* Summon spell */
         else if (attack < 32*7)
         {
         l_ptr->r_l_flags7 |= (1L << (attack - 32*6));
-        if (l_ptr->ranged < MAX_UCHAR) l_ptr->ranged++;
+        if (l_ptr->ranged < UCHAR_MAX) l_ptr->ranged++;
         }
 
     }
@@ -4061,7 +4061,7 @@ bool make_attack_ranged(monster_type *m_ptr, int attack, int py, int px)
         message(QString("%1 has %2 mana remaining.") .arg(capitalize_first(m_name)) .arg(m_ptr->mana));
 
     /* Always take note of monsters that kill you */
-    if (p_ptr->is_dead && (l_ptr->deaths < MAX_SHORT))
+    if (p_ptr->is_dead && (l_ptr->deaths < SHRT_MAX))
     {
         l_ptr->deaths++;
     }

@@ -150,7 +150,7 @@ void create_directories()
     npp_dir_icon.setPath(QString(npp_dir_base.path() .append("/lib/icons/")));
     npp_dir_save.setPath(QString(npp_dir_base.path() .append("/lib/save/")));
     npp_dir_user.setPath(QString(npp_dir_base.path() .append("/lib/user/")));
-    npp_dir_graf.setPath(QString(npp_dir_base.path() .append("/lib/xtra/graf/")));
+    npp_dir_graf.setPath(QString(npp_dir_base.path() .append("/lib/graf/")));
 
 }
 
@@ -607,33 +607,6 @@ static int init_flavor_info(void)
     err = read_edit_file(file_name);
 
     return (err);
-}
-
-/*
- * Initialize the "flavor_info" array
- */
-void init_player_graf_info(void)
-{
-    int err;
-
-    QString file_name;
-
-    // Currently works for both NPPAngband and NPPMoria
-    file_name = "p_tiles";
-
-    parse_which_info = parse_player_graf_info;
-
-    err = read_edit_file(file_name);
-
-    // If something went wrong, just use the default tiles for the human race
-    if (err)
-    {
-        monster_race *r_ptr = &r_info[0];
-        p_ptr->tile_32x32_y =   r_ptr->tile_32x32_y;
-        p_ptr->tile_32x32_x =   r_ptr->tile_32x32_x;
-        p_ptr->tile_8x8_y =     r_ptr->tile_8x8_y;
-        p_ptr->tile_8x8_x =     r_ptr->tile_8x8_x;
-    }
 }
 
 
@@ -1521,13 +1494,11 @@ void flavor_init(void)
 {
     int i, j;
 
-
     /* Hack -- Use the "simple" RNG */
     Rand_quick = TRUE;
 
     /* Hack -- Induce consistent flavors */
     Rand_value = seed_flavor;
-
 
     flavor_assign_fixed();
 
@@ -1650,95 +1621,3 @@ void flavor_init(void)
     }
 }
 
-
-int read_coordinate(QString text)
-{
-    bool ok;
-    if (text.startsWith("0x")) return text.toInt(&ok, 16);
-    return text.toInt();
-}
-
-void clear_graphics()
-{
-    if (!character_dungeon) return;
-
-    for (int i = 0; i < z_info->f_max; i++) {
-        f_info[i].tile_id.clear();
-    }
-
-    for (int i = 0; i < z_info->r_max; i++) {
-        r_info[i].tile_id.clear();
-    }
-
-    for (int i = 0; i < z_info->k_max; i++) {
-        k_info[i].tile_id.clear();
-    }
-
-    for (int i = 0; i < z_info->flavor_max; i++) {
-        flavor_info[i].tile_id.clear();
-    }
-
-    for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
-        for (int x = 0; x < MAX_DUNGEON_WID; x++) {
-            dungeon_type *d_ptr = &dungeon_info[y][x];
-            d_ptr->monster_tile.clear();
-            d_ptr->object_tile.clear();
-            d_ptr->dun_tile.clear();
-            d_ptr->effect_tile.clear();
-        }
-    }
-
-    p_ptr->tile_id.clear();
-}
-
-void init_graphics()
-{
-    if (!character_dungeon) return;
-
-    clear_graphics();    
-
-    for (int i = 0; i < z_info->f_max; i++) {
-        if (use_graphics == GRAPHICS_DAVID_GERVAIS) {
-            f_info[i].tile_id = QString("%1x%2").arg(f_info[i].tile_32x32_y).arg(f_info[i].tile_32x32_x);
-        }
-        else {
-            f_info[i].tile_id = QString("%1x%2").arg(f_info[i].tile_8x8_y).arg(f_info[i].tile_8x8_x);
-        }
-    }
-
-    for (int i = 0; i < z_info->r_max; i++) {
-        if (use_graphics == GRAPHICS_DAVID_GERVAIS) {
-            r_info[i].tile_id = QString("%1x%2").arg(r_info[i].tile_32x32_y).arg(r_info[i].tile_32x32_x);
-        }
-        else {
-            r_info[i].tile_id = QString("%1x%2").arg(r_info[i].tile_8x8_y).arg(r_info[i].tile_8x8_x);
-        }
-    }
-
-    for (int i = 0; i < z_info->k_max; i++) {
-        if (use_graphics == GRAPHICS_DAVID_GERVAIS) {
-            k_info[i].tile_id = QString("%1x%2").arg(k_info[i].tile_32x32_y).arg(k_info[i].tile_32x32_x);
-        }
-        else {
-            k_info[i].tile_id = QString("%1x%2").arg(k_info[i].tile_8x8_y).arg(k_info[i].tile_8x8_x);
-        }
-    }
-
-    for (int i = 0; i < z_info->flavor_max; i++) {
-        if (use_graphics == GRAPHICS_DAVID_GERVAIS) {
-            flavor_info[i].tile_id = QString("%1x%2").arg(flavor_info[i].tile_32x32_y).arg(flavor_info[i].tile_32x32_x);
-        }
-        else {
-            flavor_info[i].tile_id = QString("%1x%2").arg(flavor_info[i].tile_8x8_y).arg(flavor_info[i].tile_8x8_x);
-        }
-    }
-
-    init_player_graf_info();
-
-    if (use_graphics == GRAPHICS_DAVID_GERVAIS) {
-        p_ptr->tile_id = QString("%1x%2").arg(p_ptr->tile_32x32_y).arg(p_ptr->tile_32x32_x);
-    }
-    else {
-        p_ptr->tile_id = QString("%1x%2").arg(p_ptr->tile_8x8_y).arg(p_ptr->tile_8x8_x);
-    }
-}

@@ -131,7 +131,7 @@ static void effect_absorb(effect_type *x_ptr, const effect_type *x2_ptr)
 
             /* Add the countdown, and extract the power */
             int new_countdown = x_ptr->x_countdown + x2_ptr->x_countdown;
-            if (new_countdown > MAX_UCHAR) new_countdown = MAX_UCHAR;
+            if (new_countdown > UCHAR_MAX) new_countdown = UCHAR_MAX;
             x_ptr->x_countdown = (byte)new_countdown;
 
             x_ptr->x_power = ((power + power2) / (x_ptr->x_countdown));
@@ -155,7 +155,7 @@ static void effect_absorb(effect_type *x_ptr, const effect_type *x2_ptr)
 
             /* Add the countdown, and extract the power */
             int new_countdown = x_ptr->x_countdown + x2_ptr->x_countdown;
-            if (new_countdown > MAX_UCHAR) new_countdown = MAX_UCHAR;
+            if (new_countdown > UCHAR_MAX) new_countdown = UCHAR_MAX;
             x_ptr->x_countdown = (byte)new_countdown;
 
             x_ptr->x_power = ((power + power2) / (x_ptr->x_countdown));
@@ -290,7 +290,7 @@ bool set_effect_lingering_cloud(int f_idx, byte y, byte x,	u16b power, s16b sour
     countdown = (effect_power / 1000) + f_ptr->x_timeout_set + randint(f_ptr->x_timeout_rand);
 
     /* Keep it in bounds */
-    if (countdown >= MAX_UCHAR) countdown = MAX_UCHAR - 1;
+    if (countdown >= UCHAR_MAX) countdown = UCHAR_MAX - 1;
 
     /* Create the effect */
     effect_prep(x_idx, EFFECT_LINGERING_CLOUD, f_idx, y, x, (byte)countdown, 0, effect_power, source, flag);
@@ -317,7 +317,7 @@ bool set_effect_glacier(int f_idx, byte y, byte x, s16b source, u16b flag)
     countdown = f_ptr->x_timeout_set + randint(f_ptr->x_timeout_rand);
 
     /* Keep it in bounds */
-    if (countdown >= MAX_UCHAR) countdown = MAX_UCHAR - 1;
+    if (countdown >= UCHAR_MAX) countdown = UCHAR_MAX - 1;
 
     /* Create the effect */
     effect_prep(x_idx, EFFECT_GLACIER, f_idx, y, x, (byte)countdown, 0, 0, source, flag);
@@ -386,7 +386,7 @@ bool set_effect_shimmering_cloud(int f_idx, byte y, byte x, byte repeats, u16b p
     countdown = f_ptr->x_timeout_set + randint(f_ptr->x_timeout_rand);
 
     /* Keep it in bounds */
-    if (countdown >= MAX_UCHAR) countdown = MAX_UCHAR - 1;
+    if (countdown >= UCHAR_MAX) countdown = UCHAR_MAX - 1;
 
     /* Create the effect */
     effect_prep(x_idx, EFFECT_SHIMMERING_CLOUD, f_idx, y, x, (byte)countdown, repeats, effect_power, source, flag);
@@ -454,7 +454,7 @@ bool set_effect_trap_smart(int f_idx, byte y, byte x, u16b flags)
     if (countdown <=3) countdown = 4;
 
     /*Keep it in bounds*/
-    if (countdown >= MAX_UCHAR) countdown = MAX_UCHAR - 1;
+    if (countdown >= UCHAR_MAX) countdown = UCHAR_MAX - 1;
 
     flags |= (EF1_TRAP_SMART | EF1_PERMANENT | EF1_HIDDEN | EF1_HURT_PLAY);
 

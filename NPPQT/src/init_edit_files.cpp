@@ -2062,22 +2062,6 @@ int parse_f_info(QString line_info)
         f_ptr->f_text = process_description (line_info, f_ptr->f_text);
     }
 
-    // Process 'T' for Tile Mapping
-    else if (command == 'T')
-    {
-        int tile_32x32_y = 0, tile_32x32_x = 0, tile_8x8_y = 0, tile_8x8_x= 0;
-
-        process_4_ints(line_info, &tile_32x32_y, &tile_32x32_x, &tile_8x8_y, &tile_8x8_x);
-
-        /* There better be a current f_ptr */
-        if (!f_ptr) return (PARSE_ERROR_MISSING_RECORD_HEADER);
-
-        f_ptr->tile_32x32_y = (byte)tile_32x32_y;
-        f_ptr->tile_32x32_x = (byte)tile_32x32_x;
-        f_ptr->tile_8x8_y = (byte)tile_8x8_y;
-        f_ptr->tile_8x8_x = (byte)tile_8x8_x;
-    }
-
     else if (command == 'V')
     {
         return (verify_version(line_info));
@@ -2299,22 +2283,6 @@ int parse_k_info(QString line_info)
 
         //Store the text
         k_ptr->k_text = process_description (line_info, k_ptr->k_text);
-    }
-
-    // Process 'T' for Tile Mapping
-    else if (command == 'T')
-    {
-        int tile_32x32_y = 0, tile_32x32_x = 0, tile_8x8_y = 0, tile_8x8_x= 0;
-
-        process_4_ints(line_info, &tile_32x32_y, &tile_32x32_x, &tile_8x8_y, &tile_8x8_x);
-
-        /* There better be a current k_ptr */
-        if (!k_ptr) return (PARSE_ERROR_MISSING_RECORD_HEADER);
-
-        k_ptr->tile_32x32_y = (byte)tile_32x32_y;
-        k_ptr->tile_32x32_x = (byte)tile_32x32_x;
-        k_ptr->tile_8x8_y = (byte)tile_8x8_y;
-        k_ptr->tile_8x8_x = (byte)tile_8x8_x;
     }
 
     else if (command == 'V')
@@ -3211,22 +3179,6 @@ int parse_r_info(QString line_info)
             //found an inalid flag
             else return PARSE_ERROR_INVALID_FLAG;
         }
-    }
-
-    // Process 'T' for Tile Mapping
-    else if (command == 'T')
-    {
-        int tile_32x32_y = 0, tile_32x32_x = 0, tile_8x8_y = 0, tile_8x8_x= 0;
-
-        process_4_ints(line_info, &tile_32x32_y, &tile_32x32_x, &tile_8x8_y, &tile_8x8_x);
-
-        /* There better be a current r_ptr */
-        if (!r_ptr) return (PARSE_ERROR_MISSING_RECORD_HEADER);
-
-        r_ptr->tile_32x32_y = (byte)tile_32x32_y;
-        r_ptr->tile_32x32_x = (byte)tile_32x32_x;
-        r_ptr->tile_8x8_y = (byte)tile_8x8_y;
-        r_ptr->tile_8x8_x = (byte)tile_8x8_x;
     }
 
     else if (command == 'V')
@@ -4128,22 +4080,6 @@ int parse_flavor_info(QString line_info)
 
     }
 
-    // Process 'T' for Tile Mapping
-    else if (command == 'T')
-    {
-        int tile_32x32_y = 0, tile_32x32_x = 0, tile_8x8_y = 0, tile_8x8_x= 0;
-
-        process_4_ints(line_info, &tile_32x32_y, &tile_32x32_x, &tile_8x8_y, &tile_8x8_x);
-
-        /* There better be a current flavor_ptr */
-        if (!flavor_ptr) return (PARSE_ERROR_MISSING_RECORD_HEADER);
-
-        flavor_ptr->tile_32x32_y = (byte)tile_32x32_y;
-        flavor_ptr->tile_32x32_x = (byte)tile_32x32_x;
-        flavor_ptr->tile_8x8_y = (byte)tile_8x8_y;
-        flavor_ptr->tile_8x8_x = (byte)tile_8x8_x;
-    }
-
     else if (command == 'V')
     {
         return (verify_version(line_info));
@@ -4154,47 +4090,6 @@ int parse_flavor_info(QString line_info)
         /* Oops */
         return (PARSE_ERROR_UNDEFINED_DIRECTIVE);
     }
-
-    /* Success */
-    return (0);
-}
-
-/*
- * Find the player_graf info
- * Should only be called after the player's gender, class, and race have been chosen.
- * If this fails, we just use the human warrior tile.  No need to quit the game.
- */
-int parse_player_graf_info(QString line_info)
-{
-
-
-    /* Skip comments and blank lines */
-    if (line_info.isNull() || line_info.isEmpty() || line_info[0] == '#') return (0);
-
-    /* Verify correct "colon" format */
-    if (line_info[1] != ':') return (PARSE_ERROR_GENERIC);
-
-    // Get the commmand and remove the command prefix (ex. N:)
-    QChar command = line_info.at(0);
-    line_info.remove(0,2);
-
-    // Process 'T' for Tile Mapping
-    if (command == 'T')
-    {
-        int l_class =0 , l_race = 0, tile_32x32_y = 0, tile_32x32_x = 0, tile_8x8_y = 0, tile_8x8_x= 0;
-
-        process_6_ints(line_info, &l_race, & l_class, &tile_32x32_y, &tile_32x32_x, &tile_8x8_y, &tile_8x8_x);
-
-        // Make sure we have the right race and class
-        if (l_race != p_ptr->prace) return (0);
-        if (l_class != p_ptr->pclass) return (0);
-
-        p_ptr->tile_32x32_y = (byte)tile_32x32_y;
-        p_ptr->tile_32x32_x = (byte)tile_32x32_x;
-        p_ptr->tile_8x8_y = (byte)tile_8x8_y;
-        p_ptr->tile_8x8_x = (byte)tile_8x8_x;
-    }
-
 
     /* Success */
     return (0);

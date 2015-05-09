@@ -983,7 +983,6 @@ void WizardModeDialog::wiz_winners_kit(void)
 // Know every object kind, ego item, feature, and monster
 void WizardModeDialog::wiz_know_all(void)
 {
-
     int i, j;
 
     /* Knowledge of every object */
@@ -1016,13 +1015,13 @@ void WizardModeDialog::wiz_know_all(void)
         l_ptr->r_l_native = r_ptr->r_native;
 
         /* Know max sightings, sleeping habits, spellcasting, and combat blows. */
-        l_ptr->sights = MAX_SHORT;
-        l_ptr->ranged = MAX_UCHAR;
+        l_ptr->sights = SHRT_MAX;
+        l_ptr->ranged = UCHAR_MAX;
         for (j = 0; j < MONSTER_BLOW_MAX; j++)
         {
-            l_ptr->blows[j] = MAX_UCHAR;
+            l_ptr->blows[j] = UCHAR_MAX;
         }
-        l_ptr->wake = l_ptr->ignore = MAX_UCHAR;
+        l_ptr->wake = l_ptr->ignore = UCHAR_MAX;
 
         /* know the treasure drops*/
         l_ptr->drop_gold = l_ptr->drop_item =
@@ -1048,27 +1047,33 @@ void WizardModeDialog::wiz_know_all(void)
         f_l_ptr->f_l_flags1 = f_ptr->f_flags1;
         f_l_ptr->f_l_flags2 = f_ptr->f_flags2;
         f_l_ptr->f_l_flags3 = f_ptr->f_flags3;
-        f_l_ptr->f_l_sights = MAX_UCHAR;
+        f_l_ptr->f_l_sights = UCHAR_MAX;
 
         /* Know all transitions */
-        f_l_ptr->f_l_defaults = MAX_UCHAR;
+        f_l_ptr->f_l_defaults = UCHAR_MAX;
         for (j = 0; j < MAX_FEAT_STATES; j++)
         {
             /*There isn't an action here*/
             if (f_ptr->state[j].fs_action == FS_FLAGS_END) continue;
 
             /* Hack -- we have seen this transition */
-            f_l_ptr->f_l_state[j] = MAX_UCHAR;
+            f_l_ptr->f_l_state[j] = UCHAR_MAX;
         }
         /*Know movement, damage to non-native, and stealth.....*/
-        f_l_ptr->f_l_dam_non_native = MAX_UCHAR;
-        f_l_ptr->f_l_native_moves = MAX_UCHAR;
-        f_l_ptr->f_l_non_native_moves = MAX_UCHAR;
-        f_l_ptr->f_l_stealth_adj = MAX_UCHAR;
-        f_l_ptr->f_l_native_to_hit_adj = MAX_UCHAR;
-        f_l_ptr->f_l_non_native_to_hit_adj = MAX_UCHAR;
+        f_l_ptr->f_l_dam_non_native = UCHAR_MAX;
+        f_l_ptr->f_l_native_moves = UCHAR_MAX;
+        f_l_ptr->f_l_non_native_moves = UCHAR_MAX;
+        f_l_ptr->f_l_stealth_adj = UCHAR_MAX;
+        f_l_ptr->f_l_native_to_hit_adj = UCHAR_MAX;
+        f_l_ptr->f_l_non_native_to_hit_adj = UCHAR_MAX;
     }
 
+    this->accept();
+}
+
+void WizardModeDialog::wiz_print_spoilers()
+{
+    print_monster_spoiler_file();
     this->accept();
 }
 
@@ -1371,6 +1376,12 @@ WizardModeDialog::WizardModeDialog(void)
     edit_character->setToolTip("Edit character statistics, experience, gold, and fame.");
     connect(edit_character, SIGNAL(clicked()), this, SLOT(wiz_edit_character()));
     wizard_layout->addWidget(edit_character, row, 0);
+
+    // Add the "know all" button
+    QPushButton *spoil_button = new QPushButton("Print Spoilers");
+    spoil_button->setToolTip("Print out Spoilers for all Monsters, objects, artifacts, and terrain.");
+    connect(spoil_button, SIGNAL(clicked()), this, SLOT(wiz_print_spoilers()));
+    wizard_layout->addWidget(spoil_button, row, 1);
 
     row++;
 

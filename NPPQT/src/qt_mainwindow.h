@@ -180,6 +180,7 @@ private slots:
     void update_file_menu_game_inactive();
 
     // Graphics
+    void set_reg();
     void set_dvg();
     void set_old_tiles();
     void set_ascii();
@@ -245,6 +246,7 @@ private:
     QAction *options_act;
     QActionGroup *tiles_choice;
     QAction *ascii_mode_act;
+    QAction *reg_mode_act;
     QAction *dvg_mode_act;
     QAction *old_tiles_act;
     QAction *pseudo_ascii_act;

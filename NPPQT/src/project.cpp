@@ -1158,7 +1158,7 @@ void take_terrain_hit(int dam, int feat, QString kb_str)
     if (dam == 0) return;
 
     /* Count the number of times this damage has been felt */
-    if (f_l_ptr->f_l_dam_non_native < MAX_UCHAR) f_l_ptr->f_l_dam_non_native++;
+    if (f_l_ptr->f_l_dam_non_native < UCHAR_MAX) f_l_ptr->f_l_dam_non_native++;
 
     /* Get spell type */
     action = get_spell_type_from_feature(feat, &gf_type);

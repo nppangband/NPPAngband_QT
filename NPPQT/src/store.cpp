@@ -771,8 +771,8 @@ bool do_service_probing(byte choice, u32b price)
     lore_probe_monster_aux(q_ptr->mon_idx);
 
     /* Hack -- Increse the sightings, and ranged attacks around 50% of the time */
-    l_ptr->sights = MAX_SHORT;
-    l_ptr->ranged = MAX_UCHAR;
+    l_ptr->sights = SHRT_MAX;
+    l_ptr->ranged = UCHAR_MAX;
 
     /* Know "race" flags */
     l_ptr->r_l_flags3 |= (r_ptr->flags3 & RF3_RACE_MASK);

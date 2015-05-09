@@ -29,7 +29,8 @@ player_class::player_class()
 void player_class::player_class_wipe()
 {
     cl_name.clear();
-    for (int i = 0; i < PY_MAX_LEVEL; i++) {
+    for (int i = 0; i < PY_MAX_LEVEL; i++)
+    {
         cl_title[i].clear();
     }
     C_WIPE(c_adj, A_MAX, s16b);
@@ -37,10 +38,12 @@ void player_class::player_class_wipe()
     x_dis = x_dev = x_sav = x_stl = x_srh = x_fos = x_thn = x_thb = 0;
     c_mhp = c_exp = flags = c_native = max_attacks = min_weight = att_multiply = 0;
     spell_book = spell_first = spell_weight = sense_base = sense_div = 0;
-    for (int i = 0; i < MAX_START_ITEMS; i++) {
+    for (int i = 0; i < MAX_START_ITEMS; i++)
+    {
         start_items[i].max = start_items[i].min = start_items[i].sval = start_items[i].tval = 0;
     }
-    for (int i = 0; i < PY_MAX_SPELLS; i++) {
+    for (int i = 0; i < PY_MAX_SPELLS; i++)
+    {
         magic_type *m = spells.info + i;
         m->sexp = m->sfail = m->slevel = m->smana = 0;
     }
@@ -228,7 +231,6 @@ void player_type::player_type_wipe()
     flow_center_y = flow_center_x = 0;
     update_center_y = update_center_x = 0;
     psex = prace = pclass = 0;
-    tile_32x32_y = tile_32x32_x = tile_8x8_y = tile_8x8_x = 0;
     hitdie = expfact = 0;
     age = ht = wt = sc = au = 0;
     q_fame = deferred_rewards = quest_depth = max_depth = depth = recall_depth = 0;

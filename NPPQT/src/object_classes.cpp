@@ -926,8 +926,6 @@ void object_kind::object_kind_wipe()
     autoinscribe.clear();
     flavor = squelch = 0;
     aware = tried = everseen = FALSE;
-    tile_32x32_y = tile_32x32_x = tile_8x8_y = tile_8x8_x = 0;
-    tile_id.clear();
     C_WIPE(use_verify, VERIFY_MAX, byte);
 
 }
@@ -975,7 +973,6 @@ void flavor_type::flavor_wipe()
     tval = sval = color_num = 0;
     d_color = QColor("black");
     d_char = QChar(' ');
-    tile_32x32_y = tile_32x32_x = tile_8x8_y = tile_8x8_x = 0;
     tile_id.clear();
 }
 

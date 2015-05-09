@@ -3756,7 +3756,7 @@ bool make_gold(object_type *j_ptr)
     }
 
     /* Cap gold at max short (or alternatively make pvals s32b) */
-    if (value > MAX_SHORT)	value = MAX_SHORT;
+    if (value > SHRT_MAX)	value = SHRT_MAX;
 
     j_ptr->pval = value;
 

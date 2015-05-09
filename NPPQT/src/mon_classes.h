@@ -112,12 +112,6 @@ public:
 
     QString tile_id;
 
-    // Tile mapping
-    byte tile_32x32_y;
-    byte tile_32x32_x;
-    byte tile_8x8_y;
-    byte tile_8x8_x;
-
     bool is_unique(void);
     bool is_player_ghost(void);
     bool is_mimic(void);
@@ -159,10 +153,6 @@ public:
     byte drop_item;			/* Max number of item dropped at once */
 
     byte ranged;			/* Observed ranged attacks */
-    byte mana;				/* Max mana */
-    byte spell_power;		/* Power of (damage-dealing) spells */
-
-    byte xtra3;				/* Something (unused) */
 
     byte blows[MONSTER_BLOW_MAX]; /* Number of times each blow type was seen */
 

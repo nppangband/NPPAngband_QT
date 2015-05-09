@@ -106,7 +106,7 @@ int feat_adjust_combat_for_player(int chance, bool being_attacked)
         bonus = f_ptr->native_to_hit_adj - 100;
 
         /*Mark the feature lore if the player understands*/
-        if ((player_can_observe()) && (f_l_ptr->f_l_native_to_hit_adj < MAX_UCHAR))
+        if ((player_can_observe()) && (f_l_ptr->f_l_native_to_hit_adj < UCHAR_MAX))
         {
             f_l_ptr->f_l_native_to_hit_adj++;
         }
@@ -119,7 +119,7 @@ int feat_adjust_combat_for_player(int chance, bool being_attacked)
         bonus = f_ptr->non_native_to_hit_adj - 100;
 
         /*Mark the feature lore if the player understands*/
-        if ((player_can_observe()) && (f_l_ptr->f_l_non_native_to_hit_adj < MAX_UCHAR))
+        if ((player_can_observe()) && (f_l_ptr->f_l_non_native_to_hit_adj < UCHAR_MAX))
         {
             f_l_ptr->f_l_non_native_to_hit_adj++;
         }
@@ -178,7 +178,7 @@ int feat_adjust_combat_for_monster(const monster_type *m_ptr, int chance,
         }
 
         /* Mark the feature lore if the player understands */
-        if ((player_can_observe()) && (f_l_ptr->f_l_native_to_hit_adj < MAX_UCHAR))
+        if ((player_can_observe()) && (f_l_ptr->f_l_native_to_hit_adj < UCHAR_MAX))
         {
             f_l_ptr->f_l_native_to_hit_adj++;
         }
@@ -190,7 +190,7 @@ int feat_adjust_combat_for_monster(const monster_type *m_ptr, int chance,
         bonus = f_ptr->non_native_to_hit_adj - 100;
 
         /*Mark the feature lore if the player understands*/
-        if ((player_can_observe()) && (f_l_ptr->f_l_non_native_to_hit_adj < MAX_UCHAR))
+        if ((player_can_observe()) && (f_l_ptr->f_l_non_native_to_hit_adj < UCHAR_MAX))
         {
             f_l_ptr->f_l_non_native_to_hit_adj++;
         }
@@ -222,7 +222,7 @@ void find_secret(int y, int x)
     f_ptr = &f_info[dungeon_info[y][x].feat];
     f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
 
-    if (f_l_ptr->f_l_sights < MAX_UCHAR) f_l_ptr->f_l_sights++;
+    if (f_l_ptr->f_l_sights < UCHAR_MAX) f_l_ptr->f_l_sights++;
 
     if (player_has_los_bold(y, x) && (!f_ptr->f_text.isEmpty()))
     {
@@ -402,7 +402,7 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc)
         else message(QString("The %1 %2") .arg(feat_name) .arg(f_ptr->f_text));
 
         /*Count in the feature lore the number of times set off*/
-        if (f_l_ptr->f_l_power < MAX_UCHAR)
+        if (f_l_ptr->f_l_power < UCHAR_MAX)
         {
             f_l_ptr->f_l_power++;
         }
@@ -685,7 +685,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
         }
 
         /*Count in the feature lore the number of times set off*/
-        if (f_l_ptr->f_l_power < MAX_UCHAR)
+        if (f_l_ptr->f_l_power < UCHAR_MAX)
         {
             f_l_ptr->f_l_power++;
 
@@ -1362,7 +1362,7 @@ void count_feat_everseen(void)
         if (!f_ptr->f_everseen) continue;
 
         /*Count the number of levels this character has been seen*/
-        if (f_l_ptr->f_l_sights < MAX_UCHAR) f_l_ptr->f_l_sights ++;
+        if (f_l_ptr->f_l_sights < UCHAR_MAX) f_l_ptr->f_l_sights ++;
 
         /*Clear it for the next level*/
         f_ptr->f_everseen = FALSE;
@@ -2120,7 +2120,7 @@ void lore_do_probe_feature(int f_idx)
     }
 
     /* Hack -- Maximal sightings 50% of the time*/
-    if (one_in_(2)) f_l_ptr->f_l_sights = MAX_UCHAR;
+    if (one_in_(2)) f_l_ptr->f_l_sights = UCHAR_MAX;
 
     /* Observe all transitions another 50% of the time*/
     else
@@ -2131,11 +2131,11 @@ void lore_do_probe_feature(int f_idx)
             if (f_ptr->state[i].fs_action == FS_FLAGS_END) continue;
 
             /* Hack -- we have seen this transition */
-            f_l_ptr->f_l_state[i] = MAX_UCHAR;
+            f_l_ptr->f_l_state[i] = UCHAR_MAX;
         }
 
         /* Hack -- Maximal info */
-        f_l_ptr->f_l_defaults = MAX_UCHAR;
+        f_l_ptr->f_l_defaults = UCHAR_MAX;
     }
 
     /*Other 33% of the time, learn all combat, movement and stealth*/
@@ -2146,20 +2146,20 @@ void lore_do_probe_feature(int f_idx)
     {
         case 1:
         {
-            f_l_ptr->f_l_dam_non_native = MAX_UCHAR;
+            f_l_ptr->f_l_dam_non_native = UCHAR_MAX;
             break;
         }
         case 2:
         {
-            f_l_ptr->f_l_native_moves = MAX_UCHAR;
-            f_l_ptr->f_l_non_native_moves = MAX_UCHAR;
-            f_l_ptr->f_l_stealth_adj = MAX_UCHAR;
+            f_l_ptr->f_l_native_moves = UCHAR_MAX;
+            f_l_ptr->f_l_non_native_moves = UCHAR_MAX;
+            f_l_ptr->f_l_stealth_adj = UCHAR_MAX;
             break;
         }
         default:
         {
-            f_l_ptr->f_l_native_to_hit_adj = MAX_UCHAR;
-            f_l_ptr->f_l_non_native_to_hit_adj = MAX_UCHAR;
+            f_l_ptr->f_l_native_to_hit_adj = UCHAR_MAX;
+            f_l_ptr->f_l_non_native_to_hit_adj = UCHAR_MAX;
             break;
         }
 
@@ -2177,10 +2177,10 @@ void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr)
     int i;
 
     /* Hack -- Maximal sightings */
-    f_l_ptr->f_l_sights = MAX_UCHAR;
+    f_l_ptr->f_l_sights = UCHAR_MAX;
 
     /* Hack -- Maximal info */
-    f_l_ptr->f_l_defaults = MAX_UCHAR;
+    f_l_ptr->f_l_defaults = UCHAR_MAX;
 
     /* Observe "maximal" attacks */
     for (i = 0; i < MAX_FEAT_STATES; i++)
@@ -2189,19 +2189,19 @@ void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr)
         if (f_ptr->state[i].fs_action == FS_FLAGS_END) continue;
 
         /* Hack -- we have seen this transition */
-        f_l_ptr->f_l_state[i] = MAX_UCHAR;
+        f_l_ptr->f_l_state[i] = UCHAR_MAX;
     }
 
     /* Hack -- maximal uses of power */
-    f_l_ptr->f_l_power = MAX_UCHAR;
+    f_l_ptr->f_l_power = UCHAR_MAX;
 
     /*Hack -- Have seen all changes to movement, stealth, and combat*/
-    f_l_ptr->f_l_dam_non_native = MAX_UCHAR;
-    f_l_ptr->f_l_native_moves = MAX_UCHAR;
-    f_l_ptr->f_l_non_native_moves = MAX_UCHAR;
-    f_l_ptr->f_l_native_to_hit_adj = MAX_UCHAR;
-    f_l_ptr->f_l_non_native_to_hit_adj = MAX_UCHAR;
-    f_l_ptr->f_l_stealth_adj = MAX_UCHAR;
+    f_l_ptr->f_l_dam_non_native = UCHAR_MAX;
+    f_l_ptr->f_l_native_moves = UCHAR_MAX;
+    f_l_ptr->f_l_non_native_moves = UCHAR_MAX;
+    f_l_ptr->f_l_native_to_hit_adj = UCHAR_MAX;
+    f_l_ptr->f_l_non_native_to_hit_adj = UCHAR_MAX;
+    f_l_ptr->f_l_stealth_adj = UCHAR_MAX;
 
     /* Hack -- know all the flags */
     f_l_ptr->f_l_flags1 = f_ptr->f_flags1;

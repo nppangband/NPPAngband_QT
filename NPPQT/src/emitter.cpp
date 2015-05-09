@@ -339,10 +339,12 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
             key = fl_ptr->tile_id;
         }
 
-        if (use_graphics) {            
+        if (use_graphics)
+        {
             pix = main_window->get_tile(key);
         }
-        else {
+        else
+        {
             pix = pseudo_ascii(chr, col, ui_main_window_font(),
                                QSizeF(main_window->cell_wid + 10,
                                       main_window->cell_hgt + 10));

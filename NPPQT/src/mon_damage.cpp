@@ -1357,10 +1357,10 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
         if (m_ptr->ml || (r_ptr->flags1 & (RF1_UNIQUE)))
         {
             /* Count kills this life */
-            if (l_ptr->pkills < MAX_SHORT) l_ptr->pkills++;
+            if (l_ptr->pkills < SHRT_MAX) l_ptr->pkills++;
 
             /* Count kills in all lives */
-            if (l_ptr->tkills < MAX_SHORT) l_ptr->tkills++;
+            if (l_ptr->tkills < SHRT_MAX) l_ptr->tkills++;
 
             /* Hack -- Auto-recall */
             monster_race_track(m_ptr->r_idx);

@@ -357,7 +357,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
     }
 
     /*Count in the feature lore the number of times set off*/
-    if ((mode == MODE_ACTION) && (f_l_ptr->f_l_power < MAX_UCHAR))
+    if ((mode == MODE_ACTION) && (f_l_ptr->f_l_power < UCHAR_MAX))
     {
         f_l_ptr->f_l_power++;
     }
@@ -3549,12 +3549,12 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
             if (is_monster_native(m_ptr->fy, m_ptr->fx, r_ptr))
             {
                 /*Mark the lore*/
-                if (f_l_ptr->f_l_native_moves < MAX_UCHAR) f_l_ptr->f_l_native_moves ++;
+                if (f_l_ptr->f_l_native_moves < UCHAR_MAX) f_l_ptr->f_l_native_moves ++;
             }
             else
             {
                 /*Mark the lore*/
-                if (f_l_ptr->f_l_non_native_moves < MAX_UCHAR) f_l_ptr->f_l_non_native_moves ++;
+                if (f_l_ptr->f_l_non_native_moves < UCHAR_MAX) f_l_ptr->f_l_non_native_moves ++;
             }
         }
 

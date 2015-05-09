@@ -178,7 +178,7 @@ static void regenhp(int percent)
     p_ptr->chp += (s16b)(new_chp >> 16);	/* div 65536 */
 
     /* check for overflow */
-    if ((p_ptr->chp < 0) && (old_chp > 0)) p_ptr->chp = MAX_SHORT;
+    if ((p_ptr->chp < 0) && (old_chp > 0)) p_ptr->chp = SHRT_MAX;
     new_chp_frac = (new_chp & 0xFFFF) + p_ptr->chp_frac;	/* mod 65536 */
     if (new_chp_frac >= 0x10000L)
     {
@@ -220,7 +220,7 @@ static void regenmana(int percent)
     /* check for overflow */
     if ((p_ptr->csp < 0) && (old_csp > 0))
     {
-        p_ptr->csp = MAX_SHORT;
+        p_ptr->csp = SHRT_MAX;
     }
     new_mana_frac = (new_mana & 0xFFFF) + p_ptr->csp_frac;	/* mod 65536 */
     if (new_mana_frac >= 0x10000L)
@@ -288,7 +288,7 @@ static void monster_terrain_damage(void)
                 feature_lore *f_l_ptr = &f_l_list[feat];
 
                 /*Count the number of times this damage has been felt*/
-                if (f_l_ptr->f_l_dam_non_native < MAX_UCHAR) f_l_ptr->f_l_dam_non_native++;
+                if (f_l_ptr->f_l_dam_non_native < UCHAR_MAX) f_l_ptr->f_l_dam_non_native++;
             }
 
             get_spell_type_from_feature(feat, &gf_type);
