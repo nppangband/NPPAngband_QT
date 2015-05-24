@@ -3349,7 +3349,7 @@ void command_use(cmd_arg args)
     }
 
     /* Hack to make Glyph of Warding work properly */
-    if (dungeon_info[py][px].effect_idx == FEAT_GLYPH)
+    if (dungeon_info[py][px].effect_idx == FEAT_GLYPH_WARDING)
     {
         /* Shift any objects to further away */
         for (o_ptr = get_first_object(py, px); o_ptr; o_ptr = get_next_object(o_ptr))

@@ -838,12 +838,12 @@ void process_wilderness_quest(void)
     {
         for (x = 1; x < (p_ptr->cur_map_wid - 1); x++)
         {
-            if (dungeon_info[y][x].feat == FEAT_BWATER_WALL)
+            if (dungeon_info[y][x].feat == FEAT_WALL_CRACKED_OVER_BOILING_WATER)
             {
                 ice_or_mud++;
                 continue;
             }
-            else if (dungeon_info[y][x].feat == FEAT_BMUD_WALL)
+            else if (dungeon_info[y][x].feat == FEAT_WALL_CRACKED_OVER_BOILING_MUD)
             {
                 ice_or_mud--;
                 continue;
@@ -870,8 +870,8 @@ void process_wilderness_quest(void)
             u16b new_feat;
 
             /* Already fully transformed */
-            if (feat == FEAT_BWATER_WALL) 		continue;
-            else if (feat == FEAT_BMUD_WALL)	continue;
+            if (feat == FEAT_WALL_CRACKED_OVER_BOILING_WATER) 		continue;
+            else if (feat == FEAT_WALL_CRACKED_OVER_BOILING_MUD)	continue;
 
             /* Don't do squares close to the player */
             if ((((y - p_ptr->py) * (y - p_ptr->py)) + ((x - p_ptr->px) * (x - p_ptr->px))) <= 100) continue;
@@ -882,7 +882,7 @@ void process_wilderness_quest(void)
                 if (cave_ff1_match(y, x, (FF1_WALL | FF1_STAIRS))) continue;
             }
 
-            if ((feat == FEAT_BWATER) || (feat == FEAT_BMUD))
+            if ((feat == FEAT_FLOOR_WATER_BOILING) || (feat == FEAT_FLOOR_MUD_BOILING))
             {
                 do_wall = TRUE;
                 chance += 25 + p_ptr->depth / 5;
@@ -907,8 +907,8 @@ void process_wilderness_quest(void)
                     break;
                 }
 
-                if ((feat2 == FEAT_BWATER_WALL) || (feat2 == FEAT_BMUD_WALL)) chance += 25 + p_ptr->depth / 5;
-                else if ((feat2 == FEAT_BWATER) || (feat2 == FEAT_BMUD)) chance += 15 + p_ptr->depth / 5;
+                if ((feat2 == FEAT_WALL_CRACKED_OVER_BOILING_WATER) || (feat2 == FEAT_WALL_CRACKED_OVER_BOILING_MUD)) chance += 25 + p_ptr->depth / 5;
+                else if ((feat2 == FEAT_FLOOR_WATER_BOILING) || (feat2 == FEAT_FLOOR_MUD_BOILING)) chance += 15 + p_ptr->depth / 5;
             }
 
             /* Leave space around the stairs */
@@ -933,14 +933,14 @@ void process_wilderness_quest(void)
             /* Ice level */
             if (ice_or_mud > 0)
             {
-                if (do_wall)	new_feat =  FEAT_BWATER_WALL;
-                else			new_feat =  FEAT_BWATER;
+                if (do_wall)	new_feat =  FEAT_WALL_CRACKED_OVER_BOILING_WATER;
+                else			new_feat =  FEAT_FLOOR_WATER_BOILING;
             }
             /* Boiling Mud */
             else
             {
-                if (do_wall)	new_feat =  FEAT_BMUD_WALL;
-                else 			new_feat =  FEAT_BMUD;
+                if (do_wall)	new_feat =  FEAT_WALL_CRACKED_OVER_BOILING_MUD;
+                else 			new_feat =  FEAT_FLOOR_MUD_BOILING;
             }
 
             /* Clear off the square of objects, effects, and monsters */

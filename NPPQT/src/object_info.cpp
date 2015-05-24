@@ -94,12 +94,12 @@ static QString describe_stats(object_type *o_ptr, u32b f1)
     if (!pval) return (output);
 
     /* Collect stat bonuses */
-    if (f1 & (TR1_STR)) descs[cnt++] = stat_names_full[A_STR];
-    if (f1 & (TR1_INT)) descs[cnt++] = stat_names_full[A_INT];
-    if (f1 & (TR1_WIS)) descs[cnt++] = stat_names_full[A_WIS];
-    if (f1 & (TR1_DEX)) descs[cnt++] = stat_names_full[A_DEX];
-    if (f1 & (TR1_CON)) descs[cnt++] = stat_names_full[A_CON];
-    if (f1 & (TR1_CHR)) descs[cnt++] = stat_names_full[A_CHR];
+    if (f1 & (TR1_STR)) descs[cnt++] = color_string(stat_names_full[A_STR], pval > 0 ? TERM_GREEN : TERM_RED);
+    if (f1 & (TR1_INT)) descs[cnt++] = color_string(stat_names_full[A_INT], pval > 0 ? TERM_GREEN : TERM_RED);
+    if (f1 & (TR1_WIS)) descs[cnt++] = color_string(stat_names_full[A_WIS], pval > 0 ? TERM_GREEN : TERM_RED);
+    if (f1 & (TR1_DEX)) descs[cnt++] = color_string(stat_names_full[A_DEX], pval > 0 ? TERM_GREEN : TERM_RED);
+    if (f1 & (TR1_CON)) descs[cnt++] = color_string(stat_names_full[A_CON], pval > 0 ? TERM_GREEN : TERM_RED);
+    if (f1 & (TR1_CHR)) descs[cnt++] = color_string(stat_names_full[A_CHR], pval > 0 ? TERM_GREEN : TERM_RED);
 
     /* Skip */
     if (cnt == 0) return (output);
@@ -107,11 +107,13 @@ static QString describe_stats(object_type *o_ptr, u32b f1)
     /* Shorten to "all stats", if appropriate. */
     if (cnt == A_MAX)
     {
-        output.append(QString("It %1 all your stats") .arg((o_ptr->pval > 0 ? "increases" : "decreases")));
+        if (pval > 0) output.append(color_string("It increases all your stats", TERM_GREEN));
+        else output.append(color_string("It decreases all your stats", TERM_RED));
     }
     else
     {
-        output.append(QString("It %1 your ") .arg((o_ptr->pval > 0 ? "increases" : "decreases")));
+        if (pval > 0) output.append("It increases your ");
+        else output.append("It decreases your ");
 
         /* Output list */
         output.append(output_list(descs, cnt));
@@ -152,6 +154,13 @@ static QString describe_secondary(object_type *o_ptr, u32b f1)
 
     /* Start */
     output.append(QString("It %1 your ") .arg(o_ptr->pval > 0 ? "increases" : "decreases"));
+
+    int attr = (pval > 0 ? TERM_GREEN : TERM_RED);
+
+    for (int i = 0; i < cnt; i++)
+    {
+        descs[i] = color_string(descs[i], attr);
+    }
 
     /* Output list */
     output.append(output_list(descs, cnt));
@@ -206,6 +215,8 @@ static QString describe_slay(object_type *o_ptr, u32b f1)
     /* Describe */
     if (slcnt)
     {
+        for (int i = 0; i < slcnt; i++)  slays[i] = color_string(slays[i], TERM_L_BLUE);
+
         /* Output intro */
         output.append("It slays ");
 
@@ -218,6 +229,8 @@ static QString describe_slay(object_type *o_ptr, u32b f1)
 
     if (excnt)
     {
+        for (int i = 0; i < excnt; i++)  execs[i] = color_string(execs[i], TERM_BLUE);
+
         /* Output intro */
         if (slcnt) output.append(", and it is especially deadly against ");
         else output.append("It is especially deadly against ");
@@ -255,6 +268,8 @@ static QString describe_brand(object_type *o_ptr, u32b f1)
     if (f1 & (TR1_BRAND_COLD)) descs[cnt++] = "frost";
     if (f1 & (TR1_BRAND_POIS)) descs[cnt++] = "poison";
 
+    for (int i = 0; i < cnt; i++)  descs[i] = color_string(descs[i], TERM_GREEN);
+
     /* Describe brands */
     output.append(output_desc_list("It is branded with ", descs, cnt));
 
@@ -283,6 +298,8 @@ static QString describe_immune(object_type *o_ptr, u32b f2)
     if (f2 & (TR2_IM_FIRE)) descs[cnt++] = "fire";
     if (f2 & (TR2_IM_COLD)) descs[cnt++] = "cold";
     if (f2 & (TR2_IM_POIS)) descs[cnt++] = "poison";
+
+    for (int i = 0; i < cnt; i++)  descs[i] = color_string(descs[i], TERM_BLUE);
 
     /* Describe immunities */
     output.append(output_desc_list("It provides immunity to ", descs, cnt));
@@ -329,6 +346,8 @@ static QString describe_resist(const object_type *o_ptr, u32b f2, u32b f3)
     if (f2 & (TR2_RES_CHAOS)) vp[vn++] = "chaos";
     if (f2 & (TR2_RES_DISEN)) vp[vn++] = "disenchantment";
     if (f3 & (TR3_HOLD_LIFE)) vp[vn++] = "life draining";
+
+    for (int i = 0; i < vn; i++)  vp[i] = color_string(vp[i], TERM_ORANGE);
 
     /* Describe resistances */
     output.append(output_desc_list("It provides resistance to ", vp, vn));
@@ -1551,12 +1570,9 @@ QString screen_out_head(object_type *o_ptr)
     o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
     o_name = capitalize_first(o_name);
 
-    QChar d_char = k_ptr->d_char;
-    QColor d_color = k_ptr->d_color;
-    if (use_flavor_glyph(o_ptr)) {
-        d_char = flavor_info[k_ptr->flavor].d_char;
-        d_color = flavor_info[k_ptr->flavor].d_color;
-    }
+    QChar d_char = k_ptr->get_char();
+    QColor d_color = k_ptr->get_color();
+
     QString obj_symbol = color_string(d_char, d_color);
 
     /* Print, in colour */

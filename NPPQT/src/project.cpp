@@ -2917,7 +2917,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
         }
         case GF_MAKE_WALL:
         {
-            int feat = FEAT_WALL_INNER;
+            int feat = FEAT_WALL_GRANITE_INNER;
 
             obvious = TRUE;
 
@@ -2928,15 +2928,15 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             delete_effects(y, x);
 
             /* Now make it a wall, depending on the terrain below it */
-            if (cave_ff3_match(y, x, FF3_WATER)) feat = FEAT_LIMESTONE;
-            if (cave_ff3_match(y, x, FF3_SAND)) feat = FEAT_SANDSTONE;
-            if (cave_ff3_match(y, x, FF3_ICE)) feat = FEAT_ICE_WALL;
-            if (cave_ff3_match(y, x, FF3_OIL)) feat = FEAT_SHALE;
-            if (cave_ff3_match(y, x, FF3_LAVA)) feat = FEAT_LAVA_W;
-            if (cave_ff3_match(y, x, FF3_FOREST)) feat = FEAT_VINES;
-            if (cave_ff3_match(y, x, FF3_ACID)) feat = FEAT_ACID_WALL;
-            if (cave_ff3_match(y, x, (FF3_LAVA | FF3_WATER)) == (FF3_LAVA | FF3_WATER)) feat = FEAT_BWATER_WALL;
-            if (cave_ff3_match(y, x, (FF3_LAVA | FF3_MUD)) == (FF3_LAVA | FF3_MUD)) feat = FEAT_BMUD_WALL;
+            if (cave_ff3_match(y, x, FF3_WATER)) feat = FEAT_WALL_LIMESTONE;
+            if (cave_ff3_match(y, x, FF3_SAND)) feat = FEAT_WALL_SANDSTONE;
+            if (cave_ff3_match(y, x, FF3_ICE)) feat = FEAT_WALL_ICE;
+            if (cave_ff3_match(y, x, FF3_OIL)) feat = FEAT_WALL_SHALE;
+            if (cave_ff3_match(y, x, FF3_LAVA)) feat = FEAT_CRACKED_WALL_OVER_LAVA;
+            if (cave_ff3_match(y, x, FF3_FOREST)) feat = FEAT_WALL_VINES;
+            if (cave_ff3_match(y, x, FF3_ACID)) feat = FEAT_CRACKED_WALL_OVER_ACID;
+            if (cave_ff3_match(y, x, (FF3_LAVA | FF3_WATER)) == (FF3_LAVA | FF3_WATER)) feat = FEAT_WALL_CRACKED_OVER_BOILING_WATER;
+            if (cave_ff3_match(y, x, (FF3_LAVA | FF3_MUD)) == (FF3_LAVA | FF3_MUD)) feat = FEAT_WALL_CRACKED_OVER_BOILING_MUD;
 
             cave_set_feat(y, x, feat);
 
@@ -6331,14 +6331,14 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         case GF_LAVA:
         {
             /*Lingering Smoke Cloud*/
-            if ((dam > 1200) || always) (void)set_effect_lingering_cloud(FEAT_SMOKE, y, x, dam, source, effect_flag);
+            if ((dam > 1200) || always) (void)set_effect_lingering_cloud(FEAT_EFFECT_SMOKE, y, x, dam, source, effect_flag);
             break;
         }
         /* Fire leaves smoke */
         case GF_ACID:
         case GF_ELEC:
         {
-            int feat = ((typ == GF_ACID) ? FEAT_SMOKE : FEAT_SPARKS);
+            int feat = ((typ == GF_ACID) ? FEAT_EFFECT_SMOKE : FEAT_EFFECT_SPARKS);
 
             /*Lingering Cloud*/
             if ((dam > 1200) || always)  (void)set_effect_lingering_cloud(feat, y, x, (dam / 3), source, effect_flag);
@@ -6347,7 +6347,7 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         case GF_GRAVITY:
         case GF_INERTIA_NPP:
         {
-            int feat = ((typ == GF_GRAVITY) ? FEAT_GRAVITY : FEAT_INERTIA);
+            int feat = ((typ == GF_GRAVITY) ? FEAT_EFFECT_CLOUD_GRAVITY : FEAT_EFFECT_CLOUD_INERTIA);
 
             /*Not noticed*/
             obvious = FALSE;
@@ -6367,7 +6367,7 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         case GF_COLD:
         {
             /*Lingering Poison Cloud*/
-            if ((dam > 250) || always)  (void)set_effect_lingering_cloud(FEAT_FROST_CLOUD, y, x, dam / 3, source, effect_flag);
+            if ((dam > 250) || always)  (void)set_effect_lingering_cloud(FEAT_EFFECT_CLOUD_FROST, y, x, dam / 3, source, effect_flag);
             break;
         }
 
@@ -6375,7 +6375,7 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         case GF_POIS:
         {
             /*Lingering Poison Cloud*/
-            if ((dam > 250) || always)  (void)set_effect_lingering_cloud(FEAT_POISON_CLOUD, y, x, dam / 3, source, effect_flag);
+            if ((dam > 250) || always)  (void)set_effect_lingering_cloud(FEAT_EFFECT_CLOUD_POISON, y, x, dam / 3, source, effect_flag);
             break;
         }
 
@@ -6395,7 +6395,7 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         case GF_BMUD:
         {
             /* Steam Cloud */
-            if ((dam > 250) || always)  (void)set_effect_lingering_cloud(FEAT_STEAM, y, x, dam, source, effect_flag);
+            if ((dam > 250) || always)  (void)set_effect_lingering_cloud(FEAT_EFFECT_CLOUD_STEAM, y, x, dam, source, effect_flag);
             break;
         }
 
@@ -6403,7 +6403,7 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         case GF_LIGHT:
         case GF_DARK:
         {
-            int feat = ((typ == GF_LIGHT) ? FEAT_LIGHT : FEAT_DARK);
+            int feat = ((typ == GF_LIGHT) ? FEAT_EFFECT_FLASHING_LIGHT : FEAT_EFFECT_FLASHING_DARKNESS);
 
             /*Not noticed*/
             obvious = FALSE;
@@ -6423,11 +6423,11 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
             /*Leave residual effects if a player spell*/
             if (always)
             {
-                int dam1 = (dam * f_info[FEAT_LIFE_DRAIN].x_damage) / 100;
+                int dam1 = (dam * f_info[FEAT_EFFECT_DRAIN_LIFE].x_damage) / 100;
 
                 int repeats = ((dam1 / 25) + randint(dam1 / 25));
 
-                (void)set_effect_shimmering_cloud(FEAT_LIFE_DRAIN, y, x, repeats, dam, source, effect_flag);
+                (void)set_effect_shimmering_cloud(FEAT_EFFECT_DRAIN_LIFE, y, x, repeats, dam, source, effect_flag);
             }
 
             break;
@@ -6438,11 +6438,11 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
             /*Leave residual effects if a player spell*/
             if (always)
             {
-                int dam1 = (dam * f_info[FEAT_SPARKS].x_damage) / 100;
+                int dam1 = (dam * f_info[FEAT_EFFECT_SPARKS].x_damage) / 100;
 
                 int repeats = ((dam1 / 25) + randint(dam1 / 25));
 
-                (void)set_effect_shimmering_cloud(FEAT_SPARKS, y, x, repeats, dam, source, effect_flag);
+                (void)set_effect_shimmering_cloud(FEAT_EFFECT_SPARKS, y, x, repeats, dam, source, effect_flag);
             }
 
             break;
@@ -6453,11 +6453,11 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
             /*Leave residual effects if a player spell*/
             if (always)
             {
-                int dam1 = (dam * f_info[FEAT_METEOR_BURST].x_damage) / 100;
+                int dam1 = (dam * f_info[FEAT_EFFECT_METEOR_STRIKE].x_damage) / 100;
 
                 int repeats = ((dam1 / 25) + randint(dam1 / 25));
 
-                (void)set_effect_shimmering_cloud(FEAT_METEOR_BURST, y, x, repeats, dam, source, effect_flag);
+                (void)set_effect_shimmering_cloud(FEAT_EFFECT_METEOR_STRIKE, y, x, repeats, dam, source, effect_flag);
             }
 
             break;
@@ -6467,7 +6467,7 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         case GF_SPORE:
         {
             /*Lingering Poison Cloud*/
-            if ((dam > 300) || always)  (void)set_effect_lingering_cloud(FEAT_POISON_CLOUD, y, x, dam, source, effect_flag);
+            if ((dam > 300) || always)  (void)set_effect_lingering_cloud(FEAT_EFFECT_CLOUD_POISON, y, x, dam, source, effect_flag);
             break;
         }
 
@@ -6509,14 +6509,14 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
 
         {
             /*Lingering Steam Cloud*/
-            (void)set_effect_lingering_cloud(FEAT_STEAM, y, x, dam, source, effect_flag);
+            (void)set_effect_lingering_cloud(FEAT_EFFECT_CLOUD_STEAM, y, x, dam, source, effect_flag);
             break;
         }
 
         case GF_SMOKE:
         {
             /*Lingering Smoke Cloud*/
-            (void)set_effect_lingering_cloud(FEAT_SMOKE, y, x, dam / 3, source, effect_flag);
+            (void)set_effect_lingering_cloud(FEAT_EFFECT_SMOKE, y, x, dam / 3, source, effect_flag);
             break;
         }
         case GF_STATIC:
@@ -6528,7 +6528,7 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
             {
                 int repeats = ((dam / 100) + randint(dam / 100));
 
-                (void)set_effect_shimmering_cloud(FEAT_STATIC, y, x, repeats, dam, source, effect_flag);
+                (void)set_effect_shimmering_cloud(FEAT_EFFECT_CLOUD_STATIC, y, x, repeats, dam, source, effect_flag);
             }
 
             break;
@@ -6544,13 +6544,13 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
         {
             int feat;
 
-            if (typ == GF_NETHER) 			feat = FEAT_NETHER;
-            else if (typ == GF_CHAOS) 		feat = FEAT_CHAOS;
-            else if (typ == GF_DISENCHANT) 		feat = FEAT_DISENCHANTMENT;
-            else if (typ == GF_NEXUS) 		feat = FEAT_NEXUS;
-            else if (typ == GF_TIME) 		feat = FEAT_TIME;
-            else if (typ == GF_CONFUSION) 	feat = FEAT_CONFUSION;
-            else if (typ == GF_SHARD) 	    feat = FEAT_SHARD;
+            if (typ == GF_NETHER) 			feat = FEAT_EFFECT_CLOUD_NETHER;
+            else if (typ == GF_CHAOS) 		feat = FEAT_EFFECT_CLOUD_CHAOS;
+            else if (typ == GF_DISENCHANT) 		feat = FEAT_EFFECT_CLOUD_DISENCHANTMENT;
+            else if (typ == GF_NEXUS) 		feat = FEAT_EFFECT_CLOUD_NEXUS;
+            else if (typ == GF_TIME) 		feat = FEAT_EFFECT_CLOUD_TIME;
+            else if (typ == GF_CONFUSION) 	feat = FEAT_EFFECT_CLOUD_CONFUSION;
+            else if (typ == GF_SHARD) 	    feat = FEAT_EFFECT_CLOUD_SHARD;
             /*Paranoia*/
             else break;
 

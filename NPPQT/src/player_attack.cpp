@@ -1339,7 +1339,7 @@ static bool do_flavor_breakage(const object_type *o_ptr, int y, int x)
         case TV_FLASK:
         {
             /* Hack -- Check if oil exists */
-            if (f_info[FEAT_OIL].f_name.isEmpty()) break;
+            if (f_ptr->f_flags3 & (FF3_OIL)) break;
 
             /* Hack -- Graphics (don't hurt anything) */
             project(SOURCE_OTHER, 1, y, x, y, x, 0, GF_SMOKE, PROJECT_BOOM, 0, 0);
@@ -1351,11 +1351,11 @@ static bool do_flavor_breakage(const object_type *o_ptr, int y, int x)
             if (!_feat_ff3_match(f_ptr, TERRAIN_MASK) && cave_passable_bold(y, x) &&
                     !_feat_ff1_match(f_ptr, FF1_PERMANENT | FF1_STAIRS | FF1_DOOR) &&
                     (_feat_ff1_match(f_ptr, FF1_LOS | FF1_PROJECT) ==
-                    feat_ff1_match(FEAT_OIL, FF1_LOS | FF1_PROJECT)) &&
+                    feat_ff1_match(FEAT_FLOOR_OIL, FF1_LOS | FF1_PROJECT)) &&
                     one_in_(4))
             {
                 /* Create oil */
-                cave_set_feat(y, x, FEAT_OIL);
+                cave_set_feat(y, x, FEAT_FLOOR_OIL);
 
                 /* Message */
                 message(QString("There is oil on the floor."));

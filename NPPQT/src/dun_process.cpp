@@ -1653,8 +1653,8 @@ void change_player_level(void)
     /* No stairs down from fixed or guardian quests */
     if (no_down_stairs(p_ptr->depth))
     {
-        if ((p_ptr->create_stair == FEAT_MORE) ||
-            (p_ptr->create_stair == FEAT_MORE_SHAFT))
+        if ((p_ptr->create_stair == FEAT_STAIRS_DOWN) ||
+            (p_ptr->create_stair == FEAT_SHAFT_DOWN))
              p_ptr->create_stair = FALSE;
     }
 

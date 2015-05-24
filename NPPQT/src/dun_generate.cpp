@@ -549,7 +549,7 @@ static bool new_player_spot_old(void)
 static void place_rubble(int y, int x)
 {
     /* Create rubble */
-    cave_set_feat(y, x, one_in_(5) ? FEAT_RUBBLE_H: FEAT_RUBBLE);
+    cave_set_feat(y, x, one_in_(5) ? FEAT_RUBBLE_HIDDEN: FEAT_RUBBLE);
 }
 
 
@@ -559,14 +559,14 @@ static void place_rubble(int y, int x)
 static int pick_up_stairs(void)
 {
     /* No shafts in Moria */
-    if (game_mode == GAME_NPPMORIA) return (FEAT_LESS);
+    if (game_mode == GAME_NPPMORIA) return (FEAT_STAIRS_UP);
 
     if (p_ptr->depth >= 2)
     {
-        if (one_in_(2)) return (FEAT_LESS_SHAFT);
+        if (one_in_(2)) return (FEAT_SHAFT_UP);
     }
 
-    return (FEAT_LESS);
+    return (FEAT_STAIRS_UP);
 }
 
 
@@ -576,15 +576,15 @@ static int pick_up_stairs(void)
 static int pick_down_stairs(void)
 {
     /* No shafts in Moria */
-    if (game_mode == GAME_NPPMORIA) return (FEAT_MORE);
+    if (game_mode == GAME_NPPMORIA) return (FEAT_STAIRS_DOWN);
 
     if ((p_ptr->depth < MAX_DEPTH - 2) &&
         (!quest_check(p_ptr->depth + 1)))
     {
-        if (one_in_(2)) return (FEAT_MORE_SHAFT);
+        if (one_in_(2)) return (FEAT_SHAFT_DOWN);
     }
 
-    return (FEAT_MORE);
+    return (FEAT_STAIRS_DOWN);
 }
 
 
@@ -599,27 +599,27 @@ void place_random_stairs(int y, int x)
     /* Create a staircase */
     if (!p_ptr->depth)
     {
-        cave_set_feat(y, x, FEAT_MORE);
+        cave_set_feat(y, x, FEAT_STAIRS_DOWN);
     }
     else if ((quest_check(p_ptr->depth)) || (p_ptr->depth >= MAX_DEPTH-1))
     {
-        if ((p_ptr->depth < 2) || one_in_(2))	cave_set_feat(y, x, FEAT_LESS);
-        else cave_set_feat(y, x, FEAT_LESS_SHAFT);
+        if ((p_ptr->depth < 2) || one_in_(2))	cave_set_feat(y, x, FEAT_STAIRS_UP);
+        else cave_set_feat(y, x, FEAT_SHAFT_UP);
     }
     else if (one_in_(2))
     {
         /* No shafts in Moria */
-        if (game_mode == GAME_NPPMORIA) cave_set_feat(y, x, FEAT_MORE);
+        if (game_mode == GAME_NPPMORIA) cave_set_feat(y, x, FEAT_STAIRS_DOWN);
         else if ((quest_check(p_ptr->depth + 1)) || (p_ptr->depth <= 1))
-            cave_set_feat(y, x, FEAT_MORE);
-        else if (one_in_(2)) cave_set_feat(y, x, FEAT_MORE);
-        else cave_set_feat(y, x, FEAT_MORE_SHAFT);
+            cave_set_feat(y, x, FEAT_STAIRS_DOWN);
+        else if (one_in_(2)) cave_set_feat(y, x, FEAT_STAIRS_DOWN);
+        else cave_set_feat(y, x, FEAT_SHAFT_DOWN);
     }
     else
     {
-        if (game_mode == GAME_NPPMORIA) cave_set_feat(y, x, FEAT_LESS);
-        else if ((one_in_(2)) || (p_ptr->depth == 1)) cave_set_feat(y, x, FEAT_LESS);
-        else cave_set_feat(y, x, FEAT_LESS_SHAFT);
+        if (game_mode == GAME_NPPMORIA) cave_set_feat(y, x, FEAT_STAIRS_UP);
+        else if ((one_in_(2)) || (p_ptr->depth == 1)) cave_set_feat(y, x, FEAT_STAIRS_UP);
+        else cave_set_feat(y, x, FEAT_SHAFT_UP);
     }
 }
 
@@ -811,14 +811,14 @@ static bool build_streamer(u16b feat, int chance)
             if (one_in_(chance))
             {
                 /* Quartz with treasure? */
-                if (feat == FEAT_QUARTZ)
+                if (feat == FEAT_QUARTZ_VEIN)
                 {
-                    new_feat = FEAT_QUARTZ_H;
+                    new_feat = FEAT_QUARTZ_VEIN_TREASURE;
                 }
                 /* Magma with treasure? */
-                else if (feat == FEAT_MAGMA)
+                else if (feat == FEAT_MAGMA_VEIN)
                 {
-                    new_feat = FEAT_MAGMA_H;
+                    new_feat = FEAT_MAGMA_VEIN_TREASURE;
                 }
             }
 
@@ -895,21 +895,21 @@ static void destroy_level(void)
                     else if (t < 20)
                     {
                         /* Create granite wall */
-                        cave_set_feat(y, x, FEAT_WALL_EXTRA);
+                        cave_set_feat(y, x, FEAT_WALL_GRANITE);
                     }
 
                     /* Quartz */
                     else if (t < 70)
                     {
                         /* Create quartz vein */
-                        cave_set_feat(y, x, FEAT_QUARTZ);
+                        cave_set_feat(y, x, FEAT_QUARTZ_VEIN);
                     }
 
                     /* Magma */
                     else if (t < 100)
                     {
                         /* Create magma vein */
-                        cave_set_feat(y, x, FEAT_MAGMA);
+                        cave_set_feat(y, x, FEAT_MAGMA_VEIN);
                     }
 
                     /* Rubble */
@@ -1258,7 +1258,7 @@ static void build_type1(int y0, int x0)
     generate_room(y1-1, x1-1, y2+1, x2+1, light);
 
     /* Generate outer walls */
-    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_OUTER);
+    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate inner floors */
     generate_fill(y1, x1, y2, x2, FEAT_FLOOR);
@@ -1270,7 +1270,7 @@ static void build_type1(int y0, int x0)
         {
             for (x = x1; x <= x2; x += 2)
             {
-                cave_set_feat(y, x, FEAT_WALL_INNER);
+                cave_set_feat(y, x, FEAT_WALL_GRANITE_INNER);
             }
         }
     }
@@ -1280,14 +1280,14 @@ static void build_type1(int y0, int x0)
     {
         for (y = y1 + 2; y <= y2 - 2; y += 2)
         {
-            cave_set_feat(y, x1, FEAT_WALL_INNER);
-            cave_set_feat(y, x2, FEAT_WALL_INNER);
+            cave_set_feat(y, x1, FEAT_WALL_GRANITE_INNER);
+            cave_set_feat(y, x2, FEAT_WALL_GRANITE_INNER);
         }
 
         for (x = x1 + 2; x <= x2 - 2; x += 2)
         {
-            cave_set_feat(y1, x, FEAT_WALL_INNER);
-            cave_set_feat(y2, x, FEAT_WALL_INNER);
+            cave_set_feat(y1, x, FEAT_WALL_GRANITE_INNER);
+            cave_set_feat(y2, x, FEAT_WALL_GRANITE_INNER);
         }
     }
 }
@@ -1326,10 +1326,10 @@ static void build_type2(int y0, int x0)
     generate_room(y1b-1, x1b-1, y2b+1, x2b+1, light);
 
     /* Generate outer walls (a) */
-    generate_draw(y1a-1, x1a-1, y2a+1, x2a+1, FEAT_WALL_OUTER);
+    generate_draw(y1a-1, x1a-1, y2a+1, x2a+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate outer walls (b) */
-    generate_draw(y1b-1, x1b-1, y2b+1, x2b+1, FEAT_WALL_OUTER);
+    generate_draw(y1b-1, x1b-1, y2b+1, x2b+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate inner floors (a) */
     generate_fill(y1a, x1a, y2a, x2a, FEAT_FLOOR);
@@ -1391,10 +1391,10 @@ static void build_type3(int y0, int x0)
     generate_room(y1b-1, x1b-1, y2b+1, x2b+1, light);
 
     /* Generate outer walls (a) */
-    generate_draw(y1a-1, x1a-1, y2a+1, x2a+1, FEAT_WALL_OUTER);
+    generate_draw(y1a-1, x1a-1, y2a+1, x2a+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate outer walls (b) */
-    generate_draw(y1b-1, x1b-1, y2b+1, x2b+1, FEAT_WALL_OUTER);
+    generate_draw(y1b-1, x1b-1, y2b+1, x2b+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate inner floors (a) */
     generate_fill(y1a, x1a, y2a, x2a, FEAT_FLOOR);
@@ -1415,7 +1415,7 @@ static void build_type3(int y0, int x0)
         case 2:
         {
             /* Generate a small inner solid pillar */
-            generate_fill(y1b, x1a, y2b, x2a, FEAT_WALL_INNER);
+            generate_fill(y1b, x1a, y2b, x2a, FEAT_WALL_GRANITE_INNER);
 
             break;
         }
@@ -1424,7 +1424,7 @@ static void build_type3(int y0, int x0)
         case 3:
         {
             /* Generate a small inner vault */
-            generate_draw(y1b, x1a, y2b, x2a, FEAT_WALL_INNER);
+            generate_draw(y1b, x1a, y2b, x2a, FEAT_WALL_GRANITE_INNER);
 
             /* Open the inner vault with a secret door */
             generate_hole(y1b, x1a, y2b, x2a, get_secret_door_num());
@@ -1451,16 +1451,16 @@ static void build_type3(int y0, int x0)
                 for (y = y1b; y <= y2b; y++)
                 {
                     if (y == y0) continue;
-                    cave_set_feat(y, x1a - 1, FEAT_WALL_INNER);
-                    cave_set_feat(y, x2a + 1, FEAT_WALL_INNER);
+                    cave_set_feat(y, x1a - 1, FEAT_WALL_GRANITE_INNER);
+                    cave_set_feat(y, x2a + 1, FEAT_WALL_GRANITE_INNER);
                 }
 
                 /* Pinch the north/south sides */
                 for (x = x1a; x <= x2a; x++)
                 {
                     if (x == x0) continue;
-                    cave_set_feat(y1b - 1, x, FEAT_WALL_INNER);
-                    cave_set_feat(y2b + 1, x, FEAT_WALL_INNER);
+                    cave_set_feat(y1b - 1, x, FEAT_WALL_GRANITE_INNER);
+                    cave_set_feat(y2b + 1, x, FEAT_WALL_GRANITE_INNER);
                 }
 
                 /* Open sides with secret doors */
@@ -1473,13 +1473,13 @@ static void build_type3(int y0, int x0)
             /* Occasionally put a "plus" in the center */
             else if (one_in_(3))
             {
-                generate_plus(y1b, x1a, y2b, x2a, FEAT_WALL_INNER);
+                generate_plus(y1b, x1a, y2b, x2a, FEAT_WALL_GRANITE_INNER);
             }
 
             /* Occasionally put a "pillar" in the center */
             else if (one_in_(3))
             {
-                cave_set_feat(y0, x0, FEAT_WALL_INNER);
+                cave_set_feat(y0, x0, FEAT_WALL_GRANITE_INNER);
             }
 
             break;
@@ -1518,7 +1518,7 @@ static void build_type4(int y0, int x0)
     generate_room(y1-1, x1-1, y2+1, x2+1, light);
 
     /* Generate outer walls */
-    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_OUTER);
+    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate inner floors */
     generate_fill(y1, x1, y2, x2, FEAT_FLOOR);
@@ -1530,7 +1530,7 @@ static void build_type4(int y0, int x0)
     x2 = x2 - 2;
 
     /* Generate inner walls */
-    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_INNER);
+    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_GRANITE_INNER);
 
     /* Inner room variations */
     switch (randint(5))
@@ -1556,7 +1556,7 @@ static void build_type4(int y0, int x0)
             generate_hole(y1-1, x1-1, y2+1, x2+1, get_secret_door_num());
 
             /* Place another inner room */
-            generate_draw(y0-1, x0-1, y0+1, x0+1, FEAT_WALL_INNER);
+            generate_draw(y0-1, x0-1, y0+1, x0+1, FEAT_WALL_GRANITE_INNER);
 
             /*Get a locked door*/
 
@@ -1602,7 +1602,7 @@ static void build_type4(int y0, int x0)
             generate_hole(y1-1, x1-1, y2+1, x2+1, get_secret_door_num());
 
             /* Inner pillar */
-            generate_fill(y0-1, x0-1, y0+1, x0+1, FEAT_WALL_INNER);
+            generate_fill(y0-1, x0-1, y0+1, x0+1, FEAT_WALL_GRANITE_INNER);
 
             /* Occasionally, two more Large Inner Pillars */
             if (one_in_(2))
@@ -1611,20 +1611,20 @@ static void build_type4(int y0, int x0)
                 if (one_in_(2))
                 {
                     /* Inner pillar */
-                    generate_fill(y0-1, x0-7, y0+1, x0-5, FEAT_WALL_INNER);
+                    generate_fill(y0-1, x0-7, y0+1, x0-5, FEAT_WALL_GRANITE_INNER);
 
                     /* Inner pillar */
-                    generate_fill(y0-1, x0+5, y0+1, x0+7, FEAT_WALL_INNER);
+                    generate_fill(y0-1, x0+5, y0+1, x0+7, FEAT_WALL_GRANITE_INNER);
                 }
 
                 /* Two spaces */
                 else
                 {
                     /* Inner pillar */
-                    generate_fill(y0-1, x0-6, y0+1, x0-4, FEAT_WALL_INNER);
+                    generate_fill(y0-1, x0-6, y0+1, x0-4, FEAT_WALL_GRANITE_INNER);
 
                     /* Inner pillar */
-                    generate_fill(y0-1, x0+4, y0+1, x0+6, FEAT_WALL_INNER);
+                    generate_fill(y0-1, x0+4, y0+1, x0+6, FEAT_WALL_GRANITE_INNER);
                 }
             }
 
@@ -1632,7 +1632,7 @@ static void build_type4(int y0, int x0)
             if (one_in_(3))
             {
                 /* Inner rectangle */
-                generate_draw(y0-1, x0-5, y0+1, x0+5, FEAT_WALL_INNER);
+                generate_draw(y0-1, x0-5, y0+1, x0+5, FEAT_WALL_GRANITE_INNER);
 
                 /* Secret doors (random top/bottom) */
                 place_secret_door(y0 - 3 + (randint(2) * 2), x0 - 3);
@@ -1663,7 +1663,7 @@ static void build_type4(int y0, int x0)
                 {
                     if ((x + y) & 0x01)
                     {
-                        cave_set_feat(y, x, FEAT_WALL_INNER);
+                        cave_set_feat(y, x, FEAT_WALL_GRANITE_INNER);
                     }
                 }
             }
@@ -1686,7 +1686,7 @@ static void build_type4(int y0, int x0)
         case 5:
         {
             /* Inner "cross" */
-            generate_plus(y1, x1, y2, x2, FEAT_WALL_INNER);
+            generate_plus(y1, x1, y2, x2, FEAT_WALL_GRANITE_INNER);
 
             /* Doors into the rooms */
             if (one_in_(2))
@@ -2489,7 +2489,7 @@ static void build_type_nest(int y0, int x0)
     generate_room(y1-1, x1-1, y2+1, x2+1, light);
 
     /* Generate outer walls */
-    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_OUTER);
+    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate inner floors */
     generate_fill(y1, x1, y2, x2, FEAT_FLOOR);
@@ -2501,7 +2501,7 @@ static void build_type_nest(int y0, int x0)
     x2 = x2 - 2;
 
     /* Generate inner walls */
-    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_INNER);
+    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_GRANITE_INNER);
 
     /* Open the inner room with one or two secret doors */
     generate_hole(y1-1, x1-1, y2+1, x2+1, get_secret_door_num());
@@ -2737,7 +2737,7 @@ static void build_type_pit(int y0, int x0)
     generate_room(y1-1, x1-1, y2+1, x2+1, light);
 
     /* Generate outer walls */
-    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_OUTER);
+    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_GRANITE_OUTER);
 
     /* Generate inner floors */
     generate_fill(y1, x1, y2, x2, FEAT_FLOOR);
@@ -2749,7 +2749,7 @@ static void build_type_pit(int y0, int x0)
     x2 = x2 - 2;
 
     /* Generate inner walls */
-    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_INNER);
+    generate_draw(y1-1, x1-1, y2+1, x2+1, FEAT_WALL_GRANITE_INNER);
 
     /* Open the inner room with one or two secret doors */
     generate_hole(y1-1, x1-1, y2+1, x2+1, get_secret_door_num());
@@ -3022,19 +3022,19 @@ static void build_vault(int y0, int x0, const vault_type *v_ptr)
                 if (quest_greater_vault) dungeon_info[y][x].cave_info &= ~(CAVE_ROOM | CAVE_ICKY);
 
                 /* Otherwise a wall */
-                else cave_set_feat(y, x, FEAT_WALL_OUTER);
+                else cave_set_feat(y, x, FEAT_WALL_GRANITE_OUTER);
             }
 
             /* Granite wall (inner) */
             else if (symbol == '#')
             {
-                cave_set_feat(y, x, FEAT_WALL_INNER);
+                cave_set_feat(y, x, FEAT_WALL_GRANITE_INNER);
             }
 
             /* Permanent wall (inner) */
             else if (symbol == 'X')
             {
-                cave_set_feat(y, x, FEAT_PERM_INNER);
+                cave_set_feat(y, x, FEAT_WALL_PERM_INNER);
             }
 
             /* Treasure/trap */
@@ -3300,7 +3300,7 @@ static void mark_g_vault(int y0, int x0, int hgt, int wid)
      */
 
     /* We need a perimeter of outer walls surrounding the vault */
-    if (dungeon_info[y1][x1].feat != FEAT_WALL_OUTER) return;
+    if (dungeon_info[y1][x1].feat != FEAT_WALL_GRANITE_OUTER) return;
 
     /* Create the queue */
     grid_queue_create(que_ptr, 500);
@@ -3344,7 +3344,7 @@ static void mark_g_vault(int y0, int x0, int hgt, int wid)
 
             /* But keep processing only certain grid types */
             if (cave_ff1_match(yy, xx, FF1_FLOOR) ||
-                (dungeon_info[yy][xx].feat == FEAT_WALL_OUTER))
+                (dungeon_info[yy][xx].feat == FEAT_WALL_GRANITE_OUTER))
             {
                 /* Append that grid to the queue */
                 grid_queue_push(que_ptr, yy, xx);
@@ -3517,12 +3517,12 @@ void build_terrain(int y, int x, int feat)
             /* Heat the water */
             if (_feat_ff3_match(f_ptr, FF3_WATER))
             {
-                newfeat = FEAT_BWATER;
+                newfeat = FEAT_FLOOR_WATER_BOILING;
             }
             /* Melt the old feature */
             else
             {
-                newfeat = FEAT_BMUD;
+                newfeat = FEAT_FLOOR_MUD_BOILING;
             }
         }
         /* Burn old features */
@@ -3545,12 +3545,12 @@ void build_terrain(int y, int x, int feat)
             /* Heat the water */
             if (_feat_ff3_match(f2_ptr, FF3_WATER))
             {
-                newfeat = FEAT_BWATER;
+                newfeat = FEAT_FLOOR_WATER_BOILING;
             }
             /* Melt the new feature */
             else
             {
-                newfeat = FEAT_BMUD;
+                newfeat = FEAT_FLOOR_MUD_BOILING;
             }
         }
     }
@@ -3568,12 +3568,6 @@ void build_terrain(int y, int x, int feat)
         {
             newfeat = feat;
         }
-    }
-
-    /* Preserve tree branches  */
-    else if (_feat_ff3_match(f_ptr, FF3_NEED_TREE))
-    {
-        newfeat = oldfeat;
     }
 
     /* Handle new ice */
@@ -3612,23 +3606,16 @@ void build_terrain(int y, int x, int feat)
     /* Replace some features with something else (sometimes) */
     switch (newfeat)
     {
-        case FEAT_LIMESTONE:
+        case FEAT_WALL_LIMESTONE:
         {
             if (k <= 40) newfeat = FEAT_FLOOR;
 
-            else if (k <= 60) newfeat = FEAT_WATER;
+            else if (k <= 60) newfeat = FEAT_FLOOR_WATER;
 
             break;
         }
 
         case FEAT_FLOOR_MUD:
-        {
-            if (k <= 40) newfeat = FEAT_MUD;
-
-            break;
-        }
-
-        case FEAT_MUD_H:
         {
             if (k <= 10) newfeat = FEAT_FLOOR_EARTH;
 
@@ -3639,105 +3626,96 @@ void build_terrain(int y, int x, int feat)
             break;
         }
 
-        case FEAT_BMUD:
+        case FEAT_FLOOR_MUD_BOILING:
         {
-            if (k <= 10) newfeat = FEAT_BWATER;
+            if (k <= 10) newfeat = FEAT_FLOOR_WATER_BOILING;
 
             break;
         }
 
-        case FEAT_BWATER:
+        case FEAT_FLOOR_WATER_BOILING:
         {
-            if (k <= 10) newfeat = FEAT_MAGMA;
+            if (k <= 10) newfeat = FEAT_MAGMA_VEIN;
 
-            else if (k <= 13) newfeat = FEAT_GEYSER;
+            else if (k <= 13) newfeat = FEAT_WALL_WATER_BOILING_GEYSER;
 
             break;
         }
 
-        case FEAT_FSOIL:
+        case FEAT_FOREST_SOIL:
         {
             if (k <= 10) newfeat = FEAT_TREE;
 
-            else if (k <= 20) newfeat = FEAT_FSOIL_D;
+            else if (k <= 20) newfeat = FEAT_FOREST_SOIL;
 
             else if (k <= 25) newfeat = oldfeat;
 
-            else if (k <= 35) newfeat = FEAT_FSOIL_DYNAMIC;
+            else if (k <= 35) newfeat = FEAT_FOREST_SOIL_DYNAMIC;
 
             break;
         }
 
-        case FEAT_ICE:
+        case FEAT_FLOOR_ICE:
         {
-            if (k <= 5) newfeat = FEAT_ICE_WALL_C;
+            if (k <= 5) newfeat = FEAT_WALL_ICE_CRACKED;
 
             break;
         }
 
-        case FEAT_ICE_WALL:
+        case FEAT_WALL_ICE:
         {
-            if (k <= 25) newfeat = FEAT_ICE_WALL_C;
+            if (k <= 25) newfeat = FEAT_WALL_ICE_CRACKED;
 
-            else if (k <= 50) newfeat = FEAT_ICE;
+            else if (k <= 50) newfeat = FEAT_FLOOR_ICE;
 
             break;
         }
 
-        case FEAT_ICE_WALL_C:
+        case FEAT_WALL_ICE_CRACKED:
         {
-            if (k <= 90) newfeat = FEAT_ICE_WALL;
+            if (k <= 90) newfeat = FEAT_WALL_ICE;
 
             break;
         }
 
-        case FEAT_ACID:
-        case FEAT_ACID_H:
+        case FEAT_FLOOR_ACID:
         {
             if (k <= 5)
             {
-                newfeat = FEAT_GRANITE_C;
+                newfeat = FEAT_CRACKED_WALL_OVER_ACID;
             }
 
             break;
         }
 
-        case FEAT_COAL:
+        case FEAT_WALL_COAL:
         {
-            if (k <= 5) newfeat = FEAT_BCOAL;
+            if (k <= 5) newfeat = FEAT_WALL_COAL_BURNING;
 
-            else if (k <= 50) newfeat = FEAT_BURNT_S;
+            else if (k <= 50) newfeat = FEAT_BURNT_SPOT;
 
             else if (k <= 60) newfeat = FEAT_FIRE;
 
             break;
         }
 
-        case FEAT_SHALE:
+        case FEAT_WALL_SHALE:
         {
-            if (k <= 5) newfeat = FEAT_COAL;
+            if (k <= 5) newfeat = FEAT_WALL_COAL;
 
             break;
         }
 
-        case FEAT_SAND:
+
+        case FEAT_FLOOR_SAND:
         {
-            if (k <= 5) newfeat = FEAT_SANDSTONE;
+            if (k <= 5) newfeat = FEAT_WALL_SANDSTONE;
 
-            else if (k <= 10) newfeat = FEAT_QUARTZ;
+            else if (k <= 10) newfeat = FEAT_QUARTZ_VEIN;
 
-            break;
-        }
+            else if (k <= 4) newfeat = FEAT_LOOSE_ROCK;
 
-        case FEAT_SAND_H:
-        {
-            if (k <= 3) newfeat = FEAT_QUARTZ;
-
-            else if (k <= 4) newfeat = FEAT_L_ROCK;
-
-            else if (k <= 5) newfeat = FEAT_ROCK;
-
-            else if (k <= 35) newfeat = FEAT_DUNE;
+            else if (k <= 5) newfeat = FEAT_FLOOR_ROCK;
 
             break;
         }
@@ -3752,25 +3730,24 @@ void build_terrain(int y, int x, int feat)
 
             else if (k <= 21) newfeat = FEAT_TREE;
 
-            else if (k <= 25) newfeat = FEAT_PEBBLES;
+            else if (k <= 25) newfeat = FEAT_FLOOR_PEBBLES;
 
             else if (k <= 30)
             {
-                if (level_flag & (ELEMENT_WATER)) newfeat = FEAT_WATER;
-                else newfeat = FEAT_MUD;
+                if (level_flag & (ELEMENT_WATER)) newfeat = FEAT_FLOOR_WATER;
+                else newfeat = FEAT_FLOOR_MUD;
             }
 
-            else if (k <= 40) newfeat = FEAT_MUD;
+            else if (k <= 40) newfeat = FEAT_FLOOR_MUD;
 
-            else if (k <= 70) newfeat = FEAT_EARTH;
+            else if (k <= 70) newfeat = FEAT_FLOOR_EARTH;
 
             break;
         }
 
-        case FEAT_LAVA:
-        case FEAT_LAVA_H:
+        case FEAT_FLOOR_LAVA:
         {
-            if (k <= 10) newfeat = FEAT_WALL_FIRE;
+            if (k <= 10) newfeat = FEAT_WALL_OF_FIRE;
 
             else if (k <= 15) newfeat = FEAT_SCORCHED_WALL;
 
@@ -3779,18 +3756,18 @@ void build_terrain(int y, int x, int feat)
 
         case FEAT_FLOOR_EARTH:
         {
-            if (k <= 1) newfeat = FEAT_L_ROCK;
+            if (k <= 1) newfeat = FEAT_LOOSE_ROCK;
 
-            else if (k <= 5) newfeat = FEAT_ROCK;
+            else if (k <= 5) newfeat = FEAT_FLOOR_ROCK;
 
-            else if (k <= 10) newfeat = FEAT_PEBBLES;
+            else if (k <= 10) newfeat = FEAT_FLOOR_PEBBLES;
 
             break;
         }
 
         case FEAT_FIRE:
         {
-            if (k <= 25) newfeat = FEAT_BURNT_S;
+            if (k <= 25) newfeat = FEAT_BURNT_SPOT;
 
             break;
         }
@@ -4701,12 +4678,12 @@ static void fractal_map_to_room(fractal_map map, byte fractal_type, int y0, int 
                 /* Place ice walls on ice levels */
                 if (level_flag & LF1_ICE)
                 {
-                    build_terrain(yy, xx, FEAT_ICE_WALL);
+                    build_terrain(yy, xx, FEAT_WALL_ICE);
                 }
                 /* Place usual walls on other levels */
                 else
                 {
-                    cave_set_feat(yy, xx, FEAT_WALL_EXTRA);
+                    cave_set_feat(yy, xx, FEAT_WALL_GRANITE);
                 }
             }
             else
@@ -5312,7 +5289,7 @@ static void build_type_starburst(int y0, int x0, bool giant_room)
     bool want_pools = (rand_int(150) < p_ptr->depth);
     /* Default floor and edge */
     u16b feat = FEAT_FLOOR;
-    u16b edge = FEAT_WALL_EXTRA;
+    u16b edge = FEAT_WALL_GRANITE;
     /* Default flags, classic rooms */
     u32b flag = (STAR_BURST_ROOM | STAR_BURST_RAW_FLOOR |
         STAR_BURST_RAW_EDGE);
@@ -5348,7 +5325,7 @@ static void build_type_starburst(int y0, int x0, bool giant_room)
     /* Frozen edge on ice levels */
     if (level_flag & (LF1_ICE))
     {
-        edge = FEAT_ICE_WALL;
+        edge = FEAT_WALL_ICE;
 
         /* Make ice walls interesting */
         flag &= ~(STAR_BURST_RAW_EDGE);
@@ -5374,9 +5351,9 @@ static void build_type_starburst(int y0, int x0, bool giant_room)
         if (one_in_(2))
         {
             /* Classic rooms */
-            if (edge == FEAT_WALL_EXTRA)
+            if (edge == FEAT_WALL_GRANITE)
             {
-                feat = FEAT_WALL_INNER;
+                feat = FEAT_WALL_GRANITE_INNER;
             }
 
             /* Ice wall formation */
@@ -5485,14 +5462,14 @@ static void build_type_starburst(int y0, int x0, bool giant_room)
  * "excessively wide" room entrances.
  *
  * Useful "feat" values:
- *   FEAT_WALL_EXTRA -- granite walls
- *   FEAT_WALL_INNER -- inner room walls
- *   FEAT_WALL_OUTER -- outer room walls
- *   FEAT_WALL_SOLID -- solid room walls
+ *   FEAT_WALL_GRANITE -- granite walls
+ *   FEAT_WALL_GRANITE_INNER -- inner room walls
+ *   FEAT_WALL_GRANITE_OUTER -- outer room walls
+ *   FEAT_WALL_GRANITE_SOLID -- solid room walls
  *   FEAT_PERM_EXTRA -- shop walls (perma)
- *   FEAT_PERM_INNER -- inner room walls (perma)
- *   FEAT_PERM_OUTER -- outer room walls (perma)
- *   FEAT_PERM_SOLID -- dungeon border (perma)
+ *   FEAT_WALL_PERM_INNER -- inner room walls (perma)
+ *   FEAT_WALL_PERM_OUTER -- outer room walls (perma)
+ *   FEAT_WALL_PERM_SOLID -- dungeon border (perma)
  */
 static void build_tunnel(int row1, int col1, int row2, int col2)
 {
@@ -5556,16 +5533,16 @@ static void build_tunnel(int row1, int col1, int row2, int col2)
         }
 
         /* Avoid the edge of the dungeon */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_PERM_SOLID) continue;
+        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_PERM_SOLID) continue;
 
         /* Avoid the edge of vaults */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_PERM_OUTER) continue;
+        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_PERM_OUTER) continue;
 
         /* Avoid "solid" granite walls */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_SOLID) continue;
+        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_GRANITE_SOLID) continue;
 
         /* Pierce "outer" walls of rooms */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_OUTER)
+        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_GRANITE_OUTER)
         {
             /* We can pierce 2 outer walls at the same time */
             int outer_x[2], outer_y[2], num_outer = 0;
@@ -5575,15 +5552,15 @@ static void build_tunnel(int row1, int col1, int row2, int col2)
             x = tmp_col + col_dir;
 
             /* Hack -- Avoid outer/solid permanent walls */
-            if (dungeon_info[y][x].feat == FEAT_PERM_SOLID) continue;
-            if (dungeon_info[y][x].feat == FEAT_PERM_OUTER) continue;
+            if (dungeon_info[y][x].feat == FEAT_WALL_PERM_SOLID) continue;
+            if (dungeon_info[y][x].feat == FEAT_WALL_PERM_OUTER) continue;
 
             /* Hack -- Avoid solid granite walls */
-            if (dungeon_info[y][x].feat == FEAT_WALL_SOLID) continue;
+            if (dungeon_info[y][x].feat == FEAT_WALL_GRANITE_SOLID) continue;
 
             /* Check if we have only 2 consecutive outer walls */
             /* This is important to avoid disconnected rooms */
-            if (dungeon_info[y][x].feat == FEAT_WALL_OUTER)
+            if (dungeon_info[y][x].feat == FEAT_WALL_GRANITE_OUTER)
             {
                 /* Get the "next" location (again) */
                 int yy = y + row_dir;
@@ -5628,10 +5605,10 @@ static void build_tunnel(int row1, int col1, int row2, int col2)
                     for (x = col1 - 1; x <= col1 + 1; x++)
                     {
                         /* Convert adjacent "outer" walls as "solid" walls */
-                        if (dungeon_info[y][x].feat == FEAT_WALL_OUTER)
+                        if (dungeon_info[y][x].feat == FEAT_WALL_GRANITE_OUTER)
                         {
                             /* Change the wall to a "solid" wall */
-                            cave_set_feat(y, x, FEAT_WALL_SOLID);
+                            cave_set_feat(y, x, FEAT_WALL_GRANITE_SOLID);
                         }
                     }
                 }
@@ -5998,7 +5975,7 @@ static bool alloc_stairs(u16b feat, int num)
         if (!p_ptr->depth)
         {
             /* Clear previous contents, add down stairs */
-            cave_set_feat(yy, xx, FEAT_MORE);
+            cave_set_feat(yy, xx, FEAT_STAIRS_DOWN);
         }
 
         /* Quest -- must go up */
@@ -6006,7 +5983,7 @@ static bool alloc_stairs(u16b feat, int num)
                  (p_ptr->depth >= MAX_DEPTH-1))
         {
             /* Clear previous contents, add up stairs */
-            if (x == 0) cave_set_feat(yy, xx, FEAT_LESS);
+            if (x == 0) cave_set_feat(yy, xx, FEAT_STAIRS_UP);
             else cave_set_feat(yy, xx, pick_up_stairs());
         }
 
@@ -6016,8 +5993,8 @@ static bool alloc_stairs(u16b feat, int num)
             /* Allow shafts, but guarantee the first one is an ordinary stair */
             if (x != 0)
             {
-                if      (feat == FEAT_LESS) feat = pick_up_stairs();
-                else if (feat == FEAT_MORE) feat = pick_down_stairs();
+                if      (feat == FEAT_STAIRS_UP) feat = pick_up_stairs();
+                else if (feat == FEAT_STAIRS_DOWN) feat = pick_down_stairs();
             }
 
             /* Clear previous contents, add stairs */
@@ -6199,7 +6176,7 @@ static void basic_granite(void)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             /* Create granite wall */
-            cave_set_feat(y, x, FEAT_WALL_EXTRA);
+            cave_set_feat(y, x, FEAT_WALL_GRANITE);
         }
     }
 }
@@ -6289,7 +6266,7 @@ static bool scramble_and_connect_rooms_stairs(void)
     }
 
     /* Place 3 or 5 down stairs near some walls */
-    if (!alloc_stairs(FEAT_MORE, (3 + randint0(3))))
+    if (!alloc_stairs(FEAT_STAIRS_DOWN, (3 + randint0(3))))
     {
         if (cheat_room)
         {
@@ -6300,7 +6277,7 @@ static bool scramble_and_connect_rooms_stairs(void)
     }
 
     /* Place 1 or 3 up stairs near some walls */
-    if (!alloc_stairs(FEAT_LESS, (1 + randint0(3))))
+    if (!alloc_stairs(FEAT_STAIRS_UP, (1 + randint0(3))))
     {
         if (cheat_room)
         {
@@ -6318,7 +6295,7 @@ static bool scramble_and_connect_rooms_stairs(void)
         for (i = 0; i < DUN_STR_MAG; i++)
         {
             /*if we can't build streamers, something is wrong with level*/
-            if (!build_streamer(FEAT_MAGMA, DUN_STR_MC)) return (FALSE);
+            if (!build_streamer(FEAT_MAGMA_VEIN, DUN_STR_MC)) return (FALSE);
         }
     }
 
@@ -6328,14 +6305,14 @@ static bool scramble_and_connect_rooms_stairs(void)
         for (i = 0; i < DUN_STR_QUA; i++)
         {
             /*if we can't build streamers, something is wrong with level*/
-            if (!build_streamer(FEAT_QUARTZ, DUN_STR_QC)) return (FALSE);
+            if (!build_streamer(FEAT_QUARTZ_VEIN, DUN_STR_QC)) return (FALSE);
         }
     }
 
     /* Hack -- Add a rich mineral vein very rarely */
     if (one_in_(DUN_STR_GOL))
     {
-        if (!build_streamer(FEAT_QUARTZ, DUN_STR_GC)) return (FALSE);
+        if (!build_streamer(FEAT_QUARTZ_VEIN, DUN_STR_GC)) return (FALSE);
     }
 
     return (TRUE);
@@ -6353,7 +6330,7 @@ static void set_perm_boundry(void)
         y = 0;
 
         /* Clear previous contents, add "solid" perma-wall */
-        cave_set_feat(y, x, FEAT_PERM_SOLID);
+        cave_set_feat(y, x, FEAT_WALL_PERM_SOLID);
     }
 
     /* Special boundary walls -- Bottom */
@@ -6362,7 +6339,7 @@ static void set_perm_boundry(void)
         y = p_ptr->cur_map_hgt-1;
 
         /* Clear previous contents, add "solid" perma-wall */
-        cave_set_feat(y, x, FEAT_PERM_SOLID);
+        cave_set_feat(y, x, FEAT_WALL_PERM_SOLID);
     }
 
     /* Special boundary walls -- Left */
@@ -6371,7 +6348,7 @@ static void set_perm_boundry(void)
         x = 0;
 
         /* Clear previous contents, add "solid" perma-wall */
-        cave_set_feat(y, x, FEAT_PERM_SOLID);
+        cave_set_feat(y, x, FEAT_WALL_PERM_SOLID);
     }
 
     /* Special boundary walls -- Right */
@@ -6380,7 +6357,7 @@ static void set_perm_boundry(void)
         x = p_ptr->cur_map_wid-1;
 
         /* Clear previous contents, add "solid" perma-wall */
-        cave_set_feat(y, x, FEAT_PERM_SOLID);
+        cave_set_feat(y, x, FEAT_WALL_PERM_SOLID);
     }
 }
 
@@ -6616,185 +6593,7 @@ byte max_themed_monsters(const monster_race *r_ptr, u32b max_power)
     return (r_ptr->max_num);
 }
 
-#define ENABLE_WAVES 1
 
-#ifdef ENABLE_WAVES
-
-/*
- * Pick a point from the border of a rectangle given its top left corner (p1)
- * and its bottom right corner (p2).
- * Assumes (p1.x < p2.x) and (p1.y < p2.y)
- * Returns the selected point in "result".
- */
-static void pick_point_from_border(coord p1, coord p2, coord *result)
-{
-    /* Pick a side of the rectangle */
-    switch (rand_int(4))
-    {
-        /* Top border */
-        case 0:
-        {
-            /* Fixed coordinate */
-            result->y = p1.y;
-            result->x = rand_range(p1.x, p2.x);
-            break;
-        }
-        /* Bottom border */
-        case 1:
-        {
-            /* Fixed coordinate */
-            result->y = p2.y;
-            result->x = rand_range(p1.x, p2.x);
-            break;
-        }
-        /* Left border */
-        case 2:
-        {
-            /* Fixed coordinate */
-            result->x = p1.x;
-            result->y = rand_range(p1.y, p2.y);
-            break;
-        }
-        /* Right border */
-        case 3:
-        {
-            /* Fixed coordinate */
-            result->x = p2.x;
-            result->y = rand_range(p1.y, p2.y);
-            break;
-        }
-    }
-}
-
-
-/*
- * Construct a chain of waves for a water lake, given the coordinates of the
- * rectangle who contains the lake.
- */
-static void build_waves(int y1, int x1, int y2, int x2)
-{
-    coord p1, p2;
-    coord start, end;
-    int dx, dy;
-    int wid, hgt;
-
-    int tries = 0;
-
-    /* Fill in the point structures */
-    p1.x = x1;
-    p1.y = y1;
-
-    p2.x = x2;
-    p2.y = y2;
-
-    /* Paranoia */
-    if (!in_bounds_fully(y1, x1) || !in_bounds_fully(y2, x2)) return;
-
-    /* Get the size of the lake */
-    hgt = y2 - y1 + 1;
-    wid = x2 - x1 + 1;
-
-    /* We don't like small lakes */
-    if ((hgt < 15) || (wid < 15)) return;
-
-    /* Pick a pair of points from the border of the rectangle */
-    while (TRUE)
-    {
-        int chain_wid, chain_hgt;
-
-        /* Paranoia */
-        if (++tries > 2500) return;
-
-        /* Pick the points */
-        pick_point_from_border(p1, p2, &start);
-        pick_point_from_border(p1, p2, &end);
-
-        /* These points define a rectangle. Get its size */
-        chain_hgt = (int)start.y - (int)end.y;
-        chain_hgt = ABS(chain_hgt) + 1;
-
-        chain_wid = (int)start.x - (int)end.x;
-        chain_wid = ABS(chain_wid) + 1;
-
-        /* This new rectangle must be noticeable */
-        if ((chain_hgt >= (2 * hgt / 3)) &&
-            (chain_wid >= (2 * wid / 3))) break;
-    }
-
-    /* Reset the loop count */
-    tries = 0;
-
-    /* Join the points using waves (similar to build_tunnel) */
-    while ((start.x != end.x) || (start.y != end.y))
-    {
-        int x, y, i, wave;
-
-        /* Paranoia */
-        if (++tries > 2500) return;
-
-        /* Get the current coordinate of the chain */
-        y = start.y;
-        x = start.x;
-
-        /* Get the next coordinate */
-        correct_dir(&dy, &dx, start.y, start.x, end.y, end.x);
-
-        /* Get the next coordinate of the chain (for later) */
-        start.y += dy;
-        start.x += dx;
-
-        /* Paranoia */
-        if (!in_bounds_fully(y, x)) break;
-
-        /* Ignore non-water */
-        if (!cave_ff3_match(y, x, FF3_WATER)) continue;
-
-        /* Pick the proper "crest" feature */
-        if (cave_ff2_match(y, x, FF2_DEEP))
-        {
-            wave = FEAT_CREST_H;
-        }
-        else
-        {
-            wave = FEAT_CREST;
-        }
-
-        /* A chain of waves is built using "crest of waves" */
-        cave_set_feat(y, x, wave);
-
-        /* Sometimes, surround the crest with "plain" waves */
-        if (rand_int(100) < 50)	continue;
-
-        /* Place the surrounding waves (similar to build_streamer) */
-        for (i = 0; i < 2; i++)
-        {
-            /* Pick a nearby location (very close) */
-            int yy = rand_spread(y, 1);
-            int xx = rand_spread(x, 1);
-
-            /* Ignore annoying locations */
-            if (!in_bounds_fully(yy, xx)) continue;
-
-            /* Ignore non-water */
-            if(!cave_ff3_match(yy, xx, FF3_WATER)) continue;
-
-            /* Pick the proper "wave" feature */
-            if (cave_ff2_match(yy, xx, FF2_DEEP))
-            {
-                wave = FEAT_WAVE_H;
-            }
-            else
-            {
-                wave = FEAT_WAVE;
-            }
-
-            /* Place the wave */
-            cave_set_feat(yy, xx, wave);
-        }
-    }
-}
-
-#endif /* ENABLE_WAVES */
 
 
 /* Available size for lakes (in blocks) */
@@ -6842,7 +6641,7 @@ static bool build_lake(int feat, bool do_big_lake, int *y0, int *x0)
      * sometimes (build_terrain)
      */
     bool solid_lake = (feat_ff1_match(feat, FF1_WALL) &&
-        (feat != FEAT_LIMESTONE) && (feat != FEAT_COAL));
+        (feat != FEAT_WALL_LIMESTONE) && (feat != FEAT_WALL_COAL));
 
     /* Solid lakes are made very large sometimes */
     if (solid_lake && one_in_(2)) do_big_lake = TRUE;
@@ -6990,19 +6789,6 @@ static bool build_lake(int feat, bool do_big_lake, int *y0, int *x0)
     generate_starburst_room(*y0 - hgt, *x0 - wid, *y0 + hgt, *x0 + wid,
         feat, f_info[feat].f_edge, flag);
 
-#ifdef ENABLE_WAVES
-    /* Special case -- Give some flavor to water lakes */
-    if ((feat == FEAT_WATER) || (feat == FEAT_WATER_H))
-    {
-        int i;
-
-        for (i = 0; i < (do_big_lake ? 2: 1); i++)
-        {
-            build_waves(*y0 - hgt, *x0 - wid, *y0 + hgt, *x0 + wid);
-        }
-    }
-#endif /* ENABLE_WAVES */
-
     /* Success */
     return (TRUE);
 }
@@ -7033,7 +6819,7 @@ static void build_river(int feat, int y, int x)
      * sometimes (build_terrain)
      */
     bool solid_river = (feat_ff1_match(feat, FF1_WALL) &&
-        (feat != FEAT_LIMESTONE) && (feat != FEAT_COAL));
+        (feat != FEAT_WALL_LIMESTONE) && (feat != FEAT_WALL_COAL));
 
     /* Choose a random compass direction */
     dir = old_dir = rand_int(4);
@@ -7883,7 +7669,7 @@ static void build_fog(void)
             if (cave_ff1_match(yy, xx, FF1_DOOR | FF1_STAIRS)) continue;
 
             /* Create the fog */
-            set_effect_permanent_cloud(FEAT_FOG, yy, xx, 0, 0);
+            set_effect_permanent_cloud(FEAT_EFFECT_FOG, yy, xx, 0, 0);
         }
     }
 
@@ -8187,56 +7973,56 @@ static void transform_regions(coord *grids, int num_grids, feature_selector_type
                     u16b new_wall = wall;
 
                     /* Flavor */
-                    if ((wall == FEAT_LAVA_W) ||
-                        (wall == FEAT_BMUD_WALL) ||
-                        (wall == FEAT_BWATER_WALL) ||
-                        (wall == FEAT_ACID_WALL))
+                    if ((wall == FEAT_CRACKED_WALL_OVER_LAVA) ||
+                        (wall == FEAT_WALL_CRACKED_OVER_BOILING_MUD) ||
+                        (wall == FEAT_WALL_CRACKED_OVER_BOILING_WATER) ||
+                        (wall == FEAT_CRACKED_WALL_OVER_ACID))
                     {
                         int k = rand_int(100);
 
                         if (k < 7) new_wall = FEAT_SCORCHED_WALL;
 
-                        else if (k < 10) new_wall = FEAT_GRANITE_C;
+                        else if (k < 10) new_wall = FEAT_WALL_GRANITE_CRACKED;
                     }
-                    else if (wall == FEAT_SANDSTONE)
+                    else if (wall == FEAT_WALL_SANDSTONE)
                     {
                         int k = rand_int(100);
 
-                        if (k < 5) new_wall = FEAT_GRANITE_C;
+                        if (k < 5) new_wall = FEAT_WALL_GRANITE_CRACKED;
                     }
-                    else if (wall == FEAT_ICE_WALL)
+                    else if (wall == FEAT_WALL_ICE)
                     {
                         int k = rand_int(100);
 
-                        if (k < 10) new_wall = FEAT_ICE_WALL_C;
+                        if (k < 10) new_wall = FEAT_WALL_ICE_CRACKED;
                     }
-                    else if (wall == FEAT_ICE_WALL_C)
+                    else if (wall == FEAT_WALL_ICE_CRACKED)
                     {
                         int k = rand_int(100);
 
-                        if (k < 10) new_wall = FEAT_ICE_WALL;
+                        if (k < 10) new_wall = FEAT_WALL_ICE;
                     }
-                    else if (wall == FEAT_COAL)
+                    else if (wall == FEAT_WALL_COAL)
                     {
                         int k = rand_int(100);
 
                         if (k < 10) new_wall = FEAT_SCORCHED_WALL;
 
-                        else if (k < 17) new_wall = FEAT_BCOAL;
+                        else if (k < 17) new_wall = FEAT_WALL_COAL_BURNING;
                     }
-                    else if (wall == FEAT_SHALE)
+                    else if (wall == FEAT_WALL_SHALE)
                     {
                         int k = rand_int(100);
 
-                        if (k < 10) new_wall = FEAT_COAL;
+                        if (k < 10) new_wall = FEAT_WALL_COAL;
 
-                        else if (k < 17) new_wall = FEAT_QUARTZ;
+                        else if (k < 17) new_wall = FEAT_QUARTZ_VEIN;
                     }
-                    else if (wall == FEAT_VINES)
+                    else if (wall == FEAT_WALL_VINES)
                     {
                         int k = rand_int(100);
 
-                        if (k < 10) new_wall = FEAT_EARTH_WALL;
+                        if (k < 10) new_wall = FEAT_WALL_EARTH;
                     }
 
                     cave_set_feat(yy, xx, new_wall);
@@ -8251,31 +8037,29 @@ static void transform_regions(coord *grids, int num_grids, feature_selector_type
                     {
                         int k = rand_int(100);
 
-                        if (k < 30) new_floor = FEAT_WATER;
+                        if (k < 30) new_floor = FEAT_FLOOR_WATER;
                     }
-                    else if (floor == FEAT_FSOIL)
+                    else if (floor == FEAT_FOREST_SOIL)
                     {
                         int k = rand_int(100);
 
-                        if (k < 20) new_floor = FEAT_EARTH;
+                        if (k < 20) new_floor = FEAT_FLOOR_EARTH;
 
                         else if (k < 21) new_floor = FEAT_TREE;
 
                         else if (k < 26) new_floor = FEAT_BUSH;
                     }
-                    else if (floor == FEAT_SAND)
+                    else if (floor == FEAT_FLOOR_SAND)
                     {
                         int k = rand_int(100);
 
-                        if (k < 7) new_floor = FEAT_ROCK;
+                        if (k < 7) new_floor = FEAT_FLOOR_ROCK;
                     }
                     else if (floor == FEAT_FLOOR_MUD)
                     {
                         int k = rand_int(100);
 
-                        if (k < 10) new_floor = FEAT_MUD;
-
-                        else if (k < 15) new_floor = FEAT_MUD_H;
+                        if (k < 15) new_floor = FEAT_FLOOR_MUD;
                     }
 
                     cave_set_feat(yy, xx, new_floor);
@@ -8406,31 +8190,30 @@ static struct elemental_transformation_info {
     byte rad;
 } elemental_transformations[] =
 {
-    {LF1_ICE, TRANSFORM_REGION, FEAT_ICE_WALL, FEAT_ICE, 200, 0},
-    {LF1_ICE, TRANSFORM_REGION, FEAT_ICE_WALL_C, FEAT_ICE, 200, 0},
+    {LF1_ICE, TRANSFORM_REGION, FEAT_WALL_ICE, FEAT_FLOOR_ICE, 200, 0},
+    {LF1_ICE, TRANSFORM_REGION, FEAT_WALL_ICE_CRACKED, FEAT_FLOOR_ICE, 200, 0},
 
-    {LF1_WATER, TRANSFORM_REGION, FEAT_LIMESTONE, FEAT_FLOOR_WET, 150, 0},
+    {LF1_WATER, TRANSFORM_REGION, FEAT_WALL_LIMESTONE, FEAT_FLOOR_WET, 150, 0},
 
-    {LF1_LAVA, TRANSFORM_REGION, FEAT_LAVA_W, FEAT_BURNT_S, 200, 0},
+    {LF1_LAVA, TRANSFORM_REGION, FEAT_CRACKED_WALL_OVER_LAVA, FEAT_BURNT_SPOT, 200, 0},
 
-    {LF1_SAND, TRANSFORM_REGION, FEAT_SANDSTONE, FEAT_SAND, 100, 0},
-    {LF1_SAND, TRANSFORM_REGION, FEAT_SANDSTONE, FEAT_SAND_H, 10, 0},
+    {LF1_SAND, TRANSFORM_REGION, FEAT_WALL_SANDSTONE, FEAT_FLOOR_SAND, 100, 0},
 
-    {LF1_OIL, TRANSFORM_REGION, FEAT_COAL, FEAT_NONE, 200, 0},
-    {LF1_OIL, TRANSFORM_REGION, FEAT_SHALE, FEAT_NONE, 100, 0},
+    {LF1_OIL, TRANSFORM_REGION, FEAT_WALL_COAL, FEAT_NONE, 200, 0},
+    {LF1_OIL, TRANSFORM_REGION, FEAT_WALL_SHALE, FEAT_NONE, 100, 0},
 
     {LF1_FOREST, TRANSFORM_WALL, FEAT_PUTRID_FLOWER, FEAT_NONE, 10, 1},
-    {LF1_FOREST, TRANSFORM_REGION, FEAT_VINES, FEAT_FSOIL, 150, 0},
+    {LF1_FOREST, TRANSFORM_REGION, FEAT_WALL_VINES, FEAT_FOREST_SOIL, 150, 0},
 
-    {LF1_MUD, TRANSFORM_REGION, FEAT_EARTH_WALL, FEAT_FLOOR_MUD, 100, 0},
+    {LF1_MUD, TRANSFORM_REGION, FEAT_WALL_EARTH, FEAT_FLOOR_MUD, 100, 0},
 
-    {LF1_BWATER, TRANSFORM_REGION, FEAT_BWATER_WALL, FEAT_NONE, 200, 0},
+    {LF1_BWATER, TRANSFORM_REGION, FEAT_WALL_CRACKED_OVER_BOILING_MUD, FEAT_NONE, 200, 0},
 
-    {LF1_BMUD, TRANSFORM_REGION, FEAT_BMUD_WALL, FEAT_NONE, 200, 0},
+    {LF1_BMUD, TRANSFORM_REGION, FEAT_WALL_CRACKED_OVER_BOILING_WATER, FEAT_NONE, 200, 0},
 
-    {LF1_FIRE, TRANSFORM_REGION, FEAT_SCORCHED_WALL, FEAT_BURNT_S, 100, 0},
+    {LF1_FIRE, TRANSFORM_REGION, FEAT_SCORCHED_WALL, FEAT_BURNT_SPOT, 100, 0},
 
-    {LF1_ACID, TRANSFORM_REGION, FEAT_ACID_WALL, FEAT_BURNT_S, 100, 0},
+    {LF1_ACID, TRANSFORM_REGION, FEAT_CRACKED_WALL_OVER_ACID, FEAT_BURNT_SPOT, 100, 0},
 
     /* Marks the end of the list */
     {0,0,0,0,0,0}
@@ -8507,7 +8290,7 @@ static void transform_walls_regions(void)
     if ((p_ptr->depth < 50) || !one_in_(4))
     {
         item->level_flag = 0;
-        item->wall = FEAT_ELVISH_WALL;
+        item->wall = FEAT_WALL_ELVISH;
         item->floor = FEAT_NONE;
         item->chance = 100;
         item->rad = 1;
@@ -9157,7 +8940,7 @@ static bool build_forest_level(void)
     {
         for (x = 0; x < wid; x++)
         {
-            cave_set_feat(y, x, FEAT_FSOIL);
+            cave_set_feat(y, x, FEAT_FOREST_SOIL);
 
             dungeon_info[y][x].cave_info |= (CAVE_ROOM);
         }
@@ -9166,7 +8949,7 @@ static bool build_forest_level(void)
     /* Place some initial big earth formations */
     for (i = 0; i < 5; i++)
     {
-        build_formation(-1, -1, FEAT_EARTH, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
+        build_formation(-1, -1, FEAT_FLOOR_EARTH, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
     }
 
     /* Place one big earth wall formation most of the time */
@@ -9174,7 +8957,7 @@ static bool build_forest_level(void)
 
     for (i = 0; i < j; i++)
     {
-        build_formation(-1, -1, FEAT_EARTH_WALL, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
+        build_formation(-1, -1, FEAT_WALL_EARTH, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
     }
 
     /* Place some irregular rooms of variable size */
@@ -9182,8 +8965,8 @@ static bool build_forest_level(void)
 
     for (i = 0; i < j; i++)
     {
-        build_formation(-1, -1, FEAT_WALL_EXTRA, one_in_(3) ? FRACTAL_TYPE_9x9: FRACTAL_TYPE_17x17, 15,
-            FEAT_GRANITE_C, 1);
+        build_formation(-1, -1, FEAT_WALL_GRANITE, one_in_(3) ? FRACTAL_TYPE_9x9: FRACTAL_TYPE_17x17, 15,
+            FEAT_WALL_GRANITE_CRACKED, 1);
     }
 
     /* Place a dense forest on the left side of the level */
@@ -9226,14 +9009,14 @@ static bool build_forest_level(void)
         x = randint(wid - 1);
 
         /* Place earth */
-        cave_set_feat(y, x, FEAT_EARTH);
+        cave_set_feat(y, x, FEAT_FLOOR_EARTH);
 
         /* Pick random grid */
         y = randint(hgt - 1);
         x = randint(wid - 1);
 
         /* Place forest soil, sometimes dynamic */
-        cave_set_feat(y, x, (i < (j / 5)) ? FEAT_FSOIL_DYNAMIC: FEAT_FSOIL);
+        cave_set_feat(y, x, (i < (j / 5)) ? FEAT_FOREST_SOIL_DYNAMIC: FEAT_FOREST_SOIL);
     }
 
     /* Place a few mud grids */
@@ -9245,7 +9028,7 @@ static bool build_forest_level(void)
         y = randint(hgt - 1);
         x = randint(wid - 1);
 
-        cave_set_feat(y, x, FEAT_MUD);
+        cave_set_feat(y, x, FEAT_FLOOR_MUD);
     }
 
     /* Place a big lake most of the time */
@@ -9253,13 +9036,13 @@ static bool build_forest_level(void)
 
     for (i = 0; i < j; i++)
     {
-        build_formation(-1, -1, one_in_(2) ? FEAT_WATER : FEAT_MUD, FRACTAL_TYPE_33x65, 15, FEAT_NONE, 0);
+        build_formation(-1, -1, one_in_(2) ? FEAT_FLOOR_WATER : FEAT_FLOOR_MUD, FRACTAL_TYPE_33x65, 15, FEAT_NONE, 0);
     }
 
     /* Place some smaller earth wall formations */
     for (i = 0; i < 7; i++)
     {
-        build_formation(-1, -1, FEAT_EARTH_WALL, FRACTAL_TYPE_17x17, 10, one_in_(2) ? FEAT_MUD: FEAT_NONE, 0);
+        build_formation(-1, -1, FEAT_WALL_EARTH, FRACTAL_TYPE_17x17, 10, one_in_(2) ? FEAT_FLOOR_MUD: FEAT_NONE, 0);
     }
 
     /* Place some small vaults */
@@ -9594,8 +9377,8 @@ static void build_ice_mountains(int row)
                 u16b feat;
 
                 /* Flavor */
-                if (k < 90) feat = FEAT_ICE_WALL;
-                else feat = FEAT_ICE_WALL_C;
+                if (k < 90) feat = FEAT_WALL_ICE;
+                else feat = FEAT_WALL_ICE_CRACKED;
 
                 /* Place the wall */
                 cave_set_feat(y, x, feat);
@@ -9639,7 +9422,7 @@ static bool build_ice_level(void)
     /* Put lots of ice */
     for (i = 0; i < 15; i++)
     {
-        build_formation(-1, -1, FEAT_ICE, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
+        build_formation(-1, -1, FEAT_FLOOR_ICE, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
     }
 
     /* Put some "mountains" */
@@ -9648,7 +9431,7 @@ static bool build_ice_level(void)
     /* Add some granite formations */
     for (i = 0; i < 15; i++)
     {
-        build_formation(-1, -1, FEAT_GRANITE_C, FRACTAL_TYPE_17x17, 0, FEAT_NONE, 0);
+        build_formation(-1, -1, FEAT_WALL_GRANITE_CRACKED, FRACTAL_TYPE_17x17, 0, FEAT_NONE, 0);
     }
 
     j = 20;
@@ -9668,7 +9451,7 @@ static bool build_ice_level(void)
             if (cave_ff1_match(y, x, FF1_MOVE)) break;
         }
 
-        build_formation(y, x, FEAT_ICE_WALL_C, FRACTAL_TYPE_17x17, 40, FEAT_NONE, 1);
+        build_formation(y, x, FEAT_WALL_ICE_CRACKED, FRACTAL_TYPE_17x17, 40, FEAT_NONE, 1);
     }
 
     j = 70 + rand_int(51);
@@ -9691,7 +9474,7 @@ static bool build_ice_level(void)
             if (cave_ff1_match(y, x, FF1_MOVE)) break;
         }
 
-        cave_set_feat(y, x, FEAT_PEBBLES);
+        cave_set_feat(y, x, FEAT_FLOOR_PEBBLES);
     }
 
     j = one_in_(4) ? (2 + rand_int(3)): 0;
@@ -9711,7 +9494,7 @@ static bool build_ice_level(void)
             if (cave_ff1_match(y, x, FF1_MOVE)) break;
         }
 
-        build_formation(y, x, FEAT_WATER_H, FRACTAL_TYPE_17x33, 10, FEAT_NONE, 0);
+        build_formation(y, x, FEAT_FLOOR_WATER, FRACTAL_TYPE_17x33, 10, FEAT_NONE, 0);
     }
 
     j = 4;
@@ -9916,13 +9699,13 @@ static bool build_wilderness_level(void)
     }
 
     /* Irregular borders */
-    build_wilderness_borders(FEAT_WALL_EXTRA);
+    build_wilderness_borders(FEAT_WALL_GRANITE);
 
     /* Mandatory dungeon borders */
     set_perm_boundry();
 
     /* Place 3 or 5 down stairs near some walls */
-    if (!alloc_stairs(FEAT_MORE, (3 + randint(2))))
+    if (!alloc_stairs(FEAT_STAIRS_DOWN, (3 + randint(2))))
     {
         if (cheat_room)
         {
@@ -9933,7 +9716,7 @@ static bool build_wilderness_level(void)
     }
 
     /* Place 1 or 3 up stairs near some walls */
-    if (!alloc_stairs(FEAT_LESS, (1 + randint(2))))
+    if (!alloc_stairs(FEAT_STAIRS_UP, (1 + randint(2))))
     {
         if (cheat_room)
         {
@@ -9990,8 +9773,8 @@ static bool build_wilderness_level(void)
     if (is_quest_level)
     {
         /* These terrain types are processed in dungeon.c during the quest level */
-        if (done_ice) add_wilderness_quest_terrain(FEAT_BWATER, FEAT_BWATER_WALL);
-        else add_wilderness_quest_terrain(FEAT_BMUD, FEAT_BMUD_WALL);
+        if (done_ice) add_wilderness_quest_terrain(FEAT_FLOOR_WATER_BOILING, FEAT_WALL_CRACKED_OVER_BOILING_WATER);
+        else add_wilderness_quest_terrain(FEAT_FLOOR_MUD_BOILING, FEAT_WALL_CRACKED_OVER_BOILING_MUD);
     }
 
     /*get the hook*/
@@ -10277,7 +10060,7 @@ static bool build_labyrinth_level(void)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             /* Create permanent wall */
-            cave_set_feat(y, x, FEAT_PERM_SOLID);
+            cave_set_feat(y, x, FEAT_WALL_PERM_SOLID);
         }
     }
 
@@ -10289,7 +10072,7 @@ static bool build_labyrinth_level(void)
         for (x = 1; x < p_ptr->cur_map_wid - 1; x++)
         {
             /* Either soft or permanent walls */
-            cave_set_feat(y, x, soft ? FEAT_WALL_SOLID : FEAT_PERM_SOLID);
+            cave_set_feat(y, x, soft ? FEAT_WALL_GRANITE_SOLID : FEAT_WALL_PERM_SOLID);
         }
     }
 
@@ -10352,7 +10135,7 @@ static bool build_labyrinth_level(void)
     }
 
     /* Place 1 or 2 down stairs  */
-    if (!alloc_stairs(FEAT_MORE, (randint1(2))))
+    if (!alloc_stairs(FEAT_STAIRS_DOWN, (randint1(2))))
     {
         if (cheat_room)
         {
@@ -10363,7 +10146,7 @@ static bool build_labyrinth_level(void)
     }
 
     /* Place 1 or 2 up stairs */
-    if (!alloc_stairs(FEAT_LESS, (randint1(2))))
+    if (!alloc_stairs(FEAT_STAIRS_UP, (randint1(2))))
     {
         if (cheat_room)
         {
@@ -10533,7 +10316,7 @@ void update_arena_level(byte stage)
             if (!in_bounds_fully(y, x)) continue;
 
             /* Really set the feature */
-            if (dungeon_info[y][x].feat != FEAT_PERM_SOLID) continue;
+            if (dungeon_info[y][x].feat != FEAT_WALL_PERM_SOLID) continue;
 
             /* Look in all directions to see if it borders a floor space */
             for (d = 0; d < 8; d++)
@@ -10548,7 +10331,7 @@ void update_arena_level(byte stage)
                 if (cave_ff1_match(yy, xx, FF1_MOVE))
                 {
                     /* Set it to be an inner permanent wall */
-                    cave_set_feat(y, x, FEAT_PERM_INNER);
+                    cave_set_feat(y, x, FEAT_WALL_PERM_INNER);
 
                     /* Make it all one big room, and light it up */
                     dungeon_info[y][x].cave_info |= (CAVE_ROOM | CAVE_GLOW);
@@ -10598,7 +10381,7 @@ static bool player_place_arena(void)
     slot = randint0(empty_squares);
 
     /* Hack - excape stairs stairs */
-    p_ptr->create_stair = FEAT_LESS;
+    p_ptr->create_stair = FEAT_STAIRS_UP;
 
     return (player_place(empty_squares_y[slot], empty_squares_x[slot]));
 }
@@ -10637,7 +10420,7 @@ static bool build_arena_level(void)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             /* Create permanent wall */
-            cave_set_feat(y, x, FEAT_PERM_SOLID);
+            cave_set_feat(y, x, FEAT_WALL_PERM_SOLID);
         }
     }
 
@@ -10712,7 +10495,7 @@ static bool player_place_greater_vault_level(void)
     slot = 0;
 
     /* Hack - escape stairs */
-    p_ptr->create_stair = FEAT_LESS;
+    p_ptr->create_stair = FEAT_STAIRS_UP;
 
     if (!player_place(empty_squares_y[slot], empty_squares_x[slot])) return (FALSE);
 
@@ -10725,7 +10508,7 @@ static bool player_place_greater_vault_level(void)
     slot = randint0(empty_squares);
 
     /* Now place one up stair */
-    cave_set_feat(empty_squares_y[slot], empty_squares_x[slot], FEAT_LESS);
+    cave_set_feat(empty_squares_y[slot], empty_squares_x[slot], FEAT_STAIRS_UP);
 
     /* Select a new location for down stairs */
     empty_squares--;
@@ -10736,7 +10519,7 @@ static bool player_place_greater_vault_level(void)
     slot = randint0(empty_squares);
 
     /* Now place one down stair */
-    cave_set_feat(empty_squares_y[slot], empty_squares_x[slot], FEAT_MORE);
+    cave_set_feat(empty_squares_y[slot], empty_squares_x[slot], FEAT_STAIRS_DOWN);
 
     return (TRUE);
 }
@@ -10793,7 +10576,7 @@ static bool build_greater_vault_level(void)
     wid = p_ptr->cur_map_wid = v_ptr->wid + 6;
 
     /* All floors to start, except the outer boundry */
-    generate_fill(0, 0, hgt - 1, wid - 1, FEAT_WALL_OUTER);
+    generate_fill(0, 0, hgt - 1, wid - 1, FEAT_WALL_GRANITE_OUTER);
     generate_fill(4, 4, hgt - 5, wid - 5, FEAT_FLOOR);
     set_perm_boundry();
 
@@ -11250,7 +11033,7 @@ static void build_store(u16b feat, int yy, int xx)
         for (x = x1; x <= x2; x++)
         {
             /* Create the building */
-            cave_set_feat(y, x, FEAT_PERM_EXTRA);
+            cave_set_feat(y, x, FEAT_WALL_PERM);
         }
     }
 
@@ -11412,7 +11195,7 @@ static void town_gen_hack(void)
     }
 
     /* Clear previous contents, add down stairs */
-    cave_set_feat(y, x, FEAT_MORE);
+    cave_set_feat(y, x, FEAT_STAIRS_DOWN);
 
     /* Place the player */
     player_place(y, x);
@@ -11477,7 +11260,7 @@ static void town_gen(void)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             /* Create "solid" perma-wall */
-            cave_set_feat(y, x, FEAT_PERM_SOLID);
+            cave_set_feat(y, x, FEAT_WALL_PERM_SOLID);
         }
     }
 

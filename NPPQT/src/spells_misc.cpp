@@ -236,8 +236,8 @@ bool create_elements(int cy, int cx, int range)
                 if (trees_enabled && (k < 2)) feat = FEAT_TREE;
                 else if (k < 20) feat = FEAT_BUSH;
                 else if (k < 30) feat = FEAT_BRAMBLES;
-                else if (k < 35) feat = FEAT_FSOIL_D;
-                else feat = FEAT_FSOIL;
+                else if (k < 35) feat = FEAT_FOREST_SOIL_DYNAMIC;
+                else feat = FEAT_FOREST_SOIL;
             }
 
             /* Put the feature */
@@ -304,7 +304,7 @@ bool create_glacier(void)
         }
 
         /* Create the glacier */
-        set_effect_glacier(FEAT_GLACIER, y, x, SOURCE_EFFECT, 0);
+        set_effect_glacier(FEAT_WALL_GLACIER, y, x, SOURCE_EFFECT, 0);
 
         /* Show that grid */
         dungeon_info[y][x].cave_info |= (CAVE_MARK);
@@ -1597,21 +1597,21 @@ void destroy_area(int y1, int x1, int r)
                 else if (t < 20)
                 {
                     /* Create granite wall */
-                    feat = FEAT_WALL_EXTRA;
+                    feat = FEAT_WALL_GRANITE;
                 }
 
                 /* Quartz */
                 else if (t < 70)
                 {
                     /* Create quartz vein */
-                    feat = FEAT_QUARTZ;
+                    feat = FEAT_QUARTZ_VEIN;
                 }
 
                 /* Magma */
                 else if (t < 100)
                 {
                     /* Create magma vein */
-                    feat = FEAT_MAGMA;
+                    feat = FEAT_MAGMA_VEIN;
                 }
 
                 /* Rubble */
@@ -1974,21 +1974,21 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
                 if (t < 20)
                 {
                     /* Create granite wall */
-                    feat = FEAT_WALL_EXTRA;
+                    feat = FEAT_WALL_GRANITE;
                 }
 
                 /* Quartz */
                 else if (t < 70)
                 {
                     /* Create quartz vein */
-                    feat = FEAT_QUARTZ;
+                    feat = FEAT_QUARTZ_VEIN;
                 }
 
                 /* Magma */
                 else if (t < 100)
                 {
                     /* Create magma vein */
-                    feat = FEAT_MAGMA;
+                    feat = FEAT_MAGMA_VEIN;
                 }
 
                 /* Change the feature */
@@ -4583,9 +4583,9 @@ static void misc_place_elements(int y, int x, int gf_type, int rad)
         u16b feat;
     } info[] =
     {
-        {GF_ACID, FEAT_ACID},
-        {GF_ICE, FEAT_ICE},
-        {GF_COLD, FEAT_ICE},
+        {GF_ACID, FEAT_FLOOR_ACID},
+        {GF_ICE, FEAT_FLOOR_ICE},
+        {GF_COLD, FEAT_FLOOR_ICE},
         {GF_FIRE, FEAT_FIRE},
         {0, 0}
     };
@@ -5140,7 +5140,7 @@ bool call_huorns(void)
         if (do_destroy && one_in_(10))
         {
             /* Set new feature */
-            cave_set_feat(y, x, (rand_int(100) < 30) ? FEAT_BURNING_TREE: FEAT_FSOIL_DYNAMIC);
+            cave_set_feat(y, x, (rand_int(100) < 30) ? FEAT_TREE_BURNING: FEAT_FOREST_SOIL_DYNAMIC);
             /* Message */
             message(QString("A huorn was destroyed!"));
             /* Done */
@@ -5240,14 +5240,14 @@ bool call_huorns(void)
         /* Can we move? */
         if (best_grid)
         {
-            u16b feat = FEAT_FSOIL_DYNAMIC;
+            u16b feat = FEAT_FOREST_SOIL_DYNAMIC;
             int k = rand_int(100);
 
             /* Add flavor */
-            if (k < 10) feat = FEAT_FSOIL_D;
+            if (k < 10) feat = FEAT_FOREST_SOIL;
             else if (k < 20) feat = FEAT_BRAMBLES;
             else if (k < 25) feat = FEAT_THORNS;
-            else if (k < 30) feat = FEAT_VINES;
+            else if (k < 30) feat = FEAT_WALL_VINES;
             else if (k < 40) feat = FEAT_BUSH;
             else if (k < 50) feat = FEAT_THICKET;
 

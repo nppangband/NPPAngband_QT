@@ -385,7 +385,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
         }
 
         /* Lightning traps affect all but ghosts */
-        if (f_idx == FEAT_MTRAP_ELEC)
+        if (f_idx == FEAT_MTRAP_LIGHTNING)
         {
             if (r_ptr->flags2 & (RF2_PASS_WALL))
             {
@@ -645,7 +645,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
                 }
             }
 
-            case FEAT_MTRAP_POISON:
+            case FEAT_MTRAP_POISON_GAS:
             {
                 int rad = 3;
 
@@ -668,7 +668,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
                 break;
             }
 
-            case FEAT_MTRAP_ELEC:
+            case FEAT_MTRAP_LIGHTNING:
             {
                 int rad = 3;
 
@@ -738,7 +738,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
             }
 
             /* Dispel Monsters Trap */
-            case FEAT_MTRAP_DISPEL_M:
+            case FEAT_MTRAP_DISPEL_MONSTERS:
             {
 
                 if (mode == MODE_DESCRIBE)

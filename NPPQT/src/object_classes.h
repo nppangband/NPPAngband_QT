@@ -20,6 +20,7 @@
 #include <src/defines.h>
 #include <QString>
 #include <QColor>
+#include <QChar>
 
 typedef struct artifact_lore artifact_lore;
 /*
@@ -182,6 +183,10 @@ class object_type
     void uncurse();
     byte object_color();
     void update_object_flags();
+    bool use_flavor();
+    QChar get_char();
+    QColor get_color();
+    QString get_tile_id();
 
 
     // return pseudo-id
@@ -196,8 +201,7 @@ class object_type
 class object_kind
 {
 public:
-    object_kind();
-    void object_kind_wipe();
+
 
     QString k_name;			/* Name  */
     QString k_text;			/* Text  */
@@ -252,6 +256,13 @@ public:
     byte squelch;		/* Squelch setting for the particular item */
 
     bool everseen;		/* Used to despoilify squelch menus */
+
+    object_kind();
+    void object_kind_wipe();
+    bool use_flavor();
+    QChar get_char();
+    QColor get_color();
+    QString get_tile_id();
 };
 
 

@@ -783,11 +783,8 @@ static flag_name info_flags[] =
     {"F3XXX_18", FF3, FF3_F3XXX_18},
     {"F3XXX_19", FF3, FF3_F3XXX_19},
     {"TREE", FF3, FF3_TREE},
-    {"NEED_TREE", FF3, FF3_NEED_TREE},
-    {"F3XXX_21", FF3, FF3_F3XXX_21},
-#if 0
     {"F3XXX_22", FF3, FF3_F3XXX_22},
-#endif
+    {"F3XXX_21", FF3, FF3_F3XXX_21},
     {"DYNAMIC", FF3, FF3_DYNAMIC},
 
     /*FFE Uber-Flags*/

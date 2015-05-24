@@ -615,11 +615,7 @@ void display_info_window(byte mode, int index, QString info, object_type *o_ptr)
     else if (mode == DISPLAY_INFO_OBJECT)
     {
         object_kind *k_ptr = &k_info[index];
-        if (use_flavor_glyph(o_ptr))
-        {
-            tile_id = flavor_info[k_ptr->flavor].tile_id;
-        }
-        else tile_id = k_ptr->tile_id;
+        tile_id = k_ptr->get_tile_id();
     }
     // Whoops!
     else return;

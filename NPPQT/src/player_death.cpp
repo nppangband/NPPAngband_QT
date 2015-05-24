@@ -20,6 +20,7 @@
 #include <src/knowledge.h>
 #include <src/cmds.h>
 #include <src/player_scores.h>
+#include <src/object_all_menu.h>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -28,7 +29,7 @@
 
 void PlayerDeathDialog::death_info(void)
 {
-    //TODO death info
+    do_cmd_all_objects(TAB_INVEN);
 }
 
 void PlayerDeathDialog::death_home_inven(void)
@@ -89,7 +90,7 @@ PlayerDeathDialog::PlayerDeathDialog(void)
     // Add the "Information" button
     QPushButton *home_button = new QPushButton("Home Inventory");
     home_button->setToolTip("View inventory in player's home.");
-    connect(home_button, SIGNAL(clicked()), this, SLOT(death_info()));
+    connect(home_button, SIGNAL(clicked()), this, SLOT(death_home_inven()));
     vlay->addWidget(home_button);
 
     // Add the "Messages" button

@@ -102,6 +102,10 @@ static QString tile_obj_name_convert(QString orig_name)
     orig_name = to_ascii(orig_name);
     orig_name = orig_name.toLower();
 
+    QString star_string = "*";
+
+    bool contains_star = orig_name.contains(star_string);
+
     //now delete all commas, and then replace spaces with '_', then start with "obj_".
     orig_name.remove(QChar(','));
     orig_name.remove(QString("'"));
@@ -109,10 +113,11 @@ static QString tile_obj_name_convert(QString orig_name)
     orig_name.remove(QChar(']'));
     orig_name.remove(QChar('('));
     orig_name.remove(QChar(')'));
-    orig_name.remove(QChar('/'));
+    orig_name.remove(QChar('*'));
+    orig_name.replace(QChar('/'), QChar('_'));
     orig_name.replace(QChar(' '), QChar('_'));
-    orig_name.replace("*", "_star_");
     orig_name.prepend("obj_");
+    if (contains_star) orig_name.append("_star");
     return (orig_name);
 }
 
@@ -158,6 +163,8 @@ static QString tile_flav_name_convert(QString orig_name, int tval)
     orig_name.remove(QChar('('));
     orig_name.remove(QChar(')'));
     orig_name.remove(QString("'"));
+    orig_name.remove(QChar('*'));
+    orig_name.replace(QChar('/'), QChar('_'));
     orig_name.replace(QChar(' '), QChar('_'));
     if (tval == TV_RING) orig_name.prepend("ring_");
     else if (tval == TV_AMULET) orig_name.prepend("amulet_");
@@ -180,9 +187,7 @@ void extract_tiles(void)
     {
         monster_race *r_ptr = &r_info[i];
         if (r_ptr->r_name_full.isEmpty()) continue;
-        QString race_name = monster_desc_race(i);
-        if (r_ptr->flags1 & (RF1_FRIEND | RF1_FRIENDS)) race_name = plural_aux(race_name);
-        r_ptr->tile_id = tile_mon_name_convert(race_name);
+        r_ptr->tile_id = tile_mon_name_convert(monster_desc_race(i));
     }
     for (i = 0; i < z_info->k_max; i++)\
     {

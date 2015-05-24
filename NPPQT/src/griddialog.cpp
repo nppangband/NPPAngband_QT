@@ -94,14 +94,9 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
         object_kind *k_ptr = k_info + o_ptr->k_idx;
 
-        QChar chr = k_ptr->d_char;
-        QColor color = k_ptr->d_color;
-        QString tile = k_ptr->tile_id;
-        if (use_flavor_glyph(o_ptr)) {
-            chr = flavor_info[k_ptr->flavor].d_char;
-            color = flavor_info[k_ptr->flavor].d_color;
-            tile = flavor_info[k_ptr->flavor].tile_id;
-        }
+        QChar chr = k_ptr->get_char();
+        QColor color = k_ptr->get_color();
+        QString tile = k_ptr->get_tile_id();
 
         QLabel *lb = new QLabel(QString(" %1 ").arg(chr));
         lb->setStyleSheet(QString("background-color: black; color: %1;").arg(color.name()));

@@ -16,10 +16,10 @@ V:7.1.0
 
 
 # Maximum number of feature types
-F:207
+F:175
 
 # Maximum number of object kinds
-K:454
+K:471
 
 # 
 # Maximum number of total artifacts (special + normal + pre-made random + in-game random)
@@ -64,7 +64,7 @@ B:4
 Q:3
 
 # Maximum number of flavors
-L:348
+L:332
 
 # Maximum number of objects on the level
 O:1024

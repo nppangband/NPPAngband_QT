@@ -902,6 +902,29 @@ void object_type::update_object_flags()
     }
 }
 
+// Return the object kind character
+bool object_type::use_flavor()
+{
+    return (k_info[k_idx].use_flavor());
+}
+
+// Return the object character
+QChar object_type::get_char()
+{
+    return (k_info[k_idx].get_char());
+}
+
+// Return the object color
+QColor object_type::get_color()
+{
+    return (k_info[k_idx].get_color());
+}
+
+QString object_type::get_tile_id()
+{
+    return (k_info[k_idx].get_tile_id());
+}
+
 object_kind::object_kind()
 {
     object_kind_wipe();
@@ -928,6 +951,42 @@ void object_kind::object_kind_wipe()
     aware = tried = everseen = FALSE;
     C_WIPE(use_verify, VERIFY_MAX, byte);
 
+}
+
+// Determine if flavor glyph should be used.
+bool object_kind::use_flavor()
+{
+    if (!flavor) return (FALSE);
+
+    if (tval != TV_SCROLL) return TRUE;
+
+    // Id'ed scrolls use the object info.
+    if (aware) return (TRUE);
+    return (FALSE);
+}
+
+// Factor in flavor when returning object kind character
+QChar object_kind::get_char()
+{
+    if (use_flavor()) return (flavor_info[flavor].d_char);
+
+    return (d_char);
+}
+
+// Factor in flavor when returning object kind character
+QColor object_kind::get_color()
+{
+    if (use_flavor()) return (flavor_info[flavor].d_color);
+
+    return (d_color);
+}
+
+// Factor in flavor when returning tile id
+QString object_kind::get_tile_id()
+{
+    if (use_flavor()) return (flavor_info[flavor].tile_id);
+
+    return (tile_id);
 }
 
 artifact_type::artifact_type()

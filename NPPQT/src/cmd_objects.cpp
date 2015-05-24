@@ -892,10 +892,10 @@ static bool do_cmd_refill_lamp_from_terrain(void)
     }
 
     /* Sometimes we remove the oil grid to stop oil-abuse */
-    if (can_dry && !f_info[FEAT_EARTH].f_name.length() && one_in_(7))
+    if (can_dry && !f_info[FEAT_FLOOR_EARTH].f_name.length() && one_in_(7))
     {
         /* Transform to earth */
-        cave_set_feat(y, x, FEAT_EARTH);
+        cave_set_feat(y, x, FEAT_FLOOR_EARTH);
 
         /* Message */
         message(QString("The oil patch dries."));

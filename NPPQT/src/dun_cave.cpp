@@ -891,25 +891,15 @@ static void map_objects (s16b y, s16b x)
         /*hack - never allow quest items to appear as dot*/
         if ((!sq_flag) || o_ptr->is_quest_object())
         {
-            /* Normal attr */
-            if (use_flavor_glyph(o_ptr)) {
-                flavor_type *fl_ptr = flavor_info + k_info[o_ptr->k_idx].flavor;
-                dun_ptr->object_color = fl_ptr->d_color;
-                dun_ptr->object_char =  fl_ptr->d_char;
-                dun_ptr->object_tile = fl_ptr->tile_id;
-            }
-            else {
-                dun_ptr->object_color = k_info[o_ptr->k_idx].d_color;
-                dun_ptr->object_char =  k_info[o_ptr->k_idx].d_char;
-                dun_ptr->object_tile = k_info[o_ptr->k_idx].tile_id;
-            }
+            dun_ptr->object_color = o_ptr->get_color();
+            dun_ptr->object_char = o_ptr->get_char();
+            dun_ptr->object_tile = o_ptr->get_tile_id();
 
             /*found a non-squelchable item, unless showing piles, display this one*/
             if (!show_piles) break;
 
             /*if only one item in a pile is not squelchable, show that one*/
             do_purple_dot = FALSE;
-
         }
 
         if (do_purple_dot)
@@ -4008,7 +3998,6 @@ void cave_alter_feat(int y, int x, int action)
 void cave_set_feat(int y, int x, u16b feat)
 {
     int i, j;
-    u16b feat2;
 
     /* Old Feature */
     u16b old_feat = dungeon_info[y][x].feat;
@@ -4132,95 +4121,6 @@ void cave_set_feat(int y, int x, u16b feat)
         if (player_has_los_bold(y, x))
         {
             p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW |	PU_MONSTERS);
-        }
-    }
-
-    /* Create a tree */
-    if (_feat_ff3_match(f2_ptr, FF3_TREE))
-    {
-        /* Hack -- Reduce number of calls to rand_int */
-        int k = rand_int(1 << 17);
-
-        /* Hack -- Some trees have more branches */
-        bool dense_tree = one_in_(3);
-
-        /* Create branches on adjacent grids */
-        for (i = 0; i < 8; i++)
-        {
-            /* Get coordinates */
-            int yy = y + ddy_ddd[i];
-            int xx = x + ddx_ddd[i];
-
-            /* Ignore annoying locations */
-            if (!in_bounds_fully(yy, xx)) continue;
-
-            /*
-             * We have a 50% (or 25% for dense trees) chance to
-             * ignore the grid
-             */
-            if ((k & (1 << i)) && (!dense_tree ||
-                (k & (1 << (i + 8))))) continue;
-
-            /* Convert to branch */
-            feat2 = feat_state(dungeon_info[y][x].feat, FS_TREE);
-
-            /* Set the new feature */
-            cave_set_feat_aux(yy, xx, feat2);
-
-            /* Hack - lite the branch if the trunk is lit */
-            if (dungeon_info[y][x].cave_info & (CAVE_GLOW))
-            {
-                dungeon_info[yy][xx].cave_info |= (CAVE_GLOW);
-            }
-        }
-    }
-    /* Handle NEED_TREE locations */
-    else if (_feat_ff3_match(f_ptr, FF3_TREE))
-    {
-        /*
-         * We have destroyed the trunk, what do we have to do
-         * with the branches?
-         */
-        for (i = 0; i < 8; i++)
-        {
-            int yy = y + ddy_ddd[i];
-            int xx = x + ddx_ddd[i];
-
-            /* Ignore annoying locations */
-            if (!in_bounds_fully(yy, xx)) continue;
-
-            /* Get the feature */
-            feat2 = dungeon_info[yy][xx].feat;
-
-            /* Ignore non-branches */
-            if (!feat_ff3_match(feat2, FF3_NEED_TREE)) continue;
-
-            /* Look for adjacent trees */
-            for (j = 0; j < 8; j++)
-            {
-                int yyy = yy + ddy_ddd[j];
-                int xxx = xx + ddx_ddd[j];
-
-                /* Ignore annoying locations */
-                if (!in_bounds_fully(yyy, xxx)) continue;
-
-                /* Found a tree */
-                if (cave_ff3_match(yyy, xxx, FF3_TREE)) break;
-            }
-
-            /*
-             * Remove the branch if we couldn't find a tree.
-             * We also have a slight chance to remove the branch
-             * if we found one.
-             */
-            if ((j >= 8) || one_in_(4))
-            {
-                /* Remove the branch */
-                feat2 = feat_state(feat2, FS_NEED_TREE);
-
-                /* Set the new feature */
-                cave_set_feat_aux(yy, xx, feat2);
-            }
         }
     }
 

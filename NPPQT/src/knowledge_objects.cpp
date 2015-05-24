@@ -736,7 +736,7 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         /* Skip "empty" and unknown objects, and gold */
         if (!k_ptr->k_name.length()) continue;
         if (k_ptr->tval == TV_GOLD) continue;
-        if (!k_ptr->everseen || !k_ptr->aware) continue;
+        if ((!k_ptr->everseen || !k_ptr->aware) && !p_ptr->is_wizard) continue;
         // Handled in artifact knowledge
         if (k_ptr->k_flags3 & (TR3_INSTA_ART)) continue;
 
@@ -765,11 +765,13 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         QTableWidgetItem *kind_ltr = new QTableWidgetItem(obj_symbol);
         if (use_graphics)
         {
-            QPixmap pix = ui_get_tile(k_ptr->tile_id);
+            QString tile_id = k_ptr->get_tile_id();
+
+            QPixmap pix = ui_get_tile(tile_id);
             pix = pix.scaled(32, 32);
             kind_ltr->setIcon(pix);
         }
-        kind_ltr->setData(Qt::ForegroundRole, object_type_attr(i));
+        kind_ltr->setData(Qt::ForegroundRole, k_ptr->get_color());
         kind_ltr->setTextAlignment(Qt::AlignCenter);
         object_table->setItem(row, col++, kind_ltr);
 
@@ -1027,7 +1029,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
 
         /* Skip "empty" and unknown objects, and gold */
         if (!e_ptr->e_name.length()) continue;
-        if (!e_ptr->everseen) continue;
+        if (!e_ptr->everseen && !p_ptr->is_wizard) continue;
 
         ego_item_table->insertRow(row);
         col = 0;
@@ -1290,7 +1292,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
 
         /* This slot is already being used */
         if ((a_ptr->tval + a_ptr->sval) == 0) continue;
-        if (!artifact_is_known(i)) continue;
+        if (!artifact_is_known(i) && !p_ptr->is_wizard) continue;
 
         /*  Don't do quest artifacts*/
         if (i == QUEST_ART_SLOT) continue;
@@ -1303,7 +1305,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
         // artifact kind
         QString this_art = get_artifact_display_name(i);
         QTableWidgetItem *art_kind = new QTableWidgetItem(this_art);
-        art_kind->setData(Qt::ForegroundRole, object_type_attr(k_idx));
+        art_kind->setData(Qt::ForegroundRole, k_info[k_idx].get_color());
         art_kind->setTextAlignment(Qt::AlignLeft);
         artifact_table->setItem(row, col++, art_kind);
 

@@ -216,7 +216,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 
         // Don't count non and unseen entries
         if (f_ptr->f_name.isEmpty()) continue;
-        if (!f_ptr->f_everseen) continue;
+        if (!f_ptr->f_everseen && !p_ptr->is_wizard) continue;
 
         terrain_table->insertRow(row);
         col = 0;

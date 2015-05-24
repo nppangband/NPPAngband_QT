@@ -495,7 +495,7 @@ bool set_effect_glyph(byte y, byte x)
     /*All full*/
     if (!x_idx) return (FALSE);
 
-    effect_prep(x_idx, EFFECT_GLYPH, FEAT_GLYPH, y, x, 1, 1, 0, SOURCE_TRAP, flags);
+    effect_prep(x_idx, EFFECT_GLYPH, FEAT_GLYPH_WARDING, y, x, 1, 1, 0, SOURCE_TRAP, flags);
 
     /* RE-do the flow */
     p_ptr->update |= (PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
@@ -1000,25 +1000,24 @@ static void effect_damage(const effect_type *x_ptr)
             switch (x_ptr->x_f_idx)
             {
                 /*Just a couple exceptions to the default, breathing*/
-                case FEAT_SPARKS:
-                case FEAT_STATIC:
+                case FEAT_EFFECT_CLOUD_STATIC:
                 {
                     kb_str = (QString("getting shocked by %1") .arg(name));
                     break;
                 }
 
-                case FEAT_NETHER:
-                case FEAT_CHAOS:
-                case FEAT_DISENCHANTMENT:
-                case FEAT_NEXUS:
-                case FEAT_TIME:
-                case FEAT_CONFUSION:
+                case FEAT_EFFECT_CLOUD_NETHER:
+                case FEAT_EFFECT_CLOUD_CHAOS:
+                case FEAT_EFFECT_CLOUD_DISENCHANTMENT:
+                case FEAT_EFFECT_CLOUD_NEXUS:
+                case FEAT_EFFECT_CLOUD_TIME:
+                case FEAT_EFFECT_CLOUD_CONFUSION:
                 {
                     kb_str = (QString("standing in a %1") .arg(name));
                     break;
                 }
 
-                case FEAT_STEAM:
+                case FEAT_EFFECT_CLOUD_STEAM:
                 {
                     kb_str = (QString("getting scalded by %1") .arg(name));
                     break;

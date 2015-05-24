@@ -93,7 +93,7 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
         /* Do nothing */
     }
 
-    else if (f_l_ptr->f_l_flags1 & FF1_SHOP)
+    else if ((f_l_ptr->f_l_flags1 & FF1_SHOP) || (f_idx == FEAT_COBBLESTONE_FLOOR))
     {
         output.append(color_string(" that is found in the town", TERM_L_GREEN));
     }
@@ -123,7 +123,7 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
         }
         else
         {
-            output.append(color_string("appears", TERM_L_GREEN));
+            output.append(color_string(" appears", TERM_L_GREEN));
             output.append(color_string(QString(" at depths of %1 feet and below") .arg(f_ptr->f_level * 50), TERM_L_GREEN));
         }
 
@@ -233,16 +233,16 @@ static QString describe_feature_stairs(const feature_lore *f_l_ptr)
 
     output.append("  This");
 
-    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string("shaft", TERM_NAVY_BLUE));
-    else output.append(color_string("staircase", TERM_NAVY_BLUE));
+    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string(" shaft", TERM_NAVY_BLUE));
+    else output.append(color_string(" staircase", TERM_NAVY_BLUE));
 
     output.append(" will take you");
 
-    if (f_l_ptr->f_l_flags1 & FF1_LESS)		output.append(color_string("up", TERM_NAVY_BLUE));
-    if (f_l_ptr->f_l_flags1 & FF1_MORE)		output.append(color_string("down", TERM_NAVY_BLUE));
+    if (f_l_ptr->f_l_flags1 & FF1_LESS)		output.append(color_string(" up", TERM_NAVY_BLUE));
+    if (f_l_ptr->f_l_flags1 & FF1_MORE)		output.append(color_string(" down", TERM_NAVY_BLUE));
 
-    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string("two levels.  ", TERM_NAVY_BLUE));
-    else output.append(color_string("one level.  ", TERM_NAVY_BLUE));
+    if (f_l_ptr->f_l_flags2 & FF2_SHAFT)	output.append(color_string(" two levels.  ", TERM_NAVY_BLUE));
+    else output.append(color_string(" one level.  ", TERM_NAVY_BLUE));
 
     return(output);
 }
@@ -436,7 +436,6 @@ static QString describe_transition_action(int action, bool *skip_output)
         case	FS_HURT_BWATER:	{return(color_string("  Boiling water", TERM_GOLD));}
         case	FS_HURT_POIS:	{return(color_string("  Poison", TERM_GOLD));}
         case	FS_TREE:		{return(color_string("  Forest creation", TERM_GOLD));}
-        case   	FS_NEED_TREE: 	{return(color_string("  Forest destruction", TERM_GOLD));}
 
         /*Paranoia*/
         default:				{return(color_string("ERROR - Unspecified Action", TERM_RED));}
@@ -577,6 +576,8 @@ static QString describe_feature_movement_effects(int f_idx, const feature_lore *
 {
     QString output;
     output.clear();
+
+    if (!feat_ff1_match(f_idx, FF1_MOVE)) return (output);
 
     feature_type *f_ptr = &f_info[f_idx];
 
@@ -783,7 +784,7 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
         return (output);
     }
 
-    if (f_idx == FEAT_GEYSER)
+    if (f_idx == FEAT_WALL_WATER_BOILING_GEYSER)
     {
         output.append("  The geyser can explode in a burst of boiling water!  ");
 
@@ -791,7 +792,7 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
         return (output);
     }
 
-    if (f_idx == FEAT_FSOIL_DYNAMIC)
+    if (f_idx == FEAT_FOREST_SOIL_DYNAMIC)
     {
         output.append("  This feature can slowly spread across the dungeon.  ");
 
@@ -908,14 +909,16 @@ QString get_feature_description(int f_idx, bool spoilers, bool include_header)
     latest_output.append(describe_feature_vulnerabilities(&lore));
 
     output.append(latest_output);
+
     if (latest_output.length()) output.append("<br>");
+    latest_output.clear();
 
     latest_output = describe_feature_transitions(f_idx, &lore);
 
     output.append(latest_output);
     if (latest_output.length()) output.append("<br>");
 
-    latest_output.append(describe_feature_damage(f_idx, &lore));
+    latest_output = describe_feature_damage(f_idx, &lore);
 
     latest_output.append(describe_feature_movement_effects(f_idx, &lore));
 

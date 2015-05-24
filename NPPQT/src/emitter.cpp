@@ -325,19 +325,14 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
 
     bool do_default = true;
 
-    if (o_ptr != 0) {
+    if (o_ptr != 0)
+    {
         do_default = false;
 
         object_kind *k_ptr = k_info + o_ptr->k_idx;
-        QChar chr = k_ptr->d_char;
-        QColor col = k_ptr->d_color;
-        QString key = k_ptr->tile_id;
-        if (use_flavor_glyph(o_ptr)) {
-            flavor_type *fl_ptr = flavor_info + k_ptr->flavor;
-            chr = fl_ptr->d_char;
-            col = fl_ptr->d_color;
-            key = fl_ptr->tile_id;
-        }
+        QChar chr = k_ptr->get_char();
+        QColor col = k_ptr->get_color();
+        QString key = k_ptr->get_tile_id();
 
         if (use_graphics)
         {

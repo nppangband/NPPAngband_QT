@@ -28,12 +28,12 @@
 void TrapSelectDialog::trap_choice_sturdy(void)     {trap_choice = FEAT_MTRAP_STURDY;       this->accept();}
 void TrapSelectDialog::trap_choice_slowing(void)    {trap_choice = FEAT_MTRAP_SLOWING;      this->accept();}
 void TrapSelectDialog::trap_choice_confusion(void)  {trap_choice = FEAT_MTRAP_CONFUSION;    this->accept();}
-void TrapSelectDialog::trap_choice_poison(void)     {trap_choice = FEAT_MTRAP_POISON;       this->accept();}
+void TrapSelectDialog::trap_choice_poison(void)     {trap_choice = FEAT_MTRAP_POISON_GAS;   this->accept();}
 void TrapSelectDialog::trap_choice_life_drain(void) {trap_choice = FEAT_MTRAP_DRAIN_LIFE;   this->accept();}
-void TrapSelectDialog::trap_choice_lightning(void)  {trap_choice = FEAT_MTRAP_ELEC;         this->accept();}
+void TrapSelectDialog::trap_choice_lightning(void)  {trap_choice = FEAT_MTRAP_LIGHTNING;    this->accept();}
 void TrapSelectDialog::trap_choice_explosive(void)  {trap_choice = FEAT_MTRAP_EXPLOSIVE;    this->accept();}
 void TrapSelectDialog::trap_choice_portal(void)     {trap_choice = FEAT_MTRAP_PORTAL;       this->accept();}
-void TrapSelectDialog::trap_choice_dispell(void)    {trap_choice = FEAT_MTRAP_DISPEL_M;     this->accept();}
+void TrapSelectDialog::trap_choice_dispell(void)    {trap_choice = FEAT_MTRAP_DISPEL_MONSTERS;  this->accept();}
 
 void TrapSelectDialog::on_dialog_buttons_pressed(QAbstractButton *)
 {
@@ -88,7 +88,7 @@ TrapSelectDialog::TrapSelectDialog(void)
     {
         // Add the "Poison Trap" button
         QPushButton *poison_button = new QPushButton("&Poison Trap");
-        poison_button->setToolTip(apply_monster_trap(FEAT_MTRAP_POISON, 0, 0, MODE_DESCRIBE));
+        poison_button->setToolTip(apply_monster_trap(FEAT_MTRAP_POISON_GAS, 0, 0, MODE_DESCRIBE));
         connect(poison_button, SIGNAL(clicked()), this, SLOT(trap_choice_poison()));
         vlay->addWidget(poison_button);
     }
@@ -106,7 +106,7 @@ TrapSelectDialog::TrapSelectDialog(void)
     {
         // Add the "Lightning Trap" button
         QPushButton *lightning_button = new QPushButton("&Lightning Ball Trap");
-        lightning_button->setToolTip(apply_monster_trap(FEAT_MTRAP_ELEC, 0, 0, MODE_DESCRIBE));
+        lightning_button->setToolTip(apply_monster_trap(FEAT_MTRAP_LIGHTNING, 0, 0, MODE_DESCRIBE));
         connect(lightning_button, SIGNAL(clicked()), this, SLOT(trap_choice_lightning()));
         vlay->addWidget(lightning_button);
     }
@@ -133,7 +133,7 @@ TrapSelectDialog::TrapSelectDialog(void)
     {
         // Add the "Dispel Monster Trap" button
         QPushButton *dispel_button = new QPushButton("&Monster Dispelling Trap");
-        dispel_button->setToolTip(apply_monster_trap(FEAT_MTRAP_DISPEL_M, 0, 0, MODE_DESCRIBE));
+        dispel_button->setToolTip(apply_monster_trap(FEAT_MTRAP_DISPEL_MONSTERS, 0, 0, MODE_DESCRIBE));
         connect(dispel_button, SIGNAL(clicked()), this, SLOT(trap_choice_dispell()));
         vlay->addWidget(dispel_button);
     }
@@ -213,7 +213,7 @@ void py_set_trap(int y, int x)
     }
 
     /* Set the trap, and draw it. */
-    set_effect_trap_player(FEAT_MTRAP_BASE, y, x);
+    set_effect_trap_player(FEAT_MTRAP_BASIC, y, x);
 
     /* Remember the location */
     dungeon_info[y][x].mark_square();
@@ -263,7 +263,7 @@ bool py_modify_trap(int y, int x)
     x_list[dungeon_info[y][x].effect_idx].x_f_idx = which_trap;
 
     /*check if player did not modify trap*/
-    if (x_list[dungeon_info[y][x].effect_idx].x_f_idx == FEAT_MTRAP_BASE) return(FALSE);
+    if (x_list[dungeon_info[y][x].effect_idx].x_f_idx == FEAT_MTRAP_BASIC) return(FALSE);
 
     /*Mark it*/
     light_spot(y,x);

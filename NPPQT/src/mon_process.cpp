@@ -86,7 +86,7 @@ void cloud_surround(int r_idx, int *typ, int *dam, int *rad)
             /* If they have the breath, add it to the list */
             if (r_ptr->flags4 & brth->flag)
             {
-                choices[count++] = brth->flag;
+                choices[count++] = brth->gf_value;
             }
 
         }

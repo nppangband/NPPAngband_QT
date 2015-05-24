@@ -412,7 +412,7 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc)
     }
 
     /* Don't describe if not set off*/
-    if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power))
+    if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power) && !p_ptr->is_wizard)
     {
         desc->append("  The effects of this trap are unknown.");
         return(FALSE);
@@ -695,7 +695,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
     }
 
     /* Don't describe if not set off*/
-    if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power))
+    if ((mode == MODE_DESCRIBE) && (!f_l_ptr->f_l_power) && !p_ptr->is_wizard)
     {
         desc = ("  The effects of this trap are unknown.");
         return (desc);
@@ -715,7 +715,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This pit will cause you %1d%2 damage.") .arg(dice) .arg(sides));
-                desc.append(QString("  Daggers will cut you up to %1 times for %2d%3 turns")  .arg(reps) .arg(dice2) .arg(sides2));
+                desc.append(QString("  Daggers will cut you up to %1 times for %2d%3 damage")  .arg(reps) .arg(dice2) .arg(sides2));
                 desc.append(" each as you fall.");
                 return (desc);
             }
@@ -2262,13 +2262,13 @@ dynamic_grid_type *get_dynamic_terrain(byte y, byte x)
 static byte calculate_turn_count(u16b feat)
 {
     /* Growing trees */
-    if (feat == FEAT_FSOIL_DYNAMIC)
+    if (feat == FEAT_FOREST_SOIL_DYNAMIC)
     {
         return (25 + rand_int(30));
     }
 
     /* Geysers */
-    if (feat == FEAT_GEYSER)
+    if (feat == FEAT_WALL_WATER_BOILING_GEYSER)
     {
         return (20 + rand_int(50));
     }
@@ -2704,7 +2704,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
                 if (!one_in_(15)) continue;
 
                 /* Create smoke */
-                set_effect_lingering_cloud(FEAT_SMOKE, yy, xx, 100, SOURCE_OTHER, 0);
+                set_effect_lingering_cloud(FEAT_EFFECT_SMOKE, yy, xx, 100, SOURCE_OTHER, 0);
 
                 /*Mark the lore if the player observed this*/
                 if (player_can_see_bold(yy, xx)) f_l_ptr->f_l_flags3 |= (FF3_DYNAMIC);
@@ -2719,7 +2719,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
     }
 
     /* Boiling water geysers can soak the dungeon with boiling water */
-    if (feat == FEAT_GEYSER)
+    if (feat == FEAT_WALL_WATER_BOILING_GEYSER)
     {
         u32b flg = PROJECT_BOOM | PROJECT_ITEM | PROJECT_GRID |
             PROJECT_KILL | PROJECT_PLAY;
@@ -2753,7 +2753,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
     /*
      * A very bad imitation of the Fangorn forest.
      */
-    if (feat == FEAT_FSOIL_DYNAMIC)
+    if (feat == FEAT_FOREST_SOIL_DYNAMIC)
     {
         bool skip = FALSE;
 

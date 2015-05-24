@@ -348,7 +348,7 @@ void MainWindow::win_obj_list_update()
             obj_ltr->setIcon(pix);
         }
 
-        obj_ltr->setData(Qt::ForegroundRole, object_type_attr(o_ptr->k_idx));
+        obj_ltr->setData(Qt::ForegroundRole, o_ptr->get_color());
         obj_ltr->setTextAlignment(Qt::AlignCenter);
         obj_ltr->setFont(font_win_obj_list);
         obj_list_area->setItem(row, col++, obj_ltr);

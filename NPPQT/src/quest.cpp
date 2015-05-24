@@ -2192,7 +2192,7 @@ static void build_quest_stairs(int y, int x)
     message(QString("A magical staircase appears..."));
 
     /* Create stairs down */
-    cave_set_feat(y, x, FEAT_MORE);
+    cave_set_feat(y, x, FEAT_STAIRS_DOWN);
 
     light_spot(y, x);
 

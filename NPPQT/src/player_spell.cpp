@@ -706,7 +706,7 @@ QString do_mage_spell(int mode, int spell, int dir)
                dam+=(plev-30)*9;
 
 
-            dam1 = (dam * f_info[FEAT_SHARD].x_damage) / 100;
+            dam1 = (dam * f_info[FEAT_EFFECT_CLOUD_SHARD].x_damage) / 100;
 
             if (name) return ("Shard Storm");
             if (desc) return (QString("Creates a radius %1 cloud of shards that causes %2 hp damage.") .arg(rad) .arg(dam1));
@@ -746,7 +746,7 @@ QString do_mage_spell(int mode, int spell, int dir)
              * mana later if it is too fast a damage dealing rate. -AR
              */
             dam = 2400 + (plev * 40);  /*240 + plev times 4 damage*/
-            dam1 = (dam * f_info[FEAT_SPARKS].x_damage) / 100;
+            dam1 = (dam * f_info[FEAT_EFFECT_SPARKS].x_damage) / 100;
 
             if (name) return ("Call Lightning");
             if (desc) return (QString("Creates a radius %1 orb of time released lightning strikes that cause %2 hp damage each.") .arg(rad) .arg(dam1));
@@ -799,7 +799,7 @@ QString do_mage_spell(int mode, int spell, int dir)
             * Bedlam is now a cloud of confusion -AR
             */
             dam = 120 + (plev * 8);
-            dam1 = (dam * f_info[FEAT_CONFUSION].x_damage) / 100;
+            dam1 = (dam * f_info[FEAT_EFFECT_CLOUD_CONFUSION].x_damage) / 100;
 
             if (name) return ("Bedlam");
             if (desc) return (QString("Creates a radius %1 cloud of confusion that causes %2 hp damage.") .arg(rad) .arg(dam1));
@@ -960,7 +960,7 @@ QString do_mage_spell(int mode, int spell, int dir)
 
             if (plev > 40) dam += (plev - 40) * 24;
 
-            dam1 = (dam * f_info[FEAT_NETHER].x_damage) / 100;
+            dam1 = (dam * f_info[FEAT_EFFECT_CLOUD_NETHER].x_damage) / 100;
 
             if (name) return ("Cloudkill");
             if (desc) return (QString("Creates a radius %1 cloud of nether that causes %2 hp damage.") .arg(rad) .arg(dam1));
@@ -1017,7 +1017,7 @@ QString do_mage_spell(int mode, int spell, int dir)
              * required of course, at least 60 or 75 mana. -AR
              */
             dam = 1800 + (plev * 30);  /*540 + plev times 9 damage for each meteor*/
-            dam1 = (dam * f_info[FEAT_METEOR_BURST].x_damage) / 100;
+            dam1 = (dam * f_info[FEAT_EFFECT_METEOR_STRIKE].x_damage) / 100;
 
             if (name) return ("Meteor Storm");
             if (desc) return (QString("Creates a radius %1 meteor strike that causes %2 hp damage.") .arg(rad) .arg(dam1));
@@ -1668,7 +1668,7 @@ QString do_druid_incantation(int mode, int spell, int dir)
              * damage listed below, according to terrain.txt
              */
             dam = 30 + (plev * 2);
-            dam1 = (dam * f_info[FEAT_POISON_CLOUD].x_damage) / 100;
+            dam1 = (dam * f_info[FEAT_EFFECT_CLOUD_POISON].x_damage) / 100;
 
             if (name) return ("Poison Cloud");
             if (desc) return (QString("Creates a radius %1 cloud of poison that causes %2 hp damage.") .arg(rad) .arg(dam1));
@@ -1704,7 +1704,6 @@ QString do_druid_incantation(int mode, int spell, int dir)
 
         case DRUID_BARKSKIN:
         {
-
             dur = 25 + p_ptr->lev;
 
             if (name) return ("Bark Skin");
@@ -1988,7 +1987,7 @@ QString do_druid_incantation(int mode, int spell, int dir)
              * damage listed below, according to terrain.txt
              */
             dam = 400 + (plev * 6);  /*120 + plev times 2 damage*/
-            dam1 = (dam * f_info[FEAT_LIFE_DRAIN].x_damage) / 100;
+            dam1 = (dam * f_info[FEAT_EFFECT_DRAIN_LIFE].x_damage) / 100;
 
             if (name) return ("Life draining bursts");
             if (desc) return (QString("Creates a radius %1 orb of time released life draining bursts that causes %2 hp damage.") .arg(rad) .arg(dam1));
@@ -2231,7 +2230,7 @@ QString do_druid_incantation(int mode, int spell, int dir)
         case DRUID_GLACIER:
         {
             /* Get the feature */
-            feature_type *f_ptr = &f_info[FEAT_GLACIER];
+            feature_type *f_ptr = &f_info[FEAT_WALL_GLACIER];
             dam = f_ptr->x_timeout_set;
             dam1 = f_ptr->x_timeout_rand;
 
