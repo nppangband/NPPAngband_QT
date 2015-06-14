@@ -75,7 +75,7 @@ void player_state::player_state_wipe()
         stat_loaded_cur[i] = 0;
         stat_loaded_max[i] = 0;
     }
-    dis_ac = ac = dis_to_a = to_a = to_h = dis_to_h = to_d = dis_to_d = 0;
+    known_ac = ac = known_to_a = to_a = to_h = known_to_h = to_d = known_to_d = 0;
     see_infra = 0;
     for (i = 0; i < SKILL_MAX; i++) skills[i] = 0;
     noise = cur_light = 0;

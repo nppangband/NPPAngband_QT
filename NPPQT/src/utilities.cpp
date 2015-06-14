@@ -519,7 +519,7 @@ void debug_rarities()
 {
     if (!character_dungeon) return;
 
-    // TODO PLAYTESTING
+    /* TODO PLAYTESTING
     int n = 0;
     for (int y = 0; y < p_ptr->cur_map_hgt; y++) {
         for (int x = 0; x < p_ptr->cur_map_wid; x++) {
@@ -528,7 +528,7 @@ void debug_rarities()
                 color_message(QString("NONE terrain %1x%2").arg(y).arg(x), TERM_RED);
             }
         }
-    }
+    }*/
 
     /*
     n = 0;
@@ -591,7 +591,7 @@ QColor get_object_color(object_type *o_ptr)
 
 
 // Display an actual window with the information, sybmol, and tile
-void display_info_window(byte mode, int index, QString info, object_type *o_ptr)
+void display_info_window(byte mode, int index, QString info)
 {
     QString tile_id;
     QMessageBox message_box;
@@ -801,6 +801,8 @@ QString int_to_roman(int n)
 
     return (roman);
 }
+
+
 
 
 /*

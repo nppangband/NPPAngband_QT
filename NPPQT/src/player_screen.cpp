@@ -607,8 +607,8 @@ void update_char_screen(QWidget *return_widget)
         }
         if (this_name.operator ==("PLYR_AC"))
         {
-            first_num = p_ptr->state.dis_ac;
-            second_num = p_ptr->state.dis_to_a;
+            first_num = p_ptr->state.known_ac;
+            second_num = p_ptr->state.known_to_a;
             first_num_string.setNum(first_num);
             second_num_string.setNum(second_num);
             if (second_num < 0) second_num_string.prepend("-");
@@ -618,8 +618,8 @@ void update_char_screen(QWidget *return_widget)
         }
         if (this_name.operator ==("PLYR_MELEE"))
         {
-            first_num = p_ptr->state.dis_to_h;
-            second_num = p_ptr->state.dis_to_d;
+            first_num = p_ptr->state.known_to_h;
+            second_num = p_ptr->state.known_to_d;
 
             object_type *o_ptr = &inventory[INVEN_WIELD];
             QString dd; ;
@@ -669,7 +669,7 @@ void update_char_screen(QWidget *return_widget)
             }
             else o_ptr = &inventory[INVEN_BOW];
 
-            first_num = p_ptr->state.dis_to_h;
+            first_num = p_ptr->state.known_to_h;
             second_num = 0;
             s32b mult = p_ptr->state.ammo_mult;
             if (o_ptr->is_known())

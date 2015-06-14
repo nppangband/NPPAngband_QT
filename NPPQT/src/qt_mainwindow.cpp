@@ -1013,6 +1013,8 @@ MainWindow::MainWindow()
     update_file_menu_game_inactive();
 
     setWindowFilePath(QString());
+
+    get_8x8_tiles();
 }
 
 void MainWindow::setup_nppangband()
@@ -1776,6 +1778,8 @@ void MainWindow::create_menus()
     QMenu *submenu = settings->addMenu(tr("Tile multiplier"));
     multipliers = new QActionGroup(this);
     QString items[] = {
+      QString("0.5:0.5"),
+      QString("0.75:0.75"),
       QString("1:1"),
       QString("1.25:1.25"),
       QString("1.5:1.5"),

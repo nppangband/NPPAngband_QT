@@ -657,7 +657,7 @@ void MainWindow::update_sidebar_player()
             }
             if (this_name.operator ==("ARMOR CLASS"))
             {
-                int known_ac = p_ptr->state.dis_ac + p_ptr->state.dis_to_a;
+                int known_ac = p_ptr->state.known_ac + p_ptr->state.known_to_a;
                 QString ac = number_to_formatted_string(known_ac);
                 this_lbl->setText(color_string(ac, SBAR_NORMAL));
                 this_lbl->setAlignment(Qt::AlignRight);

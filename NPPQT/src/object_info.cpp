@@ -431,7 +431,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
         dd = k_ptr->dd;
         ds = k_ptr->ds;
     }
-    plus = object_state.dis_to_d + (o_ptr->is_known() ? o_ptr->to_d : 0);
+    plus = object_state.known_to_d + (o_ptr->is_known() ? o_ptr->to_d : 0);
     crit_hit_percent = critical_hit_chance(o_ptr, object_state, TRUE) / (CRIT_HIT_CHANCE / 100);
     average = (dd * ds) / 2 + plus;
 
@@ -916,7 +916,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
         dd = k_ptr->dd;
         ds = k_ptr->ds;
     }
-    plus = (o_ptr->is_known() ? o_ptr->to_d : 0) + p_ptr->state.dis_to_d; ;
+    plus = (o_ptr->is_known() ? o_ptr->to_d : 0) + p_ptr->state.known_to_d; ;
 
     /* Apply the throwing weapon bonus. */
     mult = weapon_throw_adjust(o_ptr, f3, &plus, TRUE);
@@ -1691,7 +1691,7 @@ void object_info_screen(object_type *o_ptr)
     QString output = get_object_description(o_ptr);
 
     /* Finally, display it */
-    display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
+    display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output);
 
     return;
 }

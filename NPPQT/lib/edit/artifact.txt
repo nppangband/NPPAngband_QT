@@ -230,7 +230,7 @@ D: return to the Shire.
 
 # The Gem of Amon Sul (by Ceilti O'Cahill)
 
-N:12:of Amon Sul
+N:12:of Amon Sûl
 I:39:8:2
 W:76:85:200:100000
 P:2:10d10:2:2:10
@@ -2006,9 +2006,21 @@ A:RES_ELEC:50:50
 D:A set of handgear with sparks that crackle across its knuckleguards.
 
 
+# The Set of Gauntlets 'Paurannon'
+
+N:136:'Paurannon'
+I:31:2:0
+W:40:80:25:50000
+P:2:1d1:0:0:25
+F:RES_ACID | RES_ELEC | RES_FIRE | RES_COLD | RES_POIS
+F:IGNORE_ACID | IGNORE_ELEC | IGNORE_FIRE | IGNORE_COLD | ACTIVATE
+A:RESIST:100:100
+D:A set of handgear with multiple elements across its knuckleguards.
+
+
 # The Set of Gauntlets 'Camlost'
 
-N:136:'Camlost'
+N:137:'Camlost'
 I:31:2:-3
 W:10:20:25:0
 P:2:1d1:-12:-12:0
@@ -2021,7 +2033,7 @@ D: hand of Beren that once clasped a Silmaril.
 
 # The Set of Cesti of Fingolfin
 
-N:137:of Fingolfin
+N:138:of Fingolfin
 I:31:5:4
 W:40:20:40:110000
 P:5:1d1:10:10:20
@@ -2034,7 +2046,7 @@ D: dealt Morgoth seven mighty wounds and pain that will last forever.
 
 # The Massive Iron Crown of Morgoth
 
-N:138:of Morgoth
+N:139:of Morgoth
 I:33:50:125
 W:100:1:20:10000000
 P:0:1d1:0:0:0
@@ -2051,7 +2063,7 @@ D: Silmarils, greatest treasures of Middle-Earth.
 
 # The Mighty Hammer 'Grond'
 
-N:139:'Grond'
+N:140:'Grond'
 I:21:50:0
 W:100:1:1000:500000
 P:0:9d9:5:25:10
@@ -2064,15 +2076,5 @@ D: shattering, whose wielder holds the lives of all Morgoth's servants
 D: in his hand.
 
 
-# The Set of Gauntlets 'Paurannon'
-
-N:140:'Paurannon'
-I:31:2:0
-W:40:80:25:50000
-P:2:1d1:0:0:25
-F:RES_ACID | RES_ELEC | RES_FIRE | RES_COLD | RES_POIS
-F:IGNORE_ACID | IGNORE_ELEC | IGNORE_FIRE | IGNORE_COLD | ACTIVATE
-A:RESIST:100:100
-D:A set of handgear with multiple elements across its knuckleguards.
 
 

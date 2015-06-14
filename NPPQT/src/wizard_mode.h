@@ -143,4 +143,6 @@ private slots:
     void wiz_create_object(void);
 };
 
+
+
 #endif // WIZARD_MODE_H

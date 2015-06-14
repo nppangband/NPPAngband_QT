@@ -916,8 +916,8 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     bool old_see_inv;
 
 
-    int old_dis_ac;
-    int old_dis_to_a;
+    int old_known_ac;
+    int old_known_to_a;
 
     int extra_blows = 0;
     int extra_shots = 0;
@@ -953,8 +953,8 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     old_see_inv = new_state->see_inv;
 
     /* Save the old armor class */
-    old_dis_ac = new_state->dis_ac;
-    old_dis_to_a = new_state->dis_to_a;
+    old_known_ac = new_state->known_ac;
+    old_known_to_a = new_state->known_to_a;
 
     /* Save the old stats */
     for (i = 0; i < A_MAX; i++)
@@ -1229,13 +1229,13 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         new_state->ac += o_ptr->ac;
 
         /* The base armor class is always known */
-        new_state->dis_ac += o_ptr->ac;
+        new_state->known_ac += o_ptr->ac;
 
-        /* Apply the bonuses to armor class (if known) */
-        if ((!id_only) || o_ptr->is_known()) new_state->to_a += o_ptr->to_a;
+        /* Apply the bonuses to armor class */
+        new_state->to_a += o_ptr->to_a;
 
         /* Apply the mental bonuses to armor class, if known */
-        if (o_ptr->is_known()) new_state->dis_to_a += o_ptr->to_a;
+        if (o_ptr->is_known()) new_state->known_to_a += o_ptr->to_a;
 
         /* Hack -- do not apply "weapon" bonuses */
         if (i == INVEN_WIELD) continue;
@@ -1253,8 +1253,8 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         /* Apply the mental bonuses to hit/damage, if known */
         if (o_ptr->is_known())
         {
-            new_state->dis_to_h += o_ptr->to_h;
-            new_state->dis_to_d += o_ptr->to_d;
+            new_state->known_to_h += o_ptr->to_h;
+            new_state->known_to_d += o_ptr->to_d;
         }
 
         new_state->p_flags_native_with_temp |= fn;
@@ -1350,55 +1350,55 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (p_ptr->timed[TMD_STUN] > STUN_HEAVY)
     {
         new_state->to_h -= 20;
-        new_state->dis_to_h -= 20;
+        new_state->known_to_h -= 20;
         new_state->to_d -= 20;
-        new_state->dis_to_d -= 20;
+        new_state->known_to_d -= 20;
     }
     else if (p_ptr->timed[TMD_STUN])
     {
         new_state->to_h -= 5;
-        new_state->dis_to_h -= 5;
+        new_state->known_to_h -= 5;
         new_state->to_d -= 5;
-        new_state->dis_to_d -= 5;
+        new_state->known_to_d -= 5;
     }
 
     /* Invulnerability */
     if (p_ptr->timed[TMD_INVULN])
     {
         new_state->to_a += 100;
-        new_state->dis_to_a += 100;
+        new_state->known_to_a += 100;
     }
 
     /* Temporary blessing */
     if (p_ptr->timed[TMD_BLESSED])
     {
         new_state->to_a += 5;
-        new_state->dis_to_a += 5;
+        new_state->known_to_a += 5;
         new_state->to_h += 10;
-        new_state->dis_to_h += 10;
+        new_state->known_to_h += 10;
     }
 
     /* Temporary shield */
     if (p_ptr->timed[TMD_SHIELD])
     {
         new_state->to_a += 50;
-        new_state->dis_to_a += 50;
+        new_state->known_to_a += 50;
     }
 
     /* Temporary "Hero" */
     if (p_ptr->timed[TMD_HERO])
     {
         new_state->to_h += 12;
-        new_state->dis_to_h += 12;
+        new_state->known_to_h += 12;
     }
 
     /* Temporary "Berserk" */
     if (p_ptr->timed[TMD_BERSERK])
     {
         new_state->to_h += 24;
-        new_state->dis_to_h += 24;
+        new_state->known_to_h += 24;
         new_state->to_a -= 10;
-        new_state->dis_to_a -= 10;
+        new_state->known_to_a -= 10;
     }
 
     /* Temporary "fast" */
@@ -1536,9 +1536,9 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         new_state->to_d += moria_todam_adj();
         new_state->to_h += moria_tohit_adj();
 
-        new_state->dis_to_a += moria_toac_adj();
-        new_state->dis_to_d += moria_todam_adj();
-        new_state->dis_to_h += moria_tohit_adj();
+        new_state->known_to_a += moria_toac_adj();
+        new_state->known_to_d += moria_todam_adj();
+        new_state->known_to_h += moria_tohit_adj();
 
     }
     else
@@ -1560,10 +1560,10 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         new_state->to_h += ((int)(adj_str_th[new_state->stat_index[A_STR]]) - 128);
 
         /* Displayed Modifier Bonuses (Un-inflate stat bonuses) */
-        new_state->dis_to_a += ((int)(adj_dex_ta[new_state->stat_index[A_DEX]]) - 128);
-        new_state->dis_to_d += ((int)(adj_str_td[new_state->stat_index[A_STR]]) - 128);
-        new_state->dis_to_h += ((int)(adj_dex_th[new_state->stat_index[A_DEX]]) - 128);
-        new_state->dis_to_h += ((int)(adj_str_th[new_state->stat_index[A_STR]]) - 128);
+        new_state->known_to_a += ((int)(adj_dex_ta[new_state->stat_index[A_DEX]]) - 128);
+        new_state->known_to_d += ((int)(adj_str_td[new_state->stat_index[A_STR]]) - 128);
+        new_state->known_to_h += ((int)(adj_dex_th[new_state->stat_index[A_DEX]]) - 128);
+        new_state->known_to_h += ((int)(adj_str_th[new_state->stat_index[A_STR]]) - 128);
     }
 
 
@@ -1624,7 +1624,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         {
             /* Hard to wield a heavy bow */
             new_state->to_h += 2 * (hold - o_ptr->weight / 10);
-            new_state->dis_to_h += 2 * (hold - o_ptr->weight / 10);
+            new_state->known_to_h += 2 * (hold - o_ptr->weight / 10);
 
             /* Heavy Bow */
             new_state->heavy_shoot = TRUE;
@@ -1732,7 +1732,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     {
         /* Hard to wield a heavy weapon */
         new_state->to_h += 2 * (hold - o_ptr->weight / 10);
-        new_state->dis_to_h += 2 * (hold - o_ptr->weight / 10);
+        new_state->known_to_h += 2 * (hold - o_ptr->weight / 10);
 
         /* Heavy weapon */
         new_state->heavy_wield = TRUE;
@@ -1764,8 +1764,8 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         new_state->to_d -= 2;
 
         /* Reduce the mental bonuses */
-        new_state->dis_to_h -= 2;
-        new_state->dis_to_d -= 2;
+        new_state->known_to_h -= 2;
+        new_state->known_to_d -= 2;
 
         /* Icky weapon */
         new_state->icky_wield = TRUE;
@@ -1850,7 +1850,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     }
 
     /* Redraw armor (if needed) */
-    if ((new_state->dis_ac != old_dis_ac) || (new_state->dis_to_a != old_dis_to_a))
+    if ((new_state->known_ac != old_known_ac) || (new_state->known_to_a != old_known_to_a))
     {
         /* Redraw */
         p_ptr->redraw |= (PR_SIDEBAR_PL);

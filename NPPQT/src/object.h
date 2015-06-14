@@ -69,8 +69,8 @@
 
 /*** Important artifact indexes (see "lib/edit/artifact.txt") ***/
 
-#define ART_MORGOTH			138
-#define ART_GROND			139
+#define ART_MORGOTH			139
+#define ART_GROND			140
 
 /*
  * Maximum length of artifact names

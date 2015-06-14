@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QHash>
 #include <QPixmap>
+#include <QDialog>
 
 class Package;
 
@@ -37,5 +38,7 @@ extern TileBag *current_tiles;
 extern void init_tile_bags();
 
 extern void extract_tiles(void);
+
+extern void get_8x8_tiles(void);
 
 #endif // TILEBAG_H

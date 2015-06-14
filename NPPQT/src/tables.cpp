@@ -2769,8 +2769,9 @@ const colors_preset preset_colors [MAX_COLORS] =
     { "TERM_SLATE_GRAY",    112 , 128 , 144 },
     { "TERM_TAUPE" ,        139 , 133 , 137 },
     { "TERM_WHITE" ,        255 , 255 , 255 },
-    { "TERM_LIGHT_GRAY",    192 , 192 , 192 },
+    { "TERM_LIGHT_GRAY",    211 , 211 , 211 },
     { "TERM_SNOW_WHITE",    255 , 250 , 250 },
+    { "TERM_IVORY",         255 , 255 , 240 },
     { "TERM_RED",           192 ,   0 ,   0 },
     { "TERM_L_RED",         255 ,  64 ,  64 },
     { "TERM_RED_LAVA",      207 ,  16 ,  32 },
@@ -2800,6 +2801,7 @@ const colors_preset preset_colors [MAX_COLORS] =
     { "TERM_GOLD",          255 , 215 ,   0 },
     { "TERM_SILVER",        192 , 192 , 192 },
     { "TERM_COPPER",        184 , 115 ,  51 },
+    { "TERM_BRONZE",        205 , 127 ,  50 },
 };
 
 

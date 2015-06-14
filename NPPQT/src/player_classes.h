@@ -199,17 +199,17 @@ public:
     s16b stat_loaded_cur[A_MAX];	/* Current "natural" stats with all adjustments */
     s16b stat_loaded_max[A_MAX];       /* Current "maximal" stats with all adjustments */
 
-    s16b dis_ac;		/* Known base ac */
+    s16b known_ac;		/* Known base ac */
     s16b ac;			/* Base ac */
 
-    s16b dis_to_a;		/* Known bonus to ac */
+    s16b known_to_a;	/* Known bonus to ac */
     s16b to_a;			/* Bonus to ac */
 
     s16b to_h;			/* Bonus to hit */
-    s16b dis_to_h;		/* Known bonus to hit */
+    s16b known_to_h;	/* Known bonus to hit */
 
     s16b to_d;			/* Bonus to dam */
-    s16b dis_to_d;		/* Known bonus to dam */
+    s16b known_to_d;	// Known bonus to dam
 
     s16b see_infra;		/* Infravision range */
 

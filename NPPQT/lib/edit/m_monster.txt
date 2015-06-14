@@ -621,7 +621,7 @@ D: for a good tavern.
 
 
 N:42:Huge Brown Bat
-A:Gt brown bat
+A:hugebrownbat
 G:b:TERM_UMBER
 I:13:2d6:8:12:40
 W:3:1:0:4
@@ -1717,7 +1717,7 @@ B:CLAW:HURT:1d2
 B:CLAW:HURT:1d2
 F:RAND_25 | EVASIVE | ANIMAL | FLYING | HURT_LIGHT
 F:HURT_FIRE
-D:A giant bat with sparks shooting out of its nostrils.
+D:A giant bat with long ears.
 
 
 N:135:Giant Gnat
@@ -2833,7 +2833,7 @@ B:CLAW:HURT:1d5
 B:CLAW:HURT:1d5
 F:FORCE_EXTRA | RAND_25 | HAS_LIGHT | EVASIVE | BASH_DOOR
 F:ANIMAL | FLYING | IM_ELEC
-D:A giant bat with flames shooting out of its nostrils.
+D:A giant bat that emits sparks of lightning.
 
 
 N:224:Giant Static Ant
@@ -3231,7 +3231,7 @@ I:12:24d8:14:50:40
 W:36:1:0:350
 B:BITE:HURT:2d10
 F:WEIRD_MIND | KILL_BODY | ANIMAL | HURT_FIRE | HURT_COLD
-D:A grey spotted insect with shart pincers.
+D:A giant spotted insect with shart pincers.
 
 
 N:253:Grey Wraith

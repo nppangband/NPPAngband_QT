@@ -900,6 +900,7 @@ enum
     TERM_WHITE,
     TERM_LIGHT_GRAY,
     TERM_SNOW_WHITE,
+    TERM_IVORY,
 
     //Red
     TERM_RED,
@@ -945,6 +946,7 @@ enum
     TERM_GOLD,
     TERM_SILVER,
     TERM_COPPER,
+    TERM_BRONZE,
 
     MAX_COLORS,
     COLOR_CUSTOM  //
@@ -960,6 +962,7 @@ enum
 #define    COLOR24BIT_WHITE         #FFFFFF
 #define    COLOR24BIT_LIGHT_GRAY    #C0C0C0
 #define    COLOR24BIT_SNOW_WHITE    #FFFAFA
+#define    COLOR24BIT_IVORY         #FFFFF0
 #define    COLOR24BIT_RED           #C00000
 #define    COLOR24BIT_L_RED         #FF4040
 #define    COLOR24BIT_RED_LAVA      #CF1020
@@ -989,6 +992,7 @@ enum
 #define    COLOR24BIT_GOLD          #FFD700
 #define    COLOR24BIT_SILVER        #C0C0C0
 #define    COLOR24BIT_COPPER        #B87333
+#define    COLOR24BIT_BRONZE        #CD7F32
 
 
 

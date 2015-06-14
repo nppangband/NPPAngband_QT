@@ -842,7 +842,7 @@ static byte cold_color(void)
     switch (rand_int(3))
     {
         case 0: case 1: return (TERM_WHITE);
-        case 2: return (TERM_SNOW_WHITE);
+        case 2: return (TERM_IVORY);
     }
     return (TERM_WHITE);
 }
@@ -920,7 +920,7 @@ static byte confu_color(void)
 {
     switch (rand_int(5))
     {
-        case 0: case 1: case 2: return (TERM_L_UMBER);
+        case 0: case 1: case 2: return (TERM_BRONZE);
         case 3: return (TERM_UMBER);
         case 4: return (TERM_WHITE);
     }

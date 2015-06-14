@@ -370,7 +370,7 @@ int critical_shot_chance(object_type *o_ptr, player_state a_state, bool is_throw
     /* Extract "shot" power */
     if (id_only)
     {
-        i += o_ptr->weight + (a_state.dis_to_h + (o_ptr->is_known() ? o_ptr->to_h : 0)) * 3;
+        i += o_ptr->weight + (a_state.known_to_h + (o_ptr->is_known() ? o_ptr->to_h : 0)) * 3;
     }
 
     else i += o_ptr->weight + (a_state.to_h + o_ptr->to_h) * 3;
@@ -490,7 +490,7 @@ int critical_hit_chance(object_type *o_ptr, player_state a_state, bool id_only)
     /* Re-do depending on the known variable */
     if (id_only)
     {
-        i = o_ptr->weight + (p_ptr->state.dis_to_h + (o_ptr->is_known() ? o_ptr->to_h : 0)) * 3;
+        i = o_ptr->weight + (p_ptr->state.known_to_h + (o_ptr->is_known() ? o_ptr->to_h : 0)) * 3;
         i += a_state.skills[SKILL_TO_HIT_MELEE] * 2;
     }
 

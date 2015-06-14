@@ -434,7 +434,7 @@ QString desc_ego_fake(int ego_num, QString object_string, bool display)
     if (e_ptr->e_flags3 & (TR3_LIGHT_CURSE)) output.append("It is cursed.");
 
     /* Finally, display it */
-    if (display) display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output, o_ptr);
+    if (display) display_info_window(DISPLAY_INFO_OBJECT, o_ptr->k_idx, output);
 
     return(output);
 }
@@ -1387,7 +1387,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     //Filter for the first monster group.
     filter_rows(0,0);
 
-    QSize this_size = QSize(width()* 7 / 7, height() * 4 / 3);
+    QSize this_size = QSize(width()* 7 / 5, height() * 4 / 3);
     resize(ui_max_widget_size(this_size));
     updateGeometry();
 

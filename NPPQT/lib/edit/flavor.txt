@@ -22,22 +22,22 @@ D:Plain Gold
 
 # Sapphire Ring     The Ring of Power 'Vilya'
 N:2:45:36
-G:=:TERM_BLUE
+G:=:15:82:186
 D:Sapphire
 
-# Mithril Ring     The Ring of Power 'Nenya'
+# Beryl Ring     The Ring of Power 'Nenya'
 N:3:45:35
-G:=:TERM_L_BLUE
-D:Mithril
+G:=:TERM_WHITE
+D:Beryl
 
 # Ruby Ring     Fixed - The Ring of Power 'Narya'
 N:4:45:34
-G:=:TERM_RED_LAVA
+G:=:224:17:95
 D:Ruby
 
 # Adamantite Ring     
 N:5:45
-G:=:TERM_JUNGLE_GREEN
+G:=:TERM_GREEN
 D:Adamantite
 
 # Alexandrite Ring     
@@ -52,7 +52,7 @@ D:Almandine
 
 # Amethyst Ring     
 N:8:45
-G:=:TERM_PURPLE
+G:=:153:102:204
 D:Amethyst
 
 # Apatite Ring     
@@ -62,107 +62,107 @@ D:Apatite
 
 # Aquamarine Ring     
 N:10:45
-G:=:TERM_SKY_BLUE
+G:=:127:255:212
 D:Aquamarine
 
 # Azurite Ring     
 N:11:45
-G:=:TERM_BLUE
+G:=:240:255:255
 D:Azurite
 
-# Beryl Ring     
-N:12:45
-G:=:TERM_SNOW_WHITE
-D:Beryl
-
 # Bloodstone Ring     
-N:13:45
+N:12:45
 G:=:TERM_JUNGLE_GREEN
 D:Bloodstone
 
 # Bronze Ring     
-N:14:45
-G:=:TERM_COPPER
+N:13:45
+G:=:TERM_BRONZE
 D:Bronze
 
 # Calcite Ring     
-N:15:45
+N:14:45
 G:=:TERM_WHITE
 D:Calcite
 
 # Carnelian Ring     
-N:16:45
-G:=:TERM_RED_LAVA
+N:15:45
+G:=:179:127:27
 D:Carnelian
 
 # Corundum Ring     
-N:17:45
-G:=:TERM_SLATE_GRAY
+N:16:45
+G:=:TERM_RED
 D:Corundum
 
 # Diamond Ring     
-N:18:45
+N:17:45
 G:=:TERM_WHITE
 D:Diamond
 
 # Emerald Ring     
-N:19:45
-G:=:TERM_GREEN
+N:18:45
+G:=:80:200:120
 D:Emerald
 
 # Engagement Ring     
-N:20:45
+N:19:45
 G:=:TERM_L_BLUE
 D:Engagement
 
 # Fluorite Ring     
-N:21:45
+N:20:45
 G:=:TERM_GREEN
 D:Fluorite
 
 # Garnet Ring     
-N:22:45
+N:21:45
 G:=:TERM_RED_LAVA
 D:Garnet
 
 # Granite Ring     
-N:23:45
+N:22:45
 G:=:TERM_L_DARK
 D:Granite
 
 # Jade Ring     
-N:24:45
-G:=:TERM_JUNGLE_GREEN
+N:23:45
+G:=:0:168:107
 D:Jade
 
 # Jasper Ring     
-N:25:45
-G:=:TERM_RED
+N:24:45
+G:=:215:59:62
 D:Jasper
 
 # Jet Ring     
-N:26:45
-G:=:TERM_L_DARK
+N:25:45
+G:=:52:52:52
 D:Jet
 
 # Lapis Lazulii Ring     
-N:27:45
-G:=:TERM_NAVY_BLUE
+N:26:45
+G:=:38:97:156
 D:Lapis Lazulii
 
 # Malachite Ring     
-N:28:45
+N:27:45
 G:=:TERM_GREEN
 D:Malachite
 
 # Marble Ring     
-N:29:45
+N:28:45
 G:=:TERM_LIGHT_GRAY
 D:Marble
 
+# Mithril Ring     
+N:29:45
+G:=:TERM_SILVER
+D:Mithril
+
 # Moonstone Ring     
 N:30:45
-G:=:TERM_SKY_BLUE
+G:=:115:169:194
 D:Moonstone
 
 # Mother of Pearl Ring     
@@ -187,12 +187,12 @@ D:Opal
 
 # Pearl Ring     
 N:35:45
-G:=:TERM_LIGHT_GRAY
+G:=:TERM_IVORY
 D:Pearl
 
 # Platinum Ring     
 N:36:45
-G:=:TERM_WHITE
+G:=:229:228:226
 D:Platinum
 
 # Quartz Ring     
@@ -227,7 +227,7 @@ D:Tanzanite
 
 # Tiger Eye Ring     
 N:43:45
-G:=:TERM_RASPBERRY
+G:=:TERM_L_BROWN
 D:Tiger Eye
 
 # Tortoise Shell Ring     
@@ -237,7 +237,7 @@ D:Tortoise Shell
 
 # Turquoise Ring     
 N:45:45
-G:=:TERM_L_GREEN
+G:=:64:224:208
 D:Turquoise
 
 # Yellow Gold Ring     
@@ -250,14 +250,14 @@ N:47:45
 G:=:TERM_SILVER
 D:Zircon
 
-# Amber Amulet     The Jewel 'Evenstar'
-N:48:40:17
-G:":TERM_L_UMBER
-D:Amber
+# Adamant Amulet   The Jewel 'Evenstar'  
+N:48:40
+G:":TERM_SILVER
+D:Adamant
 
 # Emerald Amulet     The Elfstone 'Elessar'
 N:49:40:16
-G:":TERM_L_GREEN
+G:":80:200:120
 D:Emerald
 
 # Golden Amulet     The Necklace of the Dwarves
@@ -267,27 +267,27 @@ D:Golden
 
 # Brass Amulet     The Amulet of Ingwë
 N:51:40:11
-G:":TERM_COPPER
+G:":205:127:50
 D:Brass
 
 # Bronze Amulet     The Amulet of Carlammas
 N:52:40:10
-G:":TERM_COPPER
+G:":TERM_BRONZE
 D:Bronze
 
-# Adamant Amulet     
-N:53:40
-G:":TERM_SILVER
-D:Adamant
-
 # Agate Amulet     
-N:54:40
+N:53:40
 G:":TERM_LIGHT_GRAY
 D:Agate
 
+# Amber Amulet     
+N:54:40:17
+G:":TERM_L_UMBER
+D:Amber
+
 # Amethyst Amulet     
 N:55:40
-G:":TERM_VIOLET
+G:":153:102:204
 D:Amethyst
 
 # Blue Topaz Amulet     
@@ -312,7 +312,7 @@ D:Copper
 
 # Coral Amulet     
 N:60:40
-G:":TERM_PINK
+G:":248:131:121
 D:Coral
 
 # Dragontooth Amulet     
@@ -327,7 +327,7 @@ D:Driftwood
 
 # Ivory Amulet     
 N:63:40
-G:":TERM_WHITE
+G:":TERM_IVORY
 D:Ivory
 
 # Mithril Amulet     
@@ -352,7 +352,7 @@ D:Pewter
 
 # Ruby Amulet     
 N:68:40
-G:":TERM_RED
+G:":224:17:95
 D:Ruby
 
 # Sea Shell Amulet     
@@ -392,7 +392,7 @@ D:Balsa
 
 # Bamboo Staff     
 N:76:55
-G:_:TERM_L_UMBER
+G:_:125:78:45
 D:Bamboo
 
 # Banyan Staff     
@@ -407,7 +407,7 @@ D:Birch
 
 # Cedar Staff     
 N:79:55
-G:_:TERM_L_UMBER
+G:_:201:90:73
 D:Cedar
 
 # Cherry Staff     
@@ -417,7 +417,7 @@ D:Cherry
 
 # Chestnut Staff     
 N:81:55
-G:_:TERM_RED
+G:_:149:69:53
 D:Chestnut
 
 # Cottonwood Staff     
@@ -442,7 +442,7 @@ D:Elm
 
 # Eucalyptus Staff     
 N:86:55
-G:_:TERM_L_UMBER
+G:_:68:215:168
 D:Eucalyptus
 
 # Fir Staff     
@@ -482,7 +482,7 @@ D:Ironwood
 
 # Ivory Staff     
 N:94:55
-G:_:TERM_WHITE
+G:_:TERM_IVORY
 D:Ivory
 
 # Locust Staff     
@@ -577,22 +577,22 @@ D:Willow
 
 # Aluminum Wand     
 N:113:65
-G:-:TERM_L_BLUE
+G:-:169:172:182
 D:Aluminum
 
 # Aluminum-Plated Wand     
 N:114:65
-G:-:TERM_SKY_BLUE
+G:-:169:172:182
 D:Aluminum-Plated
 
 # Brass Wand     
 N:115:65
-G:-:TERM_GOLD
+G:-:205:127:50
 D:Brass
 
 # Bronze Wand     
 N:116:65
-G:-:TERM_COPPER
+G:-:TERM_BRONZE
 D:Bronze
 
 # Cast Iron Wand     
@@ -627,12 +627,12 @@ D:Gold-Plated
 
 # Iron Wand     
 N:123:65
-G:-:TERM_SLATE
+G:-:212:215:217
 D:Iron
 
 # Ivory Wand     
 N:124:65
-G:-:TERM_SNOW_WHITE
+G:-:TERM_IVORY
 D:Ivory
 
 # Lead Wand     
@@ -652,12 +652,12 @@ D:Magnesium
 
 # Mithril Wand     
 N:128:65
-G:-:TERM_L_BLUE
+G:-:TERM_SILVER
 D:Mithril
 
 # Mithril-Plated Wand     
 N:129:65
-G:-:TERM_SKY_BLUE
+G:-:TERM_SILVER
 D:Mithril-Plated
 
 # Molybdenum Wand     
@@ -667,22 +667,22 @@ D:Molybdenum
 
 # Nickel Wand     
 N:131:65
-G:-:TERM_SLATE_GRAY
+G:-:195:195:189
 D:Nickel
 
-# Nickel Plated Wand     
+# Nickel-Plated Wand     
 N:132:65
-G:-:TERM_SLATE
-D:Nickel Plated
+G:-:195:195:189
+D:Nickel-Plated
 
 # Pewter Wand     
 N:133:65
-G:-:TERM_SLATE
+G:-:150:168:161
 D:Pewter
 
 # Platinum Wand     
 N:134:65
-G:-:TERM_SLATE_GRAY
+G:-:229:228:226
 D:Platinum
 
 # Runed Wand     
@@ -692,7 +692,7 @@ D:Runed
 
 # Rusty Wand     
 N:136:65
-G:-:TERM_L_RED
+G:-:72:4:4
 D:Rusty
 
 # Silver Wand     
@@ -707,12 +707,12 @@ D:Silver-Plated
 
 # Steel Wand     
 N:139:65
-G:-:TERM_SILVER
+G:-:38:35:53
 D:Steel
 
 # Steel-Plated Wand     
 N:140:65
-G:-:TERM_LIGHT_GRAY
+G:-:38:35:53
 D:Steel-Plated
 
 # Tin Wand     
@@ -727,7 +727,7 @@ D:Tin-Plated
 
 # Titanium Wand     
 N:143:65
-G:-:TERM_YELLOW
+G:-:238:230:0
 D:Titanium
 
 # Tungsten Wand     
@@ -752,22 +752,22 @@ D:Zirconium
 
 # Aluminum Rod     
 N:148:66
-G:¯:TERM_L_BLUE
+G:¯:169:172:182
 D:Aluminum
 
 # Aluminum-Plated Rod     
 N:149:66
-G:¯:TERM_SKY_BLUE
+G:¯:169:172:182
 D:Aluminum-Plated
 
 # Brass Rod     
 N:150:66
-G:-:TERM_GOLD
+G:-:205:127:50
 D:Brass
 
 # Bronze Rod     
 N:151:66
-G:¯:TERM_COPPER
+G:¯:TERM_BRONZE
 D:Bronze
 
 # Cast Iron Rod     
@@ -802,12 +802,12 @@ D:Gold-Plated
 
 # Iron Rod     
 N:158:66
-G:¯:TERM_SLATE
+G:¯:212:215:217
 D:Iron
 
 # Ivory Rod     
 N:159:66
-G:¯:TERM_SNOW_WHITE
+G:¯:TERM_IVORY
 D:Ivory
 
 # Lead Rod     
@@ -842,22 +842,22 @@ D:Molybdenum
 
 # Nickel Rod     
 N:166:66
-G:¯:TERM_SLATE_GRAY
+G:¯:195:195:189
 D:Nickel
 
 # Nickel Plated Rod     
 N:167:66
-G:¯:TERM_SLATE
-D:Nickel Plated
+G:¯:195:195:189
+D:Nickel-Plated
 
 # Pewter Rod     
 N:168:66
-G:¯:TERM_SLATE
+G:¯:150:168:161
 D:Pewter
 
 # Platinum Rod     
 N:169:66
-G:¯:TERM_SLATE_GRAY
+G:¯:229:228:226
 D:Platinum
 
 # Runed Rod     
@@ -867,7 +867,7 @@ D:Runed
 
 # Rusty Rod     
 N:171:66
-G:¯:TERM_L_RED
+G:¯:72:4:4
 D:Rusty
 
 # Silver Rod     
@@ -882,12 +882,12 @@ D:Silver-Plated
 
 # Steel Rod     
 N:174:66
-G:¯:TERM_SILVER
+G:¯:38:35:53
 D:Steel
 
 # Steel-Plated Rod     
 N:175:66
-G:¯:TERM_LIGHT_GRAY
+G:¯:38:35:53
 D:Steel-Plated
 
 # Tin Rod     
@@ -902,7 +902,7 @@ D:Tin-Plated
 
 # Titanium Rod     
 N:178:66
-G:¯:TERM_YELLOW
+G:¯:238:230:0
 D:Titanium
 
 # Tungsten Rod     
@@ -942,7 +942,7 @@ D:Blue
 
 # Bronze Mushroom     
 N:186:80
-G:,:TERM_COPPER
+G:,:TERM_BRONZE
 D:Bronze
 
 # Brown Mushroom     
@@ -1047,7 +1047,7 @@ D:Slimy
 
 # Tan Mushroom     
 N:207:80
-G:,:TERM_L_UMBER
+G:,:210:180:140
 D:Tan
 
 # Violet Mushroom     
@@ -1127,7 +1127,7 @@ D:Bubbling
 
 # Chartreuse Potion     
 N:223:75
-G:!:TERM_L_GREEN
+G:!:127:155:0
 D:Chartreuse
 
 # Clotted Red Potion     
@@ -1162,7 +1162,7 @@ D:Crimson
 
 # Cyan Potion     
 N:230:75
-G:!:TERM_SKY_BLUE
+G:!:0:255:255
 D:Cyan
 
 # Dark Blue Potion     
@@ -1227,7 +1227,7 @@ D:Hazy
 
 # Indigo Potion     
 N:243:75
-G:!:TERM_PURPLE
+G:!:75:0:130
 D:Indigo
 
 # Light Blue Potion     
@@ -1242,7 +1242,7 @@ D:Light Green
 
 # Magenta Potion     
 N:246:75
-G:!:TERM_PURPLE
+G:!:255:0:255
 D:Magenta
 
 # Metallic Blue Potion     
@@ -1302,7 +1302,7 @@ D:Pink Sparkling
 
 # Puce Potion     
 N:258:75
-G:!:TERM_VIOLET
+G:!:114:47:55
 D:Puce
 
 # Pungent Potion     

@@ -921,7 +921,7 @@ extern QString formatted_weight_string(s32b weight);
 extern QString get_player_title(void);
 extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);
-extern void display_info_window(byte mode, int index, QString info, object_type *o_ptr = 0);
+extern void display_info_window(byte mode, int index, QString info);
 extern QString to_ascii(QString src);
 extern QString cnv_stat(int val);
 extern void write_note(QString note, s16b depth);

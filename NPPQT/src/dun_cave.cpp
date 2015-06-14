@@ -359,12 +359,12 @@ static byte breath_to_attr[32][2] =
     {  TERM_SLATE, TERM_L_DARK },       /* RF4_BRTH_ACID */
     {  TERM_BLUE,  TERM_L_BLUE },       /* RF4_BRTH_ELEC */
     {  TERM_RED,  TERM_L_RED },         /* RF4_BRTH_FIRE */
-    {  TERM_WHITE,  TERM_SNOW_WHITE },     /* RF4_BRTH_COLD */
+    {  TERM_WHITE,  TERM_IVORY },     /* RF4_BRTH_COLD */
     {  TERM_GREEN,  TERM_L_GREEN },     /* RF4_BRTH_POIS */
     {  TERM_ORANGE,  TERM_RED },        /* RF4_BRTH_PLAS */
     {  TERM_YELLOW,  TERM_ORANGE },     /* RF4_BRTH_LIGHT */
     {  TERM_L_DARK,  TERM_SLATE },      /* RF4_BRTH_DARK */
-    {  TERM_L_UMBER,  TERM_UMBER },     /* RF4_BRTH_CONFU */
+    {  TERM_BRONZE,  TERM_UMBER },     /* RF4_BRTH_CONFU */
     {  TERM_YELLOW,  TERM_L_UMBER },    /* RF4_BRTH_SOUND */
     {  TERM_UMBER,  TERM_L_UMBER },     /* RF4_BRTH_SHARD */
     {  TERM_SNOW_WHITE,  TERM_SLATE },  /* RF4_BRTH_INER */

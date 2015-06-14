@@ -825,7 +825,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             if (mode == MODE_DESCRIBE)
             {
                 desc = (QString("  This spiked pit will cause you %1d%2 damage when you fall into it.") .arg(dice) .arg(sides));
-                desc.append(QString("  50% the time, The spikes will cut you up to (%1d%2) * 2 turns.") .arg(dice) .arg(sides));
+                desc.append(QString("  50 percent the time, The spikes will cut you up to (%1d%2) * 2 turns.") .arg(dice) .arg(sides));
                 return (desc);
             }
 
@@ -873,7 +873,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             {
                 desc = (QString("  This poison spiked pit will cause you %1d%1 damage when you fall into it.") .arg(dice) .arg(sides));
                 desc.append (QString("  %1 percent of the time, the spikes will cut you up to (%2d%3) * 2 turns") .arg(percentage) .arg(dice) .arg(sides));
-                desc.append (QString("  as well as poison you up to (%1d%1) * 4 turns.") .arg(dice) .arg(sides));
+                desc.append (QString("  as well as poison you up to (%1d%2) * 4 turns.") .arg(dice) .arg(sides));
                 return (desc);
             }
 
