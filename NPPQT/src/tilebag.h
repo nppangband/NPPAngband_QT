@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QPixmap>
 #include <QDialog>
+#include "nppdialog.h"
 
 class Package;
 
@@ -24,6 +25,22 @@ public:
     bool has_tile(QString name);
 
     virtual ~TileBag();
+};
+
+class PackageDialog: public QDialog
+{
+    Q_OBJECT
+public:
+    QLineEdit *pak_path;
+    QLineEdit *folder_path;
+    QString mode;
+
+    PackageDialog(QString _mode);
+
+public slots:
+    void find_pak();
+    void find_folder();
+    void do_accept();
 };
 
 extern TileBag *tiles_64x64;

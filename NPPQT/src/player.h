@@ -662,8 +662,8 @@ enum
 #define PR_WIN_MESSAGES     0x01000000L // Update message window
 #define PR_WIN_CHAR_BASIC   0x02000000L // Update basic character window
 #define PR_WIN_CHAR_EQUIP_INFO  0x04000000L // Update basic equipment information window
-#define PR_MAP              0x08000000L	/* Display Map */
-#define PR_XX13             0x10000000L
+#define PR_MAP              0x08000000L	/* Both map windows */
+#define PR_XX13             0x10000000L //
 #define PR_XX12             0x20000000L
 #define PR_XX18             0x40000000L
 #define PR_UNUSED2          0x80000000L	/* Unused */
@@ -671,13 +671,6 @@ enum
 
 //Both player and monster sidebar
 #define PR_SIDEBAR_ALL (PR_SIDEBAR_PL | PR_SIDEBAR_MON)
-
-/*
- * Bit flags for the "p_ptr->window" variable (etc)
- */
-#define PW_MAP              0x00000020L /* Display dungeon map */
-#define PW_OVERHEAD         0x00000080L /* Display overhead view */
-#define PW_STATUS           0x00000800L /* Display Status */
 
 
 /*Player Native Flags*/

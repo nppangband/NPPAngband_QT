@@ -178,6 +178,7 @@ void ui_player_moved()
 {
     if (!character_dungeon) return;
     main_window->update_cursor();
+    QRect vis;
 
     int py = p_ptr->py;
     int px = p_ptr->px;
@@ -185,17 +186,33 @@ void ui_player_moved()
     if (center_player && !p_ptr->is_running())
     {
         ui_center(py, px);
-        return;
+    }
+    else
+    {
+        QRect vis = visible_dungeon();
+        if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
+                || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
+                || px < vis.x() + PANEL_CHANGE_OFFSET_X
+                || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
+        {
+            ui_center(py, px);
+        }
     }
 
-    QRect vis = visible_dungeon();
-    if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
-            || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
-            || px < vis.x() + PANEL_CHANGE_OFFSET_X
-            || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
+
+    if (main_window->dun_map_created)
     {
-        ui_center(py, px);
+        vis = main_window->visible_dun_map();
+        if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
+                || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
+                || px < vis.x() + PANEL_CHANGE_OFFSET_X
+                || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
+        {
+            main_window->dun_map_center(py, px);
+        }
+
     }
+
 }
 
 QSize ui_grid_size()
@@ -435,6 +452,14 @@ void ui_update_char_inventory_window()
     p_ptr->redraw &= ~(PR_WIN_INVENTORY);
 }
 
+void ui_update_small_map_window()
+{
+    if (!p_ptr->player_turn) return;
+    if (p_ptr->is_running() || p_ptr->is_resting()) return;
+    main_window->win_dun_map_update();
+    p_ptr->redraw &= ~(PR_MAP);
+}
+
 void ui_update_char_score()
 {
     if (p_ptr->is_running() || p_ptr->is_resting()) return;
@@ -542,14 +567,13 @@ void ui_redraw_grid(int y, int x)
     DungeonGrid *g_ptr = main_window->grids[y][x];
     g_ptr->setVisible(true);
     g_ptr->update(g_ptr->boundingRect());
+
+    main_window->dun_map_update_one_grid(y, x);
 }
 
 void ui_redraw_all()
 {
     main_window->redraw_all();
-    p_ptr->redraw &= ~(PR_MESSAGES | PR_WIN_MESSAGES | PR_WIN_MONLIST | PR_WIN_OBJLIST);
-    p_ptr->redraw &= ~(PR_WIN_EQUIPMENT | PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
-    p_ptr->redraw &= ~(PR_SIDEBAR_ALL | PR_WIN_CHAR_BASIC | PR_PLYR_SCORE | PR_TURNCOUNT);
 }
 
 void ui_redraw_map()

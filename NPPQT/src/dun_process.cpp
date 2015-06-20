@@ -1804,7 +1804,6 @@ static void process_game_turns(void)
         redraw_stuff();
 
         /* Handle reasons to break the loop */
-        if (p_ptr->player_turn) return;
         if (p_ptr->is_dead)  return;
         if (p_ptr->leaving_level) change_player_level();
 

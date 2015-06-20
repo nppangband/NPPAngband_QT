@@ -639,6 +639,7 @@ extern void ui_update_char_basic_window();
 extern void ui_update_char_equip_info_window();
 extern void ui_update_char_equipment_window();
 extern void ui_update_char_inventory_window();
+extern void ui_update_small_map_window();
 extern void ui_update_char_score();
 extern void ui_update_char_turncount();
 extern void player_death_close_game(void);

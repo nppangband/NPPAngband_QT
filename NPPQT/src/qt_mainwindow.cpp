@@ -53,7 +53,34 @@
 
 MainWindow *main_window = 0;
 
-#define FONT_EXTRA 4
+
+
+
+
+QString items[] = {
+  QString("0.25:0.25"),
+  QString("0.5:0.5"),
+  QString("0.75:0.75"),
+  QString("1:1"),
+  QString("1.25:1.25"),
+  QString("1.5:1.5"),
+  QString("1.75:1.75"),
+  QString("2:1"),
+  QString("2:2"),
+  QString("2.5:2.5"),
+  QString("3:3"),
+  QString("4:2"),
+  QString("4:4"),
+  QString("5:5"),
+  QString("6:3"),
+  QString("6:6"),
+  QString("7:7"),
+  QString("8:4"),
+  QString("8:8"),
+  QString("10:5"),
+  QString("10:10"),
+  QString("")
+};
 
 static QPixmap gray_pix(QPixmap src)
 {
@@ -82,10 +109,6 @@ static QPixmap darken_pix(QPixmap src)
 
 void MainWindow::slot_redraw()
 {
-    //redraw();
-
-    //ui_animate_victory(p_ptr->py, p_ptr->px);
-
     QString txt = get_string("Enter text to convert", "With accents please...", "");
     txt = to_ascii(txt);
     message(txt);
@@ -126,139 +149,7 @@ void MainWindow::do_extract_from_package()
     PackageDialog dlg("extract");
 }
 
-PackageDialog::PackageDialog(QString _mode)
-{
-    mode = _mode;
 
-    central = new QWidget;
-    QVBoxLayout *lay1 = new QVBoxLayout;
-    central->setLayout(lay1);
-    this->setClient(central);
-
-    QWidget *area2 = new QWidget;
-    lay1->addWidget(area2);
-    QGridLayout *lay2 = new QGridLayout;
-    lay2->setContentsMargins(0, 0, 0, 0);
-    lay2->setColumnStretch(1, 1);
-    area2->setLayout(lay2);
-
-    int row = 0;
-
-    QLabel *lb = new QLabel;
-    if (mode == "create")
-    {
-        lb->setText("Create a tile package");
-    }
-    else
-    {
-        lb->setText("Extract tiles from a package");
-    }
-    lb->setStyleSheet("font-size: 1.5em; font-weight: bold;");
-    lay2->addWidget(lb, row, 0, 1, 3);
-
-    ++row;
-
-    lay2->addWidget(new QLabel(tr("Package")), row, 0);
-
-    pak_path = new QLineEdit;
-    pak_path->setReadOnly(true);
-    lay2->addWidget(pak_path, row, 1);
-
-    QToolButton *btn2 = new QToolButton();
-    btn2->setText("...");
-    //btn2->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-    lay2->addWidget(btn2, row, 2);
-    connect(btn2, SIGNAL(clicked()), this, SLOT(find_pak()));
-
-    ++row;
-
-    lay2->addWidget(new QLabel(tr("Tiles folder")), row, 0);
-
-    folder_path = new QLineEdit;
-    folder_path->setReadOnly(true);
-    lay2->addWidget(folder_path, row, 1);
-
-    QToolButton *btn3 = new QToolButton();
-    btn3->setText("...");
-    //btn3->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-    lay2->addWidget(btn3, row, 2);
-    connect(btn3, SIGNAL(clicked()), this, SLOT(find_folder()));
-
-    ++row;
-
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    lay2->addItem(spacer, row, 0);
-
-    QWidget *area3 = new QWidget;
-    lay1->addWidget(area3);
-    QHBoxLayout *lay3 = new QHBoxLayout;
-    area3->setLayout(lay3);
-    lay3->setContentsMargins(0, 0, 0, 0);
-
-    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay3->addItem(spacer);
-
-    QPushButton *btn1 = new QPushButton(tr("Go!"));
-    lay3->addWidget(btn1);
-    connect(btn1, SIGNAL(clicked()), this, SLOT(do_accept()));
-
-    QPushButton *btn4 = new QPushButton(tr("Cancel"));
-    lay3->addWidget(btn4);
-    connect(btn4, SIGNAL(clicked()), this, SLOT(reject()));
-
-    this->clientSizeUpdated();
-    this->exec();
-}
-
-void PackageDialog::do_accept()
-{
-    if (pak_path->text().isEmpty() || folder_path->text().isEmpty()) {
-        pop_up_message_box(tr("Complete both fields"), QMessageBox::Critical);
-        return;
-    }
-
-    if (mode == "create") {
-        int n = create_package(pak_path->text(), folder_path->text());
-        pop_up_message_box(tr("Imported tiles: %1").arg(n));
-    }
-    else {
-        Package pak(pak_path->text());
-        if (!pak.is_open()) {
-            pop_up_message_box(tr("Couldn't load the package"), QMessageBox::Critical);
-        }
-        else {
-            int n = pak.extract_to(folder_path->text());
-            pop_up_message_box(tr("Extracted tiles: %1").arg(n));
-        }
-    }
-}
-
-void PackageDialog::find_pak()
-{
-    QString path;
-
-    if (mode == "extract")
-    {
-        path = QFileDialog::getOpenFileName(this, tr("Select a package"), "",
-                                            tr("Packages (*.pak)"));
-    }
-    else
-    {
-        path = QFileDialog::getSaveFileName(this, tr("Select a package"), "",
-                                            tr("Packages (*.pak)"));
-    }
-
-    if (path != "") pak_path->setText(path);
-}
-
-void PackageDialog::find_folder()
-{
-    QString path;
-
-    path = QFileDialog::getExistingDirectory(this, tr("Select a folder"));
-
-    if (path != "") folder_path->setText(path);
-}
 
 QPainterPath DungeonGrid::shape() const
 {
@@ -277,6 +168,7 @@ QPainterPath DungeonCursor::shape() const
 void MainWindow::force_redraw()
 {
     graphics_view->viewport()->update();
+    if (dun_map_created) dun_map_view->viewport()->update();
 }
 
 void DungeonCursor::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -538,9 +430,11 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             done_bg = true;
 
             // Draw cloud effects (in graphics mode), if not already drawing that
-            if (!is_cloud) {
+            if (!is_cloud)
+            {
                 QString tile = find_cloud_tile(c_y, c_x);
-                if (!tile.isEmpty()) {
+                if (!tile.isEmpty())
+                {
                     painter->setOpacity(0.7);                    
                     QPixmap pix = parent->get_tile(tile);
                     painter->drawPixmap(0, 0, pix);
@@ -712,8 +606,8 @@ void MainWindow::set_graphic_mode(int mode)
     {
         case GRAPHICS_RAYMOND_GAUSTADNES:
         {
-            tile_hgt = 64;
-            tile_wid = 64;
+            dun_map_tile_hgt = tile_hgt = 64;
+            dun_map_tile_wid = tile_wid = 64;
             current_tiles = tiles_64x64;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(TRUE);
@@ -723,8 +617,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         case GRAPHICS_DAVID_GERVAIS:
         {
-            tile_hgt = 32;
-            tile_wid = 32;
+            dun_map_tile_hgt = tile_hgt = 32;
+            dun_map_tile_wid = tile_wid = 32;
             current_tiles = tiles_32x32;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
@@ -734,8 +628,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         case GRAPHICS_ORIGINAL:
         {
-            tile_hgt = 8;
-            tile_wid = 8;
+            dun_map_tile_hgt = tile_hgt = 8;
+            dun_map_tile_wid = tile_wid = 8;
             current_tiles = tiles_8x8;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
@@ -745,8 +639,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         default: //GRAPHICS_NONE:
         {
-            tile_hgt = 0;
-            tile_wid = 0;
+            dun_map_tile_hgt = tile_hgt = 0;
+            dun_map_tile_wid = tile_wid = 0;
             current_tiles = 0;
             ascii_mode_act->setChecked(TRUE);
             reg_mode_act->setChecked(FALSE);
@@ -758,12 +652,15 @@ void MainWindow::set_graphic_mode(int mode)
 
     use_graphics = mode;
     calculate_cell_size();
+    dun_map_calc_cell_size();
+
     destroy_tiles();
     if (character_dungeon) extract_tiles();
     update_sidebar_all();
 
     // Recenter the view
-    if (cy != -1 && cx != -1) {
+    if (cy != -1 && cx != -1)
+    {
         ui_redraw_all();
         ui_center(cy, cx);
     }
@@ -829,8 +726,10 @@ void MainWindow::init_scene()
     QBrush brush(QColor("black"));
     dungeon_scene->setBackgroundBrush(brush);    
 
-    for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
-        for (int x = 0; x < MAX_DUNGEON_WID; x++) {
+    for (int y = 0; y < MAX_DUNGEON_HGT; y++)
+    {
+        for (int x = 0; x < MAX_DUNGEON_WID; x++)
+        {
             grids[y][x] = new DungeonGrid(x, y, this);
             dungeon_scene->addItem(grids[y][x]);
         }
@@ -842,13 +741,18 @@ void MainWindow::init_scene()
 void MainWindow::redraw_screen()
 {
     // Important. No dungeon yet
-    if (!character_dungeon) {
+    if (!character_dungeon)
+    {
         if (graphics_view) force_redraw();
         return;
     }
 
     // Adjust scrollbars
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
+    if (dun_map_created)
+    {
+        dun_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * dun_map_cell_wid, p_ptr->cur_map_hgt * dun_map_cell_hgt);
+    }
 
     for (int y = 0; y < p_ptr->cur_map_hgt; y++)
     {
@@ -943,6 +847,7 @@ MainWindow::MainWindow()
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
+    show_win_dun_map = dun_map_use_graphics = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -952,7 +857,7 @@ MainWindow::MainWindow()
     cursor = new DungeonCursor(this);
     do_pseudo_ascii = false;
 
-    current_multiplier = "1:1";
+    dun_map_multiplier = current_multiplier = "1:1";
 
     // Set the main area
     dungeon_scene = new QGraphicsScene;
@@ -1013,8 +918,6 @@ MainWindow::MainWindow()
     update_file_menu_game_inactive();
 
     setWindowFilePath(QString());
-
-    get_8x8_tiles();
 }
 
 void MainWindow::setup_nppangband()
@@ -1118,6 +1021,7 @@ void MainWindow::save_and_close()
     win_char_info_equip_wipe();
     win_char_equipment_wipe();
     win_char_inventory_wipe();
+    win_dun_map_wipe();
 
     character_loaded = character_dungeon = character_generated = FALSE;
 
@@ -1265,6 +1169,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_char_info_equip_destroy();
     win_char_equipment_destroy();
     win_char_inventory_destroy();
+    win_dun_map_destroy();
 
     event->accept();
 }
@@ -1600,6 +1505,10 @@ void MainWindow::create_actions()
     win_char_inventory->setStatusTip(tr("Display character Inventory screen."));
     connect(win_char_inventory, SIGNAL(triggered()), this, SLOT(toggle_win_char_inventory_frame()));
 
+    win_dun_map = new QAction(tr("Show Small Map Screen"), this);
+    win_dun_map->setStatusTip(tr("Display small map screen."));
+    connect(win_dun_map, SIGNAL(triggered()), this, SLOT(toggle_win_dun_map_frame()));
+
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
     connect(help_about, SIGNAL(triggered()), this, SLOT(about()));
@@ -1777,36 +1686,14 @@ void MainWindow::create_menus()
 
     QMenu *submenu = settings->addMenu(tr("Tile multiplier"));
     multipliers = new QActionGroup(this);
-    QString items[] = {
-      QString("0.5:0.5"),
-      QString("0.75:0.75"),
-      QString("1:1"),
-      QString("1.25:1.25"),
-      QString("1.5:1.5"),
-      QString("1.75:1.75"),
-      QString("2:1"),
-      QString("2:2"),
-      QString("2.5:2.5"),
-      QString("3:3"),
-      QString("4:2"),
-      QString("4:4"),
-      QString("5:5"),
-      QString("6:3"),
-      QString("6:6"),
-      QString("7:7"),
-      QString("8:4"),
-      QString("8:8"),
-      QString("10:5"),
-      QString("10:10"),
-      QString("")
-    };
+
     for (int i = 0; !items[i].isEmpty(); i++)
     {
         QAction *act = submenu->addAction(items[i]);
         act->setObjectName(items[i]);
         act->setCheckable(true);
         multipliers->addAction(act);
-        if (i == 0) act->setChecked(true);
+        if (i == TILE_1x1_MULT) act->setChecked(true);
     }
     connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
 
@@ -1841,6 +1728,7 @@ void MainWindow::create_menus()
     win_menu->addAction(win_char_equip_info);
     win_menu->addAction(win_char_equipment);
     win_menu->addAction(win_char_inventory);
+    win_menu->addAction(win_dun_map);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1895,6 +1783,7 @@ void MainWindow::select_font()
             font_char_equip_info = QFont(family);
             font_char_equipment = QFont(family);
             font_char_inventory = QFont(family);
+            font_dun_map_win = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1912,6 +1801,7 @@ void MainWindow::select_font()
     font_char_equip_info.setPointSize(12);
     font_char_equipment.setPointSize(12);
     font_char_inventory.setPointSize(12);
+    font_dun_map_win.setPointSize(12);
 }
 
 
@@ -1960,6 +1850,8 @@ void MainWindow::read_settings()
     font_char_equip_info.fromString(load_font);
     load_font = settings.value("font_char_equipment", font_char_equipment ).toString();
     font_char_equipment.fromString(load_font);
+    load_font = settings.value("font_dun_map", font_dun_map_win ).toString();
+    font_dun_map_win.fromString(load_font);
     load_font = settings.value("font_char_inventory", font_char_inventory ).toString();
     font_char_inventory.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
@@ -2048,6 +1940,18 @@ void MainWindow::read_settings()
         inven_show_buttons = settings.value("show_inven_window_buttons", false).toBool();
     }
 
+    show_win_dun_map = settings.value("show_dun_map_window", false).toBool();
+    if (show_win_dun_map)
+    {
+        dun_map_multiplier = settings.value("dun_map_tile_multiplier", "1:1").toString();
+        dun_map_use_graphics = settings.value("dun_map_graphics", false).toBool();
+        show_win_dun_map = FALSE; //hack - so it gets toggled to true
+        toggle_win_dun_map_frame();
+        window_dun_map->restoreGeometry(settings.value("winDunMapGeometry").toByteArray());
+        window_dun_map->show();
+
+    }
+
     update_recent_savefiles();
 }
 
@@ -2069,12 +1973,14 @@ void MainWindow::write_settings()
     settings.setValue("font_char_equip_info", font_char_equip_info.toString());
     settings.setValue("font_char_equipment", font_char_equipment.toString());
     settings.setValue("font_char_inventory", font_char_inventory.toString());
+    settings.setValue("font_dun_map", font_dun_map_win.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
     settings.setValue("which_keyset", which_keyset);
     settings.setValue("tile_multiplier", current_multiplier);
     settings.setValue("show_mon_list_window", show_mon_list);
+    settings.setValue("show_win_dun_map_window", show_win_dun_map);
     if (show_mon_list)
     {
         settings.setValue("winMonListGeometry", window_mon_list->saveGeometry());
@@ -2126,6 +2032,13 @@ void MainWindow::write_settings()
         settings.setValue("winCharInventoryGeometry", window_char_inventory->saveGeometry());
         settings.setValue("show_inven_window_buttons", inven_show_buttons);
     }
+    settings.setValue("show_dun_map_window", show_win_dun_map);
+    if (show_win_dun_map)
+    {
+        settings.setValue("winDunMapGeometry", window_dun_map->saveGeometry());
+        settings.setValue("dun_map_graphics", dun_map_use_graphics);
+        settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
+    }
 }
 
 
@@ -2171,6 +2084,7 @@ void MainWindow::load_file(const QString &file_name)
                 if (show_char_info_equip) create_win_char_equip_info();
                 if (show_char_equipment) create_win_char_equipment();
                 if (show_char_inventory) create_win_char_inventory();
+                if (show_win_dun_map) create_win_dun_map();
 
                 //hack - draw everything
                 p_ptr->player_turn = TRUE;
@@ -2203,6 +2117,7 @@ void MainWindow::launch_birth(bool quick_start)
         if (show_char_info_equip) create_win_char_equip_info();
         if (show_char_equipment) create_win_char_equipment();
         if (show_char_inventory) create_win_char_inventory();
+        if (show_win_dun_map) create_win_dun_map();
 
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.
