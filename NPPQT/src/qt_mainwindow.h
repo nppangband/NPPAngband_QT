@@ -612,41 +612,25 @@ private:
     QGraphicsScene *dun_map_scene;
     QGraphicsView *dun_map_view;
     QMenuBar *win_dun_map_menubar;
-    QAction *dun_map_font;
-    QAction *dun_map_graphics_use;
-
     QMenu *win_dun_map_settings;
     void win_dun_map_create();
     void win_dun_map_destroy();
     void win_dun_map_wipe();
-    void update_dun_map_font();
-    void set_font_dun_map(QFont newFont);
     void create_win_dun_map();
-    DunMapGrid *dun_map_grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
-    int dun_map_font_hgt, dun_map_font_wid;
-    int dun_map_tile_hgt, dun_map_tile_wid;
-
-
-
+    DungeonGrid *dun_map_grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
     void dun_map_calc_cell_size();
     QActionGroup *dun_map_multipliers;
     QString dun_map_multiplier;
 
-
 public:
     bool show_win_dun_map;
-    QFont font_dun_map_win;
     void win_dun_map_update();
-    int dun_map_cell_hgt, dun_map_cell_wid;
-    bool dun_map_use_graphics;
     void dun_map_update_one_grid(int y, int x);
     void dun_map_center(int y, int x);
     QRect visible_dun_map();
     bool dun_map_created;
 
 private slots:
-    void set_dun_map_graphics();
-    void win_dun_map_font();
     void toggle_win_dun_map_frame();
     void dun_map_multiplier_clicked(QAction *);
 
@@ -654,21 +638,7 @@ private slots:
 
 extern MainWindow *main_window;
 
-// Similar to the DungeonGrid class, but for extra windows.
-class DunMapGrid: public QGraphicsItem
-{
-public:
-    DunMapGrid(int _x, int _y, MainWindow *_parent);
 
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QPainterPath shape() const;
-
-    void DunMapCellSizeChanged();
-    MainWindow *parent;
-
-    int c_x, c_y;
-};
 
 class DungeonGrid: public QGraphicsItem
 {

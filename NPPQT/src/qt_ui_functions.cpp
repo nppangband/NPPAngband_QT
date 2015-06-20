@@ -203,7 +203,11 @@ void ui_player_moved()
     if (main_window->dun_map_created)
     {
         vis = main_window->visible_dun_map();
-        if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
+        if (center_player && !p_ptr->is_running())
+        {
+            main_window->dun_map_center(py, px);
+        }
+        else if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
                 || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
                 || px < vis.x() + PANEL_CHANGE_OFFSET_X
                 || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)

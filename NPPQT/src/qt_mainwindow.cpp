@@ -579,8 +579,10 @@ void MainWindow::calculate_cell_size()
 
     cell_hgt = MAX(tile_hgt, font_hgt);
 
-    for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
-        for (int x = 0; x < MAX_DUNGEON_WID; x++) {
+    for (int y = 0; y < MAX_DUNGEON_HGT; y++)
+    {
+        for (int x = 0; x < MAX_DUNGEON_WID; x++)
+        {
             grids[y][x]->cellSizeChanged();
             grids[y][x]->setPos(x * cell_wid, y * cell_hgt);
         }
@@ -606,8 +608,8 @@ void MainWindow::set_graphic_mode(int mode)
     {
         case GRAPHICS_RAYMOND_GAUSTADNES:
         {
-            dun_map_tile_hgt = tile_hgt = 64;
-            dun_map_tile_wid = tile_wid = 64;
+            tile_hgt = 64;
+            tile_wid = 64;
             current_tiles = tiles_64x64;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(TRUE);
@@ -617,8 +619,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         case GRAPHICS_DAVID_GERVAIS:
         {
-            dun_map_tile_hgt = tile_hgt = 32;
-            dun_map_tile_wid = tile_wid = 32;
+            tile_hgt = 32;
+            tile_wid = 32;
             current_tiles = tiles_32x32;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
@@ -628,8 +630,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         case GRAPHICS_ORIGINAL:
         {
-            dun_map_tile_hgt = tile_hgt = 8;
-            dun_map_tile_wid = tile_wid = 8;
+            tile_hgt = 8;
+            tile_wid = 8;
             current_tiles = tiles_8x8;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
@@ -639,8 +641,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         default: //GRAPHICS_NONE:
         {
-            dun_map_tile_hgt = tile_hgt = 0;
-            dun_map_tile_wid = tile_wid = 0;
+            tile_hgt = 0;
+            tile_wid = 0;
             current_tiles = 0;
             ascii_mode_act->setChecked(TRUE);
             reg_mode_act->setChecked(FALSE);
@@ -751,7 +753,7 @@ void MainWindow::redraw_screen()
     graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
     if (dun_map_created)
     {
-        dun_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * dun_map_cell_wid, p_ptr->cur_map_hgt * dun_map_cell_hgt);
+        dun_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
     }
 
     for (int y = 0; y < p_ptr->cur_map_hgt; y++)
@@ -847,7 +849,7 @@ MainWindow::MainWindow()
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
-    show_win_dun_map = dun_map_use_graphics = dun_map_created = FALSE;
+    show_win_dun_map = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -1783,7 +1785,6 @@ void MainWindow::select_font()
             font_char_equip_info = QFont(family);
             font_char_equipment = QFont(family);
             font_char_inventory = QFont(family);
-            font_dun_map_win = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1801,7 +1802,6 @@ void MainWindow::select_font()
     font_char_equip_info.setPointSize(12);
     font_char_equipment.setPointSize(12);
     font_char_inventory.setPointSize(12);
-    font_dun_map_win.setPointSize(12);
 }
 
 
@@ -1850,8 +1850,6 @@ void MainWindow::read_settings()
     font_char_equip_info.fromString(load_font);
     load_font = settings.value("font_char_equipment", font_char_equipment ).toString();
     font_char_equipment.fromString(load_font);
-    load_font = settings.value("font_dun_map", font_dun_map_win ).toString();
-    font_dun_map_win.fromString(load_font);
     load_font = settings.value("font_char_inventory", font_char_inventory ).toString();
     font_char_inventory.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
@@ -1944,7 +1942,6 @@ void MainWindow::read_settings()
     if (show_win_dun_map)
     {
         dun_map_multiplier = settings.value("dun_map_tile_multiplier", "1:1").toString();
-        dun_map_use_graphics = settings.value("dun_map_graphics", false).toBool();
         show_win_dun_map = FALSE; //hack - so it gets toggled to true
         toggle_win_dun_map_frame();
         window_dun_map->restoreGeometry(settings.value("winDunMapGeometry").toByteArray());
@@ -1973,7 +1970,6 @@ void MainWindow::write_settings()
     settings.setValue("font_char_equip_info", font_char_equip_info.toString());
     settings.setValue("font_char_equipment", font_char_equipment.toString());
     settings.setValue("font_char_inventory", font_char_inventory.toString());
-    settings.setValue("font_dun_map", font_dun_map_win.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
@@ -2036,7 +2032,6 @@ void MainWindow::write_settings()
     if (show_win_dun_map)
     {
         settings.setValue("winDunMapGeometry", window_dun_map->saveGeometry());
-        settings.setValue("dun_map_graphics", dun_map_use_graphics);
         settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
     }
 }
