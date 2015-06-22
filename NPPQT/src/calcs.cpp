@@ -2061,11 +2061,7 @@ void redraw_stuff(void)
     /* Character is not ready yet, no screen updates */
     if (!character_generated) return;
 
-    if (p_ptr->redraw & (PR_MAP))
-    {
-        ui_redraw_map();
-        ui_update_small_map_window();
-    }
+    if (p_ptr->redraw & PR_MAP) ui_redraw_all();
 
     if (p_ptr->redraw & (PR_WIN_EQUIPMENT))
     {

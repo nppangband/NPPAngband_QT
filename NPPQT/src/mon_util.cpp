@@ -2258,9 +2258,6 @@ void monster_swap(int y1, int x1, int y2, int x2)
 
         /* Update the visuals (and monster distances) */
         p_ptr->update |= (PU_UPDATE_VIEW | PU_DISTANCE);
-
-        /* Window stuff */
-        p_ptr->redraw |= (PR_MAP);
     }
 
     /* Redraw */

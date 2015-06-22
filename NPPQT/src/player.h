@@ -662,8 +662,8 @@ enum
 #define PR_WIN_MESSAGES     0x01000000L // Update message window
 #define PR_WIN_CHAR_BASIC   0x02000000L // Update basic character window
 #define PR_WIN_CHAR_EQUIP_INFO  0x04000000L // Update basic equipment information window
-#define PR_MAP              0x08000000L	/* Both map windows */
-#define PR_XX13             0x10000000L //
+#define PR_MAP              0x08000000L
+#define PR_XX13             0x10000000L
 #define PR_XX12             0x20000000L
 #define PR_XX18             0x40000000L
 #define PR_UNUSED2          0x80000000L	/* Unused */

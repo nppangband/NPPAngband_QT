@@ -58,6 +58,7 @@ static struct command_desc list_commands_new[] =
     {"Pickup Items", "+"},
     {"Quest Desription", "q"},
     {"Quit NPP Games", "CTRL-Q"},
+    {"Redraw Screen", "CTRL-E"},
     {"Rest Until Fully Healed	", "r"},
     {"Rest To Recover All HP ", "CTRL-R"},
     {"Rest To Recover All SP", "ALT-R"},
@@ -106,7 +107,6 @@ static struct command_desc list_commands_angband[] =
     {"Equipment (view", "e"},
     {"Fire Ammunition",	"f"},
     {"Fire At Nearest",	"h"},
-
     {"Go Down Staircase", "<"},
     {"Go Up Staircase	", ">"},
     {"Hold", "'_' or ','"},
@@ -129,6 +129,7 @@ static struct command_desc list_commands_angband[] =
     {"Quest Desription", "ALT-Q"},
     {"Quit NPP Games", "CTRL-Q"},
     {"Read a Scroll", "r"},
+    {"Redraw Screen", "CTRL-R"},
     {"Repeat Previous Command", "'n' or '0'"},
     {"Rest", "R (shift-r)"},
     {"Repeat Level Feeling", "CTRL-F"},
@@ -199,6 +200,7 @@ static struct command_desc list_commands_roguelike[] =
     {"Quest Desription", "ALT-Q"},
     {"Quit NPP Games", "CTRL-Q"},
     {"Read a Scroll", "r"},
+    {"Redraw Screen", "CTRL-R"},
     {"Repeat Previous Command", "v"},
     {"Rest", "R (shift-r)"},
     {"Repeat Level Feeling", "CTRL-F"},
@@ -627,7 +629,8 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_E:
         {
-            if (shift_key)          do_cmd_all_objects(TAB_EQUIP);
+            if (ctrl_key)           ui_redraw_all();
+            else if (shift_key)     do_cmd_all_objects(TAB_EQUIP);
             else if (!using_mods)   do_cmd_use_item();
             break;
         }

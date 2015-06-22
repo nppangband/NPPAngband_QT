@@ -1334,6 +1334,8 @@ void note_spot(int y, int x)
     }
 }
 
+
+
 /*
  * Redraw a dungeon square.
  * first update it, then print it(on the screen) a given map location
@@ -1343,7 +1345,6 @@ void note_spot(int y, int x)
  */
 void light_spot(int y, int x)
 {
-
     /* Hack -- redraw the grid */
     map_info(y, x);
 
@@ -3628,10 +3629,7 @@ void town_illuminate(bool daytime)
     /* Fully update the visuals */
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
 
-    /* Redraw map */
-    p_ptr->redraw |= (PR_MAP);
-
-    /* Window stuff */
+    /* Redraw stuff */
     p_ptr->redraw |= (PR_WIN_MONLIST | PR_MAP |  PR_WIN_OBJLIST);
 }
 

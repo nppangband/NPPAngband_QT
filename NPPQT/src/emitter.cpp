@@ -65,7 +65,7 @@ static QPixmap rotate_pix(QPixmap src, qreal angle)
 static QPoint to_dungeon_coord(QGraphicsItem *item, QPoint p)
 {
     p += item->pos().toPoint();
-    QPoint p2(p.x() / main_window->cell_wid, p.y() / main_window->cell_hgt);
+    QPoint p2(p.x() / main_window->main_cell_wid, p.y() / main_window->main_cell_hgt);
     return p2;
 }
 
@@ -177,7 +177,7 @@ QPolygonF make_beam(QPointF from, QPointF to)
     points.append(from);
     points.append(to);
     qreal displace = 70;
-    if (main_window->cell_hgt < 16) displace = 35;
+    if (main_window->main_cell_hgt < 16) displace = 35;
     make_beam_aux(from, to, &points, displace, 5);
     QList<BeamPoint> bp;
     for (int i = 0; i < points.size(); i++) {
@@ -336,13 +336,13 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
 
         if (use_graphics)
         {
-            pix = main_window->get_tile(key);
+            pix = main_window->get_tile(key, main_window->main_cell_hgt, main_window->main_cell_wid);
         }
         else
         {
             pix = pseudo_ascii(chr, col, ui_main_window_font(),
-                               QSizeF(main_window->cell_wid + 10,
-                                      main_window->cell_hgt + 10));
+                               QSizeF(main_window->main_cell_wid + 10,
+                                      main_window->main_cell_hgt + 10));
         }
     }
     else if (gf_type == GF_ARROW) {
@@ -421,7 +421,7 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b f
 
     int size = (newRadius * 2 + 1 + 5); // 5 extra
 
-    maxLength = (size * (main_window->cell_hgt + main_window->cell_wid) / 2) * 0.5;
+    maxLength = (size * (main_window->main_cell_hgt + main_window->main_cell_wid) / 2) * 0.5;
 
     length = previousLength = 0;
 
@@ -455,7 +455,7 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b f
     anim = new QPropertyAnimation(this, "length");
     anim->setDuration(500);
     anim->setStartValue(0);
-    maxLength = ((newRadius * 2 + 1) * main_window->cell_hgt) * 0.5;
+    maxLength = ((newRadius * 2 + 1) * main_window->main_cell_hgt) * 0.5;
     anim->setEndValue(maxLength);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
@@ -575,7 +575,7 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
 
     rad = newRad;
 
-    QPointF pp(main_window->cell_wid, main_window->cell_hgt);
+    QPointF pp(main_window->main_cell_wid, main_window->main_cell_hgt);
     int extra = 5;
     QPointF p1(from.x() - rad - extra, from.y() - rad - extra); // +-5 extra
     QPointF p2(from.x() + rad + extra, from.y() + rad + extra);
@@ -593,8 +593,8 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
         }
     }
 
-    brect = QRectF(0, 0, (p2.x() - p1.x() + 1) * main_window->cell_wid,
-                         (p2.y() - p1.y() + 1) * main_window->cell_hgt);
+    brect = QRectF(0, 0, (p2.x() - p1.x() + 1) * main_window->main_cell_wid,
+                         (p2.y() - p1.y() + 1) * main_window->main_cell_hgt);
 
     setPos(mulp(p1, pp));
 
@@ -602,7 +602,7 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
 
     QPointF h = mulp(to - from, pp);
     centerAngle = getAngle(h);
-    maxLength = rad * MIN(main_window->cell_wid, main_window->cell_hgt);
+    maxLength = rad * MIN(main_window->main_cell_wid, main_window->main_cell_hgt);
     drawnLength = length = previousLength = 0;
 
     degrees = newDegrees;
@@ -646,7 +646,8 @@ void ArcAnimation::do_timeout()
     int n = degrees * 10 / 30; // 10 particles every 30 degrees
     if (n < 10) n = 10;        // minimum
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         BallParticle *p = new BallParticle;
         qreal angle = rand_int(degrees) - degrees / 2.0;
         angle = angle * PI / 180;
@@ -659,7 +660,8 @@ void ArcAnimation::do_timeout()
     for (int i = 0; i < particles.size(); i++) {
         BallParticle *p = particles.at(i);
 
-        if ((p->currentLength > 0) || (delta < 40)) {
+        if ((p->currentLength > 0) || (delta < 40))
+        {
             p->currentLength += delta;
         }
         else {
@@ -762,7 +764,7 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
 
     length = previousLength = 0;
 
-    maxLength = main_window->cell_hgt * (radius + 0.5);
+    maxLength = main_window->main_cell_hgt * (radius + 0.5);
 
     timer.setInterval(40);
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));

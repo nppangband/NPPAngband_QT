@@ -57,7 +57,7 @@ MainWindow *main_window = 0;
 
 
 
-QString items[] = {
+QString mult_list[] = {
   QString("0.25:0.25"),
   QString("0.5:0.5"),
   QString("0.75:0.75"),
@@ -169,6 +169,7 @@ void MainWindow::force_redraw()
 {
     graphics_view->viewport()->update();
     if (dun_map_created) dun_map_view->viewport()->update();
+    if (overhead_map_created) overhead_map_view->viewport()->update();
 }
 
 void DungeonCursor::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -255,7 +256,7 @@ DungeonCursor::DungeonCursor(MainWindow *_parent)
 
 QRectF DungeonCursor::boundingRect() const
 {
-    return QRectF(0, 0, parent->cell_wid, parent->cell_hgt);
+    return QRectF(0, 0, parent->main_cell_wid, parent->main_cell_hgt);
 }
 
 void DungeonCursor::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -279,13 +280,13 @@ void DungeonCursor::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     painter->setOpacity(1);
     painter->setBrush(Qt::NoBrush);
     painter->setPen(QColor("yellow"));
-    painter->drawRect(0, 0, parent->cell_wid - 1, parent->cell_hgt - 1);
-    if ((parent->cell_wid > 16) && (parent->cell_hgt > 16)) {
+    painter->drawRect(0, 0, parent->main_cell_wid - 1, parent->main_cell_hgt - 1);
+    if ((parent->main_cell_wid > 16) && (parent->main_cell_hgt > 16)) {
         int z = 3;
         painter->drawRect(0, 0, z, z);
-        painter->drawRect(parent->cell_wid - z - 1, 0, z, z);
-        painter->drawRect(0, parent->cell_hgt - z - 1, z, z);
-        painter->drawRect(parent->cell_wid - z - 1, parent->cell_hgt - z - 1, z, z);
+        painter->drawRect(parent->main_cell_wid - z - 1, 0, z, z);
+        painter->drawRect(0, parent->main_cell_hgt - z - 1, z, z);
+        painter->drawRect(parent->main_cell_wid - z - 1, parent->main_cell_hgt - z - 1, z, z);
     }
 
     painter->restore();
@@ -295,7 +296,7 @@ void DungeonCursor::moveTo(int _y, int _x)
 {
     c_x = _x;
     c_y = _y;
-    setPos(c_x * parent->cell_wid, c_y * parent->cell_hgt);
+    setPos(c_x * parent->main_cell_wid, c_y * parent->main_cell_hgt);
 }
 
 DungeonGrid::DungeonGrid(int _x, int _y, MainWindow *_parent)
@@ -308,7 +309,7 @@ DungeonGrid::DungeonGrid(int _x, int _y, MainWindow *_parent)
 
 QRectF DungeonGrid::boundingRect() const
 {
-    return QRectF(0, 0, parent->cell_wid, parent->cell_hgt);
+    return QRectF(0, 0, parent->main_cell_wid, parent->main_cell_hgt);
 }
 
 QString find_cloud_tile(int y, int x)
@@ -346,7 +347,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     if (!in_bounds(c_y, c_x)) return;
 
-    painter->fillRect(QRectF(0, 0, parent->cell_wid, parent->cell_hgt), Qt::black);
+    painter->fillRect(QRectF(0, 0, parent->main_cell_wid, parent->main_cell_hgt), Qt::black);
 
     dungeon_type *d_ptr = &dungeon_info[c_y][c_x];
     QChar square_char = d_ptr->dun_char;
@@ -411,8 +412,9 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         // Draw background tile
         QString key1 = d_ptr->dun_tile;
 
-        if (key1.length() > 0) {            
-            QPixmap pix = parent->get_tile(key1);
+        if (key1.length() > 0)
+        {
+            QPixmap pix = parent->get_tile(key1, parent->main_cell_hgt, parent->main_cell_wid);
 
             if (flags & UI_LIGHT_TORCH) {
                 QColor color = QColor("yellow").darker(150);
@@ -436,7 +438,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 if (!tile.isEmpty())
                 {
                     painter->setOpacity(0.7);                    
-                    QPixmap pix = parent->get_tile(tile);
+                    QPixmap pix = parent->get_tile(tile, parent->main_cell_hgt, parent->main_cell_wid);
                     painter->drawPixmap(0, 0, pix);
                     painter->setOpacity(1);
                     done_bg = true;
@@ -445,8 +447,9 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
             // Draw foreground tile
             if (key2.length() > 0) {               
-               QPixmap pix = parent->get_tile(key2);
-               if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER)) {
+               QPixmap pix = parent->get_tile(key2, parent->main_cell_hgt, parent->main_cell_wid);
+               if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER))
+               {
                    painter->setOpacity(opacity);
                }               
                painter->drawPixmap(pix.rect(), pix, pix.rect());
@@ -456,7 +459,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             // draw foreground circle for dtrap edge
             else if (d_ptr->dtrap)
             {
-                QPixmap sample = parent->get_tile(key1);
+                QPixmap sample = parent->get_tile(key1, parent->main_cell_hgt, parent->main_cell_wid);
                 int height = sample.height();
                 int width = sample.width();
                 QBrush brush(Qt::green);
@@ -471,7 +474,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
             if (do_shadow) {
                 QPixmap pix = pseudo_ascii(square_char, square_color, parent->font_main_window,
-                                           QSizeF(parent->cell_wid, parent->cell_hgt));
+                                           QSizeF(parent->main_cell_wid, parent->main_cell_hgt));
                 painter->drawPixmap(pix.rect(), pix, pix.rect());
                 done_fg = true;
             }
@@ -482,7 +485,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     if (!done_fg && (!empty || !done_bg)) {
         painter->setFont(parent->font_main_window);
         painter->setPen(square_color);
-        painter->drawText(QRectF(0, 0, parent->cell_wid, parent->cell_hgt),
+        painter->drawText(QRectF(0, 0, parent->main_cell_wid, parent->main_cell_hgt),
                           Qt::AlignCenter, QString(square_char));
     }
 
@@ -495,11 +498,12 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             cur = m_ptr->hp;
             max = m_ptr->maxhp;
         }
-        if (max > 0 && cur < max) {
-            int w = parent->cell_wid * cur / max;
+        if (max > 0 && cur < max)
+        {
+            int w = parent->main_cell_wid * cur / max;
             w = MAX(w, 1);
             int h = 1;
-            if (parent->cell_hgt > 16) h = 2;
+            if (parent->main_cell_hgt > 16) h = 2;
             QColor color("red");
             if (cur * 100 / max > 50) color = QColor("yellow");
             painter->fillRect(0, 0, w, h, color);
@@ -510,9 +514,9 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     if (d_ptr->has_visible_artifact()) {
         int s = 6;
         QPointF points[] = {
-            QPointF(parent->cell_wid - s, parent->cell_hgt),
-            QPointF(parent->cell_wid, parent->cell_hgt),
-            QPointF(parent->cell_wid, parent->cell_hgt - s)
+            QPointF(parent->main_cell_wid - s, parent->main_cell_hgt),
+            QPointF(parent->main_cell_wid, parent->main_cell_hgt),
+            QPointF(parent->main_cell_wid, parent->main_cell_hgt - s)
         };
         painter->setBrush(QColor("violet"));
         painter->setPen(Qt::NoPen);
@@ -554,7 +558,7 @@ void MainWindow::destroy_tiles()
     shade_cache.clear();
 }
 
-QPixmap MainWindow::get_tile(QString tile_id)
+QPixmap MainWindow::get_tile(QString tile_id, int tile_wid, int tile_hgt)
 {
     if (tiles.contains(tile_id)) return tiles.value(tile_id);
 
@@ -564,8 +568,9 @@ QPixmap MainWindow::get_tile(QString tile_id)
 
     if (pix.width() == 1) return pix;
 
-    if (cell_wid != pix.width() || cell_hgt != pix.height()) {
-        pix = pix.scaled(cell_wid, cell_hgt);
+    if (tile_wid != pix.width() || tile_hgt != pix.height())
+    {
+        pix = pix.scaled(tile_wid, tile_hgt);
     }
 
     tiles.insert(tile_id, pix);
@@ -575,16 +580,16 @@ QPixmap MainWindow::get_tile(QString tile_id)
 
 void MainWindow::calculate_cell_size()
 {
-    cell_wid = MAX(tile_wid, font_wid);
+    main_cell_wid = MAX(main_tile_wid, main_font_wid);
 
-    cell_hgt = MAX(tile_hgt, font_hgt);
+    main_cell_hgt = MAX(main_tile_hgt, main_font_hgt);
 
     for (int y = 0; y < MAX_DUNGEON_HGT; y++)
     {
         for (int x = 0; x < MAX_DUNGEON_WID; x++)
         {
             grids[y][x]->cellSizeChanged();
-            grids[y][x]->setPos(x * cell_wid, y * cell_hgt);
+            grids[y][x]->setPos(x * main_cell_wid, y * main_cell_hgt);
         }
     }
 
@@ -593,23 +598,14 @@ void MainWindow::calculate_cell_size()
 
 void MainWindow::set_graphic_mode(int mode)
 {    
-    int cy = -1;
-    int cx = -1;
 
-    // Remember the center of the view
-    if (character_dungeon)
-    {
-        QRect vis = visible_dungeon();
-        cy = vis.y() + vis.height() / 2;
-        cx = vis.x() + vis.width() / 2;
-    }
 
     switch (mode)
     {
         case GRAPHICS_RAYMOND_GAUSTADNES:
         {
-            tile_hgt = 64;
-            tile_wid = 64;
+            main_tile_hgt = 64;
+            main_tile_wid = 64;
             current_tiles = tiles_64x64;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(TRUE);
@@ -619,8 +615,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         case GRAPHICS_DAVID_GERVAIS:
         {
-            tile_hgt = 32;
-            tile_wid = 32;
+            main_tile_hgt = 32;
+            main_tile_wid = 32;
             current_tiles = tiles_32x32;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
@@ -630,8 +626,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         case GRAPHICS_ORIGINAL:
         {
-            tile_hgt = 8;
-            tile_wid = 8;
+            main_tile_hgt = 8;
+            main_tile_wid = 8;
             current_tiles = tiles_8x8;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
@@ -641,8 +637,8 @@ void MainWindow::set_graphic_mode(int mode)
         }
         default: //GRAPHICS_NONE:
         {
-            tile_hgt = 0;
-            tile_wid = 0;
+            main_tile_hgt = 0;
+            main_tile_wid = 0;
             current_tiles = 0;
             ascii_mode_act->setChecked(TRUE);
             reg_mode_act->setChecked(FALSE);
@@ -654,17 +650,19 @@ void MainWindow::set_graphic_mode(int mode)
 
     use_graphics = mode;
     calculate_cell_size();
-    dun_map_calc_cell_size();
-
+    set_dun_map_graphics();
+    set_overhead_map_graphics();
     destroy_tiles();
     if (character_dungeon) extract_tiles();
     update_sidebar_all();
 
     // Recenter the view
-    if (cy != -1 && cx != -1)
+    if (character_dungeon)
     {
         ui_redraw_all();
-        ui_center(cy, cx);
+        ui_center(p_ptr->py, p_ptr->px);
+        dun_map_center(p_ptr->py, p_ptr->px);
+        overhead_map_center(p_ptr->py, p_ptr->px);
     }
 }
 
@@ -696,8 +694,8 @@ void MainWindow::set_font_main_window(QFont newFont)
 {
     font_main_window = newFont;
     QFontMetrics metrics(font_main_window);
-    font_hgt = metrics.height() + FONT_EXTRA;
-    font_wid = metrics.width('M') + FONT_EXTRA;
+    main_font_hgt = metrics.height() + FONT_EXTRA;
+    main_font_wid = metrics.width('M') + FONT_EXTRA;
 
     calculate_cell_size();
 
@@ -720,10 +718,11 @@ void MainWindow::init_scene()
 {
     QFontMetrics metrics(font_main_window);
 
-    font_hgt = metrics.height() + FONT_EXTRA;
-    font_wid = metrics.width('M') + FONT_EXTRA;
-    tile_hgt = tile_wid = 0;
-    cell_hgt = cell_wid = 0;
+    main_font_hgt = metrics.height() + FONT_EXTRA;
+    main_font_wid = metrics.width('M') + FONT_EXTRA;
+    main_tile_hgt = main_tile_wid = 0;
+    main_cell_hgt = main_cell_wid = 0;
+
 
     QBrush brush(QColor("black"));
     dungeon_scene->setBackgroundBrush(brush);    
@@ -750,10 +749,14 @@ void MainWindow::redraw_screen()
     }
 
     // Adjust scrollbars
-    graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
+    graphics_view->setSceneRect(0, 0, p_ptr->cur_map_wid * main_cell_wid, p_ptr->cur_map_hgt * main_cell_hgt);
     if (dun_map_created)
     {
-        dun_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * cell_wid, p_ptr->cur_map_hgt * cell_hgt);
+        dun_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * dun_map_cell_wid, p_ptr->cur_map_hgt * dun_map_cell_hgt);
+    }
+    if (overhead_map_created)
+    {
+        overhead_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * overhead_map_cell_wid, p_ptr->cur_map_hgt * overhead_map_cell_hgt);
     }
 
     for (int y = 0; y < p_ptr->cur_map_hgt; y++)
@@ -781,8 +784,8 @@ bool MainWindow::panel_contains(int y, int x)
 {
     QPolygonF pol = graphics_view->mapToScene(graphics_view->viewport()->geometry());
     // We test top-left and bottom-right corners of the cell
-    QPointF point1(x * cell_wid, y * cell_hgt);
-    QPointF point2(x * cell_wid + cell_wid, y * cell_hgt + cell_hgt);
+    QPointF point1(x * main_cell_wid, y * main_cell_hgt);
+    QPointF point2(x * main_cell_wid + main_cell_wid, y * main_cell_hgt + main_cell_hgt);
     return pol.containsPoint(point1, Qt::OddEvenFill) && pol.containsPoint(point2, Qt::OddEvenFill);
 }
 
@@ -849,8 +852,13 @@ MainWindow::MainWindow()
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
-    show_win_dun_map = dun_map_created = FALSE;
+    show_win_overhead_map = show_win_dun_map = overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
+    dun_map_cell_wid = dun_map_cell_hgt = 0;
+    dun_map_use_graphics = dun_map_created = FALSE;
+    overhead_map_cell_wid = overhead_map_cell_hgt = 0;
+    overhead_map_use_graphics = overhead_map_created = FALSE;
+
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -859,7 +867,7 @@ MainWindow::MainWindow()
     cursor = new DungeonCursor(this);
     do_pseudo_ascii = false;
 
-    dun_map_multiplier = current_multiplier = "1:1";
+    overhead_map_multiplier = dun_map_multiplier = main_multiplier = "1:1";
 
     // Set the main area
     dungeon_scene = new QGraphicsScene;
@@ -876,7 +884,6 @@ MainWindow::MainWindow()
     message_dock->setAllowedAreas(Qt::TopDockWidgetArea);
     message_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
     addDockWidget(Qt::TopDockWidgetArea, message_dock);
-
 
     // Set up the sidebar area, make it scrollable in case there are alot of monsters
     sidebar_widget = new QWidget;
@@ -1024,6 +1031,7 @@ void MainWindow::save_and_close()
     win_char_equipment_wipe();
     win_char_inventory_wipe();
     win_dun_map_wipe();
+    win_overhead_map_wipe();
 
     character_loaded = character_dungeon = character_generated = FALSE;
 
@@ -1172,6 +1180,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_char_equipment_destroy();
     win_char_inventory_destroy();
     win_dun_map_destroy();
+    win_overhead_map_destroy();
 
     event->accept();
 }
@@ -1190,7 +1199,7 @@ void MainWindow::options_dialog()
     OptionsDialog *dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
-    p_ptr->redraw |= (PR_MAP);
+    redraw_screen();
     handle_stuff();
 }
 
@@ -1507,9 +1516,13 @@ void MainWindow::create_actions()
     win_char_inventory->setStatusTip(tr("Display character Inventory screen."));
     connect(win_char_inventory, SIGNAL(triggered()), this, SLOT(toggle_win_char_inventory_frame()));
 
-    win_dun_map = new QAction(tr("Show Small Map Screen"), this);
-    win_dun_map->setStatusTip(tr("Display small map screen."));
+    win_dun_map = new QAction(tr("Show Map Window"), this);
+    win_dun_map->setStatusTip(tr("Display map window."));
     connect(win_dun_map, SIGNAL(triggered()), this, SLOT(toggle_win_dun_map_frame()));
+
+    win_overhead_map = new QAction(tr("Show Overhead Map"), this);
+    win_overhead_map->setStatusTip(tr("Display overhead map."));
+    connect(win_overhead_map, SIGNAL(triggered()), this, SLOT(toggle_win_overhead_map_frame()));
 
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
@@ -1615,8 +1628,8 @@ void MainWindow::create_signals()
 
 void MainWindow::slot_multiplier_clicked(QAction *action)
 {
-    if (action) current_multiplier = action->objectName();
-    QList<QString> parts = current_multiplier.split(":");
+    if (action) main_multiplier = action->objectName();
+    QList<QString> parts = main_multiplier.split(":");
     if (parts.size() == 2)
     {
         qreal x = parts.at(1).toFloat();
@@ -1689,10 +1702,10 @@ void MainWindow::create_menus()
     QMenu *submenu = settings->addMenu(tr("Tile multiplier"));
     multipliers = new QActionGroup(this);
 
-    for (int i = 0; !items[i].isEmpty(); i++)
+    for (int i = 0; !mult_list[i].isEmpty(); i++)
     {
-        QAction *act = submenu->addAction(items[i]);
-        act->setObjectName(items[i]);
+        QAction *act = submenu->addAction(mult_list[i]);
+        act->setObjectName(mult_list[i]);
         act->setCheckable(true);
         multipliers->addAction(act);
         if (i == TILE_1x1_MULT) act->setChecked(true);
@@ -1731,6 +1744,7 @@ void MainWindow::create_menus()
     win_menu->addAction(win_char_equipment);
     win_menu->addAction(win_char_inventory);
     win_menu->addAction(win_dun_map);
+    win_menu->addAction(win_overhead_map);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1785,6 +1799,8 @@ void MainWindow::select_font()
             font_char_equip_info = QFont(family);
             font_char_equipment = QFont(family);
             font_char_inventory = QFont(family);
+            font_dun_map = QFont(family);
+            font_overhead_map = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1802,12 +1818,14 @@ void MainWindow::select_font()
     font_char_equip_info.setPointSize(12);
     font_char_equipment.setPointSize(12);
     font_char_inventory.setPointSize(12);
+    font_dun_map.setPointSize(10);
+    font_overhead_map.setPointSize(8);
 }
 
 
 
 // Read and write the game settings.
-// Every entry in write-settings should ahve a corresponding entry in read_settings.
+// Every entry in write-settings should have a corresponding entry in read_settings.
 void MainWindow::read_settings()
 {
     QSettings settings("NPPGames", "NPPQT");
@@ -1818,8 +1836,8 @@ void MainWindow::read_settings()
     pseudo_ascii_act->setChecked(do_pseudo_ascii);
     use_graphics = settings.value("use_graphics", 0).toInt();
     which_keyset = settings.value("which_keyset", 0).toInt();
-    current_multiplier = settings.value("tile_multiplier", "1:1").toString();
-    QAction *act = this->findChild<QAction *>(current_multiplier);
+    main_multiplier = settings.value("tile_multiplier", "1:1").toString();
+    QAction *act = this->findChild<QAction *>(main_multiplier);
     if (act)
     {
         act->setChecked(true);
@@ -1852,6 +1870,10 @@ void MainWindow::read_settings()
     font_char_equipment.fromString(load_font);
     load_font = settings.value("font_char_inventory", font_char_inventory ).toString();
     font_char_inventory.fromString(load_font);
+    load_font = settings.value("font_dun_map", font_dun_map ).toString();
+    font_dun_map.fromString(load_font);
+    load_font = settings.value("font_overhead_map", font_overhead_map ).toString();
+    font_overhead_map.fromString(load_font);
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
@@ -1939,15 +1961,29 @@ void MainWindow::read_settings()
     }
 
     show_win_dun_map = settings.value("show_dun_map_window", false).toBool();
+
     if (show_win_dun_map)
     {
+        dun_map_use_graphics = settings.value("graphics_dun_map", false).toBool();
         dun_map_multiplier = settings.value("dun_map_tile_multiplier", "1:1").toString();
         show_win_dun_map = FALSE; //hack - so it gets toggled to true
         toggle_win_dun_map_frame();
         window_dun_map->restoreGeometry(settings.value("winDunMapGeometry").toByteArray());
         window_dun_map->show();
-
     }
+
+    show_win_overhead_map = settings.value("show_dun_overhead_window", false).toBool();
+    if (show_win_overhead_map)
+    {
+        overhead_map_use_graphics = settings.value("graphics_overhead_map", false).toBool();
+        overhead_map_multiplier = settings.value("dun_overhead_tile_multiplier", "1:1").toString();
+        show_win_overhead_map = FALSE; //hack - so it gets toggled to true
+        toggle_win_overhead_map_frame();
+        window_overhead_map->restoreGeometry(settings.value("winOverheadMapGeometry").toByteArray());
+        window_overhead_map->show();
+    }
+
+
 
     update_recent_savefiles();
 }
@@ -1970,13 +2006,16 @@ void MainWindow::write_settings()
     settings.setValue("font_char_equip_info", font_char_equip_info.toString());
     settings.setValue("font_char_equipment", font_char_equipment.toString());
     settings.setValue("font_char_inventory", font_char_inventory.toString());
+    settings.setValue("font_dun_map", font_dun_map.toString());
+    settings.setValue("font_overhead_map", font_overhead_map.toString());
     settings.setValue("window_state", saveState());
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
     settings.setValue("which_keyset", which_keyset);
-    settings.setValue("tile_multiplier", current_multiplier);
+    settings.setValue("tile_multiplier", main_multiplier);
     settings.setValue("show_mon_list_window", show_mon_list);
     settings.setValue("show_win_dun_map_window", show_win_dun_map);
+    settings.setValue("show_win_dun_overhead_window", show_win_overhead_map);
     if (show_mon_list)
     {
         settings.setValue("winMonListGeometry", window_mon_list->saveGeometry());
@@ -2029,10 +2068,20 @@ void MainWindow::write_settings()
         settings.setValue("show_inven_window_buttons", inven_show_buttons);
     }
     settings.setValue("show_dun_map_window", show_win_dun_map);
+
     if (show_win_dun_map)
     {
-        settings.setValue("winDunMapGeometry", window_dun_map->saveGeometry());
+        settings.setValue("graphics_dun_map", dun_map_use_graphics);
         settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
+        settings.setValue("winDunMapGeometry", window_dun_map->saveGeometry());
+
+    }
+    settings.setValue("show_dun_overhead_window", show_win_overhead_map);
+    if (show_win_overhead_map)
+    {
+        settings.setValue("graphics_overhead_map", overhead_map_use_graphics);
+        settings.setValue("winOverheadMapGeometry", window_overhead_map->saveGeometry());
+        settings.setValue("dun_overhead_tile_multiplier", overhead_map_multiplier);
     }
 }
 
@@ -2080,6 +2129,7 @@ void MainWindow::load_file(const QString &file_name)
                 if (show_char_equipment) create_win_char_equipment();
                 if (show_char_inventory) create_win_char_inventory();
                 if (show_win_dun_map) create_win_dun_map();
+                if (show_win_overhead_map) create_win_overhead_map();
 
                 //hack - draw everything
                 p_ptr->player_turn = TRUE;
@@ -2113,6 +2163,7 @@ void MainWindow::launch_birth(bool quick_start)
         if (show_char_equipment) create_win_char_equipment();
         if (show_char_inventory) create_win_char_inventory();
         if (show_win_dun_map) create_win_dun_map();
+        if (show_win_overhead_map) create_win_overhead_map();
 
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.

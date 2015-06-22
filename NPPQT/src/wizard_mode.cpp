@@ -588,7 +588,6 @@ MakeMonsterDialog::MakeMonsterDialog(void)
         /* Place it (allow groups) */
         if (place_monster_aux(y, x, i, (MPLACE_GROUP | MPLACE_OVERRIDE | MPLACE_SLEEP))) break;
     }
-    p_ptr->redraw |= (PR_MAP);
 }
 
 //Helper function to get the complete monster name.

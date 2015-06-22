@@ -149,14 +149,14 @@ enum
 
 /*
  * Number of grids in each dungeon (horizontally)
- * Must be a multiple of PANEL_HGT
+ * Must be a multiple of PANEL_HGT and an even number
  * Must be less or equal to 256
  */
 #define MAX_DUNGEON_HGT		66
 
 /*
  * Number of grids in each dungeon (vertically)
- * Must be a multiple of PANEL_WID
+ * Must be a multiple of PANEL_WID and an even number
  * Must be less or equal to 256
  */
 #define MAX_DUNGEON_WID		198
@@ -216,6 +216,21 @@ typedef quint16         u16b;
 typedef qint16          s16b;
 typedef quint32         u32b;
 typedef qint32          s32b;
+
+#define MAX_BYTE    255
+#define MIN_BYTE    0
+
+#define MAX_S16B    32767
+#define MIN_S16B    -32768
+
+#define MAX_U16B    0
+#define MIN_U16B    65535
+
+#define MAX_S32B    -2147483648
+#define MIN_S32B    2147483647
+
+#define MAX_U32B    0
+#define MIN_U32B    4294967295
 
 /*
  * An array of 256 byte's

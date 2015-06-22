@@ -37,6 +37,7 @@ class QGraphicsScene;
 class QGraphicsItem;
 class DungeonGrid;
 class DunMapGrid;
+class DunOverheadGrid;
 class DungeonCursor;
 class QTextEdit;
 class QLineEdit;
@@ -62,10 +63,10 @@ public:
     QFont font_main_window;
     QFont font_message_window;
     QFont font_sidebar_window;
-    int font_hgt, font_wid;
-    int tile_hgt, tile_wid;
-    int cell_hgt, cell_wid;
-    QString current_multiplier;
+    int main_font_hgt, main_font_wid;
+    int main_tile_hgt, main_tile_wid;
+    int main_cell_hgt, main_cell_wid;
+    QString main_multiplier;
     bool do_pseudo_ascii;
 
     // Scaled tiles
@@ -109,7 +110,7 @@ public:
     void force_redraw();
     bool panel_contains(int y, int x);    
     bool running_command();
-    QPixmap get_tile(QString tile_id);
+    QPixmap get_tile(QString tile_id, int tile_hgt, int tile_wid);
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
     void wait_animation(int n_animations = 1);
     void animation_done();
@@ -280,6 +281,7 @@ private:
     QAction *win_char_equipment;
     QAction *win_char_inventory;
     QAction *win_dun_map;
+    QAction *win_overhead_map;
 
     // Holds the actual commands for the help menu.
     QAction *help_about;
@@ -612,33 +614,109 @@ private:
     QGraphicsScene *dun_map_scene;
     QGraphicsView *dun_map_view;
     QMenuBar *win_dun_map_menubar;
+    QAction *dun_map_font;
+    QAction *dun_map_graphics;
     QMenu *win_dun_map_settings;
     void win_dun_map_create();
     void win_dun_map_destroy();
     void win_dun_map_wipe();
     void create_win_dun_map();
-    DungeonGrid *dun_map_grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
+    DunMapGrid *dun_map_grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
     void dun_map_calc_cell_size();
     QActionGroup *dun_map_multipliers;
     QString dun_map_multiplier;
+    void set_dun_map_font(QFont newFont);
+
 
 public:
     bool show_win_dun_map;
+    bool dun_map_use_graphics;
     void win_dun_map_update();
     void dun_map_update_one_grid(int y, int x);
     void dun_map_center(int y, int x);
     QRect visible_dun_map();
     bool dun_map_created;
+    int dun_map_font_hgt, dun_map_font_wid;
+    int dun_map_tile_hgt, dun_map_tile_wid;
+    int dun_map_cell_wid, dun_map_cell_hgt;
+    QFont font_dun_map;
 
 private slots:
+    void win_dun_map_font();
     void toggle_win_dun_map_frame();
     void dun_map_multiplier_clicked(QAction *);
+    void set_dun_map_graphics();
+
+    // Overhead window
+private:
+    QWidget *window_overhead_map;
+    QVBoxLayout *main_vlay_overhead_map;
+    QGraphicsScene *overhead_map_scene;
+    QGraphicsView *overhead_map_view;
+    QMenuBar *win_overhead_map_menubar;
+    QAction *overhead_map_font;
+    QAction *overhead_map_graphics;
+    QMenu *win_overhead_map_settings;
+    void win_overhead_map_create();
+    void win_overhead_map_destroy();
+    void win_overhead_map_wipe();
+    void create_win_overhead_map();
+    DunOverheadGrid *overhead_map_grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
+    void overhead_map_calc_cell_size();
+    QActionGroup *overhead_map_multipliers;
+    QString overhead_map_multiplier;
+    void set_overhead_map_font(QFont newFont);
+
+public:
+    bool show_win_overhead_map;
+    bool overhead_map_use_graphics;
+    void win_overhead_map_update();
+    void overhead_map_update_one_grid(int y, int x);
+    void overhead_map_center(int y, int x);
+    QRect visible_overhead_map();
+    bool overhead_map_created;
+    int overhead_map_font_hgt, overhead_map_font_wid;
+    int overhead_map_tile_hgt, overhead_map_tile_wid;
+    int overhead_map_cell_wid, overhead_map_cell_hgt;
+    QFont font_overhead_map;
+
+private slots:
+    void win_overhead_map_font();
+    void toggle_win_overhead_map_frame();
+    void overhead_map_multiplier_clicked(QAction *);
+    void set_overhead_map_graphics();
 
 };
 
 extern MainWindow *main_window;
 
+class DunMapGrid: public QGraphicsItem
+{
+public:
+    DunMapGrid(int _x, int _y);
 
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QPainterPath shape() const;
+
+    void DunMapCellSizeChanged();
+
+    int dm_x, dm_y;
+};
+
+class DunOverheadGrid: public QGraphicsItem
+{
+public:
+    DunOverheadGrid(int _x, int _y);
+
+    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QPainterPath shape() const;
+
+    void DunMapCellSizeChanged();
+
+    int oh_x, oh_y;
+};
 
 class DungeonGrid: public QGraphicsItem
 {
@@ -679,6 +757,6 @@ public:
 extern QString find_cloud_tile(int y, int x);
 
 extern QVector<s16b> sidebar_monsters;
-extern QString items[];
+extern QString mult_list[];
 
 #endif

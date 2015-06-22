@@ -29,10 +29,10 @@ QRect visible_dungeon()
 {
     QGraphicsView *view = main_window->graphics_view;
     QRectF rect1 = view->mapToScene(view->viewport()->geometry()).boundingRect();
-    QRect rect2(floor(rect1.x() / main_window->cell_wid),
-                floor(rect1.y() / main_window->cell_hgt),
-                ceil(rect1.width() / main_window->cell_wid),
-                ceil(rect1.height() / main_window->cell_hgt));
+    QRect rect2(floor(rect1.x() / main_window->main_cell_wid),
+                floor(rect1.y() / main_window->main_cell_hgt),
+                ceil(rect1.width() / main_window->main_cell_wid),
+                ceil(rect1.height() / main_window->main_cell_hgt));
     QRect rect3(0, 0, p_ptr->cur_map_wid, p_ptr->cur_map_hgt);
     rect2 = rect2.intersected(rect3);
     return rect2;
@@ -104,8 +104,8 @@ bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x)
         if (y == cur_tar_y && x == cur_tar_x) continue;
 
         QGraphicsRectItem *item = main_window->dungeon_scene->addRect(
-                    x * main_window->cell_wid, y * main_window->cell_hgt,
-                    main_window->cell_wid - 1, main_window->cell_hgt - 1, pen, Qt::NoBrush);
+                    x * main_window->main_cell_wid, y * main_window->main_cell_hgt,
+                    main_window->main_cell_wid - 1, main_window->main_cell_hgt - 1, pen, Qt::NoBrush);
 
         item->setOpacity(1);
         item->setZValue(90);
@@ -178,7 +178,6 @@ void ui_player_moved()
 {
     if (!character_dungeon) return;
     main_window->update_cursor();
-    QRect vis;
 
     int py = p_ptr->py;
     int px = p_ptr->px;
@@ -186,33 +185,42 @@ void ui_player_moved()
     if (center_player && !p_ptr->is_running())
     {
         ui_center(py, px);
+        main_window->dun_map_center(py, px);
+        main_window->overhead_map_center(py, px);
+        return;
     }
-    else
+
+    QRect vis = visible_dungeon();
+    if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
+            || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
+            || px < vis.x() + PANEL_CHANGE_OFFSET_X
+            || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
     {
-        QRect vis = visible_dungeon();
+        ui_center(py, px);
+    }
+
+    if (main_window->dun_map_created)
+    {
+        vis = main_window->visible_dun_map();
         if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
                 || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
                 || px < vis.x() + PANEL_CHANGE_OFFSET_X
                 || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
         {
-            ui_center(py, px);
-        }
-    }
-
-
-    if (main_window->dun_map_created)
-    {
-        vis = main_window->visible_dun_map();
-        if (center_player && !p_ptr->is_running())
-        {
             main_window->dun_map_center(py, px);
         }
-        else if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
+
+    }
+
+    if (main_window->overhead_map_created)
+    {
+        vis = main_window->visible_overhead_map();
+        if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
                 || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
                 || px < vis.x() + PANEL_CHANGE_OFFSET_X
                 || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
         {
-            main_window->dun_map_center(py, px);
+            main_window->overhead_map_center(py, px);
         }
 
     }
@@ -221,7 +229,7 @@ void ui_player_moved()
 
 QSize ui_grid_size()
 {
-    return QSize(main_window->cell_wid, main_window->cell_hgt);
+    return QSize(main_window->main_cell_wid, main_window->main_cell_hgt);
 }
 
 QPixmap ui_get_tile(QString tile_id, TileBag *tileset)
@@ -456,14 +464,6 @@ void ui_update_char_inventory_window()
     p_ptr->redraw &= ~(PR_WIN_INVENTORY);
 }
 
-void ui_update_small_map_window()
-{
-    if (!p_ptr->player_turn) return;
-    if (p_ptr->is_running() || p_ptr->is_resting()) return;
-    main_window->win_dun_map_update();
-    p_ptr->redraw &= ~(PR_MAP);
-}
-
 void ui_update_char_score()
 {
     if (p_ptr->is_running() || p_ptr->is_resting()) return;
@@ -497,10 +497,10 @@ int ui_get_dir_from_slope(int y1, int x1, int y2, int x2)
 
 QPoint ui_get_center(int y, int x)
 {
-    x *= main_window->cell_wid;
-    y *= main_window->cell_hgt;
-    x += main_window->cell_wid / 2;
-    y += main_window->cell_hgt / 2;
+    x *= main_window->main_cell_wid;
+    y *= main_window->main_cell_hgt;
+    x += main_window->main_cell_wid / 2;
+    y += main_window->main_cell_hgt / 2;
     return QPoint(x, y);
 }
 
@@ -512,9 +512,9 @@ bool panel_contains(int y, int x)
 
 void ui_ensure(int y, int x)
 {
-    main_window->graphics_view->ensureVisible(QRectF(x * main_window->cell_wid,
-                                                     y * main_window->cell_hgt,
-                                                     main_window->cell_wid, main_window->cell_hgt));
+    main_window->graphics_view->ensureVisible(QRectF(x * main_window->main_cell_wid,
+                                                     y * main_window->main_cell_hgt,
+                                                     main_window->main_cell_wid, main_window->main_cell_hgt));
 }
 
 bool ui_modify_panel(int y, int x)
@@ -529,8 +529,8 @@ bool ui_modify_panel(int y, int x)
 
     if (y == vis.y() && x == vis.x()) return false;
 
-    main_window->graphics_view->verticalScrollBar()->setValue(y * main_window->cell_hgt);
-    main_window->graphics_view->horizontalScrollBar()->setValue(x * main_window->cell_wid);
+    main_window->graphics_view->verticalScrollBar()->setValue(y * main_window->main_cell_hgt);
+    main_window->graphics_view->horizontalScrollBar()->setValue(x * main_window->main_cell_wid);
 
     return true;
 }
@@ -563,7 +563,7 @@ bool ui_change_panel(int dir)
 
 void ui_center(int y, int x)
 {
-    main_window->graphics_view->centerOn(x * main_window->cell_wid, y * main_window->cell_hgt);
+    main_window->graphics_view->centerOn(x * main_window->main_cell_wid, y * main_window->main_cell_hgt);
 }
 
 void ui_redraw_grid(int y, int x)
@@ -573,17 +573,13 @@ void ui_redraw_grid(int y, int x)
     g_ptr->update(g_ptr->boundingRect());
 
     main_window->dun_map_update_one_grid(y, x);
+    main_window->overhead_map_update_one_grid(y, x);
 }
 
 void ui_redraw_all()
 {
-    main_window->redraw_all();
-}
-
-void ui_redraw_map()
-{
-    main_window->redraw_screen();
     p_ptr->redraw &= ~(PR_MAP);
+    main_window->redraw_all();
 }
 
 void player_death_close_game(void)

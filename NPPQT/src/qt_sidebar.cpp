@@ -711,12 +711,18 @@ void MainWindow::sidebar_display_mon(int m_idx)
 
     QLabel *mon_name = new QLabel(monster_name);
 
+    QFontMetrics metrics(font_sidebar_window);
+
+    int font_hgt = metrics.height() + FONT_EXTRA;
+    int font_wid = metrics.width('M') + FONT_EXTRA;
+
     if (use_graphics)
     {
         QPixmap pix = ui_get_tile(r_ptr->tile_id);
-        pix = pix.scaled(cell_wid, cell_hgt);
+        pix = pix.scaled(main_cell_hgt, main_cell_wid);
         mon_name->setPixmap(pix);
     }
+    mon_name->setText(monster_name);
     mon_name->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     mon_name->setAlignment(Qt::AlignLeft);
     mon_name->setToolTip(get_monster_description(m_ptr->r_idx, FALSE, NULL, FALSE));
@@ -726,12 +732,9 @@ void MainWindow::sidebar_display_mon(int m_idx)
 
     QLabel *mon_health = new QLabel;
     mon_health->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    QSize label_size = mon_name->sizeHint();
 
-    label_size.setWidth(sidebar_widget->width());
-
-    int w = label_size.width() * 9/10;
-    int h = label_size.height() * 4 / 5;
+    int w = font_wid*15;
+    int h = font_hgt;
     QPixmap mon_health_bar(w, h);
 
     QPainter painter(&mon_health_bar);
