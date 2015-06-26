@@ -342,8 +342,8 @@ bool object_type::is_artifact()
  */
 bool object_type::is_known_artifact()
 {
-
-    if (is_artifact() && was_sensed()) return (TRUE);
+    if (!is_artifact()) return (FALSE);
+    if (is_known()) return (TRUE);
     if (discount == INSCRIP_INDESTRUCTIBLE) return (TRUE);
     if (discount == INSCRIP_TERRIBLE) return (TRUE);
     if (discount == INSCRIP_SPECIAL) return (TRUE);

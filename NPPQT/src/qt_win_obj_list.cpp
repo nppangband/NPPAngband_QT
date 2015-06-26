@@ -41,9 +41,6 @@ static bool compare_types(const object_type *o_ptr, const object_type *j_ptr)
     return (TRUE);
 }
 
-/* some handy macros for sorting */
-#define object_is_worthless(o) (k_info[o->k_idx].cost == 0)
-
 /*
  * Sort comparator for objects
  *  TRUE if o1 should be first
@@ -54,25 +51,31 @@ static bool compare_items(const object_vis ov1, const object_vis ov2)
     object_type *o1 = ov1.obj_type;
     object_type *o2 = ov2.obj_type;
 
+    QString oname1 = object_desc(o1, ODESC_FULL);
+    QString oname2 = object_desc(o2, ODESC_FULL);
+
     /* known artifacts will sort first */
-    if (o1->is_known_artifact() && o2->is_known_artifact())
-        return compare_types(o1, o2);
-    if (o1->is_known_artifact()) return FALSE;
-    if (o2->is_known_artifact()) return TRUE;
+    if (o1->is_known_artifact() && o2->is_known_artifact()) return compare_types(o1, o2);
+    if (o1->is_known_artifact()) return TRUE;
+    if (o2->is_known_artifact()) return FALSE;
 
-    /* unknown objects will sort next */
-    if (!o1->is_flavor_known() && !o2->is_flavor_known())
-        return compare_types(o1, o2);
-    if (!o1->is_flavor_known()) return FALSE;
-    if (!o2->is_flavor_known()) return TRUE;
+    if (o1->is_wearable() && o2->is_wearable()) return compare_types(o1, o2);
+    if (o1->is_wearable()) return TRUE;
+    if (o2->is_wearable()) return FALSE;
 
-    /* if only one of them is worthless, the other comes first */
-    if (object_is_worthless(o1) && !object_is_worthless(o2)) return TRUE;
-    if (!object_is_worthless(o1) && object_is_worthless(o2)) return FALSE;
+    if (o1->is_known() && o2->is_known()) return compare_types(o1, o2);
+    if (o1->is_known()) return TRUE;
+    if (o2->is_known()) return FALSE;
 
-    /* otherwise, just compare tvals and svals */
-    /* NOTE: arguably there could be a better order than this */
-    return compare_types(o1, o2);
+    if (o1->is_aware() && o2->is_aware()) return compare_types(o1, o2);
+    if (o1->is_aware()) return TRUE;
+    if (o2->is_aware()) return FALSE;
+
+    if (o1->is_easy_know() && o2->is_easy_know()) return compare_types(o1, o2);
+    if (o1->is_easy_know()) return TRUE;
+    if (o2->is_easy_know()) return FALSE;
+
+    return (FALSE);
 }
 
 
@@ -285,7 +288,7 @@ void MainWindow::win_obj_list_update()
         QTableWidgetItem *obj_ltr = new QTableWidgetItem(obj_symbol);
         if (use_graphics)
         {
-            QPixmap pix = ui_get_tile(k_ptr->tile_id);
+            QPixmap pix = ui_get_tile(k_ptr->get_tile_id());
             pix = pix.scaled(32, 32);
             obj_ltr->setIcon(pix);
         }
@@ -300,7 +303,6 @@ void MainWindow::win_obj_list_update()
         // Different colors depending on object_type.
         if (o_ptr->is_artifact() && o_ptr->is_known()) this_color = defined_colors[TERM_VIOLET];
         else if (!o_ptr->is_aware()) this_color = defined_colors[TERM_RED];
-        else if (object_is_worthless(o_ptr)) this_color = defined_colors[TERM_SLATE];
         else if (!o_ptr->is_known()) this_color = defined_colors[TERM_L_UMBER];
         else this_color = defined_colors[TERM_WHITE];
 
@@ -343,7 +345,7 @@ void MainWindow::win_obj_list_update()
         QTableWidgetItem *obj_ltr = new QTableWidgetItem(obj_symbol);
         if (use_graphics)
         {
-            QPixmap pix = ui_get_tile(k_ptr->tile_id);
+            QPixmap pix = ui_get_tile(k_ptr->get_tile_id());
             pix = pix.scaled(32, 32);
             obj_ltr->setIcon(pix);
         }
@@ -358,7 +360,6 @@ void MainWindow::win_obj_list_update()
         // Different colors depending on object_type.
         if (o_ptr->is_artifact() && o_ptr->is_known()) this_color = defined_colors[TERM_VIOLET];
         else if (!o_ptr->is_aware()) this_color = defined_colors[TERM_RED];
-        else if (object_is_worthless(o_ptr)) this_color = defined_colors[TERM_SLATE];
         else if (!o_ptr->is_known()) this_color = defined_colors[TERM_L_UMBER];
         else this_color = defined_colors[TERM_WHITE];
 

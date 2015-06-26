@@ -899,8 +899,6 @@ MainWindow::MainWindow()
     sidebar_dock->setWidget(sidebar_scroll);
     sidebar_scroll->setWidget(sidebar_widget);
     sidebar_scroll->setWidgetResizable(TRUE);
-    sidebar_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    sidebar_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     sidebar_vlay = new QVBoxLayout;
     sidebar_widget->setLayout(sidebar_vlay);

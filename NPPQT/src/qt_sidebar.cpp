@@ -707,33 +707,41 @@ void MainWindow::sidebar_display_mon(int m_idx)
     monster_type *m_ptr = mon_list + m_idx;
     monster_race *r_ptr = r_info + m_ptr->r_idx;
 
-    QString monster_name = color_string(QString("'%1'  %2") .arg(r_ptr->d_char) .arg(r_ptr->r_name_short), r_ptr->d_color);
-
-    QLabel *mon_name = new QLabel(monster_name);
+    QHBoxLayout *mon_hlayout = new QHBoxLayout;
 
     QFontMetrics metrics(font_sidebar_window);
 
     int font_hgt = metrics.height() + FONT_EXTRA;
     int font_wid = metrics.width('M') + FONT_EXTRA;
 
+    QLabel *mon_pic = new QLabel;
     if (use_graphics)
     {
+
         QPixmap pix = ui_get_tile(r_ptr->tile_id);
         pix = pix.scaled(main_cell_hgt, main_cell_wid);
-        mon_name->setPixmap(pix);
+        mon_pic->setPixmap(pix);
     }
-    mon_name->setText(monster_name);
+    else
+    {
+        mon_pic->setText(color_string(QString("'%1' ") .arg(r_ptr->d_char), r_ptr->d_color));
+        mon_pic->setFont(font_sidebar_window);
+    }
+    mon_hlayout->addWidget(mon_pic, Qt::AlignLeft);
+
+    QLabel *mon_name = new QLabel(color_string(r_ptr->r_name_short, r_ptr->d_color));
     mon_name->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    mon_name->setAlignment(Qt::AlignLeft);
     mon_name->setToolTip(get_monster_description(m_ptr->r_idx, FALSE, NULL, FALSE));
     mon_name->setFont(font_sidebar_window);
+    mon_hlayout->addWidget(mon_name, Qt::AlignLeft);
+    mon_hlayout->addStretch(10);
 
-    mon_health_vlay->addWidget(mon_name);
+    mon_health_vlay->addLayout(mon_hlayout);
 
     QLabel *mon_health = new QLabel;
     mon_health->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
 
-    int w = font_wid*15;
+    int w = font_wid*14;
     int h = font_hgt;
     QPixmap mon_health_bar(w, h);
 
@@ -824,19 +832,19 @@ void MainWindow::sidebar_display_mon(int m_idx)
 
 void MainWindow::update_sidebar_mon()
 {
-    update_mon_sidebar_list();
 
-    // Clear all the old data
-    QLayoutItem *item;
-    while ((item = mon_health_vlay->takeAt(0)) != 0)
-    {
-        QWidget *wid = item->widget();
-        if (wid) delete wid;
-        delete item;
-    }
+
+    clear_layout(mon_health_vlay);
 
     //Halluc
     if (p_ptr->timed[TMD_IMAGE]) return;
+
+    update_mon_sidebar_list();
+
+    QFontMetrics metrics(font_sidebar_window);
+
+    int font_wid = metrics.width('M') + FONT_EXTRA;
+    sidebar_scroll->setFixedWidth(font_wid*18);
 
     for (int i = 0; i < sidebar_monsters.size(); i++)
     {

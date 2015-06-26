@@ -847,8 +847,6 @@ static void map_terrain (s16b y, s16b x)
     }
 }
 
-#define GRAF_BROKEN_BONE 440
-
 static void map_objects (s16b y, s16b x)
 {
     object_type *o_ptr;
@@ -879,7 +877,7 @@ static void map_objects (s16b y, s16b x)
 
             dun_ptr->object_color = k_info[i].d_color;
             dun_ptr->object_char =  k_info[i].d_char;
-            dun_ptr->object_tile = k_info[i].tile_id;
+            dun_ptr->object_tile = k_info[i].get_tile_id();
 
             return;
         }

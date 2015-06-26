@@ -1599,7 +1599,7 @@ obj_holy_book_of_prayers_exorcisms_and_dispellings.png
 obj_holy_book_of_prayers_words_of_wisdom.png
 430
 obj_human_skeleton.png
-337
+399
 obj_iron_helm.png
 291
 obj_iron_shot.png
@@ -1676,6 +1676,8 @@ obj_piece_of_elvish_waybread.png
 346
 obj_pike.png
 307
+obj_pile.png
+777
 obj_pint_of_fine_ale.png
 391
 obj_pint_of_fine_grade_mush.png
@@ -1700,6 +1702,8 @@ obj_rusty_chain_mail.png
 855
 obj_sabre.png
 454
+obj_sapphires.png
+447
 obj_scroll_of_aggravate_monster.png
 814
 obj_scroll_of_banishment.png
@@ -1790,8 +1794,6 @@ obj_silver.png
 415
 obj_silver_crown.png
 346
-obj_skelaton_human.png
-399
 obj_slime_mold.png
 350
 obj_sling.png
@@ -5378,10 +5380,9 @@ DŽwÁD¼¿ WßoÕ„gC\Í|(}ÃÏrçJ±ì    IEND®B`‚‰PNG
 ÄŠtG	øDºÂ[EQ„ºÒ§O“|òâWD
     IEND®B`‚‰PNG
 
-   IHDR           szzô   	pHYs  Ä  Ä•+  IDATX…í•Ñƒ †ÿ6àgpwp&p÷qÂŒ /8€b\€>AhD*Õ‡&ò%$Žûÿœ ™L&swg6‘±ßË²œÊµ+à‹øsDdú¾7œóML
-»®‰ÈH) UU¹y)%†a  Œãˆ¶mÝÚ/Uˆn "#„@QN c›X!êºN6ñŠ‰€R
-J)4MM4Ï³5aRL<câ  µŽŠ[1Æ˜3‘Ò_AL4×uÊ²üè›XEøVÖ	 ˜¦é§Þ&>kçüÐö€OŠs?v]WwZB÷Éa©XZë]s>×_ŸHëË+ð7œy2™Ì½x
-ÿaƒu÷    IEND®B`‚‰PNG
+   IHDR           szzô   sRGB ®Îé   gAMA  ±üa   	pHYs  Ã  ÃÇo¨d   tEXtSoftware paint.net 4.0.5e…2e   IDATXGí’Ù‚@D	Hšˆ€dHFíuž¶ã"x–ÛU]s;Ð544444¬¡ïûC¨ƒzÂpÕ¡„eY¶È÷!èâ<ÏEnö¦€DH¬$ýä{ôa.>tìÒ(ƒBQ[{¤šÇ«IåKf*^f( ,Žãx·ŒëHeOÓTtIÙèØ1ò
+l‘®»ä…N|cäÔúËÝ&Ï¥×»]cŒ<§
+Åü‚ZCÏãäs{Õsï-Ö%Ðóù'óŒÐúOá*¼&çÊ¦O¸öa­á3Ð%þôŸZ€/]á]°ÀÞOùh¨_"Ü¿ƒ/®††E×ä:Æ¨ºAõ‡    IEND®B`‚‰PNG
 
    IHDR           szzô   	pHYs  t  tÞfx   ÕIDATX…í”ÁÃ EiÕ<K•²@NHY€˜ FÈ0=÷B¢ŽÂîÉ)¨	©*Õïb ÿ/KD)AþÓžË €´!ìêÅ6 Ç	§	‘öq ­\JÌ»%çtfm‹œiœKÍ›æªîŸhºÞ)Î$6x5÷~N4ˆ‚5#(
 àýœÿ×Ô„ý
@@ -5531,6 +5532,11 @@ H Þ´LaB&`š>†pnnnU—ú²×]Ü|ˆ¿³+}$’ä0p`<ò2†%²ƒ0`¯X
 
    IHDR           szzô   	pHYs  t  tÞfx   åIDATX…íÔ±„0…áO£é€n{™„: ¡ *  Ë¸‹hÌ'vaO$+ÀÁyB¬ïylþc‰ˆ‰ˆ|Ä€sW²OØ{oÞûÇé>¯ÀÛ¶ Ë2æyÞô°œlš¦Ûz=Ïs Æq¤išMÿ°7°Ü­sîDD¬®k†aØÝwÛí¼À9GQ¨*ð;®ë€¿Ó9¥DÄB¦ªVUÕæÑ]‚÷¥©ª…âà}ùeå[&±þx.Å—õÂ¹ÓØÃ×ýhø©•ð„'<á	OxÂ "qð×Qð˜õ½ø{OV    IEND®B`‚‰PNG
 
+   IHDR           szzô   	pHYs  t  tÞfx  »IDATX…Ý–1kÛP…?™BggùÒ-“kÉœ1´K—Ì‘½¤]mœ,ÖÔc!Kâ”!Y
+…ÒzŠðªÅ!¡{xÒb(”ü„¾ŽT)–dKu(ô‚¿ç{ïÑyç+ø_BD´ˆèÖÜmCn¥EiÙ´êŠ< 
+ˆÒ-"ºUWá^Ï‘\ ži^W“†N¤‰#‚óÞÉ[.?€ šG6µQË²hÑ÷,Ë¦EŸž#Z)edÕÉuItFñÆÍ×Í<%‹iÀáUÝ+k¹jå:¥”Ñsâ,X–c!oÖ€eÙÔÖK\¹¿¦€ÔÖKÀ|:ø;H£;Ç1,ÔˆŠDê<4’€ÆPÄé.ªƒDDD·ËŠvYñ©]§]Îp¶Ý®>Ž¨­—&~0ÃïæÔÁÔˆˆÞÜÜä§iR­Vùl};àÙõ5»»»3-oLPJ———º¾¤ð>ÃÁ×1§§§œœœ<ŠREhÔÜÞÞP­V³«¬¬;î§!ýLÏ²X+lDYÑs„`b"Ùÿ} J)#Õ³43µˆ0 àììŒë‰c“¦c°ŸvõŠýHj>ˆÈ
+J)CDt·Û¥R©`š& ¾ïãyN'™ÑFC7H}Æã±Sž?Ñ\×Õ®ëê`=x¢ëAn)úæåãcÎ5œ'¬­®®rxx£X)eDß`{{{ªF°ÖívÃüT&ÈŠ( Ó4¹¸¸`8²µ¿À×·ïØØØÀ4M<ÏóJÑ¤yâÃòrfóN§ƒïûaó¥£cž?…­ý=†Ã!¾ïÇt›wš'E”þò›FêDnˆè¼½	eK	…ï€—ƒÁÔMò“À|ñ&7äEå#Es¯¡išø¾y?nnnB;Nj>D42}`ž"³œ-+Ñ“t!ñH…—ÂŒ^Ž    IEND®B`‚‰PNG
+
    IHDR           szzô   sRGB ®Îé   gAMA  ±üa   	pHYs  Ã  ÃÇo¨d   tEXtSoftware paint.net 4.0.5e…2e   øIDATXGí”Ñ‚@D¯Z z K¡
 ¡~°&ômv&·˜˜›drwîÂ<ÖäRQQÑ·jšfyeo‰!Ër6÷}¿ŒãxçP…+xš&PÛ¶ñ w]g¶ÎiÝcz´÷ÇòI „Z¸3	é‘C ó {ý%Þš¨mÏYÄ˜‡Ûè@€h"×õP€½µ P'8$} û#yÅ‹çáä¡ÏkX0ªëÚ¸Š±. 9ü*®ªj/7"¿# Õ¬9·øz ¶{ööüÚ<Z5oÍ/ÞÐ£5D
 ÈHukŒÖ#€ìåc¤iø±¨è”Ò¸‹Ã]Cxùñ    IEND®B`‚‰PNG
@@ -5569,6 +5575,11 @@ lrM^91!6¹Itx¤Ò˜Fž(ÀFm+"ŸÊ[Q‘i´KÐÜM^e9äì‚I òlÚ•½y® Óá¢ÓVE®€q w¶E,×:2;_á
    IHDR           szzô   	pHYs  t  tÞfx  xIDATX…í–±Â0†?N×ó˜€F`Ê,(€h #XòLÁ AC—ØÎ¾*‡N:Û1T|]dÇÿû¿Ø/@D|èÜ¯WˆWU\DöbÉZ€ˆøÕjÅt:e¿ß¥=år	Àl6šŸ­€~ïµÖ EñÞRÉRÀ³{	~÷{Œèãóår`³Ù°X,‚×™¤ŠWUõçØz½¦(
 Ê²ÄZûïúI	Xk'Zk_×õÐlóùœÛíÀõzMY6ñ"â•R^)åï÷»WJù˜£8izñãñ@Y–¿ÆB¢ïInÂgbDIúÝeô9ÚíÙ
 xtß¶mªî@R´mK×ul·ÛQî!2ñu]ÓuÆ˜1ºÑ	c0Æp8F»‡ˆDÄïv;Œ1XkÇêD%`­Å9‡Ö:‹{L ¿|œsYÝCDÖZš¦át:es	ô?šMÓàœË¥;”@/|>Ÿ³º¦¿vß.üáü í‚§ŒŽÑ,[    IEND®B`‚‰PNG
+
+   IHDR           szzô   	pHYs  t  tÞfx  qIDATX…í•?nƒ0Æ¿4aŒôXrƒ.ô{†p€HDÙ8[•J œ¡#cF²ôY°”¹}lò‡Uâ“lcûû½‡ŸºCD$Ÿj>^Iù"’;)¥—dýCpälÎíÞ ˆH3’‡^n]°ôs ÀçÛ÷#¾¥&ÕŽbÔ‰Kƒ´,âŽnŠ£›öRnÀÚ±Ê4ßAD’Ÿ»>ö9ÂÀ*ûUˆh>k4ÿJS,âÃµÞ—7ò’¬<ñ@Ržv®}u¼Z¢]T†¡Þ…A¬Ss6anï¤¬ü™9›±1©ÏJ€.Ì'¦Á0°€ßJ¨¼Ó&¯Í›nmD[€è€ºWÛ]¢,ý¢
+ÂÀÂ´•ÆSE)¯ï¶-› j/ˆH
+c¼r°ôsDó„£¦ôÝô"3ÝÚ3aüªx±	ä´Ùkó½äõœÅsÀk€‘
+c$k1Et|?¹Aƒýý lË*ð;Ä3    IEND®B`‚‰PNG
 
    IHDR           szzô   	pHYs  t  tÞfx  àIDATX…ÅW¿‹Û0þ\ºlè˜­¤ssv²'¹? ËA!sÌýÅS§LþZ;CÇ²t.i¦n‘O*¹é†‹¡cw°¥Êúa;åà>–žžô>=é=YÀÃ’¶mçb;Ë2K'—ûe,Ë,¹ÝšÀyò¶3
   ¢Lë—uœQ€ux·ïq	3žWöÎ(@EÆ°'Õ¶0&Ù¸ýª¾3
@@ -5757,10 +5768,6 @@ r·\:°U#>¼O µžäpÉV7%ˆG)eÀ¡W àŽW çùÉRºÄÇêMˆh¨ëœó`²÷OZ½ghN8²Úp+Y.±Qp!&âÈ¡”=ŽC
 ¥:xlKÊ¿È’$IòslÛÖìzÉ§s]À´ÖÚhŽÓ+š›iÎ;ô(Ï¶ïû»Ž“3öé}| 
 =.€7OöÌbœ(5Ê¿uöÌjŒ(Dë>Hç¦-@áW«!î>Dk”µÆ !„Žã8MÙóo{Ã¨©. •RÎ:kœ¥P3«>Öumšród3^·Ð%z
 ×`Ì¨«tÎ,ûˆÂ½4ÄËlæ-ÉÆç|%8I’?`Y^>¶yv+¹W    IEND®B`‚‰PNG
-
-   IHDR           szzô   sRGB ®Îé   gAMA  ±üa   	pHYs  Ã  ÃÇo¨d   tEXtSoftware paint.net 4.0.5e…2e   IDATXGí’Ù‚@D	Hšˆ€dHFíuž¶ã"x–ÛU]s;Ð544444¬¡ïûC¨ƒzÂpÕ¡„eY¶È÷!èâ<ÏEnö¦€DH¬$ýä{ôa.>tìÒ(ƒBQ[{¤šÇ«IåKf*^f( ,Žãx·ŒëHeOÓTtIÙèØ1ò
-l‘®»ä…N|cäÔúËÝ&Ï¥×»]cŒ<§
-Åü‚ZCÏãäs{Õsï-Ö%Ðóù'óŒÐúOá*¼&çÊ¦O¸öa­á3Ð%þôŸZ€/]á]°ÀÞOùh¨_"Ü¿ƒ/®††E×ä:Æ¨ºAõ‡    IEND®B`‚‰PNG
 
    IHDR           szzô   	pHYs  t  tÞfx  IDATX…í”Ýƒ …¯Mh€Ž@W°#¸‚+t&]ÁºAeV(íôAQ0 @›4Mø^T¸rŽ÷G€@ øWp…9®0ÿôœÈGX·Nkê|–›<
 ‹K4¼Z$‰v»>œŒìœÄqÒ¶.š
