@@ -159,6 +159,11 @@ private slots:
     void font_dialog_message_window();
     void font_dialog_sidebar_window();
 
+    void manage_hotkeys();
+    void export_hotkeys();
+    void import_hotkeys();
+
+
     void slot_find_player();
     void slot_redraw();
     void toggle_searching() {do_cmd_toggle_search();}
@@ -256,6 +261,10 @@ private:
     QAction *keymap_new;
     QAction *keymap_angband;
     QAction *keymap_rogue;
+    QAction *hotkey_manage;
+    QAction *hotkey_export;
+    QAction *hotkey_import;
+
 
     //Commmands for the knowledge menu
     QAction *view_monster_knowledge;
