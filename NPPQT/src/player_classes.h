@@ -49,6 +49,8 @@ public:
 class player_race
 {
 public:
+    player_race();
+    void player_race_wipe();
 
     QString pr_name;			/* Name */
     QString pr_text;			/* Text */
@@ -90,6 +92,8 @@ public:
     u32b pr_flags2;		/* Racial Flags, set 2 */
     u32b pr_flags3;		/* Racial Flags, set 3 */
     u32b pr_native;		/* Player Native Flags, set 3 */
+
+
 };
 
 
@@ -440,7 +444,7 @@ public:
     s16b equip_cnt;			/* Number of items in equipment */
     s16b pack_size_reduce;	/*
                              * Number of inventory slots used by
-                             *the quiver */
+                             * the quiver */
     u16b quiver_remainder;	/* "cached" quiver statistics*/
     u16b quiver_slots;
 
@@ -472,6 +476,8 @@ public:
 
     s16b command_previous;          // Remembers the previous command
     cmd_arg command_previous_args;  // Remembers the previous command args
+
+    int current_hotkey;
 
     s16b command_see;	/**< See "cmd1.c" */
 

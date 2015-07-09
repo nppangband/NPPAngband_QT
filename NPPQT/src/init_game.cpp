@@ -1276,7 +1276,8 @@ void init_npp_games(void)
     // Calculate the maximum possible abilities for each race/class combo.
     pam_ptr->calculate_maximums();
 
-
+    // These are loaded and saved with the player
+    clear_all_hotkeys();
 }
 
 
@@ -1361,6 +1362,9 @@ void cleanup_npp_games(void)
 
     /*free the randart arrays*/
     free_randart_tables();
+
+    // CLear the hotkeys
+    clear_all_hotkeys();
 }
 
 

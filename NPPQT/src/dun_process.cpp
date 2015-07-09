@@ -22,6 +22,8 @@
 #include "src/player_command.h"
 
 
+
+
 /*
  * Sense the inventory
  */
@@ -1852,6 +1854,7 @@ static void redraw_hallucination()
     }
 }
 
+static int depth_counter = 0;
 /*
  * the actual process player energy function.
  * Separated so that repeated commands and macros can
@@ -1860,9 +1863,8 @@ static void redraw_hallucination()
 void process_player_energy_aux(byte energy_used)
 {
 
-    static int depth_counter = 0;
-
-    if (depth_counter > 0) {
+    if (depth_counter > 0)
+    {
         pop_up_message_box("process_player_energy is calling itself indirectly");
         return;
     }

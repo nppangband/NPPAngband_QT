@@ -153,6 +153,9 @@ extern void set_dungeon_type(u16b dungeon_type);
 extern void process_player_energy(byte energy);
 extern void change_player_level(void);
 
+// hotkeys.cpp
+extern void clear_all_hotkeys();
+
 /* init_game.cpp */
 extern void init_player_graf_info();
 extern void init_npp_games(void);
@@ -810,7 +813,6 @@ extern const s16b ddx[10];
 extern const s16b ddy[10];
 extern const s16b ddx_ddd[9];
 extern const s16b ddy_ddd[9];
-extern const QChar hexsym[16];
 extern const int adj_mag_study[STAT_TABLE_SIZE];
 extern const int adj_mag_mana[STAT_TABLE_SIZE];
 extern const byte adj_mag_fail[STAT_TABLE_SIZE];

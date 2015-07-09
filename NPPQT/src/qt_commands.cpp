@@ -42,6 +42,7 @@ static struct command_desc list_commands_new[] =
     {"Fuel Lantern/Torch", "ALT-F"},
     {"Go Down Staircase", "<"},
     {"Do Up Staircase	", ">"},
+    {"Help", "?"},
     {"Inscribe Item", "{"},
     {"Inspect All Objects", "i"},
     {"Inspect Object", "I (shift-i)"},
@@ -109,6 +110,7 @@ static struct command_desc list_commands_angband[] =
     {"Fire At Nearest",	"h"},
     {"Go Down Staircase", "<"},
     {"Go Up Staircase	", ">"},
+    {"Help", "?"},
     {"Hold", "'_' or ','"},
     {"Inscribe Item", "{"},
     {"Inspect Inventory", "i"},
@@ -180,6 +182,7 @@ static struct command_desc list_commands_roguelike[] =
     {"Fuel Lantern/Torch", "F (shift-f)"},
     {"Go Down Staircase", "<"},
     {"Go Up Staircase	", ">"},
+    {"Help", "?"},
     {"Hold", "'_' '.' or 'g'"},
     {"Inscribe Item", "{"},
     {"Inspect Inventory", "i"},
@@ -346,9 +349,9 @@ void CommandList::add_dir_commands(QGridLayout *return_layout)
     while (TRUE)
     {
         command_desc *cmd_ptr;
-        if (which_keyset == KEYSET_NEW) cmd_ptr = &dir_commands_new[x++];
-        else if (which_keyset == KEYSET_ANGBAND) cmd_ptr = &dir_commands_angband[x++];
-        else /* KEYSET_ROGUE */ cmd_ptr = &list_commands_roguelike[x++];
+        if (which_keyset == KEYSET_NEW) cmd_ptr = &dir_commands_new[x];
+        else if (which_keyset == KEYSET_ANGBAND) cmd_ptr = &dir_commands_angband[x];
+        else /* KEYSET_ROGUE */ cmd_ptr = &list_commands_roguelike[x];
 
         int col = 0;
 
@@ -761,6 +764,11 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
             do_cmd_write_note();
             break;
         }
+        case Qt::Key_Question:
+        {
+            do_cmd_command_list();
+            break;
+        }
         default:
         {
             break;
@@ -1052,6 +1060,11 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
             do_cmd_write_note();
             break;
         }
+        case Qt::Key_Question:
+        {
+            do_cmd_command_list();
+            break;
+        }
         default:
         {
             break;
@@ -1314,6 +1327,11 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_Colon:
         {
             do_cmd_write_note();
+            break;
+        }
+        case Qt::Key_Question:
+        {
+            do_cmd_command_list();
             break;
         }
         default:

@@ -21,6 +21,26 @@
 #include "src/utilities.h"
 #include <src/messages.h>
 
+player_race::player_race()
+{
+    player_race_wipe();
+}
+
+void player_race::player_race_wipe()
+{
+    pr_name.clear();
+    pr_text.clear();
+    C_WIPE(r_adj, A_MAX, s16b);
+    r_dis = r_dev = r_sav = r_stl = r_srh = r_fos = r_thn = r_thb = 0;
+    r_mhp = r_exp = b_age = m_age = 0;
+    m_b_ht = m_m_ht = m_b_wt = m_m_wt = 0;
+    f_b_ht = f_m_ht = f_b_wt = f_m_wt = 0;
+    infra = choice = 0;
+    hist = 0;
+    pr_flags1 = pr_flags2 = pr_flags3 = pr_native = 0;
+
+}
+
 player_class::player_class()
 {
     player_class_wipe();
@@ -269,6 +289,7 @@ void player_type::player_type_wipe()
     au_birth = 0;
     for (i = 0; i < A_MAX; i++) stat_birth[i] = 0;
     ht_birth = wt_birth = sc_birth = 0;
+    current_hotkey = 0;
 
     state.player_state_wipe();
 

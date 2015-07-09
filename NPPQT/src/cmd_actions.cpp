@@ -1739,8 +1739,9 @@ void command_tunnel(cmd_arg args)
         /* Message */
         message("There is a monster in the way!");
 
-        /* Attack */
+        /* Attack Energy burned by py_attack. */
         py_attack(y, x);
+        return;
     }
 
     /* Walls */
@@ -1901,9 +1902,8 @@ void command_close(cmd_arg args)
         /* Message */
         message("There is a monster in the way!");
 
-        /* Attack */
+        /* Attack Energy burned by py_attack.*/
         py_attack(y, x);
-        //Energy burned by py_attack.
         return;
     }
 

@@ -851,7 +851,7 @@ void command_fire(cmd_arg args)
 {
     int dir, item;
     int i, j, y, x, ty, tx;
-    int tmul, tdis, thits;
+    int tmul, tdis;
     int bonus, chance;
 
     object_type *o_ptr;
@@ -974,9 +974,6 @@ void command_fire(cmd_arg args)
         floor_item_increase(0 - item, -1);
         floor_item_optimize(0 - item);
     }
-
-    /* Use the proper number of shots */
-    thits = p_ptr->state.num_fire;
 
     /* Actually "fire" the object */
     bonus = (p_ptr->state.to_h + i_ptr->to_h + j_ptr->to_h);
@@ -1182,7 +1179,7 @@ void command_fire(cmd_arg args)
     /* Drop (or break) near that location */
     drop_near(i_ptr, j, y, x);
 
-    process_player_energy(BASE_ENERGY_MOVE / thits);
+    process_player_energy(BASE_ENERGY_MOVE / p_ptr->state.num_fire);
 }
 
 void do_cmd_fire(void)

@@ -14,6 +14,7 @@ TARGET = NPPGAMES
 SOURCES +=  src/qt_main.cpp \
             src/qt_mainwindow.cpp \
             src/qt_commands.cpp  \
+            src/qt_main_grid_cursor.cpp \
             src/qt_win_char_equipment.cpp \
             src/qt_win_char_info_equip.cpp \
             src/qt_win_char_info_basic.cpp \
@@ -49,6 +50,7 @@ SOURCES +=  src/qt_main.cpp \
             src/globals.cpp \
             src/griddialog.cpp \
             src/help.cpp \
+            src/hotkeys.cpp \
             src/init_edit_files.cpp\
             src/init_game.cpp\
             src/knowledge.cpp\
@@ -115,7 +117,6 @@ SOURCES +=  src/qt_main.cpp \
             src/wizard_mode.cpp
 
 
-
 HEADERS  += src/qt_mainwindow.h\
             src/npp.h\
             src/defines.h\
@@ -137,6 +138,7 @@ HEADERS  += src/qt_mainwindow.h\
             src/emitter.h \
             src/griddialog.h \
             src/help.h \
+            src/hotkeys.h \
             src/knowledge.h\
             src/loadsave.h \
             src/messages.h \
@@ -163,7 +165,6 @@ HEADERS  += src/qt_mainwindow.h\
             src/user_macros.h \
             src/utilities.h \
             src/wizard_mode.h
-
 
 
 RESOURCES += \
