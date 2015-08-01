@@ -13,6 +13,7 @@
 
 
 #define NUM_HOTKEYS 12
+
 enum
 {
     HK_TYPE_EMPTY = 0,
@@ -29,15 +30,23 @@ struct hotkey_list
     int listed_hotkey;
 };
 
+enum
+{
+    HK_NEEDS_DIRECTION = 0,
+    HK_NEEDS_TARGET,
+    HK_NEEDS_SPELL,
+    HK_NEEDS_OBJECT,
+};
+
+#define HK_VERIFY_YES   true
+#define HK_VERIFY_NO   false
 
 typedef struct hotkey_type hotkey_type;
 struct hotkey_type
 {
     void (*hotkey_function)(cmd_arg args);
-    bool needs_direction;
-    bool needs_target;
-    bool needs_spell;
-    bool needs_object;
+    byte hotkey_needs;
+    bool use_verify;
     QString name;
 };
 
@@ -58,6 +67,8 @@ public:
     QVector<hotkey_step> hotkey_steps;
 
     void copy_hotkey(single_hotkey *other_hotkey);
+    void clear_hotkey(void);
+    bool has_commands(void);
 };
 
 class HotKeyDialog : public QDialog
@@ -66,7 +77,7 @@ class HotKeyDialog : public QDialog
 
 public:
     explicit HotKeyDialog(void);
-    single_hotkey active_hotkey;
+    single_hotkey dialog_hotkey;
     int active_step;
 
 private:
@@ -100,11 +111,12 @@ private slots:
 };
 
 extern void do_hotkey_manage();
+extern void wipe_hotkeys();
 extern void do_hotkey_export();
 extern void do_hotkey_import();
+extern void run_hotkey_step();
 
-
-extern single_hotkey active_hotkey;
+extern single_hotkey running_hotkey;
 extern single_hotkey player_hotkeys[NUM_HOTKEYS];
 
 #endif // HOTKEYS_H

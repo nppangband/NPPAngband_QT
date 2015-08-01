@@ -19,7 +19,7 @@
 #include <src/cmds.h>
 #include <src/hotkeys.h>
 
-single_hotkey active_hotkey;
+single_hotkey running_hotkey;
 single_hotkey player_hotkeys[NUM_HOTKEYS];
 
 static hotkey_list list_hotkeys[NUM_HOTKEYS] =
@@ -41,35 +41,35 @@ static hotkey_list list_hotkeys[NUM_HOTKEYS] =
 hotkey_type hotkey_actions[] =
 {
     //HK_TYPE_EMPTY
-    {NULL, FALSE, FALSE, FALSE, FALSE, "None"},
+    {NULL, HK_NEEDS_DIRECTION, HK_VERIFY_NO, "None"},
     //HK_TYPE_MOVE
-    {command_walk, TRUE, FALSE, FALSE, FALSE, "Walk"},
+    {command_walk, HK_NEEDS_DIRECTION, HK_VERIFY_NO, "Walk"},
     //HK_TYPE_JUMP
-    {command_walk, TRUE, FALSE, FALSE, FALSE, "Jump"},
+    {command_walk, HK_NEEDS_DIRECTION, HK_VERIFY_YES, "Jump"},
     //HK_TYPE_RUN
-    {command_walk, TRUE, FALSE, FALSE, FALSE, "Run"},
+    {command_walk, HK_NEEDS_DIRECTION, HK_VERIFY_NO, "Run"},
 
 };
 
-static void clear_hotkey(int this_hotkey)
+void single_hotkey::clear_hotkey(void)
 {
-    hotkey_list *hk_list_ptr = &list_hotkeys[this_hotkey];
-    single_hotkey *plyr_hk_ptr = &player_hotkeys[this_hotkey];
-    plyr_hk_ptr->hotkey_name = hk_list_ptr->hotkey_list_name;
-    plyr_hk_ptr->hotkey_button_name = hk_list_ptr->hotkey_list_name;
-    plyr_hk_ptr->hotkey_button = hk_list_ptr->listed_hotkey;
-    plyr_hk_ptr->hotkey_steps.clear();
+    hotkey_list *hk_list_ptr = &list_hotkeys[HK_TYPE_EMPTY];
+    hotkey_name = hk_list_ptr->hotkey_list_name;
+    hotkey_button_name = hk_list_ptr->hotkey_list_name;
+    hotkey_button = hk_list_ptr->listed_hotkey;
+    hotkey_steps.clear();
     hotkey_step dummy_step;
     dummy_step.step_commmand = HK_TYPE_EMPTY;
     dummy_step.step_args.wipe();
-    plyr_hk_ptr->hotkey_steps.append(dummy_step);
+    hotkey_steps.append(dummy_step);
 }
 
 void clear_all_hotkeys()
 {
     for (int i = 0; i < NUM_HOTKEYS; i++)
     {
-        clear_hotkey(i);
+        single_hotkey *plyr_hk_ptr = &player_hotkeys[i];
+        plyr_hk_ptr->clear_hotkey();
     }
 }
 
@@ -89,27 +89,39 @@ void single_hotkey::copy_hotkey(single_hotkey *other_hotkey)
     }
 }
 
+bool single_hotkey::has_commands(void)
+{
+    if (hotkey_steps[0].step_commmand == HK_TYPE_EMPTY) return (FALSE);
+    if (!hotkey_steps.size())
+    {
+        clear_hotkey();
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
 void HotKeyDialog::active_hotkey_name_changed(QString new_name)
 {
-    active_hotkey.hotkey_name = new_name;
+    dialog_hotkey.hotkey_name = new_name;
 }
 
 void HotKeyDialog::save_current_hotkey()
 {
-    player_hotkeys[current_hotkey_int].copy_hotkey(&active_hotkey);
+    player_hotkeys[current_hotkey_int].copy_hotkey(&dialog_hotkey);
 }
 
 void HotKeyDialog::load_new_hotkey(int this_choice)
 {
     current_hotkey_int = this_choice;
-    active_hotkey.copy_hotkey(&player_hotkeys[this_choice]);
+    dialog_hotkey.copy_hotkey(&player_hotkeys[this_choice]);
 }
 
 void HotKeyDialog::active_hotkey_changed(int new_hotkey)
 {
     save_current_hotkey();
     load_new_hotkey(new_hotkey);
-    current_name->setText(active_hotkey.hotkey_name);
+    current_name->setText(dialog_hotkey.hotkey_name);
     active_step = 0;
     display_hotkey_steps();
 
@@ -127,11 +139,12 @@ void HotKeyDialog::add_hotkeys_header()
     }
     hlay_header->addWidget(current_hotkey_name);
     connect(current_hotkey_name, SIGNAL(currentIndexChanged(int)), this, SLOT(active_hotkey_changed(int)));
-    hlay_header->addStretch(1);
     current_name = new QLineEdit;
-    current_name->setText(active_hotkey.hotkey_name);
+    current_name->setText(dialog_hotkey.hotkey_name);
     connect(current_name, SIGNAL(textChanged(QString)), this, SLOT(active_hotkey_name_changed(QString)));
     hlay_header->addWidget(current_name);
+
+    hlay_header->addStretch(1);
 }
 
 void HotKeyDialog::active_hotkey_command_changed(int this_choice)
@@ -139,8 +152,8 @@ void HotKeyDialog::active_hotkey_command_changed(int this_choice)
     QString item_id = QObject::sender()->objectName();
     item_id.remove("Step_Command_");
     int this_step = item_id.toInt();
-    active_hotkey.hotkey_steps[this_step].step_commmand = this_choice;
-    active_hotkey.hotkey_steps[this_step].step_args.wipe();
+    dialog_hotkey.hotkey_steps[this_step].step_commmand = this_choice;
+    dialog_hotkey.hotkey_steps[this_step].step_args.wipe();
     item_id.prepend("hlay_step_");
     QList<QHBoxLayout *> hlay_list = this->findChildren<QHBoxLayout *>();
     for (int x = 0; x < hlay_list.size(); x++)
@@ -159,12 +172,12 @@ void HotKeyDialog::active_hotkey_command_changed(int this_choice)
 
 void HotKeyDialog::active_hotkey_direction_changed(int new_dir)
 {
-    active_hotkey.hotkey_steps[active_step].step_args.direction = new_dir;
+    dialog_hotkey.hotkey_steps[active_step].step_args.direction = new_dir;
 }
 
 void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
 {
-    hotkey_step *hks_ptr = &active_hotkey.hotkey_steps[step];
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
     this_layout->addStretch(1);
     QVBoxLayout *vlay_direction = new QVBoxLayout;
@@ -252,10 +265,10 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
 void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
 {
     clear_layout(this_layout);
-    hotkey_step *hks_ptr = &active_hotkey.hotkey_steps[step];
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
     hotkey_type *ht_ptr = &hotkey_actions[hks_ptr->step_commmand];
-    if (ht_ptr->needs_direction) create_direction_pad(this_layout, step);
+    if (ht_ptr->hotkey_needs == HK_NEEDS_DIRECTION) create_direction_pad(this_layout, step);
     else hks_ptr->step_args.direction = 0;
 
 }
@@ -263,7 +276,7 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
 void HotKeyDialog::display_hotkey_steps()
 {
     clear_layout(vlay_hotkey_steps);
-    for (int i = 0; i < active_hotkey.hotkey_steps.size(); i++)
+    for (int i = 0; i < dialog_hotkey.hotkey_steps.size(); i++)
     {
         QHBoxLayout *hlay_header = new QHBoxLayout;
         vlay_hotkey_steps->addLayout(hlay_header);
@@ -277,7 +290,7 @@ void HotKeyDialog::display_hotkey_steps()
             this_combo_box->addItem(QString("%1") .arg(x));
             this_combo_box->setItemText(x, hotkey_actions[x].name);
         }
-        this_combo_box->setCurrentIndex(active_hotkey.hotkey_steps[i].step_commmand);
+        this_combo_box->setCurrentIndex(dialog_hotkey.hotkey_steps[i].step_commmand);
         connect(this_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(active_hotkey_command_changed(int)));
         hlay_header->addWidget(this_combo_box, Qt::AlignLeft);
         hlay_header->addStretch(1);
@@ -286,9 +299,11 @@ void HotKeyDialog::display_hotkey_steps()
         this_layout->setObjectName(QString("hlay_step_%1") .arg(i));
         create_one_hotkey_step(this_layout, i);
         hlay_header->addLayout(this_layout, Qt::AlignLeft);
+
+        hlay_header->addStretch(1);
     }
 
-    vlay_hotkey_steps->addStretch(1);
+
 }
 
 
@@ -324,6 +339,8 @@ HotKeyDialog::HotKeyDialog(void)
     connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
     main_layout->addWidget(buttons);
 
+    top_layout->addStretch(1);
+
     setLayout(top_layout);
     setWindowTitle(tr("Hotkey Menu"));
 
@@ -344,7 +361,63 @@ void do_hotkey_export()
 
 void do_hotkey_import()
 {
+
+}
+
+void wipe_hotkeys()
+{
+    running_hotkey.clear_hotkey();
     clear_all_hotkeys();
 }
 
+static bool set_up_hotkey(int which_hotkey)
+{
+    //paranoia
+    if (which_hotkey >= NUM_HOTKEYS)return (FALSE);
 
+    single_hotkey *plyr_hk_ptr = &player_hotkeys[which_hotkey];
+
+    // Make sure the hotkey is set up
+    if (!plyr_hk_ptr->has_commands()) return (FALSE);
+
+    running_hotkey.copy_hotkey(plyr_hk_ptr);
+
+    run_hotkey_step();
+
+    return (TRUE);
+}
+
+bool check_hotkey_commands(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
+{
+    (void)shift_key;
+    (void)alt_key;
+    (void)ctrl_key;
+    (void)meta_key;
+    for (int i = 0; i < NUM_HOTKEYS; i++)
+    {
+        hotkey_list *hk_list_ptr = &list_hotkeys[i];
+
+        if (key_press != hk_list_ptr->listed_hotkey) continue;
+        return (set_up_hotkey(i));
+    }
+
+    return (FALSE);
+}
+
+// Run the active hotkey first step
+// First checks if there is a hotkey to run
+void run_hotkey_step()
+{
+    //First, make sure there are remaining hotkey steps
+    if (!running_hotkey.has_commands()) return;
+
+    hotkey_step *this_step = &running_hotkey.hotkey_steps[0];
+    hotkey_type *this_action = &hotkey_actions[this_step->step_commmand];
+
+    // A simple direction based hotkey
+    if (this_action->hotkey_needs == HK_NEEDS_DIRECTION)
+    {
+        this_action->hotkey_function(this_step->step_args);
+        running_hotkey.hotkey_steps.remove(0);
+    }
+}

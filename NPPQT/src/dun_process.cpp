@@ -20,6 +20,7 @@
 #include "src/cmds.h"
 #include "src/store.h"
 #include "src/player_command.h"
+#include "src/hotkeys.h"
 
 
 
@@ -2056,12 +2057,16 @@ void process_player_energy(byte energy_used)
     else if (command_ptr->repeated_command_completed())
     {
         p_ptr->player_command_wipe();
-        return;
+        // Run the next hotkey step, if any
+        run_hotkey_step();
     }
 
-    // Run the command, reduce repeat command count
-    if (p_ptr->player_args.repeats) p_ptr->player_args.repeats--;
-    command_ptr->command_function(p_ptr->player_args);
+    else
+    {
+        // Run the command, reduce repeat command count
+        if (p_ptr->player_args.repeats) p_ptr->player_args.repeats--;
+        command_ptr->command_function(p_ptr->player_args);
+    }
 
     /* Redraw the state */
     p_ptr->redraw |= (PR_STATUSBAR);

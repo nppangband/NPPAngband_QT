@@ -155,6 +155,7 @@ extern void change_player_level(void);
 
 // hotkeys.cpp
 extern void clear_all_hotkeys();
+extern bool check_hotkey_commands(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);
 
 /* init_game.cpp */
 extern void init_player_graf_info();

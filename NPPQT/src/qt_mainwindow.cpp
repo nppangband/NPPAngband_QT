@@ -755,6 +755,13 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         if (lNumPadKeys.contains(code)) shift_key = TRUE;
     }
 
+    //Hotkeys are checked first
+    if (check_hotkey_commands(which_key->key(), shift_key, alt_key, ctrl_key, meta_key))
+    {
+        handle_stuff();
+        return;
+    }
+
     if (which_keyset == KEYSET_NEW)
     {
         commands_new_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
