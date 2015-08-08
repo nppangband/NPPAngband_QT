@@ -869,8 +869,19 @@ enum
 #define NPPANGBAND_SPEED_TABLE 200
 #define NPPANGBAND_MAX_SPEED   (NPPANGBAND_SPEED_TABLE - 1)
 
-#define DIR_UNKNOWN 0
-#define DIR_TARGET 5
+ enum
+{
+     DIR_UNKNOWN = 0,
+     DIR_SOUTHWEST,
+     DIR_SOUTH,
+     DIR_SOUTHEAST,
+     DIR_WEST,
+     DIR_TARGET,
+     DIR_EAST,
+     DIR_NORTHWEST,
+     DIR_NORTH,
+     DIR_NORTHEAST,
+};
 
 
 

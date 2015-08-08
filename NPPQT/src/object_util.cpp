@@ -4489,6 +4489,48 @@ bool obj_aim_trap(object_type *o_ptr)
     return (FALSE);
 }
 
+bool obj_kind_needs_aim(object_kind *k_ptr)
+{
+    switch (k_ptr->tval)
+    {
+        case TV_DRAG_ARMOR:
+        case TV_DRAG_SHIELD:
+        case TV_WAND:
+        {
+            /* All wands and dragon armor need aiming. */
+            return (TRUE);
+        }
+        case TV_ROD:
+        {
+            /*Some rod doesn't need targeting*/
+            if (((k_ptr->sval >= SV_ROD_MIN_DIRECTION) &&
+                 (k_ptr->sval != SV_ROD_STAR_IDENTIFY) &&
+                 (k_ptr->sval != SV_ROD_MASS_IDENTIFY)) || !k_ptr->aware)return(TRUE);
+            else return (FALSE);
+        }
+        case TV_RING:
+        {
+            switch (k_ptr->sval)
+            {
+                case SV_RING_ACID:
+                case SV_RING_FLAMES:
+                case SV_RING_ICE:
+                case SV_RING_LIGHTNING:
+                {
+                    return (TRUE);
+                }
+                default: return(FALSE);
+            }
+            break; /* compiler happiness */
+        }
+
+        default: /*fall through*/break;
+    }
+
+    /*Oops*/
+    return (FALSE);
+}
+
 
 /*
  * Does the given object need to be aimed?
@@ -4530,44 +4572,11 @@ bool obj_needs_aim(object_type *o_ptr)
         }
     }
 
-    switch (o_ptr->tval)
-    {
-        case TV_DRAG_ARMOR:
-        case TV_DRAG_SHIELD:
-        case TV_WAND:
-        {
-            /* All wands and dragon armor need aiming. */
-            return (TRUE);
-        }
-        case TV_ROD:
-        {
-            /*Some rod doesn't need targeting*/
-            if (((o_ptr->sval >= SV_ROD_MIN_DIRECTION) &&
-                 (o_ptr->sval != SV_ROD_STAR_IDENTIFY) &&
-                 (o_ptr->sval != SV_ROD_MASS_IDENTIFY)) || !o_ptr->is_aware())return(TRUE);
-            else return (FALSE);
-        }
-        case TV_RING:
-        {
-            switch (o_ptr->sval)
-            {
-                case SV_RING_ACID:
-                case SV_RING_FLAMES:
-                case SV_RING_ICE:
-                case SV_RING_LIGHTNING:
-                {
-                    return (TRUE);
-                }
-                default: return(FALSE);
-            }
-            break; /* compiler happiness */
-        }
+    object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
-        default: /*fall through*/break;
-    }
+    return (obj_kind_needs_aim(k_ptr));
 
-    /*Oops*/
-    return (FALSE);
+
 }
 
 

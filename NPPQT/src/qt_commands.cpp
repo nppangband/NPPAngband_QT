@@ -514,11 +514,11 @@ static void process_move_key(int dir, bool shift_key, bool alt_key, bool ctrl_ke
 
     // Flip pickup
     if (ctrl_key && alt_key) do_cmd_walk(dir, TRUE);
-    else if (ctrl_key && shift_key) do_cmd_tunnel_dir(dir);
+    else if (ctrl_key && shift_key) do_cmd_tunnel(dir);
     else if (ctrl_key) ui_change_panel(dir);
     else if (alt_key) do_cmd_alter(dir);
     else if (shift_key)  do_cmd_run(dir);
-    else if (meta_key) do_cmd_tunnel_dir(dir);
+    else if (meta_key) do_cmd_tunnel(dir);
     else do_cmd_walk(dir, FALSE);
 }
 
@@ -619,14 +619,14 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_0:
         {
             if (shift_key)          do_cmd_character_screen();
-            else if (!using_mods)   do_cmd_close();
+            else if (!using_mods)   do_cmd_close(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_D:
         {
-            if (ctrl_key)           do_cmd_spike();
-            else if (alt_key)       do_cmd_bash();
-            else if (shift_key)     do_cmd_disarm();
+            if (ctrl_key)           do_cmd_spike(DIR_UNKNOWN);
+            else if (alt_key)       do_cmd_bash(DIR_UNKNOWN);
+            else if (shift_key)     do_cmd_disarm(DIR_UNKNOWN);
             else if (!using_mods)   do_cmd_drop();
             break;
         }
@@ -671,9 +671,9 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_O:
         {
-            if (ctrl_key)           do_cmd_tunnel();
-            else if (shift_key)     do_cmd_make_trap();
-            else if (!using_mods)   do_cmd_open();
+            if (ctrl_key)           do_cmd_tunnel(DIR_UNKNOWN);
+            else if (shift_key)     do_cmd_make_trap(DIR_UNKNOWN);
+            else if (!using_mods)   do_cmd_open(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_P:
@@ -862,19 +862,19 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_B:
         {
-            if (shift_key)          do_cmd_bash();
+            if (shift_key)          do_cmd_bash(DIR_UNKNOWN);
             else if (!using_mods)   do_cmd_browse(-1);
             break;
         }
         case Qt::Key_C:
         {
             if (shift_key)          do_cmd_character_screen();
-            else if (!using_mods)   do_cmd_close();
+            else if (!using_mods)   do_cmd_close(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_D:
         {
-            if (shift_key)          do_cmd_disarm();
+            if (shift_key)          do_cmd_disarm(DIR_UNKNOWN);
             else if (!using_mods)   do_cmd_drop();
             break;
         }
@@ -910,7 +910,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_J:
         {
-            if (!using_mods)        do_cmd_spike();
+            if (!using_mods)        do_cmd_spike(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_K:
@@ -938,8 +938,8 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_O:
         {
-            if (shift_key)          do_cmd_make_trap();
-            else if (!using_mods)   do_cmd_open();
+            if (shift_key)          do_cmd_make_trap(DIR_UNKNOWN);
+            else if (!using_mods)   do_cmd_open(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_P:
@@ -970,7 +970,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_T:
         {
-            if (shift_key)          do_cmd_tunnel();
+            if (shift_key)          do_cmd_tunnel(DIR_UNKNOWN);
             else if (!using_mods)   do_cmd_takeoff();
             break;
         }
@@ -1154,13 +1154,13 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_C:
         {
             if (shift_key)          do_cmd_character_screen();
-            else if (!using_mods)   do_cmd_close();
+            else if (!using_mods)   do_cmd_close(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_D:
         {
             if (ctrl_key)           do_cmd_destroy();
-            else if (shift_key)     do_cmd_disarm();
+            else if (shift_key)     do_cmd_disarm(DIR_UNKNOWN);
             else if (!using_mods)   do_cmd_drop();
             break;
         }
@@ -1174,7 +1174,7 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         {
             if (ctrl_key)           do_cmd_feeling();
             else if (shift_key)     do_cmd_refuel();
-            else if (!using_mods)   do_cmd_bash();
+            else if (!using_mods)   do_cmd_bash(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_G:
@@ -1200,8 +1200,8 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
 
         case Qt::Key_O:
         {
-            if (shift_key)          do_cmd_make_trap();
-            else if (!using_mods)   do_cmd_open();
+            if (shift_key)          do_cmd_make_trap(DIR_UNKNOWN);
+            else if (!using_mods)   do_cmd_open(DIR_UNKNOWN);
             break;
         }
         case Qt::Key_P:
@@ -1227,13 +1227,13 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         }
         case Qt::Key_S:
         {
-            if (shift_key)          do_cmd_spike();
+            if (shift_key)          do_cmd_spike(DIR_UNKNOWN);
             else if (!using_mods)   do_cmd_search();
             break;
         }
         case Qt::Key_T:
         {
-            if (ctrl_key)           do_cmd_tunnel();
+            if (ctrl_key)           do_cmd_tunnel(DIR_UNKNOWN);
             else if (shift_key)     do_cmd_takeoff();
             else if (!using_mods)   do_cmd_fire_at_nearest();
             break;

@@ -17,9 +17,25 @@
 enum
 {
     HK_TYPE_EMPTY = 0,
+    HK_QUAFF_POTION,
+    HK_READ_SCROLL,
+    HK_AIM_WAND,
+    HK_USE_STAFF,
+    HK_ZAP_ROD,
+    HK_EAT_FOOD,
     HK_TYPE_MOVE,
     HK_TYPE_JUMP,
     HK_TYPE_RUN,
+    HK_TYPE_ALTER,
+    HK_TYPE_DISARM,
+    HK_TYPE_CLOSE,
+    HK_TYPE_OPEN,
+    HK_TYPE_BASH,
+    HK_TYPE_TUNNEL,
+    HK_TYPE_MAKE_TRAP,
+    HK_TYPE_SPIKE,
+    HK_TYPE_HOLD,
+
     HK_TYPE_END,
 };
 
@@ -32,10 +48,12 @@ struct hotkey_list
 
 enum
 {
-    HK_NEEDS_DIRECTION = 0,
+    HK_NEEDS_NOTHING = 0,
+    HK_NEEDS_DIRECTION,
+    HK_NEEDS_OBJECT_KIND,
     HK_NEEDS_TARGET,
     HK_NEEDS_SPELL,
-    HK_NEEDS_OBJECT,
+    HK_NEEDS_SPEIFIC_OBJECT,
 };
 
 #define HK_VERIFY_YES   true
@@ -44,10 +62,9 @@ enum
 typedef struct hotkey_type hotkey_type;
 struct hotkey_type
 {
-    void (*hotkey_function)(cmd_arg args);
     byte hotkey_needs;
-    bool use_verify;
     QString name;
+    int tval;
 };
 
 typedef struct hotkey_step hotkey_step;
@@ -78,7 +95,6 @@ class HotKeyDialog : public QDialog
 public:
     explicit HotKeyDialog(void);
     single_hotkey dialog_hotkey;
-    int active_step;
 
 private:
     QWidget *top_widget;
@@ -95,6 +111,9 @@ private:
     void create_one_hotkey_step(QHBoxLayout *this_layout, int step);
     void display_hotkey_steps();
     void create_direction_pad(QHBoxLayout *this_layout, int step);
+    void create_object_kind_dropbox(QHBoxLayout *this_layout, int step);
+    int get_current_step();
+    bool accept_object_kind(int k_idx, int tval, int step);
     QButtonGroup *group_directions;
 
     int current_hotkey_int;
@@ -108,6 +127,7 @@ private slots:
     void active_hotkey_name_changed(QString new_name);
     void active_hotkey_command_changed(int this_choice);
     void active_hotkey_direction_changed(int new_dir);
+    void active_k_idx_changed(int choice);
 };
 
 extern void do_hotkey_manage();

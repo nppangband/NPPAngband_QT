@@ -3227,7 +3227,10 @@ void command_use(cmd_arg args)
     {
         dir = args.direction;
 
-        if (!get_aim_dir(&dir, obj_aim_trap(o_ptr))) return;
+        if (dir == DIR_UNKNOWN)
+        {
+            if (!get_aim_dir(&dir, obj_aim_trap(o_ptr))) return;
+        }
     }
 
     p_ptr->message_append_start();

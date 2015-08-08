@@ -334,21 +334,8 @@ void command_uninscribe(cmd_arg args)
         QString tmp_val;
         QString o_name2;
 
-        /*make a fake object so we can give a proper message*/
-        object_type *i_ptr;
-        object_type object_type_body;
-
-        /* Get local object */
-        i_ptr = &object_type_body;
-
-        /* Wipe the object */
-        i_ptr->object_wipe();
-
-        /* Create the object */
-        object_prep(i_ptr, o_ptr->k_idx);
-
         /*now describe with correct amount*/
-        o_name2 = object_desc(i_ptr, ODESC_PLURAL | ODESC_FULL);
+        o_name2 = object_desc_from_k_idx(o_ptr->k_idx, ODESC_PLURAL | ODESC_FULL);
 
         /* Prompt */
         tmp_val = (QString("Remove automatic inscription for %1?") .arg(o_name2));
@@ -411,21 +398,8 @@ void command_inscribe(cmd_arg args)
         QString tmp_val;
         QString o_name2;
 
-        /*make a fake object so we can give a proper message*/
-        object_type *i_ptr;
-        object_type object_type_body;
-
-        /* Get local object */
-        i_ptr = &object_type_body;
-
-        /* Wipe the object */
-        i_ptr->object_wipe();
-
-        /* Create the object */
-        object_prep(i_ptr, o_ptr->k_idx);
-
         /*now describe with correct amount*/
-        o_name2 = object_desc(i_ptr, ODESC_FULL | ODESC_PLURAL);
+        o_name2 = object_desc_from_k_idx(o_ptr->k_idx, ODESC_PLURAL | ODESC_FULL);
 
         /* Prompt */
         tmp_val = (QString("Automatically inscribe all %1 with %2?") .arg(o_name2) .arg(new_inscription));

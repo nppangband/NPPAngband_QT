@@ -974,11 +974,9 @@ void command_open(cmd_arg args)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-void do_cmd_open(void)
+void do_cmd_open(int dir)
 {
     if (!character_dungeon) return;
-
-    int dir = DIR_UNKNOWN;
 
     int door_y, door_x;
     int chest_y, chest_x;
@@ -1386,11 +1384,10 @@ void command_disarm(cmd_arg args)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-void do_cmd_disarm(void)
+void do_cmd_disarm(int dir)
 {
     if (!character_dungeon) return;
 
-    int dir = DIR_UNKNOWN;
     int chest_y, chest_x, trap_y, trap_x;
 
     /* Count visible traps */
@@ -1758,11 +1755,9 @@ void command_tunnel(cmd_arg args)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-void do_cmd_tunnel(void)
+void do_cmd_tunnel(int dir)
 {
     if (!character_dungeon) return;
-
-    int dir = DIR_UNKNOWN;
 
     int y, x;
 
@@ -1794,16 +1789,6 @@ void do_cmd_tunnel(void)
     command_tunnel(args);
 }
 
-void do_cmd_tunnel_dir(int dir)
-{
-    if (!character_dungeon) return;
-
-    cmd_arg args;
-    args.wipe();
-    args.direction = dir;
-
-    command_tunnel(args);
-}
 
 /*
  * Perform the basic "close" command
@@ -1922,11 +1907,9 @@ void command_close(cmd_arg args)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-void do_cmd_close(void)
+void do_cmd_close(int dir)
 {
     if (!character_dungeon) return;
-
-    int dir;
 
     int y, x;
 
@@ -1942,10 +1925,10 @@ void do_cmd_close(void)
             dir = coords_to_dir(y, x);
         }
     }
-    else
+
+    if (dir == DIR_UNKNOWN)
     {
-        if (!get_rep_dir(&dir))
-            return;
+        if (!get_rep_dir(&dir)) return;
     }
 
 
@@ -2198,12 +2181,14 @@ void command_spike(cmd_arg args)
 }
 
 
-void do_cmd_spike(void)
+void do_cmd_spike(int dir)
 {
     if (!character_dungeon) return;
 
-    int dir;
-    if (!get_rep_dir(&dir)) return;
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     cmd_arg args;
     args.wipe();
@@ -2849,13 +2834,14 @@ void command_bash(cmd_arg args)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-void do_cmd_bash(void)
+void do_cmd_bash(int dir)
 {
     if (!character_dungeon) return;
 
-    int dir;
-
-    if (!get_rep_dir(&dir)) return;
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     cmd_arg args;
     args.wipe();

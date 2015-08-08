@@ -798,4 +798,25 @@ QString object_desc_spoil(object_type *o_ptr)
     return(object_desc(i_ptr, ODESC_FULL | ODESC_SPOIL));
 }
 
+QString object_desc_from_k_idx(int k_idx, byte mode)
+{
+    object_type object_type_body;
+    object_type *o_ptr = &object_type_body;
 
+    /* Make fake artifact */
+    o_ptr = &object_type_body;
+    o_ptr->object_wipe();
+    object_prep(o_ptr, k_idx);
+
+    //  This is necessary to keep the game from freezing on dragon armor
+    object_level = k_info[k_idx].k_level;
+
+    apply_magic(o_ptr, k_info[k_idx].k_level, FALSE, FALSE, FALSE, FALSE);
+    object_aware(o_ptr);
+    object_known(o_ptr);
+    o_ptr->ident |= (IDENT_MENTAL);
+
+    object_level = p_ptr->depth;
+
+    return object_desc(o_ptr, mode);
+}

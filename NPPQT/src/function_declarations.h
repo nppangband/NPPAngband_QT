@@ -273,7 +273,7 @@ extern void do_cmd_all_objects(int start_screen);
 extern QString strip_name(int k_idx);
 extern QString object_desc(object_type *o_ptr, byte mode);
 extern QString object_desc_spoil(object_type *o_ptr);
-
+extern QString object_desc_from_k_idx(int k_idx, byte mode);
 
 // object_hooks.cpp
 extern bool item_tester_hook_wieldable_ided_weapon(object_type *o_ptr);
@@ -401,6 +401,7 @@ extern bool has_correct_ammo(void);
 extern bool obj_has_charges(object_type *o_ptr);
 extern object_type *object_from_item_idx(int item);
 extern bool obj_aim_trap(object_type *o_ptr);
+extern bool obj_kind_needs_aim(object_kind *k_ptr);
 extern bool obj_needs_aim(object_type *o_ptr);
 extern bool obj_is_activatable(object_type *o_ptr);
 extern bool obj_can_activate(object_type *o_ptr);

@@ -1024,7 +1024,7 @@ int target_dir(UserInput input)
         case Qt::Key_4:
         case Qt::Key_G:
         {
-            d = 4;
+            d = DIR_WEST;
             break;
         }
         // Right
@@ -1032,7 +1032,7 @@ int target_dir(UserInput input)
         case Qt::Key_6:
         case Qt::Key_J:
         {
-            d = 6;
+            d = DIR_EAST;
             break;
         }
         // Up
@@ -1040,7 +1040,7 @@ int target_dir(UserInput input)
         case Qt::Key_8:
         case Qt::Key_Y:
         {
-            d = 8;
+            d = DIR_NORTH;
             break;
         }
         // Down
@@ -1048,7 +1048,7 @@ int target_dir(UserInput input)
         case Qt::Key_2:
         case Qt::Key_B:
         {
-            d = 2;
+            d = DIR_SOUTH;
             break;
         }
         // left and up
@@ -1056,7 +1056,7 @@ int target_dir(UserInput input)
         case Qt::Key_T:
         case Qt::Key_Home:
         {
-            d = 7;
+            d = DIR_NORTHWEST;
             break;
         }
         // right and up
@@ -1064,7 +1064,7 @@ int target_dir(UserInput input)
         case Qt::Key_U:
         case Qt::Key_PageUp:
         {
-            d = 9;
+            d = DIR_NORTHEAST;
             break;
         }
         // left and down
@@ -1072,7 +1072,7 @@ int target_dir(UserInput input)
         case Qt::Key_V:
         case Qt::Key_End:
         {
-            d = 1;
+            d = DIR_SOUTHWEST;
             break;
         }
         // right and down
@@ -1080,13 +1080,13 @@ int target_dir(UserInput input)
         case Qt::Key_N:
         case Qt::Key_PageDown:
         {
-            d = 3;
+            d = DIR_SOUTHEAST;
             break;
         }
         // Illegal direction
         default:
         {
-            d = 0;
+            d = DIR_UNKNOWN;
             break;
         }
     }

@@ -240,8 +240,6 @@ void py_set_trap(int y, int x)
  */
 bool py_modify_trap(int y, int x)
 {
-
-
     if (p_ptr->timed[TMD_BLIND] || no_light())
     {
         message(QString("You can not see to modify your trap."));
@@ -343,13 +341,15 @@ void command_make_trap(cmd_arg args)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-void do_cmd_make_trap()
+void do_cmd_make_trap(int dir)
 {
     if (!character_dungeon) return;
 
-    int dir;
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
-    if (!get_rep_dir(&dir)) return;
 
     cmd_arg args;
     args.wipe();
