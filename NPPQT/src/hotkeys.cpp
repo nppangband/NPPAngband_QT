@@ -485,15 +485,6 @@ void do_hotkey_manage()
     HotKeyDialog();
 }
 
-void do_hotkey_export()
-{
-
-}
-
-void do_hotkey_import()
-{
-
-}
 
 void wipe_hotkeys()
 {

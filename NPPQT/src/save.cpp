@@ -208,6 +208,32 @@ static void wr_effect(const effect_type *x_ptr)
     wr_s16b(x_ptr->x_r_idx);
 }
 
+static void wr_hotkey(int hotkey)
+{
+    single_hotkey *shk_ptr = &player_hotkeys[hotkey];
+
+    wr_string(shk_ptr->hotkey_name);
+    wr_string(shk_ptr->hotkey_button_name);
+    wr_s16b((s16b)shk_ptr->hotkey_button);
+    wr_u16b((u16b)shk_ptr->hotkey_steps.size());
+    for (u16b i = 0; i < shk_ptr->hotkey_steps.size(); i++)
+    {
+        wr_byte(shk_ptr->hotkey_steps[i].step_commmand);
+
+        cmd_arg args = shk_ptr->hotkey_steps[i].step_args;
+        wr_string(args.string);
+        wr_s16b((s16b)args.choice);
+        wr_s16b((s16b)args.item);
+        wr_s16b((s16b)args.number);
+        wr_s16b((s16b)args.direction);
+        wr_s16b((s16b)args.slot);
+        wr_s16b((s16b)args.repeats);
+        wr_s16b((s16b)args.k_idx);
+        if (args.verify) wr_byte(1);
+        else wr_byte(0);
+    }
+}
+
 
 /*
  * Write a "lore" record
@@ -898,6 +924,11 @@ static void wr_dungeon(void)
         /* Dump it */
         wr_effect(x_ptr);
     }
+
+    for (i = 0; i < NUM_HOTKEYS; i++)
+    {
+        wr_hotkey(i);
+    }
 }
 
 
@@ -1254,3 +1285,25 @@ bool save_player(void)
     return (FALSE);
 }
 
+
+void do_hotkey_export(QString file_name)
+{
+    // Open the current file
+    save_file.setFileName(file_name);
+    save_file.open(QIODevice::WriteOnly);
+
+    // Ensure the data is read and written consistently
+    out.setVersion(QDataStream::Qt_5_1);
+
+    /*** Actually write the file ***/
+
+    /* Dump the game mode */
+    wr_byte(game_mode);
+
+    for (int i = 0; i < NUM_HOTKEYS; i++)
+    {
+        wr_hotkey(i);
+    }
+
+    save_file.close();
+}

@@ -885,12 +885,26 @@ void MainWindow::manage_hotkeys()
 
 void MainWindow::export_hotkeys()
 {
-    do_hotkey_export();
+    QString default_name = "hotkey_";
+    QString default_file = npp_dir_user.path();
+    default_file.append("/");
+    default_file.append(default_name);
+
+    QString file_name = QFileDialog::getSaveFileName(this, tr("Select a hotkey file."), default_file, tr("NPPHK (*.npphk)"));
+
+    if (file_name.isEmpty())
+        return;
+
+    do_hotkey_export(file_name);
 }
 
 void MainWindow::import_hotkeys()
 {
-    do_hotkey_import();
+    // Let the user select the savefile
+    QString file_name = QFileDialog::getOpenFileName(this, tr("Select a hotkey file."), npp_dir_user.path(), tr("NPPHK (*.npphk)"));
+    if (file_name.isEmpty()) return;
+
+    do_hotkey_import(file_name);
 }
 
 
@@ -1376,7 +1390,7 @@ void MainWindow::create_menus()
     reg_mode_act->setCheckable(TRUE);
     dvg_mode_act->setCheckable(TRUE);
     old_tiles_act->setCheckable(TRUE);
-    QMenu *hotkey_choices = settings->addMenu("Hotkey Actions");
+    QMenu *hotkey_choices = settings->addMenu("Hotkey Settings");
     hotkey_choices->addAction(hotkey_manage);
     hotkey_choices->addAction(hotkey_export);
     hotkey_choices->addAction(hotkey_import);

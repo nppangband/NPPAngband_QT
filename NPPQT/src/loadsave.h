@@ -8,6 +8,7 @@
 #include "src/player_scores.h"
 #include "src/init.h"
 #include "src/messages.h"
+#include "src/hotkeys.h"
 
 extern byte sf_major;
 extern byte sf_minor;

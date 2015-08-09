@@ -167,6 +167,7 @@ extern void flavor_init(void);
 extern bool load_player(void);
 extern bool load_gamemode(void);
 extern void load_memory_scores(void);
+extern void do_hotkey_import(QString file_name);
 
 // mon_attack.cpp
 extern bool make_attack_normal(monster_type *m_ptr);
@@ -670,6 +671,7 @@ extern bool can_be_randart(const object_type *o_ptr);
 
 /* save.c */
 extern bool save_player(void);
+extern void do_hotkey_export(QString file_name);
 
 // spells_detect.cpp
 extern bool detect(int dist, u16b detect_checks);

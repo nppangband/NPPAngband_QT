@@ -580,7 +580,57 @@ static int rd_effect(void)
     return (0);
 }
 
+static void rd_hotkey(int hotkey)
+{
+    single_hotkey this_hotkey;
 
+    u16b num_steps;
+    s16b tmp_s16b;
+    byte tmp_byte;
+    QString temp_string;
+
+    rd_string(&this_hotkey.hotkey_name);
+    rd_string(&this_hotkey.hotkey_button_name);
+    rd_s16b(&tmp_s16b);
+    this_hotkey.hotkey_button = tmp_s16b;
+    rd_u16b(&num_steps);
+
+    for (u16b i = 0; i < num_steps; i++)
+    {
+        hotkey_step this_step;
+        rd_byte(&this_step.step_commmand);
+
+        cmd_arg *args = &this_step.step_args;
+
+        rd_string(&temp_string);
+        args->string = temp_string;
+        rd_s16b(&tmp_s16b);
+        args->choice = tmp_s16b;
+        rd_s16b(&tmp_s16b);
+        args->item = tmp_s16b;
+        rd_s16b(&tmp_s16b);
+        args->number = tmp_s16b;
+        rd_s16b(&tmp_s16b);
+        args->direction = tmp_s16b;
+        rd_s16b(&tmp_s16b);
+        args->slot = tmp_s16b;
+        rd_s16b(&tmp_s16b);
+        args->repeats = tmp_s16b;
+        rd_s16b(&tmp_s16b);
+        args->k_idx = tmp_s16b;
+
+        rd_byte (&tmp_byte);
+        if (tmp_byte) args->verify = TRUE;
+        else args->verify = FALSE;
+
+        this_hotkey.hotkey_steps.append(this_step);
+    }
+
+    // Too many hotkeys.  Don't crash the game.
+    if (hotkey >= NUM_HOTKEYS) return;
+
+    player_hotkeys[hotkey].copy_hotkey(&this_hotkey);
+}
 
 
 /*
@@ -1920,6 +1970,12 @@ static int rd_dungeon(void)
         }
     }
 
+    // Read the hotkeys
+    for (i = 0; i < NUM_HOTKEYS; i++)
+    {
+        rd_hotkey(i);
+    }
+
 
     /*** Success ***/
 
@@ -2539,4 +2595,34 @@ bool load_gamemode(void)
 
     // Success
     return (TRUE);
+}
+
+void do_hotkey_import(QString file_name)
+{
+    save_file.setFileName(file_name);
+
+    /* Okay */
+    if (!save_file.open(QIODevice::ReadOnly))
+    {
+        pop_up_message_box("Hotkey Import Failed.  Invalid filename.");
+        return;
+    }
+
+    byte this_game_mode;
+    rd_byte(&this_game_mode);
+
+    if (this_game_mode!= game_mode)
+    {
+        if (this_game_mode == GAME_NPPMORIA) pop_up_message_box("Hotkey Import Failed. Hotkey file is for NPPMoria.");
+        else pop_up_message_box("Hotkey Import Failed. Hotkey file is for NPPAngband.");
+        save_file.close();
+        return;
+    }
+
+    for (int i = 0; i < NUM_HOTKEYS; i++)
+    {
+        rd_hotkey(i);
+    }
+
+    save_file.close();
 }

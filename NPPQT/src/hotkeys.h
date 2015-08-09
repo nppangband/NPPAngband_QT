@@ -132,8 +132,8 @@ private slots:
 
 extern void do_hotkey_manage();
 extern void wipe_hotkeys();
-extern void do_hotkey_export();
-extern void do_hotkey_import();
+
+
 extern void run_hotkey_step();
 
 extern single_hotkey running_hotkey;
