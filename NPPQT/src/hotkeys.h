@@ -112,9 +112,11 @@ private:
     void display_hotkey_steps();
     void create_direction_pad(QHBoxLayout *this_layout, int step);
     void create_object_kind_dropbox(QHBoxLayout *this_layout, int step);
+    void create_targeting_choices(QHBoxLayout *this_layout, int step);
     int get_current_step();
     bool accept_object_kind(int k_idx, int tval, int step);
     QButtonGroup *group_directions;
+    QButtonGroup *target_choices;
 
     int current_hotkey_int;
 
@@ -127,6 +129,7 @@ private slots:
     void active_hotkey_name_changed(QString new_name);
     void active_hotkey_command_changed(int this_choice);
     void active_hotkey_direction_changed(int new_dir);
+    void active_hotkey_target_changed(int new_target);
     void active_k_idx_changed(int choice);
 };
 

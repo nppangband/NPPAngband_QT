@@ -881,6 +881,7 @@ enum
      DIR_NORTHWEST,
      DIR_NORTH,
      DIR_NORTHEAST,
+     DIR_CLOSEST,
 };
 
 

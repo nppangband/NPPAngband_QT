@@ -4527,8 +4527,14 @@ bool obj_kind_needs_aim(object_kind *k_ptr)
         default: /*fall through*/break;
     }
 
-    /*Oops*/
+    // Not needed
     return (FALSE);
+}
+
+bool obj_kind_needs_aim(int k_idx)
+{
+    object_kind *k_ptr = &k_info[k_idx];
+    return (obj_kind_needs_aim(k_ptr));
 }
 
 
@@ -4575,8 +4581,6 @@ bool obj_needs_aim(object_type *o_ptr)
     object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
     return (obj_kind_needs_aim(k_ptr));
-
-
 }
 
 

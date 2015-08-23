@@ -1262,7 +1262,7 @@ bool target_set_closest(int mode)
     /* If nothing was prepared, then return */
     if (temp_n < 1)
     {
-        message(QString("No Available Target."));
+        if (!(mode & TARGET_QUIET)) message(QString("No Available Target."));
         return FALSE;
     }
 
@@ -1274,7 +1274,7 @@ bool target_set_closest(int mode)
     /* Target the monster, if possible */
     if ((m_idx <= 0) || !target_able(m_idx))
     {
-        message(QString("No Available Target."));
+        if (!(mode & TARGET_QUIET)) message(QString("No Available Target."));
         return FALSE;
     }
 

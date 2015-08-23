@@ -403,6 +403,7 @@ extern bool obj_has_charges(object_type *o_ptr);
 extern object_type *object_from_item_idx(int item);
 extern bool obj_aim_trap(object_type *o_ptr);
 extern bool obj_kind_needs_aim(object_kind *k_ptr);
+extern bool obj_kind_needs_aim(int k_idx);
 extern bool obj_needs_aim(object_type *o_ptr);
 extern bool obj_is_activatable(object_type *o_ptr);
 extern bool obj_can_activate(object_type *o_ptr);
