@@ -581,7 +581,7 @@ s16b get_spell_from_list(s16b book, s16b spell)
 /*
  * Helper function to help spells that target traps (disarming, etc...)
  */
-static bool is_trap_spell(byte spell_book, int spell)
+bool is_trap_spell(byte spell_book, int spell)
 {
     if (spell_book == TV_MAGIC_BOOK)
     {
@@ -679,9 +679,10 @@ int spell_chance(int spell)
     return (chance);
 }
 
-static void cast_spell(cmd_arg args)
+void cast_spell(cmd_arg args)
 {
     if (!p_ptr->can_cast()) return;
+    if (!p_ptr->has_learned_spells()) return;
 
     int spell = args.number;
     int dir = args.direction;
@@ -810,6 +811,7 @@ void do_cmd_cast(int book_choice)
 {
     if (!character_dungeon) return;
     if (!p_ptr->can_cast()) return;
+    if (!p_ptr->has_learned_spells()) return;
 
     int spell;
     int dir = DIR_UNKNOWN;

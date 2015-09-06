@@ -3739,7 +3739,7 @@ A:1/1
 F:EASY_KNOW
 
 
-N:402:& broken set of teeth~
+N:402:& broken skull~
 G:s:TERM_WHITE
 I:1:11:0
 W:0:1:3:0

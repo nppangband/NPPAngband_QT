@@ -517,6 +517,7 @@ public:
     void player_previous_command_update(s16b command, cmd_arg args);
     void player_type_wipe();
 
+    bool has_learned_spells();
     bool can_cast();
     bool can_study();
     bool chooses_spells();

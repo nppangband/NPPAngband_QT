@@ -2103,7 +2103,7 @@ option_entry options[OPT_MAX] =
     {"birth_force_small_lev",	"Birth: All levels will be generated as small",	FALSE},	/* OPT_birth_force_small_lev */
     {"birth_connected_stairs",  "Birth: Generate connected stairs",       		TRUE},	/* OPT_birth_connected_stairs */
     {"birth_no_quests",			"Birth: Disable quests",						FALSE},	/* OPT_birth_no_quests*/
-    {"birth_no_player ghosts",	"Birth: Disable player ghosts",					FALSE},	/* OPT_birth_no_player ghosts*/
+    {"birth_no_player_ghosts",	"Birth: Disable player ghosts",					FALSE},	/* OPT_birth_no_player ghosts*/
     {"birth_no_store_services",	"Birth: Disable store services",				FALSE},	/* OPT_birth_no_store_services*/
     {"birth_no_xtra_artifacts", "Birth: Disable extra artifacts",				FALSE},	/* OPT_birth_no_xtra_artifacts*/
     {"birth_money",             "Birth: Start with more money and no equipment",FALSE },/* OPT_birth_money */

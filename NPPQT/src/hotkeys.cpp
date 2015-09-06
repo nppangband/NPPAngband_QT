@@ -54,6 +54,8 @@ hotkey_type hotkey_actions[] =
     {HK_NEEDS_OBJECT_KIND, "Zap a Rod",TV_ROD},
     //HK_EAT_FOOD
     {HK_NEEDS_OBJECT_KIND, "Eat Food", TV_FOOD},
+    //HK_TYPE_CAST
+    {HK_NEEDS_SPELL, "Cast Spell", 0},
     //HK_TYPE_MOVE
     {HK_NEEDS_DIRECTION, "Walk",0},
     //HK_TYPE_JUMP
@@ -201,6 +203,199 @@ void HotKeyDialog::active_hotkey_command_changed(int this_choice)
     }
 }
 
+
+
+// Find the new object kind based on the combo box
+void HotKeyDialog::active_spell_changed(int choice)
+{
+    int this_step = get_current_step();
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
+
+    bool old_obj_dir = spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number);
+
+    // Remember the object choice
+    hks_ptr->step_args.number = spell_list.at(choice);
+
+    bool new_obj_dir = spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number);
+
+    // Remove the radio buttons if no longer needed
+    if (!new_obj_dir && old_obj_dir)
+    {
+        delete_targeting_choices(this_step);
+        hks_ptr->step_args.direction = DIR_UNKNOWN;
+    }
+
+    // Make a new target box
+    if (new_obj_dir && !old_obj_dir)
+    {
+        hks_ptr->step_args.direction = DIR_UNKNOWN;
+
+        // Find the hbox layout
+        QString item_id = (QString("hlay_step_%1") .arg(this_step));
+        QList<QHBoxLayout *> hlay_list = this->findChildren<QHBoxLayout *>();
+        for (int x = 0; x < hlay_list.size(); x++)
+        {
+            QHBoxLayout *this_hlay = hlay_list.at(x);
+
+            QString this_name = this_hlay->objectName();
+
+            if (this_name.contains(item_id))
+            {
+                create_targeting_choices(this_hlay, this_step);
+                break;
+            }
+        }
+    }
+}
+
+void HotKeyDialog::active_hotkey_target_changed(int new_target)
+{
+    int step = new_target / 100;
+    int new_choice = new_target % 100;
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    hks_ptr->step_args.direction = new_choice;
+}
+
+void HotKeyDialog::delete_targeting_choices(int this_step)
+{
+    // First, remove the radio buttons from the group
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+    QString radio_id = (QString("targeting_step_%1") .arg(this_step));
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        QString this_name = this_radio->objectName();
+
+        if (this_name.contains(radio_id))
+        {
+            // Remove it from the target group
+            target_choices->removeButton(this_radio);
+            break;
+        }
+    }
+
+    // Now remove the vbox layout
+    QString item_id = (QString("vlay_targeting_step_%1") .arg(this_step));
+    QList<QVBoxLayout *> vlay_list = this->findChildren<QVBoxLayout *>();
+    for (int x = 0; x < vlay_list.size(); x++)
+    {
+        QVBoxLayout *this_vlay = vlay_list.at(x);
+
+        QString this_name = this_vlay->objectName();
+
+        if (this_name.contains(item_id))
+        {
+            clear_layout(this_vlay);
+            this_vlay->deleteLater();
+            break;
+        }
+    }
+}
+
+void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
+{
+    target_choices = new QButtonGroup;
+    target_choices->setExclusive(TRUE);
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    QVBoxLayout *vlay_targets = new QVBoxLayout;
+    vlay_targets->setObjectName(QString("vlay_targeting_step_%1") .arg(step));
+    this_layout->addLayout(vlay_targets);
+
+    QLabel *header_targets = new QLabel("<b>Select Targeting Method</b>");
+    vlay_targets->addWidget(header_targets, Qt::AlignCenter);
+
+    QRadioButton *radio_closest = new QRadioButton("Target Closest");
+    radio_closest->setObjectName(QString("targeting_step_%1") .arg(step));
+    radio_closest->setChecked(FALSE);
+    vlay_targets->addWidget(radio_closest);
+    target_choices->addButton(radio_closest, (step * 100 + DIR_CLOSEST));
+
+    QRadioButton *radio_current = new QRadioButton("Use Current Target");
+    radio_current->setObjectName(QString("targeting_step_%1") .arg(step));
+    radio_current->setChecked(FALSE);
+    vlay_targets->addWidget(radio_current);
+    target_choices->addButton(radio_current, (step * 100 + DIR_TARGET));
+
+    QRadioButton *radio_specify_use = new QRadioButton("Specify During Use");
+    radio_specify_use->setObjectName(QString("targeting_step_%1") .arg(step));
+    radio_specify_use->setChecked(FALSE);
+    vlay_targets->addWidget(radio_specify_use);
+    target_choices->addButton(radio_specify_use, (step * 100 + DIR_UNKNOWN));
+
+    if (hks_ptr->step_args.direction == DIR_CLOSEST) radio_closest->setChecked(TRUE);
+    else if (hks_ptr->step_args.direction == DIR_TARGET) radio_current->setChecked(TRUE);
+    else radio_specify_use->setChecked(TRUE);
+
+    connect(target_choices, SIGNAL(buttonClicked(int)), this, SLOT(active_hotkey_target_changed(int)));
+}
+
+void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int step)
+{
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    QVBoxLayout *vlay_direction = new QVBoxLayout;
+    this_layout->addLayout(vlay_direction);
+
+    //Create the combobox
+    QComboBox *combobox_spell_choice = new QComboBox;
+    int max_spellbooks = (game_mode == GAME_NPPANGBAND ? BOOKS_PER_REALM_ANGBAND : BOOKS_PER_REALM_MORIA);
+
+    spell_list.clear();
+    int current_index = -1;
+
+    if (cp_ptr->spell_book) for (int i = 0; i < max_spellbooks; i++)
+    {
+        for (int j = 0; j < SPELLS_PER_BOOK; j++)
+        {
+            int spell = get_spell_from_list(i, j);
+
+            if (spell == -1) continue;
+
+            if (!spell_okay(spell, TRUE)) continue;
+
+            combobox_spell_choice->addItem(QString("%1") .arg(spell));
+            combobox_spell_choice->setItemText(spell_list.size(), cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, spell, DIR_UNKNOWN));
+
+            // Try to find the current index.
+            if (spell == hks_ptr->step_args.number) current_index = spell_list.size();
+
+            //Assume the first possible spell
+            if (!hks_ptr->step_args.number && !spell_list.size()) hks_ptr->step_args.number = spell;
+
+            spell_list.append(spell);
+        }
+    }
+
+    QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
+    QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
+    noun.append("s");
+    QString label_text = (QString("Select a %1 to %2") .arg(noun) .arg(verb));
+
+    // Add a header
+    QLabel *header_dir = new QLabel(label_text);
+    vlay_direction->addWidget(header_dir, Qt::AlignCenter);
+    if (!spell_list.size())
+    {
+        if (!cp_ptr->spell_book)  header_dir->setText("You cannot cast spells");
+        else header_dir->setText(QString("You do not know any %1") .arg(noun));
+        delete combobox_spell_choice;
+        return;
+    }
+
+    combobox_spell_choice->setCurrentIndex(current_index);
+    hks_ptr->step_args.verify = TRUE;
+
+    connect(combobox_spell_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(active_spell_changed(int)));
+    combobox_spell_choice->setObjectName(QString("Step_Command_%1") .arg(step));
+    vlay_direction->addWidget(combobox_spell_choice);
+}
+
 bool HotKeyDialog::accept_object_kind(int k_idx, int tval, int step)
 {
     object_kind *k_ptr = &k_info[k_idx];
@@ -223,24 +418,14 @@ void HotKeyDialog::active_k_idx_changed(int choice)
     int this_step = get_current_step();
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
-    int this_tval = hotkey_actions[hks_ptr->step_commmand].tval;
 
     bool old_obj_dir = obj_kind_needs_aim(hks_ptr->step_args.k_idx);
 
-    int count = 0;
-    int i;
-    for (i = z_info->k_max-1; i > 0; i--)
-    {
-        if (!accept_object_kind(i, this_tval, this_step)) continue;
-        // See if we have found the right object
-        if (choice == count) break;
-        count++;
-    }
+    // Remember the object choice
+    hks_ptr->step_args.k_idx = k_idx_list.at(choice);
 
-    hks_ptr->step_args.k_idx = i;
-
-    // Possible re-do the whole layout
-    if (obj_kind_needs_aim(i) != old_obj_dir)
+    // Possibly re-do the whole layout
+    if (obj_kind_needs_aim(hks_ptr->step_args.k_idx) != old_obj_dir)
     {
         QString item_id = (QString("hlay_step_%1") .arg(this_step));
         QList<QHBoxLayout *> hlay_list = this->findChildren<QHBoxLayout *>();
@@ -258,56 +443,6 @@ void HotKeyDialog::active_k_idx_changed(int choice)
     }
 }
 
-void HotKeyDialog::active_hotkey_target_changed(int new_target)
-{
-    int step = new_target / 100;
-    int new_choice = new_target % 100;
-
-    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
-
-    hks_ptr->step_args.direction = new_choice;
-
-}
-
-void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
-{
-    target_choices = new QButtonGroup;
-    target_choices->setExclusive(TRUE);
-
-    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
-
-    QVBoxLayout *vlay_targets = new QVBoxLayout;
-    this_layout->addLayout(vlay_targets);
-
-    QLabel *header_targets = new QLabel("<b>Select Targeting Method</b>");
-    vlay_targets->addWidget(header_targets, Qt::AlignCenter);
-
-    QRadioButton *radio_closest = new QRadioButton("Target Closest");
-    radio_closest->setObjectName(QString("Step_Command_%1") .arg(step));
-    radio_closest->setChecked(FALSE);
-    vlay_targets->addWidget(radio_closest);
-    target_choices->addButton(radio_closest, (step * 100 + DIR_CLOSEST));
-
-    QRadioButton *radio_current = new QRadioButton("Use Current Target");
-    radio_current->setObjectName(QString("Step_Command_%1") .arg(step));
-    radio_current->setChecked(FALSE);
-    vlay_targets->addWidget(radio_current);
-    target_choices->addButton(radio_current, (step * 100 + DIR_TARGET));
-
-    QRadioButton *radio_specify_use = new QRadioButton("Specify During Use");
-    radio_specify_use->setObjectName(QString("Step_Command_%1") .arg(step));
-    radio_specify_use->setChecked(FALSE);
-    vlay_targets->addWidget(radio_specify_use);
-    target_choices->addButton(radio_specify_use, (step * 100 + DIR_UNKNOWN));
-
-    if (hks_ptr->step_args.direction == DIR_CLOSEST) radio_closest->setChecked(TRUE);
-    else if (hks_ptr->step_args.direction == DIR_TARGET) radio_current->setChecked(TRUE);
-    else radio_specify_use->setChecked(TRUE);
-
-    connect(target_choices, SIGNAL(buttonClicked(int)), this, SLOT(active_hotkey_target_changed(int)));
-
-}
-
 void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int step)
 {
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
@@ -321,7 +456,7 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int step
     QComboBox *combobox_object_kind = new QComboBox;
     int current_index = 0;
 
-    int count = 0;
+    k_idx_list.clear();
     for (int i = z_info->k_max-1; i > 0; i--)
     {
         object_kind *k_ptr = &k_info[i];
@@ -329,20 +464,20 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int step
         if (!accept_object_kind(i, this_tval, step)) continue;
 
         combobox_object_kind->addItem(QString("%1") .arg(i));
-        combobox_object_kind->setItemText(count, capitalize_first(k_ptr->k_name));
+        combobox_object_kind->setItemText(k_idx_list.size(), capitalize_first(k_ptr->k_name));
 
         // Try to find the current index.
-        if (i == hks_ptr->step_args.k_idx) current_index = count;
+        if (i == hks_ptr->step_args.k_idx) current_index = k_idx_list.size();
 
         //Assume the first possible object
-        if (!hks_ptr->step_args.k_idx && !count) hks_ptr->step_args.k_idx = i;
-        count++;
+        if (!hks_ptr->step_args.k_idx && !k_idx_list.size()) hks_ptr->step_args.k_idx = i;
+        k_idx_list.append(i);
     }
 
     // Add a header
     QLabel *header_dir = new QLabel("<b>Select Object To Use:</b>");
     vlay_direction->addWidget(header_dir, Qt::AlignCenter);
-    if (!count)
+    if (!k_idx_list.size())
     {
         header_dir->setText("No Known Objects Of This Type");
         delete combobox_object_kind;
@@ -470,7 +605,7 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
 
     hotkey_type *ht_ptr = &hotkey_actions[hks_ptr->step_commmand];
     if (ht_ptr->hotkey_needs == HK_NEEDS_DIRECTION) create_direction_pad(this_layout, step);
-    else if (ht_ptr->hotkey_needs == HK_NEEDS_OBJECT_KIND)
+    if (ht_ptr->hotkey_needs == HK_NEEDS_OBJECT_KIND)
     {
         create_object_kind_dropbox(this_layout, step);
 
@@ -480,8 +615,22 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         }
         else hks_ptr->step_args.direction = 0;
     }
-    else hks_ptr->step_args.direction = 0;
-    if (ht_ptr->hotkey_needs != HK_NEEDS_OBJECT_KIND) hks_ptr->step_args.k_idx = 0;
+    else hks_ptr->step_args.k_idx = 0;
+    if (ht_ptr->hotkey_needs == HK_NEEDS_SPELL)
+    {
+        create_spell_choice_dropbox(this_layout, step);
+
+        if (spell_list.size() && spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number))
+        {
+            create_targeting_choices(this_layout, step);
+        }
+        else hks_ptr->step_args.direction = 0;
+    }
+    else
+    {
+        hks_ptr->step_args.number = 0;
+        hks_ptr->step_args.direction = 0;
+    }
 }
 
 void HotKeyDialog::display_hotkey_steps()
@@ -652,6 +801,34 @@ static int find_item(int k_idx, int mode)
     return (MAX_S16B);
 }
 
+// Get the intended direction for a hotkey that requires one
+static int extract_hotkey_dir(int dir, bool trap_spell)
+{
+    /* Check for confusion */
+    if (p_ptr->timed[TMD_CONFUSED])
+    {
+        message(QString("You are confused."));
+        return(ddd[randint0(8)]);
+    }
+
+    // First target closest, if there is anything there
+    if (dir == DIR_CLOSEST)
+    {
+        if (target_set_closest(TARGET_KILL | TARGET_QUIET))
+        {
+            return(DIR_TARGET);
+        }
+    }
+    if (dir == DIR_TARGET)
+    {
+        if (target_okay()) return (DIR_TARGET);
+    }
+
+    if (!get_aim_dir(&dir, trap_spell)) return (DIR_UNKNOWN);
+
+    return (dir);
+}
+
 // Run the active hotkey first step
 // First checks if there is a hotkey to run
 void run_hotkey_step()
@@ -685,7 +862,6 @@ void run_hotkey_step()
 
     if (ht_ptr->hotkey_needs == HK_NEEDS_OBJECT_KIND)
     {
-
         arg_ptr->item = find_item(arg_ptr->k_idx, USE_FLOOR | USE_INVEN);
 
         // Didn't find the item
@@ -699,40 +875,35 @@ void run_hotkey_step()
 
             if (obj_kind_needs_aim(arg_ptr->k_idx))
             {
-                bool needs_dir = TRUE;
+                arg_ptr->direction = extract_hotkey_dir(arg_ptr->direction, FALSE);
 
-                /* Check for confusion */
-                if (p_ptr->timed[TMD_CONFUSED])
-                {
-                    message(QString("You are confused."));
-                    arg_ptr->direction = ddd[randint0(8)];
-                    needs_dir = FALSE;
-                }
-
-                // First target closest, if there is anything there
-                if (arg_ptr->direction == DIR_CLOSEST && needs_dir)
-                {
-                    if (target_set_closest(TARGET_KILL | TARGET_QUIET))
-                    {
-                        arg_ptr->direction = DIR_TARGET;
-                        needs_dir = FALSE;
-                    }
-                }
-                if (arg_ptr->direction == DIR_TARGET && needs_dir)
-                {
-                    if (target_okay()) needs_dir = FALSE;
-                }
-
-                if (needs_dir)
-                {
-                    if (!get_aim_dir(&arg_ptr->direction, FALSE)) do_command = FALSE;
-                }
-
+                if (arg_ptr->direction == DIR_UNKNOWN) do_command = FALSE;
             }
 
             // Use the item
             if (do_command) command_use(this_step->step_args);
         }
+    }
+
+    if (ht_ptr->hotkey_needs == HK_NEEDS_SPELL)
+    {
+        if (p_ptr->can_cast())
+        {
+            bool do_command = TRUE;
+
+            if (spell_needs_aim(cp_ptr->spell_book, arg_ptr->number))
+            {
+                bool trap_spell = is_trap_spell(cp_ptr->spell_book, arg_ptr->number);
+
+                arg_ptr->direction = extract_hotkey_dir(arg_ptr->direction, trap_spell);
+
+                if (arg_ptr->direction == DIR_UNKNOWN) do_command = FALSE;
+            }
+
+            // Use the item
+            if (do_command) cast_spell(this_step->step_args);
+        }
+
     }
 
     running_hotkey.hotkey_steps.removeFirst();

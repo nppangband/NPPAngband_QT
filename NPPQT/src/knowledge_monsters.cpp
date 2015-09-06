@@ -105,6 +105,7 @@ static struct monster_group monster_group_nppangband[] =
     { "g",		"Golems" },
     { "H",		"Harpies/Hybrids" },
     { "h",		"Hominids (Elves, Dwarves)" },
+    { "tp",		"Humans" },
     { "M",		"Hydras" },
     { "i",		"Icky Things" },
     { "lFI",	"Insects" },
@@ -112,7 +113,6 @@ static struct monster_group monster_group_nppangband[] =
     { "K",		"Killer Beetles" },
     { "k",		"Kobolds" },
     { "L",		"Lichs" },
-    { "tp",		"Men" },
 /* Note some special handling of mimics in the code below since there are so many different symbols */
     { "$!?",	"Mimics" },
     { "m",		"Molds" },

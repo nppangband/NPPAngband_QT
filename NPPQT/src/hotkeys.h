@@ -23,6 +23,7 @@ enum
     HK_USE_STAFF,
     HK_ZAP_ROD,
     HK_EAT_FOOD,
+    HK_CAST_SPELL,
     HK_TYPE_MOVE,
     HK_TYPE_JUMP,
     HK_TYPE_RUN,
@@ -104,6 +105,9 @@ private:
     QScrollArea *scroll_box;
     QLineEdit *hotkey_name;
 
+    QVector<int> spell_list;
+    QVector<int> k_idx_list;
+
     void add_hotkeys_header();
     QComboBox *current_hotkey_name;
     QLineEdit *current_name;
@@ -112,7 +116,9 @@ private:
     void display_hotkey_steps();
     void create_direction_pad(QHBoxLayout *this_layout, int step);
     void create_object_kind_dropbox(QHBoxLayout *this_layout, int step);
+    void delete_targeting_choices(int this_step);
     void create_targeting_choices(QHBoxLayout *this_layout, int step);
+    void create_spell_choice_dropbox(QHBoxLayout *this_layout, int step);
     int get_current_step();
     bool accept_object_kind(int k_idx, int tval, int step);
     QButtonGroup *group_directions;
@@ -131,6 +137,7 @@ private slots:
     void active_hotkey_direction_changed(int new_dir);
     void active_hotkey_target_changed(int new_target);
     void active_k_idx_changed(int choice);
+    void active_spell_changed(int choice);
 };
 
 extern void do_hotkey_manage();

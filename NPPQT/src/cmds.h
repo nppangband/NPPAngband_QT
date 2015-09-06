@@ -203,8 +203,10 @@ extern void do_cmd_browse(int book_choice);
 extern bool player_can_use_book(const object_type *o_ptr, bool known);
 extern void command_study(cmd_arg args);
 extern void do_cmd_study(int book_choice);
+extern void cast_spell(cmd_arg args);
 extern void command_cast(cmd_arg args);
 extern void do_cmd_cast(int book_choice);
+extern bool is_trap_spell(byte spell_book, int spell);
 extern s16b get_spell_from_list(s16b book, s16b spell);
 extern bool obj_can_cast(object_type *o_ptr);
 

@@ -32,7 +32,7 @@ Offers a service to *identify* any item.Offers a service to purchase a mass geno
 *******<end>
 
 *******Magic Shop
-Buys and sells rings, amulets, wands, rods, and staffs.  Also buys potions and scrolls.
+Buys and sells rings, amulets, wands, rods, and staffs.  
 Offers a service to recharge a wand, staff, or rod with no chance of failure.
 Offers a service to identify any item.
 Offers a service to *identify* any item.

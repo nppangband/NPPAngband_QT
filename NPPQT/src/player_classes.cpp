@@ -300,6 +300,19 @@ void player_type::player_type_wipe()
     tile_id.clear();
 }
 
+bool player_type::has_learned_spells(void)
+{
+    // Hasn't learned any spells.
+    if (p_ptr->spell_order[0] == 99)
+    {
+        QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, DIR_UNKNOWN);
+        message(QString("You have not learned any %1s.") .arg(noun));
+        return (FALSE);
+    }
+
+    return (TRUE);
+}
+
 /*
  * Is the player capable of casting a spell?
  */

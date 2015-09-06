@@ -4578,9 +4578,7 @@ bool obj_needs_aim(object_type *o_ptr)
         }
     }
 
-    object_kind *k_ptr = &k_info[o_ptr->k_idx];
-
-    return (obj_kind_needs_aim(k_ptr));
+    return (obj_kind_needs_aim(o_ptr->k_idx));
 }
 
 

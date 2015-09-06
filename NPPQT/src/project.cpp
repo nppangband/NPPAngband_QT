@@ -1229,27 +1229,6 @@ void take_hit(int dam, QString kb_str)
         /* Leaving */
         p_ptr->leaving_level = TRUE;
 
-        /* Write a note */
-        QDate today = QDate::currentDate();
-        QTime right_now = QTime::currentTime();
-        QString buf;
-        QString long_day;
-
-        /* Get time */
-        long_day = QString("%1 at %2") .arg(today.toString() .arg(right_now.toString()));
-
-        /*killed by */
-        buf = (QString("Killed by %1.") .arg(p_ptr->died_from));
-
-        /* Write message */
-        write_note(buf,  p_ptr->depth);
-
-        /* date and time*/
-        buf = (QString("Killed on %1.") .arg(long_day));
-
-        /* Write message */
-        write_note(buf,  p_ptr->depth);
-
         /* Dead */
         return;
     }
