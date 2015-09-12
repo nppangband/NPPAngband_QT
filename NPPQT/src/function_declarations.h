@@ -56,7 +56,7 @@ extern void track_object(int item);
 extern void track_object_kind(int k_idx);
 extern void monster_race_track(int r_idx);
 extern void feature_kind_track(int f_idx);
-extern void disturb(int stop_search, int unused_flag);
+extern void disturb(bool stop_search, bool wipe_hotkey);
 
 
 

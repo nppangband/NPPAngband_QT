@@ -618,7 +618,7 @@ void py_attack(int y, int x)
     if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
     /* Disturb the player */
-    disturb(0, 0);
+    disturb(TRUE, TRUE);
 
     /* Extract monster name (or "it") */
     m_name = monster_desc(m_ptr, 0);

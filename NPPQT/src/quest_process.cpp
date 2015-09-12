@@ -270,7 +270,7 @@ static bool add_arena_monster(bool new_squares, byte stage, s32b cur_quest_monst
     if (!dungeon_info[y][x].monster_idx)	return (FALSE); /* Paranoia - should never happen */
     m_ptr = &mon_list[dungeon_info[y][x].monster_idx];
     m_ptr->mflag |= (MFLAG_QUEST);
-    disturb(0,0);
+    disturb(FALSE, TRUE);
     return (TRUE);
 }
 
@@ -568,8 +568,6 @@ static bool add_labyrinth_monster_object(bool add_object, bool add_parchment)
 
         /* Put it on the floor */
         floor_carry(y, x, i_ptr);
-
-        disturb(0,0);
     }
 
     return (TRUE);

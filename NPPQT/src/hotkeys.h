@@ -83,9 +83,8 @@ public:
     QString hotkey_button_name;
     int hotkey_button;
     QVector<hotkey_step> hotkey_steps;
-
     void copy_hotkey(single_hotkey *other_hotkey);
-    void clear_hotkey(void);
+    void clear_hotkey_steps(void);
     bool has_commands(void);
 };
 
@@ -106,7 +105,6 @@ private:
     QLineEdit *hotkey_name;
 
     QVector<int> spell_list;
-    QVector<int> k_idx_list;
 
     void add_hotkeys_header();
     QComboBox *current_hotkey_name;
@@ -114,13 +112,16 @@ private:
 
     void create_one_hotkey_step(QHBoxLayout *this_layout, int step);
     void display_hotkey_steps();
+    void delete_direction_pad(int step);
     void create_direction_pad(QHBoxLayout *this_layout, int step);
-    void create_object_kind_dropbox(QHBoxLayout *this_layout, int step);
+    void create_object_kind_dropbox(QHBoxLayout *this_layout, int this_step);
     void delete_targeting_choices(int this_step);
     void create_targeting_choices(QHBoxLayout *this_layout, int step);
     void create_spell_choice_dropbox(QHBoxLayout *this_layout, int step);
-    int get_current_step();
+    void create_step_buttons(QHBoxLayout *this_layout, int step);
+    int get_current_step(QString item_id);
     bool accept_object_kind(int k_idx, int tval, int step);
+    int find_selected_k_idx(int choice, int step);
     QButtonGroup *group_directions;
     QButtonGroup *target_choices;
 
@@ -134,17 +135,16 @@ private slots:
     void active_hotkey_changed(int new_hotkey);
     void active_hotkey_name_changed(QString new_name);
     void active_hotkey_command_changed(int this_choice);
-    void active_hotkey_direction_changed(int new_dir);
-    void active_hotkey_target_changed(int new_target);
+    void hotkey_step_direction_changed(int new_dir);
+    void hotkey_step_target_changed(int new_target);
     void active_k_idx_changed(int choice);
     void active_spell_changed(int choice);
+    void insert_step(void);
+    void delete_step(void);
+    void add_step(void);
 };
 
 extern void do_hotkey_manage();
-extern void wipe_hotkeys();
-
-
-extern void run_hotkey_step();
 
 extern single_hotkey running_hotkey;
 extern single_hotkey player_hotkeys[NUM_HOTKEYS];

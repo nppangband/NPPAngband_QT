@@ -740,7 +740,7 @@ static int run_with_pathfind(void)
     // We found where we wanted to be.
     if (lowest_cost < BASE_ENERGY_MOVE)
     {
-        disturb(0, 0);
+        disturb(FALSE, FALSE);
         return(0);
     }
 
@@ -774,7 +774,7 @@ static int run_with_pathfind(void)
     //Paranoia - we didn't find a better spot?
     if (dir == 5)
     {
-        disturb(0, 0);
+        disturb(FALSE, FALSE);
         return(0);
     }
 
@@ -811,7 +811,7 @@ int run_step(int dir)
         if (run_test())
         {
             /* Disturb */
-            disturb(0, 0);
+            disturb(FALSE, FALSE);
 
             /* Done */
             return 0;

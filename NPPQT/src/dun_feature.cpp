@@ -234,7 +234,7 @@ void find_secret(int y, int x)
     cave_alter_feat(y, x, FS_SECRET);
 
     /* Disturb */
-    disturb(0, 0);
+    disturb(FALSE, FALSE);
 }
 
 
@@ -408,7 +408,7 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc)
         }
 
         /* Disturb the player */
-        disturb(0, 0);
+        disturb(TRUE, TRUE);
     }
 
     /* Don't describe if not set off*/
@@ -663,7 +663,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             message(QString("You float over the %1.") .arg(feat_name));
 
             /* Disturb the player */
-             disturb(0, 0);
+            disturb(FALSE, FALSE);
 
             /*We are done here*/
             return (desc);
@@ -690,7 +690,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             f_l_ptr->f_l_power++;
 
             /* Disturb the player */
-            disturb(0, 0);
+            disturb(FALSE, TRUE);
         }
     }
 
@@ -1249,7 +1249,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             break;
     }
 
-    if (mode == MODE_ACTION) disturb(0,0);
+    if (mode == MODE_ACTION) disturb(FALSE, TRUE);
 
     return (desc);
 }
@@ -2739,8 +2739,6 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
 
             /*Mark the lore*/
             f_l_ptr->f_l_flags3 |= (FF3_DYNAMIC);
-
-            disturb(0, 0);
         }
 
         /* Splash! */
@@ -2787,7 +2785,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
             /*Mark the lore*/
             f_l_ptr->f_l_flags3 |= (FF3_DYNAMIC);
 
-            disturb(0, 0);
+            disturb(FALSE, FALSE);
         }
 
         /* Create a new tree */
@@ -2921,9 +2919,6 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
             }
         }
 
-        /* Tell the player */
-        disturb(0, 0);
-
         /* Calculate damage */
         dam = 2 * p_ptr->depth / 3;
 
@@ -2955,7 +2950,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
         }
 
         /* Stop resting/running */
-        disturb(0, 0);
+        disturb(FALSE, TRUE);
 
         /* Call monsters */
         aggravate_monsters(SOURCE_OTHER);
@@ -3704,7 +3699,7 @@ void update_level_flag(void)
     if (cheat_room)
     {
         message(QString("Updating level flags."));
-        disturb(0, 0);
+        disturb(FALSE, FALSE);
     }
 
     /* Scan the dungeon */

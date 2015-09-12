@@ -111,8 +111,8 @@ static void sense_inventory(void)
             squelch = squelch_itemp(o_ptr, feel, FALSE);
         }
 
-        /* Stop everything */
-        disturb(0, 0);
+        /* Stop searching */
+        disturb(TRUE, FALSE);
 
         /* Get an object description */
         o_name = object_desc(o_ptr, ODESC_FULL);
@@ -398,8 +398,8 @@ static void recharged_notice(object_type *o_ptr, bool all)
     /* Describe (briefly) */
     o_name = object_desc(o_ptr, ODESC_BASE);
 
-    /*Disturb the player*/
-    disturb(0, 0);
+    /* Disturb the player */
+    disturb(TRUE, FALSE);
 
     /* Notify the player */
     if (o_ptr->number > 1)
@@ -724,7 +724,7 @@ static void play_ambient_sound(void)
 
 
 /*
- * This function randomly extinguish fires near the player location
+ * This function randomly extinguished fires near the player location
  */
 static void put_out_fires(void)
 {
@@ -736,7 +736,7 @@ static void put_out_fires(void)
     if (cheat_room)
     {
         color_message(QString("Putting out fires."), MSG_NOTICE);
-        disturb(0, 0);
+        disturb(TRUE, TRUE);
     }
 
     /* Get the bottom-right corner of a rectangle centered on the player */
@@ -1157,7 +1157,7 @@ static void process_world(void)
             {
                 /* Message */
                 message(QString("You faint from the lack of food."));
-                disturb(1, 0);
+                disturb(TRUE, TRUE);
 
                 /* Hack -- faint (bypass free action) */
                 (void)inc_timed(TMD_PARALYZED, 1 + rand_int(5), TRUE);
@@ -1208,7 +1208,7 @@ static void process_world(void)
         {
             color_message(QString("You are about to stop flying."), MSG_LOSING_FLYING);
 
-            disturb(0, 0);
+            disturb(FALSE, TRUE);
 
         }
     }
@@ -1224,7 +1224,7 @@ static void process_world(void)
             {
                 color_message(QString("You are about to lose nativity to lava."), MSG_LOSING_NATIVITY);
 
-                disturb(0, 0);
+                disturb(FALSE, TRUE);
 
             }
         }
@@ -1240,7 +1240,7 @@ static void process_world(void)
             {
                 color_message(QString("You are about to lose nativity to oil."), MSG_LOSING_NATIVITY);
 
-                disturb(0, 0);
+                disturb(FALSE, TRUE);
 
             }
         }
@@ -1255,7 +1255,7 @@ static void process_world(void)
             {
                 color_message(QString("You are about to lose nativity to sand."), MSG_LOSING_NATIVITY);
 
-                disturb(0, 0);
+                disturb(FALSE, TRUE);
             }
         }
     }
@@ -1269,7 +1269,7 @@ static void process_world(void)
             {
                 color_message(QString("You are about to lose nativity to forest."), MSG_LOSING_NATIVITY);
 
-                disturb(0, 0);
+                disturb(FALSE, TRUE);
             }
         }
     }
@@ -1283,7 +1283,7 @@ static void process_world(void)
             {
                 color_message(QString("You are about to lose nativity to water."), MSG_LOSING_NATIVITY);
 
-                disturb(0, 0);
+                disturb(FALSE, TRUE);
             }
         }
     }
@@ -1297,7 +1297,7 @@ static void process_world(void)
             {
                 color_message(QString("You are about to lose nativity to mud."), MSG_LOSING_NATIVITY);
 
-                disturb(0, 0);
+                disturb(FALSE, TRUE);
             }
         }
     }
@@ -1336,14 +1336,14 @@ static void process_world(void)
             /* The light is now out */
             else if (o_ptr->timeout == 0)
             {
-                disturb(0, 0);
+                disturb(FALSE, TRUE);
                 message(QString("Your light has gone out!"));
             }
 
             /* The light is getting dim */
             else if ((o_ptr->timeout < 100) && (!(o_ptr->timeout % 10)))
             {
-                disturb(0, 0);
+                disturb(FALSE, FALSE);
                 message(QString("Your light is growing faint."));
             }
         }
@@ -1397,7 +1397,7 @@ static void process_world(void)
         if (!p_ptr->word_recall)
         {
             /* Disturbing! */
-            disturb(0, 0);
+            disturb(TRUE, TRUE);
 
             /* Sound */
             sound(MSG_TPLEVEL);
@@ -1455,7 +1455,7 @@ static void process_world(void)
             p_ptr->redraw |= (PR_SIDEBAR_PL);
 
             /* Disturb */
-            disturb(0, 0);
+            disturb(FALSE, FALSE);
         }
     }
 
@@ -1618,7 +1618,7 @@ void change_player_level(void)
     p_ptr->cumulative_terrain_damage = 0;
 
     /* Disturb */
-    disturb(1, 0);
+    disturb(TRUE, TRUE);
 
     /* Track maximum player level */
     if (p_ptr->max_lev < p_ptr->lev)
@@ -2047,7 +2047,7 @@ void process_player_energy(byte energy_used)
     {
         if (p_ptr->should_stop_resting())
         {
-            disturb(0,0);
+            disturb(FALSE, FALSE);
             p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
             return;
         }
@@ -2057,8 +2057,6 @@ void process_player_energy(byte energy_used)
     else if (command_ptr->repeated_command_completed())
     {
         p_ptr->player_command_wipe();
-        // Run the next hotkey step, if any
-        run_hotkey_step();
     }
 
     else

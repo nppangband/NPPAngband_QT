@@ -467,7 +467,7 @@ bool make_attack_normal(monster_type *m_ptr)
         if (!effect || check_hit_player(power, rlev, m_idx))
         {
             /* Always disturbing */
-            disturb(1, 0);
+            disturb(TRUE, TRUE);
 
             /* Hack -- Apply "protection from evil" */
             if ((p_ptr->timed[TMD_PROTEVIL] > 0) &&
@@ -1616,7 +1616,7 @@ bool make_attack_normal(monster_type *m_ptr)
                 if (m_ptr->ml)
                 {
                     /* Disturbing */
-                    disturb(1, 0);
+                    disturb(TRUE, FALSE);
 
                     /* Message */
                     message(QString("%1 misses you.")  .arg(capitalize_first(m_name)));

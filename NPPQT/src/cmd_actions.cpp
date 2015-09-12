@@ -600,7 +600,7 @@ static void chest_trap(int y, int x, s16b o_idx)
         {
             (void)summon_specific(y, x, p_ptr->depth, 0, MPLACE_OVERRIDE);
         }
-        disturb(TRUE,0);
+        disturb(TRUE, TRUE);
     }
 
     /* Explode */
@@ -969,7 +969,7 @@ void command_open(cmd_arg args)
     }
 
     /* Cancel repeat unless we may continue */
-    if (!more) disturb(0, 0);
+    if (!more) disturb(TRUE, FALSE);
 
     process_player_energy(BASE_ENERGY_MOVE);
 }
@@ -1379,7 +1379,7 @@ void command_disarm(cmd_arg args)
     }
 
     /* Cancel repeat unless told not to */
-    if (!more) disturb(0, 0);
+    if (!more) disturb(FALSE, FALSE);
 
     process_player_energy(BASE_ENERGY_MOVE);
 }
@@ -1487,7 +1487,7 @@ void do_search(void)
                         message(QString("You have found a trap!"));
 
                         /* Disturb the player */
-                        disturb(0, 0);
+                        disturb(FALSE, FALSE);
                     }
                 }
 
@@ -1515,7 +1515,7 @@ void do_search(void)
                         object_known(o_ptr);
 
                         /* Notice it */
-                        disturb(0, 0);
+                        disturb(FALSE, FALSE);
                     }
                 }
             }
@@ -1647,6 +1647,14 @@ static bool command_tunnel_aux(int y, int x)
 
             cave_alter_feat(y, x, FS_TUNNEL);
 
+            /* Forget the square if marked */
+            dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
+
+            /* Check if the grid is still viewable */
+            note_spot(y, x);
+
+            light_spot(y, x);
+
             /* Update the visuals */
             p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
         }
@@ -1749,7 +1757,7 @@ void command_tunnel(cmd_arg args)
     }
 
     /* Cancel repetition unless we can continue */
-    if (!more) disturb(0, 0);
+    if (!more) disturb(FALSE, FALSE);
 
     /* Take a turn */
     process_player_energy(BASE_ENERGY_MOVE);
@@ -1865,7 +1873,7 @@ void command_close(cmd_arg args)
     if (!do_cmd_test(y, x, FS_CLOSE, TRUE))
     {
         /* Cancel repeat */
-        disturb(0, 0);
+        disturb(FALSE, FALSE);
         return;
     }
 
@@ -1900,7 +1908,7 @@ void command_close(cmd_arg args)
     }
 
     /* Cancel repeat unless told not to */
-    if (!more) disturb(0, 0);
+    if (!more) disturb(FALSE, FALSE);
 
 
     /* Take a turn */
@@ -2215,7 +2223,7 @@ void command_rest(cmd_arg args)
 
     if (p_ptr->should_stop_resting())
     {
-        disturb(0, 0);
+        disturb(FALSE, FALSE);
         p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
     }
 
@@ -2474,7 +2482,7 @@ static bool found_dangerous_grid(int y, int x)
     if (is_player_immune(gf_type)) return (FALSE);
 
     /* Stop running */
-    disturb(0, 0);
+    disturb(FALSE, TRUE);
 
     /* Ask the player for confirmation */
     QString action(feat_ff1_match(feat, FF1_MOVE) ? "walk over": "touch");
@@ -2496,7 +2504,10 @@ void command_walk(cmd_arg args)
     int y, x;
 
     /* Get a direction (or abort) */
-    if (!dir && !get_rep_dir(&dir)) return;
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     /* Get location */
     y = p_ptr->py + ddy[dir];
@@ -2536,7 +2547,10 @@ void do_cmd_walk(int dir, bool jumping)
     if (!character_dungeon) return;
 
     /* Get a direction (or abort) */
-    if (!dir && !get_rep_dir(&dir)) return;
+    if (dir == DIR_UNKNOWN)
+    {
+        if (!get_rep_dir(&dir)) return;
+    }
 
     cmd_arg args;
     args.wipe();
@@ -2827,7 +2841,7 @@ void command_bash(cmd_arg args)
         if (!do_cmd_bash_aux(y, x))
         {
             /* Cancel repeat */
-            disturb(0, 0);
+            disturb(FALSE, FALSE);
         }
     }
 
@@ -2875,7 +2889,7 @@ void command_hold(cmd_arg args)
     if (cave_shop_bold(p_ptr->py,p_ptr->px))
     {
         /* Disturb */
-        disturb(0, 0);
+        disturb(TRUE, TRUE);
 
         int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
         int store_idx = f_info[feat].f_power;

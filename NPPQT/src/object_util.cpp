@@ -4849,7 +4849,7 @@ void pack_overflow(void)
     o_ptr = &inventory[item];
 
     /* Disturbing */
-    disturb(0, 0);
+    disturb(TRUE, TRUE);
 
     /* Warning */
     message(QString("Your pack overflows!"));

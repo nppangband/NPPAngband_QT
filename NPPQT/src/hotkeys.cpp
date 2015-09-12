@@ -18,9 +18,12 @@
 #include <src/npp.h>
 #include <src/cmds.h>
 #include <src/hotkeys.h>
+#include <QPushButton>
 
 single_hotkey running_hotkey;
 single_hotkey player_hotkeys[NUM_HOTKEYS];
+
+#define STEP_MULT   1000
 
 static hotkey_list list_hotkeys[NUM_HOTKEYS] =
 {
@@ -83,7 +86,7 @@ hotkey_type hotkey_actions[] =
 
 };
 
-void single_hotkey::clear_hotkey(void)
+void single_hotkey::clear_hotkey_steps(void)
 {
     hotkey_steps.clear();
     hotkey_step dummy_step;
@@ -101,9 +104,10 @@ void clear_all_hotkeys()
         plyr_hk_ptr->hotkey_name = hk_list_ptr->hotkey_list_name;
         plyr_hk_ptr->hotkey_button_name = hk_list_ptr->hotkey_list_name;
         plyr_hk_ptr->hotkey_button = hk_list_ptr->listed_hotkey;
-        plyr_hk_ptr->clear_hotkey();
+        plyr_hk_ptr->clear_hotkey_steps();
     }
 }
+
 
 
 void single_hotkey::copy_hotkey(single_hotkey *other_hotkey)
@@ -111,7 +115,6 @@ void single_hotkey::copy_hotkey(single_hotkey *other_hotkey)
     hotkey_name = other_hotkey->hotkey_name;
     hotkey_button = other_hotkey->hotkey_button;
     hotkey_button_name = other_hotkey->hotkey_button_name;
-    hotkey_button = other_hotkey->hotkey_button;
 
     // Copy each step
     hotkey_steps.clear();
@@ -126,7 +129,6 @@ bool single_hotkey::has_commands(void)
     if (hotkey_steps[0].step_commmand == HK_TYPE_EMPTY) return (FALSE);
     if (!hotkey_steps.size())
     {
-        clear_hotkey();
         return (FALSE);
     }
 
@@ -158,10 +160,18 @@ void HotKeyDialog::active_hotkey_changed(int new_hotkey)
 }
 
 // Returns the step of the current QObject.
-int HotKeyDialog::get_current_step()
+int HotKeyDialog::get_current_step(QString item_id)
 {
-    QString item_id = QObject::sender()->objectName();
-    item_id.remove("Step_Command_");
+    item_id.remove("Step_Command_", Qt::CaseInsensitive);
+
+    // Remove anything before the phrase below
+    QString this_index = "_step_";
+    if (item_id.contains(this_index, Qt::CaseInsensitive))
+    {
+        int location = item_id.indexOf(this_index, Qt::CaseInsensitive) + this_index.length();
+        item_id.remove(0,location);
+
+    }
     return(item_id.toInt());
 }
 
@@ -185,7 +195,8 @@ void HotKeyDialog::add_hotkeys_header()
 
 void HotKeyDialog::active_hotkey_command_changed(int this_choice)
 {
-    int this_step = get_current_step();
+    QString sender_id = QObject::sender()->objectName();
+    int this_step = get_current_step(sender_id);
     dialog_hotkey.hotkey_steps[this_step].step_commmand = this_choice;
     dialog_hotkey.hotkey_steps[this_step].step_args.wipe();
     QString item_id = (QString("hlay_step_%1") .arg(this_step));
@@ -208,26 +219,27 @@ void HotKeyDialog::active_hotkey_command_changed(int this_choice)
 // Find the new object kind based on the combo box
 void HotKeyDialog::active_spell_changed(int choice)
 {
-    int this_step = get_current_step();
+    QString sender_id = QObject::sender()->objectName();
+    int this_step = get_current_step(sender_id);
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
 
-    bool old_obj_dir = spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number);
+    bool old_spell_dir = spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number);
 
     // Remember the object choice
     hks_ptr->step_args.number = spell_list.at(choice);
 
-    bool new_obj_dir = spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number);
+    bool new_spell_dir = spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number);
 
-    // Remove the radio buttons if no longer needed
-    if (!new_obj_dir && old_obj_dir)
+    // Remove the target box if no longer needed
+    if (!new_spell_dir && old_spell_dir)
     {
         delete_targeting_choices(this_step);
         hks_ptr->step_args.direction = DIR_UNKNOWN;
     }
 
     // Make a new target box
-    if (new_obj_dir && !old_obj_dir)
+    if (new_spell_dir && !old_spell_dir)
     {
         hks_ptr->step_args.direction = DIR_UNKNOWN;
 
@@ -249,14 +261,40 @@ void HotKeyDialog::active_spell_changed(int choice)
     }
 }
 
-void HotKeyDialog::active_hotkey_target_changed(int new_target)
+// Manuallly turning the buttons true or false is necessary
+// because the button group covers more than one step
+void HotKeyDialog::hotkey_step_target_changed(int new_target)
 {
-    int step = new_target / 100;
-    int new_choice = new_target % 100;
+    int step = new_target / STEP_MULT;
+    int new_choice = new_target % STEP_MULT;
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
     hks_ptr->step_args.direction = new_choice;
+
+    QString button_name = QString("Target Closest");
+
+    if (new_choice == DIR_TARGET) button_name = QString("Use Current Target");
+    else if (new_choice == DIR_UNKNOWN) button_name = QString("Specify During Use");
+
+    // Manually turn the buttons true or false.
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        // Not the right step.
+        QString item_id = this_radio->objectName();
+        item_id.remove("Step_Command_", Qt::CaseInsensitive);
+        int which_step = item_id.toInt();
+        if (step != which_step) continue;
+
+        // Turn on or off
+        QString this_name = this_radio->text();
+        if (this_name.contains(button_name)) this_radio->setChecked(TRUE);
+        else this_radio->setChecked(FALSE);
+    }
 }
 
 void HotKeyDialog::delete_targeting_choices(int this_step)
@@ -299,7 +337,9 @@ void HotKeyDialog::delete_targeting_choices(int this_step)
 void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
 {
     target_choices = new QButtonGroup;
-    target_choices->setExclusive(TRUE);
+
+    // Buttons will be manually turned on and off when changed.
+    target_choices->setExclusive(FALSE);
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
@@ -314,25 +354,25 @@ void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
     radio_closest->setObjectName(QString("targeting_step_%1") .arg(step));
     radio_closest->setChecked(FALSE);
     vlay_targets->addWidget(radio_closest);
-    target_choices->addButton(radio_closest, (step * 100 + DIR_CLOSEST));
+    target_choices->addButton(radio_closest, (step * STEP_MULT + DIR_CLOSEST));
 
     QRadioButton *radio_current = new QRadioButton("Use Current Target");
     radio_current->setObjectName(QString("targeting_step_%1") .arg(step));
     radio_current->setChecked(FALSE);
     vlay_targets->addWidget(radio_current);
-    target_choices->addButton(radio_current, (step * 100 + DIR_TARGET));
+    target_choices->addButton(radio_current, (step * STEP_MULT + DIR_TARGET));
 
     QRadioButton *radio_specify_use = new QRadioButton("Specify During Use");
     radio_specify_use->setObjectName(QString("targeting_step_%1") .arg(step));
     radio_specify_use->setChecked(FALSE);
     vlay_targets->addWidget(radio_specify_use);
-    target_choices->addButton(radio_specify_use, (step * 100 + DIR_UNKNOWN));
+    target_choices->addButton(radio_specify_use, (step * STEP_MULT + DIR_UNKNOWN));
 
     if (hks_ptr->step_args.direction == DIR_CLOSEST) radio_closest->setChecked(TRUE);
     else if (hks_ptr->step_args.direction == DIR_TARGET) radio_current->setChecked(TRUE);
     else radio_specify_use->setChecked(TRUE);
 
-    connect(target_choices, SIGNAL(buttonClicked(int)), this, SLOT(active_hotkey_target_changed(int)));
+    connect(target_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_target_changed(int)));
 }
 
 void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int step)
@@ -396,6 +436,8 @@ void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int ste
     vlay_direction->addWidget(combobox_spell_choice);
 }
 
+// Helper function to determine if the current object kind
+// should be included in a ComboBox object kinds
 bool HotKeyDialog::accept_object_kind(int k_idx, int tval, int step)
 {
     object_kind *k_ptr = &k_info[k_idx];
@@ -412,21 +454,56 @@ bool HotKeyDialog::accept_object_kind(int k_idx, int tval, int step)
     return (TRUE);
 }
 
+// Helper function to find the current k_idx
+// selection in a combobox of object kinds
+int HotKeyDialog::find_selected_k_idx(int choice, int step)
+{
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+    int this_tval = hotkey_actions[hks_ptr->step_commmand].tval;
+
+    int current_index = 0;
+
+    for (int i = z_info->k_max-1; i > 0; i--)
+    {
+        if (!accept_object_kind(i, this_tval, step)) continue;
+
+        if (choice == current_index) return (i);
+
+        current_index++;
+    }
+
+    // Whoops!  Shouldn't happen.
+    return (1);
+}
+
 // Find the new object kind based on the combo box
 void HotKeyDialog::active_k_idx_changed(int choice)
 {
-    int this_step = get_current_step();
+    QString sender_id = QObject::sender()->objectName();
+    int this_step = get_current_step(sender_id);
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
 
     bool old_obj_dir = obj_kind_needs_aim(hks_ptr->step_args.k_idx);
 
     // Remember the object choice
-    hks_ptr->step_args.k_idx = k_idx_list.at(choice);
+    hks_ptr->step_args.k_idx = find_selected_k_idx(choice, this_step);
 
-    // Possibly re-do the whole layout
-    if (obj_kind_needs_aim(hks_ptr->step_args.k_idx) != old_obj_dir)
+    bool new_obj_dir = obj_kind_needs_aim(hks_ptr->step_args.k_idx);
+
+    // Remove the direction box
+    if (new_obj_dir && !old_obj_dir)
     {
+        delete_targeting_choices(this_step);
+        hks_ptr->step_args.direction = DIR_UNKNOWN;
+    }
+
+    // Add the direction box
+    if (new_obj_dir && !old_obj_dir)
+    {
+        hks_ptr->step_args.direction = DIR_UNKNOWN;
+
+        // Find the hbox layout
         QString item_id = (QString("hlay_step_%1") .arg(this_step));
         QList<QHBoxLayout *> hlay_list = this->findChildren<QHBoxLayout *>();
         for (int x = 0; x < hlay_list.size(); x++)
@@ -437,64 +514,142 @@ void HotKeyDialog::active_k_idx_changed(int choice)
 
             if (this_name.contains(item_id))
             {
-                create_one_hotkey_step(this_hlay, this_step);
+                create_targeting_choices(this_hlay, this_step);
+                break;
             }
         }
     }
 }
 
-void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int step)
+void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this_step)
 {
-    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
 
     int this_tval = hotkey_actions[hks_ptr->step_commmand].tval;
 
-    QVBoxLayout *vlay_direction = new QVBoxLayout;
-    this_layout->addLayout(vlay_direction);
+    QVBoxLayout *vlay_obj_kind = new QVBoxLayout;
+    vlay_obj_kind->setObjectName(QString("vlay_obj_kind_step_%1") .arg(this_step));
+    this_layout->addLayout(vlay_obj_kind);
 
     //Create the combobox
-    QComboBox *combobox_object_kind = new QComboBox;
+    QComboBox *this_combobox = new QComboBox;
+    this_combobox->setObjectName(QString("obj_kind_combo_step_%1") .arg(this_step));
     int current_index = 0;
+    int count = 0;
 
-    k_idx_list.clear();
     for (int i = z_info->k_max-1; i > 0; i--)
     {
         object_kind *k_ptr = &k_info[i];
 
-        if (!accept_object_kind(i, this_tval, step)) continue;
+        if (!accept_object_kind(i, this_tval, this_step)) continue;
 
-        combobox_object_kind->addItem(QString("%1") .arg(i));
-        combobox_object_kind->setItemText(k_idx_list.size(), capitalize_first(k_ptr->k_name));
+        this_combobox->addItem(QString("%1") .arg(STEP_MULT * this_step + i));
+        this_combobox->setItemText(count, capitalize_first(k_ptr->k_name));
 
         // Try to find the current index.
-        if (i == hks_ptr->step_args.k_idx) current_index = k_idx_list.size();
+        if (i == hks_ptr->step_args.k_idx) current_index = count;
 
-        //Assume the first possible object
-        if (!hks_ptr->step_args.k_idx && !k_idx_list.size()) hks_ptr->step_args.k_idx = i;
-        k_idx_list.append(i);
+        count++;
     }
 
     // Add a header
     QLabel *header_dir = new QLabel("<b>Select Object To Use:</b>");
-    vlay_direction->addWidget(header_dir, Qt::AlignCenter);
-    if (!k_idx_list.size())
+    vlay_obj_kind->addWidget(header_dir, Qt::AlignCenter);
+    if (!count)
     {
         header_dir->setText("No Known Objects Of This Type");
-        delete combobox_object_kind;
+        delete this_combobox;
         return;
     }
 
-    combobox_object_kind->setCurrentIndex(current_index);
+    hks_ptr->step_args.k_idx = find_selected_k_idx(current_index, this_step);
+
+    this_combobox->setCurrentIndex(current_index);
     hks_ptr->step_args.verify = TRUE;
 
-    connect(combobox_object_kind, SIGNAL(currentIndexChanged(int)), this, SLOT(active_k_idx_changed(int)));
-    combobox_object_kind->setObjectName(QString("Step_Command_%1") .arg(step));
-    vlay_direction->addWidget(combobox_object_kind);
+    connect(this_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(active_k_idx_changed(int)));
+    vlay_obj_kind->addWidget(this_combobox);
 }
 
-void HotKeyDialog::active_hotkey_direction_changed(int new_dir)
+// Manuallly turning the buttons true or false is necessary
+// because the button group covers more than one step
+void HotKeyDialog::hotkey_step_direction_changed(int new_dir)
 {
-    dialog_hotkey.hotkey_steps[get_current_step()].step_args.direction = new_dir;
+    int step = new_dir / STEP_MULT;
+    int this_dir = new_dir % STEP_MULT;
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    hks_ptr->step_args.direction = this_dir;
+
+    QString button_dir = QString("Specify Direction during command execution");
+    if (this_dir == DIR_NORTHWEST) button_dir = QString("NorthWest");
+    else if (this_dir == DIR_NORTH) button_dir = QString("North");
+    else if (this_dir == DIR_NORTHEAST) button_dir = QString("NorthEast");
+    else if (this_dir == DIR_EAST) button_dir = QString("East");
+    else if (this_dir == DIR_WEST) button_dir = QString("West");
+    else if (this_dir == DIR_SOUTHEAST) button_dir = QString("SouthEast");
+    else if (this_dir == DIR_SOUTHWEST) button_dir = QString("SouthWest");
+    else if (this_dir == DIR_SOUTH) button_dir = QString("South");
+
+    // Manually turn the buttons true or false.
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        // Not the right step.
+        QString item_id = this_radio->objectName();
+        item_id.remove("direction_step_", Qt::CaseInsensitive);
+        int which_step = item_id.toInt();
+        if (step != which_step) continue;
+
+        // Turn on or off if it is a match
+        QString this_name = this_radio->toolTip();
+        if (this_name.contains(button_dir, Qt::CaseInsensitive) && (this_name.indexOf(button_dir, Qt::CaseInsensitive) == 0))
+        {
+            this_radio->setChecked(TRUE);
+        }
+        else this_radio->setChecked(FALSE);
+    }
+}
+
+void HotKeyDialog::delete_direction_pad(int step)
+{
+    // First, remove the radio buttons from the group
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+    QString radio_id = (QString("direction_step_%1") .arg(step));
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        QString this_name = this_radio->objectName();
+
+        if (this_name.contains(radio_id))
+        {
+            // Remove it from the target group
+            group_directions->removeButton(this_radio);
+            break;
+        }
+    }
+
+    // Now remove the vbox layout
+    QString item_id = (QString("vlay_direction_step_%1") .arg(step));
+    QList<QVBoxLayout *> vlay_list = this->findChildren<QVBoxLayout *>();
+    for (int x = 0; x < vlay_list.size(); x++)
+    {
+        QVBoxLayout *this_vlay = vlay_list.at(x);
+
+        QString this_name = this_vlay->objectName();
+
+        if (this_name.contains(item_id))
+        {
+            clear_layout(this_vlay);
+            this_vlay->deleteLater();
+            break;
+        }
+    }
 }
 
 void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
@@ -503,6 +658,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
 
     QVBoxLayout *vlay_direction = new QVBoxLayout;
     this_layout->addLayout(vlay_direction);
+    vlay_direction->setObjectName(QString("vlay_direction_step_%1") .arg(step));
 
     // Add a header
     QLabel *header_dir = new QLabel("<b>Direction:</b>");
@@ -510,97 +666,182 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     QGridLayout *gridlay_direction = new QGridLayout;
     vlay_direction->addLayout(gridlay_direction);
 
+    // Radiobuttons are turned on and off manually
     group_directions = new QButtonGroup;
-    group_directions->setExclusive(TRUE);
+    group_directions->setExclusive(FALSE);
 
     // Add all the buttons
     QRadioButton *north_west = new QRadioButton;
-    group_directions->addButton(north_west, DIR_NORTHWEST);
+    group_directions->addButton(north_west, step * STEP_MULT + DIR_NORTHWEST);
     north_west->setToolTip("NorthWest");
     north_west->setIcon(QIcon(":/icons/lib/icons/arrow-northwest.png"));
     gridlay_direction->addWidget(north_west, 0, 0, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_NORTHWEST) north_west->setChecked(TRUE);
     else north_west->setChecked(FALSE);
-    north_west->setObjectName(QString("Step_Command_%1") .arg(step));
+    north_west->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *north = new QRadioButton;
-    group_directions->addButton(north, DIR_NORTH);
+    group_directions->addButton(north, step * STEP_MULT + DIR_NORTH);
     north->setToolTip("North");
     north->setIcon(QIcon(":/icons/lib/icons/arrow-north.png"));
     gridlay_direction->addWidget(north, 0, 1, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_NORTH) north->setChecked(TRUE);
     else north->setChecked(FALSE);
-    north->setObjectName(QString("Step_Command_%1") .arg(step));
+    north->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *north_east = new QRadioButton;
-    group_directions->addButton(north_east, DIR_NORTHEAST);
+    group_directions->addButton(north_east, step * STEP_MULT + DIR_NORTHEAST);
     north_east->setToolTip("NorthEast");
     north_east->setIcon(QIcon(":/icons/lib/icons/arrow-northeast.png"));
     gridlay_direction->addWidget(north_east, 0, 2, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_NORTHEAST) north_east->setChecked(TRUE);
     else north_east->setChecked(FALSE);
-    north_east->setObjectName(QString("Step_Command_%1") .arg(step));
+    north_east->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *west = new QRadioButton;
-    group_directions->addButton(west, DIR_WEST);
+    group_directions->addButton(west, step * STEP_MULT + DIR_WEST);
     west->setToolTip("West");
     west->setIcon(QIcon(":/icons/lib/icons/arrow-west.png"));
     gridlay_direction->addWidget(west, 1, 0, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_WEST) west->setChecked(TRUE);
     else west->setChecked(FALSE);
-    west->setObjectName(QString("Step_Command_%1") .arg(step));
+    west->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *dir_none = new QRadioButton;
-    group_directions->addButton(dir_none, DIR_UNKNOWN);
+    group_directions->addButton(dir_none, step * STEP_MULT + DIR_UNKNOWN);
     dir_none->setToolTip("Specify Direction during command execution");
     dir_none->setIcon(QIcon(":/icons/lib/icons/target-cancel.png"));
     gridlay_direction->addWidget(dir_none, 1, 1, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_UNKNOWN) dir_none->setChecked(TRUE);
     else dir_none->setChecked(FALSE);
-    dir_none->setObjectName(QString("Step_Command_%1") .arg(step));
+    dir_none->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *east = new QRadioButton;
-    group_directions->addButton(east, DIR_EAST);
+    group_directions->addButton(east, step * STEP_MULT + DIR_EAST);
     east->setToolTip("East");
     east->setIcon(QIcon(":/icons/lib/icons/arrow-east.png"));
     gridlay_direction->addWidget(east, 1, 2, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_EAST) east->setChecked(TRUE);
     else east->setChecked(FALSE);
-    east->setObjectName(QString("Step_Command_%1") .arg(step));
+    east->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *south_west = new QRadioButton;
-    group_directions->addButton(south_west, DIR_SOUTHWEST);
+    group_directions->addButton(south_west, step * STEP_MULT + DIR_SOUTHWEST);
     south_west->setToolTip("SouthWest");
     south_west->setIcon(QIcon(":/icons/lib/icons/arrow-southwest.png"));
     gridlay_direction->addWidget(south_west, 2, 0, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_SOUTHWEST) south_west->setChecked(TRUE);
     else south_west->setChecked(FALSE);
-    south_west->setObjectName(QString("Step_Command_%1") .arg(step));
+    south_west->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *south = new QRadioButton;
-    group_directions->addButton(south, DIR_SOUTH);
+    group_directions->addButton(south, step * STEP_MULT + DIR_SOUTH);
     south->setToolTip("South");
     south->setIcon(QIcon(":/icons/lib/icons/arrow-south.png"));
     gridlay_direction->addWidget(south, 2, 1, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_SOUTH) south->setChecked(TRUE);
     else south->setChecked(FALSE);
-    south->setObjectName(QString("Step_Command_%1") .arg(step));
+    south->setObjectName(QString("direction_step_%1") .arg(step));
 
     QRadioButton *south_east = new QRadioButton;
-    group_directions->addButton(south_east, DIR_SOUTHEAST);
+    group_directions->addButton(south_east, step * STEP_MULT + DIR_SOUTHEAST);
     south_east->setToolTip("SouthEast");
     south_east->setIcon(QIcon(":/icons/lib/icons/arrow-southeast.png"));
     gridlay_direction->addWidget(south_east, 2, 2, Qt::AlignCenter);
     if (hks_ptr->step_args.direction == DIR_SOUTHEAST) south_east->setChecked(TRUE);
     else south_east->setChecked(FALSE);
-    south_east->setObjectName(QString("Step_Command_%1") .arg(step));
+    south_east->setObjectName(QString("direction_step_%1") .arg(step));
 
-    connect(group_directions, SIGNAL(buttonClicked(int)), this, SLOT(active_hotkey_direction_changed(int)));
+    connect(group_directions, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_direction_changed(int)));
+}
+
+// Add buttons for inserting and deleting steps
+void HotKeyDialog::create_step_buttons(QHBoxLayout *this_layout, int step)
+{
+    QVBoxLayout *vlay_direction = new QVBoxLayout;
+    this_layout->addLayout(vlay_direction);
+    vlay_direction->setObjectName(QString("vlay_buttons_step_%1") .arg(step));
+
+    QPushButton *insert_step_button = new QPushButton;
+    insert_step_button->setIcon(QIcon(":/icons/lib/icons/arrow-up-double.png"));
+    insert_step_button->setToolTip("Insert a new hotkey step before this step.");
+    insert_step_button->setObjectName(QString("Step_Command_%1") .arg(step));
+    connect(insert_step_button, SIGNAL(pressed()), this, SLOT(insert_step()));
+    vlay_direction->addWidget(insert_step_button);
+
+    // Add an "delete step" button for all steps
+    QPushButton *delete_step_button = new QPushButton;
+    delete_step_button->setIcon(QIcon(":/icons/lib/icons/destroy.png"));
+    delete_step_button->setToolTip("Delete this hotkey step.");
+    delete_step_button->setObjectName(QString("Step_Command_%1") .arg(step));
+    vlay_direction->addWidget(delete_step_button);
+    connect(delete_step_button, SIGNAL(pressed()), this, SLOT(delete_step()));
+
+    QPushButton *add_step_button = new QPushButton;
+    add_step_button->setIcon(QIcon(":/icons/lib/icons/arrow-down-double.png"));
+    add_step_button->setToolTip("Add a new hotkey step after this step.");
+    add_step_button->setObjectName(QString("Step_Command_%1") .arg(step));
+    connect(add_step_button, SIGNAL(pressed()), this, SLOT(add_step()));
+    vlay_direction->addWidget(add_step_button);
+
+    vlay_direction->addStretch(1);
+}
+
+// Insert a step before the current one
+void HotKeyDialog::insert_step()
+{
+    QString sender_id = QObject::sender()->objectName();
+    int this_step = get_current_step(sender_id);
+
+    hotkey_step dummy_step;
+    dummy_step.step_commmand = HK_TYPE_EMPTY;
+    dummy_step.step_args.wipe();
+
+    dialog_hotkey.hotkey_steps.insert(this_step, dummy_step);
+
+
+    display_hotkey_steps();
+}
+
+// Delete the current step
+void HotKeyDialog::delete_step()
+{
+    QString sender_id = QObject::sender()->objectName();
+    int this_step = get_current_step(sender_id);
+
+    if (dialog_hotkey.hotkey_steps.size() == 1)
+    {
+        dialog_hotkey.clear_hotkey_steps();
+    }
+    else
+    {
+        dialog_hotkey.hotkey_steps.remove(this_step);
+    }
+
+    display_hotkey_steps();
+}
+// Add a step after the current one
+void HotKeyDialog::add_step()
+{
+    QString sender_id = QObject::sender()->objectName();
+    int this_step = get_current_step(sender_id) + 1;
+
+    hotkey_step dummy_step;
+    dummy_step.step_commmand = HK_TYPE_EMPTY;
+    dummy_step.step_args.wipe();
+
+    dialog_hotkey.hotkey_steps.insert(this_step, dummy_step);
+
+    display_hotkey_steps();
 }
 
 void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
 {
+    // Make sure any radio buttons are removed form their group
+    delete_direction_pad(step);
+    delete_targeting_choices(step);
     clear_layout(this_layout);
+
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
     hotkey_type *ht_ptr = &hotkey_actions[hks_ptr->step_commmand];
@@ -631,10 +872,20 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         hks_ptr->step_args.number = 0;
         hks_ptr->step_args.direction = 0;
     }
+    create_step_buttons(this_layout, step);
+
 }
 
+// Wipe and redraw the hotkey steps
 void HotKeyDialog::display_hotkey_steps()
 {
+    // First, make sure all radio buttons are cleared from each group
+    for (int i = 0; i < dialog_hotkey.hotkey_steps.size(); i++)
+    {
+        delete_direction_pad(i);
+        delete_targeting_choices(i);
+    }
+
     clear_layout(vlay_hotkey_steps);
     for (int i = 0; i < dialog_hotkey.hotkey_steps.size(); i++)
     {
@@ -645,6 +896,7 @@ void HotKeyDialog::display_hotkey_steps()
         hlay_header->addWidget(header_step, Qt::AlignLeft);
 
         QComboBox *this_combo_box = new QComboBox;
+        this_combo_box->setObjectName(QString("Step_Command_%1") .arg(i));
         for (int x = 0; x < HK_TYPE_END; x++)
         {
             this_combo_box->addItem(QString("%1") .arg(x));
@@ -710,46 +962,6 @@ void do_hotkey_manage()
     HotKeyDialog();
 }
 
-
-void wipe_hotkeys()
-{
-    running_hotkey.clear_hotkey();
-    clear_all_hotkeys();
-}
-
-static bool set_up_hotkey(int which_hotkey)
-{
-    //paranoia
-    if (which_hotkey >= NUM_HOTKEYS)return (FALSE);
-
-    single_hotkey *plyr_hk_ptr = &player_hotkeys[which_hotkey];
-
-    // Make sure the hotkey is set up
-    if (!plyr_hk_ptr->has_commands()) return (FALSE);
-
-    running_hotkey.copy_hotkey(plyr_hk_ptr);
-
-    run_hotkey_step();
-
-    return (TRUE);
-}
-
-bool check_hotkey_commands(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
-{
-    (void)shift_key;
-    (void)alt_key;
-    (void)ctrl_key;
-    (void)meta_key;
-    for (int i = 0; i < NUM_HOTKEYS; i++)
-    {
-        hotkey_list *hk_list_ptr = &list_hotkeys[i];
-
-        if (key_press != hk_list_ptr->listed_hotkey) continue;
-        return (set_up_hotkey(i));
-    }
-
-    return (FALSE);
-}
 
 static int find_item(int k_idx, int mode)
 {
@@ -829,14 +1041,16 @@ static int extract_hotkey_dir(int dir, bool trap_spell)
     return (dir);
 }
 
-// Run the active hotkey first step
-// First checks if there is a hotkey to run
-void run_hotkey_step()
+/*
+ * Run the specified active hotkey step
+ * First checks if there is a hotkey to run
+ */
+static void run_hotkey_step(int step)
 {
     //First, make sure there are remaining hotkey steps
     if (!running_hotkey.has_commands()) return;
 
-    hotkey_step *this_step = &running_hotkey.hotkey_steps[0];
+    hotkey_step *this_step = &running_hotkey.hotkey_steps[step];
 
     int command = this_step->step_commmand;
     hotkey_type *ht_ptr = &hotkey_actions[command];
@@ -905,6 +1119,50 @@ void run_hotkey_step()
         }
 
     }
+}
 
-    running_hotkey.hotkey_steps.removeFirst();
+//Loop to run the complete hotkey
+static void run_hotkey_steps()
+{
+    for (int i = 0; i < running_hotkey.hotkey_steps.size(); i++)
+    {
+        run_hotkey_step(i);
+    }
+
+    running_hotkey.clear_hotkey_steps();
+}
+
+static bool set_up_hotkey(int which_hotkey)
+{
+    //paranoia
+    if (which_hotkey >= NUM_HOTKEYS)return (FALSE);
+
+    single_hotkey *plyr_hk_ptr = &player_hotkeys[which_hotkey];
+
+    // Make sure the hotkey is set up
+    if (!plyr_hk_ptr->has_commands()) return (FALSE);
+
+    running_hotkey.clear_hotkey_steps();
+    running_hotkey.copy_hotkey(plyr_hk_ptr);
+
+    run_hotkey_steps();
+
+    return (TRUE);
+}
+
+bool check_hotkey_commands(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
+{
+    (void)shift_key;
+    (void)alt_key;
+    (void)ctrl_key;
+    (void)meta_key;
+    for (int i = 0; i < NUM_HOTKEYS; i++)
+    {
+        hotkey_list *hk_list_ptr = &list_hotkeys[i];
+
+        if (key_press != hk_list_ptr->listed_hotkey) continue;
+        return (set_up_hotkey(i));
+    }
+
+    return (FALSE);
 }

@@ -1185,7 +1185,7 @@ static void process_effect(int x_idx)
                     (void)fire_trap_smart(x_ptr->x_f_idx, x_ptr->x_cur_y, x_ptr->x_cur_x, MODE_ACTION, &dummy_string);
 
                     /*Disturb the player*/
-                    disturb (1,0);
+                    disturb (TRUE, TRUE);
 
                     /* Hack - Special handling for smart traps*/
                     x_ptr->x_countdown = f_info[x_ptr->x_f_idx].x_timeout_set +

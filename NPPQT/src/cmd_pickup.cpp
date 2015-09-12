@@ -769,7 +769,7 @@ int move_player(int dir, int jumping)
     if (!cave_ff1_match(y, x, FF1_MOVE))
 	{
 		/* Disturb the player */
-		disturb(0, 0);
+        disturb(FALSE, TRUE);
 
 		/* Notice unknown obstacles */
         if (!(dungeon_info[y][x].cave_info & (CAVE_MARK)))
@@ -908,7 +908,7 @@ int move_player(int dir, int jumping)
 		if (disturb_detect &&
                 p_ptr->is_running() && old_dtrap && !new_dtrap)
 		{
-			disturb(0, 0);
+            disturb(FALSE, TRUE);
             return 0;
 		}
 
@@ -966,7 +966,7 @@ int move_player(int dir, int jumping)
         if (cave_shop_bold(y, x))
 		{
 			/* Disturb */
-			disturb(0, 0);
+            disturb(TRUE, TRUE);
 
 			/* Hack -- Enter store */
             //p_ptr->command_new = '_';

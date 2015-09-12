@@ -1489,7 +1489,7 @@ void update_mon(int m_idx, bool full)
                 /* Disturb if monster is not a townsman, or if fairly weak */
                 if (!(m_ptr->mflag & (MFLAG_TOWN)) || (p_ptr->lev < 10))
                 {
-                    disturb(1, 0);
+                    disturb(TRUE, TRUE);
                 }
             }
         }
@@ -1516,7 +1516,7 @@ void update_mon(int m_idx, bool full)
                 /* Disturb if monster is not a townsman, or if fairly weak */
                 if (!(m_ptr->mflag & (MFLAG_TOWN)) || (p_ptr->lev < 10))
                 {
-                    disturb(1, 0);
+                    disturb(TRUE, TRUE);
                 }
             }
         }
@@ -1537,7 +1537,7 @@ void update_mon(int m_idx, bool full)
                 /* Disturb if monster is not a townsman, or if fairly weak */
                 if (!(m_ptr->mflag & (MFLAG_TOWN)) || (p_ptr->lev < 10))
                 {
-                    disturb(1, 0);
+                    disturb(TRUE, TRUE);
                 }
             }
 
@@ -1559,7 +1559,7 @@ void update_mon(int m_idx, bool full)
                 /* Disturb if monster is not a townsman, or if fairly weak */
                 if (!(m_ptr->mflag & (MFLAG_TOWN)) || (p_ptr->lev < 10))
                 {
-                    disturb(1, 0);
+                    disturb(TRUE, TRUE);
                 }
             }
         }
@@ -2953,7 +2953,7 @@ void reveal_mimic(int o_idx, bool message)
     delete_object_idx(o_idx);
 
     /* Disturb */
-    disturb(0, 0);
+    disturb(TRUE, TRUE);
 }
 
 

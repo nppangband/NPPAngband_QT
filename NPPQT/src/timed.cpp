@@ -253,7 +253,7 @@ bool set_timed(int idx, int v, bool notify)
     /* Disturb */
     if (disturb_state)
     {
-        disturb(0, 0);
+        disturb(TRUE, FALSE);
     }
 
     /* Update the visuals, as appropriate. */
@@ -433,7 +433,7 @@ bool set_stun(int v)
             case 0:
             {
                 message(QString("You are no longer stunned."));
-                if (disturb_state) disturb(0, 0);
+                if (disturb_state) disturb(TRUE, FALSE);
                 break;
             }
         }
@@ -449,7 +449,7 @@ bool set_stun(int v)
     if (!notice) return (FALSE);
 
     /* Disturb */
-    if (disturb_state) disturb(0, 0);
+    if (disturb_state) disturb(TRUE, FALSE);
 
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS);
@@ -645,7 +645,7 @@ bool set_cut(int v)
             case 0:
             {
                 message(QString("You are no longer bleeding."));
-                if (disturb_state) disturb(0, 0);
+                if (disturb_state) disturb(TRUE, FALSE);
                 break;
             }
         }
@@ -661,7 +661,7 @@ bool set_cut(int v)
     if (!notice) return (FALSE);
 
     /* Disturb */
-    if (disturb_state) disturb(0, 0);
+    if (disturb_state) disturb(TRUE, FALSE);
 
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS);
@@ -880,7 +880,7 @@ bool set_food(int v)
     if (!notice) return (FALSE);
 
     /* Disturb */
-    if (disturb_state) disturb(0, 0);
+    if (disturb_state) disturb(TRUE, FALSE);
 
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS);

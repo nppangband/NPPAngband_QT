@@ -2882,7 +2882,7 @@ void quest_fail(void)
     p_ptr->update |= (PU_PLAYER_SCORE);
 
     /* Disturb */
-    disturb(0,0);
+    disturb(FALSE, FALSE);
 }
 
 /*

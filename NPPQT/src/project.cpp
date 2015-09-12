@@ -1199,7 +1199,7 @@ void take_hit(int dam, QString kb_str)
     if (p_ptr->is_dead) return;
 
     /* Disturb */
-    disturb(1, 0);
+    disturb(TRUE, TRUE);
 
     /* Mega-Hack -- Apply "invulnerability" */
     if (p_ptr->timed[TMD_INVULN] && (dam < 9000)) return;
@@ -3296,7 +3296,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                     if ((who > SOURCE_MONSTER_START) && CHECK_DISTURB(TRUE))
                     {
                         /* Stop everything */
-                        disturb(1, 0);
+                        disturb(TRUE, TRUE);
                     }
 
                     /* Fully update the visuals */
@@ -6236,7 +6236,7 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
 
 
     /* Disturb */
-    disturb(1, 0);
+    disturb(TRUE, TRUE);
 
 
     /* Return "Anything seen?" */

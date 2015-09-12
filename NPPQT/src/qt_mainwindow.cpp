@@ -697,7 +697,7 @@ bool MainWindow::check_disturb()
 {
     if (p_ptr->is_resting() || p_ptr->is_running() || p_ptr->command_current)
     {
-        disturb(0, 0);
+        disturb(FALSE, FALSE);
         message("Cancelled.");
         return true;
     }

@@ -811,7 +811,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
         num_trap_on_level--;
 
         /* Stop resting */
-        disturb(FALSE, 0);
+        disturb(FALSE, TRUE);
     }
 
     /* Return */
@@ -3294,7 +3294,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     did_kill_wall = TRUE;
 
                     /* Stop everything */
-                    disturb(0, 0);
+                    disturb(FALSE, FALSE);
                 }
 
                 /* Output warning messages if the racket gets too loud */
@@ -3313,7 +3313,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     }
 
                     /* Stop everything if necessary */
-                    disturb(0, 0);
+                    disturb(FALSE, FALSE);
                 }
 
                 if (feat_ff1_match(feat, FF1_CAN_BASH))
@@ -3340,7 +3340,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     did_bash_door = TRUE;
 
                     /* Stop everything */
-                    disturb(0, 0);
+                    disturb(FALSE, FALSE);
                 }
 
                 /* Character is not too far away */
@@ -3358,7 +3358,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     }
 
                     /* Stop everything if necessary */
-                    disturb(0, 0);
+                    disturb(FALSE, FALSE);
                 }
 
                 /* Just open the door sometimes */
@@ -3403,7 +3403,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     message(QString("You hear %1 being opened.") .arg(name));
 
                     /* Stop everything if necessary */
-                    disturb(0, 0);
+                    disturb(FALSE, FALSE);
                 }
 
                 /* Unlock the door */
@@ -3596,7 +3596,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
         {
 
             /* Player will always be disturbed if monster moves adjacent */
-            if (m_ptr->cdis == 1) disturb(1, 0);
+            if (m_ptr->cdis == 1) disturb(TRUE, TRUE);
 
             /* Hack -- ignore townspeople if strong enough  -clefs- */
             else if ((m_ptr->mflag & (MFLAG_TOWN)) && (p_ptr->lev >= 10))
@@ -3605,7 +3605,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
             }
 
             /* Option -- be disturbed by all other monster movement */
-            else if (disturb_move) disturb(0, 0);
+            else if (disturb_move) disturb(TRUE, TRUE);
 
             /* Option -- be disturbed by monster movement in LOS */
             else if ((m_ptr->ml) && (disturb_near))
@@ -3615,7 +3615,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                         (((r_ptr->flags2 & (RF2_PASS_WALL)) || (r_ptr->flags2 & (RF2_KILL_WALL))) &&
                                 (m_ptr->cdis < 3)))
                 {
-                    disturb(0, 0);
+                    disturb(TRUE, TRUE);
                 }
             }
         }

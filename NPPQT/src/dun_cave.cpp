@@ -20,6 +20,7 @@
 #include "src/utilities.h"
 #include "src/init.h"
 #include "tilebag.h"
+#include "src/hotkeys.h"
 
 /*
  * Support for Adam Bolt's tileset, lighting and transparency effects
@@ -3949,7 +3950,7 @@ void cave_alter_feat(int y, int x, int action)
             pick_and_set_trap(y, x, 0);
 
             /* Disturb */
-            disturb(0, 0);
+            disturb(FALSE, FALSE);
         }
         else if (feat_ff3_match(oldfeat, FF3_PICK_DOOR))
         {
@@ -3961,7 +3962,7 @@ void cave_alter_feat(int y, int x, int action)
             place_closed_door(y, x);
 
             /* Disturb */
-            disturb(0, 0);
+            disturb(FALSE, FALSE);
         }
         else
         {
@@ -4931,15 +4932,12 @@ void feature_kind_track(int f_idx)
  *
  * The first arg indicates a major disturbance, which affects search.
  *
- * The second arg is currently unused, but could induce output flush.
+ * The second arg wipes the current hotkey.
  *
- * All disturbance cancels repeated commands, resting, and running.
+ * All disturbance cancels repeated commands, hotkeys, resting, and running.
  */
-void disturb(int stop_search, int unused_flag)
+void disturb(bool stop_search, bool wipe_hotkey)
 {
-    /* Unused parameter */
-    (void)unused_flag;
-
     /* Cancel Resting */
     if (p_ptr->is_resting())
     {
@@ -4960,6 +4958,12 @@ void disturb(int stop_search, int unused_flag)
 
     /* Cancel repeated commands */
     p_ptr->player_command_wipe();
+
+    //Clear any running hotkey
+    if (wipe_hotkey)
+    {
+            if (running_hotkey.hotkey_steps.size()) running_hotkey.clear_hotkey_steps();
+    }
 
     /* Cancel searching if requested */
     if (stop_search && p_ptr->searching)
