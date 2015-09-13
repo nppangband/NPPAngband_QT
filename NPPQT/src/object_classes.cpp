@@ -989,6 +989,36 @@ QString object_kind::get_tile_id()
     return (tile_id);
 }
 
+bool object_kind::is_trap_object_kind()
+{
+    if (tval == TV_WAND)
+    {
+        switch (sval)
+        {
+            case SV_WAND_DISARMING:
+            case SV_WAND_TRAP_DOOR_DEST:
+            {
+                return (TRUE);
+            }
+            default:    return (FALSE);
+        }
+
+    }
+    if (tval == TV_ROD)
+    {
+        switch (sval)
+        {
+            case SV_ROD_DISARMING:
+            {
+                return (TRUE);
+            }
+            default:    return (FALSE);
+        }
+    }
+
+    return (FALSE);
+}
+
 artifact_type::artifact_type()
 {
     artifact_wipe();

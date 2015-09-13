@@ -263,6 +263,7 @@ public:
     QChar get_char();
     QColor get_color();
     QString get_tile_id();
+    bool is_trap_object_kind();
 };
 
 

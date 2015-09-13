@@ -845,10 +845,19 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
     hotkey_type *ht_ptr = &hotkey_actions[hks_ptr->step_commmand];
-    if (ht_ptr->hotkey_needs == HK_NEEDS_DIRECTION) create_direction_pad(this_layout, step);
-    if (ht_ptr->hotkey_needs == HK_NEEDS_OBJECT_KIND)
+
+    if (ht_ptr->hotkey_needs == HK_NEEDS_DIRECTION)
+    {
+
+        hks_ptr->step_args.k_idx = 0;
+        hks_ptr->step_args.number = 0;
+        create_direction_pad(this_layout, step);
+
+    }
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_OBJECT_KIND)
     {
         create_object_kind_dropbox(this_layout, step);
+        hks_ptr->step_args.number = 0;
 
         if (obj_kind_needs_aim(hks_ptr->step_args.k_idx))
         {
@@ -856,9 +865,9 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         }
         else hks_ptr->step_args.direction = 0;
     }
-    else hks_ptr->step_args.k_idx = 0;
-    if (ht_ptr->hotkey_needs == HK_NEEDS_SPELL)
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_SPELL)
     {
+        hks_ptr->step_args.k_idx = 0;
         create_spell_choice_dropbox(this_layout, step);
 
         if (spell_list.size() && spell_needs_aim(cp_ptr->spell_book, hks_ptr->step_args.number))
@@ -867,11 +876,7 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         }
         else hks_ptr->step_args.direction = 0;
     }
-    else
-    {
-        hks_ptr->step_args.number = 0;
-        hks_ptr->step_args.direction = 0;
-    }
+
     create_step_buttons(this_layout, step);
 
 }
@@ -1074,7 +1079,7 @@ static void run_hotkey_step(int step)
     else if (command == HK_TYPE_SPIKE) do_cmd_spike(arg_ptr->direction);
     else if (command == HK_TYPE_HOLD) do_cmd_hold();
 
-    if (ht_ptr->hotkey_needs == HK_NEEDS_OBJECT_KIND)
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_OBJECT_KIND)
     {
         arg_ptr->item = find_item(arg_ptr->k_idx, USE_FLOOR | USE_INVEN);
 
@@ -1089,7 +1094,9 @@ static void run_hotkey_step(int step)
 
             if (obj_kind_needs_aim(arg_ptr->k_idx))
             {
-                arg_ptr->direction = extract_hotkey_dir(arg_ptr->direction, FALSE);
+                bool trap_obj = k_info[arg_ptr->k_idx].is_trap_object_kind();
+
+                arg_ptr->direction = extract_hotkey_dir(arg_ptr->direction, trap_obj);
 
                 if (arg_ptr->direction == DIR_UNKNOWN) do_command = FALSE;
             }
@@ -1099,7 +1106,7 @@ static void run_hotkey_step(int step)
         }
     }
 
-    if (ht_ptr->hotkey_needs == HK_NEEDS_SPELL)
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_SPELL)
     {
         if (p_ptr->can_cast())
         {
