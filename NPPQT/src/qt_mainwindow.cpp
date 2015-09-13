@@ -200,7 +200,11 @@ QPixmap MainWindow::get_tile(QString tile_id, int tile_wid, int tile_hgt)
 
     if (!current_tiles) return ui_make_blank();
 
-    QPixmap pix = current_tiles->get_tile(tile_id);
+    QPixmap pix;
+
+    if (tile_id.startsWith("flav_")) pix = current_flav_tiles->get_tile(tile_id);
+    else if (tile_id.startsWith("feat_")) pix = current_feat_tiles->get_tile(tile_id);
+    else pix = current_tiles->get_tile(tile_id);
 
     if (pix.width() == 1) return pix;
 
@@ -243,6 +247,8 @@ void MainWindow::set_graphic_mode(int mode)
             main_tile_hgt = 64;
             main_tile_wid = 64;
             current_tiles = tiles_64x64;
+            current_flav_tiles = tiles_flav_64x64;
+            current_feat_tiles = tiles_feat_64x64;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(TRUE);
             dvg_mode_act->setChecked(FALSE);
@@ -254,6 +260,8 @@ void MainWindow::set_graphic_mode(int mode)
             main_tile_hgt = 32;
             main_tile_wid = 32;
             current_tiles = tiles_32x32;
+            current_flav_tiles = tiles_flav_32x32;
+            current_feat_tiles = tiles_feat_32x32;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
             dvg_mode_act->setChecked(TRUE);
@@ -265,6 +273,8 @@ void MainWindow::set_graphic_mode(int mode)
             main_tile_hgt = 8;
             main_tile_wid = 8;
             current_tiles = tiles_8x8;
+            current_flav_tiles = tiles_flav_8x8;
+            current_feat_tiles = tiles_feat_8x8;
             ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(FALSE);
             dvg_mode_act->setChecked(FALSE);
@@ -276,6 +286,8 @@ void MainWindow::set_graphic_mode(int mode)
             main_tile_hgt = 0;
             main_tile_wid = 0;
             current_tiles = 0;
+            current_flav_tiles = 0;
+            current_feat_tiles = 0;
             ascii_mode_act->setChecked(TRUE);
             reg_mode_act->setChecked(FALSE);
             dvg_mode_act->setChecked(FALSE);

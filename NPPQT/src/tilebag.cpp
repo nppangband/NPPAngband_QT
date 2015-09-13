@@ -13,9 +13,16 @@
 TileBag *tiles_64x64;
 TileBag *tiles_32x32;
 TileBag *tiles_8x8;
+TileBag *tiles_flav_64x64;
+TileBag *tiles_flav_32x32;
+TileBag *tiles_flav_8x8;
+TileBag *tiles_feat_64x64;
+TileBag *tiles_feat_32x32;
+TileBag *tiles_feat_8x8;
 TileBag *tiles_projections;
 TileBag *current_tiles;
-
+TileBag *current_flav_tiles;
+TileBag *current_feat_tiles;
 
 
 void init_tile_bags()
@@ -26,26 +33,64 @@ void init_tile_bags()
     tiles_32x32 = 0;
     if (tiles_8x8) delete tiles_8x8;
     tiles_8x8 = 0;
+    if (tiles_flav_64x64) delete tiles_flav_64x64;
+    tiles_flav_64x64 = 0;
+    if (tiles_flav_32x32) delete tiles_flav_32x32;
+    tiles_flav_32x32 = 0;
+    if (tiles_8x8) delete tiles_flav_8x8;
+    tiles_flav_8x8 = 0;
+    if (tiles_feat_64x64) delete tiles_feat_64x64;
+    tiles_feat_64x64 = 0;
+    if (tiles_feat_32x32) delete tiles_feat_32x32;
+    tiles_feat_32x32 = 0;
+    if (tiles_feat_8x8) delete tiles_feat_8x8;
+    tiles_feat_8x8 = 0;
 
     if (!tiles_projections) tiles_projections = new TileBag(npp_dir_graf.absoluteFilePath("projections.pak"));
 
     QString pak64("tiles_64x64.pak");
     QString pak32("tiles_32x32.pak");
     QString pak8("tiles_8x8.pak");
-    if (game_mode == GAME_NPPMORIA)
-    {
-        pak64 = "moria_tiles_64x64.pak";
-        pak32 = "moria_tiles_32x32.pak";
-        pak8 = "moria_tiles_8x8.pak";
-    }
+    QString pakflav64("tiles_flav_64x64.pak");
+    QString pakflav32("tiles_flav_32x32.pak");
+    QString pakflav8("tiles_flav_8x8.pak");
+    QString pakfeat64("tiles_feat_64x64.pak");
+    QString pakfeat32("tiles_feat_32x32.pak");
+    QString pakfeat8("tiles_feat_8x8.pak");
     tiles_64x64 = new TileBag(npp_dir_graf.absoluteFilePath(pak64));
     tiles_32x32 = new TileBag(npp_dir_graf.absoluteFilePath(pak32));
     tiles_8x8 = new TileBag(npp_dir_graf.absoluteFilePath(pak8));
+    tiles_flav_64x64 = new TileBag(npp_dir_graf.absoluteFilePath(pakflav64));
+    tiles_flav_32x32 = new TileBag(npp_dir_graf.absoluteFilePath(pakflav32));
+    tiles_flav_8x8 = new TileBag(npp_dir_graf.absoluteFilePath(pakflav8));
+    tiles_feat_64x64 = new TileBag(npp_dir_graf.absoluteFilePath(pakfeat64));
+    tiles_feat_32x32 = new TileBag(npp_dir_graf.absoluteFilePath(pakfeat32));
+    tiles_feat_8x8 = new TileBag(npp_dir_graf.absoluteFilePath(pakfeat8));
 
-    if (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES) current_tiles = tiles_64x64;
-    else if (use_graphics == GRAPHICS_DAVID_GERVAIS) current_tiles = tiles_32x32;
-    else if (use_graphics == GRAPHICS_ORIGINAL) current_tiles = tiles_8x8;
-    else current_tiles = 0;
+    if (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)
+    {
+        current_tiles = tiles_64x64;
+        current_flav_tiles = tiles_flav_64x64;
+        current_feat_tiles = tiles_feat_64x64;
+    }
+    else if (use_graphics == GRAPHICS_DAVID_GERVAIS)
+    {
+        current_tiles = tiles_32x32;
+        current_flav_tiles = tiles_flav_32x32;
+        current_feat_tiles = tiles_feat_32x32;
+    }
+    else if (use_graphics == GRAPHICS_ORIGINAL)
+    {
+        current_tiles = tiles_8x8;
+        current_flav_tiles = tiles_flav_8x8;
+        current_feat_tiles = tiles_feat_8x8;
+    }
+    else
+    {
+        current_tiles = 0;
+        current_flav_tiles = 0;
+        current_feat_tiles = 0;
+    }
 }
 
 TileBag::TileBag(QString path)

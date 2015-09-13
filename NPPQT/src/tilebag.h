@@ -46,16 +46,23 @@ public slots:
 extern TileBag *tiles_64x64;
 extern TileBag *tiles_32x32;
 extern TileBag *tiles_8x8;
+extern TileBag *tiles_flav_64x64;
+extern TileBag *tiles_flav_32x32;
+extern TileBag *tiles_flav_8x8;
+extern TileBag *tiles_feat_64x64;
+extern TileBag *tiles_feat_32x32;
+extern TileBag *tiles_feat_8x8;
 extern TileBag *tiles_projections;
 
 // This will hold tiles_64x64, tiles_32x32 or tiles_8x8 depending on graphics mode
 // or null in ascii_mode
 extern TileBag *current_tiles;
+extern TileBag *current_flav_tiles;
+extern TileBag *current_feat_tiles;
 
 extern void init_tile_bags();
 
 extern void extract_tiles(void);
 
-extern void get_8x8_tiles(void);
 
 #endif // TILEBAG_H

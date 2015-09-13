@@ -232,27 +232,9 @@ QSize ui_grid_size()
     return QSize(main_window->main_cell_wid, main_window->main_cell_hgt);
 }
 
-QPixmap ui_get_tile(QString tile_id, TileBag *tileset)
+QPixmap ui_get_tile(QString tile_id)
 {
-    // Build a transparent 1x1 pixmap
-    if (tile_id.isEmpty()) return ui_make_blank();
-
-    if (!tileset) tileset = current_tiles;
-
-    if (!tileset) return ui_make_blank();
-
-    QPixmap pix = tileset->get_tile(tile_id);
-
-    if (pix.width() == 1) return pix;
-
-    int w = 32;
-    int h = 32;
-
-    if (w != pix.width() || h != pix.height()) {
-        pix = pix.scaled(w, h);
-    }
-
-    return pix;
+    return (main_window->get_tile(tile_id, 32, 32));
 }
 
 
