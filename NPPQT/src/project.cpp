@@ -905,6 +905,18 @@ static byte ice_color(void)
     return (TERM_WHITE);
 }
 
+static byte weak_light_color(void)
+{
+    switch (rand_int(7))
+    {
+        case 0: case 1: case 2: return (TERM_L_BLUE);
+        case 3: case 4:         return (TERM_SKY_BLUE);
+        case 5: return (TERM_BLUE);
+    }
+
+    return (TERM_WHITE);
+}
+
 static byte light_color(void)
 {
     switch (rand_int(4))
@@ -1117,7 +1129,7 @@ byte gf_color(int type)
         case GF_INERTIA_NPP:	return (iner_color());
         case GF_GRAVITY:	return (grav_color());
         case GF_TIME:		return (TERM_L_BLUE);
-        case GF_LIGHT_WEAK:	return (light_color());
+        case GF_LIGHT_WEAK:	return (weak_light_color());
         case GF_LIGHT:		return (light_color());
         case GF_DARK_WEAK:	return (TERM_L_DARK);
         case GF_DARK:		return (TERM_L_DARK);

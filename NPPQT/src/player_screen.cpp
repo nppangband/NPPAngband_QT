@@ -976,7 +976,7 @@ void char_game_info(QGridLayout *return_layout)
     {
         QLabel *label_player_exp_adv = new QLabel;
         make_standard_label(label_player_exp_adv, "ADVANCE EXP:", TERM_DARK);
-        label_player_max_exp->setToolTip(get_help_topic("character_info", "Player Experience Advance"));
+        label_player_exp_adv->setToolTip(get_help_topic("character_info", "Player Experience Advance"));
         QLabel *player_exp_adv = new QLabel;
         make_standard_label(player_exp_adv, " ", TERM_BLUE);
         player_exp_adv->setObjectName("PLYR_Advance");
@@ -1735,7 +1735,7 @@ void equip_flag_info(QWidget *this_widget, QGridLayout *return_layout, int flag_
             else if (pfr_ptr->this_flag == TN1_NATIVE_SAND) line_label->setToolTip(get_help_topic("character_info", "Native Sand"));
             else if (pfr_ptr->this_flag == TN1_NATIVE_FOREST) line_label->setToolTip(get_help_topic("character_info", "Native Forest"));
             else if (pfr_ptr->this_flag == TN1_NATIVE_WATER) line_label->setToolTip(get_help_topic("character_info", "Native Water"));
-            else if (pfr_ptr->this_flag == TN1_NATIVE_ACID) line_label->setToolTip(get_help_topic("character_info", "Native Mud"));
+            else if (pfr_ptr->this_flag == TN1_NATIVE_ACID) line_label->setToolTip(get_help_topic("character_info", "Native Acid"));
             else if (pfr_ptr->this_flag == TN1_NATIVE_MUD) line_label->setToolTip(get_help_topic("character_info", "Native Mud"));
             else if (pfr_ptr->this_flag == TN1_NATIVE_BMUD) line_label->setToolTip(get_help_topic("character_info", "Native Boiling Mud"));
             else if (pfr_ptr->this_flag == TN1_NATIVE_BWATER) line_label->setToolTip(get_help_topic("character_info", "Native Boiling Water"));

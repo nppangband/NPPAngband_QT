@@ -2721,8 +2721,8 @@ void save_quiver_size(void)
         count += i_ptr->number * quiver_space_per_unit(i_ptr);
     }
 
-    p_ptr->quiver_slots = (count + 98) / 99;
-    p_ptr->quiver_remainder = count % 99;
+    p_ptr->quiver_slots = ((count + (OBJ_MAX_STACK - 1)) / OBJ_MAX_STACK);
+    p_ptr->quiver_remainder = count % OBJ_MAX_STACK;
 }
 
 /**
@@ -3114,7 +3114,7 @@ bool quiver_carry_okay(object_type *o_ptr, int num, int item)
     ammo_num += (num * quiver_space_per_unit(o_ptr));
 
     /* We need as many free inventory as: */
-    need = (ammo_num + 98) / 99;
+    need = (ammo_num + (OBJ_MAX_STACK - 1)) / OBJ_MAX_STACK;
 
     /* Calculate the number of available inventory slots */
     have = INVEN_PACK - p_ptr->inven_cnt;
@@ -3333,7 +3333,7 @@ bool inven_stack_okay(object_type *o_ptr, int set_limit)
     else if (p_ptr->quiver_remainder == 0)
         /* Quiver already maxed out */
         limit = INVEN_PACK;
-    else if (p_ptr->quiver_remainder + o_ptr->number > 99)
+    else if (p_ptr->quiver_remainder + o_ptr->number > OBJ_MAX_STACK)
         /* Too much new ammo */
         limit = INVEN_PACK;
     else
@@ -3597,6 +3597,10 @@ s16b inven_carry(object_type *o_ptr)
             return (j);
         }
     }
+
+    int count = p_ptr->inven_cnt;
+    int max_pack = INVEN_MAX_PACK;
+    int quiver_slots = p_ptr->quiver_slots;
 
     /* Paranoia */
     if (p_ptr->inven_cnt > INVEN_MAX_PACK)	return (-1);

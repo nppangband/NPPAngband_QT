@@ -19,17 +19,55 @@
  */
 
 #include <src/npp.h>
-#include "src/object_select.h"
+#include <src/object_select.h>
+#include <src/player_command.h>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
+#include <src/cmds.h>
 
-// Receives the number of the button pressed.
-void ObjectSelectDialog::button_press(int item)
+// For the object select group.
+void ObjectSelectDialog::object_select_button_press(int item)
 {
     selected_item = item;
     this->accept();
+}
+
+// For the examine buttons
+void ObjectSelectDialog::info_buttons_click()
+{
+    bool ok;
+    QString item_id = QObject::sender()->objectName();
+
+    int splitter = item_id.indexOf("_");
+
+    QString command_string = item_id;
+
+    command_string.truncate(splitter);
+    item_id.remove(0, splitter+1);
+
+    int item_num = item_id.toInt(&ok, 10);
+    // Paranoia
+    if (!ok) return;
+    int command_num = command_string.toInt(&ok, 10);
+    // Paranoia
+    if (!ok) return;
+
+    // object settings
+    if (command_num == CMD_SETTINGS)
+    {
+        object_settings(item_num);
+    }
+    else if (command_num == CMD_EXAMINE)
+    {
+        cmd_arg args;
+        args.wipe();
+        args.item = item_num;
+        command_examine(args);
+    }
+
+
 }
 
 void ObjectSelectDialog::move_left()
@@ -122,13 +160,26 @@ void ObjectSelectDialog::add_object_button(object_type *o_ptr, s16b item_slot, Q
     QString style = QString("color: %1;").arg(get_object_color(o_ptr).name());
     style.append(QString("text-align: left; font-weight: bold;"));
 
-    QString id = (QString("%1%2") .arg(char_index) .arg(item_slot));
     QPushButton *object_button = new QPushButton(desc);
     object_button->setStyleSheet(style);
     object_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     lay->addWidget(object_button, row, col);
     object_select_group->addButton(object_button, item_slot);
+}
 
+void ObjectSelectDialog::link_pushbuttons()
+{
+    QList<QPushButton *> pushbutton_list = this->findChildren<QPushButton *>();
+
+    for (int i = 0; i < pushbutton_list.size(); i++)
+    {
+        QPushButton *this_button = pushbutton_list.at(i);
+
+        // Just the objects
+        if (!this_button->objectName().length()) continue;
+
+        connect(this_button, SIGNAL(pressed()), this, SLOT(info_buttons_click()));
+    }
 }
 
 void ObjectSelectDialog::floor_items_count(int mode, int sq_y, int sq_x)
@@ -546,7 +597,7 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
         tab_order.append(TAB_QUIVER);
     }
 
-    connect(object_select_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
+    connect(object_select_group, SIGNAL(buttonClicked(int)), this, SLOT(object_select_button_press(int)));
 
     QDialogButtonBox *buttons = new QDialogButtonBox();
     QPushButton *button_left = new QPushButton();
@@ -573,6 +624,8 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     main_layout->addWidget(buttons);
     setLayout(main_layout);
     setWindowTitle(tr("Object Selection Menu"));
+
+    link_pushbuttons();
 
     QSize this_size = QSize(width()* 19 / 14, height() * 4 / 3);
     resize(ui_max_widget_size(this_size));

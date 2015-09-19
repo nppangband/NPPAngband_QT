@@ -3643,7 +3643,7 @@ int parse_c_info(QString line_info)
         /* Scan for the values */
         if (process_4_ints(line_info, &tval, &sval, &min, &max)) return (PARSE_ERROR_GENERIC);
 
-        if ((min < 0) || (max < 0) || (min > 99) || (max > 99))
+        if ((min < 0) || (max < 0) || (min > OBJ_MAX_STACK) || (max > OBJ_MAX_STACK))
             return (PARSE_ERROR_INVALID_ITEM_NUMBER);
 
         /* Save the values */

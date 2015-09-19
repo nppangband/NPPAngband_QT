@@ -1298,7 +1298,7 @@ void QuantityDialog::update_totals(int value)
 
 int StoreDialog::request_amt(object_type *o_ptr, bool buying)
 {
-    if (home  || guild)
+    if (guild)
     {
         return o_ptr->number;
     }
@@ -1309,9 +1309,17 @@ int StoreDialog::request_amt(object_type *o_ptr, bool buying)
     QString verb = tr("sell");
     if (buying) verb = tr("buy");
 
-    if (amt == 1) {
-        QString msg = tr("Do you want to %1 %2? Price: %3")
-                .arg(verb).arg(desc).arg(price);
+    if (home)
+    {
+        verb = tr("stash");
+        if (buying) tr("retrieve");
+    }
+
+    if (amt == 1)
+    {
+        QString msg = tr("Do you want to %1 %2?") .arg(verb).arg(desc);
+
+        if (!home) msg.append(tr(" Price: %1") .arg(price));
         if (!get_check(msg)) return 0;
         return 1;
     }

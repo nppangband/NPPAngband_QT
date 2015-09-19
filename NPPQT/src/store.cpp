@@ -1943,12 +1943,6 @@ void store_item_increase(int st, int item, int num)
 
     /* Save the new number */
     o_ptr->number += num;
-
-    /* Hack - don't let the store be bought out of items that are always in stock run out */
-    if (keep_in_stock(o_ptr, st))
-    {
-        if (st != STORE_HOME) o_ptr->number = STORE_MAX_ITEM;
-    }
 }
 
 
@@ -2036,7 +2030,7 @@ static bool black_market_ok(object_type *o_ptr)
  * could get caught in an eternal loop.  Be mindful of the fixed
  * variable STORE_MAX_KEEP and STORE_MIN_KEEP when making this list.
  */
-bool keep_in_stock(const object_type *o_ptr, int which)
+static bool keep_in_stock(const object_type *o_ptr, int which)
 {
 
     object_kind *k_ptr = &k_info[o_ptr->k_idx];
@@ -2465,6 +2459,9 @@ void store_maint(int which)
         /* Buy some more items */
             j = j + randint(STORE_TURNOVER_NPPANGBAND);
 
+            // Give the black market a little more inventory
+            if (which == STORE_B_MARKET) j += BLACK_MARKET_ADJUST;
+
             /* Never keep more than "STORE_MAX_KEEP" slots */
             if (j > STORE_MAX_KEEP_NPPANGBAND) j = STORE_MAX_KEEP_NPPANGBAND;
 
@@ -2888,11 +2885,17 @@ void do_cmd_retrieve(int this_store, cmd_arg args)
     /* Give it to the player */
     item_new = inven_carry(&picked_item);
 
+    if (item_new == -1)
+    {
+        message("Retrieval unsucessful");
+        return;
+    }
+
     /* Describe just the result */
     o_name = object_desc(&inventory[item_new], ODESC_PREFIX | ODESC_FULL);
 
     /* Message */
-    message(QString("You have %1 (%1).") .arg(o_name) .arg(index_to_label(item_new)));
+    message(QString("You have %1 (%2).") .arg(o_name) .arg(index_to_label(item_new)));
 
     /* Handle stuff */
     handle_stuff();

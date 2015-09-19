@@ -95,7 +95,7 @@ The amount of experience needed to advance to the next level.  A mouse hover ove
 *******<end>
 
 *******Player Score
-Player score is an attempt to quantify the player accomplishments.  It soes not have any gameplay effects.  The score is based on the uniques killed, artifacts found, player fame, experience gained, how deep in the dungeon the player has gone.  After 300,000 game turns have elasped, total score is adjusted downward based on the number of game turns the player has taken.
+Player score is an attempt to quantify the player accomplishments.  It does not have any gameplay effects.  The score is based on the uniques killed, artifacts found, player fame, experience gained, and how deep in the dungeon the player has gone.  After 300,000 game turns have elasped, total score is adjusted downward based on the number of game turns the player has taken.
 *******<end>
 
 *******Player Burden

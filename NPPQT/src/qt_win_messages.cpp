@@ -50,7 +50,7 @@ void MainWindow::win_messages_update()
 {
     if (!show_messages_win) return;
     if (!character_generated) return;
-    update_message_area(win_messages_area, 20, font_win_messages);
+    update_message_area(win_messages_area, 30, font_win_messages);
 }
 
 /*

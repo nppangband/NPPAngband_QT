@@ -36,8 +36,10 @@ protected:
     void keyPressEvent(QKeyEvent* which_key);
 
 private slots:
-    // Receives the number of the button pressed.
-    void button_press(int item);
+    // For the object select group pushbuttons.
+    void object_select_button_press(int item);
+    // for the other buttons
+    void info_buttons_click();
     void move_left(void);
     void move_right(void);
 
@@ -63,6 +65,8 @@ private:
     void build_inven_tab();
     void build_equip_tab();
     void build_quiver_tab();
+
+    void link_pushbuttons();
 
     byte find_starting_tab(int mode);
 

@@ -341,7 +341,7 @@ static int count_feats(int *y, int *x, int action)
  *
  * Returns TRUE if repeated commands may continue
  */
-static bool do_cmd_open_aux(int y, int x)
+static bool command_open_aux(int y, int x)
 {
     int i, j;
 
@@ -965,7 +965,7 @@ void command_open(cmd_arg args)
     else
     {
         /* Open the door */
-        more = do_cmd_open_aux(cy, cx);
+        more = command_open_aux(cy, cx);
     }
 
     /* Cancel repeat unless we may continue */
@@ -1179,8 +1179,6 @@ static bool command_disarm_aux(int y, int x, bool disarm)
     /* Failure -- Keep trying */
     else if ((i > 5) && (randint(i) > 5))
     {
-        /* Failure */
-        //if (flush_failure) flush();
 
         /* Message */
         message(QString("You failed to %1 the %2.").arg(act).arg(name));
@@ -1601,7 +1599,7 @@ static bool command_tunnel_aux(int y, int x)
     j = feat_state_power(feat, FS_TUNNEL);
 
     /* Sound XXX XXX XXX */
-    /* sound(MSG_DIG); */
+    sound(MSG_DIG);
 
     /* Make some noise. */
     add_wakeup_chance = 1000;
@@ -1643,7 +1641,7 @@ static bool command_tunnel_aux(int y, int x)
             name = feature_desc(feat, FALSE, TRUE);
 
             /* Give the message */
-            message("You have removed the " + name + ".");
+            message(QString("You have removed the " + name + "."));
 
             cave_alter_feat(y, x, FS_TUNNEL);
 
@@ -1682,7 +1680,7 @@ static bool command_tunnel_aux(int y, int x)
             name = feature_desc(feat, FALSE, TRUE);
 
             /* We may continue tunneling */
-            message("You dig into the " + name + ".");
+            message(QString("You dig into the " + name + "."));
 
             more = TRUE;
         }
@@ -1735,8 +1733,6 @@ void command_tunnel(cmd_arg args)
     }
 
     p_ptr->player_previous_command_update(CMD_TUNNEL, args);
-
-    p_ptr->message_append_start();
 
     /* Monster */
     if (dungeon_info[y][x].monster_idx > 0)
@@ -1885,9 +1881,7 @@ void command_close(cmd_arg args)
         x = p_ptr->px + ddx[dir];
     }
 
-    p_ptr->message_append_start();
-
-     p_ptr->player_previous_command_update(CMD_CLOSE, args);
+    p_ptr->player_previous_command_update(CMD_CLOSE, args);
 
     /* Monster */
     if (dungeon_info[y][x].has_monster())
@@ -2170,8 +2164,6 @@ void command_spike(cmd_arg args)
         message(QString("The %1 is already jammed.") .arg(feature_desc(feat, FALSE, TRUE)));
         return;
     }
-
-    p_ptr->message_append_start();
 
     /* Successful jamming */
     message(QString("You jam the %1 with a spike.") .arg(feature_desc(feat, FALSE, TRUE)));
@@ -2816,8 +2808,6 @@ void command_bash(cmd_arg args)
 
     p_ptr->player_previous_command_update(CMD_BASH, args);
 
-    p_ptr->message_append_start();
-
     /* Apply confusion */
     if (confuse_dir(&dir))
     {
@@ -2825,8 +2815,6 @@ void command_bash(cmd_arg args)
         y = p_ptr->py + ddy[dir];
         x = p_ptr->px + ddx[dir];
     }
-
-    p_ptr->message_append_start();
 
     /* Monster */
     if (m_idx > 0)

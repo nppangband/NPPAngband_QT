@@ -178,7 +178,7 @@ static item_act_t item_actions[] =
     /* ACTION_DESTROY */
    { obj_destroy, FALSE, "destroy",
     "Destroy which item? ", "You have nothing to destroy.",
-    NULL, (USE_INVEN | USE_FLOOR | USE_EQUIP | USE_QUIVER), NULL },
+    NULL, (USE_INVEN | USE_FLOOR | USE_QUIVER), NULL },
 
     /* ACTION_USE_ITEM */
    { NULL, TRUE, "use",
@@ -1155,7 +1155,7 @@ void command_destroy(cmd_arg args)
     int item = args.item;
     object_type *o_ptr = object_from_item_idx(item);
 
-    if (!item_is_available(item, NULL, USE_INVEN | USE_FLOOR))
+    if (!item_is_available(item, NULL, USE_INVEN | USE_FLOOR | USE_QUIVER))
     {
         pop_up_message_box("You do not have that item to destroy.");
         return;

@@ -461,6 +461,8 @@
  */
 #define INVEN_MAX_PACK  (INVEN_PACK - p_ptr->quiver_slots)
 
+#define OBJ_MAX_STACK   99
+
 /*
  * Indexes used for various "equipment" slots (hard-coded by savefiles, etc).
  */
