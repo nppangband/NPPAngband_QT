@@ -8,7 +8,7 @@ A flexible and adaptive race, humans are found all over Middle-Earth, from deser
 
 
 *******Elf
-Known as the Elder Race, and as the First-Born, Elves are famed for their knowledge and craftsmanship.  They tend to be smarter and more dexterous than either humans or half-elves, but not as wise or strong.  Elves are better at searching, disarming, perception, stealth, and magic, but they somewhat weak in melee.  They are fond of bows, somewhat weak in melee, and have some infravision.  Elves are resistant to attacks involving bright light, and have their dexterity sustained, and are to forest terrain.
+Known as the Elder Race, and as the First-Born, Elves are famed for their knowledge and craftsmanship.  They tend to be smarter and more dexterous than either humans or half-elves, but not as wise or strong.  Elves are better at searching, disarming, perception, stealth, and magic, but they somewhat weak in melee.  They are fond of bows, somewhat weak in melee, and have some infravision.  Elves are resistant to attacks involving bright light, and have their dexterity sustained, and are native to forest terrain.
 *******<end>
 
 *******Half-Elf
@@ -28,7 +28,7 @@ Dwarves are the headstrong miners and fighters of legend.  Since dungeons are th
 *******<end>
 
 *******Half-Orc
-The offspring of a human and an orc, half-orcs are ugly, strong, and have very bad attitudes.  They are as bad as dwarves at stealth, and horrible at searching, disarming, and perception. Their magic is a little suspect, as are most of their skills, but they know how to fight and can take as much damage as they dish out.  Most other races dislike them and so they have a hard time in stores.   Half-Orcs do make good warriors and rogues, for the simple reason that Half-Orcs tend to have great constitutions and lots of hit points.  Because of their preference to living underground to on the surface, half-orcs have innate infravision and resist darkness attacks.
+The offspring of a human and an orc, half-orcs are ugly, strong, and have very bad attitudes.  They are as bad as dwarves at stealth, and horrible at searching, disarming, and perception. Their magic is a little suspect, as are most of their skills, but they know how to fight and can take as much damage as they dish out.  Most other races dislike them and so they have a hard time in stores.   Half-Orcs do make good warriors and rogues, for the simple reason that Half-Orcs tend to have great constitutions and lots of hit points.  Because of their preference to living underground rather than on the surface, half-orcs have innate infravision and resist darkness attacks.
 *******<end>
 
 *******Half-Troll
@@ -56,7 +56,7 @@ A hack-and-slash character who solves most of his problems by cutting them to pi
 *******<end>
 
 *******Mage
-A Mage must live by his wits.  He cannot hope to simply hack his way through the dungeon, and so must therefore use his magic to defeat, deceive, confuse, and escape.  A mage is not really complete without an assortment of magical devices, and finds them very handy when his mana runs low.  He can master the higher level magical devices far easier than anyone else, and has the best saving throw to resist effects of spells cast at him.  Intelligence and Dexterity are his primary stats.  He has almost no chance of sensing wargear(slow, weak pseugo id).  There is no rule that says a mage cannot become a good fighter, but spells are his true realm.  Intelligence is his spell stat.
+A Mage must live by his wits.  He cannot hope to simply hack his way through the dungeon, and so must therefore use his magic to defeat, deceive, confuse, and escape.  A mage is not really complete without an assortment of magical devices, and finds them very handy when his mana runs low.  He can master the higher level magical devices far easier than anyone else, and has the best saving throw to resist effects of spells cast at him.  Intelligence and Dexterity are his primary stats.  He has almost no chance of sensing wargear(slow, weak pseudo id).  There is no rule that says a mage cannot become a good fighter, but spells are his true realm.  Intelligence is his spell stat.
 *******<end>
 
 *******Priest
@@ -69,11 +69,11 @@ A Rogue is a character that prefers to live by his cunning, but is capable of fi
 *******<end>
 
 *******Ranger
-A ranger is is a warrior/druid, and is the the greatest of bowsmen.  He can also hold his own in melee, and has some useful incantations to aid him in need; rangers have many talents.  The ranger learns spells much more slowly than a druid, but is capable of learning all but the most powerful incantations.  Because a ranger is really a dual class character, more experience is required for him to advance.  His primary stats are Strength, Intelligence, Wisdom and Dexterity.  A ranger has a good stealth, good perception, good searching, a good saving throw,  are native to forest terrain, and is good with magical devices.  A ranger has average-speed, weak pseudo-ID.  Intelligence and wisdom are his spell stats.  He gets an extra show with a bow at level 26.
+A ranger is is a warrior/druid, and is the the greatest of bowsmen.  He can also hold his own in melee, and has some useful incantations to aid him in need; rangers have many talents.  The ranger learns spells much more slowly than a druid, but is capable of learning all but the most powerful incantations.  Because a ranger is really a dual class character, more experience is required for him to advance.  His primary stats are Strength, Intelligence, Wisdom and Dexterity.  A ranger has a good stealth, good perception, good searching, a good saving throw, is native to forest terrain, and is good with magical devices.  A ranger has average-speed, weak pseudo-ID.  Intelligence and wisdom are his spell stats.  He gets an extra shot with a bow at level 26.
 *******<end>
 
 *******Paladin
-A paladin is a champion of the Faith.  He is a very good fighter, just below than the warrior class, but not very good at missile weapons.  A paladin receives prayers at a slower pace then the priest, but can use all but the most powerful prayers.  A paladin has slowish but detailed pseudo-ID.  Because a paladin is really a dual class character, it requires more experience to advance him.  A paladin lacks much in the way of abilities. He is poor at stealth, per-ception, searching, and  magical devices.  He has a decent saving throw due to his divine alliance.  His primary stats are Strength and Charisma, although Wisdom is necessary for his prayers.
+A paladin is a champion of the Faith.  He is a very good fighter, just below than the warrior class, but not very good at missile weapons.  A paladin receives prayers at a slower pace then the priest, but can use all but the most powerful prayers.  A paladin has slowish but detailed pseudo-ID.  Because a paladin is really a dual class character, it requires more experience to advance him.  A paladin lacks much in the way of abilities. He is poor at stealth, perception, searching, and  magical devices.  He has a decent saving throw due to his divine alliance.  His primary stats are Strength and Charisma, although Wisdom is necessary for his prayers.
 *******<end>
 
 *******Brigand

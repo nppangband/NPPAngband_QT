@@ -3598,10 +3598,6 @@ s16b inven_carry(object_type *o_ptr)
         }
     }
 
-    int count = p_ptr->inven_cnt;
-    int max_pack = INVEN_MAX_PACK;
-    int quiver_slots = p_ptr->quiver_slots;
-
     /* Paranoia */
     if (p_ptr->inven_cnt > INVEN_MAX_PACK)	return (-1);
 

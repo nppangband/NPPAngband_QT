@@ -2074,8 +2074,8 @@ option_entry options[OPT_MAX] =
     {NULL,					NULL,	FALSE},/* xxx */
     {NULL,					NULL,	FALSE},/* xxx */
     {"smart_cheat",			"Monsters exploit players weaknesses",	FALSE},     /* OPT_smart_cheat */
-    {"flush_failure",		"Flush input on various failures",		TRUE},	/* OPT_flush_failure */
-    {"flush_disturb",		"Flush input whenever disturbed",		TRUE},	/* OPT_flush_disturb */
+    {NULL,NULL,FALSE},/* xxx */
+    {NULL,NULL,FALSE},/* xxx */
     {"hilight_player",		"Hilight the player with the cursor",	FALSE},	/* OPT_hilight_player */
     {"easy_open",			"Open/Disarm/Close without direction",	TRUE},	/* OPT_easy_open */
     {"easy_alter",			"Open/Disarm doors/traps on movement",	TRUE},	/* OPT_easy_alter */
@@ -2084,8 +2084,8 @@ option_entry options[OPT_MAX] =
     {"animate_flicker",    	"Shimmer multi-colored things",  		TRUE}, /* OPT_animate_flicker */
     {"hp_changes_color",	"Player color indicates low hit points",FALSE},	/* OPT_hp_changes_color*/
     {"mark_squelch_items",	"Items marked for squelch appear as dot",FALSE},/* OPT_mark_squelch_items */
-    {"mouse_movement",      "Allow mouse clicks to move the player",       TRUE }, /*OPT_mouse_movement*/
-    {"notify_recharge",		"Notify on object recharge", 	FALSE},/* OPT_notify_recharge */
+    {NULL,NULL,FALSE},/* xxx */
+    {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,	FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
@@ -2148,10 +2148,10 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_stack_force_costs,
         OPT_easy_open,
         OPT_easy_alter,
-        OPT_mouse_movement,
         OPT_auto_scum,
         OPT_allow_themed_levels,
         OPT_smart_cheat,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,
@@ -2194,11 +2194,11 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_disturb_near,
         OPT_disturb_detect,
         OPT_disturb_state,
-        OPT_flush_failure,
-        OPT_flush_disturb,
         OPT_verify_destroy,
-        OPT_notify_recharge,
         OPT_verify_leave_quest,
+        OPT_NONE,
+        OPT_NONE,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,
@@ -2279,8 +2279,8 @@ const byte option_page_nppmoria[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_stack_force_costs,
         OPT_easy_open,
         OPT_easy_alter,
-        OPT_mouse_movement,
         OPT_smart_cheat,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,
@@ -2325,10 +2325,10 @@ const byte option_page_nppmoria[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_disturb_near,
         OPT_disturb_detect,
         OPT_disturb_state,
-        OPT_flush_failure,
-        OPT_flush_disturb,
         OPT_verify_destroy,
-        OPT_notify_recharge,
+        OPT_NONE,
+        OPT_NONE,
+        OPT_NONE,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,

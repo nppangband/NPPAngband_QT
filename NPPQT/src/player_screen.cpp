@@ -739,6 +739,7 @@ void char_basic_info(QGridLayout *return_layout)
     //Hack, the button has already been added and connected inside the class.
     QLabel *player_name = new QLabel;
     make_standard_label(player_name, " ", TERM_BLUE);
+    player_name->setToolTip(get_help_topic("character_info", "Character Name"));
     player_name->setObjectName("PLYR_Name");
     return_layout->addWidget(player_name, row++, col+1, Qt::AlignRight);
 

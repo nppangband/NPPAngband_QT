@@ -687,6 +687,7 @@ void MainWindow::save_and_close()
     cleanup_npp_games();
 
     message_area->clear();
+    update_titlebar();
 
     cursor->setVisible(false);
     destroy_tiles();

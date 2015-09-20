@@ -119,7 +119,7 @@ First restores a stat if it is below the current maximum, then permanently incre
 *******<end>
 
 ********Create Artifact[price varies]
-Turns one weapon or piece of armor into an artifact.  If the player desires a weapon with alot of slays, resists, or orther abilities, it is best to use a weapon with low damage dice, as the total damage the weapon can inflict is factored into determining the value of the artifact.
+Turns one weapon or piece of armor into an artifact.  If the player desires a weapon with many slays, resists, or other abilities, it is best to use a weapon with low damage dice, as the total damage the weapon can inflict is factored into determining the value of the artifact.
 *******<end> 
 
 *********Probe a Quest Monster[price varies]

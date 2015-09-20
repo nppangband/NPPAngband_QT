@@ -610,8 +610,8 @@ enum
     OPT_UNUSED_5,
     OPT_UNUSED_6,
     OPT_smart_cheat,
-    OPT_flush_failure,
-    OPT_flush_disturb,
+    OPT_UNUSED_6x1,
+    OPT_UNUSED_6x2,
     OPT_hilight_player,
     OPT_easy_open,
     OPT_easy_alter,
@@ -620,8 +620,8 @@ enum
     OPT_animate_flicker,
     OPT_hp_changes_color,
     OPT_mark_squelch_items,
-    OPT_mouse_movement,
-    OPT_notify_recharge,
+    OPT_UNUSED_6x3,
+    OPT_UNUSED_6x4,
     OPT_UNUSED_7,
     OPT_UNUSED_8,
     OPT_UNUSED_9,
@@ -707,8 +707,8 @@ enum
 /* xxx */
 /* xxx */
 #define smart_cheat				op_ptr->opt[OPT_smart_cheat]
-#define flush_failure			op_ptr->opt[OPT_flush_failure]
-#define flush_disturb			op_ptr->opt[OPT_flush_disturb]
+/* xxx */
+/* xxx */
 #define hilight_player			op_ptr->opt[OPT_hilight_player]
 #define easy_open				op_ptr->opt[OPT_easy_open]
 #define easy_alter				op_ptr->opt[OPT_easy_alter]
@@ -717,8 +717,8 @@ enum
 #define animate_flicker 		op_ptr->opt[OPT_animate_flicker]
 #define hp_changes_color		op_ptr->opt[OPT_hp_changes_color]
 #define mark_squelch_items		op_ptr->opt[OPT_mark_squelch_items]
-#define mouse_movement			op_ptr->opt[OPT_mouse_movement]
-#define notify_recharge			op_ptr->opt[OPT_notify_recharge]
+/* xxx */
+/* xxx */
 /* xxx */
 /* xxx */
 /* xxx */

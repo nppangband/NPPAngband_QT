@@ -26,7 +26,7 @@
 class object_vis
 {
 public:
-    object_type *obj_type;
+    object_type obj_type_body;
     u16b obj_y;
     u16b obj_x;
     qreal distance;
@@ -46,10 +46,10 @@ static bool compare_types(const object_type *o_ptr, const object_type *j_ptr)
  *  TRUE if o1 should be first
  *  FALSE if o2 should be first, or it doesn't matter
  */
-static bool compare_items(const object_vis ov1, const object_vis ov2)
+static bool compare_items(object_vis ov1, object_vis ov2)
 {
-    object_type *o1 = ov1.obj_type;
-    object_type *o2 = ov2.obj_type;
+    object_type *o1 = &ov1.obj_type_body;
+    object_type *o2 = &ov2.obj_type_body;
 
     QString oname1 = object_desc(o1, ODESC_FULL);
     QString oname2 = object_desc(o2, ODESC_FULL);
@@ -192,9 +192,9 @@ void MainWindow::win_obj_list_update()
                 {
                     object_vis *obj_vis_ptr = &vis_obj_list[j];
 
-                    if (object_similar(o_ptr, obj_vis_ptr->obj_type))
+                    if (object_similar(o_ptr, &obj_vis_ptr->obj_type_body))
                     {
-                        obj_vis_ptr->obj_type->number += o_ptr->number;
+                        obj_vis_ptr->obj_type_body.number += o_ptr->number;
                         // If this one is closer, use the new distance (using pythagorean's theorum to calc distance)
                         qreal new_distance = qSqrt(qPow((my - p_ptr->py), 2) + qPow((mx - p_ptr->px), 2));
                         if (new_distance < obj_vis_ptr->distance)
@@ -217,7 +217,7 @@ void MainWindow::win_obj_list_update()
                  */
 
                 object_vis new_entry;
-                new_entry.obj_type = o_ptr;
+                new_entry.obj_type_body.object_copy(o_ptr);
                 new_entry.distance = qSqrt(qPow((my - p_ptr->py), 2) + qPow((mx - p_ptr->px), 2));
                 new_entry.obj_y = my;
                 new_entry.obj_x = mx;
@@ -332,7 +332,7 @@ void MainWindow::win_obj_list_update()
     for (int i = 0; i < vis_obj_list.size(); i++)
     {
         object_vis *obj_vis_ptr = &vis_obj_list[i];
-        object_type *o_ptr = obj_vis_ptr->obj_type;
+        object_type *o_ptr = &obj_vis_ptr->obj_type_body;
 
         int col = 0;
 

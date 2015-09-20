@@ -345,6 +345,7 @@ void PlayerBirth::add_stat_boxes(QVBoxLayout *return_layout)
     // Display character hit dice
     QLabel *hit_die_label = new QLabel();
     make_standard_label(hit_die_label, "Hit Die:", TERM_DARK);
+    hit_die_label->setToolTip(get_help_topic("character_info", "Hit Die"));
     grid_stat_modifiers->addWidget(hit_die_label, row, col++, Qt::AlignLeft);
 
     QString this_race;
@@ -382,6 +383,7 @@ void PlayerBirth::add_stat_boxes(QVBoxLayout *return_layout)
     // Display experience percent
     QLabel *exp_pct_label = new QLabel();
     make_standard_label(exp_pct_label, "Experience:", TERM_DARK);
+    exp_pct_label->setToolTip(get_help_topic("character_info", "Experience Factor"));
     grid_stat_modifiers->addWidget(exp_pct_label, row, col++, Qt::AlignLeft);
 
     this_race = (QString(" %1%") .arg(rp_ptr->r_exp));

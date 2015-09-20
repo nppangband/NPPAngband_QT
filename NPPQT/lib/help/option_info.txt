@@ -31,10 +31,6 @@ When you issue the open, close, or disarm commands, if there is only one possibl
 When you move into a door, you automatically attempt to open it.   When you move into a trap, you automatically attempt to disarm it.
 *******<end>
 
-********mouse_movement
-Player attempts to automatically move to the spot where the player clicks on the screen.
-*******<end>
-
 ********auto_scum
 Regenerates dungeon levels until one is found with enough dangerous monsters and nifty objects.  use of this option makes for more intense but dangerous games.
 *******<end>
@@ -44,7 +40,7 @@ Allows the generation of themed levels.  Themed levels are levels packed with ma
 *******<end>
 
 ********smart_cheat
-As monsters cast spells, they learn which spells the player resists.  With this option on, monsters instantly know all your resistances ans weaknesses.
+As monsters cast spells, they learn which spells the player resists.  With this option on, monsters instantly know all your resistances and weaknesses.
 *******<end>
 
 ********hp_changes_color

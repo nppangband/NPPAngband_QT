@@ -390,8 +390,6 @@ static void recharged_notice(object_type *o_ptr, bool all)
 
     QString s;
 
-    if (!notify_recharge) return;
-
     /* No notify necessary */
     if (!o_ptr->use_verify[RECHARGE_NOTIFY]) return;
 

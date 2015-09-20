@@ -2414,6 +2414,9 @@ void do_cmd_run(int dir)
 {
     if (!character_dungeon) return;
 
+    // Already running (for excessive mouseclicks)
+    if (p_ptr->is_running()) return;
+
     if (p_ptr->timed[TMD_CONFUSED])
     {
         message("You are too confused!");
@@ -2910,6 +2913,9 @@ void do_cmd_hold()
 void do_cmd_findpath(int y, int x)
 {
     if (!character_dungeon) return;
+
+    // For excessive mouseclicks
+    if (p_ptr->is_running()) return;
 
     // If running fails, at least try a direction
     if (!buildpath(y, x))

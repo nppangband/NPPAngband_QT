@@ -19,7 +19,11 @@ Constitution is a character's ability to resist damage to his body, and to recov
 *******<end>
 
 *******Charisma
-Charisma represents a character's personality and physical appearance.  A character with a high charisma will receive better prices from store owners, whereas a character with a very low charisma may be robbed blind. Charisma also affects the character's chances to use magic to sleep, slow, confuse, scare or stun a monster.
+Charisma represents a character's personality and physical appearance.  A character with a high charisma will receive better prices from store owners, whereas a character with a very low charisma may be robbed blind. Charisma also affects the character's chances to use magic to sleep, slow, confuse, scare or stun a monster.  Characters with a low charisma may receive penalties in these areas.
+*******<end>
+
+*******Character Name
+The character name is for game "flavor" and does not have any significant gameplay effects.
 *******<end>
 
 *******Gender
@@ -147,15 +151,15 @@ The ability to move silently about is very useful.  Characters with good stealth
 *******<end>
 
 *******Fighting Ability
-Fighting Ability is the ability to hit and do damage with weapons or fists.  Fighting ability is based on character race and class, and increases with the level of the character.  It is a significant factor in making a weapon attack sucessful, and the chances of getting a critical hit.  Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the hightest calculated damage used.  In terms of total damage inflicted, Fighting abiliy is significantly less important than the number of attacks per round, player speed, player to-damage, and the weight of the of weapon the player is wielding.  Normally a character gets a single blow from any weapon, but if his dexterity and strength are high enough, he may receive more blows per round with lighter weapons.  A quirk of the combat calculations is that low level fighting classes, even a half-troll warrior, can do more damage in combat getting multiple attacks with a light weapon such as a whip or a dagger than with a heavy weapon such as a broad sword.  In NPPAngband, Warriors get an extra attack when they reach level 26.  More details of the player's ability with a weapon can be found by examining the weapon.
+Fighting Ability is the ability to hit and do damage with weapons or fists.  Fighting ability is based on character race and class, and increases with the level of the character.  It is a significant factor in making a weapon attack sucessful, and the chances of getting a critical hit.  Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the highest calculated damage used.  In terms of total damage inflicted, Fighting abiliy is significantly less important than the number of attacks per round, player speed, player to-damage, and the weight of the of weapon the player is wielding.  Normally a character gets a single blow from any weapon, but if his dexterity and strength are high enough, he may receive more blows per round with lighter weapons.  A quirk of the combat calculations is that low level fighting classes, even a half-troll warrior, can do more damage in combat getting multiple attacks with a light weapon such as a whip or a dagger than with a heavy weapon such as a broad sword.  In NPPAngband, Warriors get an extra attack when they reach level 26.  More details of the player's ability with a weapon can be found by examining the weapon.
 *******<end>
 
 *******Shooting Ability
-Shooting abillity is the skill in firing ranged missile weapons (arrows, bolts, and shots) from missile launchers (bows, crossbows, and slings).  It is based on race and class and increases with the level of the character.  It is a significant factor in making a sucessful hit, and for getting a critical hit. Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the hightest calculated damage used.  In terms of total damage inflicted, this factor is significantly less important than shooting speed, player speed, bow multiplier, the quality of missile launcher, and the quality of ammunition fired.  It can also increase the maximum distance an object is fired.  In NPPAngband, Rogues, Brigands, and Rangers can get an faster shooting speed with an appropriate missile launcher at level 26.  More details of the player's ability with a missile launcher or ammunition can be found by examining the launcher or the ammunition.
+Shooting abillity is the skill in firing ranged missile weapons (arrows, bolts, and shots) from missile launchers (bows, crossbows, and slings).  It is based on race and class and increases with the level of the character.  It is a significant factor in making a sucessful hit, and for getting a critical hit. Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the highest calculated damage used.  In terms of total damage inflicted, this factor is significantly less important than shooting speed, player speed, bow multiplier, the quality of missile launcher, and the quality of ammunition fired.  It can also increase the maximum distance an object is fired.  In NPPAngband, Rogues, Brigands, and Rangers can get an faster shooting speed with an appropriate missile launcher at level 26.  More details of the player's ability with a missile launcher or ammunition can be found by examining the launcher or the ammunition.
 ******<end>
 
 *******Throwing Ability
-Throwing abillity is the skill in throwing objects at creatues.  It is based on race and class and increases with the level of the character.  It is a significant factor in making a sucessful hit, and for getting a critical hit. Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the hightest calculated damage used.  In terms of total damage inflicted, this factor is significantly less important than the qualitiess of the item thrown.  It can also increase the maximum distance an object is fired.  Well balanced weapons can be thrown for more damage than regular weapons.  Some potions can have interesting side effects when thrown.  In NPPAngband, Rogues and brigands get extra damage when throwing a well balanced weapon.  A level 10-15 rogue with an ego item, well-balanced throwing weapon or an artifact throwing weapon can kill most creatures down to 750' with a single throw;
+Throwing abillity is the skill in throwing objects at creatues.  It is based on race and class and increases with the level of the character.  It is a significant factor in making a sucessful hit, and for getting a critical hit. Critical hits increase total damage dice and +to-damage, and cause multiple damage rolls with the highest calculated damage used.  In terms of total damage inflicted, this factor is significantly less important than the qualities of the item thrown.  It can also increase the maximum distance an object is fired.  Well balanced weapons can be thrown for more damage than regular weapons.  Some potions can have interesting side effects when thrown.  In NPPAngband, Rogues and brigands get extra damage when throwing a well balanced weapon.  A level 10-15 rogue with an ego item, well-balanced throwing weapon or an artifact throwing weapon can kill most creatures down to 750' with a single throw;
 ******<end>
 
 *******Disarming
@@ -382,4 +386,17 @@ The player becomes native to boiling mud by being native to both lava and mud.  
 
 *******Native Boiling Water
 The player becomes native to boiling mud by being native to both lava and water.  This allows the player to stand on boiling water terrains without taking any damage, and affects the player's stealth.  It allows the player to move more efficiently through biling water terrains, and gives the player a bonus to-hit in combat.  Being non-native makes the player succeptable to damage from terrain, slows their movement, and reduces their to-hit chances.
+******<end>
+
+*******Experience Factor
+The amount of experience required to advance levels depends on the selected race and class.  A race/class combination with an experience factor of 200 percent requires twice as much experience than a race class combination of 100 percent.  The more powerful races and classes require more experience to advance levels.
+******<end>
+
+
+*******Experience Factor
+The amount of experience required to advance levels depends on the selected race and class.  A race/class combination with an experience factor of 200 percent requires twice as much experience than a race class combination of 100 percent.  The more powerful races and classes require more experience to advance levels.
+******<end>
+
+*******Hit Die
+The combined hit die figure is the number of hit points the player will have as a level 1 character.  For each level gained, the player's hit points will increase by a randomly generated number between 1 and the combined hit die figure.
 ******<end>

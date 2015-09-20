@@ -48,13 +48,25 @@ byte energy_to_move(int y, int x)
 
 }
 
+static bool path_accept_square(int y, int x)
+{
+    if (!in_bounds(y, x)) return (FALSE);
+
+    // Can't get there
+    if (p_ptr->depth)
+    {
+        if (!cave_passable_bold(y, x)) return FALSE;
+        //Can't see it
+        if (!(dungeon_info[y][x].cave_info & (CAVE_EXPLORED))) return (FALSE);
+    }
+    else if (!cave_ff1_match(y, x, FF1_MOVE)) return (FALSE);
+
+    return (TRUE);
+}
 
 bool buildpath(int y, int x)
 {
-    // Can't get there
-    if (!cave_passable_bold(y, x)) return FALSE;
-    //Can't see it
-    if (!(dungeon_info[y][x].cave_info & (CAVE_EXPLORED))) return (FALSE);
+    if (!path_accept_square(y, x)) return (FALSE);
 
     //clear the path
     clear_path();
@@ -96,12 +108,7 @@ bool buildpath(int y, int x)
 
                 dungeon_type *dun_ptr_adj = &dungeon_info[yyy][xxx];
 
-                // Check bounds and accessability
-                if (!in_bounds(yyy, xxx)) continue;
-                if (!cave_passable_bold(yyy, xxx)) continue;
-
-                // Only known grids
-                if (!(dun_ptr_adj->cave_info & (CAVE_EXPLORED))) continue;
+                if (!path_accept_square(yyy, xxx)) continue;
 
                 int new_energy = energy_to_move(yyy, xxx);
                 if (!new_energy) continue;

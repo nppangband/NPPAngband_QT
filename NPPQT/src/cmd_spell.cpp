@@ -204,7 +204,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
         if (choosing_book)
         {
             QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
-            QString button_text = (QString("Study a %1 from %2") .arg(noun) .arg(book_name));
+            QString button_text = (QString("a) Learn a %1 from %2") .arg(noun) .arg(book_name));
             QPushButton *button = new QPushButton(button_text);
             spell_layout->addWidget(button, row_num, COL_SPELL_TITLE, Qt::AlignLeft);
             spell_select_group->addButton(button, i);
@@ -245,7 +245,11 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
             else if (choosing_book) do_text = TRUE;
             else if (!spell_okay(spell, (mode == BOOK_CAST))) do_text = TRUE;
 
-            QString spell_name = (QString("%1) ") .arg(number_to_letter(j)));
+            QString spell_name;
+            //  No prefix when selecting a book to learn prayers.
+            if (choosing_book) spell_name.clear();
+            else spell_name = (QString("%1) ") .arg(number_to_letter(j)));
+
             spell_name.append(cast_spell(MODE_SPELL_NAME, cp_ptr->spell_book, spell, 0));
             QString spell_comment = get_spell_comment(spell);
 
@@ -729,27 +733,29 @@ void cast_spell(cmd_arg args)
     if (rand_int(100) < chance)
     {
         message(QString("You failed to get the spell off!"));
-        process_player_energy(BASE_ENERGY_MOVE);
-        return;
     }
 
-    //Actually cast the spell.
-    sound(MSG_SPELL);
-
-    p_ptr->message_append_start();
-
-    if (cast_spell(MODE_SPELL_CAST, cp_ptr->spell_book, spell, dir) == NULL) return;
-
-    /* The spell was cast */
-    if (!(p_ptr->spell_flags[spell] & PY_SPELL_WORKED))
+    else
     {
-        int e = s_ptr->sexp;
 
-        /* The spell worked */
-        p_ptr->spell_flags[spell] |= PY_SPELL_WORKED;
+        //Actually cast the spell.
+        sound(MSG_SPELL);
 
-        /* Gain experience */
-        gain_exp(e * s_ptr->slevel);
+        p_ptr->message_append_start();
+
+        if (cast_spell(MODE_SPELL_CAST, cp_ptr->spell_book, spell, dir) == NULL) return;
+
+        /* The spell was cast */
+        if (!(p_ptr->spell_flags[spell] & PY_SPELL_WORKED))
+        {
+            int e = s_ptr->sexp;
+
+            /* The spell worked */
+            p_ptr->spell_flags[spell] |= PY_SPELL_WORKED;
+
+            /* Gain experience */
+            gain_exp(e * s_ptr->slevel);
+        }
     }
 
     /* Sufficient mana */

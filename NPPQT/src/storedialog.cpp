@@ -196,10 +196,6 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 
     lay6->addStretch(1);
 
-    QPushButton *btn_exam = new QPushButton("Examine (F5)");
-    lay6->addWidget(btn_exam);
-    connect(btn_exam, SIGNAL(clicked()), this, SLOT(exam_click()));
-
     QPushButton *btn_wield = new QPushButton("Wield (F6)");
     lay6->addWidget(btn_wield);
     connect(btn_wield, SIGNAL(clicked()), this, SLOT(wield_click()));
@@ -349,11 +345,6 @@ void StoreDialog::reset_quest_status()
     quest_picture->adjustSize();
     quest_status->adjustSize();
 
-}
-
-void StoreDialog::exam_click()
-{
-    set_mode(SMODE_EXAMINE);
 }
 
 void StoreDialog::buy_sell_click()
@@ -733,7 +724,7 @@ void StoreDialog::set_mode(int _mode)
         QString("Examining")
     };
     QString text = names[mode];
-    if (!text.isEmpty()) text.append(". Click over an item.");
+    if (!text.isEmpty()) text.append(". Click an item.");
     mode_label->setText(text);
 }
 
@@ -926,11 +917,6 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
             this->toggle_inven();
             break;
         }
-        case Qt::Key_F5:
-        {
-            this->exam_click();
-            break;
-        }
         case Qt::Key_F6:
         {
             this->wield_click();
@@ -982,11 +968,9 @@ void StoreDialog::keyPressEvent(QKeyEvent *event)
 void StoreDialog::process_item(QString id)
 {
     int aux_mode = mode;
-    if (aux_mode != SMODE_EXAMINE)
-    {
-        if (id.startsWith("e") || id.startsWith("i")) aux_mode = SMODE_SELL;
-        else aux_mode = SMODE_BUY;
-    }
+
+    if (id.startsWith("e") || id.startsWith("i")) aux_mode = SMODE_SELL;
+    else aux_mode = SMODE_BUY;
 
     set_mode(aux_mode);
 
@@ -1007,17 +991,17 @@ void StoreDialog::process_item(QString id)
 
     int price = price_item(store_idx, o_ptr, false);
 
-    switch (aux_mode)
+    if (aux_mode == SMODE_BUY)
     {
-    case SMODE_BUY:
         if (!home && !guild && price > p_ptr->au)
         {
             pop_up_message_box("It's too expensive", QMessageBox::Critical);
             return;
         }
         do_buy(o_ptr, item);
-        break;
-    case SMODE_SELL:
+    }
+    else if (aux_mode == SMODE_SELL)
+    {
         if (!home && !store_will_buy(store_idx, o_ptr))
         {
             if (o_ptr->number == 1) pop_up_message_box("I don't buy that kind of item.", QMessageBox::Critical);
@@ -1025,12 +1009,6 @@ void StoreDialog::process_item(QString id)
             return;
         }
         do_sell(o_ptr, item);
-        break;
-    case SMODE_EXAMINE:
-    {
-        object_info_screen(o_ptr);
-        break;
-        }
     }
 
     set_mode(SMODE_DEFAULT);
@@ -1046,16 +1024,7 @@ void StoreDialog::process_service(QString id)
     // Get quest index
     int service = id.mid(1).toInt();
 
-    int aux_mode = mode;
-    if (aux_mode == SMODE_EXAMINE)
-    {
-        QString topic = get_help_topic("store_info", services_info[service].service_names);
-        pop_up_message_box(topic);
-        return;
-    }
-
     set_mode(SMODE_BUY);
-
 
     u32b serv_price = price_services(service);
 
@@ -1072,14 +1041,6 @@ void StoreDialog::process_quest(QString id)
 
     // Get quest index
     int quest_idx = id.mid(1).toInt();
-
-    int aux_mode = mode;
-    if (aux_mode == SMODE_EXAMINE)
-    {
-        QString topic = get_help_topic("store_info", quests_info[quest_idx]);
-        pop_up_message_box(topic);
-        return;
-    }
 
     set_mode(SMODE_BUY);
 
