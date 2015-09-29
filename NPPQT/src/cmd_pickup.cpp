@@ -563,8 +563,6 @@ void py_pickup(bool pickup)
 	/* Next, pick up items that are marked for auto-pickup.  */
     for (this_o_idx = dungeon_info[py][px].object_idx; this_o_idx; this_o_idx = next_o_idx)
 	{
-		bool do_continue = TRUE;
-
 		/* We are done */
 		if (pack_is_full()) break;
 
@@ -577,13 +575,11 @@ void py_pickup(bool pickup)
         if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP) continue;
 
 		/* Object is marked to always pickup */
-		if ((k_info[o_ptr->k_idx].squelch == NO_SQUELCH_ALWAYS_PICKUP)  &&
-			(k_info[o_ptr->k_idx].aware)) do_continue = FALSE;
+        if ((k_info[o_ptr->k_idx].squelch != NO_SQUELCH_ALWAYS_PICKUP) ||
+            !(k_info[o_ptr->k_idx].aware)) continue;
 
         /* Player doesn't want to pickup item  */
-        if (get_item_allow(-this_o_idx, VERIFY_PICKUP)) do_continue = FALSE;
-
-		if (do_continue) continue;
+        if (!get_item_allow(-this_o_idx, VERIFY_PICKUP)) continue;
 
 		/* Hack - Don't pick up mimic objects */
         if (o_ptr->is_mimic()) continue;
