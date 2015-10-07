@@ -787,7 +787,7 @@ void PlayerBirth::add_races(QVBoxLayout *return_layout)
 void PlayerBirth::gender_changed(int new_gender)
 {
     p_ptr->psex = cur_gender = new_gender;
-    update_character(TRUE, TRUE);
+    update_character(TRUE, FALSE);
 }
 
 void PlayerBirth::name_changed(QString new_name)

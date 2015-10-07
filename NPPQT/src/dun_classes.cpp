@@ -18,6 +18,59 @@
 
 #include "src/npp.h"
 
+QVector<dungeon_coordinates> redraw_list;
+
+bool sort_coordinate_list(dungeon_coordinates sq1_ptr, dungeon_coordinates sq2_ptr)
+{
+    if (sq1_ptr.y < sq2_ptr.y) return(FALSE);
+    if (sq1_ptr.y > sq2_ptr.y) return (TRUE);
+    if (sq1_ptr.x < sq2_ptr.x) return(FALSE);
+    if (sq1_ptr.x > sq2_ptr.x) return(TRUE);
+    return (FALSE);
+}
+
+void append_redraw_list(int y, int x)
+{
+    dungeon_coordinates this_square;
+    this_square.x = x;
+    this_square.y = y;
+
+    redraw_list.append(this_square);
+
+    p_ptr->redraw |= (PR_MAP_SQUARES);
+}
+
+void redraw_square_list()
+{
+    if (!redraw_list.size()) return;
+
+    // Sort so we can avoid redrawing duplicates
+    qSort(redraw_list.begin(), redraw_list.end(), sort_coordinate_list);
+    int old_x = -1;
+    int old_y = -1;
+
+    for (int i = 0; i < redraw_list.size(); i++)
+    {
+        dungeon_coordinates *rd_ptr = &redraw_list[i];
+
+        // Handle duplicates
+        if ((rd_ptr->x == old_x) && (rd_ptr->y == old_y))
+        {
+            continue;
+        }
+
+        old_x = rd_ptr->x;
+        old_y = rd_ptr->y;
+
+        if (!in_bounds(rd_ptr->y, rd_ptr->x)) continue;
+
+        ui_redraw_grid(rd_ptr->y, rd_ptr->x);
+    }
+
+    redraw_list.clear();
+}
+
+
 bool dungeon_type::has_visible_artifact()
 {
     //if (!(cave_info & CAVE_SEEN)) return false;
@@ -39,10 +92,59 @@ bool dungeon_type::has_visible_artifact()
     return false;
 }
 
-void dungeon_type::mark_square()
+
+
+void dungeon_type::mark_seen_square()
 {
-    cave_info |= (CAVE_MARK | CAVE_EXPLORED);
+    cave_info |= (CAVE_VIEW);
 }
+
+void dungeon_type::unmark_seen_square()
+{
+    cave_info &= ~(CAVE_VIEW | CAVE_TORCH);
+}
+
+// Is the dungeon spot marked?
+bool dungeon_type::is_seen_square()
+{
+    if (cave_info & (CAVE_VIEW | CAVE_TORCH)) return (TRUE);
+    return (FALSE);
+}
+
+void dungeon_type::mark_edge_square()
+{
+    cave_info |= (CAVE_EDGE);
+}
+
+void dungeon_type::unmark_edge_note()
+{
+    cave_info &= ~(CAVE_EDGE);
+}
+
+// Is the dungeon spot marked?
+bool dungeon_type::is_edge_square()
+{
+    if (cave_info & (CAVE_EDGE)) return (TRUE);
+    return (FALSE);
+}
+
+void dungeon_type::mark_known_square()
+{
+    cave_info |= (CAVE_KNOWN);
+}
+
+void dungeon_type::unmark_known_square()
+{
+    cave_info &= ~(CAVE_KNOWN);
+}
+
+// Is the dungeon spot marked?
+bool dungeon_type::is_known_square()
+{
+    if (cave_info & (CAVE_KNOWN)) return (TRUE);
+    return (FALSE);
+}
+
 
 void dungeon_type::clear_path_flow()
 {
@@ -69,6 +171,46 @@ bool dungeon_type::has_monster()
 {
     if (monster_idx) return (TRUE);
     return (FALSE);
+}
+
+
+dungeon_type::dungeon_type()
+{
+    dungeon_square_wipe();
+}
+
+/*
+ * Wipe the dungeon_type class.
+ * This function shoudld be used instead of WIPE command.
+ * All variables in dungeon_type should be re-set in this function.
+ * This function does not clear the object, effect, and monster lists.
+ * It should not be called without first removing any
+ * monsters, effects, or objects from their respective lists.
+ */
+void dungeon_type::dungeon_square_wipe()
+{
+    feat = effect_idx = monster_idx = object_idx = 0;
+    path_cost = cave_info = 0;
+    special_lighting = obj_special_symbol = 0;
+    ui_flags = 0;
+    path_flow = dtrap = double_height_monster = FALSE;
+    dun_color = Qt::black;
+    dun_char = ' ';
+    object_color = Qt::black;
+    object_char = ' ';
+    effect_color = Qt::black;
+    effect_char = ' ';
+    monster_color = Qt::black;
+    monster_char = ' ';
+
+    monster_tile.clear();
+    object_tile.clear();
+    dun_floor_tile.clear();
+    dun_wall_tile.clear();
+    dun_corner = -1;
+
+    dun_tile_extra = 0;
+    effect_tile.clear();
 }
 
 effect_type::effect_type()
@@ -98,40 +240,6 @@ void effect_type::effect_wipe()
 }
 
 
-dungeon_type::dungeon_type()
-{
-    dungeon_square_wipe();
-}
-
-/*
- * Wipe the dungeon_type class.
- * This function shoudld be used instead of WIPE command.
- * All variables in dungeon_type should be re-set in this function.
- * This function does not clear the object, effect, and monster lists.
- * It should not be called without first removing any
- * monsters, effects, or objects from their respective lists.
- */
-void dungeon_type::dungeon_square_wipe()
-{
-    feat = effect_idx = monster_idx = object_idx = 0;
-    path_cost = cave_info = 0;
-    special_lighting = obj_special_symbol = 0;
-    ui_flags = 0;
-    path_flow = dtrap = FALSE;
-    dun_color = Qt::black;
-    dun_char = ' ';
-    object_color = Qt::black;
-    object_char = ' ';
-    effect_color = Qt::black;
-    effect_char = ' ';
-    monster_color = Qt::black;
-    monster_char = ' ';
-
-    monster_tile.clear();
-    object_tile.clear();
-    dun_tile.clear();
-    effect_tile.clear();
-}
 
 
 feature_type::feature_type()
@@ -178,6 +286,22 @@ bool feature_type::is_jammed_door(void)
 
     /* Jammed doors */
     if (f_flags3 & (FF3_DOOR_JAMMED)) return (TRUE);
+    return (FALSE);
+}
+
+// Is the feature type a wall?
+// if known is false, the actual status is returned.
+// If true, the status as it appears to the player is returned.
+bool feature_type::is_wall()
+{
+    if (f_flags1 & (FF1_WALL)) return (TRUE);
+    return (FALSE);
+}
+
+// Is the dungeon feature a wall?
+bool feature_type::is_floor()
+{
+    if (f_flags1 & (FF1_FLOOR)) return (TRUE);
     return (FALSE);
 }
 
@@ -262,3 +386,30 @@ bool dungeon_type::has_visible_monster()
     if (use_graphics && (monster_tile.length() > 0)) return true;
     return false;
 }
+
+
+// Is the dungeon feature a wall?
+// if known is false, the actual status is returned.
+// If true, the status as it appears to the player is returned.
+bool dungeon_type::is_wall(bool known)
+{
+    int this_feat = feat;
+    if (known) this_feat = f_info[feat].f_mimic;
+
+    if (f_info[this_feat].is_wall()) return (TRUE);
+    return (FALSE);
+}
+
+// Is the dungeon feature a floor?
+// if known is false, the actual status is returned.
+// If true, the status as it appears to the player is returned.
+bool dungeon_type::is_floor(bool known)
+{
+    int this_feat = feat;
+    if (known) this_feat = f_info[feat].f_mimic;
+
+    if (f_info[this_feat].is_floor()) return (TRUE);
+    return (FALSE);
+}
+
+

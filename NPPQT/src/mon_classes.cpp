@@ -162,6 +162,7 @@ void monster_race::monster_race_wipe()
     d_char = '\0';
     max_num = cur_num = 0;
     tile_id.clear();
+    double_height_tile = FALSE;
 }
 
 bool monster_race::is_unique()

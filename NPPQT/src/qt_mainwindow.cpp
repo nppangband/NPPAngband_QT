@@ -117,10 +117,12 @@ void MainWindow::wait_animation(int n_animations)
 {
     anim_depth += n_animations;
 
-    if (anim_depth == n_animations) {
+    if (anim_depth == n_animations)
+    {
         if (anim_loop.isRunning()) qDebug("Already running animation");
         //qDebug("Animation loop %x", (int)&anim_loop);
-        if (anim_loop.exec() == -1) {
+        if (anim_loop.exec() == -1)
+        {
             qDebug("Exec failed");
         }
     }
@@ -210,7 +212,7 @@ QPixmap MainWindow::get_tile(QString tile_id, int tile_wid, int tile_hgt)
 
     if (tile_wid != pix.width() || tile_hgt != pix.height())
     {
-        pix = pix.scaled(tile_wid, tile_hgt);
+        pix.scaled(tile_wid, tile_hgt);
     }
 
     tiles.insert(tile_id, pix);
@@ -249,10 +251,7 @@ void MainWindow::set_graphic_mode(int mode)
             current_tiles = tiles_64x64;
             current_flav_tiles = tiles_flav_64x64;
             current_feat_tiles = tiles_feat_64x64;
-            ascii_mode_act->setChecked(FALSE);
             reg_mode_act->setChecked(TRUE);
-            dvg_mode_act->setChecked(FALSE);
-            old_tiles_act->setChecked(FALSE);
             break;
         }
         case GRAPHICS_DAVID_GERVAIS:
@@ -262,10 +261,7 @@ void MainWindow::set_graphic_mode(int mode)
             current_tiles = tiles_32x32;
             current_flav_tiles = tiles_flav_32x32;
             current_feat_tiles = tiles_feat_32x32;
-            ascii_mode_act->setChecked(FALSE);
-            reg_mode_act->setChecked(FALSE);
             dvg_mode_act->setChecked(TRUE);
-            old_tiles_act->setChecked(FALSE);
             break;
         }
         case GRAPHICS_ORIGINAL:
@@ -275,9 +271,6 @@ void MainWindow::set_graphic_mode(int mode)
             current_tiles = tiles_8x8;
             current_flav_tiles = tiles_flav_8x8;
             current_feat_tiles = tiles_feat_8x8;
-            ascii_mode_act->setChecked(FALSE);
-            reg_mode_act->setChecked(FALSE);
-            dvg_mode_act->setChecked(FALSE);
             old_tiles_act->setChecked(TRUE);
             break;
         }
@@ -289,9 +282,6 @@ void MainWindow::set_graphic_mode(int mode)
             current_flav_tiles = 0;
             current_feat_tiles = 0;
             ascii_mode_act->setChecked(TRUE);
-            reg_mode_act->setChecked(FALSE);
-            dvg_mode_act->setChecked(FALSE);
-            old_tiles_act->setChecked(FALSE);
             break;
         }
     }
@@ -318,24 +308,9 @@ void MainWindow::set_keymap_mode(int mode)
 {
     which_keyset = mode;
 
-    if (mode == KEYSET_ANGBAND)
-    {
-        keymap_new->setChecked(FALSE);
-        keymap_angband->setChecked(TRUE);
-        keymap_rogue->setChecked(FALSE);
-    }
-    else if (mode == KEYSET_ROGUE)
-    {
-        keymap_new->setChecked(FALSE);
-        keymap_angband->setChecked(FALSE);
-        keymap_rogue->setChecked(TRUE);
-    }
-    else // (mode == KEYSET_NEW)
-    {
-        keymap_new->setChecked(TRUE);
-        keymap_angband->setChecked(FALSE);
-        keymap_rogue->setChecked(FALSE);
-    }
+    if (mode == KEYSET_ANGBAND)     keymap_angband->setChecked(TRUE);
+    else if (mode == KEYSET_ROGUE)  keymap_rogue->setChecked(TRUE);
+    else /* (mode == KEYSET_NEW) */ keymap_new->setChecked(TRUE);
 }
 
 void MainWindow::set_font_main_window(QFont newFont)
@@ -411,9 +386,11 @@ void MainWindow::redraw_screen()
     {
         for (int x = 0; x < p_ptr->cur_map_wid; x++)
         {
-            light_spot(y, x);
+            light_spot(y, x, TRUE);
         }
     }
+
+    handle_stuff();
 }
 
 void MainWindow::redraw_all()
@@ -507,13 +484,12 @@ MainWindow::MainWindow()
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
 
-
     setAttribute(Qt::WA_DeleteOnClose);
 
     ui_mode = UI_MODE_DEFAULT;
 
     cursor = new DungeonCursor(this);
-    do_pseudo_ascii = false;
+    do_pseudo_ascii = do_25D_graphics = false;
 
     overhead_map_multiplier = dun_map_multiplier = main_multiplier = "1:1";
 
@@ -1109,6 +1085,12 @@ void MainWindow::create_actions()
     old_tiles_act->setStatusTip(tr("Set the graphics to 8x8 tiles mode."));
     connect(old_tiles_act, SIGNAL(triggered()), this, SLOT(set_old_tiles()));
 
+    two_five_d_graphics_act = new QAction(tr("Use 2.5D graphics"), this);
+    two_five_d_graphics_act->setCheckable(true);
+    two_five_d_graphics_act->setChecked(false);
+    two_five_d_graphics_act->setStatusTip(tr("Display 2.5D graphics.  Works only with the Raymond Gaustadness tile set."));
+    connect(two_five_d_graphics_act, SIGNAL(changed()), this, SLOT(set_two_five_d_graphics()));
+
     pseudo_ascii_act = new QAction(tr("Pseudo-Ascii monsters"), this);
     pseudo_ascii_act->setCheckable(true);
     pseudo_ascii_act->setChecked(false);
@@ -1267,6 +1249,13 @@ void MainWindow::set_ascii()
     ui_redraw_all();
 }
 
+void MainWindow::set_two_five_d_graphics()
+{
+    do_25D_graphics = two_five_d_graphics_act->isChecked();
+    ui_redraw_all();
+    update_sidebar_all();
+}
+
 void MainWindow::set_pseudo_ascii()
 {
     do_pseudo_ascii = pseudo_ascii_act->isChecked();
@@ -1380,20 +1369,27 @@ void MainWindow::create_menus()
     choose_keymap->addAction(keymap_angband);
     choose_keymap->addAction(keymap_rogue);
     keymap_new->setCheckable(TRUE);
+    keymap_new->setChecked(TRUE);
     keymap_angband->setCheckable(TRUE);
     keymap_rogue->setCheckable(TRUE);
     keymap_new->setChecked(TRUE);
+    keymap_choice = new QActionGroup(this);
+    keymap_choice->setExclusive(TRUE);
+    keymap_choice->addAction(keymap_new);
+    keymap_choice->addAction(keymap_rogue);
+    keymap_choice->addAction(keymap_new);
 
     menuBar()->addSeparator();
 
     //Tileset options
-    QMenu *choose_tile_set = settings->addMenu("Choose Tile Set");
+    QMenu *graphics_choices = settings->addMenu("Graphics Settings");
+    QMenu *choose_tile_set = graphics_choices->addMenu("Choose Tile Set");
     choose_tile_set->addAction(ascii_mode_act);
     choose_tile_set->addAction(reg_mode_act);
     choose_tile_set->addAction(dvg_mode_act);
     choose_tile_set->addAction(old_tiles_act);
-    settings->addAction(pseudo_ascii_act);
     tiles_choice = new QActionGroup(this);
+    tiles_choice->setExclusive(TRUE);
     tiles_choice->addAction(ascii_mode_act);
     tiles_choice->addAction(reg_mode_act);
     tiles_choice->addAction(dvg_mode_act);
@@ -1403,14 +1399,14 @@ void MainWindow::create_menus()
     reg_mode_act->setCheckable(TRUE);
     dvg_mode_act->setCheckable(TRUE);
     old_tiles_act->setCheckable(TRUE);
+    graphics_choices->addAction(two_five_d_graphics_act);
+    graphics_choices->addAction(pseudo_ascii_act);
     QMenu *hotkey_choices = settings->addMenu("Hotkey Settings");
     hotkey_choices->addAction(hotkey_manage);
     hotkey_choices->addAction(hotkey_export);
     hotkey_choices->addAction(hotkey_import);
 
-
-
-    QMenu *submenu = settings->addMenu(tr("Tile multiplier"));
+    QMenu *submenu = graphics_choices->addMenu(tr("Tile multiplier"));
     multipliers = new QActionGroup(this);
 
     for (int i = 0; !mult_list[i].isEmpty(); i++)
@@ -1424,10 +1420,10 @@ void MainWindow::create_menus()
     connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
 
 
-    QAction *act = settings->addAction(tr("Create tile package"));
+    QAction *act = graphics_choices->addAction(tr("Create tile package"));
     connect(act, SIGNAL(triggered()), this, SLOT(do_create_package()));
 
-    act = settings->addAction(tr("Extract tiles from package"));
+    act = graphics_choices->addAction(tr("Extract tiles from package"));
     connect(act, SIGNAL(triggered()), this, SLOT(do_extract_from_package()));
 
     // Knowledge section of top menu.
@@ -1543,6 +1539,8 @@ void MainWindow::read_settings()
 
     restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     recent_savefiles = settings.value("recentFiles").toStringList();
+    do_25D_graphics = settings.value("do_two_five_d", false).toBool();
+    two_five_d_graphics_act->setChecked(do_25D_graphics);
     do_pseudo_ascii = settings.value("pseudo_ascii", false).toBool();
     pseudo_ascii_act->setChecked(do_pseudo_ascii);
     use_graphics = settings.value("use_graphics", 0).toInt();
@@ -1720,6 +1718,7 @@ void MainWindow::write_settings()
     settings.setValue("font_dun_map", font_dun_map.toString());
     settings.setValue("font_overhead_map", font_overhead_map.toString());
     settings.setValue("window_state", saveState());
+    settings.setValue("do_two_five_d", do_25D_graphics);
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("use_graphics", use_graphics);
     settings.setValue("which_keyset", which_keyset);

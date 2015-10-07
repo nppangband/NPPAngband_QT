@@ -123,7 +123,7 @@ enum
 #define     FALSE   false
 #endif // FALSE
 
-
+#define N_A (TRUE+1)
 
 #define SIDEBAR_MONSTER_MAX	15
 
@@ -803,14 +803,6 @@ enum
 
 
 /*
- * Determine if a "legal" grid is within "los" of the player
- *
- * Note the use of comparison to zero to force a "boolean" result
- */
-#define player_has_los_bold(Y,X) \
-    ((dungeon_info[Y][X].cave_info & (CAVE_VIEW)) != 0)
-
-/*
  * Determine if the player has a clear enough head to observe things
  */
 
@@ -824,7 +816,7 @@ enum
  * Note the use of comparison to zero to force a "boolean" result
  */
 #define player_can_see_bold(Y,X) \
-    ((dungeon_info[Y][X].cave_info & (CAVE_SEEN)) != 0)
+    ((dungeon_info[Y][X].cave_info & (CAVE_VIEW)) != 0)
 
 /*
  * Determine if a "legal" grid is within "line of fire" of the player

@@ -21,6 +21,7 @@
 #include "src/npp.h"
 #include <src/cmds.h>
 #include "src/store.h"
+#include "src/project.h"
 
 
 

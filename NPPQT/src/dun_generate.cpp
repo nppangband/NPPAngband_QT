@@ -3478,13 +3478,13 @@ void build_terrain(int y, int x, int feat)
         newfeat = feat;
     }
     /* Put the feature quickly if we are overriding boring walls */
-    else if (_feat_ff1_match(f_ptr, FF1_WALL) &&
+    else if (f_ptr->is_wall() &&
         !_feat_ff3_match(f_ptr, TERRAIN_MASK))
     {
         newfeat = feat;
     }
     /* Tunnel the old feature */
-    else if (_feat_ff1_match(f2_ptr, FF1_FLOOR) &&
+    else if (f2_ptr->is_floor() &&
         _feat_ff1_match(f_ptr, FF1_CAN_TUNNEL))
     {
         newfeat = feat_state(oldfeat, FS_TUNNEL);
@@ -5370,7 +5370,7 @@ static void build_type_starburst(int y0, int x0, bool giant_room)
         }
 
         /* Adjust the size of the inner room */
-        if (feat_ff1_match(edge, FF1_WALL))
+        if (feat_ff1_match(feat, FF1_WALL))
         {
             dy /= 4;
             dx /= 4;
@@ -5828,7 +5828,7 @@ static bool new_player_spot_safe(void)
          * The spot must be a wall. Note that we do not need to call
          * in_bounds_fully
          */
-        if (!_feat_ff1_match(f_ptr, FF1_WALL)) continue;
+        if (!f_ptr->is_wall()) continue;
 
         /* But we don't want certain walls */
         if (_feat_ff1_match(f_ptr, FF1_INNER | FF1_OUTER | FF1_SOLID |
@@ -5847,7 +5847,7 @@ static bool new_player_spot_safe(void)
             f_ptr = &f_info[dungeon_info[yy][xx].feat];
 
             /* We need walls */
-            if (!_feat_ff1_match(f_ptr, FF1_WALL)) break;
+            if (!f_ptr->is_wall()) break;
 
             /* We don't want certain walls around us */
             if (_feat_ff1_match(f_ptr, FF1_INNER | FF1_OUTER |
@@ -6145,7 +6145,7 @@ static void place_marked_squares(void)
             if (!cave_plain_bold(y, x)) continue;
 
             /* Already Marked */
-            if (dungeon_info[y][x].cave_info & (CAVE_MARKED)) continue;
+            if (dungeon_info[y][x].cave_info & (CAVE_SPECIAL)) continue;
 
             /* Check if it should be a room or not "room" */
             if (((dungeon_info[y][x].cave_info & (CAVE_ROOM)) ? TRUE : FALSE) != is_room)
@@ -6160,7 +6160,7 @@ static void place_marked_squares(void)
         if (i == 10000) return;
 
         /*mark it*/
-        dungeon_info[y][x].cave_info |= (CAVE_MARKED);
+        dungeon_info[y][x].cave_info |= (CAVE_SPECIAL);
     }
 
 }
@@ -9588,7 +9588,7 @@ static void light_elements(bool show_objects)
                 int xx = x + ddx_ddd[i];
 
                 /* Lite the grid */
-                dungeon_info[yy][xx].cave_info |= (CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
+                dungeon_info[yy][xx].cave_info |= (CAVE_GLOW | CAVE_KNOWN);
 
                 /* Remember its objects if necessary */
                 if (show_objects)
@@ -10298,7 +10298,7 @@ void update_arena_level(byte stage)
 
             /* Make it all one big room, and light it up */
             dungeon_info[y][x].cave_info |= (CAVE_ROOM | CAVE_GLOW);
-            if (character_dungeon) light_spot(y, x);
+            if (character_dungeon) light_spot(y, x, TRUE);
         }
     }
 
@@ -10335,7 +10335,7 @@ void update_arena_level(byte stage)
 
                     /* Make it all one big room, and light it up */
                     dungeon_info[y][x].cave_info |= (CAVE_ROOM | CAVE_GLOW);
-                    if (character_dungeon) light_spot(y, x);
+                    if (character_dungeon) light_spot(y, x, TRUE);
 
                     /* Go to the next square */
                     break;
@@ -10642,8 +10642,6 @@ static bool build_greater_vault_level(void)
 
 /*
  * Generate an unthemed new dungeon level
- *
- * Note that "dun_body" adds about 4000 bytes of memory to the stack.
  */
 static bool cave_gen(void)
 {

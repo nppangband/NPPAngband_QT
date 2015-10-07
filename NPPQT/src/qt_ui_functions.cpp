@@ -138,6 +138,8 @@ void ui_activate_main_window()
 
 UserInput ui_get_input()
 {
+    ui_redraw_all();
+
     // Avoid reentrant calls
     if (main_window->ev_loop.isRunning())
     {
@@ -146,6 +148,8 @@ UserInput ui_get_input()
         temp.key = 0;
         temp.x = temp.y = -1;
         temp.text.clear();
+
+        ui_redraw_all();
         return temp;
     }
 
@@ -170,6 +174,8 @@ UserInput ui_get_input()
         main_window->input.key = 0;
         main_window->input.text.clear();
     }
+
+    ui_redraw_all();
 
     return main_window->input;
 }
@@ -232,9 +238,38 @@ QSize ui_grid_size()
     return QSize(main_window->main_cell_wid, main_window->main_cell_hgt);
 }
 
-QPixmap ui_get_tile(QString tile_id)
+QPixmap ui_get_tile(QString tile_id, bool allow_double_height)
 {
-    return (main_window->get_tile(tile_id, 32, 32));
+    // Build a transparent 1x1 pixmap
+    if (tile_id.isEmpty()) return ui_make_blank();
+
+    if (!current_tiles) return ui_make_blank();
+
+    QPixmap pix;
+
+    if (tile_id.startsWith("flav_")) pix = current_flav_tiles->get_tile(tile_id);
+    else if (tile_id.startsWith("feat_")) pix = current_feat_tiles->get_tile(tile_id);
+    else pix = current_tiles->get_tile(tile_id);
+
+    if (pix.width() == 1) return pix;
+
+    int hgt = 32;
+    int wid = 32;
+
+    // Use double_height tiles if appropriate
+    if (allow_double_height)
+    {
+        if (pix.height() >= pix.width()*18/10) hgt = 64;
+    }
+
+
+    if (wid != pix.width() || hgt != pix.height())
+    {
+        pix.scaled(32, 32);
+
+    }
+
+    return pix;
 }
 
 

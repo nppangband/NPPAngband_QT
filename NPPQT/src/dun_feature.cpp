@@ -16,6 +16,7 @@
  */
 
 #include "src/npp.h"
+#include "src/project.h"
 
 
 /*
@@ -224,7 +225,7 @@ void find_secret(int y, int x)
 
     if (f_l_ptr->f_l_sights < UCHAR_MAX) f_l_ptr->f_l_sights++;
 
-    if (player_has_los_bold(y, x) && (!f_ptr->f_text.isEmpty()))
+    if (player_can_see_bold(y, x) && (!f_ptr->f_text.isEmpty()))
     {
         /* You have found something */
         message(f_ptr->f_text);
@@ -388,10 +389,10 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc)
             x_ptr->x_flags &= ~(EF1_HIDDEN);
 
             /* Memorize */
-            dungeon_info[y][x].mark_square();
+            dungeon_info[y][x].mark_known_square();
 
             /*Light it up*/
-            light_spot(y, x);
+            light_spot(y, x, FALSE);
         }
 
         /* We have seen this feature */
@@ -681,7 +682,7 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             note_spot(y, x);
 
             /* Redraw */
-            light_spot(y, x);
+            light_spot(y, x, FALSE);
         }
 
         /*Count in the feature lore the number of times set off*/
@@ -936,13 +937,13 @@ QString hit_trap(int f_idx, int y, int x, byte mode)
             {
 
                 message(QString("You are enveloped in a cloud of smoke!"));
-                dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
+                dungeon_info[y][x].unmark_known_square();
 
                 /* Destroy the trap */
                 delete_effect_idx(dungeon_info[y][x].effect_idx);
 
                 /* Forget the trap */
-                dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
+                dungeon_info[y][x].unmark_known_square();
 
                 num = sum_base + randint(sum_plus);
                 for (i = 0; i < num; i++)
@@ -1309,7 +1310,7 @@ void feat_near(int feat, int y, int x)
             if (f_info[dungeon_info[ty][tx].feat].f_flags1 & (FF1_PERMANENT)) continue;
 
             /* Don't like non-floor space */
-            if (!(f_info[dungeon_info[ty][tx].feat].f_flags1 & (FF1_FLOOR))) continue;
+            if (!(f_info[dungeon_info[ty][tx].feat].is_floor())) continue;
 
             /* Don't like objects */
             if (dungeon_info[ty][tx].has_object()) continue;
@@ -2885,7 +2886,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
         g_ptr->counter = calculate_turn_count(feat);
 
         /* Check line of fire and los */
-        if (!player_can_fire_bold(y, x) || !player_has_los_bold(y, x)) return;
+        if (!player_can_fire_bold(y, x) || !player_can_see_bold(y, x)) return;
 
         /* Select damage type */
         gf_type = (one_in_(10) ? GF_POIS: GF_ARROW);
@@ -2938,7 +2939,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
         g_ptr->counter = calculate_turn_count(feat);
 
         /* Player must be near to the silent watcher */
-        if (!player_has_los_bold(y, x) || (distance(y, x, p_ptr->py, p_ptr->px) > 4)) return;
+        if (!player_can_see_bold(y, x) || (distance(y, x, p_ptr->py, p_ptr->px) > 4)) return;
 
         /* Message */
         message(QString("The silent watcher howls in madness!"));

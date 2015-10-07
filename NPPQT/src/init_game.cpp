@@ -620,26 +620,12 @@ static int init_other(void)
 
     reset_dungeon_info();
 
-    /* Array of grids */
-    view_g = C_ZNEW(VIEW_MAX, u16b);
-    view_n = 0;
+    /* Array of visible grids */
+    cave_view_list.clear();
 
-    /* Array of grids */
-    temp_g = C_ZNEW(TEMP_MAX, u16b);
-    temp_n = 0;
 
-    /* Hack -- use some memory twice */
-    temp_y = ((byte*)(temp_g)) + 0;
-    temp_x = ((byte*)(temp_g)) + TEMP_MAX;
-
-    /* Array of grids */
-    fire_g = C_ZNEW(VIEW_MAX, u16b);
-    fire_n = 0;
-
-    /* has_LIGHT patch causes both temp_g and temp_x/y to be used
-       in targetting mode: can't use the same memory any more. */
-    temp_y = C_ZNEW(TEMP_MAX, byte);
-    temp_x = C_ZNEW(TEMP_MAX, byte);
+    /* Array of line-of_sight grids */
+    cave_fire_list.clear();
 
     /* Array of dynamic grids */
     dyna_g = C_ZNEW(DYNA_MAX, dynamic_grid_type);
@@ -1341,17 +1327,6 @@ void cleanup_npp_games(void)
 
     /* Prepare monster movement array*/
     FREE_ARRAY(mon_moment_info);
-
-    /* Free the "update_view()" array */
-    FREE_ARRAY(view_g);
-
-    /* Free the other "update_view()" array */
-    FREE_ARRAY(fire_g);
-
-    /* Free the temp array */
-    FREE_ARRAY(temp_g);
-    FREE_ARRAY(temp_y);
-    FREE_ARRAY(temp_x);
 
     /* Free the dynamic features array */
     FREE_ARRAY(dyna_g);

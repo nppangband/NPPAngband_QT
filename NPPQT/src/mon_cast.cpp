@@ -18,6 +18,7 @@
  */
 
 #include "src/npp.h"
+#include "src/project.h"
 
 /*
  * Determine if there is a space near the the selected spot in which

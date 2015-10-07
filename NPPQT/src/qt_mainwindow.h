@@ -67,6 +67,7 @@ public:
     int main_tile_hgt, main_tile_wid;
     int main_cell_hgt, main_cell_wid;
     QString main_multiplier;
+    bool do_25D_graphics;
     bool do_pseudo_ascii;
 
     // Scaled tiles
@@ -134,7 +135,6 @@ public:
     void update_targetbar(int toolbar);
 
 
-
 protected:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent* which_key);
@@ -172,7 +172,7 @@ private slots:
     void do_create_package();
     void do_extract_from_package();
 
-    void slot_targetting_button();
+    void slot_targeting_button();
 
     void slot_simplified_keyset() {set_keymap_mode(KEYSET_NEW);}
     void slot_angband_keyset() {set_keymap_mode(KEYSET_ANGBAND);}
@@ -189,6 +189,7 @@ private slots:
     void set_dvg();
     void set_old_tiles();
     void set_ascii();
+    void set_two_five_d_graphics();
     void set_pseudo_ascii();
     void display_monster_info();
     void display_object_info();
@@ -254,10 +255,12 @@ private:
     QAction *reg_mode_act;
     QAction *dvg_mode_act;
     QAction *old_tiles_act;
+    QAction *two_five_d_graphics_act;
     QAction *pseudo_ascii_act;
     QAction *font_main_select_act;
     QAction *font_messages_select_act;
     QAction *font_sidebar_select_act;
+    QActionGroup *keymap_choice;
     QAction *keymap_new;
     QAction *keymap_angband;
     QAction *keymap_rogue;

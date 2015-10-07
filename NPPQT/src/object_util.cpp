@@ -20,7 +20,7 @@
  */
 #include "src/npp.h"
 #include "src/init.h"
-
+#include "src/project.h"
 
 
 
@@ -831,7 +831,7 @@ void delete_object_idx(int o_idx)
         p_ptr->redraw |= (PR_WIN_OBJLIST);
 
         /* Visual update */
-        light_spot(y, x);
+        light_spot(y, x, FALSE);
     }
 
     /* Wipe the object */
@@ -876,7 +876,7 @@ void delete_object(int y, int x)
     p_ptr->redraw |= (PR_WIN_OBJLIST);
 
     /* Visual update */
-    light_spot(y, x);
+    light_spot(y, x, FALSE);
 }
 
 
@@ -2131,7 +2131,7 @@ s16b floor_carry(int y, int x, object_type *j_ptr)
         note_spot(y, x);
 
         /* Redraw */
-        light_spot(y, x);
+        light_spot(y, x, FALSE);
 
 
         /*If the player can see the drop, mark the lore*/

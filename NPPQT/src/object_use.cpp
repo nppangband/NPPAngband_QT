@@ -22,6 +22,7 @@
 #include <src/cmds.h>
 #include "src/player_command.h"
 #include "src/object_settings.h"
+#include "src/project.h"
 
 /*
  * Determine if the player can read scrolls.

@@ -10,25 +10,23 @@
 #include <QString>
 #include <QColor>
 
-
+typedef struct dungeon_coordinates dungeon_coordinates;
 typedef struct maxima maxima;
 typedef struct colors_preset colors_preset;
 typedef struct alloc_entry alloc_entry;
 typedef struct quest_type quest_type;
 typedef struct owner_type owner_type;
 typedef struct store_type store_type;
-//typedef struct magic_type magic_type;
-//typedef struct start_item start_item;
 typedef struct names_type names_type;
 typedef struct autoinscription autoinscription;
-//typedef struct move_moment_type move_moment_type;
-typedef struct coord coord;
+
 typedef struct quiver_group_type quiver_group_type;
 typedef struct option_entry option_entry;
 typedef struct dungeon_capabilities_type dungeon_capabilities_type;
 typedef struct slays_structure slays_structure;
 typedef struct brands_structure brands_structure;
 typedef struct mon_susceptibility_struct mon_susceptibility_struct;
+typedef struct wall_type wall_type;
 
 #define INPUT_MODE_NONE 0
 #define INPUT_MODE_KEY 1
@@ -43,8 +41,11 @@ public:
     int x, y;
 };
 
-
-
+struct dungeon_coordinates
+{
+    int x;
+    int y;
+};
 
 /*
  * Information about maximal indices of certain arrays
@@ -153,22 +154,6 @@ struct names_type
     u16b lprobs[S_WORD+1][S_WORD+1][S_WORD+1];
     u16b ltotal[S_WORD+1][S_WORD+1];
 };
-
-
-
-
-/*
- * Simple structure to hold a map location
- */
-
-
-struct coord
-{
-    byte y;
-    byte x;
-};
-
-
 
 
 /*
@@ -310,6 +295,22 @@ struct mon_susceptibility_struct
   u32b brand_flag;  /* Assumes in object flag TR1_ */
   u32b mon_flag; /* Assumes in monster flag RF3 */
   QString brand_susceptibility;
+};
+
+struct wall_type
+{
+    QString wall_name;
+    byte dir_sw;
+    byte dir_s;
+    byte dir_se;
+    byte dir_w;
+    byte dir_e;
+    byte dir_nw;
+    byte dir_n;
+    byte dir_ne;
+    byte dir1;
+    byte dir2;
+    byte dir3;
 };
 
 

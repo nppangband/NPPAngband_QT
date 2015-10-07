@@ -57,7 +57,7 @@ static bool path_accept_square(int y, int x)
     {
         if (!cave_passable_bold(y, x)) return FALSE;
         //Can't see it
-        if (!(dungeon_info[y][x].cave_info & (CAVE_EXPLORED))) return (FALSE);
+        if (!dungeon_info[y][x].is_known_square()) return (FALSE);
     }
     else if (!cave_ff1_match(y, x, FF1_MOVE)) return (FALSE);
 
@@ -161,7 +161,7 @@ static int see_wall(int dir, int y, int x)
     if (!in_bounds(y, x)) return (FALSE);
 
     /* Unknown walls are not known walls */
-    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) return (FALSE);
+    if (!dungeon_info[y][x].is_known_square()) return (FALSE);
 
     /* Non-wall grids are not known walls */
     /* Was !cave_ff1_match(y, x, FF1_WALL) -DG- */
@@ -506,7 +506,7 @@ static bool run_test(void)
         inv = TRUE;
 
         /* Check memorized grids */
-        if (dungeon_info[row][col].cave_info & (CAVE_MARK))
+        if (dungeon_info[row][col].is_known_square())
         {
             feature_type *f_ptr;
 
@@ -635,7 +635,7 @@ static bool run_test(void)
 
             /* Unknown grid or non-wall */
             /* Was: cave_floor_bold(row, col) */
-            if (!(dungeon_info[row][col].cave_info & (CAVE_MARK)) || feat_ff1_match(feat, FF1_MOVE))
+            if (!dungeon_info[row][col].is_known_square() || feat_ff1_match(feat, FF1_MOVE))
             {
                 /* Looking to break right */
                 if (p_ptr->run_break_right)
@@ -671,7 +671,7 @@ static bool run_test(void)
 
             /* Unknown grid or non-wall */
             /* Was: cave_floor_bold(row, col) */
-            if (!(dungeon_info[row][col].cave_info & (CAVE_MARK)) || feat_ff1_match(feat, FF1_MOVE))
+            if (!dungeon_info[row][col].is_known_square() || feat_ff1_match(feat, FF1_MOVE))
             {
                 /* Looking to break left */
                 if (p_ptr->run_break_left)

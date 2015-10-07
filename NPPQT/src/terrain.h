@@ -93,6 +93,9 @@
 
 #define MAX_DISTANCE_BETWEEN_UPDATES 12
 
+// FOr recognizing if a wall is a corner, part of a corridor, etc.
+#define MAX_WALL_TYPES  12
+
 
 /*
  * Number of feats we change to (Excluding default). Used in f_info.txt.
@@ -314,21 +317,20 @@ enum
 /*
  * Special cave grid flags
  */
-#define CAVE_MARK		0x0001 	/* memorized feature */
+#define CAVE_KNOWN		0x0001 	/* memorized feature */
 #define CAVE_GLOW		0x0002 	/* self-illuminating */
 #define CAVE_ICKY		0x0004 	/* part of a vault */
 #define CAVE_ROOM		0x0008 	/* part of a room */
 #define CAVE_G_VAULT    0x0010  /* part of a greater vault */
-#define CAVE_MARKED		0x0020 	/* used to occasionally allow unusual things to happen */
+#define CAVE_SPECIAL    0x0020 	/* used to occasionally allow unusual things to happen */
 #define CAVE_DTRAP		0x0040 	/* trap detected grid */
 #define CAVE_LOS		0x0080 	/* grid allows LOS */
 #define CAVE_FIRE       0x0100  /* is in line of fire */
-#define CAVE_SEEN     	0x0200  /* seen flag */
-#define CAVE_VIEW       0x0400  /* view flag */
+#define CAVE_VIEW     	0x0200  /* is in line of sight */
+#define CAVE_TORCH      0x0400  // Visible and within the player light radius
 #define CAVE_HALO		0x0800	/* glowing grid (FF2_GLOW), or adjacent to glowing grid */
-
 #define CAVE_PROJECT	0x1000  /* grid allows projections */
-#define CAVE_EXPLORED   0x2000  /* The player has seen this square, for running */
+#define CAVE_EDGE       0x2000  // This square is lit up as an edge only
 #define CAVE_MOVE       0x4000  /* grid allows movement */
 #define CAVE_TEMP       0x8000  /* temporary flag (hard-coded position) */
 

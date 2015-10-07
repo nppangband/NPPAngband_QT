@@ -15,6 +15,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 #include "src/npp.h"
+#include "src/project.h"
 
 
 /*

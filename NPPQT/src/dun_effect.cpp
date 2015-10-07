@@ -20,6 +20,7 @@
  */
 
 #include "src/npp.h"
+#include "src/project.h"
 
 
 /* Maximum number of delayed effect bursts */
@@ -202,7 +203,7 @@ static void place_effect_idx(int x_idx, int y, int x)
     /* Redraw grid if necessary */
     if (character_dungeon && !(x_ptr->x_flags & (EF1_HIDDEN)))
     {
-        light_spot(y, x);
+        light_spot(y, x, FALSE);
     }
 }
 
@@ -733,7 +734,7 @@ void delete_effect_idx(int x_idx)
     update_los_proj_move(y, x);
 
     /* Visual update */
-    light_spot(y, x);
+    light_spot(y, x, FALSE);
 
     /* Count effects */
     x_cnt--;
@@ -777,7 +778,7 @@ void delete_effects(int y, int x)
     update_los_proj_move(y, x);
 
     /* Visual update */
-    light_spot(y, x);
+    light_spot(y, x, FALSE);
 }
 
 
@@ -925,7 +926,7 @@ static bool effect_burst(const effect_type *x_ptr)
     if (CHECK_DISTURB(FALSE)) flg |= (PROJECT_HIDE);
 
     /* Leave graphics for later in empty grids */
-    else if ((op_ptr->delay_factor > 0) && !dungeon_info[y][x].has_effect() && player_has_los_bold(y, x) && panel_contains(y, x))
+    else if ((op_ptr->delay_factor > 0) && !dungeon_info[y][x].has_effect() && player_can_see_bold(y, x) && panel_contains(y, x))
     {
         /* Don't display anything now */
         flg |= (PROJECT_HIDE);
@@ -1077,7 +1078,7 @@ static void process_effect(int x_idx)
                     (!dungeon_info[y][x].has_monster()) && one_in_(2))
                 {
                     /* Redraw */
-                    light_spot(y, x);
+                    light_spot(y, x, TRUE);
                 }
 
                 break;
@@ -1238,17 +1239,6 @@ static void show_burst_effects(void)
             int x = burst_x[i];
 
             ui_animate_ball(y, x, 1, burst_gf[i], 0L);
-        }
-
-        /* Clear the burst effects and restore old graphics */
-        for (i = 0; i < n_burst; i++)
-        {
-            /* Get coordinates */
-            int y = burst_y[i];
-            int x = burst_x[i];
-
-            /* Restore */
-            light_spot(y, x);
         }
     }
 

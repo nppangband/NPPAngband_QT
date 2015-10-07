@@ -1931,7 +1931,6 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
             message(QString("You feel more comfortable after removing your weapon."));
         }
     }
-
 }
 
 
@@ -2119,6 +2118,12 @@ void redraw_stuff(void)
     if (p_ptr->redraw & (PR_TURNCOUNT)) ui_update_char_turncount();
 
     if (p_ptr->redraw & (PR_WIN_CHAR_EQUIP_INFO)) ui_update_char_equip_info_window();
+
+    if (p_ptr->redraw & PR_MAP_SQUARES)
+    {
+        redraw_square_list();
+        p_ptr->redraw &= ~(PR_MAP_SQUARES);
+    }
 }
 
 

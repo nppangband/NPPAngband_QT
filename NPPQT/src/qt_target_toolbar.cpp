@@ -20,7 +20,7 @@
 #include <src/player_command.h>
 #include <QToolBar>
 
-void MainWindow::slot_targetting_button()
+void MainWindow::slot_targeting_button()
 {
     if (ui_mode != UI_MODE_INPUT || !ev_loop.isRunning()) return;
 
@@ -49,58 +49,58 @@ void MainWindow::create_targetbar(void)
     escape->setToolTip("ESC - Cancel Targeting.");
     escape->setProperty("key", Qt::Key_Escape);
     target_toolbar->addAction(escape);
-    connect(escape, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(escape, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
     use_current = new QAction(tr("Select Target"), this);
     use_current->setIcon(QIcon(":icons/lib/icons/target.png"));
     use_current->setToolTip("5 - Select This Target.");
     use_current->setProperty("key", Qt::Key_5);
     target_toolbar->addAction(use_current);
-    connect(use_current, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(use_current, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
     target_closest = new QAction(tr("Target Closest"), this);
     target_closest->setIcon(QIcon(":icons/lib/icons/target-closest.png"));
     target_closest->setToolTip("C - Select the closest target.");
     target_closest->setProperty("key", Qt::Key_C);
     target_toolbar->addAction(target_closest);
-    connect(target_closest, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(target_closest, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
     target_interactive = new QAction(tr("Interactive targeting mode"), this);
     target_interactive->setIcon(QIcon(":icons/lib/icons/target-interactive.png"));
     target_interactive->setToolTip("* - Select the target interactively.");
     target_interactive->setProperty("key", Qt::Key_Asterisk);
     target_toolbar->addAction(target_interactive);
-    connect(target_interactive, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(target_interactive, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
     target_manually = new QAction(tr("Manual targeting mode"), this);
     target_manually->setIcon(QIcon(":icons/lib/icons/target-manual.png"));
     target_manually->setToolTip("* m - Select the target manually.");
     target_manually->setProperty("key", Qt::Key_M);
     target_toolbar->addAction(target_manually);
-    connect(target_manually, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(target_manually, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
     target_player = new QAction(tr("Target the player"), this);
     target_player->setIcon(QIcon(":icons/lib/icons/target-player.png"));
     target_player->setToolTip("p - Target the player location.");
     target_player->setProperty("key", Qt::Key_P);
     target_toolbar->addAction(target_player);
-    connect(target_player, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(target_player, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
     view_grid_contents = new QAction(tr("View Grid Contents"), this);
     view_grid_contents->setIcon(QIcon(":icons/lib/icons/help.png"));
     view_grid_contents->setToolTip("L = View the contents of the grid.");
     view_grid_contents->setProperty("key", Qt::Key_L);
     target_toolbar->addAction(view_grid_contents);
-    connect(view_grid_contents, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(view_grid_contents, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
     target_help = new QAction(tr("View Grid Contents"), this);
     target_help->setIcon(QIcon(":icons/lib/icons/help.png"));
     target_help->setToolTip("L = View the contents of the grid.");
     target_help->setProperty("key", Qt::Key_Question);
     target_toolbar->addAction(target_help);
-    connect(target_help, SIGNAL(triggered()), this, SLOT(slot_targetting_button()));
+    connect(target_help, SIGNAL(triggered()), this, SLOT(slot_targeting_button()));
 
-    ui_toolbar_hide(TOOLBAR_TARGETTING);
+    ui_toolbar_hide(TOOLBAR_TARGETING);
 }
 
 void MainWindow::update_targetbar(int toolbar)
@@ -109,7 +109,7 @@ void MainWindow::update_targetbar(int toolbar)
 
     switch (toolbar)
     {
-        case TOOLBAR_TARGETTING:
+        case TOOLBAR_TARGETING:
         {
             target_closest->setVisible(TRUE);
             target_interactive->setVisible(TRUE);
@@ -118,7 +118,7 @@ void MainWindow::update_targetbar(int toolbar)
             view_grid_contents->setVisible(FALSE);
             break;
         }
-        case TOOLBAR_TARGETTING_INTERACTIVE:
+        case TOOLBAR_TARGETING_INTERACTIVE:
         {
             target_closest->setVisible(FALSE);
             target_interactive->setVisible(FALSE);

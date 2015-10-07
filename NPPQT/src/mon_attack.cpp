@@ -18,6 +18,7 @@
  */
 
 #include "src/npp.h"
+#include "src/project.h"
 
 #define MAX_DESC_INSULT   8
 

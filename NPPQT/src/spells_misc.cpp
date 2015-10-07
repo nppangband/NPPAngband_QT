@@ -19,6 +19,7 @@
 
 #include "src/npp.h"
 #include <src/spells.h>
+#include "src/project.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QRadioButton>
@@ -27,6 +28,7 @@
 #include <QApplication>
 #include <QTextEdit>
 
+static QVector<dungeon_coordinates> cave_temp_list;
 
 /*
  * Increase players hit points, notice effects
@@ -133,7 +135,7 @@ bool warding_glyph(void)
     set_effect_glyph(py, px);
 
     /* Remember this square */
-    dungeon_info[py][px].cave_info |= (CAVE_MARK);
+    dungeon_info[py][px].mark_known_square();
 
     /* Success */
     return (TRUE);
@@ -307,8 +309,8 @@ bool create_glacier(void)
         set_effect_glacier(FEAT_WALL_GLACIER, y, x, SOURCE_EFFECT, 0);
 
         /* Show that grid */
-        dungeon_info[y][x].cave_info |= (CAVE_MARK);
-        light_spot(y, x);
+        dungeon_info[y][x].mark_known_square();
+        light_spot(y, x, FALSE);
 
         /* Success */
         status = TRUE;
@@ -799,18 +801,14 @@ static void cave_temp_room_light(void)
 {
     int i;
 
-
     /* Apply flag changes */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < cave_temp_list.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
-
         /* No longer in the array */
-        dungeon_info[y][x].cave_info &= ~(CAVE_TEMP);
+        dungeon_info[cave_temp_list[i].y][cave_temp_list[i].x].cave_info &= ~(CAVE_TEMP);
 
         /* Perma-Lite */
-        dungeon_info[y][x].cave_info |= (CAVE_GLOW);
+        dungeon_info[cave_temp_list[i].y][cave_temp_list[i].x].cave_info |= (CAVE_GLOW);
     }
 
     /* Fully update the visuals */
@@ -820,13 +818,13 @@ static void cave_temp_room_light(void)
     update_stuff();
 
     /* Process the grids */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < cave_temp_list.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
+        int y = cave_temp_list[i].y;
+        int x = cave_temp_list[i].x;
 
         /* Redraw the grid */
-        light_spot(y, x);
+        light_spot(y, x, FALSE);
 
         /* Process affected monsters */
         if (dungeon_info[y][x].monster_idx > 0)
@@ -856,7 +854,7 @@ static void cave_temp_room_light(void)
     }
 
     /* None left */
-    temp_n = 0;
+    cave_temp_list.clear();
 }
 
 
@@ -875,10 +873,10 @@ static void cave_temp_room_unlite(void)
     int i;
 
     /* Apply flag changes */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < cave_temp_list.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
+        int y = cave_temp_list[i].y;
+        int x = cave_temp_list[i].x;
 
         /* No longer in the array */
         dungeon_info[y][x].cave_info &= ~(CAVE_TEMP);
@@ -894,7 +892,7 @@ static void cave_temp_room_unlite(void)
                 (EF1_HIDDEN))))
         {
             /* Forget the grid */
-            dungeon_info[y][x].cave_info &= ~(CAVE_MARK | CAVE_EXPLORED);
+            dungeon_info[y][x].cave_info &= ~(CAVE_KNOWN);
         }
     }
 
@@ -905,19 +903,14 @@ static void cave_temp_room_unlite(void)
     update_stuff();
 
     /* Process the grids */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < cave_temp_list.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
-
         /* Redraw the grid */
-        light_spot(y, x);
-
-
+        light_spot(cave_temp_list[i].y, cave_temp_list[i].x, FALSE);
     }
 
     /* None left */
-    temp_n = 0;
+    cave_temp_list.clear();
 }
 
 
@@ -934,16 +927,14 @@ static void cave_temp_room_aux(int y, int x)
     /* Do not "leave" the current room */
     if (!(dungeon_info[y][x].cave_info & (CAVE_ROOM))) return;
 
-    /* Paranoia -- verify space */
-    if (temp_n == TEMP_MAX) return;
-
     /* Mark the grid as "seen" */
     dungeon_info[y][x].cave_info |= (CAVE_TEMP);
 
     /* Add it to the "seen" set */
-    temp_y[temp_n] = y;
-    temp_x[temp_n] = x;
-    temp_n++;
+    dungeon_coordinates this_coord;
+    this_coord.y = y;
+    this_coord.x = x;
+    cave_temp_list.append(this_coord);
 }
 
 
@@ -1082,7 +1073,7 @@ void mass_aggravate_monsters(int who)
         m_ptr->m_timed[MON_TMD_SLEEP] = 0;
 
         /* Speed up monsters in line of sight */
-        if (player_has_los_bold(m_ptr->fy, m_ptr->fx))
+        if (player_can_see_bold(m_ptr->fy, m_ptr->fx))
         {
             int flag = MON_TMD_FLG_NOTIFY;
 
@@ -1549,7 +1540,7 @@ void destroy_area(int y1, int x1, int r)
             dungeon_info[y][x].cave_info &= ~(CAVE_ROOM);
 
             /* Lose light and knowledge */
-            dungeon_info[y][x].cave_info &= ~(CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
+            dungeon_info[y][x].cave_info &= ~(CAVE_GLOW | CAVE_KNOWN);
 
             /* Hack -- Notice player affect */
             if (dungeon_info[y][x].monster_idx < 0)
@@ -1724,7 +1715,7 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
             dungeon_info[yy][xx].cave_info &= ~(CAVE_ROOM);
 
             /* Lose light and knowledge */
-            dungeon_info[yy][xx].cave_info &= ~(CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
+            dungeon_info[yy][xx].cave_info &= ~(CAVE_GLOW | CAVE_KNOWN);
 
             /* Skip the epicenter */
             if (!dx && !dy) continue;
@@ -2016,15 +2007,14 @@ void earthquake(int cy, int cx, int r, bool kill_vault)
  */
 void light_room(int y1, int x1)
 {
-    int i, x, y;
-
     /* Add the initial grid */
     cave_temp_room_aux(y1, x1);
 
     /* While grids are in the queue, add their neighbors */
-    for (i = 0; i < temp_n; i++)
+    for (int i = 0; i < cave_temp_list.size(); i++)
     {
-        x = temp_x[i], y = temp_y[i];
+        int x = cave_temp_list[i].x;
+        int y = cave_temp_list[i].y;
 
         /* Walls get lit, but stop light */
         if (!cave_project_bold(y, x)) continue;
@@ -2056,15 +2046,14 @@ void light_room(int y1, int x1)
  */
 void unlight_room(int y1, int x1)
 {
-    int i, x, y;
-
     /* Add the initial grid */
     cave_temp_room_aux(y1, x1);
 
     /* Spread, breadth first */
-    for (i = 0; i < temp_n; i++)
+    for (int i = 0; i < cave_temp_list.size(); i++)
     {
-        x = temp_x[i], y = temp_y[i];
+        int x = cave_temp_list[i].x;
+        int y = cave_temp_list[i].y;
 
         /* Walls get dark, but stop darkness */
         if (!cave_project_bold(y, x)) continue;
@@ -4473,7 +4462,7 @@ bool read_minds(void)
                     flag = TRUE;
 
                     /* Lite */
-                    dungeon_info[yy][xx].cave_info |= (CAVE_MARK | CAVE_GLOW);
+                    dungeon_info[yy][xx].cave_info |= (CAVE_KNOWN | CAVE_GLOW);
 
                     /* Remember the feature */
                     f_info[dungeon_info[yy][xx].feat].f_everseen = TRUE;

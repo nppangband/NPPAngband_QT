@@ -47,7 +47,8 @@ void DungeonCursor::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     painter->save();
 
-    if (parent->ui_mode == UI_MODE_INPUT) {
+    if (parent->ui_mode == UI_MODE_INPUT)
+    {
         painter->setOpacity(0.5);
         painter->setPen(Qt::NoPen);
         painter->setBrush(QColor("red"));
@@ -117,17 +118,19 @@ QString find_cloud_tile(int y, int x)
 
     if (!use_graphics) return tile;
 
-    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK | CAVE_SEEN))) return tile;
+    if (!(dungeon_info[y][x].cave_info & (CAVE_KNOWN | CAVE_VIEW))) return tile;
 
     int x_idx = dungeon_info[y][x].effect_idx;
-    while (x_idx) {
+    while (x_idx)
+    {
         effect_type *x_ptr = x_list + x_idx;
         x_idx = x_ptr->next_x_idx;
 
         if (x_ptr->x_flags & EF1_HIDDEN) continue;
 
         if (x_ptr->x_type == EFFECT_PERMANENT_CLOUD || x_ptr->x_type == EFFECT_LINGERING_CLOUD
-                || x_ptr->x_type == EFFECT_SHIMMERING_CLOUD) {
+                || x_ptr->x_type == EFFECT_SHIMMERING_CLOUD)
+        {
             int feat = x_ptr->x_f_idx;
             feat = f_info[feat].f_mimic;
             return f_info[feat].tile_id;
@@ -137,6 +140,38 @@ QString find_cloud_tile(int y, int x)
     return tile;
 }
 
+typedef struct floor_location floor_location;
+struct floor_location
+{
+    QString name_append;
+    bool southwest;
+    bool south;
+    bool southeast;
+    bool west;
+    bool east;
+    bool northwest;
+    bool north;
+    bool northeast;
+};
+
+
+// Determine if a tile should be drawn at double-height
+static bool is_double_height_tile(int y, int x)
+{
+    dungeon_type *d_ptr = &dungeon_info[y][x];
+
+    if (use_graphics != GRAPHICS_RAYMOND_GAUSTADNES) return (FALSE);
+    if (!d_ptr->double_height_monster) return (FALSE);
+    if (main_window->ui_mode == UI_MODE_INPUT) return (FALSE);
+    if (in_bounds(y-1, x))
+    {
+        dungeon_type *dun2_ptr = &dungeon_info[y-1][x];
+        if (dun2_ptr->has_visible_monster()) return (FALSE);
+    }
+    return (TRUE);
+}
+
+// This function redraws the actual dungeon square
 void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     (void)option;
@@ -156,6 +191,11 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     QString key2;
     qreal opacity = 1;
     bool do_shadow = false;
+
+    key2.clear();
+
+    bool double_height_mon = FALSE;
+    bool double_height_mon_below = FALSE;
 
     flags = (d_ptr->ui_flags & (UI_LIGHT_BRIGHT | UI_LIGHT_DIM | UI_LIGHT_TORCH | UI_COSMIC_TORCH));
 
@@ -206,24 +246,37 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     painter->save();
 
+    // Are we drawing the top half of a monster below?
+    if (in_bounds_fully(c_y+1, c_x))
+    {
+        if (is_double_height_tile(c_y+1, c_x)) double_height_mon_below = TRUE;
+    }
+
+    //Double check that there isn't something drawn above.  If double height tile and nothing above, use the space.
+    if (is_double_height_tile(c_y, c_x)) double_height_mon = TRUE;
+
     if (use_graphics)
     {
         // Draw background tile
-        QString key1 = d_ptr->dun_tile;
+        QString key1 = d_ptr->dun_floor_tile;
+        if (d_ptr->dun_wall_tile.length()) key1 = d_ptr->dun_wall_tile;
 
         if (key1.length() > 0)
         {
             QPixmap pix = parent->get_tile(key1, parent->main_cell_hgt, parent->main_cell_wid);
 
-            if (flags & UI_LIGHT_TORCH) {
+            if (flags & UI_LIGHT_TORCH)
+            {
                 QColor color = QColor("yellow").darker(150);
                 if (flags & UI_COSMIC_TORCH) color = QColor("cyan").darker(150);
                 pix = colorize_pix(pix, color);
             }
-            else if (flags & UI_LIGHT_BRIGHT) {
+            else if (flags & UI_LIGHT_BRIGHT)
+            {
                 pix = parent->apply_shade(key1, pix, "bright");
             }
-            else if (flags & UI_LIGHT_DIM) {
+            else if (flags & UI_LIGHT_DIM)
+            {
                 pix = parent->apply_shade(key1, pix, "dim");
             }
 
@@ -245,18 +298,29 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             }
 
             // Draw foreground tile
-            if (key2.length() > 0) {
-               QPixmap pix = parent->get_tile(key2, parent->main_cell_hgt, parent->main_cell_wid);
-               if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER))
-               {
+            if (key2.length() > 0)
+            {
+                QPixmap pix;
+                if (double_height_mon)
+                {
+                    // Use only the bottom half of the tile
+                    pix = parent->get_tile(key2, parent->main_cell_hgt*2, parent->main_cell_wid);
+                    QRect this_rect(0,pix.height()/2+1, pix.width(), pix.height());
+                    pix = pix.copy(this_rect);
+                }
+
+                else pix = parent->get_tile(key2, parent->main_cell_hgt, parent->main_cell_wid);
+                if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER))
+                {
                    painter->setOpacity(opacity);
-               }
-               painter->drawPixmap(pix.rect(), pix, pix.rect());
-               painter->setOpacity(1);
-               done_fg = true;
+                }
+                painter->drawPixmap(pix.rect(), pix, pix.rect());
+                painter->setOpacity(1);
+                done_fg = true;
             }
+
             // draw foreground circle for dtrap edge
-            else if (d_ptr->dtrap)
+            else if (d_ptr->dtrap && !double_height_mon_below)
             {
                 QPixmap sample = parent->get_tile(key1, parent->main_cell_hgt, parent->main_cell_wid);
                 int height = sample.height();
@@ -270,8 +334,22 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 painter->setBrush(Qt::NoBrush);
                 done_fg = true;
             }
+            if (double_height_mon_below)
+            {
+                dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x];
+                // Use only the top half of the tile
+                QPixmap pix = parent->get_tile(d2_ptr->monster_tile, parent->main_cell_hgt*2, parent->main_cell_wid);
+                QRect this_rect(0, 0, pix.width(), pix.height()/2);
+                pix = pix.copy(this_rect);
 
-            if (do_shadow) {
+                painter->setOpacity(opacity - .3);
+                painter->drawPixmap(pix.rect(), pix, pix.rect());
+                painter->setOpacity(1);
+                done_fg = true;
+            }
+
+            if (do_shadow)
+            {
                 QPixmap pix = pseudo_ascii(square_char, square_color, parent->font_main_window,
                                            QSizeF(parent->main_cell_wid, parent->main_cell_hgt));
                 painter->drawPixmap(pix.rect(), pix, pix.rect());
@@ -281,7 +359,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     }
 
     // Go ascii?
-    if (!done_fg && (!empty || !done_bg)) {
+    if (!done_fg && (!empty || !done_bg))
+    {
         painter->setFont(parent->font_main_window);
         painter->setPen(square_color);
         painter->drawText(QRectF(0, 0, parent->main_cell_wid, parent->main_cell_hgt),
@@ -289,10 +368,12 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     }
 
     // Show a red line over a monster with its remaining hp
-    if (d_ptr->has_visible_monster()) {
+    if (d_ptr->has_visible_monster())
+    {
         int cur = p_ptr->chp;
         int max = p_ptr->mhp;
-        if (d_ptr->monster_idx > 0) {
+        if (d_ptr->monster_idx > 0)
+        {
             monster_type *m_ptr = mon_list + d_ptr->monster_idx;
             cur = m_ptr->hp;
             max = m_ptr->maxhp;
@@ -310,9 +391,11 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     }
 
     // Draw a mark for visible artifacts
-    if (d_ptr->has_visible_artifact()) {
+    if (d_ptr->has_visible_artifact())
+    {
         int s = 6;
-        QPointF points[] = {
+        QPointF points[] =
+        {
             QPointF(parent->main_cell_wid - s, parent->main_cell_hgt),
             QPointF(parent->main_cell_wid, parent->main_cell_hgt),
             QPointF(parent->main_cell_wid, parent->main_cell_hgt - s)
@@ -379,6 +462,8 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
             do_cmd_character_screen();
         }
     }
+
+    handle_stuff();
 
 
     QGraphicsItem::mousePressEvent(event);

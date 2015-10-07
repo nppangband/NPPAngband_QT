@@ -21,6 +21,8 @@
 #include "src/help.h"
 #include <QObject>
 
+QVector<dungeon_coordinates> cave_target_list;
+
 /*
  * Determine if a trap makes a reasonable target
  */
@@ -42,7 +44,7 @@ static bool target_able_trap(int y, int x)
 /*
  * Determine is a monster makes a reasonable target
  *
- * The concept of "targetting" was stolen from "Morgul" (?)
+ * The concept of "targeting" was stolen from "Morgul" (?)
  *
  * The player can target any location, or any "target-able" monster.
  *
@@ -197,7 +199,7 @@ static bool target_set_interactive_accept(int y, int x)
 
     /* Interesting memorized features */
     /* Ignore unknown features */
-    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) return (FALSE);
+    if (!dungeon_info[y][x].is_known_square()) return (FALSE);
 
     /* Find interesting effects */
     if (dungeon_info[y][x].effect_idx > 0)
@@ -239,7 +241,7 @@ static void target_set_interactive_prepare(int mode)
     bool expand_look = (mode & (TARGET_LOOK)) ? TRUE : FALSE;
 
     /* Reset "temp" array */
-    clear_temp_array();
+    cave_target_list.clear();
 
     QRect vis = visible_dungeon();
 
@@ -250,14 +252,11 @@ static void target_set_interactive_prepare(int mode)
         {
             bool do_continue = FALSE;
 
-            /* Check overflow */
-            if (temp_n >= TEMP_MAX) continue;
-
             /* Check bounds */
             if (!in_bounds_fully(y, x)) continue;
 
             /* Require line of sight, unless "look" is "expanded" */
-            if (!player_has_los_bold(y, x) && (!expand_look)) continue;
+            if (!player_can_see_bold(y, x) && (!expand_look)) continue;
 
             /* Require "interesting" contents */
             if (!target_set_interactive_accept(y, x)) continue;
@@ -291,9 +290,10 @@ static void target_set_interactive_prepare(int mode)
             }
 
             /* Save the location */
-            temp_x[temp_n] = x;
-            temp_y[temp_n] = y;
-            temp_n++;
+            dungeon_coordinates this_coord;
+            this_coord.y = y;
+            this_coord.x = x;
+            cave_target_list.append(this_coord);
         }
     }
 
@@ -302,7 +302,7 @@ static void target_set_interactive_prepare(int mode)
     ang_sort_swap = ang_sort_swap_distance;
 
     /* Sort the positions */
-    ang_sort(temp_x, temp_y, temp_n);
+    qSort(cave_target_list.begin(), cave_target_list.end(), sort_coordinate_list);
 }
 
 /*
@@ -317,11 +317,11 @@ static s16b target_pick(int y1, int x1, int dy, int dx)
     int b_i = -1, b_v = 9999;
 
     /* Scan the locations */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < cave_target_list.size(); i++)
     {
         /* Point 2 */
-        x2 = temp_x[i];
-        y2 = temp_y[i];
+        x2 = cave_target_list[i].x;
+        y2 = cave_target_list[i].y;
 
         /* Directed distance */
         x3 = (x2 - x1);
@@ -378,18 +378,21 @@ static void describe_grid_brief(int y, int x)
         o_idx = o_ptr->next_o_idx;
     }
 
-    if (n > 1) {
+    if (n > 1)
+    {
         message("You see a pile of objects.");
         return;
     }
 
-    if (n == 1) {
+    if (n == 1)
+    {
         QString name = object_desc(o_list + saved_o_idx, ODESC_PREFIX | ODESC_FULL);
         message("You see " + name + ".");
         return;
     }
 
-    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN)) {
+    if (d_ptr->cave_info & (CAVE_KNOWN | CAVE_VIEW))
+    {
         QString x_name;
         int x_idx = d_ptr->effect_idx;
         while (x_idx) {
@@ -427,7 +430,7 @@ static void describe_grid_brief(int y, int x)
  * panels which are adjacent to the one currently scanned, but this is
  * overkill for this function.  XXX XXX
  *
- * Hack -- targetting/observing an "outer border grid" may induce
+ * Hack -- targeting/observing an "outer border grid" may induce
  * problems, so this is not currently allowed.
  *
  * The player can use the direction keys to move among "interesting"
@@ -518,16 +521,16 @@ bool target_set_interactive(int mode, int x, int y)
     /* Interact */
     while (!done)
     {
-        ui_toolbar_show(TOOLBAR_TARGETTING_INTERACTIVE);
+        ui_toolbar_show(TOOLBAR_TARGETING_INTERACTIVE);
 
         /* Interesting grids */
-        if (flag && temp_n)
+        if (flag && cave_target_list.size())
         {
             bool path_drawn = FALSE;
             int yy, xx;
 
-            y = temp_y[m];
-            x = temp_x[m];
+            y = cave_target_list[m].y;
+            x = cave_target_list[m].x;
 
             /* Dummy pointers to send to project_path */
             yy = y;
@@ -583,13 +586,13 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_Space:
                 case Qt::Key_Plus:
                 {
-                    if (++m == temp_n) m = 0;
+                    if (++m == cave_target_list.size()) m = 0;
                     break;
                 }
 
                 case Qt::Key_Minus:
                 {
-                    if (m-- == 0)  m = temp_n - 1;
+                    if (m-- == 0)  m = cave_target_list.size() - 1;
                     break;
                 }
                 case Qt::Key_Ampersand:
@@ -610,7 +613,7 @@ bool target_set_interactive(int mode, int x, int y)
                 }
 
                 /* If we click, move the target location to the click and
-                   switch to "free targetting" mode by unsetting 'flag'.
+                   switch to "free targeting" mode by unsetting 'flag'.
                    This means we get some info about wherever we've picked. */
                 case 0:
                 {
@@ -680,8 +683,8 @@ bool target_set_interactive(int mode, int x, int y)
             /* Hack -- move around */
             if (d)
             {
-                int old_y = temp_y[m];
-                int old_x = temp_x[m];
+                int old_y = cave_target_list[m].y;
+                int old_x = cave_target_list[m].x;
 
                 /* Find a new monster */
                 i = target_pick(old_y, old_x, ddy[d], ddx[d]);
@@ -886,9 +889,9 @@ bool target_set_interactive(int mode, int x, int y)
     }
 
     /* Forget */
-    temp_n = 0;
+    cave_target_list.clear();
 
-    ui_toolbar_hide(TOOLBAR_TARGETTING_INTERACTIVE);
+    ui_toolbar_hide(TOOLBAR_TARGETING_INTERACTIVE);
 
     /* Recenter around player */
     ui_ensure(py, px);
@@ -1141,12 +1144,12 @@ bool get_aim_dir(int *dp, bool target_trap)
     /* Hack -- auto-target if requested */
     if (use_old_target && target_okay() && !dir) dir = DIR_TARGET;
 
-    else color_message(QObject::tr("Entering targetting mode"), TERM_YELLOW);
+    else color_message(QObject::tr("Entering targeting mode"), TERM_YELLOW);
 
     /* Ask until satisfied */
     while (!dir)
     {
-        ui_toolbar_show(TOOLBAR_TARGETTING);
+        ui_toolbar_show(TOOLBAR_TARGETING);
 
         ui_show_cursor(p_ptr->py, p_ptr->px);        
 
@@ -1158,7 +1161,7 @@ bool get_aim_dir(int *dp, bool target_trap)
 
         if (input.key == Qt::Key_Escape)
         {
-            color_message(QObject::tr("Exiting targetting mode"), TERM_VIOLET);
+            color_message(QObject::tr("Exiting targeting mode"), TERM_VIOLET);
             break;
         }
 
@@ -1215,7 +1218,7 @@ bool get_aim_dir(int *dp, bool target_trap)
         if (!dir) color_message("Illegal aim direction!", TERM_ORANGE);
     }
 
-    ui_toolbar_hide(TOOLBAR_TARGETTING);
+    ui_toolbar_hide(TOOLBAR_TARGETING);
 
     ui_show_cursor(-1, -1);
 
@@ -1256,19 +1259,19 @@ bool target_set_closest(int mode)
     /* Cancel old target */
     target_set_monster(0);
 
-    /* Get ready to do targetting */
+    /* Get ready to do targeting */
     target_set_interactive_prepare(mode);
 
     /* If nothing was prepared, then return */
-    if (temp_n < 1)
+    if (!cave_target_list.size())
     {
         if (!(mode & TARGET_QUIET)) message(QString("No Available Target."));
         return FALSE;
     }
 
     /* Find the first monster in the queue */
-    y = temp_y[0];
-    x = temp_x[0];
+    y = cave_target_list[0].y;
+    x = cave_target_list[0].x;
     m_idx = dungeon_info[y][x].monster_idx;
 
     /* Target the monster, if possible */

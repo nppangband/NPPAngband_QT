@@ -236,13 +236,22 @@ void extract_tiles(void)
 {
     int i;
 
-    for (i = 0; i < z_info->r_max; i++)\
+    for (i = 0; i < z_info->r_max; i++)
     {
         monster_race *r_ptr = &r_info[i];
         if (r_ptr->r_name_full.isEmpty()) continue;
         r_ptr->tile_id = tile_mon_name_convert(monster_desc_race(i));
+
+        // Hunt for the double height tiles
+        r_ptr->double_height_tile = FALSE;
+
+        if (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)
+        {
+            QPixmap this_pixmap = current_tiles->get_tile(r_ptr->tile_id);
+            if (this_pixmap.height() >= this_pixmap.width()*9/5) r_ptr->double_height_tile = TRUE;
+        }
     }
-    for (i = 0; i < z_info->k_max; i++)\
+    for (i = 0; i < z_info->k_max; i++)
     {
         object_kind *k_ptr = &k_info[i];
         if (k_ptr->k_name.isEmpty()) continue;
@@ -252,7 +261,8 @@ void extract_tiles(void)
         if (k_ptr->k_flags3 & (TR3_INSTA_ART))
         {
             int art_num = i;
-            if (game_mode == GAME_NPPANGBAND) {
+            if (game_mode == GAME_NPPANGBAND)
+            {
                 if (k_ptr->tval == TV_HAFTED && k_ptr->sval == SV_GROND) art_num = ART_GROND;
                 if (k_ptr->tval == TV_CROWN && k_ptr->sval == SV_MORGOTH) art_num = ART_MORGOTH;
             }
@@ -396,21 +406,26 @@ PackageDialog::PackageDialog(QString _mode)
 
 void PackageDialog::do_accept()
 {
-    if (pak_path->text().isEmpty() || folder_path->text().isEmpty()) {
+    if (pak_path->text().isEmpty() || folder_path->text().isEmpty())
+    {
         pop_up_message_box(tr("Complete both fields"), QMessageBox::Critical);
         return;
     }
 
-    if (mode == "create") {
+    if (mode == "create")
+    {
         int n = create_package(pak_path->text(), folder_path->text());
         pop_up_message_box(tr("Imported tiles: %1").arg(n));
     }
-    else {
+    else
+    {
         Package pak(pak_path->text());
-        if (!pak.is_open()) {
+        if (!pak.is_open())
+        {
             pop_up_message_box(tr("Couldn't load the package"), QMessageBox::Critical);
         }
-        else {
+        else
+        {
             int n = pak.extract_to(folder_path->text());
             pop_up_message_box(tr("Extracted tiles: %1").arg(n));
         }

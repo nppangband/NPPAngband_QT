@@ -18,7 +18,7 @@
  */
 
 #include "src/npp.h"
-
+#include "src/project.h"
 
 
 /*
@@ -505,7 +505,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
             if ((m_ptr->ml) && (!(fail_disarm))) message(QString("%1 sets off your cunning trap!") .arg(capitalize_first(m_name)));
 
             /* Not seen but in line of sight */
-            else if ((player_has_los_bold(y, x)) && (!(fail_disarm)))
+            else if ((player_can_see_bold(y, x)) && (!(fail_disarm)))
                 message(QString("Something sets off your cunning trap!"));
 
             /* Monster is not seen or in LOS */
@@ -805,7 +805,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
         delete_effect_idx(dungeon_info[y][x].effect_idx);
 
         /* Redraw the spot */
-        light_spot(y, x);
+        light_spot(y, x, FALSE);
 
         /*one less trap on level*/
         num_trap_on_level--;
@@ -1813,7 +1813,7 @@ static bool get_move_retreat(monster_type *m_ptr, int *ty, int *tx)
     if ((m_ptr->target_y) && (m_ptr->target_x))
     {
         /* It's out of LOS; keep using it, except in "knight's move" cases */
-        if (!player_has_los_bold(m_ptr->target_y, m_ptr->target_x))
+        if (!player_can_see_bold(m_ptr->target_y, m_ptr->target_x))
         {
             /* Get axis distance from character to current target */
             int dist_y = ABS(p_ptr->py - m_ptr->target_y);
@@ -1836,7 +1836,7 @@ static bool get_move_retreat(monster_type *m_ptr, int *ty, int *tx)
                     /* Check Bounds */
                     if (!in_bounds(y, x)) continue;
 
-                    if (player_has_los_bold(y, x)) continue;
+                    if (player_can_see_bold(y, x)) continue;
 
                     if ((y == m_ptr->target_y) && (x == m_ptr->target_x)) continue;
 
@@ -1875,7 +1875,7 @@ static bool get_move_retreat(monster_type *m_ptr, int *ty, int *tx)
     }
 
     /* The monster is not in LOS, but thinks it's still too close. */
-    else if (!player_has_los_bold(m_ptr->fy, m_ptr->fx))
+    else if (!player_can_see_bold(m_ptr->fy, m_ptr->fx))
     {
         /* Monster cannot pass through walls */
         if (!((r_ptr->flags2 & (RF2_PASS_WALL)) ||
@@ -1900,7 +1900,7 @@ static bool get_move_retreat(monster_type *m_ptr, int *ty, int *tx)
                     /* Accept the first non-visible grid with a higher cost */
                     if (cave_cost[flow_used][y][x] > start_cost)
                     {
-                        if (!player_has_los_bold(y, x))
+                        if (!player_can_see_bold(y, x))
                         {
                             *ty = y;  *tx = x;
                             done = TRUE;
@@ -1935,7 +1935,7 @@ static bool get_move_retreat(monster_type *m_ptr, int *ty, int *tx)
             if (!in_bounds(y, x)) continue;
 
             /* No grids in LOS */
-            if (player_has_los_bold(y, x)) continue;
+            if (player_can_see_bold(y, x)) continue;
 
             /* Grid must be pretty easy to enter */
             if (cave_passable_mon(m_ptr, y, x, &dummy) < 50) continue;
@@ -1959,7 +1959,7 @@ static bool get_move_retreat(monster_type *m_ptr, int *ty, int *tx)
          * No safe place found.  If monster is in LOS and close,
          * it will turn to fight.
          */
-        if ((player_has_los_bold(m_ptr->fy, m_ptr->fx)) &&
+        if ((player_can_see_bold(m_ptr->fy, m_ptr->fx)) &&
             ((m_ptr->mflag & (MFLAG_JUST_SCARED | MFLAG_DESPERATE)) == 0) &&
             ((m_ptr->cdis < TURN_RANGE) || (m_ptr->m_speed < p_ptr->state.p_speed)))
         {
@@ -2313,7 +2313,7 @@ bool get_move(monster_type *m_ptr, int *ty, int *tx, bool *fear, bool must_use_t
             if ((p_ptr->vulnerability <= 4) && (!(m_ptr->mflag & (MFLAG_ATTACKED_BAD))))
             {
                 /* If we're in sight, find a hiding place */
-                if (dungeon_info[m_ptr->fy][m_ptr->fx].cave_info & (CAVE_FIRE | CAVE_SEEN))
+                if (dungeon_info[m_ptr->fy][m_ptr->fx].cave_info & (CAVE_FIRE | CAVE_VIEW))
                 {
                     /* Find a safe spot to lurk in */
                     if (get_move_retreat(m_ptr, ty, tx))
@@ -2570,7 +2570,7 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
     if (!in_bounds_fully(y, x)) return;
 
     /* Check visibility */
-    if ((m_ptr->ml) && (dungeon_info[y][x].cave_info & (CAVE_SEEN))) seen = TRUE;
+    if ((m_ptr->ml) && (dungeon_info[y][x].cave_info & (CAVE_VIEW))) seen = TRUE;
 
     /* Get the monster name/poss */
     m_name = monster_desc(m_ptr, 0);
@@ -2931,10 +2931,10 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
                 if (m_ptr->ml)
                 {
                     /* And is in LOS */
-                    if (player_has_los_bold(oy, ox))
+                    if (player_can_see_bold(oy, ox))
                     {
                         /* Accept any easily passable grid out of LOS */
-                        if ((!player_has_los_bold(ny, nx)) &&
+                        if ((!player_can_see_bold(ny, nx)) &&
                             (moves_data[i].move_chance > 40))
                         {
                             break;
@@ -2943,7 +2943,7 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
                     else
                     {
                         /* Do not enter a grid in LOS */
-                        if (player_has_los_bold(ny, nx))
+                        if (player_can_see_bold(ny, nx))
                         {
                             moves_data[i].move_chance = 0;
                             continue;
@@ -3222,7 +3222,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                 if (randint(BREAK_GLYPH) < r_ptr->level)
                 {
                     /* Describe observable breakage */
-                    if (dungeon_info[ny][nx].cave_info & (CAVE_MARK))
+                    if (dungeon_info[ny][nx].is_known_square())
                     {
                         message(QString("The rune of protection is broken!"));
                     }
@@ -3284,7 +3284,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                 int noise_dist = 3 + MIN(8, m_ptr->hp / p_ptr->lev);
 
                 /* Forget the wall */
-                dungeon_info[ny][nx].cave_info &= ~(CAVE_MARK);
+                dungeon_info[ny][nx].unmark_known_square();
 
                 /* Note that the monster killed the wall */
                 if (player_can_see_bold(ny, nx))
@@ -3449,7 +3449,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     delete_effect_idx((s16b)(x_ptr - x_list));
 
                     /* Notify the player */
-                    if (player_has_los_bold(ny, nx))
+                    if (player_can_see_bold(ny, nx))
                     {
 
                         /* Get the name of the effect */
@@ -3471,7 +3471,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
         else if (cave_player_glyph_bold(ny, nx))
         {
             /* Describe observable breakage */
-            if (dungeon_info[ny][nx].cave_info & (CAVE_MARK))
+            if (dungeon_info[ny][nx].is_known_square())
             {
                 message(QString("The rune of protection is broken!"));
             }
@@ -3673,7 +3673,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                         did_take_item = TRUE;
 
                         /* Describe observable situations */
-                        if (m_ptr->ml && player_has_los_bold(ny, nx))
+                        if (m_ptr->ml && player_can_see_bold(ny, nx))
                         {
                             /* Get the object name */
                             o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
@@ -3698,7 +3698,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     did_take_item = TRUE;
 
                     /* Describe observable situations */
-                    if (player_has_los_bold(ny, nx) && m_ptr->ml)
+                    if (player_can_see_bold(ny, nx) && m_ptr->ml)
                     {
                         /* Get the object name */
                         o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
@@ -3730,7 +3730,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                     did_kill_item = TRUE;
 
                     /* Describe observable situations */
-                    if (player_has_los_bold(ny, nx))
+                    if (player_can_see_bold(ny, nx))
                     {
                         /* Get the object name */
                         o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
@@ -3777,7 +3777,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
         {
             /* Monster and terrain lore*/
             l_ptr->r_l_flags3 |= (RF3_FLYING);
-            if ((f_ptr->f_flags2 & (FF2_CAN_FLY)) && (dungeon_info[m_ptr->fy][m_ptr->fx].cave_info & (CAVE_SEEN)))
+            if ((f_ptr->f_flags2 & (FF2_CAN_FLY)) && (dungeon_info[m_ptr->fy][m_ptr->fx].is_seen_square()))
             {
                 f_l_ptr->f_l_flags2 |= FF2_CAN_FLY;
             }

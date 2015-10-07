@@ -38,7 +38,7 @@ static bool detect_traps(int y, int x)
         x_ptr->x_flags &= ~(EF1_HIDDEN);
 
         /* Hack -- Memorize */
-        dungeon_info[y][x].cave_info |= (CAVE_MARK);
+        dungeon_info[y][x].mark_known_square();
 
         return (TRUE);
     }
@@ -67,7 +67,7 @@ static bool detect_doors(int y, int x)
         }
 
         /* Hack -- Memorize */
-        dungeon_info[y][x].cave_info |= (CAVE_MARK);
+        dungeon_info[y][x].mark_known_square();
 
         return (TRUE);
     }
@@ -93,7 +93,7 @@ static bool detect_stairs(int y, int x)
         }
 
         /* Hack -- Memorize */
-        dungeon_info[y][x].cave_info |= (CAVE_MARK);
+        dungeon_info[y][x].mark_known_square();
 
         return (TRUE);
     }
@@ -123,7 +123,7 @@ static bool detect_treasure(int y, int x)
         }
 
         /* Hack -- Memorize */
-        dungeon_info[y][x].cave_info |= (CAVE_MARK);
+        dungeon_info[y][x].mark_known_square();
 
         return (TRUE);
     }
@@ -424,7 +424,7 @@ static bool detect_terrain(int y, int x)
     if (feat_ff3_match(dungeon_info[y][x].feat, TERRAIN_MASK))
     {
         /* Memorize the grid */
-        dungeon_info[y][x].cave_info |= (CAVE_MARK | CAVE_GLOW);
+        dungeon_info[y][x].cave_info |= (CAVE_KNOWN | CAVE_GLOW);
 
         /* We have seen the feature */
         f_info[dungeon_info[y][x].feat].f_everseen = TRUE;
@@ -443,13 +443,13 @@ static bool detect_map(int y, int x)
     int i;
 
     /* All non-walls are "checked"*/
-    if (!(f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_WALL)))
+    if (!(f_info[dungeon_info[y][x].feat].is_wall()))
     {
         /* Memorize normal features */
         if (f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_REMEMBER))
         {
             /* Memorize the object */
-            dungeon_info[y][x].cave_info |= (CAVE_MARK);
+            dungeon_info[y][x].mark_known_square();
         }
 
         /* Memorize known walls */
@@ -462,7 +462,7 @@ static bool detect_map(int y, int x)
             if (f_info[dungeon_info[yy][xx].feat].f_flags1 & (FF1_REMEMBER))
             {
                 /* Memorize the walls */
-                dungeon_info[yy][xx].cave_info |= (CAVE_MARK);
+                dungeon_info[yy][xx].mark_known_square();
             }
         }
     }
@@ -563,7 +563,7 @@ bool detect(int dist, u16b detect_checks)
     {
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
-            if (panel_contains(y, x)) light_spot(y, x);
+            if (panel_contains(y, x)) light_spot(y, x, FALSE);
             else map_info(y, x);
         }
     }

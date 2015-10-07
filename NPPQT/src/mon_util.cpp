@@ -206,7 +206,7 @@ void delete_monster_idx(int i)
     mon_cnt--;
 
     /* Visual update */
-    light_spot(y, x);
+    light_spot(y, x, FALSE);
 }
 
 
@@ -1386,7 +1386,7 @@ void update_mon(int m_idx, bool full)
                 is_visible = TRUE;
 
                 /* The monster is easy to see (disturb_near) */
-                if (player_has_los_bold(fy, fx) || player_can_fire_bold(fy, fx))
+                if (player_can_see_bold(fy, fx) || player_can_fire_bold(fy, fx))
                 {
                     easy = TRUE;
                 }
@@ -1398,7 +1398,7 @@ void update_mon(int m_idx, bool full)
         }
 
         /* Normal line of sight, and not blind, and monster isn't hidden  */
-        if (player_has_los_bold(fy, fx) && !p_ptr->timed[TMD_BLIND] && !(m_ptr->mflag & (MFLAG_HIDE)))
+        if (player_can_see_bold(fy, fx) && !p_ptr->timed[TMD_BLIND] && !(m_ptr->mflag & (MFLAG_HIDE)))
         {
             bool do_invisible = FALSE;
             bool do_cold_blood = FALSE;
@@ -1472,7 +1472,7 @@ void update_mon(int m_idx, bool full)
             m_ptr->ml = TRUE;
 
             /* Draw the monster */
-            light_spot(fy, fx);
+            light_spot(fy, fx, FALSE);
 
             /* Update health bar as needed */
             p_ptr->redraw |= (PR_SIDEBAR_MON);
@@ -1505,7 +1505,7 @@ void update_mon(int m_idx, bool full)
             m_ptr->ml = FALSE;
 
             /* Erase the monster */
-            light_spot(fy, fx);
+            light_spot(fy, fx, FALSE);
 
             /* Update health bar as needed */
             p_ptr->redraw |= (PR_SIDEBAR_MON);
@@ -2261,8 +2261,8 @@ void monster_swap(int y1, int x1, int y2, int x2)
     }
 
     /* Redraw */
-    light_spot(y1, x1);
-    light_spot(y2, x2);
+    light_spot(y1, x1, FALSE);
+    light_spot(y2, x2, FALSE);
 }
 
 
@@ -2311,7 +2311,7 @@ void monster_hide(monster_type *m_ptr)
     if (cave_ff2_match(y, x, FF2_COVERED) && is_monster_native(y, x, r_ptr))
     {
         /* Hack --- tell the player if something hides */
-        if (character_dungeon && (dungeon_info[y][x].cave_info & (CAVE_MARK)) && m_ptr->ml &&
+        if (character_dungeon && dungeon_info[y][x].is_known_square() && m_ptr->ml &&
             player_can_fire_bold(y, x) && player_can_observe())
         {
             QString m_name;
@@ -2364,7 +2364,7 @@ void monster_hide(monster_type *m_ptr)
             update_mon((int)(m_ptr - mon_list), FALSE);
 
             /* Hack -- Show a special character for hidden monsters */
-            if (seen && m_ptr->ml) light_spot(y, x);
+            if (seen && m_ptr->ml) light_spot(y, x, FALSE);
         }
     }
 }
@@ -2401,10 +2401,10 @@ void monster_unhide(monster_type *m_ptr)
     update_mon((int)(m_ptr - mon_list), FALSE);
 
     /* Hack -- Show a special character for hidden monsters */
-    if (seen && m_ptr->ml) light_spot(y, x);
+    if (seen && m_ptr->ml) light_spot(y, x, FALSE);
 
     /* Hack --- tell the player if something unhides */
-    if ((dungeon_info[y][x].cave_info & (CAVE_MARK)) && m_ptr->ml && player_can_observe() &&
+    if (dungeon_info[y][x].is_known_square() && m_ptr->ml && player_can_observe() &&
         player_can_fire_bold(y, x))
     {
         QString m_name;

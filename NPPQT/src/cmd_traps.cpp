@@ -20,6 +20,7 @@
 #include "src/player_command.h"
 #include "src/dun_traps.h"
 #include "src/cmds.h"
+#include "src/project.h"
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QPushButton>
@@ -216,12 +217,12 @@ void py_set_trap(int y, int x)
     set_effect_trap_player(FEAT_MTRAP_BASIC, y, x);
 
     /* Remember the location */
-    dungeon_info[y][x].mark_square();
+    dungeon_info[y][x].mark_known_square();
 
     /* Notify the player. */
     message(QString("You set a monster trap."));
 
-    light_spot(y, x);
+    light_spot(y, x, FALSE);
 
     /*make the monsters who saw wary*/
     (void)project_los(y, x, 0, GF_MAKE_WARY);
@@ -264,7 +265,7 @@ bool py_modify_trap(int y, int x)
     if (x_list[dungeon_info[y][x].effect_idx].x_f_idx == FEAT_MTRAP_BASIC) return(FALSE);
 
     /*Mark it*/
-    light_spot(y,x);
+    light_spot(y,x, FALSE);
 
     /* Notify the player. */
     message(QString("You modify the monster trap."));

@@ -7,6 +7,7 @@
 #include <QLinearGradient>
 #include <QHash>
 #include "tilebag.h"
+#include "src/project.h"
 
 qreal delay = 1.4; // delay per pixel
 

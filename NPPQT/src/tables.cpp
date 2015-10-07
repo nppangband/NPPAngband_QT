@@ -20,8 +20,19 @@
 
 #include "npp.h"
 
-
-
+const QString ddd_dir_text[10] =
+{
+    "escape",
+    "southwest",
+    "south",
+    "southeast",
+    "west",
+    "hold",
+    "east",
+    "northwest",
+    "north",
+    "northeast",
+};
 
 /*
  * Global array for looping through the "keypad directions".
@@ -2980,3 +2991,38 @@ const mon_susceptibility_struct mon_suscept[4] =
     {TR1_BRAND_ACID, RF3_HURT_ACID, "acid"},
     {TR1_BRAND_POIS, RF3_HURT_COLD, "poison"},
 };
+
+/*
+ * True means a wall should be there.  False means a floor should be in that direction
+ * N_A means it doesn't matter
+ * Used to figure out if a a wall is part of a corridor, or corner, etc
+ */
+const wall_type wall_list[MAX_WALL_TYPES] =
+{
+    // South Wall
+    {"_south",                  N_A, N_A, N_A, TRUE, TRUE, N_A, FALSE, N_A, 2, 0, 0},
+    // West Wall
+    {"_west",                   N_A, TRUE, N_A, N_A, FALSE, N_A, TRUE, N_A, 4, 0, 0},
+    // East Wall
+    {"_east",                   N_A, TRUE, N_A, FALSE, N_A, N_A, TRUE, N_A, 6, 0, 0},
+    // North Wall
+    {"_north",                  N_A, FALSE, N_A, TRUE, TRUE, N_A, N_A, N_A, 8, 0, 0},
+    // SW outer corner
+    {"_corner_outer_southwest", N_A, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, 1, 0, 0},
+    // SE outer corner
+    {"_corner_outer_southeast", FALSE, TRUE, N_A, FALSE, TRUE, FALSE, FALSE, FALSE, 3, 0, 0},
+    // NW outer corner
+    {"_corner_outer_northwest", FALSE, FALSE, FALSE, TRUE, FALSE, N_A, TRUE, FALSE, 7, 0, 0},
+    // NE outer corner
+    {"_corner_outer_northeast", FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, 9, 0, 0},
+    // SW inner corner
+    {"_corner_inner_southwest", N_A, N_A, N_A, N_A, TRUE, N_A, TRUE, FALSE, 1, 2, 4},
+    // SE inner corner
+    {"_corner_inner_southeast", N_A, N_A, N_A, TRUE, N_A, FALSE, TRUE, N_A, 3, 2, 6},
+    // NW inner corner
+    {"_corner_inner_northwest", N_A, TRUE, FALSE, N_A, TRUE, N_A, N_A, N_A, 7, 4, 8},
+    // NE inner corner
+    {"_corner_inner_northeast",  FALSE, TRUE, N_A, TRUE, N_A, N_A, N_A, N_A, 9, 8, 6},
+};\
+
+

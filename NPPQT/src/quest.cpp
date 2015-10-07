@@ -2194,7 +2194,7 @@ static void build_quest_stairs(int y, int x)
     /* Create stairs down */
     cave_set_feat(y, x, FEAT_STAIRS_DOWN);
 
-    light_spot(y, x);
+    light_spot(y, x, FALSE);
 
     /* Update the visuals */
     p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);

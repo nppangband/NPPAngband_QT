@@ -112,6 +112,8 @@ public:
 
     QString tile_id;
 
+    bool double_height_tile;
+
     bool is_unique(void);
     bool is_player_ghost(void);
     bool is_mimic(void);

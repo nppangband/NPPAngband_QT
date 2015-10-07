@@ -380,10 +380,9 @@ int damroll(int num, int sides)
  */
 int max_damroll(int num, int sides, int tries)
 {
-    int best_sum = 0;
-    int i;
+    int best_sum = 1;
 
-    for (i = 0; i < tries; i++)
+    for (int i = 0; i < tries; i++)
     {
         int sum = damroll(num, sides);
 

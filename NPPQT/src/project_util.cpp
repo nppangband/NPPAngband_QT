@@ -26,6 +26,9 @@
  ************************************************************************/
 
 #include "src/npp.h"
+#include "src/project.h"
+
+QVector<dungeon_coordinates> temp_project_coords;
 
 /*
  * Handle bolt spells.
@@ -348,22 +351,20 @@ bool project_los(int y0, int x0, int dam, int typ)
 /*
  * This routine clears the entire "temp" set.
  */
-void clear_temp_array(void)
+void clear_project_temp_array(void)
 {
-    int i;
-
     /* Apply flag changes */
-    for (i = 0; i < temp_n; i++)
+    for (int i = 0; i < temp_project_coords.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
+        int y = temp_project_coords[i].x;
+        int x = temp_project_coords[i].y;
 
         /* No longer in the array */
         dungeon_info[y][x].cave_info &= ~(CAVE_TEMP);
     }
 
     /* None left */
-    temp_n = 0;
+    temp_project_coords.clear();
 }
 
 
@@ -380,16 +381,14 @@ void cave_temp_mark(int y, int x, bool room)
     /* Option -- do not leave the current room */
     if ((room) && (!(dungeon_info[y][x].cave_info & (CAVE_ROOM)))) return;
 
-    /* Verify space */
-    if (temp_n == TEMP_MAX) return;
-
     /* Mark the grid */
     dungeon_info[y][x].cave_info |= (CAVE_TEMP);
 
     /* Add it to the marked set */
-    temp_y[temp_n] = y;
-    temp_x[temp_n] = x;
-    temp_n++;
+    dungeon_coordinates this_coord;
+    this_coord.y = y;
+    this_coord.x = x;
+    temp_project_coords.append(this_coord);
 }
 
 /*
@@ -397,15 +396,14 @@ void cave_temp_mark(int y, int x, bool room)
  */
 void spread_cave_temp(int y1, int x1, int range, bool room, bool pass_walls)
 {
-    int i, y, x;
-
     /* Add the initial grid */
     cave_temp_mark(y1, x1, room);
 
     /* While grids are in the queue, add their neighbors */
-    for (i = 0; i < temp_n; i++)
+    for (int i = 0; i < temp_project_coords.size(); i++)
     {
-        x = temp_x[i], y = temp_y[i];
+        int y = temp_project_coords[i].x;
+        int x = temp_project_coords[i].y;
 
         /* Walls get marked, but stop further spread, unless pass_walls is TRUE */
         if (!pass_walls && !cave_project_bold(y, x)) continue;
