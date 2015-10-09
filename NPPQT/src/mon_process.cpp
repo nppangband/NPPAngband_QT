@@ -481,7 +481,7 @@ static s16b process_monster(monster_type *m_ptr)
     if (m_ptr->mflag & (MFLAG_HIT_BY_RANGED))
     {
         /*Monster will be very upset if it can't see the player*/
-        if (!player_can_see_bold(m_ptr->fy, m_ptr->fx))
+        if (!player_has_los_bold(m_ptr->fy, m_ptr->fx))
         {
             m_ptr->mflag |= (MFLAG_AGGRESSIVE | MFLAG_ATTACKED_BAD);
 
@@ -742,7 +742,7 @@ static s16b process_monster(monster_type *m_ptr)
             }
 
             /*Monster can see the player*/
-            if (player_can_see_bold(m_ptr->fy, m_ptr->fx))
+            if (player_has_los_bold(m_ptr->fy, m_ptr->fx))
             {
                 m_ptr->target_y = 0;
                 m_ptr->target_x = 0;
@@ -952,7 +952,7 @@ static void recover_monster(monster_type *m_ptr)
             divisor = 300 + m_ptr->cdis * 200;
 
             /* Monsters are disturbed more if in LOS */
-            if (player_can_see_bold(m_ptr->fy, m_ptr->fx)) divisor /= 2;
+            if (player_has_los_bold(m_ptr->fy, m_ptr->fx)) divisor /= 2;
 
             /* Get disturbance (additional noise counts double) */
             d = div_round(total_wakeup_chance + add_wakeup_chance, divisor);

@@ -332,8 +332,7 @@ void StoreDialog::reset_quest_status()
     monster_race *r_ptr = &r_info[q_info[GUILD_QUEST_SLOT].mon_idx];
     if (use_graphics)
     {
-        QPixmap pix = ui_get_tile(r_ptr->tile_id);
-        pix = pix.scaled(32, 32);
+        QPixmap pix = ui_get_tile(r_ptr->tile_id, TRUE);
         quest_picture->setPixmap(pix);
     }
     else

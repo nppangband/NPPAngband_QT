@@ -17,7 +17,6 @@
  */
 
 #include "src/wizard_mode.h"
-#include "src/project.h"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>

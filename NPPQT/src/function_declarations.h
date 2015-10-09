@@ -37,7 +37,7 @@ extern byte multi_hued_color(monster_race *r_ptr);
 extern bool dtrap_edge(int y, int x);
 extern void map_info(s16b y, s16b x);
 extern void note_spot(int y, int x);
-extern void light_spot(int y, int x, bool light_now);
+extern void light_spot(int y, int x);
 extern int vinfo_init(void);
 extern void forget_view(void);
 extern void update_view(void);
@@ -477,6 +477,63 @@ extern void player_flags(u32b *f1, u32b *f2, u32b *f3, u32b *fn);
 extern s16b modify_stat_value(int value, int amount);
 extern bool allow_player_confusion(void);
 
+// project.cpp
+extern bool teleport_away(int m_idx, int dis);
+extern bool teleport_player(int dis, bool native);
+extern void teleport_player_to(int ny, int nx);
+extern void teleport_towards(int oy, int ox, int ny, int nx);
+extern bool teleport_player_level(int who);
+extern int drain_charges(object_type *o_ptr, u32b heal);
+extern void disease(int *damage);
+extern bool apply_disenchant(int mode);
+extern byte gf_color(int type);
+extern void take_terrain_hit(int dam, int feat, QString kb_str);
+extern void take_hit(int dam, QString kb_str);
+extern bool object_hates_feature(int feat, object_type *o_ptr);
+extern bool object_hates_location(int y, int x, object_type *o_ptr);
+extern void acid_dam(int dam, QString kb_str);
+extern void elec_dam(int dam, QString kb_str);
+extern void fire_dam(int dam, QString kb_str);
+extern void cold_dam(int dam, QString kb_str);
+extern void disease(int *damage);
+extern bool apply_disenchant(int mode);
+extern bool project_m(int who, int y, int x, int dam, int typ, u32b flg);
+extern bool project_p(int who, int y, int x, int dam, int typ, QString msg);
+extern bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
+             u32b flg, int degrees, byte source_diameter);
+
+// project_util.cpp
+extern bool project_bolt(int who, int rad, int y0, int x0, int y1, int x1, int dam,
+                  int typ, u32b flg);
+extern bool project_beam(int who, int rad, int y0, int x0, int y1, int x1, int dam,
+                  int typ, u32b flg);
+extern bool project_ball(int who, int rad, int y0, int x0, int y1, int x1, int dam,
+                  int typ, u32b flg, int source_diameter);
+extern bool explosion(int who, int rad, int y0, int x0, int dam, int typ, u32b flg);
+extern bool mon_explode(int who, int rad, int y0, int x0, int dam, int typ);
+extern bool project_arc(int who, int rad, int y0, int x0, int y1, int x1,
+    int dam, int typ, u32b flg, int degrees);
+extern bool project_star(int who, int rad, int y0, int x0, int dam, int typ,
+    u32b flg);
+extern bool project_los(int y0, int x0, int dam, int typ);
+extern void clear_temp_array(void);
+extern void cave_temp_mark(int y, int x, bool room);
+extern void spread_cave_temp(int y1, int x1, int range, bool room, bool pass_walls);
+extern bool fire_bolt_beam_special(int typ, int dir, int dam, int rad, u32b flg);
+extern bool fire_effect_orb(int typ, int dir, int dam, int rad);
+extern bool fire_ball(int typ, int dir, int dam, int rad);
+extern bool fire_orb(int typ, int dir, int dam, int rad);
+extern bool fire_ball_special(int typ, int dir, int dam, int rad, u32b flg, int source_diameter);
+extern bool fire_arc_special(int typ, int dir, int dam, int rad, int degrees, u32b flg);
+extern bool fire_arc(int typ, int dir, int dam, int rad, int degrees);
+extern bool fire_star(int typ, int dam, int rad, u32b flg);
+extern bool beam_burst(int y, int x, int typ, int num, int dam);
+extern bool fire_swarm(int num, int typ, int dir, int dam, int rad);
+extern bool fire_bolt(int typ, int dir, int dam);
+extern bool fire_beam(int typ, int dir, int dam, u32b flg);
+extern bool fire_bolt_or_beam(int prob, int typ, int dir, int dam);
+extern bool beam_chain(int gf_type, int dam, int max_hits, int decrement);
+
 
 /* quest.c */
 extern QString plural_aux(QString name);
@@ -530,8 +587,7 @@ extern void process_greater_vault_quest(void);
 extern void process_guild_quests(void);
 
 // qt_mainwindow.cpp
-#define TOOLBAR_TARGETING 1
-#define TOOLBAR_TARGETING_INTERACTIVE 2
+
 
 
 
@@ -755,7 +811,6 @@ extern void bell(QString this_message);
 //tables.cpp
 extern const byte moria_class_level_adj[MORIA_MAX_CLASS][MORIA_MAX_LEV_ADJ];
 extern const byte moria_blows_table[MORIA_MAX_STR_ADJ][MORIA_MAX_DEX_ADJ];
-extern const QString ddd_dir_text[10];
 extern const s16b ddd[9];
 extern const s16b ddx[10];
 extern const s16b ddy[10];
@@ -820,7 +875,6 @@ extern const slays_structure slays_info_nppmoria[4];
 extern const slays_structure brands_info_nppmoria[4];
 extern const mon_susceptibility_struct mon_suscept[4];
 extern const colors_preset preset_colors[MAX_COLORS];
-extern const wall_type wall_list[MAX_WALL_TYPES];
 
 /* target.cpp */
 extern bool target_able(int m_idx);

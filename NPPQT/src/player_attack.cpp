@@ -20,7 +20,6 @@
 #include <src/npp.h>
 #include "src/player_command.h"
 #include "src/object_settings.h"
-#include "src/project.h"
 
 /*
  * Determine if the player "hits" a monster.
@@ -631,7 +630,7 @@ void py_attack(int y, int x)
     if (m_ptr->ml) health_track(dungeon_info[y][x].monster_idx);
 
     // Show red line
-    if (m_ptr->ml) light_spot(y, x, FALSE);
+    if (m_ptr->ml) light_spot(y, x);
 
     /* Handle player fear */
     if (p_ptr->timed[TMD_AFRAID])
@@ -768,7 +767,7 @@ void py_attack(int y, int x)
 
             k = max_damroll(dd, ds, tries) + plus;
 
-            /* No negative damage */
+            /* Must have at least 1 hp damage */
             if (k < 1) k = 1;
 
             if (p_ptr->state.impact && (k > 50)) do_quake = TRUE;
@@ -1543,7 +1542,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
                 m_ptr->ml = TRUE;
 
                 /*re-draw the spot*/
-                light_spot(y, x, FALSE);
+                light_spot(y, x);
 
                 /* Update the monster name*/
                 m_name = monster_desc(m_ptr, 0);

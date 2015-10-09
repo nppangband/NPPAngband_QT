@@ -120,7 +120,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
         ++row;
     }
 
-    if (d_ptr->cave_info & (CAVE_KNOWN | CAVE_VIEW))
+    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN))
     {
         ++n;
 
@@ -142,9 +142,6 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
         QString name = feature_desc(feat, true, false);
         name = capitalize_first(name);
-        if (d_ptr->dun_tile_extra > -1) name.append(QString(" %1 ") .arg(wall_list[d_ptr->dun_tile_extra].wall_name));
-        else name.append(QString(" %1 ") .arg(d_ptr->dun_tile_extra));
-        name.append(QString(" %1 ") .arg(d_ptr->dun_wall_tile));
         QPushButton *btn1 = new QPushButton(name);
         QString item_id = QString("f%1").arg(feat);
         btn1->setObjectName(item_id);
@@ -158,8 +155,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     }
 
     int x_idx = d_ptr->effect_idx;
-    while (x_idx && (d_ptr->cave_info & (CAVE_KNOWN | CAVE_VIEW)))
-    {
+    while (x_idx && (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN))) {
         effect_type *x_ptr = x_list + x_idx;
         x_idx = x_ptr->next_x_idx;
 

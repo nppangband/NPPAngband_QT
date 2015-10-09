@@ -4,7 +4,6 @@
 #include <QColor>
 #include <QChar>
 #include "src/terrain.h"
-#include <src/structures.h>
 
 enum
 {
@@ -25,7 +24,7 @@ enum
 #define UI_LIGHT_DIM           0x00000004
 #define UI_LIGHT_BRIGHT        0x00000008
 #define UI_LIGHT_TORCH         0x00000010
-#define UI_COSMIC_TORCH        0x00000020
+#define UI_COSMIC_TORCH         0x00000020
 
 class dungeon_type
 {
@@ -54,14 +53,11 @@ public:
     QChar  monster_char;
 
     // Tiles for the 4 layers
-    QString dun_floor_tile;
-    QString dun_wall_tile;
+    QString dun_tile;
     QString object_tile;
     QString effect_tile;
     QString monster_tile;
-    s16b dun_corner;
 
-    int dun_tile_extra;
     bool double_height_monster;
 
     u32b ui_flags;
@@ -78,22 +74,10 @@ public:
     bool has_visible_object();
     bool has_visible_effect();
     bool has_visible_monster();
+
     bool has_visible_artifact();
 
-    bool is_wall(bool known);
-    bool is_floor(bool known);
-
-    void mark_seen_square();
-    void unmark_seen_square();
-    bool is_seen_square();
-
-    void mark_edge_square();
-    void unmark_edge_note();
-    bool is_edge_square();
-
-    void mark_known_square();
-    void unmark_known_square();
-    bool is_known_square();
+    void mark_square();
 
     // All variables above should be included in this method.
     void dungeon_square_wipe();
@@ -199,8 +183,7 @@ public:
     void feature_wipe();
     bool is_door(void);
     bool is_jammed_door(void);
-    bool is_wall();
-    bool is_floor();
+
 };
 
 /*
@@ -288,11 +271,5 @@ public:
 };
 
 extern void reset_dungeon_info();
-
-extern QVector<dungeon_coordinates> redraw_list;
-
-extern bool sort_coordinate_list(dungeon_coordinates sq1_ptr, dungeon_coordinates sq2_ptr);
-extern void redraw_square_list();
-extern void append_redraw_list(int y, int x);
 
 #endif // DUN_CLASSES_H

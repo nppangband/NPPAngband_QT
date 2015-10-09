@@ -377,15 +377,27 @@ u16b size_mon_hist;
 
 
 /*
- * List of seen coordinates"
+ * Array[VIEW_MAX] used by "update_view()"
  */
-QVector<dungeon_coordinates> cave_view_list;
+int view_n = 0;
+u16b *view_g;
 
 
 /*
- * List of coordinates that can be fired through.
+ * Array[VIEW_MAX] used by "update_view()"
  */
-QVector<dungeon_coordinates> cave_fire_list;
+int fire_n = 0;
+u16b *fire_g;
+
+/*
+ * Arrays[TEMP_MAX] used for various things
+ *
+ * Note that temp_g shares memory with temp_x and temp_y.
+ */
+int temp_n = 0;
+u16b *temp_g;
+byte *temp_y;
+byte *temp_x;
 
 
 

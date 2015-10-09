@@ -725,19 +725,21 @@ int move_player(int dir, int jumping)
 
 	s16b used_energy = BASE_ENERGY_MOVE;
 
+	int y, x;
+
     QString name;
 
-	/* Find the result of moving */
-    int y = py + ddy[dir];
-    int x = px + ddx[dir];
+	feature_type *f_ptr;
 
-    dungeon_type *dun_ptr = &dungeon_info[y][x];
+	/* Find the result of moving */
+	y = py + ddy[dir];
+	x = px + ddx[dir];
 
 	/* Get the feature */
-    feature_type *f_ptr = &f_info[dun_ptr->feat];
+    f_ptr = &f_info[dungeon_info[y][x].feat];
 
 	/* Hack -- attack monsters */
-    if (dun_ptr->monster_idx > 0)
+    if (dungeon_info[y][x].monster_idx > 0)
 	{
 		/* Attack */
         py_attack(y, x);
@@ -746,10 +748,10 @@ int move_player(int dir, int jumping)
 	}
 
 	/* Optionally alter known traps/doors on (non-jumping) movement */
-    if ((easy_alter) && (!jumping) && (dun_ptr->is_known_square()) &&
+    if ((easy_alter) && (!jumping) && (dungeon_info[y][x].cave_info & (CAVE_MARK)) &&
 		 	 (_feat_ff1_match(f_ptr, FF1_CAN_OPEN | FF1_CAN_DISARM) ||
 			 (cave_player_trap_bold(y, x) &&
-            !(x_list[dun_ptr->effect_idx].x_flags & (EF1_HIDDEN)))))
+            !(x_list[dungeon_info[y][x].effect_idx].x_flags & (EF1_HIDDEN)))))
 
 	{
         cmd_arg args;
@@ -770,13 +772,13 @@ int move_player(int dir, int jumping)
         disturb(FALSE, TRUE);
 
 		/* Notice unknown obstacles */
-        if (!dun_ptr->is_known_square())
+        if (!(dungeon_info[y][x].cave_info & (CAVE_MARK)))
 		{
 			/* Get hit by traps */
 			if (cave_passive_trap_bold(y, x))
 			{
 				/* Hit the trap */
-                (void)hit_trap(x_list[dun_ptr->effect_idx].x_f_idx, y, x, MODE_ACTION);
+                (void)hit_trap(x_list[dungeon_info[y][x].effect_idx].x_f_idx, y, x, MODE_ACTION);
 			}
 
 			/* Get the feature name */
@@ -785,9 +787,9 @@ int move_player(int dir, int jumping)
 			/* Tell the player */
             message(QString("You feel %1 blocking your way.").arg(name));
 
-            dun_ptr->mark_known_square();
+            dungeon_info[y][x].mark_square();
 
-            light_spot(y, x, FALSE);
+			light_spot(y, x);
 
 		}
 
@@ -809,17 +811,17 @@ int move_player(int dir, int jumping)
 		int x_idx;
 
 		/* Discover unknown terrain */
-        if (!dun_ptr->is_known_square())
+		if (!cave_flag_bold(y, x, CAVE_MARK))
 		{
 			/* Remember */
-            dun_ptr->mark_known_square();
+            dungeon_info[y][x].mark_square();
 
 			/* Redraw */
-            light_spot(y, x, FALSE);
+			light_spot(y, x);
 		}
 
 		/* Get the first effect */
-        x_idx = dun_ptr->effect_idx;
+        x_idx = dungeon_info[y][x].effect_idx;
 
 		/* Find the effect that disables movement */
 		while (x_idx)
@@ -854,18 +856,18 @@ int move_player(int dir, int jumping)
 	}
 
 	/* Some terrain prevents flying. */
-    else if (!(feat_ff2_match(dun_ptr->feat, FF2_CAN_FLY)) && (p_ptr->timed[TMD_FLYING]))
+    else if (!(feat_ff2_match(dungeon_info[y][x].feat, FF2_CAN_FLY)) && (p_ptr->timed[TMD_FLYING]))
 	{
-        int feat = dun_ptr->feat;
+        int feat = dungeon_info[y][x].feat;
 
 		/* Discover unknown terrain */
-        if (!dun_ptr->is_known_square())
+		if (!cave_flag_bold(y, x, CAVE_MARK))
 		{
 			/* Remember */
-            dun_ptr->mark_known_square();
+            dungeon_info[y][x].mark_square();
 
 			/* Redraw */
-            light_spot(y, x, FALSE);
+			light_spot(y, x);
 		}
 
 		/* Get the feature name */
@@ -897,7 +899,7 @@ int move_player(int dir, int jumping)
 
 		/* See if trap detection status will change */
         old_dtrap = ((dungeon_info[py][px].cave_info & (CAVE_DTRAP)) != 0);
-        new_dtrap = ((dun_ptr->cave_info & (CAVE_DTRAP)) != 0);
+        new_dtrap = ((dungeon_info[y][x].cave_info & (CAVE_DTRAP)) != 0);
 
 		/* Note the change in the detect status */
         if (old_dtrap != new_dtrap) p_ptr->redraw |= (PR_STATUSBAR);
@@ -988,14 +990,14 @@ int move_player(int dir, int jumping)
 			find_secret(y, x);
 
 			/* Get the feature again */
-            f_ptr = &f_info[dun_ptr->feat];
+            f_ptr = &f_info[dungeon_info[y][x].feat];
 		}
 
 		/* Record the energy for flying creatures.*/
         if (p_ptr->timed[TMD_FLYING]) used_energy = BASE_ENERGY_FLYING;
 
 		/* Reveal when you are on shallow or deep  terrain */
-        else if (!dungeon_info[y][x].is_known_square() &&
+        else if (!(dungeon_info[y][x].cave_info & (CAVE_MARK)) &&
 				_feat_ff3_match(f_ptr, FF2_SHALLOW | FF2_DEEP))
 		{
 			/* Get the name */
@@ -1004,9 +1006,9 @@ int move_player(int dir, int jumping)
 			/* Tell the player */
             message(QString("You feel you are in %1.").arg(name));
 
-            dun_ptr->mark_known_square();
+            dungeon_info[y][x].mark_square();
 
-            light_spot(y, x, FALSE);
+			light_spot(y, x);
 		}
 
 		/* Walk on a monster trap */

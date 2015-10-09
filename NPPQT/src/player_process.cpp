@@ -19,7 +19,6 @@
 
 #include "src/npp.h"
 #include <src/cmds.h>
-#include "src/project.h"
 #include <QCoreApplication>
 
 /*
@@ -217,13 +216,13 @@ void process_player(void)
     /*** Clean up ***/
 
     /* hack - check for secret squares */
-    if (dungeon_info[p_ptr->py][p_ptr->px].cave_info & (CAVE_SPECIAL))
+    if (dungeon_info[p_ptr->py][p_ptr->px].cave_info & (CAVE_MARKED))
     {
         /* increase chance of altered inventory for around 100 turns*/
         altered_inventory_counter += 1;
 
         /*unmark the square*/
-        dungeon_info[p_ptr->py][p_ptr->px].cave_info &= ~(CAVE_SPECIAL);
+        dungeon_info[p_ptr->py][p_ptr->px].cave_info &= ~(CAVE_MARKED);
     }
 
     /* Check for greater vault squares */

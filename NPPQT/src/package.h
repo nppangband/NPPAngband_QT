@@ -38,6 +38,6 @@ public:
 
 // Create a package containing all the files ending with "ext"
 // The files are read from "folder"
-int create_package(QString name, QString folder);
+int create_package(QString name, QString folder, QString ext = ".png");
 
 #endif // PACKAGE_H

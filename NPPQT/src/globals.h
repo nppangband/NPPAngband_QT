@@ -125,8 +125,14 @@ extern move_moment_type *mon_moment_info;
 extern u16b move_moment_num;
 
 // Arrays for cave information
-extern QVector<dungeon_coordinates> cave_view_list;
-extern QVector<dungeon_coordinates> cave_fire_list;
+extern int view_n;
+extern u16b *view_g;
+extern int fire_n;
+extern u16b *fire_g;
+extern int temp_n;
+extern u16b *temp_g;
+extern byte *temp_y;
+extern byte *temp_x;
 extern u32b mon_power_ave[MAX_DEPTH_ALL][CREATURE_TYPE_MAX];
 
 extern dynamic_grid_type *dyna_g;

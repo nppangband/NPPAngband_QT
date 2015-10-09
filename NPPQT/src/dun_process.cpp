@@ -17,7 +17,6 @@
  */
 
 #include "src/npp.h"
-#include "src/project.h"
 #include "src/cmds.h"
 #include "src/store.h"
 #include "src/player_command.h"
@@ -834,7 +833,7 @@ static void do_animation(void)
 
         m_ptr->m_color = add_preset_color(multi_hued_color(r_ptr));
 
-        light_spot(m_ptr->fy, m_ptr->fx, FALSE);
+        light_spot(m_ptr->fy, m_ptr->fx);
     }
 }
 
@@ -1678,7 +1677,7 @@ void change_player_level(void)
             cave_set_feat(p_ptr->py, p_ptr->px, p_ptr->create_stair);
 
             /* Mark the stairs as known */
-            dungeon_info[p_ptr->py][p_ptr->px].mark_known_square();
+            dungeon_info[p_ptr->py][p_ptr->px].mark_square();
         }
 
         /* Cancel the stair request */
@@ -1839,15 +1838,13 @@ static void redraw_hallucination()
             int m_idx = dungeon_info[y][x].monster_idx;
             if (m_idx > 0 && mon_list[m_idx].ml)
             {
-                light_spot(y, x, FALSE);
+                light_spot(y, x);
                 continue;
             }
             int o_idx = dungeon_info[y][x].object_idx;
-            while (o_idx)
-            {
-                if (o_list[o_idx].marked)
-                {
-                    light_spot(y, x, FALSE);
+            while (o_idx) {
+                if (o_list[o_idx].marked) {
+                    light_spot(y, x);
                     break;
                 }
                 o_idx = o_list[o_idx].next_o_idx;
@@ -1918,7 +1915,7 @@ void process_player_energy_aux(byte energy_used)
             shimmer_monsters = TRUE;
 
             /* Redraw regardless */
-            light_spot(m_ptr->fy, m_ptr->fx, TRUE);
+            light_spot(m_ptr->fy, m_ptr->fx);
         }
     }
 
@@ -1937,7 +1934,7 @@ void process_player_energy_aux(byte energy_used)
             (x_ptr->x_type == EFFECT_GLACIER))
         {
             /* Redraw */
-            light_spot(x_ptr->x_cur_y, x_ptr->x_cur_x, TRUE);
+            light_spot(x_ptr->x_cur_y, x_ptr->x_cur_x);
         }
     }
 
@@ -1984,7 +1981,7 @@ void process_player_energy_aux(byte energy_used)
                 if ((m_ptr->mflag & (MFLAG_HIDE)) && m_ptr->ml)
                 {
                     /* Redraw */
-                    light_spot(m_ptr->fy, m_ptr->fx, FALSE);
+                    light_spot(m_ptr->fy, m_ptr->fx);
                 }
             }
         }

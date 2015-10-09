@@ -12,7 +12,6 @@
  */
 
 #include "src/npp.h"
-#include "src/project.h"
 
 /*
  * Display the current quest (if any)
@@ -948,7 +947,7 @@ void process_wilderness_quest(void)
             /* Convert the feature */
             cave_set_feat(y, x, new_feat);
 
-            light_spot(y, x, FALSE);
+            light_spot(y, x);
         }
     }
 }

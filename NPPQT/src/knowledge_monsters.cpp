@@ -314,8 +314,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         QTableWidgetItem *mon_ltr = new QTableWidgetItem(mon_symbol);
         if (use_graphics)
         {
-            QPixmap pix = ui_get_tile(r_ptr->tile_id);
-            pix = pix.scaled(32, 32);
+            QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);
             mon_ltr->setIcon(pix);
         }
         mon_ltr->setData(Qt::ForegroundRole, r_ptr->d_color);

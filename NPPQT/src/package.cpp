@@ -9,8 +9,7 @@ Package::Package(QString _path)
     if (!fp->open(QFile::ReadOnly)) return;
 
     // Read the header
-    while (true)
-    {
+    while (true) {
         QString line = read_line();
         if (line == "") break;  // Header ends with an empty line
 
@@ -123,7 +122,7 @@ bool Package::is_open()
     return fp->isOpen();
 }
 
-int create_package(QString name, QString folder)
+int create_package(QString name, QString folder, QString ext)
 {
     QDir dir(folder);
     dir.setFilter(QDir::Files | QDir::Readable);
@@ -132,24 +131,19 @@ int create_package(QString name, QString folder)
     int n = 0;
 
     QFileInfoList lst = dir.entryInfoList();
-
-    for (int i = 0; i < lst.size(); i++)
-    {
+    for (int i = 0; i < lst.size(); i++) {
         QFileInfo info = lst.at(i);
-        if (info.fileName().endsWith(".png"))
-        {
+        if (info.fileName().endsWith(ext)) {
             items.append(info);
         }
     }
 
     QFile out(name);
-    if (!out.open(QFile::WriteOnly))
-    {
+    if (!out.open(QFile::WriteOnly)) {
         return 0;
     }
 
-    for (int i = 0; i < items.size(); i++)
-    {
+    for (int i = 0; i < items.size(); i++) {
         QString name = items.at(i).fileName().trimmed();
         name.append("\n");
         out.write(name.toLatin1());
@@ -160,11 +154,9 @@ int create_package(QString name, QString folder)
     }
     out.write("\n"); // End the header with an empty line
 
-    for (int i = 0; i < items.size(); i++)
-    {
+    for (int i = 0; i < items.size(); i++) {
         QFile in(items.at(i).absoluteFilePath());
-        if (!in.open(QFile::ReadOnly))
-        {
+        if (!in.open(QFile::ReadOnly)) {
             out.close();
             return 0;
         }

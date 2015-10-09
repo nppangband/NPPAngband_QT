@@ -1,19 +1,6 @@
 #ifndef DUN_GENERATE_H
 #define DUN_GENERATE_H
 
-
-/*
- * Simple structure to hold a map location
- */
-
-typedef struct coord coord;
-struct coord
-{
-    byte y;
-    byte x;
-};
-
-
 /*
  * Dungeon generation values
  */
@@ -357,8 +344,5 @@ typedef struct
 
 /* Returns TRUE if the given queue is full */
 #define GRID_QUEUE_FULL(Q) ((((Q)->tail + 1) % (Q)->max_size) == (Q)->head)
-
-
-
 
 #endif // DUN_GENERATE_H

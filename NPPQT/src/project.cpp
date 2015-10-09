@@ -19,7 +19,6 @@
  */
 
 #include "src/npp.h"
-#include "src/project.h"
 #include <QDate>
 #include <QTime>
 
@@ -2295,22 +2294,22 @@ static int project_m_y;
 static bool temp_light(int y, int x)
 {
     /* Grid is in line of sight */
-    if (player_can_see_bold(y, x))
+    if (player_has_los_bold(y, x))
     {
-        if (!(dungeon_info[y][x].is_seen_square())
+        if (!(dungeon_info[y][x].cave_info & (CAVE_SEEN))
             && !(p_ptr->timed[TMD_BLIND]))
         {
             /* Temporarily seen */
-            dungeon_info[y][x].mark_seen_square();
+            dungeon_info[y][x].cave_info |= (CAVE_SEEN);
 
             /* Remember? */
             note_spot(y,x);
 
             /* Temporarily seen */
-            dungeon_info[y][x].unmark_seen_square();
+            dungeon_info[y][x].cave_info &= ~(CAVE_SEEN);
 
             /* Light? */
-            light_spot(y, x, FALSE);
+            light_spot(y,x);
 
             /* Get monster */
             if (dungeon_info[y][x].monster_idx > 0 )
@@ -2719,7 +2718,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2742,7 +2741,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2779,7 +2778,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2800,7 +2799,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2824,7 +2823,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2850,7 +2849,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2891,7 +2890,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2952,7 +2951,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -2976,7 +2975,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (cave_secret_door_bold(y, x))
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     obvious = TRUE;
                 }
@@ -2991,7 +2990,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 effect_type *x_ptr = &x_list[dungeon_info[y][x].effect_idx];
 
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[x_ptr->x_f_idx];
@@ -3005,19 +3004,19 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 delete_effect_idx(dungeon_info[y][x].effect_idx);
 
                 /* Forget the trap */
-                dungeon_info[y][x].unmark_known_square();
+                dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
 
                 /* Redraw the grid */
                 note_spot(y, x);
 
-                light_spot(y, x, FALSE);
+                light_spot(y, x);
             }
 
             /* Locked doors are unlocked */
             else if (cave_ff3_match(y, x, FF3_DOOR_LOCKED))
             {
                 /* Check line of sound */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -3041,7 +3040,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (cave_door_bold(y, x) || cave_player_trap_bold(y, x))
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /* Destroy the door */
                     if (cave_door_bold(y, x))
@@ -3077,12 +3076,12 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                     delete_effect_idx(dungeon_info[y][x].effect_idx);
 
                     /* Forget the trap */
-                    dungeon_info[y][x].unmark_known_square();
+                    dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
 
                     /* Redraw the grid */
                     note_spot(y, x);
 
-                    light_spot(y, x, FALSE);
+                    light_spot(y, x);
                 }
 
                 /* Fully update the visuals */
@@ -3103,7 +3102,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (cave_ff1_match(y, x, FF1_CAN_CLOSE))
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -3125,7 +3124,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 int feat = dungeon_info[y][x].feat;
 
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -3151,7 +3150,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (hurt_feature)
             {
                 /* Check line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
                     feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -3204,7 +3203,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             place_boring_closed_door(y, x);
 
             /* Observe */
-            if (dungeon_info[y][x].is_known_square()) obvious = TRUE;
+            if (dungeon_info[y][x].cave_info & (CAVE_MARK)) obvious = TRUE;
 
             break;
         }
@@ -3222,7 +3221,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             if (dam) cave_set_feat(y, x, dam);
 
             /* Check line of sight */
-            if (player_can_see_bold(y, x))
+            if (player_has_los_bold(y, x))
             {
                 obvious = TRUE;
             }
@@ -3248,7 +3247,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             {
                 cave_set_feat(y, x, old_feat);
             }
-            else if (player_can_see_bold(y, x))
+            else if (player_has_los_bold(y, x))
             {
                 obvious = TRUE;
             }
@@ -3264,7 +3263,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             dungeon_info[y][x].cave_info |= (CAVE_GLOW);
 
             /* Grid is in line of sight */
-            if (player_can_see_bold(y, x))
+            if (player_has_los_bold(y, x))
             {
                 if (!p_ptr->timed[TMD_BLIND])
                 {
@@ -3287,20 +3286,20 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             dungeon_info[y][x].cave_info &= ~(CAVE_GLOW);
 
             /* Hack -- Forget "boring" grids */
-            if (((dungeon_info[y][x].cave_info & (CAVE_KNOWN | CAVE_HALO)) == (CAVE_KNOWN)) &&
+            if (((dungeon_info[y][x].cave_info & (CAVE_MARK | CAVE_HALO)) == (CAVE_MARK)) &&
                 !cave_ff1_match(y, x, FF1_REMEMBER) &&
                 (!cave_any_trap_bold(y, x) ||
                     (x_list[dungeon_info[y][x].effect_idx].x_flags &
                     (EF1_HIDDEN))))
             {
                 /* Forget */
-                dungeon_info[y][x].unmark_known_square();
+                dungeon_info[y][x].cave_info &= ~(CAVE_MARK | CAVE_EXPLORED);
 
                 /* Redraw */
-                light_spot(y, x, FALSE);
+                light_spot(y, x);
 
                 /* Grid is in line of sight */
-                if (player_can_see_bold(y, x))
+                if (player_has_los_bold(y, x))
                 {
                     /* Observe */
                     obvious = TRUE;
@@ -3591,7 +3590,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 squelch = do_ident_item(-1, o_ptr);
 
                 /* Redraw purple dots */
-                light_spot(y, x, FALSE);
+                light_spot(y, x);
 
                 /* Squelch? */
                 if (squelch == SQUELCH_YES) do_kill = TRUE;
@@ -3690,7 +3689,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                 delete_object_idx(this_o_idx);
 
                 /* Redraw */
-                light_spot(y, x, FALSE);
+                light_spot(y, x);
             }
         }
     }
@@ -3882,7 +3881,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
     m_ptr->mflag |= (MFLAG_ACTV);
 
     /*Mark the monster as attacked by the player, if the player is in sight. */
-    if ((who == SOURCE_PLAYER) && player_can_see_bold(y, x)) m_ptr->mflag |= (MFLAG_HIT_BY_RANGED);
+    if ((who == SOURCE_PLAYER) && player_has_los_bold(y, x)) m_ptr->mflag |= (MFLAG_HIT_BY_RANGED);
 
     /* Adjust damage based on terrain */
     if (who != SOURCE_OTHER)
@@ -5139,7 +5138,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
         if (cave_ff3_match(y, x, TERRAIN_MASK) && is_monster_native(y, x, r_ptr) && one_in_(5))
         {
             /*Mark the lore*/
-            if ((m_ptr->ml) && player_can_observe() && dungeon_info[y][x].is_known_square())
+            if ((m_ptr->ml) && player_can_observe() && (dungeon_info[y][x].cave_info & (CAVE_MARK)))
             {
                 u32b native = f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat].f_flags3;
                 native &= r_ptr->r_native;
@@ -5413,7 +5412,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
     update_mon(mon_idx, FALSE);
 
     /* Redraw the monster grid */
-    light_spot(y, x, FALSE);
+    light_spot(y, x);
 
     /* Update monster recall window */
     if (p_ptr->monster_race_idx == m_ptr->r_idx)
@@ -6831,8 +6830,6 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     u16b path_g[PATH_SIZE];
     u16b path_gx[PATH_SIZE];
 
-    temp_project_coords.clear();
-
     /* Number of grids in the "blast area" (including the "beam" path) */
     int grids = 0;
 
@@ -6998,12 +6995,10 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                     gd[grids++] = i;
 
                     /* Mark the grid (it will not be used again) */
-                    dungeon_coordinates this_coord;
-                    this_coord.y = gy[grids-1];
-                    this_coord.x = gx[grids-1];
-                    temp_project_coords.append(this_coord);
+                    cave_temp_mark(gy[grids-1], gx[grids-1], FALSE);
                 }
             }
+
 
             /* The radius of arcs cannot be more than 20 */
             if (rad > 20) rad = 20;
@@ -7187,7 +7182,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     }
 
     /* Clear the "temp" array  XXX */
-    temp_project_coords.clear();
+    clear_temp_array();
 
     /* Calculate and store the actual damage at each distance. */
     for (i = 0; i <= MAX_RANGE; i++)
@@ -7386,7 +7381,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     }
 
     /* Clear the "temp" array  (paranoia is good) */
-    temp_project_coords.clear();
+    clear_temp_array();
 
     /* Update stuff if needed */
     notice_stuff();

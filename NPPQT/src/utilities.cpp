@@ -619,7 +619,7 @@ void display_info_window(byte mode, int index, QString info)
     }
     // Whoops!
     else return;
-    message_box.setIconPixmap(ui_get_tile(tile_id));
+    message_box.setIconPixmap(ui_get_tile(tile_id, TRUE));
 
     message_box.show();
     message_box.exec();

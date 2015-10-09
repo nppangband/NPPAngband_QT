@@ -118,7 +118,7 @@ QString find_cloud_tile(int y, int x)
 
     if (!use_graphics) return tile;
 
-    if (!(dungeon_info[y][x].cave_info & (CAVE_KNOWN | CAVE_VIEW))) return tile;
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK | CAVE_SEEN))) return tile;
 
     int x_idx = dungeon_info[y][x].effect_idx;
     while (x_idx)
@@ -139,20 +139,6 @@ QString find_cloud_tile(int y, int x)
 
     return tile;
 }
-
-typedef struct floor_location floor_location;
-struct floor_location
-{
-    QString name_append;
-    bool southwest;
-    bool south;
-    bool southeast;
-    bool west;
-    bool east;
-    bool northwest;
-    bool north;
-    bool northeast;
-};
 
 
 // Determine if a tile should be drawn at double-height
@@ -258,8 +244,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     if (use_graphics)
     {
         // Draw background tile
-        QString key1 = d_ptr->dun_floor_tile;
-        if (d_ptr->dun_wall_tile.length()) key1 = d_ptr->dun_wall_tile;
+        QString key1 = d_ptr->dun_tile;
 
         if (key1.length() > 0)
         {

@@ -288,8 +288,7 @@ void MainWindow::win_obj_list_update()
         QTableWidgetItem *obj_ltr = new QTableWidgetItem(obj_symbol);
         if (use_graphics)
         {
-            QPixmap pix = ui_get_tile(k_ptr->get_tile_id());
-            pix = pix.scaled(32, 32);
+            QPixmap pix = ui_get_tile(k_ptr->get_tile_id(), FALSE);
             obj_ltr->setIcon(pix);
         }
 
@@ -345,7 +344,7 @@ void MainWindow::win_obj_list_update()
         QTableWidgetItem *obj_ltr = new QTableWidgetItem(obj_symbol);
         if (use_graphics)
         {
-            QPixmap pix = ui_get_tile(k_ptr->get_tile_id());
+            QPixmap pix = ui_get_tile(k_ptr->get_tile_id(), FALSE);
             pix = pix.scaled(32, 32);
             obj_ltr->setIcon(pix);
         }

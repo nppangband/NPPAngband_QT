@@ -232,8 +232,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
         QTableWidgetItem *feat_ltr = new QTableWidgetItem(feat_symbol);
         if (use_graphics)
         {
-            QPixmap pix = ui_get_tile(f_ptr->tile_id);
-            pix = pix.scaled(32, 32);
+            QPixmap pix = ui_get_tile(f_ptr->tile_id, FALSE);
             feat_ltr->setIcon(pix);
         }
         feat_ltr->setData(Qt::ForegroundRole, f_ptr->d_color);

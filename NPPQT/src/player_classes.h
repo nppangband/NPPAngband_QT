@@ -424,8 +424,6 @@ public:
     bool is_wizard;			/* Player is in wizard mode */
 
 
-
-
     /*** Temporary fields ***/
 
     bool playing;			/* True if player is playing */

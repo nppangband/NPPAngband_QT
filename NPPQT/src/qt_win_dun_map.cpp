@@ -98,7 +98,7 @@ void DunMapGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     if (use_graphics && main_window->dun_map_use_graphics)
     {
         // Draw background tile
-        QString key1 = d_ptr->dun_floor_tile;
+        QString key1 = d_ptr->dun_tile;
 
         if (key1.length() > 0)
         {

@@ -767,8 +767,7 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         {
             QString tile_id = k_ptr->get_tile_id();
 
-            QPixmap pix = ui_get_tile(tile_id);
-            pix = pix.scaled(32, 32);
+            QPixmap pix = ui_get_tile(tile_id, FALSE);
             kind_ltr->setIcon(pix);
         }
         kind_ltr->setData(Qt::ForegroundRole, k_ptr->get_color());

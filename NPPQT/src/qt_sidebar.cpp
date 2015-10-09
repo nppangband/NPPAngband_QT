@@ -718,7 +718,7 @@ void MainWindow::sidebar_display_mon(int m_idx)
     if (use_graphics)
     {
 
-        QPixmap pix = ui_get_tile(r_ptr->tile_id);
+        QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);
         pix = pix.scaled(main_cell_hgt, main_cell_wid);
         mon_pic->setPixmap(pix);
     }

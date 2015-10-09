@@ -20,7 +20,6 @@
 #include "nppdialog.h"
 #include "storedialog.h"
 #include "src/cmds.h"
-#include "src/project.h"
 #include <QPushButton>
 
 /*
@@ -38,7 +37,7 @@ bool do_cmd_test(int y, int x, int action, bool do_message)
     feature_type *f_ptr;
 
     /* Must have knowledge */
-    if (!dungeon_info[y][x].is_known_square())
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK)))
     {
         /* Message */
         if (do_message) message(QString("You see nothing %1.") .arg(here));
@@ -300,7 +299,7 @@ static int count_feats(int *y, int *x, int action)
         int xx = p_ptr->px + ddx_ddd[d];
 
         /* Must have knowledge */
-        if (!dungeon_info[yy][xx].is_known_square()) continue;
+        if (!(dungeon_info[yy][xx].cave_info & (CAVE_MARK))) continue;
 
         /* Get the mimiced feature */
         f_ptr = &f_info[dungeon_info[yy][xx].feat];
@@ -1169,12 +1168,12 @@ static bool command_disarm_aux(int y, int x, bool disarm)
         delete_effect_idx(dungeon_info[y][x].effect_idx);
 
         /* Forget the trap */
-        dungeon_info[y][x].unmark_known_square();
+        dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
 
         /* Check if the grid is still viewable */
         note_spot(y, x);
 
-        light_spot(y, x, FALSE);
+        light_spot(y, x);
     }
 
     /* Failure -- Keep trying */
@@ -1480,7 +1479,7 @@ void do_search(void)
                         /* Show the trap */
                         note_spot(y, x);
 
-                        light_spot(y, x, FALSE);
+                        light_spot(y, x);
 
                         /* Message */
                         message(QString("You have found a trap!"));
@@ -1647,12 +1646,12 @@ static bool command_tunnel_aux(int y, int x)
             cave_alter_feat(y, x, FS_TUNNEL);
 
             /* Forget the square if marked */
-            dungeon_info[y][x].unmark_known_square();
+            dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
 
             /* Check if the grid is still viewable */
             note_spot(y, x);
 
-            light_spot(y, x, FALSE);
+            light_spot(y, x);
 
             /* Update the visuals */
             p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
@@ -1967,7 +1966,7 @@ void command_alter(cmd_arg args)
     feat = dungeon_info[y][x].feat;
 
     /* Must have knowledge to know feature XXX XXX */
-    if (!dungeon_info[y][x].is_known_square()) feat = FEAT_NONE;
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) feat = FEAT_NONE;
 
      p_ptr->player_previous_command_update(CMD_ALTER, args);
 
@@ -2364,7 +2363,7 @@ static bool do_cmd_walk_test(int y, int x)
     /*feat = f_info[feat].f_mimic;*/
 
     /* Hack -- walking obtains knowledge XXX XXX */
-    if (!dungeon_info[y][x].is_known_square()) return (TRUE);
+    if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) return (TRUE);
 
     /* Allow attack on visible monsters */
     if ((dungeon_info[y][x].monster_idx > 0) && (mon_list[dungeon_info[y][x].monster_idx].ml))
