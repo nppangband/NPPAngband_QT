@@ -6145,7 +6145,7 @@ static void place_marked_squares(void)
             if (!cave_plain_bold(y, x)) continue;
 
             /* Already Marked */
-            if (dungeon_info[y][x].cave_info & (CAVE_MARKED)) continue;
+            if (dungeon_info[y][x].cave_info & (CAVE_SPECIAL)) continue;
 
             /* Check if it should be a room or not "room" */
             if (((dungeon_info[y][x].cave_info & (CAVE_ROOM)) ? TRUE : FALSE) != is_room)
@@ -6160,7 +6160,7 @@ static void place_marked_squares(void)
         if (i == 10000) return;
 
         /*mark it*/
-        dungeon_info[y][x].cave_info |= (CAVE_MARKED);
+        dungeon_info[y][x].cave_info |= (CAVE_SPECIAL);
     }
 
 }

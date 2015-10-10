@@ -41,7 +41,7 @@ void DunMapGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QChar square_char = d_ptr->dun_char;
     QColor square_color = d_ptr->dun_color;
     bool empty = true;
-    u32b flags = 0;
+    u16b flags = 0;
     QString key2;
     qreal opacity = 1;
     bool do_shadow = false;

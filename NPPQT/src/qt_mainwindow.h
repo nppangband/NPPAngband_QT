@@ -67,6 +67,7 @@ public:
     int main_tile_hgt, main_tile_wid;
     int main_cell_hgt, main_cell_wid;
     QString main_multiplier;
+    bool do_25d_graphics;
     bool do_pseudo_ascii;
 
     // Scaled tiles
@@ -189,6 +190,7 @@ private slots:
     void set_dvg();
     void set_old_tiles();
     void set_ascii();
+    void set_25d_graphics();
     void set_pseudo_ascii();
     void display_monster_info();
     void display_object_info();
@@ -254,10 +256,12 @@ private:
     QAction *reg_mode_act;
     QAction *dvg_mode_act;
     QAction *old_tiles_act;
+    QAction *graphics_25d_act;
     QAction *pseudo_ascii_act;
     QAction *font_main_select_act;
     QAction *font_messages_select_act;
     QAction *font_sidebar_select_act;
+    QActionGroup *keymap_choice;
     QAction *keymap_new;
     QAction *keymap_angband;
     QAction *keymap_rogue;

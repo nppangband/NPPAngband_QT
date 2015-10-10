@@ -19,12 +19,13 @@ enum
     OBJ_SYMBOL_PILE,
 };
 
-#define UI_TRANSPARENT_MONSTER 0x00000001
-#define UI_TRANSPARENT_EFFECT  0x00000002
-#define UI_LIGHT_DIM           0x00000004
-#define UI_LIGHT_BRIGHT        0x00000008
-#define UI_LIGHT_TORCH         0x00000010
-#define UI_COSMIC_TORCH         0x00000020
+#define UI_TRANSPARENT_MONSTER 0x0001
+#define UI_TRANSPARENT_EFFECT  0x0002
+#define UI_LIGHT_DIM           0x0004
+#define UI_LIGHT_BRIGHT        0x0008
+#define UI_LIGHT_TORCH         0x0010
+#define UI_COSMIC_TORCH        0x0020
+
 
 class dungeon_type
 {
@@ -59,8 +60,10 @@ public:
     QString monster_tile;
 
     bool double_height_monster;
+    bool floor_over_wall;
+    bool wall_over_floor;
 
-    u32b ui_flags;
+    u16b ui_flags;
 
     u16b path_cost;
     bool path_flow;

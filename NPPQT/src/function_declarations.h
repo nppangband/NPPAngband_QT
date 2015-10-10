@@ -647,6 +647,7 @@ extern void ui_update_char_inventory_window();
 extern void ui_update_char_score();
 extern void ui_update_char_turncount();
 extern void player_death_close_game(void);
+extern bool ui_use_25d_graphics(void);
 extern void ui_redraw_grid(int y, int x);
 extern void ui_redraw_all();
 extern void ui_ensure(int y, int x);

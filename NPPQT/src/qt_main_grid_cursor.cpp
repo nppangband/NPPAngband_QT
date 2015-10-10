@@ -157,7 +157,7 @@ static bool is_double_height_tile(int y, int x)
     return (TRUE);
 }
 
-// This function redraws the actual dungeon square
+// This function redraws the actual dungeon square onscreen
 void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     (void)option;
@@ -173,7 +173,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     QChar square_char = d_ptr->dun_char;
     QColor square_color = d_ptr->dun_color;
     bool empty = true;
-    u32b flags = 0;
+    u16b flags = 0;
     QString key2;
     qreal opacity = 1;
     bool do_shadow = false;

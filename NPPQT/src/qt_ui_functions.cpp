@@ -583,6 +583,14 @@ void ui_center(int y, int x)
     main_window->graphics_view->centerOn(x * main_window->main_cell_wid, y * main_window->main_cell_hgt);
 }
 
+bool ui_use_25d_graphics(void)
+{
+    if (use_graphics != GRAPHICS_RAYMOND_GAUSTADNES) return (FALSE);
+    if (!main_window->do_25d_graphics) return (FALSE);
+
+    return (TRUE);
+}
+
 void ui_redraw_grid(int y, int x)
 {
     DungeonGrid *g_ptr = main_window->grids[y][x];

@@ -117,7 +117,8 @@ void dungeon_type::dungeon_square_wipe()
     path_cost = cave_info = 0;
     special_lighting = obj_special_symbol = 0;
     ui_flags = 0;
-    path_flow = dtrap = double_height_monster = FALSE;
+    path_flow = dtrap = FALSE;
+    floor_over_wall = wall_over_floor = double_height_monster = FALSE;
     dun_color = Qt::black;
     dun_char = ' ';
     object_color = Qt::black;

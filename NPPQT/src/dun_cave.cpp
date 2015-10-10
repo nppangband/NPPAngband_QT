@@ -744,8 +744,45 @@ bool dtrap_edge(int y, int x)
     return FALSE;
 }
 
+// Does this floor have an overlapping wall below it?
+static bool wall_overlapping_floor(int y, int x)
+{
 
-static void map_terrain (s16b y, s16b x)
+    if (!ui_use_25d_graphics()) return (FALSE);
+
+    if (!in_bounds(y-1, x)) return (FALSE);
+
+    dungeon_type *d_ptr = &dungeon_info[y-1][x];
+
+    if (f_info[d_ptr->feat].f_flags1 & (FF1_REMEMBER))
+    {
+        return (TRUE);
+    }
+
+    return FALSE;
+}
+
+// Is this a wall with a floor below it?
+static bool wall_over_floor(int y, int x)
+{
+    if (!ui_use_25d_graphics()) return (FALSE);
+
+    if (!in_bounds(y-1, x)) return (FALSE);
+
+    dungeon_type *d_ptr = &dungeon_info[y][x];
+
+    if (!feat_ff1_match(d_ptr->feat, FF1_WALL)) return (FALSE);
+
+    // Point to the square below it
+    d_ptr = &dungeon_info[y-1][x];
+
+    if (feat_ff1_match(d_ptr->feat, FF1_WALL)) return (FALSE);
+
+    return (TRUE);
+}
+
+
+static void map_terrain(s16b y, s16b x)
 {
     dungeon_type *dun_ptr = &dungeon_info[y][x];
     s16b feat = dun_ptr->feat;
@@ -754,6 +791,8 @@ static void map_terrain (s16b y, s16b x)
     feature_type *f_ptr;
     bool do_dtrap = FALSE;
     dun_ptr->dtrap = FALSE;
+    dun_ptr->floor_over_wall = FALSE;
+    dun_ptr->wall_over_floor = FALSE;
 
     //Assume som things normal;
     dun_ptr->special_lighting = FLOOR_LIGHT_NORMAL;   
@@ -780,6 +819,8 @@ static void map_terrain (s16b y, s16b x)
             dun_ptr->dun_char = f_ptr->d_char;
             dun_ptr->dun_color = f_ptr->d_color;
             dun_ptr->dun_tile = f_ptr->tile_id;
+
+            if (wall_overlapping_floor(y, x)) dun_ptr->floor_over_wall = TRUE;
 
             /* Special lighting effects */
             if (view_special_light)
@@ -816,6 +857,9 @@ static void map_terrain (s16b y, s16b x)
 
             /* We have seen the feature */
             f_ptr->f_everseen = TRUE;
+
+            if (wall_over_floor(y, x)) dun_ptr->wall_over_floor = TRUE;
+
 
             /* Special lighting effects (walls only) */
             if (view_granite_light)
@@ -1349,11 +1393,21 @@ void note_spot(int y, int x)
  */
 void light_spot(int y, int x)
 {
+    dungeon_type *d_ptr = &dungeon_info[y][x];
+    bool old_double_square = d_ptr->double_height_monster;
+
     /* Hack -- redraw the grid */
     map_info(y, x);
 
     // print the square onscreen
     ui_redraw_grid(y, x);
+
+    // Possibly draw the square above it
+    if (old_double_square || d_ptr->double_height_monster)
+    {
+        if (in_bounds(y-1, x)) ui_redraw_grid(y-1, x);
+    }
+
 }
 
 
