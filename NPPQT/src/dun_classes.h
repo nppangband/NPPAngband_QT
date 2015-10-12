@@ -60,8 +60,8 @@ public:
     QString monster_tile;
 
     bool double_height_monster;
-    bool floor_over_wall;
-    bool wall_over_floor;
+    bool wall_below;
+    bool wall_above;
 
     u16b ui_flags;
 
@@ -81,6 +81,8 @@ public:
     bool has_visible_artifact();
 
     void mark_square();
+
+    bool is_wall(bool known);
 
     // All variables above should be included in this method.
     void dungeon_square_wipe();
@@ -186,7 +188,7 @@ public:
     void feature_wipe();
     bool is_door(void);
     bool is_jammed_door(void);
-
+    bool is_wall(void);
 };
 
 /*

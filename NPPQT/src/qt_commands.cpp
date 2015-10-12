@@ -84,7 +84,7 @@ static struct command_desc list_commands_new[] =
     {"Uninscribe Item", "}"},
     {"Use Item", "e"},
     {"Wield Item", "w"},
-    {"Wizard Mode (cheat)", "CTRL-a"},
+    {"Wizard Mode (cheat)", "ALT-a"},
     {"Write Note", ":"},
     // The null entry at the end is essential for initializing the table of groups.
     {NULL, NULL},
@@ -154,7 +154,7 @@ static struct command_desc list_commands_angband[] =
     {"Walk (flip pickup)","-"},
     {"Walk (normal pickup)","-"},
     {"Wield Item", "w"},
-    {"Wizard Mode (cheat)", "CTRL-a"},
+    {"Wizard Mode (cheat)", "ALT-a"},
     {"Write Note", ":"},
     {"Zap a Rod", "z"},
     // The null entry at the end is essential for initializing the table of groups.
@@ -226,7 +226,7 @@ static struct command_desc list_commands_roguelike[] =
     {"Walk (flip pickup)","-"},
     {"Walk (normal pickup)","-"},
     {"Wield Item", "w"},
-    {"Wizard Mode (cheat)", "CTRL-a"},
+    {"Wizard Mode (cheat)", "ALT-a"},
     {"Write Note", ":"},
     {"Zap a Rod", "a"},
     // The null entry at the end is essential for initializing the table of groups.
@@ -611,7 +611,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_A:
         {
-            if (ctrl_key)           do_cmd_wizard_mode();
+            if (alt_key)           do_cmd_wizard_mode();
             else if (!using_mods)   do_cmd_activate();
             break;
         }
@@ -856,7 +856,8 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_A:
         {
-            if (shift_key)     do_cmd_activate();
+            if (alt_key)           do_cmd_wizard_mode();
+            else if (shift_key)          do_cmd_activate();
             else if (!using_mods)   do_cmd_aim_wand();
             break;
         }
@@ -986,8 +987,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_W:
         {
-            if (ctrl_key)           do_cmd_wizard_mode();
-            else if (!using_mods)   do_cmd_wield();
+            if (!using_mods)   do_cmd_wield();
             break;
         }
         case Qt::Key_X:
@@ -1147,8 +1147,9 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         }
         case Qt::Key_A:
         {
-            if (shift_key)          do_cmd_activate();
-            else if (!using_mods)   do_cmd_zap_rod();
+            if (alt_key)           do_cmd_wizard_mode();
+            else if (shift_key)    do_cmd_activate();
+            else if (!using_mods)  do_cmd_zap_rod();
             break;
         }
         case Qt::Key_C:
@@ -1246,8 +1247,7 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         }
         case Qt::Key_W:
         {
-            if (ctrl_key)           do_cmd_wizard_mode();
-            else if (shift_key)     ui_center(p_ptr->py, p_ptr->px);
+            if (shift_key)     ui_center(p_ptr->py, p_ptr->px);
             else if (!using_mods)   do_cmd_wield();
             break;
         }

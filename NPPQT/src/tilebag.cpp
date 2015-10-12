@@ -236,7 +236,7 @@ void extract_tiles(void)
 {
     int i;
 
-    for (i = 0; i < z_info->r_max; i++)
+    for (i = 1; i < z_info->r_max; i++)
     {
         monster_race *r_ptr = &r_info[i];
         if (r_ptr->r_name_full.isEmpty()) continue;

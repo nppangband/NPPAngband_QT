@@ -2262,7 +2262,7 @@ dynamic_grid_type *get_dynamic_terrain(byte y, byte x)
 static byte calculate_turn_count(u16b feat)
 {
     /* Growing trees */
-    if (feat == FEAT_FOREST_SOIL_DYNAMIC)
+    if ((feat == FEAT_FOREST_SOIL_DYNAMIC) || (feat == FEAT_GRASS_DYNAMIC))
     {
         return (25 + rand_int(30));
     }
@@ -2751,7 +2751,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
     /*
      * A very bad imitation of the Fangorn forest.
      */
-    if (feat == FEAT_FOREST_SOIL_DYNAMIC)
+    if ((feat == FEAT_FOREST_SOIL_DYNAMIC) || (feat == FEAT_GRASS_DYNAMIC))
     {
         bool skip = FALSE;
 

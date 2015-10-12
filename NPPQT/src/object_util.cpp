@@ -22,12 +22,6 @@
 #include "src/init.h"
 
 
-
-
-
-
-
-
 /*
  * Convert an inventory index into a one character label.
  *
@@ -2397,6 +2391,9 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
 
                 /* Ignore traps and glyphs */
                 if (cave_any_trap_bold(ty, tx)) continue;
+
+                // Ignore hidden objects
+                if (cave_hidden_object_bold(ty, tx)) continue;
 
                 /* Ignore dangerous locations */
                 if (object_hates_location(ty, tx, j_ptr)) continue;

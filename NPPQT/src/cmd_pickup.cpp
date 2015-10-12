@@ -886,8 +886,15 @@ int move_player(int dir, int jumping)
 			/*Little energy used*/
 			used_energy = BASE_ENERGY_MOVE / 10;
 		}
-
 	}
+
+    else if(cave_hidden_object_bold(y, x))
+    {
+        message(QString("You have found something."));
+        delete_effect_idx(dungeon_info[y][x].effect_idx);
+        place_object(y, x, FALSE, FALSE, DROP_TYPE_UNTHEMED);
+        used_energy = BASE_ENERGY_MOVE / 4;
+    }
 
 	/* Normal movement */
 	else

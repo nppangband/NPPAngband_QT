@@ -207,7 +207,7 @@ enum
     FEAT_RUNE_VIOLET_BRIGHT,
     FEAT_RUNE_YELLOW_SHIMMER,
     FEAT_RUBBLE,
-    FEAT_RUBBLE_HIDDEN,
+    FEAT_UNUSED_1,
     FEAT_RUBBLE_HIDDEN_OBJECT,
     FEAT_WALL_INSCRIPTION,
     FEAT_PUTRID_FLOWER,
@@ -223,6 +223,8 @@ enum
     FEAT_TREE,
     FEAT_WALL_VINES,
     FEAT_TREE_BURNING,
+    FEAT_GRASS,
+    FEAT_GRASS_DYNAMIC,
     FEAT_FOREST_SOIL,
     FEAT_FOREST_SOIL_DYNAMIC,
     FEAT_FLOOR_WATER,
@@ -347,18 +349,18 @@ enum
 #define FF1_CAN_DISARM 	0x00001000  /*Can disarm this feature*/
 #define FF1_SHOP        0x00002000  /*Feature is a shop*/
 #define FF1_CAN_TUNNEL 	0x00004000  /*Can tunnel this feature*/
-#define FF1_F1XXX_1	0x00008000  /*Unused*/
+#define FF1_F1XXX_1     0x00008000  /*Unused*/
 #define FF1_HAS_GOLD    0x00010000  /*Feature has gold*/
-#define FF1_HAS_ITEM    0x00020000  /*Feature has an item*/
-#define FF1_DOOR 	0x00040000  /*Detected by detect doors/destroyed by destroy doors*/
-#define FF1_TRAP 	0x00080000  /*Detected by detect traps/destroyed by destroy traps*/
+#define FF1_F1XXX_2    0x00020000   /*Unused */
+#define FF1_DOOR        0x00040000  /*Detected by detect doors/destroyed by destroy doors*/
+#define FF1_TRAP        0x00080000  /*Detected by detect traps/destroyed by destroy traps*/
 #define FF1_STAIRS      0x00100000  /*Detected by detect doors/destroyed by destroy stairs*/
 #define FF1_GLYPH       0x00200000  /*Destroyed by powerful creatures*/
-#define FF1_LESS 	0x00400000  /*Not allowed in town*/
-#define FF1_MORE 	0x00800000  /*Not allowed on quest levels*/
-#define FF1_RUN  	0x01000000  /*Can run over*/
+#define FF1_LESS        0x00400000  /*Not allowed in town*/
+#define FF1_MORE        0x00800000  /*Not allowed on quest levels*/
+#define FF1_RUN         0x01000000  /*Can run over*/
 #define FF1_FLOOR       0x02000000  /*Can create doors, stairs, rubble here.*/
-#define FF1_WALL 	0x04000000  /*Blocks flow and treated as WALL by magic mapping/enlightenment.*/
+#define FF1_WALL        0x04000000  /*Blocks flow and treated as WALL by magic mapping/enlightenment.*/
 #define FF1_PERMANENT   0x08000000  /*Never destroy/modify this location.*/
 #define FF1_INNER       0x10000000  /*Inner wall of room - don't overwrite with corridor.*/
 #define FF1_OUTER       0x20000000  /*Outer wall of room - OK to overwrite with corridor/turn to door*/
@@ -376,7 +378,7 @@ enum
 #define FF2_BRIDGED	0x00000008  /* Feature has been bridged */
 #define FF2_COVERED     0x00000010  /* Terrain provides coverage for monster */
 #define FF2_GLOW 	0x00000020  /*Spot is self illuminating*/
-#define FF2_ATTR_LIGHT   0x00000040  /*Attribute is modified by torchlight/blindness/not seen.*/
+#define FF2_F2XXX_2   0x00000040    // Unused
 #define FF2_EFFECT     0x00000080  /* Feature is an effect, rather than a true floor feature */
 #define FF2_F2XXX_3  	0x00000100  /* Unused */
 #define FF2_SHALLOW     0x00000200  /*Double weight of load. Chance of sinking in feature and losing move*/
@@ -434,7 +436,7 @@ enum
 #define FF3_F3XXX_17    0x02000000  /* Unused*/
 #define FF3_F3XXX_18    0x04000000  /* Unused*/
 #define FF3_F3XXX_19    0x08000000  /* Unused*/
-#define FF3_TREE	0x10000000  /* Feature is a tree*/
+#define FF3_TREE        0x10000000  /* Feature is a tree*/
 #define FF3_F3XXX_22	0x20000000
 #define FF3_F3XXX_21    0x40000000  /* Unused*/
 #define FF3_DYNAMIC		0x80000000  /* Dynamic feature */
@@ -518,7 +520,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
 #define EFFECT_GLYPH		     7		/* A glyph of warding */
 #define EFFECT_GLACIER			 8		/* A glacier */
 #define EFFECT_INSCRIPTION		 9		/* An inscription  */
-
+#define EFFECT_ROCKS            10      // Rocks with objects under them
 
 
 /*
@@ -539,7 +541,8 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
 #define EF1_GLYPH	    	0x1000  /* Glpyh set by the player */
 #define EF1_HIDDEN	    	0x2000  /* The effect can't be seen */
 #define EF1_PERMANENT    	0x4000  /* This effect should not go away*/
-/*Unused*/
+#define EF1_OBJECT          0x8000  // Effect has an object under it
+
 
 /*Put a cap on effect damage*/
 #define EFFECT_POWER_MAX    200
@@ -602,6 +605,13 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
  */
 #define cave_any_trap_bold(Y,X) \
     (x_list[dungeon_info[Y][X].effect_idx].x_flags & (EF1_TRAP_DUMB | EF1_TRAP_SMART | EF1_TRAP_PLAYER | EF1_GLYPH))
+
+/*
+ * Determine if a "legal" grid is a "trap" grid
+ */
+#define cave_hidden_object_bold(Y,X) \
+    (x_list[dungeon_info[Y][X].effect_idx].x_flags & (EF1_OBJECT))
+
 /*
  * Determine if a "legal" grid is a "trap" for monsters (set by player)
  */
@@ -644,6 +654,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
     (cave_ff1_match(Y, X, FF1_DROP) && \
      cave_passable_bold(Y, X) && \
     !cave_any_trap_bold(Y, X) && \
+    !cave_hidden_object_bold(Y, X) &&\
      (dungeon_info[Y][X].object_idx == 0))
 
 /*
@@ -658,6 +669,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
      cave_passable_bold(Y, X) && \
         !cave_player_glyph_bold(Y, X) && \
         !cave_monster_trap_bold(Y, X) && \
+        !cave_hidden_object_bold(Y, X) &&\
         (dungeon_info[Y][X].monster_idx == 0))
 
 /*
@@ -689,6 +701,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
         (cave_ff1_match(Y, X, FF1_FLOOR) && \
         cave_passable_bold(Y, X) && \
         !cave_any_trap_bold(Y, X) && \
+        !cave_hidden_object_bold(Y, X) &&\
         (dungeon_info[Y][X].object_idx == 0) && \
         (dungeon_info[Y][X].monster_idx == 0))
 
@@ -707,6 +720,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
     (!cave_ff1_match(Y, X, FF1_PERMANENT) && \
     cave_passable_bold(Y, X) && \
     !cave_any_trap_bold(Y, X) && \
+    !cave_hidden_object_bold(Y, X) &&\
     (f_info[dungeon_info[Y][X].feat].dam_non_native == 0) && \
     (dungeon_info[Y][X].object_idx == 0) && \
     (dungeon_info[Y][X].monster_idx == 0))
@@ -727,6 +741,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
  (cave_ff1_match(Y, X, FF1_DROP) && \
  cave_passable_bold(Y, X) && \
  !cave_any_trap_bold(Y, X) && \
+ !cave_hidden_object_bold(Y, X) &&\
  !cave_ff3_match(Y, X, FF3_LAVA | FF3_WATER | FF3_ACID | FF3_OIL | FF3_FIRE) && \
  (dungeon_info[Y][X].object_idx == 0))
 

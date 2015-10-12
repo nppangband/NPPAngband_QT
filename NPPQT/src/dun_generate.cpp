@@ -549,7 +549,10 @@ static bool new_player_spot_old(void)
 static void place_rubble(int y, int x)
 {
     /* Create rubble */
-    cave_set_feat(y, x, one_in_(5) ? FEAT_RUBBLE_HIDDEN: FEAT_RUBBLE);
+    int effect = FEAT_RUBBLE;
+    if (one_in_(3)) effect = FEAT_RUBBLE_HIDDEN_OBJECT;
+
+    set_effect_rocks(effect, y, x);
 }
 
 
@@ -3652,6 +3655,10 @@ void build_terrain(int y, int x, int feat)
 
             else if (k <= 35) newfeat = FEAT_FOREST_SOIL_DYNAMIC;
 
+            else if (k <= 45) newfeat = FEAT_GRASS;
+
+            else if (k <= 50) newfeat = FEAT_GRASS_DYNAMIC;
+
             break;
         }
 
@@ -3713,9 +3720,13 @@ void build_terrain(int y, int x, int feat)
 
             else if (k <= 10) newfeat = FEAT_QUARTZ_VEIN;
 
-            else if (k <= 4) newfeat = FEAT_LOOSE_ROCK;
+            else if (k <= 20)
+            {
+                set_effect_rocks(FEAT_LOOSE_ROCK, y, x);
+                return;
+            }
 
-            else if (k <= 5) newfeat = FEAT_FLOOR_ROCK;
+            else if (k <= 25) newfeat = FEAT_FLOOR_ROCK;
 
             break;
         }
@@ -3777,8 +3788,10 @@ void build_terrain(int y, int x, int feat)
     /* Hack -- no change */
     if (newfeat == oldfeat) return;
 
+
     /* Set the new feature */
     cave_set_feat(y, x, newfeat);
+
 }
 
 
@@ -8048,6 +8061,8 @@ static void transform_regions(coord *grids, int num_grids, feature_selector_type
                         else if (k < 21) new_floor = FEAT_TREE;
 
                         else if (k < 26) new_floor = FEAT_BUSH;
+
+                        else if (k < 36) new_floor = FEAT_GRASS;
                     }
                     else if (floor == FEAT_FLOOR_SAND)
                     {
@@ -9015,8 +9030,9 @@ static bool build_forest_level(void)
         y = randint(hgt - 1);
         x = randint(wid - 1);
 
-        /* Place forest soil, sometimes dynamic */
-        cave_set_feat(y, x, (i < (j / 5)) ? FEAT_FOREST_SOIL_DYNAMIC: FEAT_FOREST_SOIL);
+        /* Place forest soil or grass, sometimes dynamic */
+        if (one_in_(4)) cave_set_feat(y, x, (i < (j / 5)) ? FEAT_GRASS_DYNAMIC: FEAT_GRASS);
+        else cave_set_feat(y, x, (i < (j / 5)) ? FEAT_FOREST_SOIL_DYNAMIC: FEAT_FOREST_SOIL);
     }
 
     /* Place a few mud grids */

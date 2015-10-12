@@ -108,6 +108,10 @@ bool warding_glyph(void)
             /* Trap */
             else message(QString("The trap resists the spell."));
         }
+        else if (cave_hidden_object_bold(py, px))
+        {
+            message(QString("This location resists the spell."));
+        }
 
         /* Unsuitable terrain */
         else message(QString("The %1 resists the spell.") .arg(name));
@@ -237,6 +241,8 @@ bool create_elements(int cy, int cx, int range)
                 else if (k < 20) feat = FEAT_BUSH;
                 else if (k < 30) feat = FEAT_BRAMBLES;
                 else if (k < 35) feat = FEAT_FOREST_SOIL_DYNAMIC;
+                else if (k < 45) feat = FEAT_GRASS;
+                else if (k < 55) feat = FEAT_GRASS_DYNAMIC;
                 else feat = FEAT_FOREST_SOIL;
             }
 
@@ -5250,6 +5256,7 @@ bool call_huorns(void)
             else if (k < 30) feat = FEAT_WALL_VINES;
             else if (k < 40) feat = FEAT_BUSH;
             else if (k < 50) feat = FEAT_THICKET;
+            else if (k < 60) feat = FEAT_GRASS;
 
             /* Restore the current grid to a passable feature */
             cave_set_feat(y, x, feat);

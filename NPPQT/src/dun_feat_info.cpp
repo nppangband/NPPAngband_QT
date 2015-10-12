@@ -149,12 +149,6 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
         output.append(get_feature_type(f_l_ptr));
         output.append(" may be hiding treasure.  ");
     }
-    if (f_l_ptr->f_l_flags1 & FF1_HAS_ITEM)
-    {
-        output.append("  This");
-        output.append(get_feature_type(f_l_ptr));
-        output.append(" may be hiding an object.  ");
-    }
 
     return(output);
 }
@@ -792,7 +786,7 @@ static QString describe_feature_dynamic(int f_idx, const feature_lore *f_l_ptr)
         return (output);
     }
 
-    if (f_idx == FEAT_FOREST_SOIL_DYNAMIC)
+    if ((f_idx == FEAT_FOREST_SOIL_DYNAMIC) || (f_idx == FEAT_GRASS_DYNAMIC))
     {
         output.append("  This feature can slowly spread across the dungeon.  ");
 

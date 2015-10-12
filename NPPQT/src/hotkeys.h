@@ -12,7 +12,7 @@
 #include <QButtonGroup>
 
 
-#define NUM_HOTKEYS 12
+#define NUM_HOTKEYS 24
 
 enum
 {
@@ -44,7 +44,9 @@ typedef struct hotkey_list hotkey_list;
 struct hotkey_list
 {
     QString hotkey_list_name;
+    bool shift;
     int listed_hotkey;
+
 };
 
 enum

@@ -691,7 +691,7 @@ static flag_name info_flags[] =
     {"CAN_TUNNEL", FF1, FF1_CAN_TUNNEL},
     {"F1XXX_1", FF1, FF1_F1XXX_1},
     {"HAS_GOLD", FF1, FF1_HAS_GOLD},
-    {"HAS_ITEM", FF1, FF1_HAS_ITEM},
+    {"F1XXX_2", FF1, FF1_F1XXX_2},
     {"DOOR", FF1, FF1_DOOR},
     {"TRAP", FF1, FF1_TRAP},
     {"STAIRS", FF1, FF1_STAIRS},
@@ -720,7 +720,7 @@ static flag_name info_flags[] =
     {"BRIDGED", FF2, FF2_BRIDGED},
     {"COVERED", FF2, FF2_COVERED},
     {"GLOW", FF2, FF2_GLOW},
-    {"ATTR_LIGHT", FF2, FF2_ATTR_LIGHT},
+    {"F2XXX_2", FF2, FF2_F2XXX_2},
     {"EFFECT", FF2, FF2_EFFECT},
     {"F2XXX_3", FF2, FF2_F2XXX_3},
     {"SHALLOW", FF2, FF2_SHALLOW},
@@ -1835,13 +1835,6 @@ int parse_f_info(QString line_info)
 
         /* Default "states" */
         for (i = 0; i < MAX_FEAT_STATES; i++) f_ptr->state[i].fs_action = FS_FLAGS_END;
-
-        /* Hack -- handle graphics Playtesting*/
-        /* Note (from Unangband) that in a future version of Unangband, a preference 'Use special lighting
-         * for all features' will set this flag for all features, and the features that are
-         * dynamically lit in vanilla Angband will have this flag in terrain.txt.
-         */
-        f_ptr->f_flags2 |= (FF2_ATTR_LIGHT);
     }
 
     /* Process 'M' for "Mimic" (one line only) */

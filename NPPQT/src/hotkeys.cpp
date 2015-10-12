@@ -27,18 +27,30 @@ single_hotkey player_hotkeys[NUM_HOTKEYS];
 
 static hotkey_list list_hotkeys[NUM_HOTKEYS] =
 {
-    {"F1", Qt::Key_F1},
-    {"F2", Qt::Key_F2},
-    {"F3", Qt::Key_F3},
-    {"F4", Qt::Key_F4},
-    {"F5", Qt::Key_F5},
-    {"F6", Qt::Key_F6},
-    {"F7", Qt::Key_F7},
-    {"F8", Qt::Key_F8},
-    {"F9", Qt::Key_F9},
-    {"F10", Qt::Key_F10},
-    {"F11", Qt::Key_F11},
-    {"F12", Qt::Key_F12},
+    {"F1", FALSE, Qt::Key_F1},
+    {"F2", FALSE, Qt::Key_F2},
+    {"F3", FALSE, Qt::Key_F3},
+    {"F4", FALSE, Qt::Key_F4},
+    {"F5", FALSE, Qt::Key_F5},
+    {"F6", FALSE, Qt::Key_F6},
+    {"F7", FALSE, Qt::Key_F7},
+    {"F8", FALSE, Qt::Key_F8},
+    {"F9", FALSE, Qt::Key_F9},
+    {"F10", FALSE, Qt::Key_F10},
+    {"F11", FALSE, Qt::Key_F11},
+    {"F12", FALSE, Qt::Key_F12},
+    {"Shift-F1", TRUE, Qt::Key_F1},
+    {"Shift-F2", TRUE,  Qt::Key_F2},
+    {"Shift-F3", TRUE,  Qt::Key_F3},
+    {"Shift-F4", TRUE,  Qt::Key_F4},
+    {"Shift-F5", TRUE,  Qt::Key_F5},
+    {"Shift-F6", TRUE,  Qt::Key_F6},
+    {"Shift-F7", TRUE,  Qt::Key_F7},
+    {"Shift-F8", TRUE,  Qt::Key_F8},
+    {"Shift-F9", TRUE,  Qt::Key_F9},
+    {"Shift-F10", TRUE,  Qt::Key_F10},
+    {"Shift-F11", TRUE,  Qt::Key_F11},
+    {"Shift-F12", TRUE,  Qt::Key_F12},
 };
 
 hotkey_type hotkey_actions[] =
@@ -1159,7 +1171,6 @@ static bool set_up_hotkey(int which_hotkey)
 
 bool check_hotkey_commands(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
 {
-    (void)shift_key;
     (void)alt_key;
     (void)ctrl_key;
     (void)meta_key;
@@ -1168,6 +1179,8 @@ bool check_hotkey_commands(int key_press, bool shift_key, bool alt_key, bool ctr
         hotkey_list *hk_list_ptr = &list_hotkeys[i];
 
         if (key_press != hk_list_ptr->listed_hotkey) continue;
+
+        if (shift_key != hk_list_ptr->shift) continue;
         return (set_up_hotkey(i));
     }
 

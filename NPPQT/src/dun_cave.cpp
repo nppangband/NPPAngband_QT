@@ -744,42 +744,30 @@ bool dtrap_edge(int y, int x)
     return FALSE;
 }
 
-// Does this floor have an overlapping wall below it?
-static bool wall_overlapping_floor(int y, int x)
+// Is there a wall (above or below depends on bool above)?
+static bool is_wall_below(int y, int x)
 {
+    if (!ui_use_25d_graphics()) return (FALSE);
 
+    if (!in_bounds(y+1, x)) return (FALSE);
+
+    dungeon_type *d_ptr = &dungeon_info[y+1][x];
+
+    return (d_ptr->is_wall(TRUE));
+}
+
+// Is there a wall (above or below depends on bool above)?
+static bool is_wall_above(int y, int x)
+{
     if (!ui_use_25d_graphics()) return (FALSE);
 
     if (!in_bounds(y-1, x)) return (FALSE);
 
     dungeon_type *d_ptr = &dungeon_info[y-1][x];
 
-    if (f_info[d_ptr->feat].f_flags1 & (FF1_REMEMBER))
-    {
-        return (TRUE);
-    }
-
-    return FALSE;
+    return (d_ptr->is_wall(TRUE));
 }
 
-// Is this a wall with a floor below it?
-static bool wall_over_floor(int y, int x)
-{
-    if (!ui_use_25d_graphics()) return (FALSE);
-
-    if (!in_bounds(y-1, x)) return (FALSE);
-
-    dungeon_type *d_ptr = &dungeon_info[y][x];
-
-    if (!feat_ff1_match(d_ptr->feat, FF1_WALL)) return (FALSE);
-
-    // Point to the square below it
-    d_ptr = &dungeon_info[y-1][x];
-
-    if (feat_ff1_match(d_ptr->feat, FF1_WALL)) return (FALSE);
-
-    return (TRUE);
-}
 
 
 static void map_terrain(s16b y, s16b x)
@@ -791,8 +779,8 @@ static void map_terrain(s16b y, s16b x)
     feature_type *f_ptr;
     bool do_dtrap = FALSE;
     dun_ptr->dtrap = FALSE;
-    dun_ptr->floor_over_wall = FALSE;
-    dun_ptr->wall_over_floor = FALSE;
+    dun_ptr->wall_below = FALSE;
+    dun_ptr->wall_above = FALSE;
 
     //Assume som things normal;
     dun_ptr->special_lighting = FLOOR_LIGHT_NORMAL;   
@@ -820,7 +808,8 @@ static void map_terrain(s16b y, s16b x)
             dun_ptr->dun_color = f_ptr->d_color;
             dun_ptr->dun_tile = f_ptr->tile_id;
 
-            if (wall_overlapping_floor(y, x)) dun_ptr->floor_over_wall = TRUE;
+            if (is_wall_above(y, x)) dun_ptr->wall_above = TRUE;
+            if (is_wall_below(y, x)) dun_ptr->wall_below = TRUE;
 
             /* Special lighting effects */
             if (view_special_light)
@@ -858,8 +847,8 @@ static void map_terrain(s16b y, s16b x)
             /* We have seen the feature */
             f_ptr->f_everseen = TRUE;
 
-            if (wall_over_floor(y, x)) dun_ptr->wall_over_floor = TRUE;
-
+            if (is_wall_above(y, x)) dun_ptr->wall_above = TRUE;
+            if (is_wall_below(y, x)) dun_ptr->wall_below = TRUE;
 
             /* Special lighting effects (walls only) */
             if (view_granite_light)
@@ -1003,6 +992,7 @@ static void map_effects (s16b y, s16b x)
         20,	/* EFFECT_GLYPH */
         50,	/* EFFECT_GLACIER */
         9,	/* EFFECT_INSCRIPTION */
+        10,	/* EFFECT_ROCKS */
     };
 
     int max_priority = -1;
@@ -1035,7 +1025,8 @@ static void map_effects (s16b y, s16b x)
 
         /* Hack - Permanent clouds and inscriptions shouldn't override objects */
         if (has_object && ((tmp_x_ptr->x_type == EFFECT_PERMANENT_CLOUD) ||
-            (tmp_x_ptr->x_type == EFFECT_INSCRIPTION))) continue;
+            (tmp_x_ptr->x_type == EFFECT_INSCRIPTION) ||
+                (tmp_x_ptr->x_type == EFFECT_ROCKS))) continue;
 
         /* Get the priority of the effect, if possible */
         if (tmp_x_ptr->x_type < N_ELEMENTS(priority_table))
@@ -1074,7 +1065,8 @@ static void map_effects (s16b y, s16b x)
             dun_ptr->effect_color = f_ptr->d_color;
             dun_ptr->effect_tile = f_ptr->tile_id;
             if (x_ptr->x_type == EFFECT_PERMANENT_CLOUD || x_ptr->x_type == EFFECT_LINGERING_CLOUD
-                    || x_ptr->x_type == EFFECT_SHIMMERING_CLOUD) {
+                    || x_ptr->x_type == EFFECT_SHIMMERING_CLOUD)
+            {
                 dun_ptr->ui_flags |= UI_TRANSPARENT_EFFECT;
             }
         }
@@ -1333,8 +1325,7 @@ void note_spot(int y, int x)
             /* Option -- memorize certain floors */
             if ((view_perma_grids &&
                 (info & (CAVE_GLOW | CAVE_HALO))) ||
-                (view_torch_grids &&
-                _feat_ff2_match(f_ptr, FF2_ATTR_LIGHT)))
+                (view_torch_grids))
             {
                 /* Memorize */
                 dungeon_info[y][x].mark_square();
@@ -1394,7 +1385,7 @@ void note_spot(int y, int x)
 void light_spot(int y, int x)
 {
     dungeon_type *d_ptr = &dungeon_info[y][x];
-    bool old_double_square = d_ptr->double_height_monster;
+    bool redraw_above = d_ptr->double_height_monster;
 
     /* Hack -- redraw the grid */
     map_info(y, x);
@@ -1403,7 +1394,7 @@ void light_spot(int y, int x)
     ui_redraw_grid(y, x);
 
     // Possibly draw the square above it
-    if (old_double_square || d_ptr->double_height_monster)
+    if (redraw_above || d_ptr->double_height_monster || d_ptr->is_wall(TRUE))
     {
         if (in_bounds(y-1, x)) ui_redraw_grid(y-1, x);
     }
@@ -4194,22 +4185,6 @@ void cave_set_feat(int y, int x, u16b feat)
 
         place_gold(y, x);
     }
-
-    /* Handle items */
-    else if (character_dungeon && _feat_ff1_match(f_ptr, FF1_HAS_ITEM) &&
-        !_feat_ff1_match(f2_ptr, FF1_HAS_ITEM))
-    {
-        /* Mark the lore if seen*/
-        if (player_can_see_bold(y,x))
-        {
-            /*Mark the feature lore*/
-            feature_lore *f_l_ptr = &f_l_list[old_feat];
-            f_l_ptr->f_l_flags1 |= (FF1_HAS_ITEM);
-        }
-
-        place_object(y, x, FALSE, FALSE, DROP_TYPE_UNTHEMED);
-    }
-
 }
 
 

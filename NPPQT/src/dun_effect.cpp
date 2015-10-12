@@ -93,6 +93,7 @@ static bool effect_similar(const effect_type *x_ptr, const effect_type *x2_ptr)
     if (x_ptr->x_type == EFFECT_TRAP_DUMB)		return (FALSE);
     if (x_ptr->x_type == EFFECT_TRAP_PLAYER)	return (FALSE);
     if (x_ptr->x_type == EFFECT_GLYPH)			return (FALSE);
+    if (x_ptr->x_type == EFFECT_ROCKS)			return (FALSE);
 
     /* Require identical terrain types (this check also assures similar gf types) */
     if (x_ptr->x_f_idx != x2_ptr->x_f_idx)		return (FALSE);
@@ -185,7 +186,7 @@ static void place_effect_idx(int x_idx, int y, int x)
     /*
      * Handle next_x_idx.  Traps (and glyphs) always have first priority.
      */
-    if (cave_any_trap_bold(y, x))
+    if (cave_any_trap_bold(y, x) || (cave_hidden_object_bold(y, x)))
     {
         x_ptr->next_x_idx = x_list[dungeon_info[y][x].effect_idx].next_x_idx;
         x_list[dungeon_info[y][x].effect_idx].next_x_idx = x_idx;
@@ -503,6 +504,28 @@ bool set_effect_glyph(byte y, byte x)
     return (TRUE);
 }
 
+/*
+ * Set a glyph.  Return false if it could not be set.
+ */
+bool set_effect_rocks(int f_idx, byte y, byte x)
+{
+    int x_idx = x_pop();
+    u16b flags = (EF1_PERMANENT | EF1_SKIP);
+
+    //Hack - plan rubble doesn't have an object.
+    if (f_idx != FEAT_RUBBLE) flags |= EF1_OBJECT;
+
+    /*All full*/
+    if (!x_idx) return (FALSE);
+
+    effect_prep(x_idx, EFFECT_ROCKS, f_idx, y, x, 1, 1, 0, SOURCE_TRAP, flags);
+
+    /* RE-do the flow */
+    p_ptr->update |= (PU_FLOW_DOORS | PU_FLOW_NO_DOORS);
+
+    return (TRUE);
+}
+
 
 /*
  * Move an effect from index i1 to index i2 in the effect list
@@ -616,6 +639,8 @@ void pick_and_set_trap(int y, int x, int mode)
 
     /* Paranoia */
     if (cave_any_trap_bold(y, x)) return;
+
+    if (cave_hidden_object_bold(y, x)) return;
 
     /* No NPP terrains option turned on */
     if (birth_classic_dungeons) mode = EFFECT_TRAP_DUMB;

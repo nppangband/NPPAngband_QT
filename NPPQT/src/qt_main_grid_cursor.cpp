@@ -178,6 +178,8 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     qreal opacity = 1;
     bool do_shadow = false;
 
+    bool graphics_25d = ui_use_25d_graphics();
+
     key2.clear();
 
     bool double_height_mon = FALSE;
@@ -265,7 +267,25 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 pix = parent->apply_shade(key1, pix, "dim");
             }
 
-            painter->drawPixmap(pix.rect(), pix, pix.rect());
+            // Paste in the top 2/3 of the wall.  Possibly draw an offset wall in the bottom third if above a floor
+            if (d_ptr->is_wall(TRUE) && graphics_25d)
+            {
+                QPixmap pix2 = pix.copy();
+                QRect cut_from(0, pix2.height()/3, pix2.width(), pix2.height());
+                QRect paste_to(0, 0, pix2.width(), pix2.height()*2/3);
+                pix2 = pix2.copy(cut_from);
+                painter->setOpacity(1);
+                painter->drawPixmap(paste_to, pix2, pix2.rect());
+                if (!d_ptr->wall_below)
+                {
+                    pix = parent->apply_shade(key1, pix, "dim");
+                    QRect paste_offset(0, pix.height()*2/3, pix.width(), pix.height());
+                    pix = pix.scaledToHeight(pix.height()/2);
+                    painter->drawPixmap(paste_offset, pix, pix.rect());
+                }
+                painter->setOpacity(1);
+            }
+            else painter->drawPixmap(pix.rect(), pix, pix.rect());
             done_bg = true;
 
             // Draw cloud effects (in graphics mode), if not already drawing that
@@ -338,6 +358,23 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 QPixmap pix = pseudo_ascii(square_char, square_color, parent->font_main_window,
                                            QSizeF(parent->main_cell_wid, parent->main_cell_hgt));
                 painter->drawPixmap(pix.rect(), pix, pix.rect());
+                done_fg = true;
+            }
+        }
+
+        if (d_ptr->wall_below && graphics_25d)
+        {
+            dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x];
+            QString wall_overlap = d2_ptr->dun_tile;
+            if (wall_overlap.length())
+            {
+                QPixmap pix = parent->get_tile(wall_overlap, parent->main_cell_hgt, parent->main_cell_wid);
+                QRect cut_from(0, pix.height()/3, pix.width(), pix.height());
+                QRect paste_to(0, pix.height()*2/3, pix.width(), pix.height());
+                pix = pix.copy(cut_from);
+                if (!d_ptr->is_wall(TRUE)) painter->setOpacity(.6);
+                painter->drawPixmap(paste_to, pix, pix.rect());
+                painter->setOpacity(1);
                 done_fg = true;
             }
         }

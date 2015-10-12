@@ -71,6 +71,74 @@ bool dungeon_type::has_monster()
     return (FALSE);
 }
 
+bool dungeon_type::has_visible_object()
+{
+    if (object_char != ' ') return true;
+    if (object_color != QColor("black")) return true;
+    if (use_graphics && (object_tile.length() > 0)) return true;
+    return false;
+}
+
+bool dungeon_type::has_visible_effect()
+{
+    if (effect_char != ' ') return true;
+    if (effect_color != QColor("black")) return true;
+    if (use_graphics && (effect_tile.length() > 0)) return true;
+    return false;
+}
+
+bool dungeon_type::has_visible_monster()
+{
+    if (monster_char != ' ') return true;
+    if (monster_color != QColor("black")) return true;
+    if (use_graphics && (monster_tile.length() > 0)) return true;
+    return false;
+}
+
+bool dungeon_type::is_wall(bool known)
+{
+    int this_feat = feat;
+    if (known) this_feat = f_info[feat].f_mimic;
+    return (f_info[this_feat].is_wall());
+}
+
+dungeon_type::dungeon_type()
+{
+    dungeon_square_wipe();
+}
+
+/*
+ * Wipe the dungeon_type class.
+ * This function shoudld be used instead of WIPE command.
+ * All variables in dungeon_type should be re-set in this function.
+ * This function does not clear the object, effect, and monster lists.
+ * It should not be called without first removing any
+ * monsters, effects, or objects from their respective lists.
+ */
+void dungeon_type::dungeon_square_wipe()
+{
+    feat = effect_idx = monster_idx = object_idx = 0;
+    path_cost = cave_info = 0;
+    special_lighting = obj_special_symbol = 0;
+    ui_flags = 0;
+    path_flow = dtrap = FALSE;
+    wall_above = wall_below = double_height_monster = FALSE;
+    dun_color = Qt::black;
+    dun_char = ' ';
+    object_color = Qt::black;
+    object_char = ' ';
+    effect_color = Qt::black;
+    effect_char = ' ';
+    monster_color = Qt::black;
+    monster_char = ' ';
+
+    monster_tile.clear();
+    object_tile.clear();
+    dun_tile.clear();
+    effect_tile.clear();
+}
+
+
 effect_type::effect_type()
 {
     effect_wipe();
@@ -98,41 +166,7 @@ void effect_type::effect_wipe()
 }
 
 
-dungeon_type::dungeon_type()
-{
-    dungeon_square_wipe();
-}
 
-/*
- * Wipe the dungeon_type class.
- * This function shoudld be used instead of WIPE command.
- * All variables in dungeon_type should be re-set in this function.
- * This function does not clear the object, effect, and monster lists.
- * It should not be called without first removing any
- * monsters, effects, or objects from their respective lists.
- */
-void dungeon_type::dungeon_square_wipe()
-{
-    feat = effect_idx = monster_idx = object_idx = 0;
-    path_cost = cave_info = 0;
-    special_lighting = obj_special_symbol = 0;
-    ui_flags = 0;
-    path_flow = dtrap = FALSE;
-    floor_over_wall = wall_over_floor = double_height_monster = FALSE;
-    dun_color = Qt::black;
-    dun_char = ' ';
-    object_color = Qt::black;
-    object_char = ' ';
-    effect_color = Qt::black;
-    effect_char = ' ';
-    monster_color = Qt::black;
-    monster_char = ' ';
-
-    monster_tile.clear();
-    object_tile.clear();
-    dun_tile.clear();
-    effect_tile.clear();
-}
 
 
 feature_type::feature_type()
@@ -168,9 +202,14 @@ void feature_type::feature_wipe()
 
 bool feature_type::is_door(void)
 {
-    /* Decline non-door */
-    if (!(f_flags1 & (FF1_DOOR))) return (FALSE);
-    return (TRUE);
+    if (f_flags1 & (FF1_DOOR)) return (TRUE);
+    return (FALSE);
+}
+
+bool feature_type::is_wall(void)
+{
+    if (f_flags1 & (FF1_WALL)) return (TRUE);
+    return (FALSE);
 }
 
 bool feature_type::is_jammed_door(void)
@@ -240,26 +279,3 @@ void reset_dungeon_info()
     }
 }
 
-bool dungeon_type::has_visible_object()
-{
-    if (object_char != ' ') return true;
-    if (object_color != QColor("black")) return true;
-    if (use_graphics && (object_tile.length() > 0)) return true;
-    return false;
-}
-
-bool dungeon_type::has_visible_effect()
-{
-    if (effect_char != ' ') return true;
-    if (effect_color != QColor("black")) return true;
-    if (use_graphics && (effect_tile.length() > 0)) return true;
-    return false;
-}
-
-bool dungeon_type::has_visible_monster()
-{
-    if (monster_char != ' ') return true;
-    if (monster_color != QColor("black")) return true;
-    if (use_graphics && (monster_tile.length() > 0)) return true;
-    return false;
-}

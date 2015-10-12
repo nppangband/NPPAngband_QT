@@ -76,6 +76,7 @@ extern bool set_effect_trap_passive(int f_idx, byte y, byte x);
 extern bool set_effect_trap_smart(int f_idx, byte y, byte x, u16b flags);
 extern bool set_effect_trap_player(int f_idx, byte y, byte x);
 extern bool set_effect_glyph(byte y, byte x);
+extern bool set_effect_rocks(int f_idx, byte y, byte x);
 extern bool set_effect_inscription(int f_idx, byte y, byte x, s16b source, u16b flag);
 extern void compact_effects(void);
 extern void pick_and_set_trap(int y, int x, int mode);
