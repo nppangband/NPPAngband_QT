@@ -715,7 +715,7 @@ void MainWindow::sidebar_display_mon(int m_idx)
     int font_wid = metrics.width('M') + FONT_EXTRA;
 
     QLabel *mon_pic = new QLabel;
-    if (use_graphics)
+    if (use_graphics && !do_pseudo_ascii)
     {
 
         QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);

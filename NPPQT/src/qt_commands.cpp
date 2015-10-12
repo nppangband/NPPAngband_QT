@@ -895,7 +895,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         case Qt::Key_G:
         {
             if (shift_key)          do_cmd_study(-1);
-            else if (!using_mods)   do_cmd_pickup_from_pile(FALSE, TRUE);
+            else if (!using_mods)   do_cmd_pickup_from_pile(TRUE, TRUE);
             break;
         }
         case Qt::Key_H:
