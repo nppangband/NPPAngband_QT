@@ -59,7 +59,8 @@ void DungeonCursor::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     painter->setBrush(Qt::NoBrush);
     painter->setPen(QColor("yellow"));
     painter->drawRect(0, 0, parent->main_cell_wid - 1, parent->main_cell_hgt - 1);
-    if ((parent->main_cell_wid > 16) && (parent->main_cell_hgt > 16)) {
+    if ((parent->main_cell_wid > 16) && (parent->main_cell_hgt > 16))
+    {
         int z = 3;
         painter->drawRect(0, 0, z, z);
         painter->drawRect(parent->main_cell_wid - z - 1, 0, z, z);

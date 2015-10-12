@@ -43,16 +43,19 @@ QRect visible_dungeon()
 void ui_request_size_update(QWidget *widget)
 {
     QObjectList lst = widget->children();
-    for (int i = 0; i < lst.size(); i++) {
+    for (int i = 0; i < lst.size(); i++)
+    {
         QObject *obj = lst.at(i);
-        if (obj->isWidgetType()) {
+        if (obj->isWidgetType())
+        {
             ui_request_size_update((QWidget *)obj);
         }
     }
 
     widget->updateGeometry();
 
-    if (widget->layout()) {
+    if (widget->layout())
+    {
         widget->layout()->invalidate();
     }
 }
@@ -62,17 +65,21 @@ QSize ui_estimate_table_size(QTableWidget *table, bool horiz, bool vert, int pad
     QSize final(padding, padding);
     int w = 0, h = 0;
 
-    if (horiz) {
+    if (horiz)
+    {
         w += table->verticalHeader()->width();
-        for (int i = 0; i < table->columnCount(); i++) {
+        for (int i = 0; i < table->columnCount(); i++)
+        {
             if (table->isColumnHidden(i)) continue;
             w += table->columnWidth(i);
         }
     }
 
-    if (vert) {
+    if (vert)
+    {
         h += table->horizontalHeader()->height();
-        for (int i = 0; i < table->rowCount(); i++) {
+        for (int i = 0; i < table->rowCount(); i++)
+        {
             if (table->isRowHidden(i)) continue;
             h += table->rowHeight(i);
         }
@@ -96,7 +103,8 @@ bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x)
 
     QPen pen(QColor("yellow"));
 
-    for (int i = 0; i < path_n; i++) {
+    for (int i = 0; i < path_n; i++)
+    {
         int y = GRID_Y(path_g[i]);
         int x = GRID_X(path_g[i]);
 
@@ -118,7 +126,8 @@ bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x)
 
 void ui_destroy_path()
 {
-    for (int i = 0; i < main_window->path_items.size(); i++) {
+    for (int i = 0; i < main_window->path_items.size(); i++)
+    {
         QGraphicsItem *item = main_window->path_items.at(i);
         main_window->dungeon_scene->removeItem(item);
         delete item;

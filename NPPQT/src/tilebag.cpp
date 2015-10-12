@@ -395,7 +395,7 @@ PackageDialog::PackageDialog(QString _mode)
     lay3->addWidget(btn1);
     connect(btn1, SIGNAL(clicked()), this, SLOT(do_accept()));
 
-    QPushButton *btn4 = new QPushButton(tr("Cancel"));
+    QPushButton *btn4 = new QPushButton(tr("Close"));
     lay3->addWidget(btn4);
     connect(btn4, SIGNAL(clicked()), this, SLOT(reject()));
 
@@ -461,7 +461,7 @@ void PackageDialog::find_folder()
 
 
 
-#ifdef NOT_DEFINED
+#ifdef UNDEFINED
 
 // Useful code for extracting tiles from a tilemap
 class tile_coords

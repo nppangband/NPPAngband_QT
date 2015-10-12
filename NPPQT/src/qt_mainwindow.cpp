@@ -194,7 +194,7 @@ void MainWindow::destroy_tiles()
     shade_cache.clear();
 }
 
-QPixmap MainWindow::get_tile(QString tile_id, int tile_wid, int tile_hgt)
+QPixmap MainWindow::get_tile(QString tile_id, int tile_hgt, int tile_wid)
 {
     if (tiles.contains(tile_id)) return tiles.value(tile_id);
 
