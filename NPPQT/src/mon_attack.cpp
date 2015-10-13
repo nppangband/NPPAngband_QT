@@ -619,8 +619,8 @@ bool make_attack_normal(monster_type *m_ptr)
                     /* Player armour reduces total damage */
                     ac_dam(&dam, ac);
 
-                    /* Take damage */
-                    take_hit(dam, ddesc);
+                    /* Take damage, except in Moria */
+                    if (game_mode != GAME_NPPMORIA) take_hit(dam, ddesc);
 
                     /* Allow complete resist */
                     if (!p_ptr->state.resist_disen)
@@ -638,8 +638,8 @@ bool make_attack_normal(monster_type *m_ptr)
                 /* Hit to reduce charges of magical items */
                 case RBE_UN_POWER:
                 {
-                    /* Take damage */
-                    take_hit(dam, ddesc);
+                    /* Take damage, but not in Moria */
+                    if (game_mode != GAME_NPPMORIA) take_hit(dam, ddesc);
 
                     /* Find an item */
                     for (k = 0; k < 20; k++)
@@ -796,8 +796,8 @@ bool make_attack_normal(monster_type *m_ptr)
                     /* Player armour reduces total damage */
                     ac_dam(&dam, ac);
 
-                    /* Take damage */
-                    take_hit(dam, ddesc);
+                    /* Take damage , but not in Moria*/
+                    if (game_mode != GAME_NPPMORIA) take_hit(dam, ddesc);
 
                     /* Confused monsters cannot steal successfully. */
                     if (m_ptr->m_timed[MON_TMD_CONF]) break;
@@ -893,8 +893,8 @@ bool make_attack_normal(monster_type *m_ptr)
                     /* Player armour reduces total damage */
                     ac_dam(&dam, ac);
 
-                    /* Take damage */
-                    take_hit(dam, ddesc);
+                    /* Take damage, but not in Moria*/
+                    if (game_mode != GAME_NPPMORIA) take_hit(dam, ddesc);
 
                     /* Saving throw (unless paralyzed) based on dex and level */
                     if (!p_ptr->timed[TMD_PARALYZED] &&
@@ -981,8 +981,8 @@ bool make_attack_normal(monster_type *m_ptr)
                     /* Player armour reduces total damage */
                     ac_dam(&dam, ac);
 
-                    /* Take damage */
-                    take_hit(dam, ddesc);
+                    /* Take damage, but not in Moria */
+                    if (game_mode != GAME_NPPMORIA) take_hit(dam, ddesc);
 
                     /* Steal some food */
                     for (k = 0; k < 6; k++)
@@ -1076,8 +1076,8 @@ bool make_attack_normal(monster_type *m_ptr)
                     /* Player armour reduces total damage */
                     ac_dam(&dam, ac);
 
-                    /* Take damage */
-                    take_hit(dam, ddesc);
+                    /* Take damage, but not in Moria */
+                    if (game_mode != GAME_NPPMORIA) take_hit(dam, ddesc);
 
                     /* Get the light source */
                     o_ptr = &inventory[INVEN_LIGHT];
@@ -1443,7 +1443,8 @@ bool make_attack_normal(monster_type *m_ptr)
                     ac_dam(&dam, ac);
 
                     /* Take damage */
-                    take_hit(dam, ddesc);
+                    // No damage from this attack in Moria
+                    if (game_mode != GAME_NPPMORIA)take_hit(dam, ddesc);
 
                     /* Hold life usually prevents life draining */
                     if (p_ptr->state.hold_life)
@@ -1468,8 +1469,12 @@ bool make_attack_normal(monster_type *m_ptr)
                     {
                         int d = 0;
 
+                        // Moria experience drain is based on damage dice
+                        if (game_mode == GAME_NPPMORIA) d = dam;
+
                         /*go through the 4 strengths of drain_life*/
-                        if (effect == RBE_EXP_10)
+
+                        else if (effect == RBE_EXP_10)
                             d = damroll(10, 6) + (p_ptr->exp/100) * MON_DRAIN_LIFE;
 
                         else if (effect == RBE_EXP_20)
