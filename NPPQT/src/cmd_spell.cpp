@@ -969,11 +969,11 @@ void do_cmd_browse(int book_choice)
     int spell;
     QString prompt = QString("Press OK when done browsing.");
     int mode = BOOK_BROWSE;
-    bool success;
+    bool cannot;
     bool cancelled;
-    SpellSelectDialog(&spell, book_choice, prompt, mode, &success, &cancelled);
+    SpellSelectDialog(&spell, book_choice, prompt, mode, &cannot, &cancelled);
 
-    if (!success) message(QString("You have no books that you can read."));
+    if (cannot) message(QString("You have no books that you can read."));
 }
 
 /*

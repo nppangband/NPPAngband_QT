@@ -1400,7 +1400,8 @@ StatDialog::StatDialog(int service, byte *stat_selected)
         // Do a button if we can select this stat
         if (stats[i])
         {
-            QPushButton *stat_name_button = new QPushButton(stat_names[i]);
+            QPushButton *stat_name_button = new QPushButton();
+            stat_name_button->setText(stat_names[i]);
             stat_layout->addWidget(stat_name_button, row, col++);
             if (i == 0)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_str()));
             else if (i == 1)connect(stat_name_button, SIGNAL(clicked()), this, SLOT(select_int()));

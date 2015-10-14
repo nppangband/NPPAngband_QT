@@ -33,7 +33,7 @@ static struct player_flag_record player_resist_table[] =
     { "Resist Fire",        2, TR2_RES_FIRE,	TR2_IM_FIRE, TRUE, FALSE},
     { "Resist Cold",        2, TR2_RES_COLD,	TR2_IM_COLD, TRUE, FALSE},
     { "Resist Poison",      2, TR2_RES_POIS,	TR2_IM_POIS, FALSE, FALSE},
-    { "Resist Blind",       2, TR2_RES_BLIND,	0, TRUE, FALSE},
+    { "Resist Blindness",   2, TR2_RES_BLIND,	0, TRUE, FALSE},
     { "Resist Confusion",	2, TR2_RES_CONFU,	0, FALSE, FALSE},
     { "Resist Nexus",       2, TR2_RES_NEXUS,	0, FALSE, FALSE},
     { "Resist Nether",      2, TR2_RES_NETHR,	0, FALSE, FALSE},

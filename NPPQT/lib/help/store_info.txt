@@ -1,5 +1,5 @@
 *******General Store
-Sells foods, drinks, cloaks, torches, lamps, oil, shovels, picks, spikes,and ammunition for missile launchers.  Buys items of these types.
+Sells foods, drinks, cloaks, torches, lamps, oil, shovels, picks, spikes, and ammunition for missile launchers.  Buys items of these types.
 *******<end>
 
 *******Armoury
@@ -25,10 +25,9 @@ Offers a service to create a potion of life.
 *******<end>
 
 *******Alchemy Shop
-Buys and sells rings, amulets, wands, rods, and staffs.  Also buys potions and scrolls.
-Offers a service to recharge a wand, staff, or rod with no chance of failure.
-Offers a service to identify any item.
-Offers a service to *identify* any item.Offers a service to purchase a mass genocide scroll.
+Buys and sells potions and scrolls.
+Offers a service to restore any stat.
+ffers a service to increase any stat.
 *******<end>
 
 *******Magic Shop
@@ -77,11 +76,11 @@ Brands a weapon with either flames or frost, chosen at random.  This service can
 *******<end>
 
 ********Elemental brand some ammunition[price varies]
-Brands ammunition with poison, flames or frost, chosen randomly.  This service cannot be performed on ego-item ammunition.  The  price increases with the ammunition's value.	
+Brands ammunition with poison, flames or frost, chosen randomly.  This service cannot be performed on ego-item ammunition.  The price increases with the ammunition's value.	
 *******<end>
 	
 ********Recharge item [price varies]
-Recharge wands, staves, or rods.  The recharge spell succeeds 100% of the time, but it is expensive. The price increases significantly for wands/staves with alot of charges, or for a large stack of rods.
+Recharge wands, staves, or rods.  The recharge spell succeeds 100% of the time, but it is expensive. The price increases significantly for wands/staves with many charges, or for a large stack of rods.
 *******<end>
 
 ********Identify item
@@ -104,14 +103,12 @@ Restores experience to maximum if it is currently below maximum.  This service i
 Removes ordinary curses from all equipped items.  This service is identical to the Remove Curse scroll or spell.
 *******<end>
 
-
 ********Remove heavy curse
 Removes ordinary and heavy curses from all equipped objects.  This service is identical to the *Remove Curse* scroll or spell.
 *******<end>
 
 ********Restore stat
-First restores a stat if it is below the current maximum.  The player chooses
-which stat gets restored.
+First restores a stat if it is below the current maximum.  The player chooses which stat gets restored.
 *******<end>
 
 ********Increase stat
@@ -123,7 +120,7 @@ Turns one weapon or piece of armor into an artifact.  If the player desires a we
 *******<end> 
 
 *********Probe a Quest Monster[price varies]
-Probes the quest monster race, revealing many of their  characteristics and abilities.  This service is identical to the probing spell.
+Probes the quest monster race, revealing many of their characteristics and abilities.  This service is identical to the probing spell.
 *******<end>
 
 *********Purchase Potion of Healing
@@ -147,11 +144,11 @@ Make one spellbook invulnerable to fire attacks.
 *******<end>
 			
 ********Defer Quest Reward			
-Elect not to receive a quest reward in exchange for a slightly improved chance at better chices of quest rewards the next time you complete a quest.  If multiple quest rewards are deferred, the chance of better quest rewards increases.  All quest rewards are chosen randomly, so deferring the reward is not a guarantee of better choices.
+Elect not to receive a quest reward in exchange for a slightly improved chance at better choices of quest rewards the next time you complete a quest.  If multiple quest rewards are deferred, the chance of better quest rewards increases.  All quest rewards are chosen randomly, so deferring the reward is not a guarantee of better choices.
 *******<end>
 
 *********Create Artifact Quest Reward
-The Adventurer's Guild turns one weapon or piece of armor into an artifact.  The player gets to choose the item, and name it.  The guild selects the powers of the new artifact.  If the player desires a weapon with alot of slays, resists, or orther abilities, it is best to use a weapon with low damage dice, as the total damage the weapon can inflict is factored into determining the value of the artifact.
+The Adventurer's Guild turns one weapon or piece of armor into an artifact.  The player gets to choose the item, and name it.  The guild selects the powers of the new artifact.  If the player desires a weapon with many slays, resists, or orther abilities, it is best to use a weapon with low damage dice, as the total damage the weapon can inflict is factored into determining the value of the artifact.
 *******<end>
 
 
@@ -160,11 +157,11 @@ Permanently increases your max hit points by 25.
 *******<end>
 	
 ********Permanent Stat Increase Reward			
-Permanently increase a stat by 1.  This is the equvilent to wearing a ring of <stat>  (+1), without using an inventory slot.
+Permanently increase a stat by 1.  This is the equvilent to wearing a ring of <stat> (+1), without using an inventory slot.
 *******<end>
 	
 ********Permanent Stats Augmentation Reward			
-Permanently increase all of your stats by 1.  This is the equvilent to wearing six rings of <stat>  (+1), without using any inventory slots.
+Permanently increase all of your stats by 1.  This is the equvilent to wearing six rings of <stat> (+1), without using any inventory slots.
 *******<end>
 
 ********Monster or Unique Quest
@@ -176,41 +173,37 @@ Unlike fixed quests, it is not mandatory to complete the quest in order to win t
 
 ********Guardian Quest
 Similar to monster quests.  The player is tasked to go to a specified depth, and kill a certain number of monsters, or
-a single unique. The monsters are usuallysignificantly out-of-depth for that leve.  The depth of the quest and number of monsters varies.
+a single unique. The monsters are usually significantly out-of-depth for that level.  The depth of the quest and number of monsters varies.
 
 Unlike fixed quests, it is not mandatory to complete the quest in order to win the game.  Unlike a monster quest, a player cannot dive past the designated quest level until they complete the quest, and the player may leave and return to the level without killing the required number of creatures, without failing your quest.  The monsters are usually harder than those selected for a monter quest.  
 
-The only ways to fail this quest are to die trying and to request to abandon the quest at the adventurer's guild.  A
-down staircase will appear when you complete this quest.  Completing a guardian quest increases player fame by 15.  Failing a monster quest reduces total player 
-fame by 55%.
+The only ways to fail this quest are to die trying and to request to abandon the quest at the adventurer's guild.  A down staircase will appear when you complete this quest.  Completing a guardian quest increases player fame by 15.  Failing a monster quest reduces total player fame by 55%.
 *******<end>
   
 
 ********Pit or Nest Quest
 This quest is to go to a specified depth and kill or destroy every creature in a monster pit or nest.  A monster pit/nest has 95 creatures of a given theme.  Since there are so many like creatures bunched so closely together, a creature from inside one of these special pits/nests will not attempt to summon more creatures to the battle.  This type of quest tends to be more difficult than a monster or unique quest.  
 
-Voluntarily leaving a Pit/Nest quest level before all 95 creatures are killed results in immediate quest failure.  Completing a Pit or Next quest increases player fame by 10 + 10d2.  Failing a monster quest reduces total player fame by 35%.  In addition to the guild quest reward, 5 monsters in the pit/next are holding an aditional good item.
+Voluntarily leaving a Pit/Nest quest level before all 95 creatures are killed results in immediate quest failure.  Completing a Pit or Next quest increases player fame by 10 + 10d2.  Failing a monster quest reduces total player fame by 35%.  In addition to the guild quest reward, 5 monsters in the pit/next are holding an additional good item.
 *******<end>
 
 
 ********Level Quest
 This quest is a more difficult version of the Monster Pit/Nest quests.  Instead of 95 creatures in a pit or nest, the entire level is full of 200 or more monsters of a particular theme.  Since there are so many like creatures bunched so closely together, a creature from inside one of these themed levels only summon other creatures already on the level in battle.  
 
-Voluntarily leaving a themed level results in immediate quest failure. Completing a Themed Level Quest increases player fame by 15 + 10d2.  Failing a themed level quest reduces total player fame by 35%.  In addition to the guild quest reward, many of the monsters on the level are holding an aditional good item.
+Voluntarily leaving a themed level results in immediate quest failure. Completing a Themed Level Quest increases player fame by 15 + 10d2.  Failing a themed level quest reduces total player fame by 35%.  In addition to the guild quest reward, many of the monsters on the level are holding an additional good item.
 *******<end>
 
 
 ********Wilderness Quest
-This quest is a collection quest type.  The player is tasked to go to a wilderness level that is gradually being overrun by lava or boiling mud.  The player needs to collect and return to the guild 20 pieces of faded scroll fragments.  The 
-quest level starts with 10 scroll fragments on the ground, and 20 held by monsters.  Since there are so many like creatures bunched so closely together, a creature from inside one of these themed levels only summon other creatures already on the level in battle. Time is of the essense in this quest type, as the scroll fragments can be destroyed by fire, acid, or when the ground it is laying on gets overrun by lava or boiling mud.  In addition, the monsters will move to avoid the spreading lava or boiling mud, so they will close in on the player quicker than a typical level.  
+This quest is a collection quest type.  The player is tasked to go to a wilderness level that is gradually being overrun by lava or boiling mud.  The player needs to collect and return to the guild 20 pieces of faded scroll fragments.  The quest level starts with 10 scroll fragments on the ground, and 20 held by monsters.  Since there are so many like creatures bunched so closely together, a creature from inside one of these themed levels only summon other creatures already on the level in battle. Time is of the essense in this quest type, as the scroll fragments can be destroyed by fire, acid, or when the ground it is laying on gets overrun by lava or boiling mud.  In addition, the monsters will move to avoid the spreading lava or boiling mud, so they will close in on the player quicker than a typical level.  
 
-Voluntarily leaving a wilderness level results in immediate quest failure.  Completing a Wilderness Level Quest 
-increases player fame by 20 + 10d2.  Failing a wilderness quest reduces total player fame by 30%.  In addition to the guild quest reward, all wilderness levels contain between 3-6 chests on the ground.
+Voluntarily leaving a wilderness level results in immediate quest failure.  Completing a Wilderness Level Quest increases player fame by 20 + 10d2.  Failing a wilderness quest reduces total player fame by 30%.  In addition to the guild quest reward, all wilderness levels contain between 3-6 chests on the ground.
 *******<end>
 
 
 *********Labyrinth Quest
-This quest has a small labrynth level.  4 Monsters or monster groups will appear every 20 game turns, one of which has been chosen at random to hold a small scroll fragment, which they will drop when you kill them.  Your goal is to collect 10 of them and return them to the guild.  The difficulty of the quest deepends on the difficulty of the creatures on the level.  
+This quest has a small labyrinth level.  4 Monsters or monster groups will appear every 20 game turns, one of which has been chosen at random to hold a small scroll fragment, which they will drop when you kill them.  Your goal is to collect 10 of them and return them to the guild.  The difficulty of the quest depends on the difficulty of the creatures on the level.  
 
 Voluntarily leaving a Labrynth quest level results in immediate quest failure.  Completing a Labrynth Level Quest increases player fame by 25 + 10d2.  Failing a labrynth quest reduces total player fame by 30%.  Helpful objects will appear on the dungeon floor as well, if the player can get to them.
 *******<end>
@@ -218,10 +211,9 @@ Voluntarily leaving a Labrynth quest level results in immediate quest failure.  
 
 
 *********Artifact Vault Quest
-This quest is to go to a specified depth, retrieve an artifact and return it to the guild, which is being held by a monster inside a small vault on a small level. The artifact is special in that it cannot be weilded by the player. Returning the artifact to the adventurer's guild completes the quest. The difficulty of this quest quest depends on the monsters guarding the artifact.  
+This quest is to go to a specified depth, retrieve an artifact and return it to the guild, which is being held by a monster inside a small vault on a small level. The artifact is special in that it cannot be wielded by the player. Returning the artifact to the adventurer's guild completes the quest. The difficulty of this quest quest depends on the monsters guarding the artifact.  
 
-You will most likely need some form of tunneling, such as a digging tool or a magic source of stone-to-mud, 
-to gain access to the vault.   
+You will most likely need some form of tunneling, such as a digging tool or a magic source of stone-to-mud, to gain access to the vault.   
 
 Voluntarily leaving a level without the quest artifact results in immediate quest failure.  Completing an Artifact Quest increases player fame by 50.  Failing an artifact quest reduces total player fame by 50%.
 *******<end>
@@ -234,8 +226,7 @@ Voluntarily leaving an arena level results in immediate quest failure.  Completi
 
 
 ********Greater Vault Quest
-The quest is the reward!  The player will arrive on a small dungeon level cotaining only a single greater vault.  The player  must enter the greater vault and survive on the level for a fixed amount of turns.  A timer counts down how many player turns (at the current player speed) the player must remain on the level.  The player gains more time as they kill more vault creatures.  Once the timer expires, all monsters disappear, including all objects they are holding,  leaving the player to collect any loot remaining on the ground before they leave. In NPPAngband all vault objects are held by monsters instead of being on the floor.  This reward for this quest is the bounty of items waiting for the player inside the from the greater vault. The guild will offer only a moderate amount of gold as a quest reward. 
+The quest is the reward!  The player will arrive on a small dungeon level containing only a single greater vault.  The player must enter the greater vault and survive on the level for a fixed amount of turns.  A timer counts down how many player turns (at the current player speed) the player must remain on the level.  The player gains more time as they kill more vault creatures.  Once the timer expires, all monsters disappear, including all objects they are holding,  leaving the player to collect any loot remaining on the ground before they leave. In NPPAngband all vault objects are held by monsters instead of being on the floor.  This reward for this quest is the bounty of items waiting for the player inside the from the greater vault. The guild will offer only a moderate amount of gold as a quest reward. 
 
-Voluntarily leaving the quest level before the timer 
-expires, or allowing the quest time to expire without entering the greater vault, results in immediate quest failure. Completing a Artifact Quest increases player fame by 10.  Failing a greater vault quest reduces total player fame by only 10%.
+Voluntarily leaving the quest level before the timer expires, or allowing the quest time to expire without entering the greater vault, results in immediate quest failure. Completing a Greater Vault Quest increases player fame by 10.  Failing a greater vault quest reduces total player fame by only 10%.
 *******<end>

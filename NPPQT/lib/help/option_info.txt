@@ -12,7 +12,7 @@ Forces all commands which normally ask for a direction to use the current target
 *******<end>
 
 *******always_pickup
-Tells the game that walking onto an item should attempt to pick it up.  Picking up objects this way takes no additional energy.  Individual objects  can be marked for auto_pickup by inscribing them with '=g'.  This option can also be overridden by setting an objects squelch setting to NEVER_PICKUP in either the knowledge or squelch menus.
+Tells the game that walking onto an item should attempt to pick it up.  Picking up objects this way takes no additional energy.  Individual objects can be marked for auto_pickup by inscribing them with '=g'.  This option can also be overridden by setting an objects squelch setting to NEVER_PICKUP in either the knowledge or squelch menus.
 *******<end>
 
 *******stack_force_notes
@@ -63,11 +63,11 @@ Displays a stack of floor objects using a special character.  With this option t
 Display "flavors" (color or variety) in object descriptions and information screens, even for objects whose type is known.  This does not affect objects in stores.
 *******<end>
 
-********view_yellow_lighte
+********view_yellow_light
 If the option "view_special_light" is also on, floor grids that are only lit by the player's own light source will appear yellow.  If the option "view_granite_light" is on, walls will be colored in the same way.  Turning this option off will slightly increase the speed of the game.
 *******<end>
 
-********view_bright_lighte
+********view_bright_light
 This option causes special colors to be used for non "viewable" grids in certain situations (see "view_granite_lite" and "view_special_lite"). When this option is set, floor grids which are normally drawn in "white" but which are not currently "viewable" by the player are instead drawn in "dark gray".  This makes the "viewable" grids to appear "brighter" than the others, allowing the player to easily determine which floor grids are in "line of sight".  Turning this option off will slightly increase the speed of the game.
 *******<end>
 
@@ -99,12 +99,11 @@ Disturb the player when any visible monster moves, appears, or disappears, wheth
 *******<end>
 
 *******disturb_near
-Disturb the player when any viewable (visible and in direct line of sight) monster moves, whenever any monster becomes viewable, and whenever any viewable monster becomes no longer viewable.  It is higly recommended that this option stay; turning it off may cause you to be ambushed by monsters as you rest.
+Disturb the player when any viewable (visible and in direct line of sight) monster moves, whenever any monster becomes viewable, and whenever any viewable monster becomes no longer viewable.  It is highly recommended that this option stay; turning it off may cause you to be ambushed by monsters as you rest.
 *******<end>
 
 *******disturb_detect
-Disturbs you when you leave the edge of the area where you have
-detected traps.
+Disturbs you when you leave the edge of the area where you have detected traps.
 *******<end>
 
 *******disturb_state
@@ -176,7 +175,7 @@ If this option is set, no additional artifacts are created during game play.  No
 *******<end>
 
 *******birth_no_selling
-If this option is set, items will sell to the stores for 0 gold.  Gold found in the dungeon will be approximatly 5 times the value.
+If this option is set, items will sell to the stores for 0 gold.  Gold found in the dungeon will be approximately 5 times the value.
 *******<end>
 
 *******birth_classic_dungeons
@@ -187,15 +186,15 @@ If this option is set, only simple, Angband dungeons will be generated.  No NPP 
 Cheaters never win.  But they can peek at object creation.  Using this option changes the character into wizard mode, unscored character.
 *******<end>
 
-***** <cheat_hear>
+*******cheat_hear
 Cheaters never win.  But they can peek at monster creation.  Using this option changes the character into wizard mode, unscored character.
 *******<end>
 
-***** <cheat_room>
+*******cheat_room
 Cheaters never win.  But they can peek at room creation.  Using this option changes the character into wizard mode, unscored character.
 *******<end>
 
-***** <cheat_xtra>
+*******cheat_xtra
 Cheaters never win.  But they can know when shopkeepers are shuffled, dungeon level generation is restarted, or monsters can not be placed.  Using this option changes the character into wizard mode, unscored character.
 *******<end>
 

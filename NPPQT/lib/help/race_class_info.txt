@@ -8,7 +8,7 @@ A flexible and adaptive race, humans are found all over Middle-Earth, from deser
 
 
 *******Elf
-Known as the Elder Race, and as the First-Born, Elves are famed for their knowledge and craftsmanship.  They tend to be smarter and more dexterous than either humans or half-elves, but not as wise or strong.  Elves are better at searching, disarming, perception, stealth, and magic, but they somewhat weak in melee.  They are fond of bows, somewhat weak in melee, and have some infravision.  Elves are resistant to attacks involving bright light, and have their dexterity sustained, and are native to forest terrain.
+Known as the Elder Race, and as the First-Born, Elves are famed for their knowledge and craftsmanship.  They tend to be smarter and more dexterous than either humans or half-elves, but not as wise or strong.  Elves are better at searching, disarming, perception, stealth, and magic, but they somewhat weak in melee.  They are fond of bows, and have some infravision.  Elves are resistant to attacks involving bright light, and have their dexterity sustained, and are native to forest terrain.
 *******<end>
 
 *******Half-Elf
@@ -16,7 +16,7 @@ Half-elves are the descendants of Elves and Humans.  Half-elves tend to be smart
 *******<end>
 
 *******Hobbit / Halfling
-Hobbits, or halflings are shy, retiring folk with enough good sense to share.  They live in homes with circular entranceways built partially underground, and are the smallest of all the races.  Although they are weak, have perilously few hitpoints, and are very poor at melee, they are extraordinary at searching, disarming, perception, and stealth.  They make excellent rogues, but prefer to be called burglers.  Hobbits are highly intelligent, dexterous, have fair infravision, and good saving throws.  They resist attacks on their life force, and are thus intrinsically resistant to life draining.
+Hobbits, or halflings are shy, retiring folk with enough good sense to share.  They live in homes with circular entranceways built partially underground, and are the smallest of all the races.  Although they are weak, have perilously few hitpoints, and are very poor at melee, they are extraordinary at searching, disarming, perception, and stealth.  They make excellent rogues, but prefer to be called burglars.  Hobbits are highly intelligent, dexterous, have fair infravision, and good saving throws.  They resist attacks on their life force, and are thus intrinsically resistant to life draining.
 *******<end>
 
 *******Gnome
@@ -32,7 +32,7 @@ The offspring of a human and an orc, half-orcs are ugly, strong, and have very b
 *******<end>
 
 *******Half-Troll
-Half-trolls are so ugly that a Half-Orc grimaces in their presence.  They are built like blocks of granite; no other race can match their strength.  They recover hit points quickly, but unfortunately this regeneration also requires them to eat more  food than other races.  They have more hit points than any other character race.  Their hand-to-hand combat prowess is fearsome and they are amazingly tough.  Unfortunately, they do poorly at almost everything else, are very noisy, need to eat a lot, and have a hard time in stores.  Half-trolls will be bad at anything that requires heavy thinking.  They have innate infravision and always have their strength sustained.  They will make great warriors and challenging priests.  They also happen to be fun to play...
+Half-trolls are so ugly that a Half-Orc grimaces in their presence.  They are built like blocks of granite; no other race can match their strength.  They recover hit points quickly, but unfortunately this regeneration also requires them to eat more food than other races.  They have more hit points than any other character race.  Their hand-to-hand combat prowess is fearsome and they are amazingly tough.  Unfortunately, they do poorly at almost everything else, are very noisy, need to eat a lot, and have a hard time in stores.  Half-trolls will be bad at anything that requires heavy thinking.  They have innate infravision and always have their strength sustained.  They will make great warriors and challenging priests.  They also happen to be fun to play...
 *******<end>
 
 *******Dúnadan
@@ -56,11 +56,11 @@ A hack-and-slash character who solves most of his problems by cutting them to pi
 *******<end>
 
 *******Mage
-A Mage must live by his wits.  He cannot hope to simply hack his way through the dungeon, and so must therefore use his magic to defeat, deceive, confuse, and escape.  A mage is not really complete without an assortment of magical devices, and finds them very handy when his mana runs low.  He can master the higher level magical devices far easier than anyone else, and has the best saving throw to resist effects of spells cast at him.  Intelligence and Dexterity are his primary stats.  He has almost no chance of sensing wargear(slow, weak pseudo id).  There is no rule that says a mage cannot become a good fighter, but spells are his true realm.  Intelligence is his spell stat.
+A Mage must live by his wits.  He cannot hope to simply hack his way through the dungeon, and so must therefore use his magic to defeat, deceive, confuse, and escape.  A mage is not really complete without an assortment of magical devices, and finds them very handy when his mana runs low.  He can master the higher level magical devices far easier than anyone else, and has the best saving throw to resist effects of spells cast at him.  Intelligence and Dexterity are his primary stats.  He has almost no chance of sensing wargear (slow, weak pseudo id).  There is no rule that says a mage cannot become a good fighter, but spells are his true realm.  Intelligence is his spell stat.
 *******<end>
 
 *******Priest
-A Priest is a character of holy devotion.  He explores the dungeon only to cleanse the evil that lurks within, and if treasure just happens to fall into his pack, well, so much more to the glory of the Church!  Priests receive their spells from a deity, and therefore do not choose which spells they will learn.A Priest is familiar with magical devices, preferring to call them "Instruments of God", but is not as good as a mage in their use.  A priest can be a decent fighter, especially when sanctified, but only with blunt or blessed weapons.  Unblessed edged weapons (swords and polearms) violate the Church's strictures about shedding blood, and wielding one will hurt his ability to pray successfully.  A Priest has fast but weak pseudo-ID.  Wisdom is his prayer stat.
+A Priest is a character of holy devotion.  He explores the dungeon only to cleanse the evil that lurks within, and if treasure just happens to fall into his pack, well, so much more to the glory of the Church!  Priests receive their spells from a deity, and therefore do not choose which spells they will learn.  A Priest is familiar with magical devices, preferring to call them "Instruments of God", but is not as good as a mage in their use.  A priest can be a decent fighter, especially when sanctified, but only with blunt or blessed weapons.  Unblessed edged weapons (swords and polearms) violate the Church's strictures about shedding blood, and wielding one will hurt his ability to pray successfully.  A Priest has fast but weak pseudo-ID.  Wisdom is his prayer stat.
 *******<end>
 
 
@@ -69,11 +69,11 @@ A Rogue is a character that prefers to live by his cunning, but is capable of fi
 *******<end>
 
 *******Ranger
-A ranger is is a warrior/druid, and is the the greatest of bowsmen.  He can also hold his own in melee, and has some useful incantations to aid him in need; rangers have many talents.  The ranger learns spells much more slowly than a druid, but is capable of learning all but the most powerful incantations.  Because a ranger is really a dual class character, more experience is required for him to advance.  His primary stats are Strength, Intelligence, Wisdom and Dexterity.  A ranger has a good stealth, good perception, good searching, a good saving throw, is native to forest terrain, and is good with magical devices.  A ranger has average-speed, weak pseudo-ID.  Intelligence and wisdom are his spell stats.  He gets an extra shot with a bow at level 26.
+A ranger is is a warrior/druid, and is the the greatest of bowmen.  He can also hold his own in melee, and has some useful incantations to aid him in need; rangers have many talents.  The ranger learns spells much more slowly than a druid, but is capable of learning all but the most powerful incantations.  Because a ranger is really a dual class character, more experience is required for him to advance.  His primary stats are Strength, Intelligence, Wisdom and Dexterity.  A ranger has a good stealth, good perception, good searching, a good saving throw, is native to forest terrain, and is good with magical devices.  A ranger has average-speed, weak pseudo-ID.  Intelligence and wisdom are his spell stats.  He gets an extra shot with a bow at level 26.
 *******<end>
 
 *******Paladin
-A paladin is a champion of the Faith.  He is a very good fighter, just below than the warrior class, but not very good at missile weapons.  A paladin receives prayers at a slower pace then the priest, but can use all but the most powerful prayers.  A paladin has slowish but detailed pseudo-ID.  Because a paladin is really a dual class character, it requires more experience to advance him.  A paladin lacks much in the way of abilities. He is poor at stealth, perception, searching, and  magical devices.  He has a decent saving throw due to his divine alliance.  His primary stats are Strength and Charisma, although Wisdom is necessary for his prayers.
+A paladin is a champion of the Faith.  He is a very good fighter, just below than the warrior class, but not very good at missile weapons.  A paladin receives prayers at a slower pace then the priest, but can use all but the most powerful prayers.  A paladin has slowish but detailed pseudo-ID.  Because a paladin is really a dual class character, it requires more experience to advance him.  A paladin lacks much in the way of abilities. He is poor at stealth, perception, searching, and magical devices.  He has a decent saving throw due to his divine alliance.  His primary stats are Strength and Charisma, although Wisdom is necessary for his prayers.
 *******<end>
 
 *******Brigand
@@ -81,7 +81,7 @@ A Brigand is a thief, who simply wants to plunder the pits of Angband to steal i
 *******<end>
 
 *******Druid
-A Druid is a master of all things natural, and cannot hope to simply hack his way through the dungeon.  So he must therefore call upon the power of nature for attack and defense.  A druid is not really complete without an assortment of magical devices to use in addition to his incantations.  He can master the higher level magical devices easily, and has a very good saving throw to resist effects of spells cast at him.  Intelligence and Wisdom are his spell stats.  He is the weakest fighter of all the classes, and incantations are his true realm.
+A Druid is a master of all things natural, and cannot hope to simply hack his way through the dungeon.  So he must therefore call upon the power of nature for attack and defense.  A druid is not really complete without an assortment of magical devices to use in addition to his incantations.  He has almost no chance of sensing wargear (slow, weak pseudo id).  He can master the higher level magical devices easily, and has a very good saving throw to resist effects of spells cast at him.  Intelligence and Wisdom are his spell stats.  He is the weakest fighter of all the classes, and incantations are his true realm.
 *******<end>
 
 

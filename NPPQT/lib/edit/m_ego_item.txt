@@ -300,7 +300,7 @@ X:4:0
 W:0:1:0:500
 C:0:0:0:4
 T:20:0:99
-F:TUNNEL | BRAND_ACID
+F:TUNNEL
 
 
 # XXX Record28 is unused XXX #

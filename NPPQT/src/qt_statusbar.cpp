@@ -542,7 +542,7 @@ void MainWindow::create_statusbar(void)
 
     infravision = new QAction(tr("Infravision"), this);
     infravision->setIcon(QIcon(":/icons/lib/icons/infravision.png"));
-    infravision->setToolTip("You temporarily have your infravision increased the player's infravision by 50 feet.");
+    infravision->setToolTip("You temporarily have your infravision increased by 50 feet.");
     status_bar->addAction(infravision);
     infravision->setVisible(FALSE);
 
