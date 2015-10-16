@@ -57,7 +57,6 @@ extern QVector<notes_type>  notes_log;
 
 extern QString likert(int x, int y, byte *attr);
 extern QString _num(int n);
-extern void popup1(QString message, int id = 0);
 
 
 

@@ -98,5 +98,11 @@
         <file>lib/icons/arrow-west.png</file>
         <file>lib/icons/arrow-south.png</file>
         <file>lib/icons/arrow-northwest.png</file>
+        <file>lib/graf/angband_8x8.png</file>
+        <file>lib/graf/npp8x8.png</file>
+        <file>lib/icons/arrow-down-double.png</file>
+        <file>lib/icons/arrow-down.png</file>
+        <file>lib/icons/arrow-up.png</file>
+        <file>lib/icons/arrow-up-double.png</file>
     </qresource>
 </RCC>
