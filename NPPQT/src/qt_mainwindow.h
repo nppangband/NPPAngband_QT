@@ -69,6 +69,7 @@ public:
     QString main_multiplier;
     bool do_25d_graphics;
     bool do_pseudo_ascii;
+    bool do_wall_block;
 
     // Scaled tiles
     QHash<QString,QPixmap> tiles;
@@ -192,6 +193,7 @@ private slots:
     void set_ascii();
     void set_25d_graphics();
     void set_pseudo_ascii();
+    void set_wall_block();
     void display_monster_info();
     void display_object_info();
     void display_ego_item_info();
@@ -238,6 +240,7 @@ private:
     QMenu *recent_files_menu;
     QMenu *settings;
     QMenu *knowledge;
+    QMenu *display;
     QMenu *win_menu;
     QMenu *help_menu;
     QToolBar *file_toolbar;
@@ -251,13 +254,6 @@ private:
 
     //Command for the settings menu
     QAction *options_act;
-    QActionGroup *tiles_choice;
-    QAction *ascii_mode_act;
-    QAction *reg_mode_act;
-    QAction *dvg_mode_act;
-    QAction *old_tiles_act;
-    QAction *graphics_25d_act;
-    QAction *pseudo_ascii_act;
     QAction *font_main_select_act;
     QAction *font_messages_select_act;
     QAction *font_sidebar_select_act;
@@ -281,6 +277,16 @@ private:
     QAction *view_home_inven;
     QAction *view_scores;
     QAction *view_kill_count;
+
+    // Commands for the display menu
+    QActionGroup *tiles_choice;
+    QAction *ascii_mode_act;
+    QAction *reg_mode_act;
+    QAction *dvg_mode_act;
+    QAction *old_tiles_act;
+    QAction *graphics_25d_act;
+    QAction *pseudo_ascii_act;
+    QAction *wall_block_act;
 
     // Commands for the additional windows
     QAction *win_mon_list;

@@ -497,7 +497,7 @@ MainWindow::MainWindow()
     ui_mode = UI_MODE_DEFAULT;
 
     cursor = new DungeonCursor(this);
-    do_25d_graphics = do_pseudo_ascii = false;
+    do_25d_graphics = do_pseudo_ascii = do_wall_block = false;
 
     overhead_map_multiplier = dun_map_multiplier = main_multiplier = "1:1";
 
@@ -1105,6 +1105,12 @@ void MainWindow::create_actions()
     pseudo_ascii_act->setStatusTip(tr("Set the monsters graphics to pseudo-ascii."));
     connect(pseudo_ascii_act, SIGNAL(changed()), this, SLOT(set_pseudo_ascii()));
 
+    wall_block_act = new QAction(tr("Solid Block Walls"), this);
+    wall_block_act->setCheckable(true);
+    wall_block_act->setChecked(false);
+    wall_block_act->setStatusTip(tr("Display walls with a solid block instead of '#'."));
+    connect(wall_block_act, SIGNAL(changed()), this, SLOT(set_wall_block()));
+
     font_main_select_act = new QAction(tr("Main Window Font"), this);
     font_main_select_act->setStatusTip(tr("Change the font or font size for the main window."));
     connect(font_main_select_act, SIGNAL(triggered()), this, SLOT(font_dialog_main_window()));
@@ -1263,6 +1269,12 @@ void MainWindow::set_25d_graphics()
     ui_redraw_all();
 }
 
+void MainWindow::set_wall_block()
+{
+    do_wall_block = wall_block_act->isChecked();
+    ui_redraw_all();
+}
+
 void MainWindow::set_pseudo_ascii()
 {
     do_pseudo_ascii = pseudo_ascii_act->isChecked();
@@ -1385,55 +1397,12 @@ void MainWindow::create_menus()
     keymap_rogue->setCheckable(TRUE);
     keymap_new->setChecked(TRUE);
 
-
     menuBar()->addSeparator();
 
-    //Tileset options
-    QMenu *graphics_choices  = settings->addMenu("Graphics Choices");
-    QMenu *choose_tile_set = graphics_choices->addMenu("Choose Tile Set");
-    choose_tile_set->addAction(ascii_mode_act);
-    choose_tile_set->addAction(reg_mode_act);
-    choose_tile_set->addAction(dvg_mode_act);
-    choose_tile_set->addAction(old_tiles_act);
-    graphics_choices->addAction(graphics_25d_act);
-    graphics_choices->addAction(pseudo_ascii_act);
-    tiles_choice = new QActionGroup(this);
-    tiles_choice->setExclusive(TRUE);
-    tiles_choice->addAction(ascii_mode_act);
-    tiles_choice->addAction(reg_mode_act);
-    tiles_choice->addAction(dvg_mode_act);
-    tiles_choice->addAction(old_tiles_act);
-    ascii_mode_act->setCheckable(TRUE);
-    ascii_mode_act->setChecked(TRUE);
-    reg_mode_act->setCheckable(TRUE);
-    dvg_mode_act->setCheckable(TRUE);
-    old_tiles_act->setCheckable(TRUE);
     QMenu *hotkey_choices = settings->addMenu("Hotkey Settings");
     hotkey_choices->addAction(hotkey_manage);
     hotkey_choices->addAction(hotkey_export);
     hotkey_choices->addAction(hotkey_import);
-
-
-
-    QMenu *submenu = graphics_choices->addMenu(tr("Tile multiplier"));
-    multipliers = new QActionGroup(this);
-
-    for (int i = 0; !mult_list[i].isEmpty(); i++)
-    {
-        QAction *act = submenu->addAction(mult_list[i]);
-        act->setObjectName(mult_list[i]);
-        act->setCheckable(true);
-        multipliers->addAction(act);
-        if (i == TILE_1x1_MULT) act->setChecked(true);
-    }
-    connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
-
-
-    QAction *act = graphics_choices->addAction(tr("Create tile package"));
-    connect(act, SIGNAL(triggered()), this, SLOT(do_create_package()));
-
-    act = graphics_choices->addAction(tr("Extract tiles from package"));
-    connect(act, SIGNAL(triggered()), this, SLOT(do_extract_from_package()));
 
     // Knowledge section of top menu.
     knowledge = menuBar()->addMenu(tr("&Knowledge"));
@@ -1447,6 +1416,48 @@ void MainWindow::create_menus()
     knowledge->addAction(view_home_inven);
     knowledge->addAction(view_scores);
     knowledge->addAction(view_kill_count);
+
+    //Tileset options
+    display = menuBar()->addMenu(tr("&Display"));
+    QMenu *choose_tile_set = display->addMenu("Choose Tile Set");
+    choose_tile_set->addAction(ascii_mode_act);
+    choose_tile_set->addAction(reg_mode_act);
+    choose_tile_set->addAction(dvg_mode_act);
+    choose_tile_set->addAction(old_tiles_act);
+    display->addAction(graphics_25d_act);
+    display->addAction(wall_block_act);
+    display->addAction(pseudo_ascii_act);
+    tiles_choice = new QActionGroup(this);
+    tiles_choice->setExclusive(TRUE);
+    tiles_choice->addAction(ascii_mode_act);
+    tiles_choice->addAction(reg_mode_act);
+    tiles_choice->addAction(dvg_mode_act);
+    tiles_choice->addAction(old_tiles_act);
+    ascii_mode_act->setCheckable(TRUE);
+    ascii_mode_act->setChecked(TRUE);
+    reg_mode_act->setCheckable(TRUE);
+    dvg_mode_act->setCheckable(TRUE);
+    old_tiles_act->setCheckable(TRUE);
+
+    QMenu *submenu = display->addMenu(tr("Tile multiplier"));
+    multipliers = new QActionGroup(this);
+
+    for (int i = 0; !mult_list[i].isEmpty(); i++)
+    {
+        QAction *act = submenu->addAction(mult_list[i]);
+        act->setObjectName(mult_list[i]);
+        act->setCheckable(true);
+        multipliers->addAction(act);
+        if (i == TILE_1x1_MULT) act->setChecked(true);
+    }
+    connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
+
+
+    QAction *act = display->addAction(tr("Create tile package"));
+    connect(act, SIGNAL(triggered()), this, SLOT(do_create_package()));
+
+    act = display->addAction(tr("Extract tiles from package"));
+    connect(act, SIGNAL(triggered()), this, SLOT(do_extract_from_package()));
 
     win_menu = menuBar()->addMenu(tr("&Windows"));
     win_menu->addAction(win_mon_list);
@@ -1552,6 +1563,8 @@ void MainWindow::read_settings()
     graphics_25d_act->setChecked(do_25d_graphics);
     do_pseudo_ascii = settings.value("pseudo_ascii", false).toBool();
     pseudo_ascii_act->setChecked(do_pseudo_ascii);
+    do_wall_block = settings.value("solid_block", false).toBool();
+    wall_block_act->setChecked(do_wall_block);
     use_graphics = settings.value("use_graphics", 0).toInt();
     which_keyset = settings.value("which_keyset", 0).toInt();
     main_multiplier = settings.value("tile_multiplier", "1:1").toString();
@@ -1729,6 +1742,7 @@ void MainWindow::write_settings()
     settings.setValue("window_state", saveState());
     settings.setValue("graphics_25d", do_25d_graphics);
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
+    settings.setValue("solid_block", do_wall_block);
     settings.setValue("use_graphics", use_graphics);
     settings.setValue("which_keyset", which_keyset);
     settings.setValue("tile_multiplier", main_multiplier);

@@ -306,32 +306,36 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 painter->setOpacity(1);
                 painter->drawPixmap(paste_to, pix2, pix2.rect());
 
-                if (!is_shop)
+                QPixmap this_pix;
+                if (!is_shop) this_pix = parent->apply_shade(key1, pix, "dim");
+                else
                 {
-                    QPixmap this_pix = parent->apply_shade(key1, pix, "dim");
+                    QString tile_id = f_info[FEAT_WALL_PERM].tile_id;
+                    this_pix = parent->get_tile(tile_id, parent->main_cell_hgt, parent->main_cell_wid);
+                    //this_pix = parent->apply_shade(tile_id, pix, "dim");
+                }
 
-                    if (!d_ptr->wall_below)
-                    {
-                        QPixmap pix3 = this_pix.copy();
-                        QRect paste_offset(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3, pix3.height()));
-                        pix3 = pix3.scaledToHeight(pix3.height()/2);
-                        painter->drawPixmap(paste_offset, pix3, pix3.rect());
-                    }
-                    if (!d_ptr->wall_right)
-                    {
-                        QPixmap pix3 = this_pix.copy();
-                        QRect paste_offset(QPoint(pix3.width()*2/3+1, 0), QPoint(pix3.width(), pix3.height()*2/3));
-                        pix3 = pix3.scaledToWidth(pix3.width()/2);
-                        painter->drawPixmap(paste_offset, pix3, pix3.rect());
-                    }
-                    if (!d_ptr->wall_southeast)
-                    {
-                        QPixmap pix3 = this_pix.copy();
-                        QRect paste_offset(QPoint(pix3.width()*2/3+1, pix3.height()*2/3+1), QPoint(pix3.width(), pix3.height()));
-                        pix3 = pix3.scaledToWidth(pix3.width()/2);
-                        pix3 = pix3.scaledToHeight(pix3.height()/2);
-                        painter->drawPixmap(paste_offset, pix3, pix3.rect());
-                    }
+                if (!d_ptr->wall_below)
+                {
+                    QPixmap pix3 = this_pix.copy();
+                    QRect paste_offset(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3, pix3.height()));
+                    pix3 = pix3.scaledToHeight(pix3.height()/2);
+                    painter->drawPixmap(paste_offset, pix3, pix3.rect());
+                }
+                if (!d_ptr->wall_right)
+                {
+                    QPixmap pix3 = this_pix.copy();
+                    QRect paste_offset(QPoint(pix3.width()*2/3+1, 0), QPoint(pix3.width(), pix3.height()*2/3));
+                    pix3 = pix3.scaledToWidth(pix3.width()/2);
+                    painter->drawPixmap(paste_offset, pix3, pix3.rect());
+                }
+                if (!d_ptr->wall_southeast)
+                {
+                    QPixmap pix3 = this_pix.copy();
+                    QRect paste_offset(QPoint(pix3.width()*2/3+1, pix3.height()*2/3+1), QPoint(pix3.width(), pix3.height()));
+                    pix3 = pix3.scaledToWidth(pix3.width()/2);
+                    pix3 = pix3.scaledToHeight(pix3.height()/2);
+                    painter->drawPixmap(paste_offset, pix3, pix3.rect());
                 }
 
                 painter->setOpacity(1);
@@ -538,10 +542,23 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     // Go ascii?
     if (!done_fg && (!empty || !done_bg))
     {
-        painter->setFont(parent->font_main_window);
-        painter->setPen(square_color);
-        painter->drawText(QRectF(0, 0, parent->main_cell_wid, parent->main_cell_hgt),
-                          Qt::AlignCenter, QString(square_char));
+        // Fill with a solid color for walls if that option is set
+        if (main_window->do_wall_block  && d_ptr->is_wall(TRUE))
+        {
+            QPixmap pix(parent->main_cell_wid, parent->main_cell_hgt);
+
+            pix.fill(square_color);
+            painter->setOpacity(1);
+            painter->drawPixmap(pix.rect(), pix, pix.rect());
+        }
+        else
+        {
+            painter->setFont(parent->font_main_window);
+            painter->setPen(square_color);
+            painter->drawText(QRectF(0, 0, parent->main_cell_wid, parent->main_cell_hgt),
+                              Qt::AlignCenter, QString(square_char));
+        }
+
     }
 
     // Show a red line over a monster with its remaining hp
