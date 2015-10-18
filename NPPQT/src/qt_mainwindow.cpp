@@ -56,7 +56,8 @@ MainWindow *main_window = 0;
 
 
 
-QString mult_list[] = {
+QString mult_list[] =
+{
   QString("0.25:0.25"),
   QString("0.5:0.5"),
   QString("0.75:0.75"),
@@ -84,8 +85,10 @@ QString mult_list[] = {
 static QPixmap gray_pix(QPixmap src)
 {
     QImage img = src.toImage();
-    for (int x = 0; x < img.width(); x++) {
-        for (int y = 0; y < img.height(); y++) {
+    for (int x = 0; x < img.width(); x++)
+    {
+        for (int y = 0; y < img.height(); y++)
+        {
             QColor col = QColor(img.pixel(x, y)).darker();
             int gray = qGray(col.rgb());
             img.setPixel(x, y, qRgb(gray, gray, gray));
@@ -385,7 +388,14 @@ void MainWindow::redraw_screen()
     {
         for (int x = 0; x < p_ptr->cur_map_wid; x++)
         {
-            light_spot(y, x);
+            map_info(y, x);
+        }
+    }
+    for (int y = 0; y < p_ptr->cur_map_hgt; y++)
+    {
+        for (int x = 0; x < p_ptr->cur_map_wid; x++)
+        {
+            grids[y][x]->update(grids[y][x]->boundingRect());
         }
     }
 }

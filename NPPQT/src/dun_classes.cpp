@@ -122,7 +122,7 @@ void dungeon_type::dungeon_square_wipe()
     special_lighting = obj_special_symbol = 0;
     ui_flags = 0;
     path_flow = dtrap = FALSE;
-    wall_above = wall_below = double_height_monster = FALSE;
+    wall_right = wall_southeast = wall_below = double_height_monster = FALSE;
     dun_color = Qt::black;
     dun_char = ' ';
     object_color = Qt::black;
@@ -277,5 +277,7 @@ void reset_dungeon_info()
             dungeon_info[y][x].dungeon_square_wipe();
         }
     }
+
+    redraw_coords.clear();
 }
 

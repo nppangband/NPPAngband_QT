@@ -22,6 +22,7 @@
 #include "tilebag.h"
 #include "src/hotkeys.h"
 
+
 /*
  * Support for Adam Bolt's tileset, lighting and transparency effects
  * by Robert Ruehlmann (rr9@thangorodrim.net)
@@ -744,7 +745,7 @@ bool dtrap_edge(int y, int x)
     return FALSE;
 }
 
-// Is there a wall (above or below depends on bool above)?
+// Is there a wall above?
 static bool is_wall_below(int y, int x)
 {
     if (!ui_use_25d_graphics()) return (FALSE);
@@ -756,14 +757,26 @@ static bool is_wall_below(int y, int x)
     return (d_ptr->is_wall(TRUE));
 }
 
-// Is there a wall (above or below depends on bool above)?
-static bool is_wall_above(int y, int x)
+// Is there a wall to the right?
+static bool is_wall_right(int y, int x)
 {
     if (!ui_use_25d_graphics()) return (FALSE);
 
-    if (!in_bounds(y-1, x)) return (FALSE);
+    if (!in_bounds(y, x+1)) return (FALSE);
 
-    dungeon_type *d_ptr = &dungeon_info[y-1][x];
+    dungeon_type *d_ptr = &dungeon_info[y][x+1];
+
+    return (d_ptr->is_wall(TRUE));
+}
+
+// Is there a wall (above or below depends on bool above)?
+static bool is_wall_southeast(int y, int x)
+{
+    if (!ui_use_25d_graphics()) return (FALSE);
+
+    if (!in_bounds(y+1, x+1)) return (FALSE);
+
+    dungeon_type *d_ptr = &dungeon_info[y+1][x+1];
 
     return (d_ptr->is_wall(TRUE));
 }
@@ -780,7 +793,8 @@ static void map_terrain(s16b y, s16b x)
     bool do_dtrap = FALSE;
     dun_ptr->dtrap = FALSE;
     dun_ptr->wall_below = FALSE;
-    dun_ptr->wall_above = FALSE;
+    dun_ptr->wall_right = FALSE;
+    dun_ptr->wall_southeast = FALSE;
 
     //Assume som things normal;
     dun_ptr->special_lighting = FLOOR_LIGHT_NORMAL;   
@@ -808,8 +822,9 @@ static void map_terrain(s16b y, s16b x)
             dun_ptr->dun_color = f_ptr->d_color;
             dun_ptr->dun_tile = f_ptr->tile_id;
 
-            if (is_wall_above(y, x)) dun_ptr->wall_above = TRUE;
+            if (is_wall_right(y, x)) dun_ptr->wall_right = TRUE;
             if (is_wall_below(y, x)) dun_ptr->wall_below = TRUE;
+            if (is_wall_southeast(y, x)) dun_ptr->wall_southeast = TRUE;
 
             /* Special lighting effects */
             if (view_special_light)
@@ -847,8 +862,9 @@ static void map_terrain(s16b y, s16b x)
             /* We have seen the feature */
             f_ptr->f_everseen = TRUE;
 
-            if (is_wall_above(y, x)) dun_ptr->wall_above = TRUE;
+            if (is_wall_right(y, x)) dun_ptr->wall_right = TRUE;
             if (is_wall_below(y, x)) dun_ptr->wall_below = TRUE;
+            if (is_wall_southeast(y, x)) dun_ptr->wall_southeast = TRUE;
 
             /* Special lighting effects (walls only) */
             if (view_granite_light)
@@ -1396,9 +1412,55 @@ void light_spot(int y, int x)
     // Possibly draw the square above it
     if (redraw_above || d_ptr->double_height_monster || d_ptr->is_wall(TRUE))
     {
-        if (in_bounds(y-1, x)) ui_redraw_grid(y-1, x);
+        if (in_bounds(y-1, x)) redraw_coords.append(make_coords(y-1, x));
+    }
+}
+
+static bool coords_sort(coord first, coord second)
+{
+    if (first.y > second.y) return (TRUE);
+    if (first.y < second.y)return (FALSE);
+
+    // Y coords are equal
+    if (first.x > second.x) return (TRUE);
+    return (FALSE);
+
+
+}
+
+coord make_coords(int x, int y)
+{
+    coord this_coord;
+    this_coord.y = y;
+    this_coord.x = x;
+    return (this_coord);
+}
+
+void draw_coords(void)
+{
+    if (!redraw_coords.size()) return;
+
+    qSort(redraw_coords.begin(), redraw_coords.end(), coords_sort);
+
+    int y = -1;
+    int x = -1;
+
+    for (int i = 0; i < redraw_coords.size(); i++)
+    {
+           coord *co_ptr = &redraw_coords[i];
+
+           // Don't do duplicates
+           if (y == co_ptr->y && x == co_ptr->x) continue;
+
+           y = co_ptr->y;
+           x = co_ptr->x;
+
+           ui_redraw_grid(y, x);
     }
 
+    redraw_coords.clear();
+
+    p_ptr->redraw &= ~(PR_DRAW);
 }
 
 

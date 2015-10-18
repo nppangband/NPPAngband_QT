@@ -124,6 +124,9 @@ extern u16b size_mon_hist;
 extern move_moment_type *mon_moment_info;
 extern u16b move_moment_num;
 
+// Track which squares need to be drawn
+extern QVector<coord> redraw_coords;
+
 // Arrays for cave information
 extern int view_n;
 extern u16b *view_g;

@@ -38,6 +38,8 @@ extern bool dtrap_edge(int y, int x);
 extern void map_info(s16b y, s16b x);
 extern void note_spot(int y, int x);
 extern void light_spot(int y, int x);
+extern coord make_coords(int x, int y);
+extern void draw_coords(void);
 extern int vinfo_init(void);
 extern void forget_view(void);
 extern void update_view(void);
@@ -61,8 +63,10 @@ extern void disturb(bool stop_search, bool wipe_hotkey);
 
 
 // dungeon.cpp
+
 extern void dungeon_change_level(int dlev);
 extern void launch_game();
+
 
 /* dun_effect.cpp */
 extern int scan_effects_grid(int *effects, int size, int y, int x);
@@ -913,6 +917,7 @@ extern bool begins_with_vowel(QString line);
 extern QString capitalize_first(QString line);
 extern QString format_stat(s16b value);
 extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMessageBox::Information);
+extern void pop_up_message_box(QString message, QPixmap into_icon);
 extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
 extern s16b get_quantity(QString prompt, int max, int amt, bool allow_zero);

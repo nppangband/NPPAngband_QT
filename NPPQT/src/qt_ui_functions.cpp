@@ -600,6 +600,7 @@ bool ui_use_25d_graphics(void)
     return (TRUE);
 }
 
+
 void ui_redraw_grid(int y, int x)
 {
     DungeonGrid *g_ptr = main_window->grids[y][x];
@@ -612,8 +613,9 @@ void ui_redraw_grid(int y, int x)
 
 void ui_redraw_all()
 {
-    p_ptr->redraw &= ~(PR_MAP);
+    p_ptr->redraw &= ~(PR_MAP | PR_DRAW);
     main_window->redraw_all();
+    redraw_coords.clear();
 }
 
 void player_death_close_game(void)

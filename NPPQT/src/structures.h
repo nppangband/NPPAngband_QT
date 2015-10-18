@@ -156,12 +156,9 @@ struct names_type
 
 
 
-
 /*
  * Simple structure to hold a map location
  */
-
-
 struct coord
 {
     byte y;

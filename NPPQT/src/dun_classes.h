@@ -5,6 +5,7 @@
 #include <QChar>
 #include "src/terrain.h"
 
+
 enum
 {
     FLOOR_LIGHT_DIM = 0,
@@ -60,8 +61,9 @@ public:
     QString monster_tile;
 
     bool double_height_monster;
+    bool wall_right;
     bool wall_below;
-    bool wall_above;
+    bool wall_southeast;
 
     u16b ui_flags;
 

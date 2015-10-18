@@ -250,6 +250,15 @@ void pop_up_message_box(QString message, QMessageBox::Icon the_icon)
     msg_box.exec();
 }
 
+void pop_up_message_box(QString message, QPixmap into_icon)
+{
+    QMessageBox msg_box;
+    msg_box.setModal(true);
+    msg_box.setIconPixmap(into_icon);
+    msg_box.setText(message);
+    msg_box.exec();
+}
+
 // Post a question to the player and wait for a yes/no response.
 // return TRUE/FALSE;
 bool get_check(QString question)

@@ -2119,6 +2119,8 @@ void redraw_stuff(void)
     if (p_ptr->redraw & (PR_TURNCOUNT)) ui_update_char_turncount();
 
     if (p_ptr->redraw & (PR_WIN_CHAR_EQUIP_INFO)) ui_update_char_equip_info_window();
+
+    if (p_ptr->redraw & (PR_DRAW)) draw_coords();
 }
 
 

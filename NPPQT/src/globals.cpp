@@ -375,6 +375,8 @@ monster_message_history *mon_message_hist;
 u16b size_mon_msg;
 u16b size_mon_hist;
 
+// List of squares to be re-drawn
+QVector<coord> redraw_coords;
 
 /*
  * Array[VIEW_MAX] used by "update_view()"
