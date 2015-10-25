@@ -759,11 +759,6 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
 #define cave_wall_bold(Y,X) \
      (f_info[dungeon_info[Y][X].feat].f_flags1 & (FF1_WALL))
 
-     /*
- * Determine if a "legal" grid is a "wall" grid
- */
-#define cave_door_bold(Y,X) \
-     (f_info[dungeon_info[Y][X].feat].f_flags1 & (FF1_DOOR))
 
 /*
  * Determine if a "legal" grid is an up stairs.
@@ -777,17 +772,6 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
 #define cave_down_stairs(Y,X) \
    (cave_ff1_match(Y, X, FF1_STAIRS | FF1_MORE) == (FF1_STAIRS | FF1_MORE))
 
-/*
- * Determine if a "legal" grid is a "stair" grid
- */
-#define cave_stair_bold(Y,X) \
-    cave_ff1_match(Y, X, FF1_STAIRS)
-
-/*
- * Determine if a "legal" grid is a "stair" grid
- */
-#define cave_shaft_bold(Y,X) \
-    cave_ff2_match(Y, X, FF2_SHAFT)
 
 /*
  * Determine if a "legal" grid is "permanent"
@@ -799,44 +783,9 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
 #define cave_perma_bold(Y,X) \
     (f_info[dungeon_info[Y][X].feat].f_flags1  & (FF1_PERMANENT))
 
-/*
- * Determine if a "legal" grid is a door but not secret.
- */
-#define cave_known_door_bold(Y,X) \
-    (cave_ff1_match(Y, X, FF1_DOOR | FF1_SECRET) == (FF1_DOOR))
-
-/*
- * Determine if a "legal" grid is a secret door.
-
- */
-#define cave_secret_door_bold(Y,X) \
-    (cave_ff1_match(Y, X, FF1_DOOR | FF1_SECRET) == \
-    (FF1_DOOR | FF1_SECRET))
 
 
-/*
- * Determine if a "legal" grid is a closed door.
- * Open or broken doors don't count.
- */
-#define cave_closed_door(Y,X) \
-    cave_ff3_match(Y, X, FF3_DOOR_CLOSED)
-
-/*
- * Determine if a "legal" grid is a open door.
- * Closed or broken doors don't count.
- */
-#define cave_open_door(Y,X) \
-    cave_ff3_match(Y, X, FF3_DOOR_OPEN)
-
-/*
- * Determine if a "legal" grid is a closed door but not secret.
- * Open or broken doors don't count.
- */
-#define cave_known_closed_door(Y,X) \
-    (cave_ff3_match(Y, X, FF3_DOOR_CLOSED) && \
-    !cave_ff1_match(Y, X, FF1_SECRET))
-
-/*Compiler weirdness - if I use enums  I get compiler error messages */
+/*Compiler weirdness - with enums there are compiler error messages */
 # define 	FLOW_NO_DOORS			0
 # define    FLOW_PASS_DOORS 		1
 # define    FLOW_FLYING     		2

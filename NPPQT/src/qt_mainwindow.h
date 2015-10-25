@@ -751,6 +751,8 @@ public:
 
     MainWindow *parent;
     int c_x, c_y;
+
+    QPixmap shade_tile(QPixmap this_tile, u16b flags, QString tile_name);
 };
 
 class DungeonCursor: public QGraphicsItem

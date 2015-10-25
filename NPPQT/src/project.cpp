@@ -2972,7 +2972,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
         case GF_KILL_TRAP:
         {
             /* Reveal secret doors */
-            if (cave_secret_door_bold(y, x))
+            if (dungeon_info[y][x].is_secret_door())
             {
                 /* Check line of sight */
                 if (player_has_los_bold(y, x))
@@ -3037,13 +3037,13 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
         /* Destroy Doors (and traps) */
         case GF_KILL_DOOR:
         {
-            if (cave_door_bold(y, x) || cave_player_trap_bold(y, x))
+            if (dungeon_info[y][x].is_door() || cave_player_trap_bold(y, x))
             {
                 /* Check line of sight */
                 if (player_has_los_bold(y, x))
                 {
                     /* Destroy the door */
-                    if (cave_door_bold(y, x))
+                    if (dungeon_info[y][x].is_door())
                     {
                         /*Mark the feature lore*/
                         feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
@@ -3065,7 +3065,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 }
 
                 /* Destroy the door */
-                if (cave_door_bold(y, x))
+                if (dungeon_info[y][x].is_door())
                 {
                     cave_alter_feat(y, x, FS_TUNNEL);
                 }
@@ -3096,7 +3096,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
         case GF_LOCK_DOOR:
         {
             /* Check doors */
-            if (!cave_door_bold(y, x)) break;
+            if (!dungeon_info[y][x].is_door()) break;
 
             /* Close doors */
             if (cave_ff1_match(y, x, FF1_CAN_CLOSE))

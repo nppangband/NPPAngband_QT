@@ -1406,6 +1406,15 @@ void light_spot(int y, int x)
     /* Hack -- redraw the grid */
     map_info(y, x);
 
+    // Possibly draw the square above it
+    if (redraw_above || d_ptr->double_height_monster || d_ptr->is_wall(TRUE))
+    {
+        if (in_bounds(y-1, x)) map_info(y-1, x);
+    }
+    if (d_ptr->wall_below) map_terrain(y+1, x);
+    if (d_ptr->wall_right) map_terrain(y, x+1);
+    if (d_ptr->wall_southeast) map_terrain(y+1, x+1);
+
     // print the square onscreen
     ui_redraw_grid(y, x);
 

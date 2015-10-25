@@ -85,6 +85,15 @@ public:
     void mark_square();
 
     bool is_wall(bool known);
+    bool is_door(void);
+    bool is_secret_door(void);
+    bool is_known_door(void);
+    bool is_closed_door(void);
+    bool is_known_closed_door(void);
+    bool is_jammed_door(void);
+    bool is_wall(void);
+    bool is_stairs(void);
+
 
     // All variables above should be included in this method.
     void dungeon_square_wipe();
@@ -189,8 +198,13 @@ public:
 
     void feature_wipe();
     bool is_door(void);
+    bool is_secret_door(void);
+    bool is_known_door(void);
+    bool is_closed_door(void);
+    bool is_known_closed_door(void);
     bool is_jammed_door(void);
     bool is_wall(void);
+    bool is_stairs(void);
 };
 
 /*

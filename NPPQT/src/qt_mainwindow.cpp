@@ -120,10 +120,12 @@ void MainWindow::wait_animation(int n_animations)
 {
     anim_depth += n_animations;
 
-    if (anim_depth == n_animations) {
+    if (anim_depth == n_animations)
+    {
         if (anim_loop.isRunning()) qDebug("Already running animation");
         //qDebug("Animation loop %x", (int)&anim_loop);
-        if (anim_loop.exec() == -1) {
+        if (anim_loop.exec() == -1)
+        {
             qDebug("Exec failed");
         }
     }
@@ -131,7 +133,8 @@ void MainWindow::wait_animation(int n_animations)
 
 void MainWindow::animation_done()
 {
-    if (--anim_depth < 1) {
+    if (--anim_depth < 1)
+    {
         if (!anim_loop.isRunning()) qDebug("Anim loop isn't running");
         //qDebug("Quitting %1", anim_depth);
         anim_loop.quit();
@@ -550,6 +553,7 @@ MainWindow::MainWindow()
     create_signals();
     (void)statusBar();
     read_settings();
+
     init_scene();
     set_graphic_mode(use_graphics);
     set_keymap_mode(which_keyset);
@@ -1108,7 +1112,7 @@ void MainWindow::create_actions()
     wall_block_act = new QAction(tr("Solid Block Walls"), this);
     wall_block_act->setCheckable(true);
     wall_block_act->setChecked(false);
-    wall_block_act->setStatusTip(tr("Display walls with a solid block instead of '#'."));
+    wall_block_act->setStatusTip(tr("Display walls with a solid block instead of '#'.  (ASCII graphics only)"));
     connect(wall_block_act, SIGNAL(changed()), this, SLOT(set_wall_block()));
 
     font_main_select_act = new QAction(tr("Main Window Font"), this);
@@ -1378,10 +1382,7 @@ void MainWindow::create_menus()
     settings = menuBar()->addMenu(tr("&Settings"));
     settings->addAction(options_act);
 
-    QMenu *choose_fonts = settings->addMenu("Choose Fonts");
-    choose_fonts->addAction(font_main_select_act);
-    choose_fonts->addAction(font_messages_select_act);
-    choose_fonts->addAction(font_sidebar_select_act);
+
 
     QMenu *choose_keymap = settings->addMenu("Choose Keyset");
     choose_keymap->addAction(keymap_new);
@@ -1419,6 +1420,10 @@ void MainWindow::create_menus()
 
     //Tileset options
     display = menuBar()->addMenu(tr("&Display"));
+    QMenu *choose_fonts = display->addMenu("Choose Fonts");
+    choose_fonts->addAction(font_main_select_act);
+    choose_fonts->addAction(font_messages_select_act);
+    choose_fonts->addAction(font_sidebar_select_act);
     QMenu *choose_tile_set = display->addMenu("Choose Tile Set");
     choose_tile_set->addAction(ascii_mode_act);
     choose_tile_set->addAction(reg_mode_act);

@@ -102,9 +102,44 @@ bool dungeon_type::is_wall(bool known)
     return (f_info[this_feat].is_wall());
 }
 
+bool dungeon_type::is_door(void)
+{
+    return (f_info[feat].is_door());
+}
+
+bool dungeon_type::is_secret_door(void)
+{
+    return (f_info[feat].is_secret_door());
+}
+
+bool dungeon_type::is_known_door(void)
+{
+    return (f_info[feat].is_known_door());
+}
+
+bool dungeon_type::is_known_closed_door(void)
+{
+    return (f_info[feat].is_known_closed_door());
+}
+
+bool dungeon_type::is_closed_door(void)
+{
+    return (f_info[feat].is_closed_door());
+}
+
+bool dungeon_type::is_jammed_door(void)
+{
+    return (f_info[feat].is_jammed_door());
+}
+
 dungeon_type::dungeon_type()
 {
     dungeon_square_wipe();
+}
+
+bool dungeon_type::is_stairs(void)
+{
+    return (f_info[feat].is_stairs());
 }
 
 /*
@@ -206,10 +241,31 @@ bool feature_type::is_door(void)
     return (FALSE);
 }
 
-bool feature_type::is_wall(void)
+bool feature_type::is_secret_door(void)
 {
-    if (f_flags1 & (FF1_WALL)) return (TRUE);
+    if (!is_door()) return (FALSE);
+    if (f_flags1 & (FF1_SECRET))  return (TRUE);
     return (FALSE);
+}
+
+bool feature_type::is_closed_door(void)
+{
+    if (!is_door()) return (FALSE);
+    if (f_flags3 & (FF3_DOOR_CLOSED))  return (TRUE);
+    return (FALSE);
+}
+
+bool feature_type::is_known_door(void)
+{
+    if (is_secret_door())   return (FALSE);
+    return (TRUE);
+}
+
+bool feature_type::is_known_closed_door(void)
+{
+    if (!is_closed_door())  return (FALSE);
+    if (is_secret_door())   return (FALSE);
+    return (TRUE);
 }
 
 bool feature_type::is_jammed_door(void)
@@ -218,6 +274,18 @@ bool feature_type::is_jammed_door(void)
 
     /* Jammed doors */
     if (f_flags3 & (FF3_DOOR_JAMMED)) return (TRUE);
+    return (FALSE);
+}
+
+bool feature_type::is_wall(void)
+{
+    if (f_flags1 & (FF1_WALL)) return (TRUE);
+    return (FALSE);
+}
+
+bool feature_type::is_stairs(void)
+{
+    if (f_flags1 & (FF1_STAIRS)) return (TRUE);
     return (FALSE);
 }
 

@@ -54,9 +54,8 @@ static bool detect_traps(int y, int x)
  */
 static bool detect_doors(int y, int x)
 {
-
     /* Detect doors */
-    if (cave_door_bold(y, x))
+    if (dungeon_info[y][x].is_door())
     {
 
         /* Detect secret doors */
@@ -82,9 +81,8 @@ static bool detect_doors(int y, int x)
  */
 static bool detect_stairs(int y, int x)
 {
-
     /* Detect stairs */
-    if (cave_stair_bold(y, x))
+    if (dungeon_info[y][x].is_stairs())
     {
         /* Find secrets */
         if (cave_ff1_match(y, x, FF1_SECRET))

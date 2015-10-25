@@ -3301,7 +3301,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                 else if (m_ptr->cdis <= noise_dist)
                 {
                     /* Grid is currently a door */
-                    if (cave_closed_door(ny, nx))
+                    if (dungeon_info[ny][nx].is_closed_door())
                     {
                         message(QString("You hear a door being smashed open."));
                     }
@@ -3347,7 +3347,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
                 else if (m_ptr->cdis <= MAX_SIGHT)
                 {
                     /* Grid is currently a door */
-                    if (cave_closed_door(ny, nx))
+                    if (dungeon_info[ny][nx].is_closed_door())
                     {
                         message(QString("You hear a door burst open!"));
                     }
