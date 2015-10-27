@@ -2207,7 +2207,7 @@ static int read_savefile(void)
     }
 
     // Ensure the data is read and written consistently
-    in.setVersion(QDataStream::Qt_5_1);
+    in.setVersion(QDataStream::Qt_5_5);
 
     /* Extract version */
     rd_byte(&sf_major);
@@ -2256,7 +2256,7 @@ static bool load_scores(void)
     }
 
     // Ensure the data is read and written consistently
-    in.setVersion(QDataStream::Qt_5_1);
+    in.setVersion(QDataStream::Qt_5_5);
 
     /* Extract version */
     rd_byte(&sf_major);
@@ -2312,7 +2312,7 @@ static bool load_memory(void)
     }
 
     // Ensure the data is read and written consistently
-    in.setVersion(QDataStream::Qt_5_1);
+    in.setVersion(QDataStream::Qt_5_5);
 
     /* Extract version */
     rd_byte(&sf_major);
@@ -2607,6 +2607,9 @@ void do_hotkey_import(QString file_name)
         pop_up_message_box("Hotkey Import Failed.  Invalid filename.");
         return;
     }
+
+    // Ensure the data is read and written consistently
+    in.setVersion(QDataStream::Qt_5_5);
 
     byte this_game_mode;
     rd_byte(&this_game_mode);

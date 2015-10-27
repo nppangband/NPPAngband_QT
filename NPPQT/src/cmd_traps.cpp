@@ -58,7 +58,7 @@ TrapSelectDialog::TrapSelectDialog(void)
 
     vlay->addWidget(main_prompt);
 
-    vlay->addStretch();
+    vlay->addStretch(1);
 
     // Add the "Sturdy Trap" button
     QPushButton *sturdy_button = new QPushButton("&Resilient Trap");
@@ -139,7 +139,7 @@ TrapSelectDialog::TrapSelectDialog(void)
     }
 
 
-    vlay->addStretch();
+    vlay->addStretch(1);
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
     connect(buttons, SIGNAL(clicked(QAbstractButton*)), this,

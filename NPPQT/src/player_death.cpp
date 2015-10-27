@@ -79,7 +79,7 @@ PlayerDeathDialog::PlayerDeathDialog(void)
     obj_label->setAlignment(Qt::AlignCenter);
     vlay->addWidget(obj_label);
 
-    vlay->addStretch();
+    vlay->addStretch(1);
 
     // Add the "Home Inventory" button
     QPushButton *info_button = new QPushButton("Player Information");
@@ -132,7 +132,7 @@ PlayerDeathDialog::PlayerDeathDialog(void)
     QPushButton *close_button = new QPushButton(tr("&Close"));
     connect(close_button, SIGNAL(clicked()), this, SLOT(close()));
 
-    vlay->addStretch();
+    vlay->addStretch(1);
     vlay->addWidget(close_button);
 
     setLayout(vlay);

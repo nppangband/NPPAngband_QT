@@ -360,7 +360,7 @@ void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
     this_layout->addLayout(vlay_targets);
 
     QLabel *header_targets = new QLabel("<b>Select Targeting Method</b>");
-    vlay_targets->addWidget(header_targets, Qt::AlignCenter);
+    vlay_targets->addWidget(header_targets);
 
     QRadioButton *radio_closest = new QRadioButton("Target Closest");
     radio_closest->setObjectName(QString("targeting_step_%1") .arg(step));
@@ -391,8 +391,8 @@ void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int ste
 {
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
-    QVBoxLayout *vlay_direction = new QVBoxLayout;
-    this_layout->addLayout(vlay_direction);
+    QVBoxLayout *vlay_spellbox = new QVBoxLayout;
+    this_layout->addLayout(vlay_spellbox);
 
     //Create the combobox
     QComboBox *combobox_spell_choice = new QComboBox;
@@ -431,12 +431,13 @@ void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int ste
 
     // Add a header
     QLabel *header_dir = new QLabel(label_text);
-    vlay_direction->addWidget(header_dir, Qt::AlignCenter);
+    vlay_spellbox->addWidget(header_dir);
     if (!spell_list.size())
     {
         if (!cp_ptr->spell_book)  header_dir->setText("You cannot cast spells");
         else header_dir->setText(QString("You do not know any %1") .arg(noun));
         delete combobox_spell_choice;
+        vlay_spellbox->addStretch(1);
         return;
     }
 
@@ -445,7 +446,9 @@ void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int ste
 
     connect(combobox_spell_choice, SIGNAL(currentIndexChanged(int)), this, SLOT(active_spell_changed(int)));
     combobox_spell_choice->setObjectName(QString("Step_Command_%1") .arg(step));
-    vlay_direction->addWidget(combobox_spell_choice);
+    vlay_spellbox->addWidget(combobox_spell_choice);
+
+    vlay_spellbox->addStretch(1);
 }
 
 // Helper function to determine if the current object kind
@@ -533,6 +536,19 @@ void HotKeyDialog::active_k_idx_changed(int choice)
     }
 }
 
+static QString get_object_label_text(int tval)
+{
+    if (tval == TV_POTION) return (QString("<b>Select Potion to Quaff:</b>"));
+    if (tval == TV_SCROLL) return (QString("<b>Select Scroll to Read:</b>"));
+    if (tval == TV_WAND) return (QString("<b>Select Wand to Aim:</b>"));
+    if (tval == TV_STAFF) return (QString("<b>Select Staff to Use:</b>"));
+    if (tval == TV_ROD) return (QString("<b>Select Rod to Zap:</b>"));
+    if (tval == TV_FOOD) return (QString("<b>Select Food to Eat:</b>"));
+
+    // Should never happen
+    return QString("<b>Select Object To Use:</b>");
+}
+
 void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this_step)
 {
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
@@ -565,12 +581,13 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this
     }
 
     // Add a header
-    QLabel *header_dir = new QLabel("<b>Select Object To Use:</b>");
-    vlay_obj_kind->addWidget(header_dir, Qt::AlignCenter);
+    QLabel *header_dir = new QLabel(get_object_label_text(this_tval));
+    vlay_obj_kind->addWidget(header_dir);
     if (!count)
     {
         header_dir->setText("No Known Objects Of This Type");
         delete this_combobox;
+        vlay_obj_kind->addStretch(1);
         return;
     }
 
@@ -581,6 +598,7 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this
 
     connect(this_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(active_k_idx_changed(int)));
     vlay_obj_kind->addWidget(this_combobox);
+    vlay_obj_kind->addStretch(1);
 }
 
 // Manuallly turning the buttons true or false is necessary
@@ -674,7 +692,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
 
     // Add a header
     QLabel *header_dir = new QLabel("<b>Direction:</b>");
-    vlay_direction->addWidget(header_dir, Qt::AlignCenter);
+    vlay_direction->addWidget(header_dir);
     QGridLayout *gridlay_direction = new QGridLayout;
     vlay_direction->addLayout(gridlay_direction);
 
@@ -687,7 +705,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(north_west, step * STEP_MULT + DIR_NORTHWEST);
     north_west->setToolTip("NorthWest");
     north_west->setIcon(QIcon(":/icons/lib/icons/arrow-northwest.png"));
-    gridlay_direction->addWidget(north_west, 0, 0, Qt::AlignCenter);
+    gridlay_direction->addWidget(north_west, 0, 0);
     if (hks_ptr->step_args.direction == DIR_NORTHWEST) north_west->setChecked(TRUE);
     else north_west->setChecked(FALSE);
     north_west->setObjectName(QString("direction_step_%1") .arg(step));
@@ -696,7 +714,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(north, step * STEP_MULT + DIR_NORTH);
     north->setToolTip("North");
     north->setIcon(QIcon(":/icons/lib/icons/arrow-north.png"));
-    gridlay_direction->addWidget(north, 0, 1, Qt::AlignCenter);
+    gridlay_direction->addWidget(north, 0, 1);
     if (hks_ptr->step_args.direction == DIR_NORTH) north->setChecked(TRUE);
     else north->setChecked(FALSE);
     north->setObjectName(QString("direction_step_%1") .arg(step));
@@ -705,7 +723,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(north_east, step * STEP_MULT + DIR_NORTHEAST);
     north_east->setToolTip("NorthEast");
     north_east->setIcon(QIcon(":/icons/lib/icons/arrow-northeast.png"));
-    gridlay_direction->addWidget(north_east, 0, 2, Qt::AlignCenter);
+    gridlay_direction->addWidget(north_east, 0, 2);
     if (hks_ptr->step_args.direction == DIR_NORTHEAST) north_east->setChecked(TRUE);
     else north_east->setChecked(FALSE);
     north_east->setObjectName(QString("direction_step_%1") .arg(step));
@@ -714,7 +732,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(west, step * STEP_MULT + DIR_WEST);
     west->setToolTip("West");
     west->setIcon(QIcon(":/icons/lib/icons/arrow-west.png"));
-    gridlay_direction->addWidget(west, 1, 0, Qt::AlignCenter);
+    gridlay_direction->addWidget(west, 1, 0);
     if (hks_ptr->step_args.direction == DIR_WEST) west->setChecked(TRUE);
     else west->setChecked(FALSE);
     west->setObjectName(QString("direction_step_%1") .arg(step));
@@ -723,7 +741,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(dir_none, step * STEP_MULT + DIR_UNKNOWN);
     dir_none->setToolTip("Specify Direction during command execution");
     dir_none->setIcon(QIcon(":/icons/lib/icons/target-cancel.png"));
-    gridlay_direction->addWidget(dir_none, 1, 1, Qt::AlignCenter);
+    gridlay_direction->addWidget(dir_none, 1, 1);
     if (hks_ptr->step_args.direction == DIR_UNKNOWN) dir_none->setChecked(TRUE);
     else dir_none->setChecked(FALSE);
     dir_none->setObjectName(QString("direction_step_%1") .arg(step));
@@ -732,7 +750,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(east, step * STEP_MULT + DIR_EAST);
     east->setToolTip("East");
     east->setIcon(QIcon(":/icons/lib/icons/arrow-east.png"));
-    gridlay_direction->addWidget(east, 1, 2, Qt::AlignCenter);
+    gridlay_direction->addWidget(east, 1, 2);
     if (hks_ptr->step_args.direction == DIR_EAST) east->setChecked(TRUE);
     else east->setChecked(FALSE);
     east->setObjectName(QString("direction_step_%1") .arg(step));
@@ -741,7 +759,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(south_west, step * STEP_MULT + DIR_SOUTHWEST);
     south_west->setToolTip("SouthWest");
     south_west->setIcon(QIcon(":/icons/lib/icons/arrow-southwest.png"));
-    gridlay_direction->addWidget(south_west, 2, 0, Qt::AlignCenter);
+    gridlay_direction->addWidget(south_west, 2, 0);
     if (hks_ptr->step_args.direction == DIR_SOUTHWEST) south_west->setChecked(TRUE);
     else south_west->setChecked(FALSE);
     south_west->setObjectName(QString("direction_step_%1") .arg(step));
@@ -750,7 +768,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(south, step * STEP_MULT + DIR_SOUTH);
     south->setToolTip("South");
     south->setIcon(QIcon(":/icons/lib/icons/arrow-south.png"));
-    gridlay_direction->addWidget(south, 2, 1, Qt::AlignCenter);
+    gridlay_direction->addWidget(south, 2, 1);
     if (hks_ptr->step_args.direction == DIR_SOUTH) south->setChecked(TRUE);
     else south->setChecked(FALSE);
     south->setObjectName(QString("direction_step_%1") .arg(step));
@@ -759,7 +777,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     group_directions->addButton(south_east, step * STEP_MULT + DIR_SOUTHEAST);
     south_east->setToolTip("SouthEast");
     south_east->setIcon(QIcon(":/icons/lib/icons/arrow-southeast.png"));
-    gridlay_direction->addWidget(south_east, 2, 2, Qt::AlignCenter);
+    gridlay_direction->addWidget(south_east, 2, 2);
     if (hks_ptr->step_args.direction == DIR_SOUTHEAST) south_east->setChecked(TRUE);
     else south_east->setChecked(FALSE);
     south_east->setObjectName(QString("direction_step_%1") .arg(step));
@@ -889,6 +907,8 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         else hks_ptr->step_args.direction = 0;
     }
 
+    this_layout->addStretch(1);
+
     create_step_buttons(this_layout, step);
 
 }
@@ -909,8 +929,11 @@ void HotKeyDialog::display_hotkey_steps()
         QHBoxLayout *hlay_header = new QHBoxLayout;
         vlay_hotkey_steps->addLayout(hlay_header);
 
+        QVBoxLayout *this_vlayout = new QVBoxLayout;
+        hlay_header->addLayout(this_vlayout);
         QLabel *header_step = new QLabel(QString("<b>Step %1:  </b>") .arg(i + 1));
-        hlay_header->addWidget(header_step, Qt::AlignLeft);
+        this_vlayout->addWidget(header_step);
+        this_vlayout->addStretch(1);
 
         QComboBox *this_combo_box = new QComboBox;
         this_combo_box->setObjectName(QString("Step_Command_%1") .arg(i));
@@ -921,12 +944,15 @@ void HotKeyDialog::display_hotkey_steps()
         }
         this_combo_box->setCurrentIndex(dialog_hotkey.hotkey_steps[i].step_commmand);
         connect(this_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(active_hotkey_command_changed(int)));
-        hlay_header->addWidget(this_combo_box, Qt::AlignLeft);
+        QVBoxLayout *combo_vlayout = new QVBoxLayout;
+        hlay_header->addLayout(combo_vlayout);
+        combo_vlayout->addWidget(this_combo_box);
+        combo_vlayout->addStretch(1);
 
         QHBoxLayout *this_layout = new QHBoxLayout;
         this_layout->setObjectName(QString("hlay_step_%1") .arg(i));
         create_one_hotkey_step(this_layout, i);
-        hlay_header->addLayout(this_layout, Qt::AlignLeft);
+        hlay_header->addLayout(this_layout);
     }
 }
 
@@ -949,7 +975,7 @@ HotKeyDialog::HotKeyDialog(void)
 
     //Build the header
     QLabel *header_main = new QLabel("<b><h2>Hotkey Menu</b></h2>");
-    main_layout->addWidget(header_main, Qt::AlignCenter | Qt::AlignTop);
+    main_layout->addWidget(header_main);
 
     add_hotkeys_header();
 
@@ -957,6 +983,7 @@ HotKeyDialog::HotKeyDialog(void)
     vlay_hotkey_steps = new QVBoxLayout;
     main_layout->addLayout(vlay_hotkey_steps);
     display_hotkey_steps();
+    vlay_hotkey_steps->addStretch(1);
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok);
     connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
