@@ -24,6 +24,7 @@ enum
     HK_ZAP_ROD,
     HK_EAT_FOOD,
     HK_CAST_SPELL,
+    HK_ACTIVATE,
     HK_TYPE_MOVE,
     HK_TYPE_JUMP,
     HK_TYPE_RUN,
@@ -56,7 +57,8 @@ enum
     HK_NEEDS_OBJECT_KIND,
     HK_NEEDS_TARGET,
     HK_NEEDS_SPELL,
-    HK_NEEDS_SPEIFIC_OBJECT,
+    HK_NEEDS_ACIVATION,
+    HK_NEEDS_SPECIFIC_OBJECT,
 };
 
 #define HK_VERIFY_YES   true
@@ -75,6 +77,9 @@ struct hotkey_step
 {
     byte step_commmand;
     cmd_arg step_args;
+
+    // This is used to store the selected object while the dialog box is open.
+    object_type step_object;
 };
 
 
@@ -117,13 +122,17 @@ private:
     void delete_direction_pad(int step);
     void create_direction_pad(QHBoxLayout *this_layout, int step);
     void create_object_kind_dropbox(QHBoxLayout *this_layout, int this_step);
+    void create_activation_dropbox(QHBoxLayout *this_layout, int this_step);
     void delete_targeting_choices(int this_step);
     void create_targeting_choices(QHBoxLayout *this_layout, int step);
     void create_spell_choice_dropbox(QHBoxLayout *this_layout, int step);
     void create_step_buttons(QHBoxLayout *this_layout, int step);
     int get_current_step(QString item_id);
     bool accept_object_kind(int k_idx, int tval, int step);
+    bool accept_activation_object(object_type *o_ptr);
     int find_selected_k_idx(int choice, int step);
+    object_type find_selected_activation(int choice, int step);
+    object_type create_selected_object(cmd_arg args);
     QButtonGroup *group_directions;
     QButtonGroup *target_choices;
 
@@ -140,6 +149,7 @@ private slots:
     void hotkey_step_direction_changed(int new_dir);
     void hotkey_step_target_changed(int new_target);
     void active_k_idx_changed(int choice);
+    void active_activation_changed(int choice);
     void active_spell_changed(int choice);
     void insert_step(void);
     void delete_step(void);

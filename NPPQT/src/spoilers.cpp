@@ -135,7 +135,7 @@ void print_object_spoiler_file(void)
         object_type object_type_body;
         object_type *o_ptr = &object_type_body;
 
-        make_object_fake(o_ptr, i, FALSE);
+        make_object_fake(o_ptr, i, 0, FALSE);
 
         QString o_name = object_desc(o_ptr, ODESC_PREFIX);
         o_name = capitalize_first(o_name);
@@ -191,7 +191,7 @@ void print_ego_item_spoiler_file(void)
         int k_idx = find_first_ego_match(i);
         if (!k_idx) continue;
 
-        make_object_fake(o_ptr, k_idx, FALSE);
+        make_object_fake(o_ptr, k_idx, 0, FALSE);
 
         QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
 

@@ -18,6 +18,7 @@
 #include <src/npp.h>
 #include <src/cmds.h>
 #include <src/hotkeys.h>
+#include <src/store.h>
 #include <QPushButton>
 
 single_hotkey running_hotkey;
@@ -71,6 +72,8 @@ hotkey_type hotkey_actions[] =
     {HK_NEEDS_OBJECT_KIND, "Eat Food", TV_FOOD},
     //HK_TYPE_CAST
     {HK_NEEDS_SPELL, "Cast Spell", 0},
+    // HK_ACTIVATE
+    {HK_ACTIVATE, "Activate", 0},
     //HK_TYPE_MOVE
     {HK_NEEDS_DIRECTION, "Walk",0},
     //HK_TYPE_JUMP
@@ -107,21 +110,6 @@ void single_hotkey::clear_hotkey_steps(void)
     hotkey_steps.append(dummy_step);
 }
 
-void clear_all_hotkeys()
-{
-    for (int i = 0; i < NUM_HOTKEYS; i++)
-    {
-        single_hotkey *plyr_hk_ptr = &player_hotkeys[i];
-        hotkey_list *hk_list_ptr = &list_hotkeys[i];
-        plyr_hk_ptr->hotkey_name = hk_list_ptr->hotkey_list_name;
-        plyr_hk_ptr->hotkey_button_name = hk_list_ptr->hotkey_list_name;
-        plyr_hk_ptr->hotkey_button = hk_list_ptr->listed_hotkey;
-        plyr_hk_ptr->clear_hotkey_steps();
-    }
-}
-
-
-
 void single_hotkey::copy_hotkey(single_hotkey *other_hotkey)
 {
     hotkey_name = other_hotkey->hotkey_name;
@@ -146,6 +134,60 @@ bool single_hotkey::has_commands(void)
 
     return (TRUE);
 }
+
+void clear_all_hotkeys()
+{
+    for (int i = 0; i < NUM_HOTKEYS; i++)
+    {
+        single_hotkey *plyr_hk_ptr = &player_hotkeys[i];
+        hotkey_list *hk_list_ptr = &list_hotkeys[i];
+        plyr_hk_ptr->hotkey_name = hk_list_ptr->hotkey_list_name;
+        plyr_hk_ptr->hotkey_button_name = hk_list_ptr->hotkey_list_name;
+        plyr_hk_ptr->hotkey_button = hk_list_ptr->listed_hotkey;
+        plyr_hk_ptr->clear_hotkey_steps();
+    }
+}
+
+// Check if the command_step matches the selected object;
+static bool activation_matches_selection(cmd_arg *this_arg, object_type *o_ptr)
+{
+    if (!o_ptr->k_idx) return (FALSE);
+    // Match object kind
+    if (o_ptr->k_idx != this_arg->k_idx) return (FALSE);
+    //Match ego num
+    if (o_ptr->ego_num != this_arg->item) return (FALSE);
+    // Match artifact num
+    if (o_ptr->art_num != this_arg->number) return (FALSE);
+
+    return (TRUE);
+}
+
+// Find the first available match to the chosen activation
+static object_type *find_object_activation(cmd_arg this_arg)
+{
+    // Check what the player is holding
+    for (int i = 0; i < ALL_INVEN_TOTAL; i++)
+    {
+        object_type *o_ptr = &inventory[i];
+        if (activation_matches_selection(&this_arg, o_ptr)) return (o_ptr);
+    }
+    store_type *st_ptr = &store[STORE_HOME];
+
+    // Check the home
+    for (int i = 0; i < st_ptr->stock_num; i++)
+    {
+        object_type *o_ptr = &st_ptr->stock[i];
+        if (activation_matches_selection(&this_arg, o_ptr)) return (o_ptr);
+    }
+
+    // Whoops!  An extra item not found in the player's inventory = handled later
+    object_type object_type_body;
+    object_type *o_ptr = &object_type_body;
+    o_ptr->object_wipe();
+    return (o_ptr);
+}
+
+
 
 void HotKeyDialog::active_hotkey_name_changed(QString new_name)
 {
@@ -211,6 +253,7 @@ void HotKeyDialog::active_hotkey_command_changed(int this_choice)
     int this_step = get_current_step(sender_id);
     dialog_hotkey.hotkey_steps[this_step].step_commmand = this_choice;
     dialog_hotkey.hotkey_steps[this_step].step_args.wipe();
+    dialog_hotkey.hotkey_steps[this_step].step_object.object_wipe();
     QString item_id = (QString("hlay_step_%1") .arg(this_step));
     QList<QHBoxLayout *> hlay_list = this->findChildren<QHBoxLayout *>();
     for (int x = 0; x < hlay_list.size(); x++)
@@ -267,6 +310,7 @@ void HotKeyDialog::active_spell_changed(int choice)
             if (this_name.contains(item_id))
             {
                 create_targeting_choices(this_hlay, this_step);
+
                 break;
             }
         }
@@ -385,6 +429,8 @@ void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
     else radio_specify_use->setChecked(TRUE);
 
     connect(target_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_target_changed(int)));
+
+    vlay_targets->addStretch(1);
 }
 
 void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int step)
@@ -427,15 +473,15 @@ void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int ste
     QString noun = cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0);
     QString verb = cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0);
     noun.append("s");
-    QString label_text = (QString("Select a %1 to %2") .arg(noun) .arg(verb));
+    QString label_text = (QString("<b>Select a %1 to %2</b>") .arg(noun) .arg(verb));
 
     // Add a header
     QLabel *header_dir = new QLabel(label_text);
     vlay_spellbox->addWidget(header_dir);
     if (!spell_list.size())
     {
-        if (!cp_ptr->spell_book)  header_dir->setText("You cannot cast spells");
-        else header_dir->setText(QString("You do not know any %1") .arg(noun));
+        if (!cp_ptr->spell_book)  header_dir->setText("<b>You cannot cast spells</b>");
+        else header_dir->setText(QString("<b>You do not know any %1</b>") .arg(noun));
         delete combobox_spell_choice;
         vlay_spellbox->addStretch(1);
         return;
@@ -469,6 +515,19 @@ bool HotKeyDialog::accept_object_kind(int k_idx, int tval, int step)
     return (TRUE);
 }
 
+// Create a dummy of the currently selected object
+object_type HotKeyDialog::create_selected_object(cmd_arg args)
+{
+    object_type object_type_body;
+    object_type *o_ptr = &object_type_body;
+    o_ptr->object_wipe();
+
+    if (args.number) make_fake_artifact(o_ptr, args.number);
+    else make_object_fake(o_ptr, args.k_idx, args.item, FALSE);
+
+    return (object_type_body);
+}
+
 // Helper function to find the current k_idx
 // selection in a combobox of object kinds
 int HotKeyDialog::find_selected_k_idx(int choice, int step)
@@ -499,21 +558,21 @@ void HotKeyDialog::active_k_idx_changed(int choice)
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
 
-    bool old_obj_dir = obj_kind_needs_aim(hks_ptr->step_args.k_idx);
+    bool old_obj_dir = obj_needs_aim(hks_ptr->step_args.k_idx);
 
     // Remember the object choice
     hks_ptr->step_args.k_idx = find_selected_k_idx(choice, this_step);
 
-    bool new_obj_dir = obj_kind_needs_aim(hks_ptr->step_args.k_idx);
+    bool new_obj_dir = obj_needs_aim(hks_ptr->step_args.k_idx);
 
     // Remove the direction box
-    if (new_obj_dir && !old_obj_dir)
+    if (!new_obj_dir && old_obj_dir)
     {
         delete_targeting_choices(this_step);
         hks_ptr->step_args.direction = DIR_UNKNOWN;
     }
 
-    // Add the direction box
+    // Add the direction box if needed
     if (new_obj_dir && !old_obj_dir)
     {
         hks_ptr->step_args.direction = DIR_UNKNOWN;
@@ -585,7 +644,7 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this
     vlay_obj_kind->addWidget(header_dir);
     if (!count)
     {
-        header_dir->setText("No Known Objects Of This Type");
+        header_dir->setText("<b>No Known Objects Of This Type</b>");
         delete this_combobox;
         vlay_obj_kind->addStretch(1);
         return;
@@ -597,6 +656,203 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this
     hks_ptr->step_args.verify = TRUE;
 
     connect(this_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(active_k_idx_changed(int)));
+    vlay_obj_kind->addWidget(this_combobox);
+    vlay_obj_kind->addStretch(1);
+}
+
+// Helper function to see if an activatable object
+// should be added to the combo box
+bool HotKeyDialog::accept_activation_object(object_type *o_ptr)
+{
+    /* Skip "empty" items */
+    if (!o_ptr->k_idx) return (FALSE);
+    // Must be activitable and known
+    if (!obj_is_activatable(o_ptr)) return (FALSE);
+    if (!o_ptr->is_known()) return (FALSE);
+    return (TRUE);
+}
+
+// Helper function to find the current activation
+// selection in a combobox of possible activations
+object_type HotKeyDialog::find_selected_activation(int choice, int step)
+{
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    int i;
+    int current_index = 0;
+
+    // Check what the player is holding
+    for (i = 0; i < ALL_INVEN_TOTAL; i++)
+    {
+        object_type *o_ptr = &inventory[i];
+        if (!accept_activation_object(o_ptr)) continue;
+
+        if (choice == current_index) return (inventory[i]);
+
+        current_index++;
+    }
+    store_type *st_ptr = &store[STORE_HOME];
+
+    // Check the home
+    for (i = 0; i < st_ptr->stock_num; i++)
+    {
+        object_type *o_ptr = &st_ptr->stock[i];
+        if (!accept_activation_object(o_ptr)) continue;
+
+        if (choice == current_index) return (st_ptr->stock[i]);
+
+        current_index++;
+    }
+
+    // The player no longer has the object, so return a blank object
+    return (hks_ptr->step_object);
+}
+
+// Find the new object activation based on the combo box
+void HotKeyDialog::active_activation_changed(int choice)
+{
+    QString sender_id = QObject::sender()->objectName();
+    int this_step = get_current_step(sender_id);
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
+
+    object_type object_type_body = create_selected_object(hks_ptr->step_args);
+    object_type *o_ptr = &object_type_body;
+
+    bool old_obj_dir = obj_needs_aim(o_ptr);
+
+    // Remember the object choice
+    object_type_body = find_selected_activation(choice, this_step);
+
+    hks_ptr->step_args.k_idx = o_ptr->k_idx;
+    hks_ptr->step_args.item = o_ptr->ego_num;
+    hks_ptr->step_args.number = o_ptr->art_num;
+    hks_ptr->step_args.string = object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX);
+
+    bool new_obj_dir = obj_needs_aim(o_ptr);
+
+    // Remove the direction box
+    if (!new_obj_dir && old_obj_dir)
+    {
+        delete_targeting_choices(this_step);
+        hks_ptr->step_args.direction = DIR_UNKNOWN;
+    }
+
+    // Add the direction box if needed
+    if (new_obj_dir && !old_obj_dir)
+    {
+        hks_ptr->step_args.direction = DIR_UNKNOWN;
+
+        // Find the hbox layout
+        QString item_id = (QString("hlay_step_%1") .arg(this_step));
+        QList<QHBoxLayout *> hlay_list = this->findChildren<QHBoxLayout *>();
+        for (int x = 0; x < hlay_list.size(); x++)
+        {
+            QHBoxLayout *this_hlay = hlay_list.at(x);
+
+            QString this_name = this_hlay->objectName();
+
+            if (this_name.contains(item_id))
+            {
+                create_targeting_choices(this_hlay, this_step);
+                break;
+            }
+        }
+    }
+}
+
+/*
+ * For activation items, k_idx = object num, item = ego_item #, number = artifact number
+ * This one is a little more complicated because a simple object kind can be selected,
+ * but also ego items and artifacts.
+ */
+void HotKeyDialog::create_activation_dropbox(QHBoxLayout *this_layout, int this_step)
+{
+    object_type object_type_body;
+    object_type *o_ptr;
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
+
+    QVBoxLayout *vlay_obj_kind = new QVBoxLayout;
+    vlay_obj_kind->setObjectName(QString("vlay_activation_step_%1") .arg(this_step));
+    this_layout->addLayout(vlay_obj_kind);
+
+    //Create the combobox
+    QComboBox *this_combobox = new QComboBox;
+    this_combobox->setObjectName(QString("activation_combo_step_%1") .arg(this_step));
+    int current_index = -1;
+    int count = 0;
+
+    // Nothing has been selected yet
+    if (!hks_ptr->step_args.k_idx) current_index = 0;
+
+    // Check what the player is holding
+    for (int i = 0; i < ALL_INVEN_TOTAL; i++)
+    {
+        o_ptr = &inventory[i];
+        if (!accept_activation_object(o_ptr)) continue;
+
+        this_combobox->addItem(QString("%1") .arg(STEP_MULT * this_step + i));
+        this_combobox->setItemText(count, object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX));
+
+        // Try to find the current index.
+        if (activation_matches_selection(&hks_ptr->step_args, o_ptr)) current_index = count;
+
+        count++;
+    }
+    store_type *st_ptr = &store[STORE_HOME];
+
+    // Check the home
+    for (int i = 0; i < st_ptr->stock_num; i++)
+    {
+        o_ptr = &st_ptr->stock[i];
+        if (!accept_activation_object(o_ptr)) continue;
+
+        this_combobox->addItem(QString("%1") .arg(STEP_MULT * this_step + ALL_INVEN_TOTAL + i));
+        this_combobox->setItemText(count, object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX));
+
+        // Try to find the current index.
+        if (activation_matches_selection(&hks_ptr->step_args, o_ptr)) current_index = count;
+
+        count++;
+    }
+
+    // Add a header
+    QLabel *header_dir = new QLabel("<b>Select Activatable Object</b>");
+    vlay_obj_kind->addWidget(header_dir);
+    if (!count)
+    {
+        header_dir->setText("<b>No Known Activatable Objects</b>");
+        delete this_combobox;
+        vlay_obj_kind->addStretch(1);
+        return;
+    }
+
+    object_type_body = find_selected_activation(current_index, this_step);
+    o_ptr = &object_type_body;
+
+    // Player no longer has the object that is selected, remember it
+    if (current_index == -1)
+    {
+       object_type_body = create_selected_object(hks_ptr->step_args);
+
+       current_index = STEP_MULT * this_step + ALL_INVEN_TOTAL + st_ptr->stock_num;
+
+       this_combobox->addItem(QString("%1") .arg(current_index));
+       this_combobox->setItemText(count++, object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX));
+
+       hks_ptr->step_object.object_copy(o_ptr);
+    }
+
+    hks_ptr->step_args.k_idx = o_ptr->k_idx;
+    hks_ptr->step_args.item = o_ptr->ego_num;
+    hks_ptr->step_args.number = o_ptr->art_num;
+    hks_ptr->step_args.string = object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX);
+
+    this_combobox->setCurrentIndex(current_index);
+    hks_ptr->step_args.verify = TRUE;
+
+    connect(this_combobox, SIGNAL(currentIndexChanged(int)), this, SLOT(active_activation_changed(int)));
     vlay_obj_kind->addWidget(this_combobox);
     vlay_obj_kind->addStretch(1);
 }
@@ -826,9 +1082,9 @@ void HotKeyDialog::insert_step()
     hotkey_step dummy_step;
     dummy_step.step_commmand = HK_TYPE_EMPTY;
     dummy_step.step_args.wipe();
+    dummy_step.step_object.object_wipe();
 
     dialog_hotkey.hotkey_steps.insert(this_step, dummy_step);
-
 
     display_hotkey_steps();
 }
@@ -850,6 +1106,7 @@ void HotKeyDialog::delete_step()
 
     display_hotkey_steps();
 }
+
 // Add a step after the current one
 void HotKeyDialog::add_step()
 {
@@ -889,7 +1146,7 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         create_object_kind_dropbox(this_layout, step);
         hks_ptr->step_args.number = 0;
 
-        if (obj_kind_needs_aim(hks_ptr->step_args.k_idx))
+        if (obj_needs_aim(hks_ptr->step_args.k_idx))
         {
             create_targeting_choices(this_layout, step);
         }
@@ -906,10 +1163,22 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         }
         else hks_ptr->step_args.direction = 0;
     }
+    else if (ht_ptr->hotkey_needs == HK_ACTIVATE)
+    {
+        create_activation_dropbox(this_layout, step);
+
+        object_type *o_ptr = find_object_activation(hks_ptr->step_args);
+
+        if (obj_needs_aim(o_ptr))
+        {
+            create_targeting_choices(this_layout, step);
+        }
+        else hks_ptr->step_args.direction = 0;
+    }
 
     this_layout->addStretch(1);
 
-    create_step_buttons(this_layout, step);
+
 
 }
 
@@ -924,10 +1193,13 @@ void HotKeyDialog::display_hotkey_steps()
     }
 
     clear_layout(vlay_hotkey_steps);
+
     for (int i = 0; i < dialog_hotkey.hotkey_steps.size(); i++)
     {
         QHBoxLayout *hlay_header = new QHBoxLayout;
         vlay_hotkey_steps->addLayout(hlay_header);
+
+        create_step_buttons(hlay_header, i);
 
         QVBoxLayout *this_vlayout = new QVBoxLayout;
         hlay_header->addLayout(this_vlayout);
@@ -959,6 +1231,7 @@ void HotKeyDialog::display_hotkey_steps()
 
 HotKeyDialog::HotKeyDialog(void)
 {
+
     // Start with the first hotkey
     load_new_hotkey(0);
 
@@ -1006,7 +1279,7 @@ void do_hotkey_manage()
     HotKeyDialog();
 }
 
-
+// Find an item to use
 static int find_item(int k_idx, int mode)
 {
     s16b this_o_idx, next_o_idx = 0;
@@ -1055,6 +1328,21 @@ static int find_item(int k_idx, int mode)
 
     // Failed to find anything
     return (MAX_S16B);
+}
+
+// Find hte item to activate.  Must be wielded.
+static int find_item_activation(cmd_arg *this_arg)
+{
+    for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
+    {
+        object_type *o_ptr = &inventory[i];
+
+        if (!activation_matches_selection(this_arg, o_ptr)) continue;
+
+        // Found a match
+        return (i);
+    }
+     return (-1);
 }
 
 // Get the intended direction for a hotkey that requires one
@@ -1125,13 +1413,13 @@ static void run_hotkey_step(int step)
         // Didn't find the item
         if (arg_ptr->item == MAX_S16B)
         {
-            message(QString("Unable to locate %1") .arg(object_desc_from_k_idx(arg_ptr->k_idx, ODESC_FULL | ODESC_PREFIX | ODESC_SINGULAR)));
+            message(QString("Unable to locate %1") .arg(object_desc(arg_ptr->k_idx, ODESC_FULL | ODESC_PREFIX | ODESC_SINGULAR)));
         }
         else
         {
             bool do_command = TRUE;
 
-            if (obj_kind_needs_aim(arg_ptr->k_idx))
+            if (obj_needs_aim(arg_ptr->k_idx))
             {
                 bool trap_obj = k_info[arg_ptr->k_idx].is_trap_object_kind();
 
@@ -1163,7 +1451,48 @@ static void run_hotkey_step(int step)
             // Use the item
             if (do_command) cast_spell(this_step->step_args);
         }
+    }
 
+    // For this one, the cmd_arg needs to be built
+    // as many fields from arg_ptr are used to find the item
+    else if (ht_ptr->hotkey_needs == HK_ACTIVATE)
+    {
+        cmd_arg command_args;
+        command_args.wipe();
+
+        command_args.item = find_item_activation(arg_ptr);
+
+        // Didn't find the item
+        if (command_args.item <= -1)
+        {
+            message(QString("Unable to locate %1") .arg(arg_ptr->string));
+        }
+        else
+        {
+            bool do_command = TRUE;
+
+            object_type *o_ptr = &inventory[command_args.item];
+
+            if (obj_needs_aim(o_ptr))
+            {
+                bool trap_obj = k_info[arg_ptr->k_idx].is_trap_object_kind();
+
+                command_args.direction = extract_hotkey_dir(arg_ptr->direction, trap_obj);
+
+                if (arg_ptr->direction == DIR_UNKNOWN) do_command = FALSE;
+            }
+
+            command_args.verify = TRUE;
+
+            if (o_ptr->timeout)
+            {
+                message(QString("The %1 is recharging.") .arg(object_desc(o_ptr, ODESC_FULL)));
+                do_command = FALSE;
+            }
+
+            // Use the item
+            if (do_command) command_use(command_args);
+        }
     }
 }
 

@@ -342,7 +342,7 @@ ObjectSettingsDialog::ObjectSettingsDialog(s16b o_idx, byte settings_mode)
         k_ptr = &k_info[o_idx];
         if (!k_ptr->k_name.length()) return;
         o_ptr = &object_type_body;
-        make_object_fake(o_ptr, o_idx, TRUE);
+        make_object_fake(o_ptr, o_idx, 0, TRUE);
     }
     else //(settings_mode == SETTINGS_ARTIFACT)
     {

@@ -3667,7 +3667,335 @@ bool prep_object_theme(int themetype)
     get_obj_num_prep();
 
     return(TRUE);
+}
 
+// Routines for making "fake" objects for dialog box purposes
+
+/*
+ * Hack -- Create a "forged" artifact
+ */
+bool make_fake_artifact(object_type *o_ptr, byte art_num)
+{
+    int i;
+
+    artifact_type *a_ptr = &a_info[art_num];
+
+    /* Ignore "empty" artifacts */
+    if (a_ptr->tval + a_ptr->sval == 0) return FALSE;
+
+    /* Get the "kind" index */
+    i = lookup_kind(a_ptr->tval, a_ptr->sval);
+
+    /* Oops */
+    if (!i) return (FALSE);
+
+    o_ptr->object_wipe();
+
+    /* Create the artifact */
+    object_prep(o_ptr, i);
+
+    /* Save the name */
+    o_ptr->art_num = art_num;
+
+    /* Extract the fields */
+    o_ptr->pval = a_ptr->pval;
+    o_ptr->ac = a_ptr->ac;
+    o_ptr->dd = a_ptr->dd;
+    o_ptr->ds = a_ptr->ds;
+    o_ptr->to_a = a_ptr->to_a;
+    o_ptr->to_h = a_ptr->to_h;
+    o_ptr->to_d = a_ptr->to_d;
+    o_ptr->weight = a_ptr->weight;
+
+    /*identify it*/
+    object_known(o_ptr);
+
+    /*make it a store item*/
+    o_ptr->ident |= IDENT_STORE;
+
+    /* Hack -- extract the "cursed" flag */
+    if (a_ptr->a_flags3 & (TR3_LIGHT_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+
+    /* Success */
+    return (TRUE);
+}
+
+
+/*
+ * Add a pval so the object descriptions don't look strange*
+ */
+void apply_magic_fake(object_type *o_ptr)
+{
+    /* Analyze type */
+    switch (o_ptr->tval)
+    {
+        case TV_DIGGING:
+        {
+            o_ptr->pval = 1;
+            break;
+        }
+
+        /*many rings need a pval*/
+        case TV_RING:
+        {
+            switch (o_ptr->sval)
+            {
+                case SV_RING_STR:
+                case SV_RING_CON:
+                case SV_RING_DEX:
+                case SV_RING_INT:
+                case SV_RING_SPEED:
+                case SV_RING_SEARCHING:
+                {
+                    o_ptr->pval = 1;
+                    break;
+                }
+
+                case SV_RING_AGGRAVATION:
+                {
+                    o_ptr->ident |= (IDENT_CURSED);
+                    break;
+                }
+                case SV_RING_WEAKNESS:
+                case SV_RING_STUPIDITY:
+                {
+                    /* Broken */
+                    o_ptr->ident |= (IDENT_BROKEN);
+
+                    /* Cursed */
+                    o_ptr->ident |= (IDENT_CURSED);
+
+                    /* Penalize */
+                    o_ptr->pval = -1;
+
+                    break;
+                }
+                /* WOE */
+                case SV_RING_WOE:
+                {
+                    /* Broken */
+                    o_ptr->ident |= (IDENT_BROKEN);
+
+                    /* Cursed */
+                    o_ptr->ident |= (IDENT_CURSED);
+
+                    /* Penalize */
+                    o_ptr->to_a = -1;
+                    o_ptr->pval = -1;
+
+                    break;
+                }
+                /* Ring that increase damage */
+                case SV_RING_DAMAGE:
+                {
+                    /* Bonus to damage */
+                    o_ptr->to_d = 1;
+
+                    break;
+                }
+                /* Ring that increase accuracy */
+                case SV_RING_ACCURACY:
+                {
+                    /* Bonus to hit */
+                    o_ptr->to_h = 1;
+
+                    break;
+                }
+                /* Rings that provide of Protection */
+                case SV_RING_PROTECTION:
+                case SV_RING_FLAMES:
+                case SV_RING_ACID:
+                case SV_RING_ICE:
+                case SV_RING_LIGHTNING:
+                {
+                    /* Bonus to armor class */
+                    o_ptr->to_a = 1;
+
+                    break;
+                }
+                /* Rings that provide of Protection */
+                case SV_RING_LORD_PROT_ACID:
+                case SV_RING_LORD_PROT_FIRE:
+                case SV_RING_LORD_PROT_COLD:
+                {
+                    /* Bonus to armor class */
+                    o_ptr->to_a = 5;
+
+                    break;
+                }
+                /*both to-hit and to-damage*/
+                case SV_RING_SLAYING:
+                {
+                    /* Bonus to damage and to hit */
+                    o_ptr->to_d = 1;
+                    o_ptr->to_h = 1;
+
+                    break;
+                }
+                default: break;
+
+            }
+            /*break for TVAL-Rings*/
+            break;
+        }
+
+        case TV_AMULET:
+        {
+            /* Analyze */
+            switch (o_ptr->sval)
+            {
+                /* Amulet of wisdom/charisma/infravision */
+                case SV_AMULET_WISDOM:
+                case SV_AMULET_CHARISMA:
+                case SV_AMULET_INFRAVISION:
+                case SV_AMULET_SEARCHING:
+                case SV_AMULET_ESP:
+                case SV_AMULET_DEVOTION:
+                case SV_AMULET_TRICKERY:
+                {
+                    /* Stat bonus */
+                    o_ptr->pval = 1;
+
+                    break;
+                }
+
+                /* Amulet of the Magi -- never cursed */
+                case SV_AMULET_THE_MAGI:
+                {
+                    o_ptr->pval = 1;
+                    o_ptr->to_a = 1;
+
+                    break;
+                }
+
+                /* Amulet of Weaponmastery -- never cursed */
+                case SV_AMULET_WEAPONMASTERY:
+                {
+                    o_ptr->to_h = 1;
+                    o_ptr->to_d = 1;
+                    o_ptr->pval = 1;
+
+                    break;
+                }
+
+                /* Amulet of Doom -- always cursed */
+                case SV_AMULET_DOOM:
+                case SV_AMULET_WOE:
+                {
+                    /* Broken */
+                    o_ptr->ident |= (IDENT_BROKEN);
+
+                    /* Cursed */
+                    o_ptr->ident |= (IDENT_CURSED);
+
+                    /* Penalize */
+                    o_ptr->pval = -1;
+                    o_ptr->to_a = -1;
+
+                    break;
+                }
+
+                default: break;
+
+            }
+            /*break for TVAL-Amulets*/
+            break;
+        }
+
+        case TV_LIGHT:
+        {
+            /* Analyze */
+            switch (o_ptr->sval)
+            {
+                case SV_LIGHT_TORCH:
+                case SV_LIGHT_LANTERN:
+                {
+                    o_ptr->timeout = 1;
+
+                    break;
+                }
+
+            }
+            /*break for TVAL-Lites*/
+            break;
+        }
+
+        /*give then one charge*/
+        case TV_STAFF:
+        case TV_WAND:
+        {
+            o_ptr->pval = 1;
+
+            break;
+        }
+    }
+
+    if (o_ptr->ego_num)
+    {
+        ego_item_type *ego_ptr = &e_info[o_ptr->ego_num];
+        if (ego_ptr->max_to_a)
+        {
+            if (ego_ptr->max_to_a > 0) o_ptr->to_a = 1;
+            else o_ptr->to_a = -1;
+        }
+        if (ego_ptr->max_to_h)
+        {
+            if (ego_ptr->max_to_h > 0) o_ptr->to_h = 1;
+            else o_ptr->to_h = -1;
+        }
+        if (ego_ptr->max_to_d)
+        {
+            if (ego_ptr->max_to_d > 0) o_ptr->to_d = 1;
+            else o_ptr->to_d = -1;
+        }
+        if (ego_ptr->max_pval)
+        {
+            if (ego_ptr->max_pval > 0) o_ptr->pval = 1;
+            else o_ptr->pval = -1;
+        }
+
+        if (ego_ptr->e_flags3 & (TR3_LIGHT_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+        if (ego_ptr->e_flags3 & (TR3_HEAVY_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+        if (ego_ptr->e_flags3 & (TR3_PERMA_CURSE)) o_ptr->ident |= (IDENT_CURSED);
+    }
+
+    o_ptr->update_object_flags();
+}
+
+
+
+// Make an object just for display purposes.
+void make_object_fake(object_type *o_ptr, int k_idx, byte ego_num, bool update_tracking)
+{
+    o_ptr->object_wipe();
+
+    /* Create the object */
+    object_prep(o_ptr, k_idx);
+
+    // Do an ego item if specified
+    o_ptr->ego_num = ego_num;
+
+    /* Add minimum bonuses so the descriptions don't look strange. */
+    apply_magic_fake(o_ptr);
+
+    /* Update the object recall window */
+    if (update_tracking)
+    {
+        track_object_kind(k_idx);
+        handle_stuff();
+    }
+
+    /* Hack -- its in the store */
+    if (k_info[k_idx].aware) o_ptr->ident |= (IDENT_STORE);
+
+    /* It's fully known */
+    if (!k_info[k_idx].flavor)
+    {
+        /* Mark the item as fully known */
+        o_ptr->ident |= (IDENT_MENTAL);
+        object_aware(o_ptr);
+        object_known(o_ptr);
+    }
 }
 
 

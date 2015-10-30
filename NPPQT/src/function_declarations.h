@@ -279,7 +279,9 @@ extern void do_cmd_all_objects(int start_screen);
 extern QString strip_name(int k_idx);
 extern QString object_desc(object_type *o_ptr, byte mode);
 extern QString object_desc_spoil(object_type *o_ptr);
-extern QString object_desc_from_k_idx(int k_idx, byte mode);
+extern QString object_desc(int k_idx, byte mode);
+extern QString desc_ego_fake(int ego_num, QString object_string, bool display);
+
 
 // object_hooks.cpp
 extern bool item_tester_hook_wieldable_ided_weapon(object_type *o_ptr);
@@ -305,6 +307,7 @@ extern void object_info_screen(object_type *o_ptr);
 extern QString format_object_history(object_type *o_ptr);
 extern bool history_interesting(object_type *o_ptr);
 extern QString identify_random_gen(object_type *o_ptr);
+extern void desc_art_fake(int a_idx);
 
 /* object-make.cpp */
 extern s16b get_obj_num(int level);
@@ -321,6 +324,9 @@ extern bool make_object(object_type *j_ptr, bool good, bool great, int objecttyp
 extern bool prep_store_object(int storetype);
 extern bool prep_object_theme(int themetype);
 extern int get_object_mimic_k_idx(const monster_race *r_ptr);
+extern bool make_fake_artifact(object_type *o_ptr, byte art_num);
+extern void apply_magic_fake(object_type *o_ptr);
+extern void make_object_fake(object_type *o_ptr, int k_idx, byte ego_num, bool update_tracking);
 extern bool make_gold(object_type *j_ptr);
 extern void place_object(int y, int x, bool good, bool great, int droptype);
 extern bool place_quest_artifact(int y, int x);
@@ -407,8 +413,8 @@ extern bool has_correct_ammo(void);
 extern bool obj_has_charges(object_type *o_ptr);
 extern object_type *object_from_item_idx(int item);
 extern bool obj_aim_trap(object_type *o_ptr);
-extern bool obj_kind_needs_aim(object_kind *k_ptr);
-extern bool obj_kind_needs_aim(int k_idx);
+extern bool obj_needs_aim(object_kind *k_ptr);
+extern bool obj_needs_aim(int k_idx);
 extern bool obj_needs_aim(object_type *o_ptr);
 extern bool obj_is_activatable(object_type *o_ptr);
 extern bool obj_can_activate(object_type *o_ptr);
@@ -943,7 +949,7 @@ extern void clear_layout(QLayout* layout);
 
 
 // widard_mode.cpp
-extern bool make_fake_artifact(object_type *o_ptr, byte art_num);
+
 extern void do_cmd_wizard_mode(void);
 
 

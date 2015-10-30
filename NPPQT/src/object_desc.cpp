@@ -798,7 +798,7 @@ QString object_desc_spoil(object_type *o_ptr)
     return(object_desc(i_ptr, ODESC_FULL | ODESC_SPOIL));
 }
 
-QString object_desc_from_k_idx(int k_idx, byte mode)
+QString object_desc(int k_idx, byte mode)
 {
     object_type object_type_body;
     object_type *o_ptr = &object_type_body;
@@ -820,3 +820,4 @@ QString object_desc_from_k_idx(int k_idx, byte mode)
 
     return object_desc(o_ptr, mode);
 }
+

@@ -623,6 +623,8 @@ static void rd_hotkey(int hotkey)
         if (tmp_byte) args->verify = TRUE;
         else args->verify = FALSE;
 
+        this_step.step_object.object_wipe();
+
         this_hotkey.hotkey_steps.append(this_step);
     }
 

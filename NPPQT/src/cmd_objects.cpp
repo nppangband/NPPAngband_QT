@@ -335,7 +335,7 @@ void command_uninscribe(cmd_arg args)
         QString o_name2;
 
         /*now describe with correct amount*/
-        o_name2 = object_desc_from_k_idx(o_ptr->k_idx, ODESC_PLURAL | ODESC_FULL);
+        o_name2 = object_desc(o_ptr->k_idx, ODESC_PLURAL | ODESC_FULL);
 
         /* Prompt */
         tmp_val = (QString("Remove automatic inscription for %1?") .arg(o_name2));
@@ -399,7 +399,7 @@ void command_inscribe(cmd_arg args)
         QString o_name2;
 
         /*now describe with correct amount*/
-        o_name2 = object_desc_from_k_idx(o_ptr->k_idx, ODESC_PLURAL | ODESC_FULL);
+        o_name2 = object_desc(o_ptr->k_idx, ODESC_PLURAL | ODESC_FULL);
 
         /* Prompt */
         tmp_val = (QString("Automatically inscribe all %1 with %2?") .arg(o_name2) .arg(new_inscription));

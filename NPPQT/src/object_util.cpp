@@ -4486,7 +4486,7 @@ bool obj_aim_trap(object_type *o_ptr)
     return (FALSE);
 }
 
-bool obj_kind_needs_aim(object_kind *k_ptr)
+bool obj_needs_aim(object_kind *k_ptr)
 {
     switch (k_ptr->tval)
     {
@@ -4528,10 +4528,10 @@ bool obj_kind_needs_aim(object_kind *k_ptr)
     return (FALSE);
 }
 
-bool obj_kind_needs_aim(int k_idx)
+bool obj_needs_aim(int k_idx)
 {
     object_kind *k_ptr = &k_info[k_idx];
-    return (obj_kind_needs_aim(k_ptr));
+    return (obj_needs_aim(k_ptr));
 }
 
 
@@ -4575,7 +4575,7 @@ bool obj_needs_aim(object_type *o_ptr)
         }
     }
 
-    return (obj_kind_needs_aim(o_ptr->k_idx));
+    return (obj_needs_aim(o_ptr->k_idx));
 }
 
 

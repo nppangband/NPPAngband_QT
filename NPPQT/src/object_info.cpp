@@ -19,6 +19,7 @@
  */
 
 #include "src/npp.h"
+#include "src/store.h"
 #include <src/cmds.h>
 #include <QMessageBox>
 
@@ -1883,5 +1884,73 @@ QString identify_random_gen(object_type *o_ptr)
     obj_string.remove(QString("\n\n"));
 
     return(obj_string);
+}
+
+/*
+ * Show artifact lore
+ */
+void desc_art_fake(int a_idx)
+{
+    object_type *o_ptr;
+    object_type object_type_body;
+    bool lost = TRUE;
+    int i, j;
+
+    /* Get local object */
+    o_ptr = &object_type_body;
+    o_ptr->object_wipe();
+
+    /* Look for the artifact, either in inventory, store or the object list */
+    for (i = 0; i < z_info->o_max; i++)
+    {
+        if (o_list[i].art_num == a_idx)
+        {
+            o_ptr = &o_list[i];
+            lost = FALSE;
+            break;
+        }
+    }
+
+    if (lost)
+    {
+        for (i = 0; i < INVEN_TOTAL; i++)
+        {
+            if (inventory[i].art_num == a_idx)
+            {
+                o_ptr = &inventory[i];
+                lost = FALSE;
+                break;
+            }
+        }
+    }
+
+    if (lost)
+    {
+        for (j = 0; j < MAX_STORES; j++)
+        {
+            for (i = 0; i < store[j].stock_size; i++)
+            {
+                if (store[j].stock[i].art_num == a_idx)
+                {
+                    o_ptr = &store[j].stock[i];
+                    lost = FALSE;
+                    break;
+                }
+            }
+            if (!lost) break;
+        }
+    }
+
+    /* If it's been lost, make a fake artifact for it */
+    if (lost)
+    {
+        make_fake_artifact(o_ptr, a_idx);
+        object_aware(o_ptr);
+        object_known(o_ptr);
+        o_ptr->ident |= (IDENT_MENTAL);
+    }
+
+    /* Print the artifact information */
+    object_info_screen(o_ptr);
 
 }
