@@ -20,6 +20,8 @@
 #include <src/hotkeys.h>
 #include <src/store.h>
 #include <QPushButton>
+#include <QSpinBox>
+#include <src/player_command.h>
 
 single_hotkey running_hotkey;
 single_hotkey player_hotkeys[NUM_HOTKEYS];
@@ -78,6 +80,8 @@ hotkey_type hotkey_actions[] =
     {HK_NEEDS_SPECIFIC_OBJECT, "Fire", 0},
     // HK_THROW
     {HK_NEEDS_SPECIFIC_OBJECT, "Throw", 0},
+    // HK_REST
+    {HK_NEEDS_REST, "Rest", 0},
     //HK_TYPE_MOVE
     {HK_NEEDS_DIRECTION, "Walk",0},
     //HK_TYPE_JUMP
@@ -771,7 +775,7 @@ void HotKeyDialog::hotkey_step_obj_select_name_changed(QString inscription)
     hks_ptr->step_args.string2 = inscription;
 }
 
-void HotKeyDialog::create_specific_object_dropbox(QHBoxLayout *this_layout, int this_step)
+void HotKeyDialog::create_specific_object_choices(QHBoxLayout *this_layout, int this_step)
 {
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
 
@@ -817,6 +821,198 @@ void HotKeyDialog::create_specific_object_dropbox(QHBoxLayout *this_layout, int 
     }
 
     vlay_obj_choose->addStretch(1);
+}
+
+void HotKeyDialog::delete_resting_choices(int this_step)
+{
+    // First, remove the radio buttons from the group
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+    QString radio_id = (QString("specify_rest_step_%1") .arg(this_step));
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        QString this_name = this_radio->objectName();
+
+        if (this_name.contains(radio_id))
+        {
+            // Remove it from the target group
+            group_resting_choices->removeButton(this_radio);
+            break;
+        }
+    }
+
+    // Now remove the vbox layout
+    QString item_id = (QString("vlay_resting_step_%1") .arg(this_step));
+    QList<QVBoxLayout *> vlay_list = this->findChildren<QVBoxLayout *>();
+    for (int x = 0; x < vlay_list.size(); x++)
+    {
+        QVBoxLayout *this_vlay = vlay_list.at(x);
+
+        QString this_name = this_vlay->objectName();
+
+        if (this_name.contains(item_id))
+        {
+            clear_layout(this_vlay);
+            this_vlay->deleteLater();
+            break;
+        }
+    }
+}
+
+// Manuallly turning the buttons true or false is necessary
+// because the button group covers more than one step
+void HotKeyDialog::hotkey_step_rest_choice_changed(int new_selection)
+{
+    int step = new_selection/ STEP_MULT;
+    int new_choice = new_selection % STEP_MULT;
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    hks_ptr->step_args.choice = new_choice;
+
+    QString button_name = QString("Rest Complete");
+
+    if (new_choice == REST_BOTH_SP_HP) button_name = QString("Rest Both HP and SP");
+    else if (new_choice == REST_BOTH_SP_HP) button_name = QString("Rest Both HP and SP");
+    else if (new_choice == REST_HP) button_name = QString("Rest Hit Points");
+    else if (new_choice == REST_SP) button_name = QString("Rest Spell Points");
+    else if (new_choice == REST_TURNCOUNT) button_name = QString("Rest Turncount:");
+
+    // Manually turn the buttons true or false.
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        // Not the right step.
+        QString item_id = this_radio->objectName();
+        if (item_id.contains("specify_rest_step_"))
+        {
+            item_id.remove("specify_rest_step_", Qt::CaseInsensitive);
+            int which_step = item_id.toInt();
+            if (step != which_step) continue;
+
+            // Turn on or off
+            QString this_name = this_radio->text();
+            if (this_name.contains(button_name)) this_radio->setChecked(TRUE);
+            else this_radio->setChecked(FALSE);
+        }
+    }
+
+    // Now find the QLineEdit box and enable it or disable it.
+    QList<QSpinBox *> spin_box_list = this->findChildren<QSpinBox *>();
+    for (int x = 0; x < spin_box_list.size(); x++)
+    {
+        QSpinBox *this_spin_box = spin_box_list.at(x);
+
+        // Not the right step.
+        QString item_id = this_spin_box->objectName();
+        if (item_id.contains("specify_rest_step_", Qt::CaseInsensitive))
+        {
+            item_id.remove("specify_rest_step_", Qt::CaseInsensitive);
+            int which_step = item_id.toInt();
+            if (step != which_step) continue;
+
+            if (new_choice == REST_TURNCOUNT)
+            {
+                this_spin_box->setValue(hks_ptr->step_args.number);
+                this_spin_box->setEnabled(TRUE);
+            }
+            else
+            {
+                this_spin_box->setValue(0);
+                this_spin_box->setEnabled(FALSE);
+            }
+        }
+    }
+}
+
+void HotKeyDialog::hotkey_rest_turncount_changed(int new_turncount)
+{
+    QString sender_id = QObject::sender()->objectName();
+    int step = get_current_step(sender_id);
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    hks_ptr->step_args.number = new_turncount;
+}
+
+void HotKeyDialog::create_resting_choices(QHBoxLayout *this_layout, int this_step)
+{
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
+
+    QVBoxLayout *vlay_resting_choose = new QVBoxLayout;
+    vlay_resting_choose->setObjectName(QString("vlay_resting_step_%1") .arg(this_step));
+    this_layout->addLayout(vlay_resting_choose);
+
+    // Add a header
+    QLabel *header_dir = new QLabel("<b>Select Rest Duration:</b>");
+    vlay_resting_choose->addWidget(header_dir);
+
+    // Add the buttons and string box
+    QRadioButton *radio_rest_complete = new QRadioButton("Rest Complete");
+    radio_rest_complete->setObjectName(QString("specify_rest_step_%1") .arg(this_step));
+    radio_rest_complete->setToolTip("Rest until the player is fully recovered.");
+    radio_rest_complete->setChecked(FALSE);
+    vlay_resting_choose->addWidget(radio_rest_complete);
+    group_resting_choices->addButton(radio_rest_complete, (this_step * STEP_MULT + REST_COMPLETE));
+
+    QRadioButton *radio_rest_hp_sp = new QRadioButton("Rest Both HP and SP");
+    radio_rest_hp_sp->setObjectName(QString("specify_rest_step_%1") .arg(this_step));
+    radio_rest_hp_sp->setToolTip("Rest until all mana and hit points are fully recovered.");
+    radio_rest_hp_sp->setChecked(FALSE);
+    vlay_resting_choose->addWidget(radio_rest_hp_sp);
+    group_resting_choices->addButton(radio_rest_hp_sp, (this_step * STEP_MULT + REST_BOTH_SP_HP));
+
+    QRadioButton *radio_rest_hitpoints = new QRadioButton("Rest Hit Points");
+    radio_rest_hitpoints->setObjectName(QString("specify_rest_step_%1") .arg(this_step));
+    radio_rest_hitpoints->setToolTip("Rest until all hit points are fully recovered.");
+    radio_rest_hitpoints->setChecked(FALSE);
+    vlay_resting_choose->addWidget(radio_rest_hitpoints);
+    group_resting_choices->addButton(radio_rest_hitpoints, (this_step * STEP_MULT + REST_HP));
+
+    QRadioButton *radio_rest_spellpoints = new QRadioButton("Rest Spell Points");
+    radio_rest_spellpoints->setObjectName(QString("specify_rest_step_%1") .arg(this_step));
+    radio_rest_spellpoints->setToolTip("Rest until all mana is fully recovered.");
+    radio_rest_spellpoints->setChecked(FALSE);
+    vlay_resting_choose->addWidget(radio_rest_spellpoints);
+    group_resting_choices->addButton(radio_rest_spellpoints, (this_step * STEP_MULT + REST_SP));
+
+    QRadioButton *radio_rest_turncount = new QRadioButton("Rest Turncount:");
+    radio_rest_turncount->setObjectName(QString("specify_rest_step_%1") .arg(this_step));
+    radio_rest_turncount->setToolTip("Rest a specified number of turns.");
+    radio_rest_turncount->setChecked(FALSE);
+    vlay_resting_choose->addWidget(radio_rest_turncount);
+    group_resting_choices->addButton(radio_rest_turncount, (this_step * STEP_MULT + REST_TURNCOUNT));
+
+    QSpinBox *spin_rest_turncount = new QSpinBox();
+    spin_rest_turncount->setRange(0, 9999);
+    spin_rest_turncount->setValue(hks_ptr->step_args.number);
+    spin_rest_turncount->setObjectName(QString("specify_rest_step_%1") .arg(this_step));
+    connect(spin_rest_turncount, SIGNAL(valueChanged(int)), this, SLOT(hotkey_rest_turncount_changed(int)));
+    vlay_resting_choose->addWidget(spin_rest_turncount);
+
+    // Start with complete rest, if one is needed.
+    if (!hks_ptr->step_args.choice) hks_ptr->step_args.choice = REST_COMPLETE;
+
+    // Set the proper radio button
+    if (hks_ptr->step_args.choice == REST_TURNCOUNT)
+    {
+        radio_rest_turncount->setChecked(TRUE);
+        spin_rest_turncount->setEnabled(TRUE);
+    }
+    else
+    {
+        if (hks_ptr->step_args.choice == REST_COMPLETE) radio_rest_complete->setChecked(TRUE);
+        else if (hks_ptr->step_args.choice == REST_BOTH_SP_HP) radio_rest_hp_sp->setChecked(TRUE);
+        else if (hks_ptr->step_args.choice == REST_HP) radio_rest_hitpoints->setChecked(TRUE);
+        else if (hks_ptr->step_args.choice == REST_SP) radio_rest_spellpoints->setChecked(TRUE);
+        spin_rest_turncount->setEnabled(FALSE);
+    }
+
+    vlay_resting_choose->addStretch(1);
 }
 
 // Helper function to see if an activatable object
@@ -1335,7 +1531,7 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
     }
     else if (ht_ptr->hotkey_needs == HK_NEEDS_SPECIFIC_OBJECT)
     {
-        create_specific_object_dropbox(this_layout, step);
+        create_specific_object_choices(this_layout, step);
 
         if ((hks_ptr->step_commmand == HK_FIRE_AMMO) ||
             (hks_ptr->step_commmand == HK_THROW))
@@ -1343,6 +1539,10 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
             create_targeting_choices(this_layout, step);
         }
         else hks_ptr->step_args.direction = 0;
+    }
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_REST)
+    {
+        create_resting_choices(this_layout, step);
     }
 
     this_layout->addStretch(1);
@@ -1411,7 +1611,10 @@ HotKeyDialog::HotKeyDialog(void)
     connect(group_target_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_target_changed(int)));
     group_specific_object = new QButtonGroup;
     group_specific_object->setExclusive(FALSE);
-    connect(group_specific_object, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_obj_selection_changed(int)));
+    connect(group_specific_object, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_obj_selection_changed(int)));group_specific_object = new QButtonGroup;
+    group_resting_choices = new QButtonGroup;
+    group_resting_choices->setExclusive(FALSE);
+    connect(group_resting_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_rest_choice_changed(int)));
 
     //Set up the main scroll bar
     top_layout = new QVBoxLayout;
@@ -1741,6 +1944,26 @@ static void run_hotkey_step(int step)
         if (command == HK_FIRE_AMMO) command_fire(command_args);
         else if (command == HK_THROW) command_throw(command_args);
 
+    }
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_REST)
+    {
+        /* Cancel the command */
+        p_ptr->player_command_wipe();
+
+        p_ptr->command_current = CMD_RESTING;
+        p_ptr->player_args.choice = arg_ptr->choice;
+
+        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
+
+        if (arg_ptr->choice == REST_TURNCOUNT)
+        {
+            if (!arg_ptr->number) return;
+            p_ptr->player_args.repeats = arg_ptr->number;
+        }
+        // Set up the args for command_rest
+        arg_ptr->number = 0;
+
+        command_rest(this_step->step_args);
     }
 }
 

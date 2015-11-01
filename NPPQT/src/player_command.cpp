@@ -25,6 +25,7 @@
 bool command_type::repeated_command_completed(void)
 {
     if (!repeat_allowed) return (TRUE);
+    if (p_ptr->is_resting()) return (FALSE);
     if (!p_ptr->player_args.repeats) return (TRUE);
     return (FALSE);
 }

@@ -27,6 +27,7 @@ enum
     HK_ACTIVATE,
     HK_FIRE_AMMO,
     HK_THROW,
+    HK_REST,
     HK_TYPE_MOVE,
     HK_TYPE_JUMP,
     HK_TYPE_RUN,
@@ -61,6 +62,7 @@ enum
     HK_NEEDS_SPELL,
     HK_NEEDS_ACIVATION,
     HK_NEEDS_SPECIFIC_OBJECT,
+    HK_NEEDS_REST,
 };
 
 enum
@@ -131,7 +133,9 @@ private:
     void create_direction_pad(QHBoxLayout *this_layout, int step);
     void create_object_kind_dropbox(QHBoxLayout *this_layout, int this_step);
     void create_activation_dropbox(QHBoxLayout *this_layout, int this_step);
-    void create_specific_object_dropbox(QHBoxLayout *this_layout, int this_step);
+    void create_specific_object_choices(QHBoxLayout *this_layout, int this_step);
+    void create_resting_choices(QHBoxLayout *this_layout, int this_step);
+    void delete_resting_choices(int this_step);
     void delete_targeting_choices(int this_step);
     void create_targeting_choices(QHBoxLayout *this_layout, int step);
     void delete_specific_object_choices(int this_step);
@@ -147,6 +151,7 @@ private:
     QButtonGroup *group_directions;
     QButtonGroup *group_target_choices;
     QButtonGroup *group_specific_object;
+    QButtonGroup *group_resting_choices;
 
     int current_hotkey_int;
 
@@ -164,6 +169,8 @@ private slots:
     void active_activation_changed(int choice);
     void hotkey_step_obj_selection_changed(int new_selection);
     void hotkey_step_obj_select_name_changed(QString new_inscription);
+    void hotkey_step_rest_choice_changed(int new_selection);
+    void hotkey_rest_turncount_changed(int new_turncount);
     void active_spell_changed(int choice);
     void insert_step(void);
     void delete_step(void);

@@ -694,16 +694,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-bool MainWindow::check_disturb()
-{
-    if (p_ptr->is_resting() || p_ptr->is_running() || p_ptr->command_current)
-    {
-        disturb(FALSE, FALSE);
-        message("Cancelled.");
-        return true;
-    }
-    return false;
-}
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
@@ -711,7 +701,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     if (p_ptr->in_store) return;
     if (anim_depth > 0) return;
 
-    if (check_disturb()) return;
+
 
     // TODO PLAYTESTING
     debug_rarities();
@@ -719,7 +709,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     QString keystring = which_key->text();
 
     // Go to special key handling
-    if (ui_mode == UI_MODE_INPUT) {
+    if (ui_mode == UI_MODE_INPUT)
+    {
         input.key = which_key->key();
         input.text = keystring;
         input.mode = INPUT_MODE_KEY;

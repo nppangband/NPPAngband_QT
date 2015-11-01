@@ -2052,7 +2052,7 @@ void process_player_energy(byte energy_used)
     }
 
     // Check if we are done with the command
-    else if (command_ptr->repeated_command_completed())
+    if (command_ptr->repeated_command_completed())
     {
         p_ptr->player_command_wipe();
     }

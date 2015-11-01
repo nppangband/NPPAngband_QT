@@ -673,8 +673,6 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if (parent->anim_depth > 0) return;
 
-    if (parent->check_disturb()) return;
-
     bool left_button = (event->button() & Qt::LeftButton);
     bool right_button = (event->button() & Qt::RightButton);
     bool middle_button = (event->button() & Qt::MiddleButton);
