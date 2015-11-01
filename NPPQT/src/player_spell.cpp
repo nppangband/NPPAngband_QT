@@ -206,7 +206,7 @@ bool spell_needs_aim(int tval, int spell)
         }
     }
 
-    else if (tval == TV_DRUID_BOOK)
+    if (tval == TV_DRUID_BOOK)
     {
         switch (spell)
         {
@@ -234,7 +234,7 @@ bool spell_needs_aim(int tval, int spell)
 
 
     }
-    else if (tval == TV_PRAYER_BOOK)
+    if (tval == TV_PRAYER_BOOK)
     {
         switch (spell)
         {
@@ -255,9 +255,65 @@ bool spell_needs_aim(int tval, int spell)
     }
 
     /*OOPS*/
-    else return (FALSE);
+   return (FALSE);
 }
 
+bool spell_needs_object(int tval, int spell)
+{
+    if (tval == TV_MAGIC_BOOK)
+    {
+        switch (spell)
+        {
+            case SPELL_RECHARGE_ITEM_I:
+            case SPELL_IDENTIFY:
+            case SPELL_ENCHANT_ARMOR:
+            case SPELL_ENCHANT_WEAPON:
+            case SPELL_RECHARGE_ITEM_II:
+            case SPELL_ELEMENTAL_BRAND:
+            {
+                return TRUE;
+            }
+
+            default: return FALSE;
+        }
+    }
+
+    if (tval == TV_DRUID_BOOK)
+    {
+        switch (spell)
+        {
+            case PRAYER_RECHARGING:
+            case PRAYER_ENCHANT_WEAPON:
+            case PRAYER_ENCHANT_ARMOUR:
+            case PRAYER_ELEMENTAL_BRAND:
+            {
+                return TRUE;
+            }
+            default: return FALSE;
+        }
+
+
+    }
+    if (tval == TV_PRAYER_BOOK)
+    {
+        switch (spell)
+        {
+            case DRUID_RECHARGE_ITEM:
+            case DRUID_BRAND_AMMUNITION:
+            case DRUID_ENCHANT_ARMOUR:
+            case DRUID_BRAND_WEAPON:
+            {
+                return TRUE;
+            }
+
+            default: return FALSE;
+        }
+    }
+
+
+    /*OOPS*/
+    return (FALSE);
+}
 
 
 /*

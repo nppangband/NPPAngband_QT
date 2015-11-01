@@ -475,6 +475,7 @@ extern void process_player(void);
 
 // player_spell.cpp
 extern bool spell_needs_aim(int tval, int spell);
+extern bool spell_needs_object(int tval, int spell);
 extern QString do_mage_spell(int mode, int spell, int dir);
 extern QString do_druid_incantation(int mode, int spell, int dir);
 extern QString do_priest_prayer(int mode, int spell, int dir);

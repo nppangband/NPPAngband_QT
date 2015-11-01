@@ -221,7 +221,8 @@ static void wr_hotkey(int hotkey)
         wr_byte(shk_ptr->hotkey_steps[i].step_commmand);
 
         cmd_arg args = shk_ptr->hotkey_steps[i].step_args;
-        wr_string(args.string);
+        wr_string(args.string1);
+        wr_string(args.string2);
         wr_s16b((s16b)args.choice);
         wr_s16b((s16b)args.item);
         wr_s16b((s16b)args.number);

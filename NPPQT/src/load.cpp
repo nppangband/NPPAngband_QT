@@ -603,7 +603,9 @@ static void rd_hotkey(int hotkey)
         cmd_arg *args = &this_step.step_args;
 
         rd_string(&temp_string);
-        args->string = temp_string;
+        args->string1 = temp_string;
+        rd_string(&temp_string);
+        args->string2 = temp_string;
         rd_s16b(&tmp_s16b);
         args->choice = tmp_s16b;
         rd_s16b(&tmp_s16b);

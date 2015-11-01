@@ -73,7 +73,11 @@ hotkey_type hotkey_actions[] =
     //HK_TYPE_CAST
     {HK_NEEDS_SPELL, "Cast Spell", 0},
     // HK_ACTIVATE
-    {HK_ACTIVATE, "Activate", 0},
+    {HK_NEEDS_ACIVATION, "Activate", 0},
+    // HK_FIRE_AMMO
+    {HK_NEEDS_SPECIFIC_OBJECT, "Fire", 0},
+    // HK_THROW
+    {HK_NEEDS_SPECIFIC_OBJECT, "Throw", 0},
     //HK_TYPE_MOVE
     {HK_NEEDS_DIRECTION, "Walk",0},
     //HK_TYPE_JUMP
@@ -220,7 +224,7 @@ int HotKeyDialog::get_current_step(QString item_id)
 
     // Remove anything before the phrase below
     QString this_index = "_step_";
-    if (item_id.contains(this_index, Qt::CaseInsensitive))
+    while (item_id.contains(this_index, Qt::CaseInsensitive))
     {
         int location = item_id.indexOf(this_index, Qt::CaseInsensitive) + this_index.length();
         item_id.remove(0,location);
@@ -342,14 +346,17 @@ void HotKeyDialog::hotkey_step_target_changed(int new_target)
 
         // Not the right step.
         QString item_id = this_radio->objectName();
-        item_id.remove("Step_Command_", Qt::CaseInsensitive);
-        int which_step = item_id.toInt();
-        if (step != which_step) continue;
+        if (item_id.contains("targeting_step_", Qt::CaseInsensitive))
+        {
+            item_id.remove("targeting_step_", Qt::CaseInsensitive);
+            int which_step = item_id.toInt();
+            if (step != which_step) continue;
 
-        // Turn on or off
-        QString this_name = this_radio->text();
-        if (this_name.contains(button_name)) this_radio->setChecked(TRUE);
-        else this_radio->setChecked(FALSE);
+            // Turn on or off
+            QString this_name = this_radio->text();
+            if (this_name.contains(button_name)) this_radio->setChecked(TRUE);
+            else this_radio->setChecked(FALSE);
+        }
     }
 }
 
@@ -367,7 +374,7 @@ void HotKeyDialog::delete_targeting_choices(int this_step)
         if (this_name.contains(radio_id))
         {
             // Remove it from the target group
-            target_choices->removeButton(this_radio);
+            group_target_choices->removeButton(this_radio);
             break;
         }
     }
@@ -392,11 +399,6 @@ void HotKeyDialog::delete_targeting_choices(int this_step)
 
 void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
 {
-    target_choices = new QButtonGroup;
-
-    // Buttons will be manually turned on and off when changed.
-    target_choices->setExclusive(FALSE);
-
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
     QVBoxLayout *vlay_targets = new QVBoxLayout;
@@ -410,25 +412,23 @@ void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
     radio_closest->setObjectName(QString("targeting_step_%1") .arg(step));
     radio_closest->setChecked(FALSE);
     vlay_targets->addWidget(radio_closest);
-    target_choices->addButton(radio_closest, (step * STEP_MULT + DIR_CLOSEST));
+    group_target_choices->addButton(radio_closest, (step * STEP_MULT + DIR_CLOSEST));
 
     QRadioButton *radio_current = new QRadioButton("Use Current Target");
     radio_current->setObjectName(QString("targeting_step_%1") .arg(step));
     radio_current->setChecked(FALSE);
     vlay_targets->addWidget(radio_current);
-    target_choices->addButton(radio_current, (step * STEP_MULT + DIR_TARGET));
+    group_target_choices->addButton(radio_current, (step * STEP_MULT + DIR_TARGET));
 
     QRadioButton *radio_specify_use = new QRadioButton("Specify During Use");
     radio_specify_use->setObjectName(QString("targeting_step_%1") .arg(step));
     radio_specify_use->setChecked(FALSE);
     vlay_targets->addWidget(radio_specify_use);
-    target_choices->addButton(radio_specify_use, (step * STEP_MULT + DIR_UNKNOWN));
+    group_target_choices->addButton(radio_specify_use, (step * STEP_MULT + DIR_UNKNOWN));
 
     if (hks_ptr->step_args.direction == DIR_CLOSEST) radio_closest->setChecked(TRUE);
     else if (hks_ptr->step_args.direction == DIR_TARGET) radio_current->setChecked(TRUE);
     else radio_specify_use->setChecked(TRUE);
-
-    connect(target_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_target_changed(int)));
 
     vlay_targets->addStretch(1);
 }
@@ -660,6 +660,165 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this
     vlay_obj_kind->addStretch(1);
 }
 
+void HotKeyDialog::delete_specific_object_choices(int this_step)
+{
+    // First, remove the radio buttons from the group
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+    QString radio_id = (QString("specify_obj_step_%1") .arg(this_step));
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        QString this_name = this_radio->objectName();
+
+        if (this_name.contains(radio_id))
+        {
+            // Remove it from the target group
+            group_target_choices->removeButton(this_radio);
+            break;
+        }
+    }
+
+    // Now remove the vbox layout
+    QString item_id = (QString("vlay_specific_obj_step_%1") .arg(this_step));
+    QList<QVBoxLayout *> vlay_list = this->findChildren<QVBoxLayout *>();
+    for (int x = 0; x < vlay_list.size(); x++)
+    {
+        QVBoxLayout *this_vlay = vlay_list.at(x);
+
+        QString this_name = this_vlay->objectName();
+
+        if (this_name.contains(item_id))
+        {
+            clear_layout(this_vlay);
+            this_vlay->deleteLater();
+            break;
+        }
+    }
+}
+
+// Manuallly turning the buttons true or false is necessary
+// because the button group covers more than one step
+void HotKeyDialog::hotkey_step_obj_selection_changed(int new_target)
+{
+    int step = new_target / STEP_MULT;
+    int new_choice = new_target % STEP_MULT;
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    hks_ptr->step_args.direction = new_choice;
+
+    QString button_name = QString("Specify During Use");
+
+    if (new_choice == OS_FIND_SPECIFIC_INSTRIPTION) button_name = QString("Use Object Inscribed With:");
+
+    // Manually turn the buttons true or false.
+    QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
+
+    for (int x = 0; x < radio_list.size(); x++)
+    {
+        QRadioButton *this_radio = radio_list.at(x);
+
+        // Not the right step.
+        QString item_id = this_radio->objectName();
+        if (item_id.contains("specify_obj_step_"))
+        {
+            item_id.remove("specify_obj_step_", Qt::CaseInsensitive);
+            int which_step = item_id.toInt();
+            if (step != which_step) continue;
+
+            // Turn on or off
+            QString this_name = this_radio->text();
+            if (this_name.contains(button_name)) this_radio->setChecked(TRUE);
+            else this_radio->setChecked(FALSE);
+        }
+    }
+
+    // Now find the QLineEdit box and enable it or disable it.
+    QList<QLineEdit *> line_edit_list = this->findChildren<QLineEdit *>();
+    for (int x = 0; x < line_edit_list.size(); x++)
+    {
+        QLineEdit *this_line_edit = line_edit_list.at(x);
+
+        // Not the right step.
+        QString item_id = this_line_edit->objectName();
+        if (item_id.contains("specify_obj_step_", Qt::CaseInsensitive))
+        {
+            item_id.remove("specify_obj_step_", Qt::CaseInsensitive);
+            int which_step = item_id.toInt();
+            if (step != which_step) continue;
+
+            if (new_choice == OS_SELECT_DURING_USE)
+            {
+                this_line_edit->setText("");
+                this_line_edit->setEnabled(FALSE);
+            }
+            else  // (new_choice == OS_FIND_SPECIFIC_INSTRIPTION)
+            {
+                this_line_edit->setEnabled(TRUE);
+            }
+        }
+    }
+}
+
+void HotKeyDialog::hotkey_step_obj_select_name_changed(QString inscription)
+{
+    QString sender_id = QObject::sender()->objectName();
+    int step = get_current_step(sender_id);
+
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
+
+    hks_ptr->step_args.string2 = inscription;
+}
+
+void HotKeyDialog::create_specific_object_dropbox(QHBoxLayout *this_layout, int this_step)
+{
+    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[this_step];
+
+    QVBoxLayout *vlay_obj_choose = new QVBoxLayout;
+    vlay_obj_choose->setObjectName(QString("vlay_specific_obj_step_%1") .arg(this_step));
+    this_layout->addLayout(vlay_obj_choose);
+
+    // Add a header
+    QLabel *header_dir = new QLabel("<b>Select Object Choice Method:</b>");
+    vlay_obj_choose->addWidget(header_dir);
+
+    // Add the buttons and string box
+    QRadioButton *radio_specify_use = new QRadioButton("Specify During Use");
+    radio_specify_use->setObjectName(QString("specify_obj_step_%1") .arg(this_step));
+    radio_specify_use->setChecked(FALSE);
+    vlay_obj_choose->addWidget(radio_specify_use);
+    group_specific_object->addButton(radio_specify_use, (this_step * STEP_MULT + OS_SELECT_DURING_USE));
+
+    QRadioButton *radio_specify_inscription = new QRadioButton("Use Object Inscribed With:");
+    radio_specify_inscription->setObjectName(QString("specify_obj_step_%1") .arg(this_step));
+    radio_specify_inscription->setToolTip("During hotkey execution, the first found object with this inscription will be used");
+    radio_specify_inscription->setChecked(FALSE);
+    vlay_obj_choose->addWidget(radio_specify_inscription);
+    group_specific_object->addButton(radio_specify_inscription, (this_step * STEP_MULT + OS_FIND_SPECIFIC_INSTRIPTION));
+
+    QLineEdit *search_inscription = new QLineEdit();
+    search_inscription->setText(hks_ptr->step_args.string2);
+    search_inscription->setObjectName(QString("specify_obj_step_%1") .arg(this_step));
+    search_inscription->setPlaceholderText("Enter Inscription Here");
+    connect(search_inscription, SIGNAL(textChanged(QString)), this, SLOT(hotkey_step_obj_select_name_changed(QString)));
+    vlay_obj_choose->addWidget(search_inscription);
+
+    // There is already a specified string
+    if (hks_ptr->step_args.string2.length())
+    {
+        radio_specify_inscription->setChecked(TRUE);
+        search_inscription->setEnabled(TRUE);
+    }
+    else
+    {
+        radio_specify_use->setChecked(TRUE);
+        search_inscription->setEnabled(FALSE);
+    }
+
+    vlay_obj_choose->addStretch(1);
+}
+
 // Helper function to see if an activatable object
 // should be added to the combo box
 bool HotKeyDialog::accept_activation_object(object_type *o_ptr)
@@ -727,7 +886,7 @@ void HotKeyDialog::active_activation_changed(int choice)
     hks_ptr->step_args.k_idx = o_ptr->k_idx;
     hks_ptr->step_args.item = o_ptr->ego_num;
     hks_ptr->step_args.number = o_ptr->art_num;
-    hks_ptr->step_args.string = object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX);
+    hks_ptr->step_args.string1 = object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX);
 
     bool new_obj_dir = obj_needs_aim(o_ptr);
 
@@ -847,7 +1006,7 @@ void HotKeyDialog::create_activation_dropbox(QHBoxLayout *this_layout, int this_
     hks_ptr->step_args.k_idx = o_ptr->k_idx;
     hks_ptr->step_args.item = o_ptr->ego_num;
     hks_ptr->step_args.number = o_ptr->art_num;
-    hks_ptr->step_args.string = object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX);
+    hks_ptr->step_args.string1 = object_desc(o_ptr, ODESC_BASE | ODESC_PREFIX);
 
     this_combobox->setCurrentIndex(current_index);
     hks_ptr->step_args.verify = TRUE;
@@ -952,9 +1111,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     QGridLayout *gridlay_direction = new QGridLayout;
     vlay_direction->addLayout(gridlay_direction);
 
-    // Radiobuttons are turned on and off manually
-    group_directions = new QButtonGroup;
-    group_directions->setExclusive(FALSE);
+
 
     // Add all the buttons
     QRadioButton *north_west = new QRadioButton;
@@ -1038,7 +1195,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     else south_east->setChecked(FALSE);
     south_east->setObjectName(QString("direction_step_%1") .arg(step));
 
-    connect(group_directions, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_direction_changed(int)));
+
 }
 
 // Add buttons for inserting and deleting steps
@@ -1127,6 +1284,7 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
     // Make sure any radio buttons are removed form their group
     delete_direction_pad(step);
     delete_targeting_choices(step);
+    delete_specific_object_choices(step);
     clear_layout(this_layout);
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
@@ -1163,7 +1321,7 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         }
         else hks_ptr->step_args.direction = 0;
     }
-    else if (ht_ptr->hotkey_needs == HK_ACTIVATE)
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_ACIVATION)
     {
         create_activation_dropbox(this_layout, step);
 
@@ -1175,11 +1333,19 @@ void HotKeyDialog::create_one_hotkey_step(QHBoxLayout *this_layout, int step)
         }
         else hks_ptr->step_args.direction = 0;
     }
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_SPECIFIC_OBJECT)
+    {
+        create_specific_object_dropbox(this_layout, step);
+
+        if ((hks_ptr->step_commmand == HK_FIRE_AMMO) ||
+            (hks_ptr->step_commmand == HK_THROW))
+        {
+            create_targeting_choices(this_layout, step);
+        }
+        else hks_ptr->step_args.direction = 0;
+    }
 
     this_layout->addStretch(1);
-
-
-
 }
 
 // Wipe and redraw the hotkey steps
@@ -1190,6 +1356,7 @@ void HotKeyDialog::display_hotkey_steps()
     {
         delete_direction_pad(i);
         delete_targeting_choices(i);
+        delete_specific_object_choices(i);
     }
 
     clear_layout(vlay_hotkey_steps);
@@ -1234,6 +1401,17 @@ HotKeyDialog::HotKeyDialog(void)
 
     // Start with the first hotkey
     load_new_hotkey(0);
+
+    // Since these radio button groups can cover multiple steps, they are toggled manuallly.
+    group_directions = new QButtonGroup;
+    group_directions->setExclusive(FALSE);
+    connect(group_directions, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_direction_changed(int)));
+    group_target_choices = new QButtonGroup;
+    group_target_choices->setExclusive(FALSE);
+    connect(group_target_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_target_changed(int)));
+    group_specific_object = new QButtonGroup;
+    group_specific_object->setExclusive(FALSE);
+    connect(group_specific_object, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_obj_selection_changed(int)));
 
     //Set up the main scroll bar
     top_layout = new QVBoxLayout;
@@ -1330,6 +1508,58 @@ static int find_item(int k_idx, int mode)
     return (MAX_S16B);
 }
 
+// Find an item to use
+static int find_inscribed_item(QString inscription, int command)
+{
+    // No inscription
+    if (!inscription.length()) return (MAX_S16B);
+
+    // First check the player equipment and inventory
+    for (int i = 0; i < ALL_INVEN_TOTAL; i++)
+    {
+        object_type *o_ptr = &inventory[i];
+
+        if (!o_ptr->inscription.contains(inscription)) continue;
+
+        if (command == HK_FIRE_AMMO)
+        {
+            if (!ammo_can_fire(o_ptr, i)) continue;
+        }
+
+        // Can't throw wielded items
+        if (command == HK_THROW)
+        {
+            if (i >= INVEN_WIELD && i < QUIVER_START) continue;
+        }
+
+        return (i);
+    }
+
+    s16b this_o_idx, next_o_idx = 0;
+
+    /* Next try to find the objects on the floor */
+    for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
+    {
+        object_type *o_ptr;
+
+        /* Get the object */
+        o_ptr = &o_list[this_o_idx];
+
+        /* Get the next object */
+        next_o_idx = o_ptr->next_o_idx;
+
+        if (command == HK_FIRE_AMMO)
+        {
+            if (!ammo_can_fire(o_ptr, this_o_idx)) continue;
+        }
+
+        if (o_ptr->inscription.contains(inscription)) return (-this_o_idx);
+    }
+
+    // Failed to find anything
+    return (MAX_S16B);
+}
+
 // Find hte item to activate.  Must be wielded.
 static int find_item_activation(cmd_arg *this_arg)
 {
@@ -1414,48 +1644,42 @@ static void run_hotkey_step(int step)
         if (arg_ptr->item == MAX_S16B)
         {
             message(QString("Unable to locate %1") .arg(object_desc(arg_ptr->k_idx, ODESC_FULL | ODESC_PREFIX | ODESC_SINGULAR)));
+            return;
         }
-        else
+        if (obj_needs_aim(arg_ptr->k_idx))
         {
-            bool do_command = TRUE;
+            bool trap_obj = k_info[arg_ptr->k_idx].is_trap_object_kind();
 
-            if (obj_needs_aim(arg_ptr->k_idx))
-            {
-                bool trap_obj = k_info[arg_ptr->k_idx].is_trap_object_kind();
+            arg_ptr->direction = extract_hotkey_dir(arg_ptr->direction, trap_obj);
 
-                arg_ptr->direction = extract_hotkey_dir(arg_ptr->direction, trap_obj);
-
-                if (arg_ptr->direction == DIR_UNKNOWN) do_command = FALSE;
-            }
-
-            // Use the item
-            if (do_command) command_use(this_step->step_args);
+            if (arg_ptr->direction == DIR_UNKNOWN) return;
         }
+
+        // Use the item
+        command_use(this_step->step_args);
     }
 
     else if (ht_ptr->hotkey_needs == HK_NEEDS_SPELL)
     {
         if (p_ptr->can_cast())
         {
-            bool do_command = TRUE;
-
             if (spell_needs_aim(cp_ptr->spell_book, arg_ptr->number))
             {
                 bool trap_spell = is_trap_spell(cp_ptr->spell_book, arg_ptr->number);
 
                 arg_ptr->direction = extract_hotkey_dir(arg_ptr->direction, trap_spell);
 
-                if (arg_ptr->direction == DIR_UNKNOWN) do_command = FALSE;
+                if (arg_ptr->direction == DIR_UNKNOWN) return;
             }
 
             // Use the item
-            if (do_command) cast_spell(this_step->step_args);
+            cast_spell(this_step->step_args);
         }
     }
 
     // For this one, the cmd_arg needs to be built
     // as many fields from arg_ptr are used to find the item
-    else if (ht_ptr->hotkey_needs == HK_ACTIVATE)
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_ACIVATION)
     {
         cmd_arg command_args;
         command_args.wipe();
@@ -1465,13 +1689,17 @@ static void run_hotkey_step(int step)
         // Didn't find the item
         if (command_args.item <= -1)
         {
-            message(QString("Unable to locate %1") .arg(arg_ptr->string));
+            message(QString("Unable to locate %1") .arg(arg_ptr->string1));
         }
         else
         {
-            bool do_command = TRUE;
-
             object_type *o_ptr = &inventory[command_args.item];
+
+            if (o_ptr->timeout)
+            {
+                message(QString("The %1 is recharging.") .arg(object_desc(o_ptr, ODESC_FULL)));
+                return;
+            }
 
             if (obj_needs_aim(o_ptr))
             {
@@ -1479,20 +1707,40 @@ static void run_hotkey_step(int step)
 
                 command_args.direction = extract_hotkey_dir(arg_ptr->direction, trap_obj);
 
-                if (arg_ptr->direction == DIR_UNKNOWN) do_command = FALSE;
+                if (arg_ptr->direction == DIR_UNKNOWN) return;
             }
 
             command_args.verify = TRUE;
 
-            if (o_ptr->timeout)
-            {
-                message(QString("The %1 is recharging.") .arg(object_desc(o_ptr, ODESC_FULL)));
-                do_command = FALSE;
-            }
-
             // Use the item
-            if (do_command) command_use(command_args);
+            command_use(command_args);
         }
+    }
+
+    else if (ht_ptr->hotkey_needs == HK_NEEDS_SPECIFIC_OBJECT)
+    {
+        cmd_arg command_args;
+        command_args.wipe();
+
+        command_args.item = find_inscribed_item(arg_ptr->string2, command);
+
+        // Didn't find the item
+        if (command_args.item == MAX_S16B)
+        {
+            message(QString("Unable to locate an item inscribed with %1") .arg(arg_ptr->string2));
+            return;
+        }
+
+        if ((command == HK_FIRE_AMMO) || (command == HK_THROW))
+        {
+            command_args.direction = extract_hotkey_dir(arg_ptr->direction, FALSE);
+
+            if (arg_ptr->direction == DIR_UNKNOWN) return;
+        }
+
+        if (command == HK_FIRE_AMMO) command_fire(command_args);
+        else if (command == HK_THROW) command_throw(command_args);
+
     }
 }
 

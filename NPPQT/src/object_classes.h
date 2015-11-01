@@ -386,7 +386,8 @@ public:
 class cmd_arg
 {
 public:
-    QString string;
+    QString string1;
+    QString string2;
 
     int choice;
     int item;

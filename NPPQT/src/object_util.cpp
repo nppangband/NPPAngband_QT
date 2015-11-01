@@ -4369,7 +4369,8 @@ bool chest_requires_disarming(object_type *o_ptr)
 
 
 /*
- * Determine whether the ammo can be fired with the current launcher
+ * Determine whether the ammo can be fired with the current launcher.
+ * If message is true, provide an error message
  */
 bool ammo_can_fire(object_type *o_ptr, int item)
 {
@@ -4379,7 +4380,7 @@ bool ammo_can_fire(object_type *o_ptr, int item)
     if (birth_swap_weapons)
     {
         j_ptr = &inventory[INVEN_MAIN_WEAPON];
-        if (!j_ptr->is_bow()) return (FALSE);
+        if (!j_ptr->is_bow() && (j_ptr->tval)) return(FALSE);
     }
 
     /* No ammo */
@@ -4389,7 +4390,7 @@ bool ammo_can_fire(object_type *o_ptr, int item)
     if (!j_ptr->tval || !p_ptr->state.ammo_tval) return (FALSE);
 
     /* Not within reach */
-    if (!item_is_available(item, NULL, (USE_INVEN | USE_FLOOR | USE_EQUIP | USE_QUIVER))) return (FALSE);
+    if (!item_is_available(item, NULL, (USE_INVEN | USE_FLOOR | USE_QUIVER))) return (FALSE);
 
     /* Cursed quiver */
     if (IS_QUIVER_SLOT(item) && p_ptr->state.cursed_quiver && !o_ptr->is_cursed()) return (FALSE);

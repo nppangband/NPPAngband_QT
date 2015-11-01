@@ -1858,8 +1858,14 @@ void command_throw(cmd_arg args)
         return;
     }
 
+    if (item_is_available(item, NULL, USE_EQUIP))
+    {
+        message(QString("You have cannot throw wielded items."));
+        return;
+    }
+
     /* Check the item being thrown is usable by the player. */
-    if (!item_is_available(item, NULL, (USE_EQUIP | USE_INVEN | USE_FLOOR | USE_QUIVER)))
+    if (!item_is_available(item, NULL, (USE_INVEN | USE_FLOOR | USE_QUIVER)))
     {
         message(QString("That item is not within your reach."));
         return;

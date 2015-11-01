@@ -25,6 +25,8 @@ enum
     HK_EAT_FOOD,
     HK_CAST_SPELL,
     HK_ACTIVATE,
+    HK_FIRE_AMMO,
+    HK_THROW,
     HK_TYPE_MOVE,
     HK_TYPE_JUMP,
     HK_TYPE_RUN,
@@ -59,6 +61,12 @@ enum
     HK_NEEDS_SPELL,
     HK_NEEDS_ACIVATION,
     HK_NEEDS_SPECIFIC_OBJECT,
+};
+
+enum
+{
+    OS_SELECT_DURING_USE = 0,
+    OS_FIND_SPECIFIC_INSTRIPTION,
 };
 
 #define HK_VERIFY_YES   true
@@ -123,8 +131,10 @@ private:
     void create_direction_pad(QHBoxLayout *this_layout, int step);
     void create_object_kind_dropbox(QHBoxLayout *this_layout, int this_step);
     void create_activation_dropbox(QHBoxLayout *this_layout, int this_step);
+    void create_specific_object_dropbox(QHBoxLayout *this_layout, int this_step);
     void delete_targeting_choices(int this_step);
     void create_targeting_choices(QHBoxLayout *this_layout, int step);
+    void delete_specific_object_choices(int this_step);
     void create_spell_choice_dropbox(QHBoxLayout *this_layout, int step);
     void create_step_buttons(QHBoxLayout *this_layout, int step);
     int get_current_step(QString item_id);
@@ -132,9 +142,11 @@ private:
     bool accept_activation_object(object_type *o_ptr);
     int find_selected_k_idx(int choice, int step);
     object_type find_selected_activation(int choice, int step);
+    object_type find_inscribed_object(QString inscription);
     object_type create_selected_object(cmd_arg args);
     QButtonGroup *group_directions;
-    QButtonGroup *target_choices;
+    QButtonGroup *group_target_choices;
+    QButtonGroup *group_specific_object;
 
     int current_hotkey_int;
 
@@ -150,6 +162,8 @@ private slots:
     void hotkey_step_target_changed(int new_target);
     void active_k_idx_changed(int choice);
     void active_activation_changed(int choice);
+    void hotkey_step_obj_selection_changed(int new_selection);
+    void hotkey_step_obj_select_name_changed(QString new_inscription);
     void active_spell_changed(int choice);
     void insert_step(void);
     void delete_step(void);

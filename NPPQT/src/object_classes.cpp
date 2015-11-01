@@ -57,11 +57,13 @@ void object_type::object_wipe()
     k_idx = iy = ix = 0;
     pval = sval = tval = 0;
     discount = number = weight = 0;
-    art_num = ego_num = xtra1 = xtra2 = 0;
-    to_h = to_d = to_a = ac = dd = ds = 0;
+    art_num = ego_num = xtra1 = dd = ds = 0;
+    xtra2 = 0;
+    to_h = to_d = to_a = ac = 0;
     timeout = discount = ident = 0;
-    marked = next_o_idx = held_m_idx = 0;
-    origin_nature = origin_dlvl = origin_r_idx = mimic_r_idx = 0;
+    next_o_idx = held_m_idx = 0;
+    origin_nature = marked = 0;
+    origin_dlvl = origin_r_idx = mimic_r_idx = 0;
     obj_in_use = FALSE;
     inscription.clear();
     origin_m_name.clear();
@@ -104,16 +106,16 @@ void object_type::object_copy(object_type *j_ptr)
     timeout = j_ptr->timeout;
     discount = j_ptr->discount;
     ident = j_ptr->ident;
+    obj_in_use = j_ptr->obj_in_use;
+    inscription = j_ptr->inscription;
     marked = j_ptr->marked;
     next_o_idx = j_ptr->next_o_idx;
     held_m_idx = j_ptr->held_m_idx;
     origin_nature = j_ptr->origin_nature;
     origin_dlvl = j_ptr->origin_dlvl;
     origin_r_idx = j_ptr->origin_r_idx;
-    mimic_r_idx = j_ptr->mimic_r_idx;
-    obj_in_use = j_ptr->obj_in_use;
-    inscription = j_ptr->inscription;
     origin_m_name = j_ptr->origin_m_name;
+    mimic_r_idx = j_ptr->mimic_r_idx;
 }
 
 void object_type::settings_erase()
@@ -1069,6 +1071,8 @@ void cmd_arg::wipe()
 {
     repeats = choice = item = number = direction = slot = k_idx = 0;
     verify = FALSE;
+    string1.clear();
+    string2.clear();
 };
 
 
