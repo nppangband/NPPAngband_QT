@@ -47,6 +47,7 @@ SOURCES +=  src/qt_main.cpp \
             src/dun_generate.cpp \
             src/dun_process.cpp \
             src/emitter.cpp \
+            src/file_output.cpp \
             src/globals.cpp \
             src/griddialog.cpp \
             src/help.cpp \

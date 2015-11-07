@@ -71,6 +71,8 @@ public:
     bool do_pseudo_ascii;
     bool do_wall_block;
 
+    bool executing_command;
+
     // Scaled tiles
     QHash<QString,QPixmap> tiles;
 
@@ -91,6 +93,8 @@ public:
     QWidget *sidebar_widget;
     QScrollArea *sidebar_scroll;
     QVBoxLayout *sidebar_vlay;
+    QVBoxLayout *player_info_labels;
+    QVBoxLayout *player_info_data;
     QVBoxLayout *player_info_vlay;
     QVBoxLayout *mon_health_vlay;
 
@@ -121,6 +125,7 @@ public:
     void update_sidebar_player();
     void update_sidebar_mon();
     void sidebar_display_mon(int m_idx);
+    QString return_sidebar_text(bool label, int row);
     void update_sidebar_all() {update_sidebar_mon(); update_sidebar_player();}
     void hide_sidebar();
     void show_sidebar();
@@ -133,7 +138,7 @@ public:
     void show_statusbar();
     void create_targetbar();
     void update_targetbar(int toolbar);
-
+    void save_png_screenshot(void);
 
 
 protected:

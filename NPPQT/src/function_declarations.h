@@ -158,6 +158,9 @@ extern void set_dungeon_type(u16b dungeon_type);
 extern void process_player_energy(byte energy);
 extern void change_player_level(void);
 
+// file_output.cpp
+void save_screenshot(byte do_png);
+
 // hotkeys.cpp
 extern void clear_all_hotkeys();
 extern bool check_hotkey_commands(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);
@@ -643,6 +646,7 @@ extern QPoint ui_get_center(int y, int x);
 extern void ui_update_sidebar_all();
 extern void ui_update_sidebar_player();
 extern void ui_update_sidebar_mon();
+extern QString ui_return_sidebar_text(bool label, int row);
 extern void ui_update_statusbar();
 extern void ui_update_titlebar();
 extern void ui_update_messages();
@@ -669,6 +673,7 @@ extern bool ui_change_panel(int dir);
 extern void ui_center(int y, int x);
 extern void ui_player_moved();
 extern QSize ui_grid_size();
+extern void ui_png_screenshot(void);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

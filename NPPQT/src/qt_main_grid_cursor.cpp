@@ -595,7 +595,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     if (!done_fg && (!empty || !done_bg))
     {
         // Fill with a solid color for walls if that option is set
-        if (main_window->do_wall_block  && d_ptr->is_wall(TRUE))
+        if (main_window->do_wall_block  && operator==(square_char, QChar(Qt::Key_NumberSign)))
         {
             // An outside slightly shaded
             QRect outside_shade(QPoint(0, 0), QPoint(parent->main_cell_wid, parent->main_cell_hgt));
@@ -670,8 +670,13 @@ QPainterPath DungeonGrid::shape() const
 void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (!character_dungeon) return;
-
+    if (p_ptr->in_store) return;
     if (parent->anim_depth > 0) return;
+
+    // Already running a command
+    if (main_window->executing_command) return;
+
+    main_window->executing_command = TRUE;
 
     bool left_button = (event->button() & Qt::LeftButton);
     bool right_button = (event->button() & Qt::RightButton);
@@ -715,6 +720,7 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     handle_stuff();
 
-
     QGraphicsItem::mousePressEvent(event);
+
+    main_window->executing_command = FALSE;
 }

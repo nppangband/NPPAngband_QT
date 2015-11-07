@@ -49,13 +49,24 @@ void MainWindow::create_sidebar()
     player_info_hlay->addLayout(player_info_labels);
     player_info_hlay->addLayout(player_info_data);
 
+    // Level
+    QLabel *level_label = new QLabel;
+    level_label->setText(color_string("LEVEL", SBAR_NORMAL));
+    level_label->setObjectName("LEVEL_LABEL");
+    player_info_labels->addWidget(level_label, Qt::AlignLeft);
+    level_label->setToolTip(get_help_topic("character_info", "Player Level"));
+    QLabel *level_info = new QLabel;
+    level_info->setObjectName("LEVEL_INFO");
+    player_info_data->addWidget(level_info, Qt::AlignRight);
+
     // Hitpoints
     QLabel *hp_label = new QLabel;
-    hp_label->setText(color_string("HP", SBAR_NORMAL));
+    hp_label->setText(color_string("HP_LABEL", SBAR_NORMAL));
+    hp_label->setObjectName("HP_LABEL");
     player_info_labels->addWidget(hp_label, Qt::AlignLeft);
     hp_label->setToolTip(get_help_topic("character_info", "Hit Points"));
     QLabel *hp_info = new QLabel;
-    hp_info->setObjectName("HP");
+    hp_info->setObjectName("HP_INFO");
     player_info_data->addWidget(hp_info, Qt::AlignRight);
 
     // SpellPoints
@@ -103,10 +114,11 @@ void MainWindow::create_sidebar()
     // gold
     QLabel *gold_label = new QLabel;
     gold_label->setText(color_string("GOLD", SBAR_GOLD));
+    gold_label->setObjectName("GOLD_LABEL");
     gold_label->setToolTip(get_help_topic("character_info", "Gold"));
     player_info_labels->addWidget(gold_label, Qt::AlignLeft);
     QLabel *gold_info = new QLabel;
-    gold_info->setObjectName("GOLD");
+    gold_info->setObjectName("GOLD_INFO");
     player_info_data->addWidget(gold_info, Qt::AlignRight);
 
     // stats
@@ -125,6 +137,7 @@ void MainWindow::create_sidebar()
     // Armor Class
     QLabel *ac_label = new QLabel;
     ac_label->setText(color_string("AC", SBAR_NORMAL));
+    ac_label->setObjectName("AC_LABEL");
     ac_label->setToolTip(get_help_topic("character_info", "Armor Class"));
     player_info_labels->addWidget(ac_label, Qt::AlignLeft);
     QLabel *ac_info = new QLabel;
@@ -500,7 +513,16 @@ void MainWindow::update_sidebar_player()
                 }
             }
             // Update the hit points
-            if (this_name.operator ==("HP"))
+            if (this_name.operator ==("LEVEL_INFO"))
+            {
+                QString level = QString("%1").arg(p_ptr->lev);
+
+                this_lbl->setText(color_string(level, SBAR_NORMAL));
+                this_lbl->setAlignment(Qt::AlignRight);
+                continue;
+            }
+            // Update the hit points
+            if (this_name.operator ==("HP_INFO"))
             {
                 QString hp = QString("%1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
 
@@ -519,7 +541,11 @@ void MainWindow::update_sidebar_player()
                 {
                     if (!this_lbl->isVisible()) this_lbl->show();
                 }
-                else if (this_lbl->isVisible()) this_lbl->hide();
+                else if (this_lbl->isVisible())
+                {
+                    this_lbl->setText("");
+                    this_lbl->hide();
+                }
                 continue;
             }
             if (this_name.operator ==("SP_INFO"))
@@ -533,7 +559,11 @@ void MainWindow::update_sidebar_player()
                     this_lbl->setText(color_string(sp, this_color));
                     this_lbl->setAlignment(Qt::AlignRight);
                 }
-                else if (this_lbl->isVisible()) this_lbl->hide();
+                else if (this_lbl->isVisible())
+                {
+                    this_lbl->setText("");
+                    this_lbl->hide();
+                }
                 continue;
             }
             if (this_name.operator ==("EXP_CUR_LABEL"))
@@ -571,6 +601,7 @@ void MainWindow::update_sidebar_player()
             {
                 if (p_ptr->exp == p_ptr->max_exp)
                 {
+                    this_lbl->setText("");
                     if (this_lbl->isVisible()) this_lbl->hide();
                     continue;
                 }
@@ -586,6 +617,7 @@ void MainWindow::update_sidebar_player()
             {
                 if (p_ptr->exp == p_ptr->max_exp)
                 {
+                    this_lbl->setText("");
                     if (this_lbl->isVisible()) this_lbl->hide();
                     continue;
                 }
@@ -604,6 +636,7 @@ void MainWindow::update_sidebar_player()
             {
                 if (p_ptr->lev == z_info->max_level)
                 {
+                    this_lbl->setText("");
                     if (this_lbl->isVisible()) this_lbl->hide();
                     continue;
                 }
@@ -629,6 +662,7 @@ void MainWindow::update_sidebar_player()
             {
                 if (p_ptr->lev == z_info->max_level)
                 {
+                    this_lbl->setText("");
                     if (this_lbl->isVisible()) this_lbl->hide();
                     continue;
                 }
@@ -648,7 +682,7 @@ void MainWindow::update_sidebar_player()
                 this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }
-            if (this_name.operator ==("GOLD"))
+            if (this_name.operator ==("GOLD_INFO"))
             {
                 QString gold = number_to_formatted_string(p_ptr->au);
                 this_lbl->setText(color_string(gold, TERM_GOLD));
@@ -687,6 +721,7 @@ void MainWindow::update_sidebar_player()
                 QString quest = format_quest_indicator(&attr);
                 if (!quest.length())
                 {
+                    this_lbl->setText("");
                     if (this_lbl->isVisible()) this_lbl->hide();
                 }
                 else
@@ -699,6 +734,82 @@ void MainWindow::update_sidebar_player()
             }
         }
     }
+}
+
+
+QString sidebar_labels[SIDEBAR_LABEL_SIZE] =
+{
+    "LEVEL_LABEL",
+    "HP_LABEL",
+    "SP_LABEL",
+    "EXP_CUR_LABEL",
+    "EXP_MAX_LABEL",
+    "EXP_NEXT_LABEL",
+    "GOLD_LABEL",
+    "STAT_LABEL_0",
+    "STAT_LABEL_1",
+    "STAT_LABEL_2",
+    "STAT_LABEL_3",
+    "STAT_LABEL_4",
+    "STAT_LABEL_5",
+    "AC_LABEL",
+    "",
+    "",
+    "",
+    "",
+};
+
+QString sidebar_info[SIDEBAR_LABEL_SIZE] =
+{
+    "LEVEL_INFO",
+    "HP_INFO",
+    "SP_INFO",
+    "EXP_CUR_INFO",
+    "EXP_MAX_INFO",
+    "EXP_NEXT_INFO",
+    "GOLD_INFO",
+    "STAT_INFO_0",
+    "STAT_INFO_1",
+    "STAT_INFO_2",
+    "STAT_INFO_3",
+    "STAT_INFO_4",
+    "STAT_INFO_5",
+    "ARMOR CLASS",
+    "SPEED",
+    "DEPTH",
+    "FEELING",
+    "QUEST",
+};
+
+QString MainWindow::return_sidebar_text(bool label, int row)
+{
+    // Paranoia
+    if (!p_ptr->playing) return ("");
+    if (row >= SIDEBAR_LABEL_SIZE) return ("");
+    if (row < 0) return ("");
+
+    QString this_text = sidebar_info[row];
+    if (label) this_text = sidebar_labels[row];
+
+    if (!this_text.length()) return ("");
+
+    // Update the player sidebar info
+    QList<QLabel *> lbl_list = sidebar_widget->findChildren<QLabel *>();
+
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        if (operator==(this_name, this_text))
+        {
+            return (this_lbl->text());
+        }
+    }
+
+    // Oops!
+    return ("");
 }
 
 
@@ -715,7 +826,7 @@ void MainWindow::sidebar_display_mon(int m_idx)
     int font_wid = metrics.width('M') + FONT_EXTRA;
 
     QLabel *mon_pic = new QLabel;
-    if (use_graphics && !do_pseudo_ascii)
+    if (use_graphics)
     {
 
         QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);
@@ -921,11 +1032,7 @@ void MainWindow::update_titlebar()
             str = "NPPMoria";
         }
 
-        str += " - Playing a level ";
-
-        str += _num(p_ptr->lev);
-
-        str += " ";
+        str += " - Playing a ";
 
         str += rp_ptr->pr_name;
 

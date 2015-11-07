@@ -1000,7 +1000,7 @@ enum
 #define    COLOR24BIT_BRONZE        #CD7F32
 
 
-
+#define SIDEBAR_LABEL_SIZE 18
 
 
 

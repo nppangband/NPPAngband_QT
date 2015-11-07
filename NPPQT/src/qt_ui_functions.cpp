@@ -397,6 +397,11 @@ void ui_update_sidebar_mon()
     p_ptr->redraw &= ~(PR_SIDEBAR_MON);
 }
 
+QString ui_return_sidebar_text(bool label, int row)
+{
+    return (main_window->return_sidebar_text(label, row));
+}
+
 void ui_update_statusbar()
 {
     main_window->update_statusbar();
@@ -658,3 +663,7 @@ QSize ui_max_widget_size(QSize this_size)
 
 }
 
+void ui_png_screenshot(void)
+{
+    main_window->save_png_screenshot();
+}

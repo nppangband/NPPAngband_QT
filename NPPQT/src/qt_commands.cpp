@@ -71,6 +71,8 @@ static struct command_desc list_commands_new[] =
     {"Save Character", "CTRL-S"},
     {"Save Character and Close Game", "CTRL-X"},
     {"Save Character As", "CTRL-W"},
+    {"Save Screenshot (html file)", ")"},
+    {"Save Screenshot (png file", "("},
     {"Search", "s"},
     {"Search (Toggle)", "S (shift-s)"},
     {"Spike A Door", "CTRL-D"},
@@ -139,6 +141,8 @@ static struct command_desc list_commands_angband[] =
     {"Save Character", "CTRL-S"},
     {"Save Character and Close Game", "CTRL-X"},
     {"Save Character As", "CTRL-W"},
+    {"Save Screenshot (html file)", ")"},
+    {"Save Screenshot (png file", "("},
     {"Search", "s"},
     {"Search (Toggle)", "S (shift-s)"},
     {"Spike A Door", "j"},
@@ -211,6 +215,8 @@ static struct command_desc list_commands_roguelike[] =
     {"Save Character", "CTRL-S"},
     {"Save Character and Close Game", "CTRL-X"},
     {"Save Character As", "CTRL-W"},
+    {"Save Screenshot (html file)", ")"},
+    {"Save Screenshot (png file", "("},
     {"Search", "s"},
     {"Search (Toggle)", "#"},
     {"Spike A Door", "j"},
@@ -769,6 +775,16 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
             do_cmd_command_list();
             break;
         }
+        case Qt::Key_ParenRight:
+        {
+            save_screenshot(FALSE);
+            break;
+        }
+        case Qt::Key_ParenLeft:
+        {
+            save_screenshot(TRUE);
+            break;
+        }
         default:
         {
             break;
@@ -895,7 +911,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         case Qt::Key_G:
         {
             if (shift_key)          do_cmd_study(-1);
-            else if (!using_mods)   do_cmd_pickup_from_pile(TRUE, TRUE);
+            else if (!using_mods)   do_cmd_pickup_from_pile(FALSE, TRUE);
             break;
         }
         case Qt::Key_H:
@@ -1063,6 +1079,16 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         case Qt::Key_Question:
         {
             do_cmd_command_list();
+            break;
+        }
+        case Qt::Key_ParenRight:
+        {
+            save_screenshot(FALSE);
+            break;
+        }
+        case Qt::Key_ParenLeft:
+        {
+            save_screenshot(TRUE);
             break;
         }
         default:
@@ -1332,6 +1358,16 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_Question:
         {
             do_cmd_command_list();
+            break;
+        }
+        case Qt::Key_ParenRight:
+        {
+            save_screenshot(FALSE);
+            break;
+        }
+        case Qt::Key_ParenLeft:
+        {
+            save_screenshot(TRUE);
             break;
         }
         default:

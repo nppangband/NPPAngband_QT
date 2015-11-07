@@ -23,7 +23,6 @@
 #include <QFileDialog>
 #include <QToolButton>
 #include <QPushButton>
-
 #include <QSplitter>
 #include <QApplication>
 #include <QFontDialog>
@@ -483,7 +482,7 @@ MainWindow::MainWindow()
 
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
-    show_obj_list = show_mon_list = show_messages_win = FALSE;
+    executing_command = show_obj_list = show_mon_list = show_messages_win = FALSE;
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
@@ -701,7 +700,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     if (p_ptr->in_store) return;
     if (anim_depth > 0) return;
 
-
+    // Already running a command
+    if (executing_command) return;
 
     // TODO PLAYTESTING
     debug_rarities();
@@ -718,6 +718,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         ev_loop.quit();
         return;
     }
+
+    executing_command = TRUE;
 
     Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
 
@@ -751,6 +753,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     if (check_hotkey_commands(which_key->key(), shift_key, alt_key, ctrl_key, meta_key))
     {
         handle_stuff();
+        executing_command = FALSE;
         return;
     }
 
@@ -769,12 +772,15 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     else pop_up_message_box("invalid keyset");
 
     handle_stuff();
+
+    executing_command = FALSE;
 }
 
 
 bool MainWindow::running_command()
 {
-    if (ev_loop.isRunning()) {
+    if (ev_loop.isRunning())
+    {
         pop_up_message_box("You must finish or cancel the current command first to do this");
         return true;
     }
@@ -1974,3 +1980,27 @@ QString MainWindow::stripped_name(const QString &full_file_name)
     return QFileInfo(full_file_name).fileName();
 }
 
+void MainWindow::save_png_screenshot(void)
+{
+    QRect dungeon_frame = graphics_view->geometry();
+
+    QRect screen_grab(sidebar_dock->pos(), dungeon_frame.bottomRight());
+
+    QPixmap screenshot = main_window->grab(screen_grab);
+
+    // Start with the current player name
+    QString default_name = "player";
+    if (!op_ptr->full_name.isEmpty())default_name = op_ptr->full_name;
+    QString default_file = npp_dir_user.path();
+    default_file.append("/");
+    default_file.append(default_name);
+    default_file.append("_npp_scr");
+
+    QString file_name = QFileDialog::getSaveFileName(this, tr("Select a savefile"), default_file, tr("PNG (*.png)"));
+
+    if (file_name.isEmpty())
+        return;
+
+    screenshot.save(file_name, "PNG", 100);
+
+}
