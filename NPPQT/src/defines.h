@@ -623,7 +623,7 @@ enum
     OPT_animate_flicker,
     OPT_hp_changes_color,
     OPT_mark_squelch_items,
-    OPT_UNUSED_6x3,
+    OPT_death_char_dump,
     OPT_UNUSED_6x4,
     OPT_UNUSED_7,
     OPT_UNUSED_8,
@@ -720,7 +720,7 @@ enum
 #define animate_flicker 		op_ptr->opt[OPT_animate_flicker]
 #define hp_changes_color		op_ptr->opt[OPT_hp_changes_color]
 #define mark_squelch_items		op_ptr->opt[OPT_mark_squelch_items]
-/* xxx */
+#define death_char_dump         op_ptr->opt[OPT_death_char_dump]
 /* xxx */
 /* xxx */
 /* xxx */

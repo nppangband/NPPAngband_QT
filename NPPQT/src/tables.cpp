@@ -2084,7 +2084,7 @@ option_entry options[OPT_MAX] =
     {"animate_flicker",    	"Shimmer multi-colored things",  		TRUE}, /* OPT_animate_flicker */
     {"hp_changes_color",	"Player color indicates low hit points",FALSE},	/* OPT_hp_changes_color*/
     {"mark_squelch_items",	"Items marked for squelch appear as dot",FALSE},/* OPT_mark_squelch_items */
-    {NULL,NULL,FALSE},/* xxx */
+    {"death_char_dump",     "Save Character File and Screenshot when character dies.", TRUE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
     {NULL,NULL,	FALSE},/* xxx */
     {NULL,NULL,FALSE},/* xxx */
@@ -2151,7 +2151,7 @@ const byte option_page_nppangband[OPT_PAGE_MAX][OPT_PAGE_PER] =
         OPT_auto_scum,
         OPT_allow_themed_levels,
         OPT_smart_cheat,
-        OPT_NONE,
+        OPT_death_char_dump,
         OPT_NONE,
         OPT_NONE,
         OPT_NONE,

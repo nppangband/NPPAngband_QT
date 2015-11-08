@@ -600,7 +600,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             // An outside slightly shaded
             QRect outside_shade(QPoint(0, 0), QPoint(parent->main_cell_wid, parent->main_cell_hgt));
             painter->setPen(square_color);
-            painter->setOpacity(.95);
+            painter->setOpacity(.85);
             painter->drawRect(outside_shade);
 
             QPixmap pix(parent->main_cell_wid-1, parent->main_cell_hgt-1);

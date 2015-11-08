@@ -44,7 +44,13 @@ void PlayerDeathDialog::death_messages(void)
 
 void PlayerDeathDialog::death_file_dump(void)
 {
-    // TODO make file dump
+    save_character_file();
+}
+
+void PlayerDeathDialog::death_screenshot(void)
+{
+    bool png_screenshot = get_check("Create a PNG screenshot (YES) or HTML screenshot (NO)");
+    save_screenshot(png_screenshot);
 }
 
 void PlayerDeathDialog::death_scores(void)
@@ -104,6 +110,12 @@ PlayerDeathDialog::PlayerDeathDialog(void)
     file_dump_button->setToolTip("Create a final character dump.");
     connect(file_dump_button, SIGNAL(clicked()), this, SLOT(death_file_dump()));
     vlay->addWidget(file_dump_button);
+
+    // Add the "Screenshot" button
+    QPushButton *screenshot_button = new QPushButton("Screenshot");
+    screenshot_button->setToolTip("Create a final screenshot.");
+    connect(screenshot_button, SIGNAL(clicked()), this, SLOT(death_screenshot()));
+    vlay->addWidget(screenshot_button);
 
     // Add the "Scores" button
     QPushButton *scores_button = new QPushButton("View Scores");
@@ -232,7 +244,12 @@ void player_death(void)
     QTime right_now = QTime::currentTime();
     QString long_day = QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString());
 
-    //TODO automatic screenshot and character dump?
+    //TODO automatic character dump
+    if (death_char_dump)
+    {
+        save_screenshot(FALSE);
+    }
+
     write_death_note(long_day);
 
     print_tomb();

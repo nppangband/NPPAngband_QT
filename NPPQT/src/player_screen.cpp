@@ -368,7 +368,7 @@ void update_char_screen(QWidget *return_widget)
             }
             if (this_name.contains(QString("st_total_%1") .arg(i)))
             {
-                QString stat_final = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
+                QString stat_final = (QString("<b>%1</b>") .arg(cnv_stat(p_ptr->state.stat_loaded_cur[i])));
                 stat_final.append(" ");
                 stat_final = color_string(stat_final, TERM_BLUE);
                 this_lbl->setText(stat_final);
@@ -376,12 +376,14 @@ void update_char_screen(QWidget *return_widget)
             }
             if (this_name.contains(QString("st_reduce_%1") .arg(i)))
             {
-                bool need_display = FALSE;
-                if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i]) need_display = TRUE;
-                QString lower_stat = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
-                if (!need_display) lower_stat = "       ";
-                lower_stat = color_string(lower_stat, TERM_RED);
-                this_lbl->setText(lower_stat);
+                if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
+                {
+                    QString lower_stat = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
+                    lower_stat = color_string(lower_stat, TERM_RED);
+                    this_lbl->setText(lower_stat);
+                }
+                else this_lbl->setText("");
+
                 continue;
             }
         }
@@ -431,7 +433,7 @@ void update_char_screen(QWidget *return_widget)
         }
         if (this_name.operator ==("PLYR_Gold"))
         {
-            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->au)), TERM_BLUE));
+            this_lbl->setText(color_string(QString("<b>%1</b>") .arg(number_to_formatted_string(p_ptr->au)), TERM_GOLD));
             continue;
         }
         if (this_name.operator ==("PLYR_Age"))
@@ -746,6 +748,7 @@ void char_basic_info(QGridLayout *return_layout)
     // Add gender
     QLabel *label_player_gender = new QLabel;
     make_standard_label(label_player_gender, "GENDER:", TERM_DARK);
+    label_player_gender->setObjectName("GENDER_LABEL");
     label_player_gender->setToolTip(get_help_topic("character_info", "Gender"));
     QLabel *player_gender = new QLabel;
     make_standard_label(player_gender, " ", TERM_BLUE);
@@ -756,6 +759,7 @@ void char_basic_info(QGridLayout *return_layout)
     // Add race
     QLabel *label_player_race = new QLabel;
     make_standard_label(label_player_race, "RACE:", TERM_DARK);
+    label_player_race->setObjectName("RACE_LABEL");
     label_player_race->setToolTip(get_help_topic("race_class_info", "Race"));
     QLabel *player_race = new QLabel;
     make_standard_label(player_race, " ", TERM_BLUE);
@@ -766,6 +770,7 @@ void char_basic_info(QGridLayout *return_layout)
     // Add class
     QLabel *label_player_class = new QLabel;
     make_standard_label(label_player_class, "CLASS:", TERM_DARK);
+    label_player_class->setObjectName("CLASS_LABEL");
     label_player_class->setToolTip(get_help_topic("race_class_info", "Class"));
     QLabel *player_class = new QLabel;
     make_standard_label(player_class, " ", TERM_BLUE);
@@ -776,6 +781,7 @@ void char_basic_info(QGridLayout *return_layout)
     // Add title
     QLabel *label_player_title = new QLabel;
     make_standard_label(label_player_title, "TITLE:", TERM_DARK);
+    label_player_title->setObjectName("TITLE_LABEL");
     label_player_title->setToolTip(get_help_topic("character_info", "Title"));
     QLabel *player_title = new QLabel;
     make_standard_label(player_title, " ", TERM_BLUE);
@@ -786,6 +792,7 @@ void char_basic_info(QGridLayout *return_layout)
     // Add hit points
     QLabel *label_player_hp = new QLabel;
     make_standard_label(label_player_hp, "HIT POINTS:", TERM_DARK);
+    label_player_hp->setObjectName("HP_LABEL");
     label_player_hp->setToolTip(get_help_topic("character_info", "Hit Points"));
     QLabel *player_hp = new QLabel;
     make_standard_label(player_hp, " ", TERM_BLUE);
@@ -798,6 +805,7 @@ void char_basic_info(QGridLayout *return_layout)
     {
         QLabel *label_player_sp = new QLabel;
         make_standard_label(label_player_sp, "SPELL POINTS:", TERM_DARK);
+        label_player_sp->setObjectName("SP_LABEL");
         label_player_sp->setToolTip(get_help_topic("character_info", "Spell Points"));
         QLabel *player_sp = new QLabel;
         make_standard_label(player_sp, " ", TERM_BLUE);
@@ -813,6 +821,7 @@ void char_basic_info(QGridLayout *return_layout)
         // Add fame
         QLabel *label_player_fame = new QLabel;
         make_standard_label(label_player_fame, "FAME:", TERM_DARK);
+        label_player_fame->setObjectName("FAME_LABEL");
         label_player_fame->setToolTip(get_help_topic("character_info", "Fame"));
         QLabel *player_fame = new QLabel;
         make_standard_label(player_fame, " ", TERM_BLUE);
@@ -825,6 +834,7 @@ void char_basic_info(QGridLayout *return_layout)
     // Add Player Gold
     QLabel *label_player_gold = new QLabel;
     make_standard_label(label_player_gold, "GOLD:", TERM_DARK);
+    label_player_gold->setObjectName("GOLD_LABEL");
     label_player_gold->setToolTip(get_help_topic("character_info", "Gold"));
     QLabel *player_gold = new QLabel;
     make_standard_label(player_gold, " ", TERM_BLUE);
@@ -845,6 +855,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add age
     QLabel *label_player_age = new QLabel;
     make_standard_label(label_player_age, "AGE:", TERM_DARK);
+    label_player_age->setObjectName("AGE_LABEL");
     label_player_age->setToolTip(get_help_topic("character_info", "Player Age"));
     QLabel *player_age = new QLabel;
     make_standard_label(player_age, " ", TERM_BLUE);
@@ -855,6 +866,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add Height
     QLabel *label_player_height = new QLabel;
     make_standard_label(label_player_height, "HEIGHT:", TERM_DARK);
+    label_player_height->setObjectName("HEIGHT_LABEL");
     label_player_height->setToolTip(get_help_topic("character_info", "Player Height"));
     QLabel *player_height = new QLabel;
     make_standard_label(player_height, " ", TERM_BLUE);
@@ -865,6 +877,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add Weight
     QLabel *label_player_weight = new QLabel;
     make_standard_label(label_player_weight, "WEIGHT:", TERM_DARK);
+    label_player_weight->setObjectName("WEIGHT_LABEL");
     label_player_weight->setToolTip(get_help_topic("character_info", "Player Weight"));
     QLabel *player_weight = new QLabel;
     make_standard_label(player_weight, " ", TERM_BLUE);
@@ -875,6 +888,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add Social Class
     QLabel *label_player_sc = new QLabel;
     make_standard_label(label_player_sc, "SOCIAL CLASS:", TERM_DARK);
+    label_player_sc->setObjectName("SC_LABEL");
     label_player_sc->setToolTip(get_help_topic("character_info", "Social Class"));
     QLabel *player_sc = new QLabel;
     make_standard_label(player_sc, " ", TERM_BLUE);
@@ -885,6 +899,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add Game Turn
     QLabel *label_player_gturn = new QLabel;
     make_standard_label(label_player_gturn, "GAME TURN:", TERM_DARK);
+    label_player_gturn->setObjectName("GAME_TURN_LABEL");
     label_player_gturn->setToolTip(get_help_topic("character_info", "Game Turn"));
     QLabel *player_gturn = new QLabel;
     make_standard_label(player_gturn, " ", TERM_BLUE);
@@ -895,6 +910,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add Player Turn
     QLabel *label_player_pturn = new QLabel;
     make_standard_label(label_player_pturn, "PLAYER TURN:", TERM_DARK);
+    label_player_pturn->setObjectName("PLAYER_TURN_LABEL");
     label_player_pturn->setToolTip(get_help_topic("character_info", "Player Turn"));
     QLabel *player_pturn = new QLabel;
     make_standard_label(player_pturn, " ", TERM_BLUE);
@@ -905,7 +921,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add current Depth
     QLabel *label_player_cur_depth = new QLabel;
     make_standard_label(label_player_cur_depth, "CUR DEPTH:", TERM_DARK);
-
+    label_player_cur_depth->setObjectName("DEPTH_CUR_LABEL");
     label_player_cur_depth->setToolTip(get_help_topic("character_info", "Current Depth"));
     QLabel *player_cur_depth = new QLabel;
     make_standard_label(player_cur_depth, " ", TERM_BLUE);
@@ -916,6 +932,7 @@ void char_basic_data(QGridLayout *return_layout)
     // Add Max Depth
     QLabel *label_player_max_depth = new QLabel;
     make_standard_label(label_player_max_depth, "MAX DEPTH:", TERM_DARK);
+    label_player_max_depth->setObjectName("DEPTH_MAX_LABEL");
     label_player_max_depth->setToolTip(get_help_topic("character_info", "Max Depth"));
     QLabel *player_max_depth = new QLabel;
     make_standard_label(player_max_depth, " ", TERM_BLUE);
@@ -926,6 +943,7 @@ void char_basic_data(QGridLayout *return_layout)
     //Infravision
     QLabel *label_player_infra = new QLabel;
     make_standard_label(label_player_infra, "INFRAVISION:", TERM_DARK);
+    label_player_infra->setObjectName("INFRA_LABEL");
     label_player_infra->setToolTip(get_help_topic("character_info", "Infravision"));
     QLabel *player_infra = new QLabel;
     make_standard_label(player_infra, " ", TERM_BLUE);
@@ -945,6 +963,7 @@ void char_game_info(QGridLayout *return_layout)
     // Add Character Level
     QLabel *label_player_lev = new QLabel;
     make_standard_label(label_player_lev, "CHAR. LEVEL:", TERM_DARK);
+    label_player_lev->setObjectName("LEVEL_LABEL");
     label_player_lev->setToolTip(get_help_topic("character_info", "Player Level"));
     QLabel *player_lev = new QLabel;
     make_standard_label(player_lev, " ", TERM_BLUE);
@@ -955,6 +974,7 @@ void char_game_info(QGridLayout *return_layout)
     // Add Player Experience
     QLabel *label_player_exp = new QLabel;
     make_standard_label(label_player_exp, "EXPERIENCE:", TERM_DARK);
+    label_player_exp->setObjectName("CUR_EXP_LABEL");
     label_player_exp->setToolTip(get_help_topic("character_info", "Player Current Experience"));
     QLabel *player_exp = new QLabel;
     player_exp->setObjectName("PLYR_Cur_Exp");
@@ -965,6 +985,7 @@ void char_game_info(QGridLayout *return_layout)
     // Add Player Maximum Experience
     QLabel *label_player_max_exp = new QLabel;
     make_standard_label(label_player_max_exp, "MAX EXP:", TERM_DARK);
+    label_player_max_exp->setObjectName("MAX_EXP_LABEL");
     label_player_max_exp->setToolTip(get_help_topic("character_info", "Player Maximum Experience"));
     QLabel *player_max_exp = new QLabel;
     player_max_exp->setObjectName("PLYR_Max_Exp");
@@ -977,6 +998,7 @@ void char_game_info(QGridLayout *return_layout)
     {
         QLabel *label_player_exp_adv = new QLabel;
         make_standard_label(label_player_exp_adv, "ADVANCE EXP:", TERM_DARK);
+        label_player_exp_adv->setObjectName("ADVANCE_LABEL");
         label_player_exp_adv->setToolTip(get_help_topic("character_info", "Player Experience Advance"));
         QLabel *player_exp_adv = new QLabel;
         make_standard_label(player_exp_adv, " ", TERM_BLUE);
@@ -989,6 +1011,7 @@ void char_game_info(QGridLayout *return_layout)
     // Add player score
     QLabel *label_player_score = new QLabel;
     make_standard_label(label_player_score, "SCORE:", TERM_DARK);
+    label_player_score->setObjectName("SCORE_LABEL");
     label_player_score->setToolTip(get_help_topic("character_info", "Player Score"));
     QLabel *player_score = new QLabel;
     make_standard_label(player_score, " ", TERM_BLUE);
@@ -999,6 +1022,7 @@ void char_game_info(QGridLayout *return_layout)
     // Add Burden
     QLabel *label_player_burden = new QLabel;
     make_standard_label(label_player_burden, "BURDEN:", TERM_DARK);
+    label_player_burden->setObjectName("BURDEN_CUR_LABEL");
     label_player_burden->setToolTip(get_help_topic("character_info", "Player Burden"));
     QLabel *player_burden = new QLabel;
     make_standard_label(player_burden, " ", TERM_BLUE);
@@ -1009,6 +1033,7 @@ void char_game_info(QGridLayout *return_layout)
     // Add Max Burden
     QLabel *label_player_burden_max = new QLabel;
     make_standard_label(label_player_burden_max, "MAX WEIGHT:", TERM_DARK);
+    label_player_burden_max->setObjectName("BURDEN_MAX_LABEL");
     label_player_burden_max->setToolTip(get_help_topic("character_info", "Max Burden"));
     QLabel *player_burden_max = new QLabel;
     make_standard_label(player_burden_max, " ", TERM_BLUE);
@@ -1019,6 +1044,7 @@ void char_game_info(QGridLayout *return_layout)
     // Add Burden %
     QLabel *label_player_burden_pct = new QLabel;
     make_standard_label(label_player_burden_pct, "% BURDEN:", TERM_DARK);
+    label_player_burden_pct->setObjectName("BURDEN_PERCENT_LABEL");
     label_player_burden_pct->setToolTip(get_help_topic("character_info", "Percent Burden"));
     QLabel *player_burden_pct = new QLabel;
     make_standard_label(player_burden_pct, " ", TERM_BLUE);
@@ -1038,22 +1064,28 @@ void char_stat_info(QGridLayout *stat_layout)
 
     QLabel *stat_header = new QLabel();
     make_standard_label(stat_header, "STAT   ", TERM_DARK);
+    stat_header->setObjectName("st_label_X");
     QLabel *self_header = new QLabel();
     make_standard_label(self_header, " SELF ", TERM_DARK);
+    self_header->setObjectName("st_base_X");
     QLabel *equip_adj_header = new QLabel();
     make_standard_label(equip_adj_header, "  EA ", TERM_DARK);
+    equip_adj_header->setObjectName("st_equip_X");
     equip_adj_header->setToolTip("Stat adjustments due to player equipment");
     QLabel *total_stat_header = new QLabel();
     make_standard_label(total_stat_header, "  TOTAL STAT", TERM_DARK);
+    total_stat_header->setObjectName("st_total_X");
     stat_layout->addWidget(stat_header, row, col++, Qt::AlignLeft);
     stat_layout->addWidget(self_header, row, col++, Qt::AlignLeft);
     if (birth_maximize)
     {
         QLabel *race_adj_header = new QLabel();
         make_standard_label(race_adj_header, "  RA ", TERM_DARK);
+        race_adj_header->setObjectName("st_race_X");
         race_adj_header->setToolTip("Stat adjustments due to player race");
         QLabel *class_adj_header = new QLabel();
         make_standard_label(class_adj_header, "  CA ", TERM_DARK);
+        class_adj_header->setObjectName("st_class_X");
         class_adj_header->setToolTip("Stat adjustments due to player class");
         stat_layout->addWidget(race_adj_header, row, col++, Qt::AlignRight);
         stat_layout->addWidget(class_adj_header, row, col++, Qt::AlignRight);
@@ -1063,6 +1095,7 @@ void char_stat_info(QGridLayout *stat_layout)
     {
         QLabel *reward_adj_header = new QLabel();
         make_standard_label(reward_adj_header, " QA ", TERM_DARK);
+        reward_adj_header->setObjectName("st_quest_X");
         reward_adj_header->setToolTip("Stat adjustments due to quest rewards");
         stat_layout->addWidget(reward_adj_header, row, col++, Qt::AlignRight);
     }
@@ -1074,10 +1107,10 @@ void char_stat_info(QGridLayout *stat_layout)
     {
         col = 0;
 
-
         // Stat label
         QLabel *stat_label = new QLabel();
         make_standard_label(stat_label, stat_names[i], TERM_DARK);
+        stat_label->setObjectName(QString("st_label_%1") .arg(i));
         stat_label->setToolTip(stat_entry(i));
         stat_layout->addWidget(stat_label, row, col++, Qt::AlignLeft);
 
@@ -1136,6 +1169,7 @@ void char_combat_info(QGridLayout *return_layout)
     // Add Speed
     QLabel *label_player_speed = new QLabel;
     make_standard_label(label_player_speed, "SPEED:", TERM_DARK);
+    label_player_speed->setObjectName("SPEED_LABEL");
     label_player_speed->setToolTip(get_help_topic("character_info", "Speed"));
     QLabel *player_speed = new QLabel;
     make_standard_label(player_speed, " ", TERM_BLUE);
@@ -1146,6 +1180,7 @@ void char_combat_info(QGridLayout *return_layout)
     // Add armor class
     QLabel *label_player_armor = new QLabel;
     make_standard_label(label_player_armor, "ARMOR:", TERM_DARK);
+    label_player_armor->setObjectName("AC_LABEL");
     label_player_armor->setToolTip(get_help_topic("character_info", "Armor Class"));
     QLabel *player_armor = new QLabel;
     make_standard_label(player_armor, " ", TERM_BLUE);
@@ -1156,6 +1191,7 @@ void char_combat_info(QGridLayout *return_layout)
     // Melee Weapon Stats
     QLabel *label_player_melee = new QLabel;
     make_standard_label(label_player_melee, "MELEE:", TERM_DARK);
+    label_player_melee->setObjectName("MELEE_LABEL");
     label_player_melee->setToolTip(get_help_topic("character_info", "Melee"));
     QLabel *player_melee = new QLabel;
     make_standard_label(player_melee, " ", TERM_BLUE);
@@ -1166,6 +1202,7 @@ void char_combat_info(QGridLayout *return_layout)
     // Add critical hit %
     QLabel *label_player_crit_hit = new QLabel;
     make_standard_label(label_player_crit_hit, "CRIT. HIT %:", TERM_DARK);
+    label_player_crit_hit->setObjectName("CRIT_HIT_LABEL");
     label_player_crit_hit->setToolTip(get_help_topic("character_info", "Critical Hit"));
     QLabel *player_crit_hit = new QLabel;
     make_standard_label(player_crit_hit, " ", TERM_BLUE);
@@ -1176,6 +1213,7 @@ void char_combat_info(QGridLayout *return_layout)
     //Shooting weapon stats
     QLabel *label_player_shoot = new QLabel;
     make_standard_label(label_player_shoot, "SHOOT:", TERM_DARK);
+    label_player_shoot->setObjectName("SHOOTING_LABEL");
     label_player_shoot->setToolTip(get_help_topic("character_info", "Shooting Stats"));
     QLabel *player_shoot = new QLabel;
     make_standard_label(player_shoot, " ", TERM_BLUE);
@@ -1186,6 +1224,7 @@ void char_combat_info(QGridLayout *return_layout)
     // Searching frequency - frequency is inverted
     QLabel *label_player_search_freq = new QLabel;
     make_standard_label(label_player_search_freq, "SEARCH FREQ:", TERM_DARK);
+    label_player_search_freq->setObjectName("SRCH_FREQ_LABEL");
     label_player_search_freq->setToolTip(get_help_topic("character_info", "Search Frequency"));
     QLabel *player_search_freq = new QLabel;
     make_standard_label(player_search_freq, " ", TERM_BLUE);
@@ -1196,6 +1235,7 @@ void char_combat_info(QGridLayout *return_layout)
     // Searching chance
     QLabel *label_player_search_chance = new QLabel;
     make_standard_label(label_player_search_chance, "SEARCH CHANCE:", TERM_DARK);
+    label_player_search_chance->setObjectName("SRCH_CHANCE_LABEL");
     label_player_search_chance->setToolTip(get_help_topic("character_info", "Search Chance"));
     QLabel *player_search_chance = new QLabel;
     make_standard_label(player_search_chance," ", TERM_BLUE);
@@ -1206,6 +1246,7 @@ void char_combat_info(QGridLayout *return_layout)
     //Digging
     QLabel *label_player_dig = new QLabel;
     make_standard_label(label_player_dig, "TUNNEL:", TERM_DARK);
+    label_player_dig->setObjectName("TUNNEL_LABEL");
     label_player_dig->setToolTip(get_help_topic("character_info", "Tunneling"));
     QLabel *player_dig = new QLabel;
     make_standard_label(player_dig, " ", TERM_BLUE);
@@ -1985,8 +2026,6 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     vlay_stat_info->addLayout(stat_info);
     vlay_stat_info->addStretch(1);
 
-
-
     // Object Info
     QGridLayout *equip_info = new QGridLayout;
     main_layout->addLayout(equip_info);
@@ -2050,13 +2089,15 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     QSize this_size = QSize(width() * 21 / 8, height() * 5 / 3);
     resize(ui_max_widget_size(this_size));
     updateGeometry();
-
-    this->exec();
 }
 
 
 
 void do_cmd_character_screen()
 {
-    PlayerScreenDialog();
+    PlayerScreenDialog dlg;
+
+    dlg.exec();
+
+
 }

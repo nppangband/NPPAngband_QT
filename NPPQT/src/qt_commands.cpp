@@ -71,6 +71,7 @@ static struct command_desc list_commands_new[] =
     {"Save Character", "CTRL-S"},
     {"Save Character and Close Game", "CTRL-X"},
     {"Save Character As", "CTRL-W"},
+    {"Save Character Dump", "SHIFT-ALT-C"},
     {"Save Screenshot (html file)", ")"},
     {"Save Screenshot (png file", "("},
     {"Search", "s"},
@@ -141,6 +142,7 @@ static struct command_desc list_commands_angband[] =
     {"Save Character", "CTRL-S"},
     {"Save Character and Close Game", "CTRL-X"},
     {"Save Character As", "CTRL-W"},
+    {"Save Character Dump", "SHIFT-ALT-C"},
     {"Save Screenshot (html file)", ")"},
     {"Save Screenshot (png file", "("},
     {"Search", "s"},
@@ -215,6 +217,7 @@ static struct command_desc list_commands_roguelike[] =
     {"Save Character", "CTRL-S"},
     {"Save Character and Close Game", "CTRL-X"},
     {"Save Character As", "CTRL-W"},
+    {"Save Character Dump", "SHIFT-ALT-C"},
     {"Save Screenshot (html file)", ")"},
     {"Save Screenshot (png file", "("},
     {"Search", "s"},
@@ -624,7 +627,8 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_C:
         case Qt::Key_0:
         {
-            if (shift_key)          do_cmd_character_screen();
+            if (shift_key && alt_key) save_character_file();
+            else if (shift_key)     do_cmd_character_screen();
             else if (!using_mods)   do_cmd_close(DIR_UNKNOWN);
             break;
         }
@@ -885,7 +889,8 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_C:
         {
-            if (shift_key)          do_cmd_character_screen();
+            if (shift_key && alt_key) save_character_file();
+            else if (shift_key)     do_cmd_character_screen();
             else if (!using_mods)   do_cmd_close(DIR_UNKNOWN);
             break;
         }
@@ -1180,7 +1185,8 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         }
         case Qt::Key_C:
         {
-            if (shift_key)          do_cmd_character_screen();
+            if (shift_key && alt_key) save_character_file();
+            else if (shift_key)     do_cmd_character_screen();
             else if (!using_mods)   do_cmd_close(DIR_UNKNOWN);
             break;
         }

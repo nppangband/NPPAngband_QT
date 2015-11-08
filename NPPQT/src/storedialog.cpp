@@ -51,17 +51,6 @@ void launch_store(int store_idx)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-static void clear_grid(QGridLayout *lay)
-{
-    QLayoutItem *item;
-    while ((item = lay->takeAt(0)) != 0)
-    {
-        QWidget *wid = item->widget();
-        if (wid) delete wid;
-        delete item;
-    }
-}
-
 void StoreDialog::add_weight_label(QGridLayout *lay, object_type *o_ptr, int row, int col)
 {
     // Add the weight
@@ -495,7 +484,7 @@ void StoreDialog::reset_store()
     }
 
     // Remove previous items
-    clear_grid(lay);
+    clear_layout(lay);
     int row = 0;
     int col = 2;
 
@@ -737,7 +726,7 @@ void StoreDialog::reset_inventory()
         tab->setLayout(lay);
     }
     // Remove previous items
-    clear_grid(lay);
+    clear_layout(lay);
     int row = 0;
     lay->addWidget(new QLabel("Weight"), row, 2);
     if (!home)
@@ -817,7 +806,7 @@ void StoreDialog::reset_equip()
         tab->setLayout(lay);
     }
     // Remove previous items
-    clear_grid(lay);
+    clear_layout(lay);
     int n = 0;
     int i;
     int row = 0;

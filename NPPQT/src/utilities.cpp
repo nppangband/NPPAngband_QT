@@ -175,6 +175,8 @@ QString number_to_formatted_string(s32b number)
     bool is_negative = TRUE;
     if (number >= 0) is_negative = FALSE;
 
+    if (!number) return (QString("0"));
+
     QString formatted_num;
     formatted_num.clear();
 
@@ -379,6 +381,29 @@ QColor add_preset_color(int which_color)
     return (color);
 }
 
+QString html_string_to_plain_text(QString text)
+{
+    text.remove(QRegExp("<[^>]*>"));
+    return (text);
+}
+
+// Get an html string to a certain length, not factoring in the html tags
+// This can only make a string longer, not shorter
+QString set_html_string_length(QString html_string, int length, bool prepend)
+{
+    QString plain_string = html_string_to_plain_text(html_string);
+
+    while (plain_string.length() < length)
+    {
+        if (prepend)    html_string.prepend(" ");
+        else            html_string.append(" ");
+
+        if (prepend)    plain_string.prepend(" ");
+        else            plain_string.append(" ");
+    }
+
+    return (html_string);
+}
 
 
 // Returns a QString in any 16 bit color, in HTML format
@@ -662,6 +687,16 @@ QString to_ascii(QString src)
     }
 
     return src;
+}
+
+// The QT version doesn't work all that great
+bool strings_match(QString string1, QString string2)
+{
+    if (string1.isEmpty() || string2.isEmpty()) return (FALSE);
+    if (string1.length() != string2.length()) return (FALSE);
+    if (!string1.contains(string2)) return (FALSE);
+    if (!string2.contains(string1)) return (FALSE);
+    return (TRUE);
 }
 
 /*

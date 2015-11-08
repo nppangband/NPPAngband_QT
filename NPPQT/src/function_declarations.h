@@ -160,6 +160,7 @@ extern void change_player_level(void);
 
 // file_output.cpp
 void save_screenshot(byte do_png);
+void save_character_file(void);
 
 // hotkeys.cpp
 extern void clear_all_hotkeys();
@@ -934,6 +935,8 @@ extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
 extern s16b get_quantity(QString prompt, int max, int amt, bool allow_zero);
 extern QColor add_preset_color(int which_color);
+extern QString html_string_to_plain_text(QString text);
+extern QString set_html_string_length(QString html_string, int length, bool prepend);
 extern QString color_string(QString msg, byte which_color);
 extern QString color_string(QString msg, QColor which_color);
 
@@ -946,6 +949,7 @@ extern QColor get_object_color(object_type *o_ptr);
 extern QColor make_color_readable(QColor clr);
 extern void display_info_window(byte mode, int index, QString info);
 extern QString to_ascii(QString src);
+extern bool strings_match(QString string1, QString string2);
 extern QString cnv_stat(int val);
 extern void write_note(QString note, s16b depth);
 extern QString find_roman_numeral(QString full_name);
