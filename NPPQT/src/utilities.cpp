@@ -427,6 +427,27 @@ QString color_string(QString msg, byte color_num)
     return (color_string(msg, msg_color));
 }
 
+// Returns a character in any 16 bit color, in HTML format
+QString color_char(QChar which_char, QColor which_color)
+{
+    return (QString("<font color='%1'>%2</font>").arg(which_color.name()).arg(which_char));
+}
+
+/*
+ *  returns a character with a preset color
+ *  Colors are in 24-bit hex RGB format (#000000 - #FFFFFF)
+ *  Keep this current with preset_colors table in tables.c.
+ */
+QString color_char(QChar which_char, byte color_num)
+{
+    // Paranoia
+    if (color_num >= MAX_COLORS) color_num = TERM_WHITE;
+
+    QColor msg_color = defined_colors[color_num];
+
+    return (color_char(which_char, msg_color));
+}
+
 
 static bool repeat_prev_allowed;
 

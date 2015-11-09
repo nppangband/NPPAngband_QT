@@ -10,6 +10,7 @@ enum
     FLAGS_RESIST = 0,
     FLAGS_ABILITY,
     FLAGS_NATIVITY,
+    PVAL_MODIFIERS,
 };
 
 
@@ -55,4 +56,10 @@ extern byte analyze_speed_bonuses(int speed, byte default_attr);
 extern void make_standard_label(QLabel *this_label, QString title, byte preset_color, QFont this_font);
 extern void make_standard_label(QLabel *this_label, QString title, byte preset_color);
 extern void update_char_screen(QWidget *return_widget);
+
+extern player_flag_record player_resist_table[];
+extern player_flag_record player_abilities_table[];
+extern player_flag_record player_pval_table[];
+extern player_flag_record player_nativity_table[];
+
 #endif // PLAYER_SCREEN_H

@@ -939,7 +939,8 @@ extern QString html_string_to_plain_text(QString text);
 extern QString set_html_string_length(QString html_string, int length, bool prepend);
 extern QString color_string(QString msg, byte which_color);
 extern QString color_string(QString msg, QColor which_color);
-
+extern QString color_char(QChar which_char, QColor which_color);
+extern QString color_char(QChar which_char, byte color_num);
 extern void cmd_enable_repeat(void);
 extern void cmd_disable_repeat(void);
 extern QString format_object_weight(object_type *o_ptr);

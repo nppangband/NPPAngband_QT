@@ -26,7 +26,7 @@
 #include <QScrollArea>
 
 // The null line is there to prevent crashes as the data is read;
-static struct player_flag_record player_resist_table[] =
+player_flag_record player_resist_table[] =
 {
     { "Resist Acid",        2, TR2_RES_ACID,	TR2_IM_ACID, TRUE, FALSE},
     { "Resist Lightning",   2, TR2_RES_ELEC,	TR2_IM_ELEC, TRUE, FALSE},
@@ -48,7 +48,7 @@ static struct player_flag_record player_resist_table[] =
 };
 
 // The null line is there to prevent crashes as the data is read;
-static struct player_flag_record player_abilities_table[] =
+player_flag_record player_abilities_table[] =
 {
     { "See Invisible",      3, TR3_SEE_INVIS, 	0, TRUE, FALSE},
     { "Free Action",        3, TR3_FREE_ACT, 	0, TRUE, FALSE},
@@ -67,7 +67,7 @@ static struct player_flag_record player_abilities_table[] =
 
 // The null line is there to prevent crashes as the data is read;
 //The stats need to come first and in order for the stat tooltips to work properly
-static struct player_flag_record player_pval_table[] =
+player_flag_record player_pval_table[] =
 {
     { "Strength",           1, TR1_STR,         TR2_SUST_STR, TRUE, FALSE},
     { "Intelligence",       1, TR1_INT,         TR2_SUST_INT, TRUE, FALSE},
@@ -87,7 +87,7 @@ static struct player_flag_record player_pval_table[] =
 };
 
 // The null line is there to prevent crashes as the data is read;
-static struct player_flag_record player_nativity_table[]=
+player_flag_record player_nativity_table[]=
 {
     { "Lava",   4,  TN1_NATIVE_LAVA,    0, FALSE, FALSE},
     { "Ice",    4,  TN1_NATIVE_ICE,     0, FALSE, FALSE},
@@ -1356,8 +1356,10 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
     {
         QLabel *this_lbl = all_lbl_list.at(j);
 
+        QString this_name = this_lbl->objectName();
+
         // Labels with an object name should be preserved.
-        if(this_lbl->objectName().length()) continue;
+        if(!this_name.contains("obj_info_")) continue;
         return_layout->removeWidget(this_lbl);
         delete this_lbl;
     }
@@ -1402,7 +1404,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 {
 
                     QLabel *immune_label = new QLabel();
-                    make_standard_label(immune_label, "✓", TERM_BLUE, this_font);
+                    make_standard_label(immune_label, "+", TERM_BLUE, this_font);
+                    immune_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     return_layout->addWidget(immune_label, row, col, Qt::AlignCenter);
 
                     // Too messy to inlude in player_flag_table
@@ -1444,7 +1447,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
             did_resist = TRUE;
 
             QLabel *resist_label = new QLabel();
-            make_standard_label(resist_label, "✓", TERM_GREEN, this_font);
+            make_standard_label(resist_label, "+", TERM_GREEN, this_font);
+            resist_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
             return_layout->addWidget(resist_label, row, col, Qt::AlignCenter);
         }
 
@@ -1491,15 +1495,17 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         if (player_has_immunity)
         {
             QLabel *player_label = new QLabel;
-            make_standard_label(player_label, "✓", TERM_GREEN, this_font);
+            make_standard_label(player_label, "+", TERM_GREEN, this_font);
             player_label->setToolTip("Inate immunity");
+            player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
             did_immunity = TRUE;
         }
         else if (player_has_flag)
         {
             QLabel *player_label = new QLabel();
-            make_standard_label(player_label, "✓", TERM_BLUE, this_font);
+            make_standard_label(player_label, "+", TERM_BLUE, this_font);
+            player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
             did_resist = TRUE;
         }
@@ -1514,7 +1520,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if (p_ptr->timed[TMD_OPP_ACID] && !redundant_timed_event(TMD_OPP_ACID))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You temporarily resist fire.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1525,7 +1532,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if (p_ptr->timed[TMD_OPP_ELEC] && !redundant_timed_event(TMD_OPP_ELEC))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You temporarily resist lightning.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1536,7 +1544,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if (p_ptr->timed[TMD_OPP_FIRE] && !redundant_timed_event(TMD_OPP_FIRE))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You temporarily resist fire.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1547,7 +1556,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if (p_ptr->timed[TMD_OPP_COLD] && !redundant_timed_event(TMD_OPP_COLD))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You temporarily resist cold.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1558,7 +1568,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if (p_ptr->timed[TMD_OPP_POIS] && !redundant_timed_event(TMD_OPP_POIS))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You temporarily resist poison.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1569,7 +1580,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if (p_ptr->timed[TMD_HERO] || p_ptr->timed[TMD_BERSERK])
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You are temporarily immune to fear.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1583,7 +1595,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if ((p_ptr->timed[TMD_SINVIS])  && !redundant_timed_event(TMD_SINVIS))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You can temporarily see invisible creatures.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1597,7 +1610,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if ((p_ptr->timed[TMD_NAT_LAVA]) && !redundant_timed_event(TMD_NAT_LAVA))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You are temporarily native to lava terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1608,7 +1622,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if ((p_ptr->timed[TMD_NAT_OIL]) && !redundant_timed_event(TMD_NAT_OIL))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You are temporarily native to oily terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1619,7 +1634,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if ((p_ptr->timed[TMD_NAT_SAND]) && !redundant_timed_event(TMD_NAT_SAND))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You are temporarily native to sandy terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1630,7 +1646,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if ((p_ptr->timed[TMD_NAT_TREE]) && !redundant_timed_event(TMD_NAT_TREE))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You are temporarily native to forest terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1641,7 +1658,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if ((p_ptr->timed[TMD_NAT_WATER]) && !redundant_timed_event(TMD_NAT_WATER))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You are temporarily native to watery terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1652,7 +1670,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 if ((p_ptr->timed[TMD_NAT_MUD]) && !redundant_timed_event(TMD_NAT_MUD))
                 {
                     QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "✓", TERM_PURPLE, this_font);
+                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
+                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     temp_label->setToolTip("You are temporarily native to muddy terrains.");
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
@@ -1660,7 +1679,7 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
             }
         }
 
-        int attr = TERM_RED;
+        int attr = TERM_DARK;
         if (did_immunity) attr = TERM_BLUE;
         else if (did_resist && did_temp_resist) attr = TERM_PURPLE;
         else if (did_resist || did_temp_resist) attr = TERM_GREEN;
@@ -1668,8 +1687,7 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         // Hack reverse the colors for bad flags
         if (pfr_ptr->bad_flag)
         {
-            if (attr == TERM_RED) attr = TERM_GREEN;
-            else attr = TERM_RED;
+            if (attr != TERM_DARK) attr = TERM_RED;
         }
 
         QList<QLabel *> lbl_list = this_widget->findChildren<QLabel *>();
@@ -1681,7 +1699,7 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
             QString this_name = this_lbl->objectName();
 
             //Not a named label
-            if (this_name.contains(QString("line_label_%1_%2") .arg(flag_set) .arg(row)))
+            if (this_name.contains(QString("line_label_%1_%2") .arg(flag_set) .arg(row-1)))
             {
                 this_lbl->setText(QString("<b>%1</b>") .arg(color_string(pfr_ptr->name, attr)));
                 this_lbl->setFont(this_font);
@@ -1732,7 +1750,7 @@ void equip_flag_info(QWidget *this_widget, QGridLayout *return_layout, int flag_
 
         QLabel *line_label = new QLabel;
         make_standard_label(line_label, pfr_ptr->name, TERM_GREEN, this_font);
-        line_label->setObjectName(QString("line_label_%1_%2") .arg(flag_set) .arg(row));
+        line_label->setObjectName(QString("line_label_%1_%2") .arg(flag_set) .arg(row-1));
         if (pfr_ptr->set == 2)
         {
             // Too messy to include in the charts
@@ -1869,7 +1887,8 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
             // Nothing to mark
             if (!this_flag && !this_extra_flag) continue;
 
-            int attr = TERM_GREEN;
+            int attr = TERM_DARK;
+            if (o_ptr->pval > 0) attr = TERM_GREEN;
             if (o_ptr->pval < 0) attr = TERM_RED;
             QString pval_num = (QString("%1") .arg(o_ptr->pval));
             if (o_ptr->tval > 0) pval_num.prepend("+");
@@ -1882,12 +1901,14 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
 
             QLabel *pval_label = new QLabel();
             make_standard_label(pval_label, pval_num, attr, this_font);
+            pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
             return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
 
             cumulative += o_ptr->pval;
         }
 
-        int attr = TERM_GREEN;
+        int attr = TERM_DARK;
+        if (cumulative > 0) attr = TERM_GREEN;
         if (cumulative < 0) attr = TERM_RED;
         if (has_extra_flag)
         {
@@ -1904,7 +1925,7 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
             QString this_name = this_lbl->objectName();
 
             //Not a named label
-            if (this_name.contains(QString("line_label_4_%2") .arg(row)))
+            if (this_name.contains(QString("line_label_%1_%2") .arg(PVAL_MODIFIERS) .arg(row-1)))
             {
                 this_lbl->setText(QString("<b>%1</b>") .arg(color_string(pfr_ptr->name, attr)));
                 this_lbl->setFont(this_font);
@@ -1939,7 +1960,7 @@ void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont
 
         QLabel *line_label = new QLabel;
         make_standard_label(line_label, pfr_ptr->name, TERM_WHITE, this_font);
-        line_label->setObjectName(QString("line_label_4_%2") .arg(row));
+        line_label->setObjectName(QString("line_label_%1_%2") .arg(PVAL_MODIFIERS) .arg(row-1));
 
         if (pfr_ptr->set == 1)
         {
@@ -1975,9 +1996,8 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     // Title Box
     QVBoxLayout *title_line = new QVBoxLayout;
     main_layout->addLayout(title_line);
-    QLabel *main_prompt = new QLabel(QString("<h2>Character Information %1 %2 </h2>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
+    QLabel *main_prompt = new QLabel(QString("<h2>Character Information %1 %2 </h2><br><br>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
     title_line->addWidget(main_prompt, Qt::AlignCenter);
-    main_layout->addStretch(1);
 
     // Char info line
     QHBoxLayout *char_info = new QHBoxLayout;
@@ -2025,6 +2045,15 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     char_stat_info(stat_info);
     vlay_stat_info->addLayout(stat_info);
     vlay_stat_info->addStretch(1);
+
+    // Title Box
+    QVBoxLayout *player_hist = new QVBoxLayout;
+    main_layout->addLayout(player_hist);
+    QString desc = color_string((QString("<br><b>%1</b><br>") .arg(p_ptr->history)), TERM_BLUE);
+    int first_space = desc.indexOf(' ', 95, Qt::CaseInsensitive);
+    desc.replace(first_space, 1, QString("<br>"));
+    QLabel *player_desc = new QLabel(desc);
+    player_hist->addWidget(player_desc);
 
     // Object Info
     QGridLayout *equip_info = new QGridLayout;

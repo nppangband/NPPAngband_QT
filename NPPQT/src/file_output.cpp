@@ -23,6 +23,20 @@
 #include <src/init.h>
 #include <src/player_screen.h>
 
+#define RESIST_TABLE_LENGTH 34
+#define EQUIPPY_TABLE_LENGTH (INVEN_TOTAL - INVEN_WIELD + 2)
+#define RESIST_LABEL_LENGTH (RESIST_TABLE_LENGTH - EQUIPPY_TABLE_LENGTH)
+
+#define ABILITIES_TABLE_LENGTH 30
+#define ABILITIES_LABEL_LENGTH (ABILITIES_TABLE_LENGTH - EQUIPPY_TABLE_LENGTH)
+
+#define NATIVITY_TABLE_LENGTH 34
+#define NATIVITY_LABEL_LENGTH (NATIVITY_TABLE_LENGTH - EQUIPPY_TABLE_LENGTH)
+
+#define MODIFIERS_TABLE_LENGTH 64
+#define EQUIPPY_MODIFIERS_LENGTH ((INVEN_TOTAL - INVEN_WIELD) * 4)
+#define MODIFIERS_LABEL_LENGTH (MODIFIERS_TABLE_LENGTH - EQUIPPY_MODIFIERS_LENGTH)
+
 // Helper function to check if the color is white
 static bool is_white(QColor this_color)
 {
@@ -311,7 +325,7 @@ static QString combine_strings(QString string_1, QString string_2, int max_lengt
 static QString make_stat_string(QString stat_label, QString stat_base, QString stat_race, QString stat_class,
                                 QString stat_equip, QString stat_quest, QString stat_total, QString stat_reduced)
 {
-    QString return_string = set_html_string_length(stat_label, 8, FALSE);
+    QString return_string = set_html_string_length(stat_label, 6, FALSE);
 
     // get rid of spaces
     stat_base.remove(" ");
@@ -324,8 +338,6 @@ static QString make_stat_string(QString stat_label, QString stat_base, QString s
 
     stat_base = set_html_string_length(stat_base, 6, TRUE);
     return_string.append(stat_base);
-
-
 
     if (birth_maximize)
     {
@@ -354,6 +366,54 @@ static QString make_stat_string(QString stat_label, QString stat_base, QString s
     }
 
     return (return_string);
+}
+
+static QString blank_string(byte length)
+{
+    // Paranoia
+    if (length < 1) return (QString(""));
+
+    QString blanks;
+
+    blanks.fill(' ', length);
+
+    return (blanks);
+}
+
+static QString make_equippy(bool do_player, bool do_temp, bool modifiers)
+{
+    QString equippy;
+    equippy.clear();
+
+    for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
+    {
+        object_type *o_ptr = &inventory[i];
+
+        if (!o_ptr->k_idx)
+        {
+            if (modifiers) equippy.append("    ");
+            else equippy.append(" ");
+            continue;
+        }
+
+        object_kind *k_ptr = &k_info[o_ptr->k_idx];
+
+        if (modifiers) equippy.append(QString("  %1 ") .arg(color_char(k_ptr->d_char, k_ptr->d_color)));
+        else equippy.append(color_char(k_ptr->d_char, k_ptr->d_color));
+    }
+
+    if (do_player)
+    {
+        if (modifiers) equippy.append("  @ ");
+        else equippy.append("@");
+    }
+    if (do_temp)
+    {
+        if (modifiers) equippy.append("  t ");
+        else equippy.append("t");
+    }
+
+    return (equippy);
 }
 
 /* Save a character file
@@ -580,16 +640,350 @@ void save_character_file(void)
             if (strings_match(this_name, combat_info_info)) combat_info_info = this_lbl->text();
         }
 
-        out << combine_strings(game_info_label, game_info_info, 22);
+        out << combine_strings(game_info_label, game_info_info, 25);
         out << combine_strings(combat_info_label, combat_info_info, 40);
         out << QString("<br>");
-
     }
 
+    // Print character description
+    QString desc = color_string(p_ptr->history, TERM_BLUE);
 
-    out << QString("</pre>");
-    out << QString("</body>");
-    out << QString("</html>");
+    int first_space = desc.indexOf(' ', 85, Qt::CaseInsensitive);
+
+    desc.replace(first_space, 1, QString("<br>"));
+
+    out << QString("<br>") << desc << QString("<br><br>");
+
+    // Print out the resists and abilities
+
+    //Equippy row
+    QString equippy = make_equippy(TRUE, TRUE, FALSE);
+
+    // Title Row
+    QString output = "Resistance Information";
+    while (output.length() < RESIST_TABLE_LENGTH)
+    {
+        if (output.length() % 2) output.append(' ');
+        else output.prepend(' ');
+    }
+
+    out << QString("<br><br>") << QString(output) << blank_string(5);
+
+    output = "Ability Information";
+    while (output.length() < ABILITIES_TABLE_LENGTH)
+    {
+        if (output.length() % 2) output.append(' ');
+        else output.prepend(' ');
+    }
+    out << QString(output) << QString("<br>");
+
+    out << blank_string(RESIST_LABEL_LENGTH) << equippy;
+    out << blank_string(ABILITIES_LABEL_LENGTH+6) <<equippy << QString("<br>");
+
+    bool resist_table = TRUE;
+    bool ability_table = TRUE;
+    int row = 0;
+
+    while (resist_table || ability_table)
+    {
+        if (resist_table)
+        {
+            player_flag_record *pfr_ptr = &player_resist_table[row];
+
+            if (pfr_ptr->name.isNull()) resist_table = FALSE;
+
+            // If in Moria, make sure the flag is used.
+            if ((game_mode == GAME_NPPMORIA && resist_table))
+            {
+                if (!pfr_ptr->moria_flag) out << blank_string(RESIST_TABLE_LENGTH);
+            }
+
+            else if (resist_table)
+            {
+                QString resist_output = (QString("line_label_%1_%2") .arg(FLAGS_RESIST) .arg(row));
+                QString inven_chars[EQUIPPY_TABLE_LENGTH];
+                for (int x = 0; x < (EQUIPPY_TABLE_LENGTH); x++)
+                {
+                    inven_chars[x] = '.';
+                }
+
+                QString test_string = (QString("obj_flag_info_%1_%2_") .arg(FLAGS_RESIST) .arg(row));
+
+                //Find the values
+                for (int x = 0; x < lbl_list.size(); x++)
+                {
+                    QLabel *this_lbl = lbl_list.at(x);
+
+                    QString this_name = this_lbl->objectName();
+
+                    if (!this_name.length()) continue;
+                    if (strings_match(this_name, resist_output))
+                    {
+                        resist_output = this_lbl->text();
+                        continue;
+                    }
+
+                    if (this_name.contains(test_string))
+                    {
+                        bool ok;
+                        this_name.remove(test_string);
+
+                        int column = this_name.toInt(&ok);
+
+                        if(ok) inven_chars[column] = this_lbl->text();
+
+                        continue;
+                    }
+                }
+
+                resist_output = set_html_string_length(resist_output, RESIST_LABEL_LENGTH, FALSE);
+
+                for (int x = 0; x < (EQUIPPY_TABLE_LENGTH); x++)
+                {
+                    resist_output.append(inven_chars[x]);
+                }
+
+                output.append(' ');
+
+                out  << resist_output << blank_string(6);
+            }
+
+            else out << blank_string(RESIST_TABLE_LENGTH + 6);
+        }
+        else out << blank_string(RESIST_TABLE_LENGTH + 6);
+
+        if (ability_table)
+        {
+            player_flag_record *pfr_ptr = &player_abilities_table[row];
+
+            if (pfr_ptr->name.isNull()) ability_table = FALSE;
+
+            // If in Moria, make sure the flag is used.
+            if ((game_mode == GAME_NPPMORIA && ability_table))
+            {
+                if (!pfr_ptr->moria_flag) out << blank_string(ABILITIES_TABLE_LENGTH);
+            }
+
+            else if (ability_table)
+            {
+                QString ability_output = (QString("line_label_%1_%2") .arg(FLAGS_ABILITY) .arg(row));
+                QString inven_chars[EQUIPPY_TABLE_LENGTH];
+                for (int x = 0; x < EQUIPPY_TABLE_LENGTH; x++)
+                {
+                    inven_chars[x] = '.';
+                }
+
+                QString test_string = (QString("obj_flag_info_%1_%2_") .arg(FLAGS_ABILITY) .arg(row));
+
+                //Find the values
+                for (int x = 0; x < lbl_list.size(); x++)
+                {
+                    QLabel *this_lbl = lbl_list.at(x);
+
+                    QString this_name = this_lbl->objectName();
+
+                    if (!this_name.length()) continue;
+                    if (strings_match(this_name, ability_output))
+                    {
+                        ability_output = this_lbl->text();
+                        continue;
+                    }
+
+                    if (this_name.contains(test_string))
+                    {
+                        bool ok;
+                        this_name.remove(test_string);
+
+                        int column = this_name.toInt(&ok);
+
+                        if(ok) inven_chars[column] = this_lbl->text();
+
+                        continue;
+                    }
+                }
+
+                ability_output = set_html_string_length(ability_output, ABILITIES_LABEL_LENGTH, FALSE);
+
+                for (int x = 0; x < EQUIPPY_TABLE_LENGTH; x++)
+                {
+                    ability_output.append(inven_chars[x]);
+                }
+
+                output.append(' ');
+
+                out  << ability_output;
+            }
+        }
+
+        out << QString("<br>");
+
+        row++;
+    }
+
+    output = "Nativity Information";
+    while (output.length() < NATIVITY_TABLE_LENGTH)
+    {
+        if (output.length() % 2) output.append(' ');
+        else output.prepend(' ');
+    }
+
+    out << QString("<br><br>") << QString(output) << blank_string(5);
+
+    output = "Equipment Modification";
+    while (output.length() < MODIFIERS_TABLE_LENGTH)
+    {
+        if (output.length() % 2) output.append(' ');
+        else output.prepend(' ');
+    }
+    out << QString(output) << QString("<br>");
+
+    out << blank_string(NATIVITY_LABEL_LENGTH) << equippy;
+
+    equippy = make_equippy(FALSE, FALSE, TRUE);
+    out << blank_string(MODIFIERS_LABEL_LENGTH+7) << equippy << QString("<br>");
+
+    bool nativity_table = TRUE;
+    bool modifiers_table = TRUE;
+    row = 0;
+
+    while (nativity_table || modifiers_table)
+    {
+        if (nativity_table)
+        {
+            player_flag_record *pfr_ptr = &player_nativity_table[row];
+
+            if (pfr_ptr->name.isNull()) nativity_table = FALSE;
+
+            // If in Moria, make sure the flag is used.
+            if ((game_mode == GAME_NPPMORIA && nativity_table))
+            {
+                if (!pfr_ptr->moria_flag) out << blank_string(NATIVITY_TABLE_LENGTH);
+            }
+
+            else if (nativity_table)
+            {
+                QString nativity_output = (QString("line_label_%1_%2") .arg(FLAGS_NATIVITY) .arg(row));
+                QString inven_chars[EQUIPPY_TABLE_LENGTH];
+                for (int x = 0; x < (EQUIPPY_TABLE_LENGTH); x++)
+                {
+                    inven_chars[x] = '.';
+                }
+
+                QString test_string = (QString("obj_flag_info_%1_%2_") .arg(FLAGS_NATIVITY) .arg(row));
+
+                //Find the values
+                for (int x = 0; x < lbl_list.size(); x++)
+                {
+                    QLabel *this_lbl = lbl_list.at(x);
+
+                    QString this_name = this_lbl->objectName();
+
+                    if (!this_name.length()) continue;
+                    if (strings_match(this_name, nativity_output))
+                    {
+                        nativity_output = this_lbl->text();
+                        continue;
+                    }
+
+                    if (this_name.contains(test_string))
+                    {
+                        bool ok;
+                        this_name.remove(test_string);
+
+                        int column = this_name.toInt(&ok);
+
+                        if(ok) inven_chars[column] = this_lbl->text();
+
+                        continue;
+                    }
+                }
+
+                nativity_output = set_html_string_length(nativity_output, NATIVITY_LABEL_LENGTH, FALSE);
+
+                for (int x = 0; x < (EQUIPPY_TABLE_LENGTH); x++)
+                {
+                    nativity_output.append(inven_chars[x]);
+                }
+
+                output.append(' ');
+
+                out  << nativity_output << blank_string(6);
+            }
+            else out << blank_string(NATIVITY_TABLE_LENGTH + 6);
+        }
+        else out << blank_string(NATIVITY_TABLE_LENGTH + 6);
+
+        if (modifiers_table)
+        {
+            player_flag_record *pfr_ptr = &player_pval_table[row];
+
+            if (pfr_ptr->name.isNull()) modifiers_table = FALSE;
+
+            // If in Moria, make sure the flag is used.
+            if ((game_mode == GAME_NPPMORIA && modifiers_table))
+            {
+                if (!pfr_ptr->moria_flag) out << blank_string(MODIFIERS_TABLE_LENGTH);
+            }
+
+            else if (modifiers_table)
+            {
+                QString modifiers_output = (QString("line_label_%1_%2") .arg(PVAL_MODIFIERS) .arg(row));
+                QString inven_chars[EQUIPPY_TABLE_LENGTH-2];
+                for (int x = 0; x < (EQUIPPY_TABLE_LENGTH-2); x++)
+                {
+                    inven_chars[x] = "   .";
+                }
+
+                QString test_string = (QString("obj_mod_info_%1_%2_") .arg(PVAL_MODIFIERS) .arg(row));
+
+                //Find the values
+                for (int x = 0; x < lbl_list.size(); x++)
+                {
+                    QLabel *this_lbl = lbl_list.at(x);
+
+                    QString this_name = this_lbl->objectName();
+
+                    if (!this_name.length()) continue;
+                    if (strings_match(this_name, modifiers_output))
+                    {
+                        modifiers_output = this_lbl->text();
+                        continue;
+                    }
+
+                    if (this_name.contains(test_string))
+                    {
+                        bool ok;
+                        this_name.remove(test_string);
+
+                        int column = this_name.toInt(&ok);
+
+                        QString this_text = this_lbl->text();
+
+                        this_text = set_html_string_length(this_text, 4, TRUE);
+
+                        inven_chars[column] = this_text;
+
+                        continue;
+                    }
+                }
+
+                modifiers_output = set_html_string_length(modifiers_output, MODIFIERS_LABEL_LENGTH, FALSE);
+
+                for (int x = 0; x < (EQUIPPY_TABLE_LENGTH-2); x++)
+                {
+                    modifiers_output.append(inven_chars[x]);
+                }
+                out  << modifiers_output;
+            }
+        }
+        else out << blank_string(NATIVITY_TABLE_LENGTH + 6);
+
+        out << QString("<br>");
+
+        row++;
+    }
+
+    out << QString("<br></pre></body></html>");
 
     char_info_file.close();
 }
