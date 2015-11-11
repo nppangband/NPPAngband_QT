@@ -182,6 +182,7 @@ extern void do_hotkey_import(QString file_name);
 extern bool make_attack_normal(monster_type *m_ptr);
 
 // messages.cpp
+extern QString output_messages(byte max_messages);
 extern void message(QString msg);
 extern void color_message(QString msg, int which_color);
 extern void color_message(QString msg, byte red, byte green, byte blue);

@@ -182,9 +182,6 @@ int quest_collection_num(quest_type *q_ptr)
 
 /*
  * Provide a description of the quest
- * QMODE_HALF - describes quest
- * QMODE_HALF_2 - describes depth of quest
- * QMODE_FULL - describes both quest and depth
  */
 QString describe_quest(s16b level)
 {

@@ -81,7 +81,7 @@ void update_message_area(QTextEdit *message_area, int max_messages, QFont messag
         }
 
         // Add a linebreak if needed.
-        if (num_messages) next_message.append("\n");
+        if (num_messages) next_message.append("<br>");
 
         message_area->moveCursor(QTextCursor::Start);
         message_area->setTextColor(message_list[i].msg_color);
@@ -145,6 +145,51 @@ void update_message_area(QLabel *message_label, int max_messages)
     message_label->setText(output);
 }
 
+QString output_messages(byte max_messages)
+{
+    int num_messages = 0;
+
+    QString next_message;
+    next_message.clear();
+
+    QString output;
+    output.clear();
+
+    for (int i = 0; i < message_list.size(); i++)
+    {
+        QString this_message = message_list[i].message;
+
+        if (message_list[i].repeats > 1)
+        {
+           this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
+        }
+
+        next_message.prepend(color_string(this_message, message_list[i].msg_color));
+
+        // See if the next message should go before this one.
+        if ((i+1) < message_list.size())
+        {
+
+            if (message_list[i+1].append)
+            {
+                next_message.prepend("  ");
+                continue;
+            }
+        }
+
+        output.prepend(next_message);
+
+        next_message.clear();
+
+        num_messages++;
+
+        if (num_messages >= max_messages) break;
+
+        output.prepend("<br>");
+    }
+
+    return (output);
+}
 
 void display_message_log(void)
 {
@@ -202,10 +247,69 @@ static void add_message_to_vector(QString msg, QColor which_color)
     redraw_stuff();
 }
 
+int html_length(QString this_string)
+{
+    int in_bracket = 0;
+    int counter = 0;
+
+    for (int space = 0; space < this_string.length(); space++)
+    {
+        if (this_string[space] == QChar('<')) in_bracket++;
+
+        else if (this_string[space] == QChar('>')) in_bracket--;
+
+        // Wait until we are outside a bracket and past the counter
+        if (in_bracket) continue;
+        counter++;
+    }
+    return (counter);
+}
+
+
+
+// This should be the only function sending messages to add_message_to_vector.
+// This is so long messages are handled properly.
+static void add_message(QString this_string, QColor this_color)
+{
+    if (html_length(this_string) < 70)
+    {
+        add_message_to_vector(this_string, this_color);
+        return;
+    }
+
+    int findspace = 70;
+    int in_bracket = 0;
+    int counter = 0;
+
+    // add the messages 80 characters at a time
+    for (int space = 0; space < this_string.length(); space++)
+    {
+        if (this_string[space] == QChar('<')) in_bracket++;
+        else if (this_string[space] == QChar('>')) in_bracket--;
+
+        // Wait until we are outside a bracket and past the counter
+        if (in_bracket) continue;
+        counter++;
+        if (counter < findspace) continue;
+
+        // Looking for the next space
+        if (this_string[space] != QChar(' ')) continue;
+
+        add_message_to_vector(this_string.left(space), this_color);
+
+        this_string.remove(0, space);
+
+        space = 0;
+    }
+
+    // See if there is anything left
+    if (this_string.length()) add_message_to_vector(this_string, this_color);
+}
+
 //  Add a message - assume the color of white
 void message(QString msg)
 {
-    add_message_to_vector(msg, add_preset_color(TERM_WHITE));
+    add_message(msg, add_preset_color(TERM_WHITE));
 }
 
 /*
@@ -221,7 +325,7 @@ void color_message(QString msg, int which_color)
     // Default is a while message
     msg_color = defined_colors[which_color];
 
-    add_message_to_vector(msg, msg_color);
+    add_message(msg, msg_color);
 }
 
 
@@ -232,12 +336,12 @@ void color_message(QString msg, byte red, byte green, byte blue)
 
     msg_color.setRgb(red, green, blue, 255);
 
-    add_message_to_vector(msg, msg_color);
+    add_message(msg, msg_color);
 }
 
 //  Add a message with any 24 bit color
 void color_message(QString msg, QColor msg_color)
 {
 
-    add_message_to_vector(msg, msg_color);
+    add_message(msg, msg_color);
 }

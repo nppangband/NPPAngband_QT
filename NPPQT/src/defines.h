@@ -672,7 +672,8 @@ enum
     OPT_MAX,
 };
 
-
+#define OPT_NOTABLE_HEAD    OPT_auto_scum
+#define OPT_NOTABLE_TAIL	OPT_allow_themed_levels
 #define OPT_BIRTH_HEAD  OPT_birth_no_selling
 #define OPT_BIRTH_TAIL  OPT_UNUSED_19
 #define OPT_CHEAT_HEAD  OPT_cheat_peek

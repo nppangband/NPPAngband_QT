@@ -24,6 +24,8 @@
  */
 void sound(int val)
 {
+    (void)val;
+
     /* No sound */
     //TODO process sounds
 

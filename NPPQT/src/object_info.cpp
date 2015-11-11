@@ -1270,11 +1270,11 @@ static QString describe_item_activation(object_type *o_ptr)
 
             /* Output the number of turns */
             if (a_ptr->time && a_ptr->randtime)
-                output.append(QString(" every %1+d%2 turns") .arg(a_ptr->time) .arg(a_ptr->randtime));
+                output.append(QString(" every %1+d%2 turns.") .arg(a_ptr->time) .arg(a_ptr->randtime));
             else if (a_ptr->time)
-                output.append(QString(" every %1 turns") .arg(a_ptr->time));
+                output.append(QString(" every %1 turns.") .arg(a_ptr->time));
             else if (a_ptr->randtime)
-                output.append(QString(" every d%1 turns") .arg(a_ptr->randtime));
+                output.append(QString(" every d%1 turns.") .arg(a_ptr->randtime));
 
             return(output);
         }
@@ -1293,18 +1293,18 @@ static QString describe_item_activation(object_type *o_ptr)
             }
             case SV_RING_FLAMES:
             {
-                output.append(QString("fire resistance (20+d20 turns) and fire ball (80) every 50+d50 turns"));
+                output.append(QString("fire resistance (20+d20 turns) and fire ball (80) every 50+d50 turns."));
                 break;
             }
             case SV_RING_ICE:
             {
-                output.append(QString("cold resistance (20+d20 turns) and cold ball (75) every 50+d50 turns"));
+                output.append(QString("cold resistance (20+d20 turns) and cold ball (75) every 50+d50 turns."));
                 break;
             }
 
             case SV_RING_LIGHTNING:
             {
-                output.append(QString("electricity resistance (20+d20 turns) and electricity ball (85) every 50+d50 turns"));
+                output.append(QString("electricity resistance (20+d20 turns) and electricity ball (85) every 50+d50 turns."));
                 break;
             }
         }
@@ -1330,14 +1330,14 @@ static QString describe_item_activation(object_type *o_ptr)
         {
             value *= 50;
 
-            output.append(QString("electricity resistance (10+d10 turns) and breathe lightning (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("electricity resistance (10+d10 turns) and breathe lightning (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
             break;
         }
         case EGO_DRAGON_WHITE:
         {
             value *= 50;
 
-            output.append(QString("cold resistance (10+d10 turns) and breathe frost (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("cold resistance (10+d10 turns) and breathe frost (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
 
             break;
         }
@@ -1345,7 +1345,7 @@ static QString describe_item_activation(object_type *o_ptr)
         {
             value *= 50;
 
-            output.append(QString("acid resistance (10+d10 turns) and breathe acid (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("acid resistance (10+d10 turns) and breathe acid (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
 
             break;
         }
@@ -1353,7 +1353,7 @@ static QString describe_item_activation(object_type *o_ptr)
         {
             value *= 50;
 
-            output.append(QString("poison resistance (10+d10 turns) and breathe poison gas (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("poison resistance (10+d10 turns) and breathe poison gas (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
 
             break;
         }
@@ -1361,7 +1361,7 @@ static QString describe_item_activation(object_type *o_ptr)
         {
             value *= 50;
 
-            output.append(QString("fire resistance (10+d10 turns) and breathe fire (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("fire resistance (10+d10 turns) and breathe fire (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
 
             break;
         }
@@ -1369,7 +1369,7 @@ static QString describe_item_activation(object_type *o_ptr)
         {
             value *= 75;
 
-            output.append(QString("resistance (20+d20 turns) and breathe multi-hued (%1) every %2+d%3 turns") .arg(value) .arg(value * 3 / 4) .arg(value * 3 / 4));
+            output.append(QString("resistance (20+d20 turns) and breathe multi-hued (%1) every %2+d%3 turns.") .arg(value) .arg(value * 3 / 4) .arg(value * 3 / 4));
 
             break;
         }
@@ -1377,48 +1377,48 @@ static QString describe_item_activation(object_type *o_ptr)
         {
             value *= 50;
 
-            output.append(QString("breathe confusion (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("breathe confusion (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
             break;
         }
         case EGO_DRAGON_GOLD:
         {
             value *= 50;
 
-            output.append(QString("breathe sound (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("breathe sound (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
             break;
         }
         case EGO_DRAGON_CHAOS:
         {
             value *= 60;
 
-            output.append(QString("breathe chaos/disenchant (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("breathe chaos/disenchant (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
             break;
         }
         case EGO_DRAGON_LAW:
         {
             value *= 60;
 
-            output.append(QString("breathe sound/shards (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("breathe sound/shards (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
         }
         case EGO_DRAGON_BALANCE:
         {
             value *= 75;
 
-            output.append(QString("breathe balance (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("breathe balance (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
             break;
         }
         case EGO_DRAGON_PSEUDO:
         {
             value *= 65;
 
-            output.append(QString("breathe light/darkness (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("breathe light/darkness (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
             break;
         }
         case EGO_DRAGON_POWER:
         {
             value *= 100;
 
-            output.append(QString("breathe the elements (%1) every %2+d%3 turns") .arg(value) .arg(value) .arg(value));
+            output.append(QString("breathe the elements (%1) every %2+d%3 turns.") .arg(value) .arg(value) .arg(value));
             break;
         }
         default:
@@ -1871,17 +1871,15 @@ QString identify_random_gen(object_type *o_ptr)
     QString obj_string;
     obj_string.clear();
     obj_string.append(object_info_out(o_ptr, TRUE, TRUE));
-    obj_string.remove(QString("\n"));
+    obj_string.remove(QString("<br>"));
     if (history_interesting(o_ptr))
     {
-        QString obj_history = QString("\n%1") .arg(format_object_history(o_ptr));
+        QString obj_history = QString("  %1<br>") .arg(format_object_history(o_ptr));
         obj_string.append(obj_history);
     }
 
     //Remove the html breaks and excess spaces.
-    obj_string.remove(QString("<br>"));
     obj_string.replace(QString("   "), QString("  "));
-    obj_string.remove(QString("\n\n"));
 
     return(obj_string);
 }

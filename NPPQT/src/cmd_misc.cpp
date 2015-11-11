@@ -175,7 +175,7 @@ void do_cmd_write_note(void)
 {
     if (!character_dungeon) return;
 
-    QString note = get_string("Please enter note you wish to record.", "Enter Note", NULL);
+    QString note = get_string("Please enter note you wish to record.", "Enter Note.  The '<' and '>' characters are reserved and should not be used", NULL);
 
     write_note(note, p_ptr->depth);
 }

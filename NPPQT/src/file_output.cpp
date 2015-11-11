@@ -21,6 +21,7 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <src/init.h>
+#include <src/utilities.h>
 #include <src/player_screen.h>
 
 #define RESIST_TABLE_LENGTH 34
@@ -416,6 +417,54 @@ static QString make_equippy(bool do_player, bool do_temp, bool modifiers)
     return (equippy);
 }
 
+// Insert page breaks into long lines for html printing.
+static QString format_line_breaks(QString this_string)
+{
+    int findspace = 85;
+    int in_bracket = 0;
+    int counter = 0;
+
+    this_string.remove("<br>");
+
+    for (int space = 0; space < this_string.length(); space++)
+    {
+        if (this_string[space] == QChar('<')) in_bracket++;
+        else if (this_string[space] == QChar('>')) in_bracket--;
+
+        // Wait until we are outside a bracket and past the counter
+        if (in_bracket) continue;
+        counter++;
+        if (counter < findspace) continue;
+
+        // Looking for the next space
+        if (this_string[space] != QChar(' ')) continue;
+
+        //  Before replacing the space,
+        // delete spaces as long as we find them.
+        while ((space+1) < this_string.length())
+        {
+            if (this_string[space+1] != QChar(' ')) break;
+
+            this_string.remove(space+1, 1);
+        }
+
+        // Paranoia check
+        if (space < this_string.length())
+        {
+            this_string.replace((space), 1, QString("<br>"));
+
+            // Make sure that new bracket space is counted
+            space--;
+            counter--;
+        }
+
+        findspace += 85;
+        if (findspace >= this_string.length()) break;
+    }
+
+    return (this_string);
+}
+
 /* Save a character file
  *
  * For this function to work, it is important that the tables above
@@ -647,12 +696,25 @@ void save_character_file(void)
 
     // Print character description
     QString desc = color_string(p_ptr->history, TERM_BLUE);
-
-    int first_space = desc.indexOf(' ', 85, Qt::CaseInsensitive);
-
+    int first_space = desc.indexOf(' ', 90, Qt::CaseInsensitive);
     desc.replace(first_space, 1, QString("<br>"));
-
     out << QString("<br>") << desc << QString("<br><br>");
+
+    // Print character description
+    if (guild_quest_active())
+    {
+        desc = color_string(describe_quest(guild_quest_level()), TERM_RED);
+        first_space = desc.indexOf(' ', 60, Qt::CaseInsensitive);
+        desc.replace(first_space, 1, QString("<br>"));
+        out << QString("<br>") << desc << QString("<br><br>");
+    }
+
+    if (p_ptr->is_dead)
+    {
+        out << output_messages(15);
+
+        QString("<br><br>");
+    }
 
     // Print out the resists and abilities
 
@@ -982,6 +1044,130 @@ void save_character_file(void)
 
         row++;
     }
+
+    out << QString("<br><b><u>[Character Equipment]</u></b><br><br>");
+
+    for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
+    {
+        QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+
+        out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
+
+        /* Describe random object attributes */
+        out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br><br>");
+    }
+
+    out << QString("<br><br>");
+
+    if (p_ptr->quiver_slots)
+    {
+        out << QString("<b><u>[Character Equipment -- Quiver]</u></b><br><br>");
+
+        for (int i = QUIVER_START; i < QUIVER_END; i++)
+        {
+            if (!inventory[i].k_idx) break;
+
+            QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+
+            out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
+
+            /* Describe random object attributes */
+            out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br><br>");
+        }
+
+        out << QString("<br><br>");
+    }
+
+    out << QString("<br><b><u>[Character Inventory]</u></b><br><br>");
+
+    for (int i = 0; i < INVEN_PACK; i++)
+    {
+        if (!inventory[i].k_idx) break;
+
+        QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+
+        out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
+
+        /* Describe random object attributes */
+        out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br><br>");
+    }
+
+    out << QString("<br><br>");
+
+    // Print the home inventory
+    store_type *st_ptr = &store[STORE_HOME];
+    if (st_ptr->stock_num)
+    {
+        out << QString("<b><u>[Home Inventory]</u></b><br><br>");
+
+        for (int i = 0; i < st_ptr->stock_num; i++)
+        {
+            QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+
+            out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
+
+            /* Describe random object attributes */
+            out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br>");
+        }
+
+        out << QString("<br><br>");
+    }
+
+    else out << QString("<b><u>[Your Home Is Empty]</u></b><br><br>");
+
+
+    // Print the notes file
+    out << QString("<b><u>  GAME TURN</u>  <u>DUNGEON DEPTH</u>  <u>PLAYER LEVEL</u>  <u>EVENT</u></b><br>");
+
+    // Print out all the notes
+    for (int i = 0; i < notes_log.size(); i++)
+    {
+       QString depth_note = (QString("Town"));
+       notes_type *notes_ptr = &notes_log[i];
+
+       // Print the game turn
+       QString game_turn = number_to_formatted_string(notes_ptr->game_turn);
+       game_turn = set_html_string_length(game_turn, 10, TRUE);
+       out << game_turn;
+
+       // Format the depth, unless the player is in town
+       if (notes_ptr->dun_depth) depth_note = number_to_formatted_string(notes_ptr->dun_depth * 50);
+       depth_note = set_html_string_length(depth_note, 10, TRUE);
+       out << depth_note;
+
+       QString player_level = set_html_string_length((QString("%1") .arg(notes_ptr->player_level)), 16, TRUE);
+       out << player_level << blank_string(4) << notes_ptr->recorded_note << QString("<br>");;
+    }
+
+    /* Dump options */
+    out << QString("<br><br><br><br><b><u>[Options]</u></b>");
+    for (int i = OPT_NOTABLE_HEAD; i < OPT_MAX; i++)
+    {
+        /* Hack - use game play options */
+        if ((i > OPT_NOTABLE_TAIL) && (i < OPT_BIRTH_HEAD))
+        {
+            if (i != OPT_smart_cheat) continue;
+        }
+
+        /* Print the labels */
+        if (i == OPT_NOTABLE_HEAD) out <<  QString("<br><br><u>GAME PLAY OPTIONS:</u><br>");
+        if (i == OPT_CHEAT_HEAD) out <<  QString("<br><br><u>CHEAT OPTIONS:</u><br>");
+        if (i == OPT_BIRTH_HEAD) out <<  QString("<br><br><u>BIRTH OPTIONS:</u><br>");
+
+        if (options[i].name.isNull()) continue;
+
+        QString opt_name = options[i].name;
+        opt_name = set_html_string_length(opt_name, 25, FALSE);
+
+        QString opt_desc = options[i].description;
+        opt_desc = set_html_string_length(opt_desc, 52, FALSE);
+
+        QString opt_setting = "off";
+        if (op_ptr->opt[i]) opt_setting = " on";
+
+        out << opt_name << opt_desc << opt_setting << QString("<br>");
+    }
+
 
     out << QString("<br></pre></body></html>");
 
