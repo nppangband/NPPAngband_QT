@@ -755,9 +755,9 @@ void save_character_file(void)
             if (pfr_ptr->name.isNull()) resist_table = FALSE;
 
             // If in Moria, make sure the flag is used.
-            if ((game_mode == GAME_NPPMORIA && resist_table))
+            if ((game_mode == GAME_NPPMORIA) && resist_table && !pfr_ptr->moria_flag)
             {
-                if (!pfr_ptr->moria_flag) out << blank_string(RESIST_TABLE_LENGTH);
+                out << blank_string(RESIST_TABLE_LENGTH + 6);
             }
 
             else if (resist_table)
@@ -821,9 +821,9 @@ void save_character_file(void)
             if (pfr_ptr->name.isNull()) ability_table = FALSE;
 
             // If in Moria, make sure the flag is used.
-            if ((game_mode == GAME_NPPMORIA && ability_table))
+            if ((game_mode == GAME_NPPMORIA) && ability_table && !pfr_ptr->moria_flag)
             {
-                if (!pfr_ptr->moria_flag) out << blank_string(ABILITIES_TABLE_LENGTH);
+                out << blank_string(ABILITIES_TABLE_LENGTH);
             }
 
             else if (ability_table)
@@ -917,9 +917,9 @@ void save_character_file(void)
             if (pfr_ptr->name.isNull()) nativity_table = FALSE;
 
             // If in Moria, make sure the flag is used.
-            if ((game_mode == GAME_NPPMORIA && nativity_table))
+            if ((game_mode == GAME_NPPMORIA) && nativity_table && !pfr_ptr->moria_flag)
             {
-                if (!pfr_ptr->moria_flag) out << blank_string(NATIVITY_TABLE_LENGTH);
+                out << blank_string(NATIVITY_TABLE_LENGTH + 6);
             }
 
             else if (nativity_table)
@@ -982,9 +982,9 @@ void save_character_file(void)
             if (pfr_ptr->name.isNull()) modifiers_table = FALSE;
 
             // If in Moria, make sure the flag is used.
-            if ((game_mode == GAME_NPPMORIA && modifiers_table))
+            if ((game_mode == GAME_NPPMORIA) && modifiers_table && !pfr_ptr->moria_flag)
             {
-                if (!pfr_ptr->moria_flag) out << blank_string(MODIFIERS_TABLE_LENGTH);
+                out << blank_string(MODIFIERS_TABLE_LENGTH);
             }
 
             else if (modifiers_table)
@@ -1069,7 +1069,7 @@ void save_character_file(void)
 
             QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
 
-            out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
+            out << (QString("%1) %2<br>") .arg(i - QUIVER_START + 1) .arg(o_name));
 
             /* Describe random object attributes */
             out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br><br>");
@@ -1168,7 +1168,6 @@ void save_character_file(void)
         out << opt_name << opt_desc << opt_setting << QString("<br>");
     }
 
-
     out << QString("<br></pre></body></html>");
 
     char_info_file.close();
@@ -1195,8 +1194,6 @@ void MainWindow::save_screenshot(void)
 
     if (file_name.isEmpty())
         return;
-
-
 
     QString text = (QString("Version: %1 %2") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
 

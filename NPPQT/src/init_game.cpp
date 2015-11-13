@@ -8,6 +8,7 @@
 #include <src/utilities.h>
 #include <src/player_scores.h>
 #include <src/messages.h>
+#include <QTime>
 
 // was init.2
 
@@ -1278,6 +1279,8 @@ void init_npp_games(void)
 
     // These are loaded and saved with the player
     clear_all_hotkeys();
+
+    qsrand(QTime::currentTime().msec());
 }
 
 

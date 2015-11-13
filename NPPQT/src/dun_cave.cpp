@@ -385,7 +385,8 @@ static byte breath_to_attr[32][2] =
 
 
 // start with a color, return a similar color for shimmering effects.
-byte similar_color(byte color)
+// This should use Rand_simple so it doesn't affect the main random thread.
+static byte similar_color(byte color)
 {
     switch (color)
     {
@@ -396,7 +397,7 @@ byte similar_color(byte color)
         case TERM_RASPBERRY:
         case TERM_PINK:
         {
-            int x = randint0(6);
+            int x = Rand_simple(6);
             if (x == 1) return TERM_RED;
             if (x == 2) return TERM_L_RED;
             if (x == 3) return TERM_RED_LAVA;
@@ -409,7 +410,7 @@ byte similar_color(byte color)
         case TERM_NAVY_BLUE:
         case TERM_SKY_BLUE:
         {
-            int x = randint0(5);
+            int x = Rand_simple(4);
             if (x == 1) return TERM_BLUE;
             if (x == 2) return TERM_L_BLUE;
             if (x == 3) return TERM_NAVY_BLUE;
@@ -421,7 +422,7 @@ byte similar_color(byte color)
         case TERM_JUNGLE_GREEN:
         case TERM_LIME_GREEN:
         {
-            int x = randint0(4);
+            int x = Rand_simple(4);
             if (x == 1) return TERM_GREEN;
             if (x == 2) return TERM_L_GREEN;
             if (x == 3) return TERM_JUNGLE_GREEN;
@@ -432,7 +433,7 @@ byte similar_color(byte color)
         case TERM_AUBURN:
         case TERM_L_BROWN:
         {
-            int x = randint0(4);
+            int x = Rand_simple(4);
             if (x == 1) return TERM_UMBER;
             if (x == 2) return TERM_L_UMBER;
             if (x == 3) return TERM_AUBURN;
@@ -442,7 +443,7 @@ byte similar_color(byte color)
         case TERM_ORANGE_PEEL:
         case TERM_MAHAGONY:
         {
-            int x = randint0(3);
+            int x = Rand_simple(3);
             if (x == 1) return TERM_ORANGE;
             if (x == 2) return TERM_ORANGE_PEEL;
             return TERM_MAHAGONY;
@@ -451,7 +452,7 @@ byte similar_color(byte color)
         case TERM_MAIZE:
         case TERM_EARTH_YELLOW:
         {
-            int x = randint0(3);
+            int x = Rand_simple(3);
             if (x == 1) return TERM_YELLOW;
             if (x == 2) return TERM_MAIZE;
             return TERM_EARTH_YELLOW;
@@ -461,7 +462,7 @@ byte similar_color(byte color)
         case TERM_SLATE_GRAY:
         case TERM_TAUPE:
         {
-            int x = randint0(4);
+            int x = Rand_simple(4);
             if (x == 1) return TERM_SLATE;
             if (x == 2) return TERM_L_DARK;
             if (x == 3) return TERM_SLATE_GRAY;
@@ -470,7 +471,7 @@ byte similar_color(byte color)
         case TERM_VIOLET:
         case TERM_PURPLE:
         {
-            int x = randint0(2);
+            int x = Rand_simple(2);
             if (x == 1) return TERM_VIOLET;
             return TERM_PURPLE;
         }
@@ -478,7 +479,7 @@ byte similar_color(byte color)
         case TERM_SILVER:
         case TERM_COPPER:
         {
-            int x = randint0(3);
+            int x = Rand_simple(3);
             if (x == 1) return TERM_GOLD;
             if (x == 2) return TERM_SILVER;
             return TERM_COPPER;
@@ -488,7 +489,7 @@ byte similar_color(byte color)
         case TERM_LIGHT_GRAY:
         default:
         {
-            int x = randint0(3);
+            int x = Rand_simple(3);
             if (x == 1) return TERM_WHITE;
             if (x == 2) return TERM_SNOW_WHITE;
             return TERM_LIGHT_GRAY;
@@ -507,17 +508,20 @@ byte similar_color(byte color)
  * color for any of its breaths.
  *
  * If a monster does not breath anything, it can be any color.
+ * This function needs to use Rand_simple to preserve
+ * the consistency of the RNG seed used in the game.
+ *
  */
 byte multi_hued_color(monster_race *r_ptr)
 {
-    byte allowed_attrs[15];
+    QVector<byte> allowed_attrs;
 
     int i, j;
 
-    int stored_colors = 0;
     int breaths = 0;
     int first_color = 0;
     int second_color = 0;
+    allowed_attrs.clear();
 
 
     /* Monsters with an attr other than 'v' choose colors according to attr */
@@ -527,7 +531,7 @@ byte multi_hued_color(monster_race *r_ptr)
     }
 
     /* Monsters with no ranged attacks can be any color */
-    if (!r_ptr->freq_ranged) return (randint0(MAX_COLORS));
+    if (!r_ptr->freq_ranged) return (Rand_simple(MAX_COLORS));
 
     /* Check breaths */
     for (i = 0; i < 32; i++)
@@ -544,24 +548,23 @@ byte multi_hued_color(monster_race *r_ptr)
         if (first_color == 0) continue;
 
         /* Monster can be of any color */
-        if (first_color == 255) return (randint0(MAX_COLORS));
+        if (first_color == 255) return (Rand_simple(MAX_COLORS));
 
         /* Increment the number of breaths */
         breaths++;
 
         /* Monsters with lots of breaths may be any color. */
-        if (breaths == 6) return (randint0(MAX_COLORS));
+        if (breaths == 6) return (Rand_simple(MAX_COLORS));
 
         /* Always store the first color */
-        for (j = 0; j < stored_colors; j++)
+        for (j = 0; j < allowed_attrs.size(); j++)
         {
             /* Already stored */
             if (allowed_attrs[j] == first_color) stored = TRUE;
         }
         if (!stored)
         {
-            allowed_attrs[stored_colors] = first_color;
-            stored_colors++;
+            allowed_attrs.append(first_color);
         }
 
         /*
@@ -575,17 +578,16 @@ byte multi_hued_color(monster_race *r_ptr)
     }
 
     /* Monsters with no breaths may be of any color. */
-    if (breaths == 0) return (randint0(MAX_COLORS));
+    if (breaths == 0) return (Rand_simple(MAX_COLORS));
 
     /* If monster has one breath, store the second color too. */
     if (breaths == 1)
     {
-        allowed_attrs[stored_colors] = second_color;
-        stored_colors++;
+        allowed_attrs.append(second_color);
     }
 
     /* Pick a color at random */
-    return (allowed_attrs[rand_int(stored_colors)]);
+    return (allowed_attrs[Rand_simple(allowed_attrs.size())]);
 }
 
 
@@ -598,8 +600,7 @@ static u16b image_monster(void)
 
     while (1)
     {
-
-        int i = rand_int(z_info->r_max);
+        int i = Rand_simple(z_info->r_max);
 
         /* Select a random monster */
         r_ptr = &r_info[i];
@@ -626,7 +627,7 @@ static u16b image_object(void)
     while (1)
     {
 
-        int i = rand_int(z_info->k_max - 1) + 1;
+        int i = Rand_simple(z_info->k_max - 1) + 1;
         /* Select a random object */
         k_ptr = &k_info[i];
 
@@ -978,7 +979,7 @@ static void map_objects (s16b y, s16b x)
     }
 }
 
-static void map_effects (s16b y, s16b x)
+static void map_effects(s16b y, s16b x)
 {
     feature_type *f_ptr;
     effect_type *x_ptr = NULL;
@@ -1161,6 +1162,7 @@ static void map_monster (s16b y, s16b x)
             monster_race *r_ptr = &r_info[m_ptr->r_idx];
 
             /* Desired attr */
+
             dun_ptr->monster_color = r_ptr->d_color;
             dun_ptr->monster_char = r_ptr->d_char;
             dun_ptr->monster_tile = r_ptr->tile_id;

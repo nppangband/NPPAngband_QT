@@ -1377,6 +1377,8 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         // We are done
         if (pfr_ptr->name.isNull()) break;
 
+        row++;
+
         // If in Moria, make sure the flag is used.
         if (game_mode == GAME_NPPMORIA)
         {
@@ -1386,8 +1388,6 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         bool did_resist = FALSE;
         bool did_temp_resist = FALSE;
         bool did_immunity = FALSE;
-
-        row++;
 
         for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
         {
@@ -1739,14 +1739,14 @@ void equip_flag_info(QWidget *this_widget, QGridLayout *return_layout, int flag_
         // We are done
         if (pfr_ptr->name.isNull()) break;
 
+        // Just make the labels at this point
+        row++;
+
         // If in Moria, make sure the flag is used.
         if (game_mode == GAME_NPPMORIA)
         {
             if (!pfr_ptr->moria_flag) continue;
         }
-
-        // Just make the labels at this point
-        row++;
 
         QLabel *line_label = new QLabel;
         make_standard_label(line_label, pfr_ptr->name, TERM_GREEN, this_font);
@@ -1838,6 +1838,8 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
         // We are done
         if (pfr_ptr->name.isNull()) break;
 
+        row++;
+
         // If in Moria, make sure the flag is used.
         if (game_mode == GAME_NPPMORIA)
         {
@@ -1846,8 +1848,6 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
 
         bool has_extra_flag = FALSE;
         int cumulative = 0;
-
-        row++;
 
         for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++, col++)
         {
@@ -1950,13 +1950,13 @@ void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont
         // We are done
         if (pfr_ptr->name.isNull()) break;
 
+        row++;
+
         // If in Moria, make sure the flag is used.
         if (game_mode == GAME_NPPMORIA)
         {
             if (!pfr_ptr->moria_flag) continue;
         }
-
-        row++;
 
         QLabel *line_label = new QLabel;
         make_standard_label(line_label, pfr_ptr->name, TERM_WHITE, this_font);

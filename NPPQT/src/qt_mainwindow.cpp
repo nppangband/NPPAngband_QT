@@ -402,7 +402,7 @@ void MainWindow::redraw_screen()
     }
 }
 
-void MainWindow::redraw_all()
+void MainWindow::redraw_all(void)
 {    
     redraw_screen();
     update_cursor();
@@ -560,6 +560,9 @@ MainWindow::MainWindow()
     update_file_menu_game_inactive();
 
     setWindowFilePath(QString());
+
+
+
 }
 
 void MainWindow::setup_nppangband()
@@ -647,6 +650,9 @@ void MainWindow::close_game_death()
 void MainWindow::save_and_close()
 {
     if (running_command()) return;
+
+    // Don't need the timer any more
+    event_timer->stop();
 
     save_character();
 
@@ -1009,6 +1015,12 @@ void MainWindow::update_file_menu_game_inactive()
 //  Set's up all the QActions that will be added to the menu bar.  These are later added by create_menus.
 void MainWindow::create_actions()
 {
+
+    event_timer = new QTimer(this);
+    event_timer->setSingleShot(FALSE);
+    event_timer->setInterval(250);
+    connect(event_timer, SIGNAL(timeout()), this, SLOT(timed_events()));
+
     new_game_nppangband = new QAction(tr("New Game - NPPAngband"), this);
     new_game_nppangband->setStatusTip(tr("Start a new game of NPPAngband."));
     new_game_nppangband->setIcon(QIcon(":/icons/lib/icons/New_game_NPPAngband.png"));
@@ -1331,6 +1343,15 @@ void MainWindow::display_scores()
 void MainWindow::display_kill_count()
 {
     display_mon_kill_count();
+}
+
+void MainWindow::timed_events()
+{
+    if(!animate_flicker) return;
+    if (!character_dungeon) return;
+    if (executing_command) return;
+
+    do_animation();
 }
 
 
@@ -1871,6 +1892,8 @@ void MainWindow::load_file(const QString &file_name)
                 redraw_stuff();
                 p_ptr->player_turn = FALSE;
             }
+
+            event_timer->start();
         }
     }
     else
@@ -1908,6 +1931,8 @@ void MainWindow::launch_birth(bool quick_start)
         p_ptr->player_turn = TRUE;
         redraw_stuff();
         p_ptr->player_turn = FALSE;
+
+        event_timer->start();
     }
     else
     {

@@ -818,9 +818,14 @@ static void decrease_timeouts(void)
 /*
  * Checks if multi-color monsters onscreen.
  */
-static void do_animation(void)
+void do_animation(void)
 {
     int i;
+
+    // No animation with graphics
+    if ((use_graphics == GRAPHICS_DAVID_GERVAIS) ||
+        (use_graphics == GRAPHICS_ORIGINAL) ||
+        (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)) return;
 
     for (i = 1; i < mon_max; i++)
     {

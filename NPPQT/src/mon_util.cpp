@@ -2778,7 +2778,7 @@ static bool place_monster_one(int y, int x, int r_idx, byte mp_flags)
     /* And start out fully healthy */
     n_ptr->hp = n_ptr->maxhp;
 
-
+    if (r_ptr->flags1 & (RF1_ATTR_MULTI)) n_ptr->m_color = add_preset_color(multi_hued_color(r_ptr));
 
     /* 75% non-unique monsters vary their speed*/
     if (!(r_ptr->flags1 & (RF1_UNIQUE)))

@@ -63,7 +63,7 @@ extern void disturb(bool stop_search, bool wipe_hotkey);
 
 
 // dungeon.cpp
-
+extern void do_animation(void);
 extern void dungeon_change_level(int dlev);
 extern void launch_game();
 

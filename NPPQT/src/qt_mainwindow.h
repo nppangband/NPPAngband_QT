@@ -19,11 +19,13 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QMenuBar>
+#include <QTimer>
 #include "defines.h"
 #include "structures.h"
 #include "src/object_dialog.h"
 #include "nppdialog.h"
 #include "src/cmds.h"
+#include <QTimer>
 
 #define UI_MODE_DEFAULT 0
 #define UI_MODE_INPUT 1
@@ -111,7 +113,7 @@ public:
     void set_graphic_mode(int mode);
     void set_keymap_mode(int mode);
     void redraw_screen();
-    void redraw_all();
+    void redraw_all(void);
     void update_cursor();
     void force_redraw();
     bool panel_contains(int y, int x);    
@@ -165,6 +167,7 @@ private slots:
     void font_dialog_message_window();
     void font_dialog_sidebar_window();
 
+
     void manage_hotkeys();
     void export_hotkeys();
     void import_hotkeys();
@@ -209,6 +212,11 @@ private slots:
     void display_scores();
     void display_kill_count();
 
+
+    void timed_events();
+
+
+
 private:
 
     void setup_nppangband();
@@ -227,7 +235,10 @@ private:
 
     // Remember the game settings
     void read_settings();
-    void write_settings();    
+    void write_settings();
+
+    // Handle timed events
+    QTimer *event_timer;
 
     //Functions and variables that handle opening and saving files, as well as maintain the
     //  5 most recent savefile list.

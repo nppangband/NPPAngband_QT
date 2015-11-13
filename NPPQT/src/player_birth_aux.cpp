@@ -935,15 +935,10 @@ void finish_birth()
     /* Start in town */
     p_ptr->depth = 0;
 
-    /* Hack -- seed for flavors */
+    /* Hack -- seed for random things that don't use the regular RNG seed */
     seed_flavor = rand_int(0x10000000);
-
-    /* Hack -- seed for town layout */
     seed_town = rand_int(0x10000000);
-
-    /* Hack -- seed for random artifacts */
     seed_randart = rand_int(0x10000000);
-
     seed_ghost = rand_int(0x10000000);
 
     /* Randomize the artifacts */
