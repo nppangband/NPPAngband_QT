@@ -668,7 +668,7 @@ MakeFeatureDialog::MakeFeatureDialog(void)
     int x = p_ptr->target_col;
 
     /* Paranoia */
-    if (dungeon_info[y][x].has_object() || dungeon_info[y][x].has_monster())
+    if (dungeon_info[y][x].has_object())
     {
         pop_up_message_box("Must be an empty grid");
         return;

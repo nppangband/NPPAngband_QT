@@ -932,9 +932,14 @@ void MainWindow::about()
                "<p>Please see copyright.txt for complete copyright and licensing restrictions."));
 }
 
-void MainWindow::command_list()
+void MainWindow::command_list_keyboard()
 {
-    do_cmd_command_list();
+    do_cmd_list_keyboard_commands();
+}
+
+void MainWindow::command_list_mouse()
+{
+    do_cmd_list_mouse_commands();
 }
 
 // Activates and de-activates certain file_menu commands when a game is started.
@@ -1246,10 +1251,15 @@ void MainWindow::create_actions()
     help_about_Qt->setStatusTip(tr("Show the Qt library's About box"));
     connect(help_about_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-    help_command_list = new QAction(tr("&Show Command List"), this);
+    help_command_list = new QAction(tr("&Show Keyboard Commands"), this);
     help_command_list->setShortcut(Qt::Key_Question);
     help_command_list->setStatusTip(tr("Show a list of all keybord commands"));
-    connect(help_command_list, SIGNAL(triggered()), this, SLOT(command_list()));
+    connect(help_command_list, SIGNAL(triggered()), this, SLOT(command_list_keyboard()));
+
+    help_mouse_list = new QAction(tr("&Show Mouse Commands"), this);
+    help_mouse_list->setShortcut(Qt::Key_Slash);
+    help_mouse_list->setStatusTip(tr("Show a list of all keybord commands"));
+    connect(help_mouse_list, SIGNAL(triggered()), this, SLOT(command_list_mouse()));
 }
 
 void MainWindow::set_reg()
@@ -1501,6 +1511,7 @@ void MainWindow::create_menus()
     help_menu->addAction(help_about);
     help_menu->addAction(help_about_Qt);
     help_menu->addAction(help_command_list);
+    help_menu->addAction(help_mouse_list);
 }
 
 // Create the toolbars

@@ -244,8 +244,6 @@ static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool
         return_layout->addWidget(obj_label, row, col, Qt::AlignCenter);
     }
 
-    col++;
-
     if (do_player)
     {
         QLabel *person_label = new QLabel;
@@ -256,8 +254,8 @@ static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool
 
     if (do_temp)
     {
-        QLabel *temp_label = new QLabel(" ");
-        temp_label->setToolTip("Temporary resistances.");
+        QLabel *temp_label = new QLabel("t");
+        temp_label->setToolTip("Temporary character traits.");
         temp_label->setFont(this_font);
         return_layout->addWidget(temp_label, row, col++);
     }
@@ -1359,7 +1357,7 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         QString this_name = this_lbl->objectName();
 
         // Labels with an object name should be preserved.
-        if(!this_name.contains("obj_info_")) continue;
+        if(!this_name.contains("obj_flag_info")) continue;
         return_layout->removeWidget(this_lbl);
         delete this_lbl;
     }
@@ -1393,7 +1391,12 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         {
             object_type *o_ptr = &inventory[i];
 
-            if (!o_ptr->tval) continue;
+            bool has_this_flag = TRUE;
+
+            if (!o_ptr->tval && FALSE)
+            {
+                has_this_flag = FALSE;
+            }
 
             col++;
 
@@ -1420,34 +1423,47 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 }
             }
 
-            if (pfr_ptr->set == 1)
+            if (!has_this_flag)
             {
-                if ((o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
+                // Do nothing.  Just skip everything below
             }
 
-            if (pfr_ptr->set == 2)
+            else if (pfr_ptr->set == 1)
             {
-                if ((o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
+                if ((o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
             }
 
-            if (pfr_ptr->set == 3)
+            else if (pfr_ptr->set == 2)
+            {
+                if ((o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
+            }
+
+            else if (pfr_ptr->set == 3)
             {
                 // Hack - special handling for cursed items
                 if (pfr_ptr->set & (TR3_CURSE_ALL))
                 {
-                    if (!(o_ptr->ident & (IDENT_CURSED))) continue;
+                    if (!(o_ptr->ident & (IDENT_CURSED))) has_this_flag = FALSE;
                 }
-                else if ((o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
+                else if ((o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
             }
-            if (pfr_ptr->set == 4)
+            else if (pfr_ptr->set == 4)
             {
-                if ((o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) continue;
+                if ((o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
             }
 
-            did_resist = TRUE;
+            QString label_string = ".";
+            byte attr = TERM_DARK;
+
+            if (has_this_flag)
+            {
+                label_string = "+";
+                attr = TERM_GREEN;
+                did_resist = TRUE;
+            }
 
             QLabel *resist_label = new QLabel();
-            make_standard_label(resist_label, "+", TERM_GREEN, this_font);
+            make_standard_label(resist_label, label_string, attr, this_font);
             resist_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
             return_layout->addWidget(resist_label, row, col, Qt::AlignCenter);
         }
@@ -1496,7 +1512,7 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         {
             QLabel *player_label = new QLabel;
             make_standard_label(player_label, "+", TERM_GREEN, this_font);
-            player_label->setToolTip("Inate immunity");
+            player_label->setToolTip("Innate immunity");
             player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
             did_immunity = TRUE;
@@ -1505,9 +1521,17 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
         {
             QLabel *player_label = new QLabel();
             make_standard_label(player_label, "+", TERM_BLUE, this_font);
+            player_label->setToolTip("Innate resistance");
             player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
             return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
             did_resist = TRUE;
+        }
+        else
+        {
+            QLabel *player_label = new QLabel();
+            make_standard_label(player_label, ".", TERM_DARK, this_font);
+            player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
+            return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
         }
 
 
@@ -1676,7 +1700,16 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                     return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
                     did_temp_resist = TRUE;
                 }
+
             }
+        }
+
+        if (!did_temp_resist)
+        {
+            QLabel *temp_label = new QLabel;
+            make_standard_label(temp_label, ".", TERM_DARK, this_font);
+            temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
+            return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
         }
 
         int attr = TERM_DARK;
@@ -1856,7 +1889,14 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
             bool this_flag = FALSE;
             bool this_extra_flag = FALSE;
 
-            if (!o_ptr->tval) continue;
+            if (!o_ptr->tval)
+            {
+                QLabel *pval_label = new QLabel();
+                make_standard_label(pval_label, ".", TERM_DARK, this_font);
+                pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
+                return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
+                continue;
+            }
 
             // First, check for sustain
             if (pfr_ptr->extra_flag)
@@ -1867,6 +1907,7 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
                 }
             }
 
+            // CHeck if this equipment has the applicable flag
             if (pfr_ptr->set == 1)
             {
                 if (o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) this_flag = TRUE;
@@ -1884,13 +1925,18 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
                 if (o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) this_flag = TRUE;
             }
 
+            // Nothing to mark
+            if (!this_flag && !this_extra_flag)
+            {
+                QLabel *pval_label = new QLabel();
+                make_standard_label(pval_label, ".", TERM_DARK, this_font);
+                pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
+                return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
+                continue;
+            }
 
             int attr = TERM_DARK;
             QString pval_num = (QString("%1") .arg(o_ptr->pval));
-
-            // Nothing to mark
-            if (!this_flag && !this_extra_flag) pval_num = '.';
-
 
             if (o_ptr->pval > 0 && this_flag)
             {
@@ -1914,9 +1960,11 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
                 pval_num = (QString("<u>%1</u>") .arg(pval_num));
             }
 
+            set_html_string_length(pval_num, 3, TRUE);
+
             QLabel *pval_label = new QLabel();
             make_standard_label(pval_label, pval_num, attr, this_font);
-            if (this_extra_flag) pval_label->setToolTip("This stat is sustained");
+            if (this_extra_flag) pval_label->setToolTip(QString("Your %1 is sustained.") .arg(stat_names_full[row-1]));
             pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
             return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
 

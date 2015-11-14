@@ -81,7 +81,7 @@ void update_message_area(QTextEdit *message_area, int max_messages, QFont messag
         }
 
         // Add a linebreak if needed.
-        if (num_messages) next_message.append("<br>");
+        if (num_messages) next_message.append("\n");
 
         message_area->moveCursor(QTextCursor::Start);
         message_area->setTextColor(message_list[i].msg_color);
@@ -139,7 +139,7 @@ void update_message_area(QLabel *message_label, int max_messages)
 
         if (num_messages >= max_messages) break;
 
-        output.prepend("<br>");
+        output.prepend("\n");
     }
 
     message_label->setText(output);

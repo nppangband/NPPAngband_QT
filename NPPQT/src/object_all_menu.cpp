@@ -480,7 +480,8 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     buttons->addButton(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
 
-    main_layout->addWidget(buttons);
+    top_layout->addWidget(buttons);
+    main_layout->addStretch(1000);
 
     hide_or_show_tabs();
 
@@ -489,7 +490,7 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 
     link_pushbuttons();
 
-    QSize this_size = QSize(width() * 3 / 2, height() * 5 / 2);
+    QSize this_size = QSize(width() * 3 / 2, height() * 4);
     resize(ui_max_widget_size(this_size));
     updateGeometry();
 

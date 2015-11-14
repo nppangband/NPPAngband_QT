@@ -161,7 +161,8 @@ private slots:
     void save_and_close();
     void open_recent_file();
     void about();
-    void command_list();
+    void command_list_keyboard();
+    void command_list_mouse();
     void options_dialog();
     void font_dialog_main_window();
     void font_dialog_message_window();
@@ -321,6 +322,7 @@ private:
     QAction *help_about;
     QAction *help_about_Qt;
     QAction *help_command_list;
+    QAction *help_mouse_list;
     QAction *separator_act;
 
 

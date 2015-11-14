@@ -12,21 +12,32 @@ struct command_desc
     QString command_key;
 };
 
-class CommandList : public QDialog
+class KeyboardCommandList : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit CommandList(void);
+    explicit KeyboardCommandList(void);
 
 private:
     void add_dir_keyboard(QVBoxLayout *return_layout, bool keyboard);
     void add_dir_commands(QGridLayout *return_layout);
     void add_keyboard_commands(QGridLayout *return_layout);
+};
+
+class MouseCommandList : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit MouseCommandList(void);
+
+private:
     void add_mouse_commands(QVBoxLayout *return_layout);
 };
 
-extern void do_cmd_command_list(void);
+extern void do_cmd_list_keyboard_commands(void);
+extern void do_cmd_list_mouse_commands(void);
 extern void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);
 extern void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);
 extern void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);

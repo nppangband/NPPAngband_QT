@@ -42,7 +42,6 @@ static struct command_desc list_commands_new[] =
     {"Fuel Lantern/Torch", "ALT-F"},
     {"Go Down Staircase", "<"},
     {"Do Up Staircase	", ">"},
-    {"Help", "?"},
     {"Inscribe Item", "{"},
     {"Inspect All Objects", "i"},
     {"Inspect Object", "I (shift-i)"},
@@ -113,7 +112,6 @@ static struct command_desc list_commands_angband[] =
     {"Fire At Nearest",	"h"},
     {"Go Down Staircase", "<"},
     {"Go Up Staircase	", ">"},
-    {"Help", "?"},
     {"Hold", "'_' or ','"},
     {"Inscribe Item", "{"},
     {"Inspect Inventory", "i"},
@@ -188,7 +186,6 @@ static struct command_desc list_commands_roguelike[] =
     {"Fuel Lantern/Torch", "F (shift-f)"},
     {"Go Down Staircase", "<"},
     {"Go Up Staircase	", ">"},
-    {"Help", "?"},
     {"Hold", "'_' '.' or 'g'"},
     {"Inscribe Item", "{"},
     {"Inspect Inventory", "i"},
@@ -243,7 +240,7 @@ static struct command_desc list_commands_roguelike[] =
 };
 
 
-void CommandList::add_keyboard_commands(QGridLayout *return_layout)
+void KeyboardCommandList::add_keyboard_commands(QGridLayout *return_layout)
 {
 
     int x = 0;
@@ -351,7 +348,7 @@ static struct command_desc dir_commands_roguelike[] =
     {NULL, NULL},
 };
 
-void CommandList::add_dir_commands(QGridLayout *return_layout)
+void KeyboardCommandList::add_dir_commands(QGridLayout *return_layout)
 {
     int x = 0;
 
@@ -383,13 +380,9 @@ void CommandList::add_dir_commands(QGridLayout *return_layout)
     return_layout->addWidget(dummy, x, 0);
 }
 
-
-
-
-void CommandList::add_dir_keyboard(QVBoxLayout *return_layout, bool keyboard)
+void KeyboardCommandList::add_dir_keyboard(QVBoxLayout *return_layout, bool keyboard)
 {
     QLabel *top_label = new QLabel;
-
 
     QString this_title  = "Keypad Dirs";
     if (keyboard) this_title = "Keyboard Dirs";
@@ -418,10 +411,72 @@ void CommandList::add_dir_keyboard(QVBoxLayout *return_layout, bool keyboard)
         }
     }
 
-    QLabel *dummy = new QLabel("   ");
-    return_layout->addWidget(dummy, 3, 0);
+    return_layout->addStretch(1000);
+}
 
-    return_layout->addStretch(1);
+
+
+KeyboardCommandList::KeyboardCommandList(void)
+{
+
+    //Set up the main scroll bar
+    QVBoxLayout *top_layout = new QVBoxLayout;
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    QWidget *top_widget = new QWidget;
+    QScrollArea *scroll_box = new QScrollArea;
+    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    top_widget->setLayout(main_layout);
+    scroll_box->setWidget(top_widget);
+    scroll_box->setWidgetResizable(TRUE);
+    top_layout->addWidget(scroll_box);
+
+    QLabel *main_prompt = new QLabel(QString("<h2>Directional Commands</h2>"));
+    main_layout->addWidget(main_prompt, Qt::AlignCenter);
+
+    QHBoxLayout *top_across = new QHBoxLayout;
+    main_layout->addLayout(top_across);
+
+    QVBoxLayout *vlay_key_dirs = new QVBoxLayout;
+    add_dir_keyboard(vlay_key_dirs, TRUE);
+    top_across->addLayout(vlay_key_dirs);
+
+    if (which_keyset != KEYSET_ANGBAND)
+    {
+        QVBoxLayout *vlay_pad_dirs = new QVBoxLayout;
+        add_dir_keyboard(vlay_pad_dirs, FALSE);
+        top_across->addLayout(vlay_pad_dirs);
+    }
+
+    top_across->addStretch(1);
+
+    QVBoxLayout *vlay_dir_commands = new QVBoxLayout;
+    QGridLayout *glay_dir_commands = new QGridLayout;
+    vlay_dir_commands->addLayout(glay_dir_commands);
+    add_dir_commands(glay_dir_commands);
+    vlay_dir_commands->addStretch(1);
+    top_across->addLayout(vlay_dir_commands);
+    top_across->addStretch(1);
+
+    QLabel *keyboard_prompt = new QLabel(QString("<h2>Keyboard Commands</h2>"));
+    main_layout->addWidget(keyboard_prompt, Qt::AlignCenter);
+
+    QGridLayout *glay_key_commands = new QGridLayout;
+    add_keyboard_commands(glay_key_commands);
+    main_layout->addLayout(glay_key_commands);
+
+    QDialogButtonBox buttons;
+    buttons.setStandardButtons(QDialogButtonBox::Ok);
+    connect(&buttons, SIGNAL(accepted()), this, SLOT(close()));
+    main_layout->addWidget(&buttons);
+
+    setLayout(top_layout);
+    setWindowTitle(tr("Command List"));
+
+    QSize this_size = QSize(width() * 1.8, height() * 2);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
+
+    this->exec();
 }
 
 static struct command_desc list_commands_mouse[] =
@@ -437,7 +492,7 @@ static struct command_desc list_commands_mouse[] =
 };
 
 
-void CommandList::add_mouse_commands(QVBoxLayout *return_layout)
+void MouseCommandList::add_mouse_commands(QVBoxLayout *return_layout)
 {
     int x = 0;
 
@@ -457,40 +512,19 @@ void CommandList::add_mouse_commands(QVBoxLayout *return_layout)
     return_layout->addWidget(dummy, x, 0);
 }
 
-CommandList::CommandList(void)
+MouseCommandList::MouseCommandList(void)
 {
 
+    //Set up the main scroll bar
+    QVBoxLayout *top_layout = new QVBoxLayout;
     QVBoxLayout *main_layout = new QVBoxLayout;
-
-    QLabel *main_prompt = new QLabel(QString("<h2>Directional Commands</h2>"));
-    main_layout->addWidget(main_prompt, Qt::AlignCenter);
-
-    QHBoxLayout *top_across = new QHBoxLayout;
-    main_layout->addLayout(top_across);
-
-    QVBoxLayout *vlay_key_dirs = new QVBoxLayout;
-    add_dir_keyboard(vlay_key_dirs, TRUE);
-    top_across->addLayout(vlay_key_dirs);
-    top_across->addStretch(1);
-
-    if (which_keyset != KEYSET_ANGBAND)
-    {
-        QVBoxLayout *vlay_pad_dirs = new QVBoxLayout;
-        add_dir_keyboard(vlay_pad_dirs, FALSE);
-        top_across->addLayout(vlay_pad_dirs);
-        top_across->addStretch(1);
-    }
-
-    QGridLayout *glay_dir_commands = new QGridLayout;
-    add_dir_commands(glay_dir_commands);
-    main_layout->addLayout(glay_dir_commands);
-
-    QLabel *keyboard_prompt = new QLabel(QString("<h2>Keyboard Commands</h2>"));
-    main_layout->addWidget(keyboard_prompt, Qt::AlignCenter);
-
-    QGridLayout *glay_key_commands = new QGridLayout;
-    add_keyboard_commands(glay_key_commands);
-    main_layout->addLayout(glay_key_commands);
+    QWidget *top_widget = new QWidget;
+    QScrollArea *scroll_box = new QScrollArea;
+    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    top_widget->setLayout(main_layout);
+    scroll_box->setWidget(top_widget);
+    scroll_box->setWidgetResizable(TRUE);
+    top_layout->addWidget(scroll_box);
 
     QLabel *mouse_prompt = new QLabel(QString("<h2>Mouse Commands</h2>"));
     main_layout->addWidget(mouse_prompt, Qt::AlignCenter);
@@ -498,22 +532,33 @@ CommandList::CommandList(void)
     QVBoxLayout *vlay_mouse_commands = new QVBoxLayout;
     add_mouse_commands(vlay_mouse_commands);
     main_layout->addLayout(vlay_mouse_commands);
-    top_across->addStretch(1);
 
     QDialogButtonBox buttons;
     buttons.setStandardButtons(QDialogButtonBox::Ok);
     connect(&buttons, SIGNAL(accepted()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    setLayout(main_layout);
-    setWindowTitle(tr("Command List"));
+    main_layout->addStretch(1);
+    top_layout->addStretch(1);
+
+    setLayout(top_layout);
+    setWindowTitle(tr("Mouse Command List"));
+
+    QSize this_size = QSize(width() * 1.3, height());
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     this->exec();
 }
 
-void do_cmd_command_list(void)
+void do_cmd_list_keyboard_commands(void)
 {
-    CommandList();
+    KeyboardCommandList();
+}
+
+void do_cmd_list_mouse_commands(void)
+{
+    MouseCommandList();
 }
 
 static void process_move_key(int dir, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
@@ -772,11 +817,6 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         case Qt::Key_Colon:
         {
             do_cmd_write_note();
-            break;
-        }
-        case Qt::Key_Question:
-        {
-            do_cmd_command_list();
             break;
         }
         case Qt::Key_ParenRight:
@@ -1081,11 +1121,6 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
             do_cmd_write_note();
             break;
         }
-        case Qt::Key_Question:
-        {
-            do_cmd_command_list();
-            break;
-        }
         case Qt::Key_ParenRight:
         {
             save_screenshot(FALSE);
@@ -1359,11 +1394,6 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_Colon:
         {
             do_cmd_write_note();
-            break;
-        }
-        case Qt::Key_Question:
-        {
-            do_cmd_command_list();
             break;
         }
         case Qt::Key_ParenRight:
