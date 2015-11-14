@@ -1884,23 +1884,39 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
                 if (o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) this_flag = TRUE;
             }
 
-            // Nothing to mark
-            if (!this_flag && !this_extra_flag) continue;
 
             int attr = TERM_DARK;
-            if (o_ptr->pval > 0) attr = TERM_GREEN;
-            if (o_ptr->pval < 0) attr = TERM_RED;
             QString pval_num = (QString("%1") .arg(o_ptr->pval));
-            if (o_ptr->tval > 0) pval_num.prepend("+");
+
+            // Nothing to mark
+            if (!this_flag && !this_extra_flag) pval_num = '.';
+
+
+            if (o_ptr->pval > 0 && this_flag)
+            {
+                attr = TERM_GREEN;
+                pval_num.prepend("+");
+            }
+            else if (o_ptr->pval < 0 && this_flag) attr = TERM_RED;
+
+            // Sustained stat
             if (this_extra_flag)
             {
+                // Handle cases where the stat is sustained but not modified
+                if (!this_flag)
+                {
+                    pval_num = "s";
+                }
+
+                if (o_ptr->pval < 0)    attr = TERM_ORANGE;
+                else if (o_ptr->pval > 0)      attr = TERM_BLUE;
+
                 pval_num = (QString("<u>%1</u>") .arg(pval_num));
-                if (o_ptr->pval < 0) attr = TERM_ORANGE;
-                else attr = TERM_BLUE;
             }
 
             QLabel *pval_label = new QLabel();
             make_standard_label(pval_label, pval_num, attr, this_font);
+            if (this_extra_flag) pval_label->setToolTip("This stat is sustained");
             pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
             return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
 
@@ -1934,8 +1950,7 @@ void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout
         }
     }
 }
-
-
+// This grid should be only for fields that are part of the TR1_PVAL_MASK flag
 void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont this_font)
 {
     int row = 0;

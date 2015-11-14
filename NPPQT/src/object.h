@@ -1100,35 +1100,18 @@ enum
      TR3_IGNORE_COLD )
 
 /*
- * Stat sustain flags
+ * Stat mod flags
  */
 #define TR1_STAT_MOD_MASK \
-    (0L)
-
-#define TR2_STAT_MOD_MASK \
-    (TR2_SUST_STR | TR2_SUST_INT | TR2_SUST_WIS | TR2_SUST_DEX | \
-          TR2_SUST_CON | TR2_SUST_CHR)
-
-#define TR3_STAT_MOD_MASK \
-    (0L)
-
-#define TN1_STAT_MOD_MASK \
-        (0L)
-
-/*
- * Stat add flags
- */
-#define TR1_STAT_SUST_MASK \
     (TR1_STR | TR1_INT | TR1_WIS | TR1_DEX | TR1_CON | TR1_CHR )
 
+/*
+ * Stat sustain flags
+ */
+
 #define TR2_STAT_SUST_MASK \
-    (0L)
-
-#define TR3_STAT_SUST_MASK \
-    (0L)
-
-#define TN1_STAT_SUST_MASK \
-        (0L)
+    (TR2_SUST_STR | TR2_SUST_INT | TR2_SUST_WIS | TR2_SUST_DEX | \
+          TR2_SUST_CON | TR2_SUST_CHR)
 
 
 /*
