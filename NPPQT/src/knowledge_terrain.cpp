@@ -223,6 +223,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 
         // feature name
         QString this_feature = capitalize_first(f_ptr->f_name);
+        this_feature.remove("~");
         QTableWidgetItem *feat = new QTableWidgetItem(this_feature);
         feat->setTextAlignment(Qt::AlignLeft);
         terrain_table->setItem(row, col++, feat);

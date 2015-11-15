@@ -2168,10 +2168,9 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     equip_modifier_info(equip_widget, equip_mods, modifier_label->font());
     equip_info->addLayout(equip_vlay, 1, 3);
 
-    QDialogButtonBox buttons;
-    buttons.setStandardButtons(QDialogButtonBox::Close);
-    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
-    main_layout->addWidget(&buttons);
+    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    top_layout->addWidget(buttons);
 
     update_char_screen(top_widget);
 

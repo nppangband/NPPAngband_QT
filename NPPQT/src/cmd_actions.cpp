@@ -2595,7 +2595,7 @@ static bool player_bash(int y, int x)
         damage = damroll(dd, ds) + plus;
 
         /* Monster is still alive */
-        if (!mon_take_hit(m_idx, damage, &fear, NULL, SOURCE_PLAYER))
+        if (!mon_take_hit(m_idx, damage, &fear, NULL, SOURCE_PLAYER, FALSE))
         {
             /* Reduce its energy (half-paralysis) */
             m_ptr->m_energy = BASE_ENERGY_MOVE / 2;

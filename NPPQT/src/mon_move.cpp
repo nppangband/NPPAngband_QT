@@ -567,7 +567,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
                 if (mode == MODE_ACTION)
                 {
 
-                    mon_take_hit(dungeon_info[y][x].monster_idx, (trap_power / 3), &fear, note_dies, SOURCE_PLAYER);
+                    mon_take_hit(dungeon_info[y][x].monster_idx, (trap_power / 3), &fear, note_dies, SOURCE_PLAYER, TRUE);
 
                 }
                 break;
@@ -774,7 +774,7 @@ QString apply_monster_trap(int f_idx, int y, int x, byte mode)
                 {
 
                     (void)(mon_take_hit(dungeon_info[y][x].monster_idx, trap_power / 2, &fear,
-                                note_dies, SOURCE_PLAYER));
+                                note_dies, SOURCE_PLAYER, TRUE));
                 }
 
                 break;

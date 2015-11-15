@@ -147,7 +147,8 @@ protected:
     void closeEvent(QCloseEvent *event);
     void keyPressEvent(QKeyEvent* which_key);
     bool eventFilter(QObject *obj, QEvent *event);
-
+    void hideEvent(QHideEvent *event);
+    void showEvent(QShowEvent *event);
 
 private slots:
 

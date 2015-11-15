@@ -1306,7 +1306,7 @@ void process_effects(void)
          * If the effect still exists and there is another effect
          * on that grid, flush the stacked monster messages
          */
-        if (x_list[i].x_type && x_list[i].next_x_idx && (size_mon_msg > 0)) flush_monster_messages();
+        if (x_list[i].x_type && x_list[i].next_x_idx) flush_monster_messages();
 
         /*continue*/;
     }

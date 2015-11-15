@@ -370,9 +370,8 @@ void (*ang_sort_swap)(void *u, void *v, int a, int b);
 
 
 // Monser race messages
-monster_race_message *mon_msg;
+QVector<monster_race_message> mon_msg;
 monster_message_history *mon_message_hist;
-u16b size_mon_msg;
 u16b size_mon_hist;
 
 // List of squares to be re-drawn

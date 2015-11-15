@@ -438,11 +438,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
 
     output.append("<br>");
 
-    if (plus < 0)
-    {
-        plus_minus = '-';
-        plus *= -1;
-    }
+    if (plus < 0) plus = 0;
 
     /* Now calculate and print out average damage */
     output.append(QString("   This weapon does %1d%2%3%4 damage (%5 avg) per attack, with a critical hit chance of %6 percent.<br>")
@@ -665,11 +661,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
 
     output.append("<br>");
 
-    if (plus < 0)
-    {
-        plus_minus = '-';
-        plus *= -1;
-    }
+    if (plus < 0) plus = 0;
 
     average = (dd * ds) / 2 + plus;
 
@@ -772,11 +764,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
 
     output.append("<br>");
 
-    if (plus < 0)
-    {
-        plus_minus = '-';
-        plus *= -1;
-    }
+    if (plus < 0) plus = 0;
 
     average = (dd * ds) / 2 + plus;
 

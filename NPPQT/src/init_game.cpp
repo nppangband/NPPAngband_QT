@@ -646,7 +646,7 @@ static int init_other(void)
     dyna_g = C_ZNEW(DYNA_MAX, dynamic_grid_type);
 
     /* Array of stacked monster messages */
-    mon_msg = C_ZNEW(MAX_STORED_MON_MSG, monster_race_message);
+    mon_msg.clear();
     mon_message_hist = C_ZNEW(MAX_STORED_MON_CODES, monster_message_history);
 
     /* Prepare monster movement array*/
@@ -1360,7 +1360,7 @@ void cleanup_npp_games(void)
     FREE_ARRAY(dyna_g);
 
     /* Free the stacked monster messages */
-    FREE_ARRAY(mon_msg);
+    mon_msg.clear();
     FREE_ARRAY(mon_message_hist);
 
     /*free the randart arrays*/

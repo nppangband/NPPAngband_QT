@@ -726,7 +726,7 @@ void MainWindow::update_sidebar_player()
                 }
                 else
                 {
-                    if (this_lbl->isVisible()) this_lbl->show();
+                    if (!this_lbl->isVisible()) this_lbl->show();
                     this_lbl->setText(color_string(quest, attr));
                     this_lbl->setToolTip(describe_quest(guild_quest_level()));
                 }

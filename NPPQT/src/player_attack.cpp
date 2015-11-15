@@ -779,7 +779,7 @@ void py_attack(int y, int x)
             }
 
             /* Damage, check for fear and death */
-            if (mon_take_hit(dungeon_info[y][x].monster_idx, k, &fear, NULL, SOURCE_PLAYER))
+            if (mon_take_hit(dungeon_info[y][x].monster_idx, k, &fear, NULL, SOURCE_PLAYER, TRUE))
             {
                 /*return energy from unused attacks*/
                 if (num < p_ptr->state.num_blow)
@@ -1158,7 +1158,7 @@ void command_fire(cmd_arg args)
             }
 
             /* Hit the monster, check for death */
-            if (mon_take_hit(dungeon_info[y][x].monster_idx, tdam, &fear, note_dies, SOURCE_PLAYER))
+            if (mon_take_hit(dungeon_info[y][x].monster_idx, tdam, &fear, note_dies, SOURCE_PLAYER, TRUE))
             {
                 /* Dead monster */
             }
@@ -1507,7 +1507,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
             ident = TRUE;
 
             /*slight damage to monster*/
-            mon_take_hit(dungeon_info[y][x].monster_idx, damroll(10, 10), fear, NULL, SOURCE_PLAYER);
+            mon_take_hit(dungeon_info[y][x].monster_idx, damroll(10, 10), fear, NULL, SOURCE_PLAYER, TRUE);
 
             break;
         }
@@ -1518,7 +1518,7 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
             ident = TRUE;
 
             /*slight damage to monster*/
-            mon_take_hit(dungeon_info[y][x].monster_idx, damroll(25, 25), fear, NULL, SOURCE_PLAYER);
+            mon_take_hit(dungeon_info[y][x].monster_idx, damroll(25, 25), fear, NULL, SOURCE_PLAYER, TRUE);
 
             /*set the stun counter*/
             do_stun = TRUE;
@@ -2156,7 +2156,7 @@ void command_throw(cmd_arg args)
             /* Hit the monster, unless a potion effect has already been done */
             if (!potion_effect)
             {
-                 is_dead = (mon_take_hit(dungeon_info[y][x].monster_idx, tdam, &fear, note_dies, SOURCE_PLAYER));
+                 is_dead = (mon_take_hit(dungeon_info[y][x].monster_idx, tdam, &fear, note_dies, SOURCE_PLAYER, TRUE));
             }
 
             /* Still alive */

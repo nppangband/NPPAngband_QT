@@ -115,9 +115,8 @@ extern void (*ang_sort_swap)(void *u, void *v, int a, int b);
 extern void ang_sort(void *u, void *v, int n);
 
 // Monser race messages
-extern monster_race_message *mon_msg;
+extern QVector<monster_race_message> mon_msg;
 extern monster_message_history *mon_message_hist;
-extern u16b size_mon_msg;
 extern u16b size_mon_hist;
 
 //monster movement information

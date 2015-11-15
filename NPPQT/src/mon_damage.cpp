@@ -1208,7 +1208,7 @@ static s32b calc_mon_exp(const monster_race *r_ptr)
  * worth more than subsequent monsters.  This would also need to
  * induce changes in the monster recall code.  XXX XXX XXX
  */
-bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
+bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who, bool do_death_message)
 {
     monster_type *m_ptr = &mon_list[m_idx];
 
@@ -1250,19 +1250,13 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who)
         if (add_wakeup_chance <= 8000) add_wakeup_chance += 300;
 
         /* Death by Missile/Spell attack */
-        if (!note.isEmpty())
+        if (!do_death_message)
         {
-            /* Hack -- allow message suppression */
-            if (note.length() <= 1)
-            {
-                /* Be silent */
-            }
-
-            else
-            {
+            // Suppress messages below
+        }
+        else if (note.length())
+        {
                 message(QString("%1%2") .arg(capitalize_first(m_name)) .arg(note));
-            }
-
         }
 
         /* Death by physical attack -- invisible monster */

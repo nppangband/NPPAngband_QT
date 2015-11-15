@@ -25,6 +25,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QHeaderView>
+#include <QScrollArea>
 
 void qtablewidget_add_palette(QTableWidget *this_tablewidget)
 {
@@ -121,7 +122,16 @@ DisplayHomeInven::DisplayHomeInven(void)
         return;
     }
 
+    //Set up the main scroll bar
+    QVBoxLayout *top_layout = new QVBoxLayout;
     QVBoxLayout *main_layout = new QVBoxLayout;
+    QWidget *top_widget = new QWidget;
+    QScrollArea *scroll_box = new QScrollArea;
+    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    top_widget->setLayout(main_layout);
+    scroll_box->setWidget(top_widget);
+    scroll_box->setWidgetResizable(TRUE);
+    top_layout->addWidget(scroll_box);
 
     /* Display contents of the home */
     for (int i = 0; i < st_ptr->stock_num; i++)
@@ -131,13 +141,12 @@ DisplayHomeInven::DisplayHomeInven(void)
         QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
         QString o_desc = identify_random_gen(o_ptr);
 
-        QLabel *name_label = new QLabel(QString("<h3>%1) %2</h3>") .arg(prefix) .arg(o_name));
-        QLabel *desc_label = new QLabel(o_desc);
-        desc_label->setWordWrap(TRUE);
-        desc_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        QLabel *name_label = new QLabel(QString("<h3>%1) %2</h3>%4") .arg(prefix) .arg(o_name) .arg(o_desc));
+        //QLabel *desc_label = new QLabel(o_desc);
+        name_label->setWordWrap(TRUE);
+        name_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
         main_layout->addWidget(name_label);
-        main_layout->addWidget(desc_label);
     }
 
     //Add a close button on the right side
@@ -146,8 +155,13 @@ DisplayHomeInven::DisplayHomeInven(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    setLayout(main_layout);
+    setLayout(top_layout);
     setWindowTitle(tr("Home Inventory"));
+
+    QSize this_size = QSize(width()* 1.5, height() * 2);
+
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
 
     this->exec();
 }

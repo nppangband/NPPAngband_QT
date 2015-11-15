@@ -3749,7 +3749,7 @@ bool multiply_monster(int m_idx, bool override)
  * string as a whole message, not as a part of a larger message. This
  * is useful to display Moria-like death messages.
  */
-static const char *msg_repository[MAX_MON_MSG + 1] =
+static QString msg_repository[MAX_MON_MSG + 1] =
 {
     /* Dummy action */
     "[is|are] hurt.",    		/* MON_MSG_NONE */
@@ -4163,67 +4163,57 @@ void message_pain(int m_idx, int dam)
  * The contents of the returned value will change with the next call
  * to this function
  */
-static char *get_mon_msg_action(byte msg_code, bool do_plural)
+QString get_mon_msg_action(byte msg_code, bool do_plural)
 {
-    static char buf[200];
-    const char *action;
 
-    u16b n = 0;
-    /* Regular text */
-    byte flag = 0;
+    QString action = msg_repository[msg_code];
 
-    /* Put the message characters in the buffer */
-    for (action = msg_repository[msg_code]; *action; action++)
+    while (action.contains("["))
     {
-        /* Check available space */
-        if (n >= (sizeof(buf) - 1)) break;
+        int first_start_bracket = action.indexOf("[", 0);
+        int middle_divider = action.indexOf("|", 0);
+        int first_end_bracket = action.indexOf("]", 0);
 
-        /* Are we parsing a quantity modifier? */
-        if (flag)
+        //Paranoia
+        if (first_start_bracket < 0) return action;
+        if (first_end_bracket < 0) return action;
+
+        // Parse simple plural .. "disappear[s]!"
+        if (middle_divider < first_start_bracket || middle_divider > first_end_bracket)
         {
-            /* Check the presence of the modifier's terminator */
-            if (*action == ']')
+            // Singular version - jsut get of bracket
+            if (!do_plural)
             {
-                /* Go back to parsing regular text */
-                flag = 0;
-
-                /* Skip the mark */
+                action.remove(first_end_bracket,1);
+                action.remove(first_start_bracket,1);
                 continue;
             }
-
-            /* Check if we have to parse the plural modifier */
-            if (*action == '|')
+            // Plural version - get rid of everything inside the bracket
+            else
             {
-                /* Switch to plural modifier */
-                flag = PLURAL_MON;
-
-                /* Skip the mark */
+                int num_chars = first_end_bracket - first_start_bracket + 1;
+                action.remove(first_start_bracket, num_chars);
                 continue;
             }
-
-            /* Ignore the character if we need the other part */
-            if ((flag == PLURAL_MON) != do_plural) continue;
         }
 
-        /* Do we need to parse a new quantity modifier? */
-        else if (*action == '[')
+        // Parse Is/are bracket .. [is|are] even more stunned.
+        if (do_plural)
         {
-            /* Switch to singular modifier */
-            flag = SINGULAR_MON;
-
-            /* Skip the mark */
+            int num_chars = middle_divider - first_start_bracket + 1;
+            action.remove(first_end_bracket, 1);
+            action.remove(first_start_bracket, num_chars);
             continue;
         }
 
-        /* Append the character to the buffer */
-        buf[n++] = *action;
+        // Singular version
+        int num_chars = first_end_bracket - middle_divider + 1;
+        action.remove(middle_divider, num_chars);
+        action.remove(first_end_bracket, 1);
     }
 
-    /* Terminate the buffer */
-    buf[n] = '\0';
-
     /* Done */
-    return (buf);
+    return (action);
 }
 
 
@@ -4266,7 +4256,6 @@ static bool redundant_monster_message(int m_idx, int msg_code)
  */
 bool add_monster_message(QString mon_name, int m_idx, int msg_code)
 {
-    int i;
     byte mon_flags = 0;
 
     monster_type *m_ptr = &mon_list[m_idx];
@@ -4278,7 +4267,7 @@ bool add_monster_message(QString mon_name, int m_idx, int msg_code)
     if (mon_name.isEmpty()) mon_name = "it";
 
     /* Monster is invisible or out of LOS */
-    if (mon_name.contains("it") || mon_name.contains("something"))
+    if (strings_match(mon_name, "it") || mon_name.contains("something"))
     {
         /* Special mark */
         r_idx = 0;
@@ -4291,37 +4280,36 @@ bool add_monster_message(QString mon_name, int m_idx, int msg_code)
     if (mon_name.contains("(offscreen)")) mon_flags |= 0x02;
 
     /* Query if the message is already stored */
-    for (i = 0; i < size_mon_msg; i++)
+    for (int i = 0; i < mon_msg.size(); i++)
     {
-        /* We found the race and the message code */
-        if ((mon_msg[i].mon_race == r_idx) &&
-            (mon_msg[i].mon_flags == mon_flags) &&
-            (mon_msg[i].msg_code == msg_code))
-        {
-            /* Can we increment the counter? */
-            if (mon_msg[i].mon_count < UCHAR_MAX)
-            {
-                /* Stack the message */
-                ++(mon_msg[i].mon_count);
-            }
+        monster_race_message *mrm_ptr = &mon_msg[i];
 
-            /* Success */
-            return (TRUE);
+        /* We found the race and the message code */
+        if (mrm_ptr->mon_race != r_idx) continue;
+        if (mrm_ptr->mon_flags != mon_flags) continue;
+        if (mrm_ptr->msg_code == msg_code) continue;
+
+        /* Can we increment the counter? */
+        if (mrm_ptr->mon_count < UCHAR_MAX)
+        {
+            /* Stack the message */
+            mrm_ptr->mon_count++;
         }
+
+        /* Success */
+        return (TRUE);
     }
 
-    /* The message isn't stored. Check free space */
-    if (size_mon_msg >= MAX_STORED_MON_MSG) return (FALSE);
+    monster_race_message this_message;
 
     /* Assign the message data to the free slot */
-    mon_msg[i].mon_race = r_idx;
-    mon_msg[i].mon_flags = mon_flags;
-    mon_msg[i].msg_code = msg_code;
+    this_message.mon_race = r_idx;
+    this_message.mon_flags = mon_flags;
+    this_message.msg_code = msg_code;
     /* Just this monster so far */
-    mon_msg[i].mon_count = 1;
+    this_message.mon_count = 1;
 
-    /* One more entry */
-    ++size_mon_msg;
+    mon_msg.append(this_message);
 
     p_ptr->notice |= PN_MON_MESSAGE;
 
@@ -4341,25 +4329,27 @@ bool add_monster_message(QString mon_name, int m_idx, int msg_code)
  */
 void flush_monster_messages(void)
 {
+    if (!mon_msg.size()) return;
+
     int i;
     int r_idx;
     int count;
     monster_race *r_ptr;
     QString buf;
-    char *action;
+    QString action;
     bool action_only;
 
     /* Show every message */
-    for (i = 0; i < size_mon_msg; i++)
+    for (i = 0; i < mon_msg.size(); i++)
     {
+        buf.clear();
+        action.clear();
+
         /* Cache the monster count */
         count = mon_msg[i].mon_count;
 
         /* Paranoia */
         if (count < 1) continue;
-
-        /* Start with an empty string */
-        buf.clear();
 
         /* Cache the race index */
         r_idx = mon_msg[i].mon_race;
@@ -4381,7 +4371,7 @@ void flush_monster_messages(void)
         action = get_mon_msg_action(mon_msg[i].msg_code, (count > 1));
 
         /* Special message? */
-        action_only = (*action == '~');
+        action_only = action.contains("~");
 
         /* Format the proper message for visible monsters */
         if (r_ptr && !action_only)
@@ -4440,7 +4430,7 @@ void flush_monster_messages(void)
         /* Special message. Nuke the mark */
         if (action_only)
         {
-            ++action;
+            action.remove("~");
         }
         /* Regular message */
         else
@@ -4466,7 +4456,7 @@ void flush_monster_messages(void)
     }
 
     /* Delete all the stacked messages and history */
-    size_mon_msg = 0;
+    mon_msg.clear();
     size_mon_hist = 0;
 }
 

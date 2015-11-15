@@ -415,7 +415,7 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         col = 0;
 
         // Object_kind
-        QString this_object = capitalize_first(k_ptr->k_name);
+        QString this_object = capitalize_first(object_desc(i, ODESC_BASE));
         QTableWidgetItem *kind = new QTableWidgetItem(this_object);
         kind->setTextAlignment(Qt::AlignLeft);
         object_table->setItem(row, col++, kind);

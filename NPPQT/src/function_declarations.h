@@ -213,7 +213,7 @@ extern void check_experience(void);
 extern void gain_exp(s32b amount);
 extern void lose_exp(s32b amount);
 extern void monster_death(int m_idx, int who);
-extern bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who);
+extern bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who, bool do_death_message);
 
 // mon_move.cpp
 extern void find_range(monster_type *m_ptr);

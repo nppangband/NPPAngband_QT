@@ -1508,7 +1508,7 @@ void change_player_level(void)
     player_ghost_name.clear();
 
     /* Delete any pending monster message */
-    size_mon_msg = 0;
+    mon_msg.clear();
     size_mon_hist = 0;
 
     /* Check for quest_failure */

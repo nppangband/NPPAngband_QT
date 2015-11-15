@@ -5356,7 +5356,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
         }
 
         /* Hurt the monster, check for fear and death */
-        if (mon_take_hit(mon_idx, damage, &fear, "", who))
+        if (mon_take_hit(mon_idx, damage, &fear, "", who, FALSE))
         {
             /* Dead monster. Empty statement */
 

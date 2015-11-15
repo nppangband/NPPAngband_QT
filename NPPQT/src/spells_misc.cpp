@@ -5126,10 +5126,10 @@ bool call_huorns(void)
                 /* Get the monster name */
                 mon_name = monster_desc(&mon_list[m_idx], 0x08);
 
-                message(QString("The huorn attacks %1 for %2 HP damage!") .arg(mon_name) .arg(dam));
+                message(QString("The huorn attacks %1") .arg(mon_name));
 
                 /* Take hit */
-                mon_take_hit(m_idx, dam, &fear, NULL, SOURCE_PLAYER);
+                mon_take_hit(m_idx, dam, &fear, NULL, SOURCE_PLAYER, TRUE);
 
                 /* Flavor. Enable tree destruction */
                 do_destroy = TRUE;
@@ -5140,7 +5140,7 @@ bool call_huorns(void)
         }
 
         /* Hack -- Avoid cloned messages */
-        if (size_mon_msg > 0) flush_monster_messages();
+        flush_monster_messages();
 
         /* Sometimes destroy the tree */
         if (do_destroy && one_in_(10))

@@ -201,7 +201,7 @@ void process_command(int item, s16b command)
     // Only for objects
     if(command_ptr->needs_quantity())
     {
-        args.number = get_quantity(command_ptr->prompt(command), o_ptr->number, 1, FALSE);
+        args.number = get_quantity(command_ptr->prompt(command), o_ptr->number, o_ptr->number, FALSE);
     }
 
     // Only for objects

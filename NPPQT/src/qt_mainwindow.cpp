@@ -51,10 +51,6 @@
 
 MainWindow *main_window = 0;
 
-
-
-
-
 QString mult_list[] =
 {
   QString("0.25:0.25"),
@@ -830,6 +826,42 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
+void MainWindow::hideEvent(QHideEvent *event)
+{
+    if (show_obj_list) window_mon_list->hide();
+    if (show_mon_list) window_obj_list->hide();
+    if (show_mon_recall) window_mon_recall->hide();
+    if (show_obj_recall) window_obj_recall->hide();
+    if (show_feat_recall) window_feat_recall->hide();
+    if (show_messages_win) window_messages->hide();
+    if (show_char_info_basic) window_char_info_basic->hide();
+    if (show_char_info_equip) window_char_info_equip->hide();
+    if (show_char_equipment) window_char_equipment->hide();
+    if (show_char_inventory) window_char_inventory->hide();
+    if (show_win_dun_map) window_dun_map->hide();
+    if (show_win_overhead_map) window_overhead_map->hide();
+
+    event->accept();
+}
+
+void MainWindow::showEvent(QShowEvent *event)
+{
+    if (show_obj_list) window_mon_list->show();
+    if (show_mon_list) window_obj_list->show();
+    if (show_mon_recall) window_mon_recall->show();
+    if (show_obj_recall) window_obj_recall->show();
+    if (show_feat_recall) window_feat_recall->show();
+    if (show_messages_win) window_messages->show();
+    if (show_char_info_basic) window_char_info_basic->show();
+    if (show_char_info_equip) window_char_info_equip->show();
+    if (show_char_equipment) window_char_equipment->show();
+    if (show_char_inventory) window_char_inventory->show();
+    if (show_win_dun_map) window_dun_map->show();
+    if (show_win_overhead_map) window_overhead_map->show();
+
+    event->accept();
+}
+
 void MainWindow::open_recent_file()
 {
     QAction *action = qobject_cast<QAction *>(sender());
@@ -1512,6 +1544,7 @@ void MainWindow::create_menus()
     help_menu->addAction(help_about_Qt);
     help_menu->addAction(help_command_list);
     help_menu->addAction(help_mouse_list);
+
 }
 
 // Create the toolbars
