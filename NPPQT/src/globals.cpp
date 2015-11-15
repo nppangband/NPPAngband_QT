@@ -163,8 +163,7 @@ quest_type *q_info;
 flavor_type *flavor_info;
 
 /*Monster_movement energy info*/
-move_moment_type *mon_moment_info;
-u16b move_moment_num;
+QVector<move_moment_type> mon_moment_info;
 
 /*
  * Array[z_info->o_max] of dungeon objects
@@ -371,8 +370,7 @@ void (*ang_sort_swap)(void *u, void *v, int a, int b);
 
 // Monser race messages
 QVector<monster_race_message> mon_msg;
-monster_message_history *mon_message_hist;
-u16b size_mon_hist;
+QVector<monster_message_history> mon_message_hist;
 
 // List of squares to be re-drawn
 QVector<coord> redraw_coords;

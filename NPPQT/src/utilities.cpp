@@ -758,6 +758,9 @@ QString cnv_stat(int val)
 // Write a note to the notes file
 void write_note(QString note, s16b depth)
 {
+    // Hack - no blank notes
+    if (!note.length()) return;
+
     notes_type note_body;
     notes_type *notes_ptr = &note_body;
 

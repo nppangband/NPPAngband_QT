@@ -68,7 +68,7 @@ void update_message_area(QTextEdit *message_area, int max_messages, QFont messag
            this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
         }
 
-        next_message.prepend(this_message);
+        next_message.prepend(color_string(this_message, message_list[i].msg_color));
 
         // See if the next message should go before this one.
         if ((i+1) < message_list.size())
@@ -81,11 +81,11 @@ void update_message_area(QTextEdit *message_area, int max_messages, QFont messag
         }
 
         // Add a linebreak if needed.
-        if (num_messages) next_message.append("\n");
+        if (num_messages) next_message.append("<br>");
 
         message_area->moveCursor(QTextCursor::Start);
-        message_area->setTextColor(message_list[i].msg_color);
-        message_area->insertPlainText(QString("%1") .arg(next_message));
+
+        message_area->insertHtml(next_message);
 
         next_message.clear();
 
@@ -139,7 +139,7 @@ void update_message_area(QLabel *message_label, int max_messages)
 
         if (num_messages >= max_messages) break;
 
-        output.prepend("\n");
+        output.prepend("<br>");
     }
 
     message_label->setText(output);
@@ -220,7 +220,7 @@ static void add_message_to_vector(QString msg, QColor which_color)
         // Point to the last message
         message_type *msg_one = &message_list[0];
 
-        if (operator==(msg_one->message, msg) && (msg_one->msg_color == which_color) && !p_ptr->message_append)
+        if (strings_match(msg_one->message, msg) && (msg_one->msg_color == which_color) && !p_ptr->message_append)
         {
             msg_one->repeats++;
             add_message = FALSE;

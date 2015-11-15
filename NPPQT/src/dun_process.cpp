@@ -1509,7 +1509,7 @@ void change_player_level(void)
 
     /* Delete any pending monster message */
     mon_msg.clear();
-    size_mon_hist = 0;
+    mon_message_hist.clear();
 
     /* Check for quest_failure */
     if (guild_quest_active())

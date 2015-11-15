@@ -702,9 +702,6 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     if (p_ptr->in_store) return;
     if (anim_depth > 0) return;
 
-    // Already running a command
-    if (executing_command) return;
-
     // TODO PLAYTESTING
     debug_rarities();
 
@@ -720,6 +717,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
         ev_loop.quit();
         return;
     }
+
+    // Already running a command
+    else if (executing_command) return;
 
     executing_command = TRUE;
 

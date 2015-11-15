@@ -674,7 +674,7 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (parent->anim_depth > 0) return;
 
     // Already running a command
-    if (main_window->executing_command) return;
+    if (main_window->executing_command && (parent->ui_mode != UI_MODE_INPUT)) return;
 
     main_window->executing_command = TRUE;
 

@@ -116,12 +116,10 @@ extern void ang_sort(void *u, void *v, int n);
 
 // Monser race messages
 extern QVector<monster_race_message> mon_msg;
-extern monster_message_history *mon_message_hist;
-extern u16b size_mon_hist;
+extern QVector<monster_message_history> mon_message_hist;
 
 //monster movement information
-extern move_moment_type *mon_moment_info;
-extern u16b move_moment_num;
+extern QVector<move_moment_type> mon_moment_info;
 
 // Track which squares need to be drawn
 extern QVector<coord> redraw_coords;

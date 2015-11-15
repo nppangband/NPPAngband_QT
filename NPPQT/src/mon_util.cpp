@@ -146,7 +146,7 @@ void delete_monster_idx(int i)
     x = m_ptr->fx;
 
     /* Remove the monster from the moment array */
-    for (m = 0; m < move_moment_num; m++)
+    for (m = 0; m < mon_moment_info.size(); m++)
     {
         move_moment_type *mm_ptr = &mon_moment_info[m];
 
@@ -455,16 +455,7 @@ void wipe_mon_list(void)
     }
 
     /* Paranoia - Clear the move moment array */
-    for (i = 0; i < move_moment_num; i++)
-    {
-        move_moment_type *mm_ptr = &mon_moment_info[i];
-
-        /* Monster */
-        if (mm_ptr->m_idx > 0)
-        {
-            (void)WIPE(mm_ptr, move_moment_type);
-        }
-    }
+    mon_moment_info.clear();
 
     /* Reset "mon_max" */
     mon_max = 1;
@@ -4228,19 +4219,15 @@ static bool redundant_monster_message(int m_idx, int msg_code)
 {
     int i;
 
-    /* No messages yet */
-    if (!size_mon_hist) return FALSE;
-
-    for (i = 0; i < size_mon_hist; i++)
+    for (i = 0; i < mon_message_hist.size(); i++)
     {
+
+
         /* Not the same monster */
         if (m_idx != mon_message_hist[i].monster_idx) continue;
 
-        /* Not the same code */
-        if (msg_code != mon_message_hist[i].message_code) continue;
-
-        /* We have a match. */
-        return (TRUE);
+        /* A match */
+        if (msg_code == mon_message_hist[i].message_code) return (TRUE);
     }
 
     return (FALSE);
@@ -4287,37 +4274,33 @@ bool add_monster_message(QString mon_name, int m_idx, int msg_code)
         /* We found the race and the message code */
         if (mrm_ptr->mon_race != r_idx) continue;
         if (mrm_ptr->mon_flags != mon_flags) continue;
-        if (mrm_ptr->msg_code == msg_code) continue;
+        if (mrm_ptr->msg_code != msg_code) continue;
 
         /* Can we increment the counter? */
-        if (mrm_ptr->mon_count < UCHAR_MAX)
-        {
-            /* Stack the message */
-            mrm_ptr->mon_count++;
-        }
+        if (mrm_ptr->mon_count >= MAX_BYTE) continue;
+
+        /* Stack the message */
+        mrm_ptr->mon_count++;
 
         /* Success */
         return (TRUE);
     }
 
-    monster_race_message this_message;
-
     /* Assign the message data to the free slot */
+    monster_race_message this_message;
     this_message.mon_race = r_idx;
     this_message.mon_flags = mon_flags;
     this_message.msg_code = msg_code;
-    /* Just this monster so far */
     this_message.mon_count = 1;
-
     mon_msg.append(this_message);
 
     p_ptr->notice |= PN_MON_MESSAGE;
 
     /* record which monster had this message stored */
-    if (size_mon_hist >= MAX_STORED_MON_CODES) return (TRUE);
-    mon_message_hist[size_mon_hist].monster_idx = m_idx;
-    mon_message_hist[size_mon_hist].message_code = msg_code;
-    size_mon_hist++;
+    monster_message_history this_history;
+    this_history.monster_idx = m_idx;
+    this_history.message_code = msg_code;
+    mon_message_hist.append(this_history);
 
     /* Success */
     return (TRUE);
@@ -4457,7 +4440,6 @@ void flush_monster_messages(void)
 
     /* Delete all the stacked messages and history */
     mon_msg.clear();
-    size_mon_hist = 0;
 }
 
 

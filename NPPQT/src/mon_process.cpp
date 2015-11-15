@@ -1086,37 +1086,13 @@ static void recover_monster(monster_type *m_ptr)
 
 
 /*
-  * Sorting hook -- comp function -- array of movement moments.
+  * Sorting hook - vector of movement moments.
+  * Sort by moment in decreasing order
   */
-static bool ang_sort_comp_hook_moment(const void *u, const void *v, int a, int b)
+static bool sort_mon_moment_info(move_moment_type m1, move_moment_type m2)
 {
-    move_moment_type *mm = (move_moment_type*)(u);
-
-    /* Unused parameter */
-    (void)v;
-
-    /* Sort by moment in increasing order */
-    return (mm[a].moment <= mm[b].moment);
-}
-
-
-/*
- * Sorting hook -- swap function -- array of movement moments.
-
- */
-static void ang_sort_swap_hook_moment(void *u, void *v, int a, int b)
-{
-    move_moment_type *mm = (move_moment_type*)(u);
-
-    move_moment_type temp_moment;
-
-    /* Unused parameter */
-    (void)v;
-
-    /* Swap records */
-    COPY(&temp_moment, &mm[a], move_moment_type);
-    COPY(&mm[a], &mm[b], move_moment_type);
-    COPY(&mm[b], &temp_moment, move_moment_type);
+    if (m1.moment >= m2.moment) return TRUE;
+    return (FALSE);
 }
 
 /*
@@ -1141,12 +1117,10 @@ void process_entities(void)
     int energy_per_turn, old_energy, moment;
     int idx;
 
-    u16b dummy = 0;
-
     monster_type *m_ptr;
 
-    /* Clear the moment array */
-    move_moment_num = 0;
+    /* Clear the moment vector */
+    mon_moment_info.clear();
 
     p_ptr->player_turn = FALSE;
 
@@ -1171,9 +1145,10 @@ void process_entities(void)
             moment = 100 * (ENERGY_TO_MOVE - old_energy) / (energy_per_turn);
 
             /* Insert character into movement table */
-            mon_moment_info[move_moment_num].m_idx = -1;
-            mon_moment_info[move_moment_num++].moment = moment;
-
+            move_moment_type this_mon_move;
+            this_mon_move.m_idx = -1;
+            this_mon_move.moment = moment;
+            mon_moment_info.append(this_mon_move);
         }
     }
 
@@ -1200,28 +1175,21 @@ void process_entities(void)
         p_ptr->message_append_stop();
 
         /* Insert monster into the movement moment table */
-        mon_moment_info[move_moment_num].m_idx = i;
-
-        /* Note how much energy the monster had last turn */
-        old_energy = m_ptr->m_energy - energy_per_turn;
-
+        move_moment_type this_mon_move;
+        this_mon_move.m_idx = i;
+        this_mon_move.moment = moment;
         /* Calculate movement moment - Hugo Kornelis - */
+        old_energy = m_ptr->m_energy - energy_per_turn;
         moment = 100 * (ENERGY_TO_MOVE - old_energy) / (energy_per_turn);
-
-        /* Save it, go to next slot */
-        mon_moment_info[move_moment_num++].moment = moment;
-
+        this_mon_move.moment = moment;
+        mon_moment_info.append(this_mon_move);
     }
 
-    /* Select the sort method */
-    ang_sort_comp = ang_sort_comp_hook_moment;
-    ang_sort_swap = ang_sort_swap_hook_moment;
-
     /* Sort the movement table by decreasing movement moment*/
-    ang_sort(mon_moment_info, &dummy, move_moment_num);
+    qSort(mon_moment_info.begin(), mon_moment_info.end(), sort_mon_moment_info);
 
     /* Process monsters and the character, in order of priority */
-    for (i = 0; i < move_moment_num; i++)
+    for (i = 0; i < mon_moment_info.size(); i++)
     {
         /* Get next entity index*/
         idx = mon_moment_info[i].m_idx;

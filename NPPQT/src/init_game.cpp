@@ -647,10 +647,10 @@ static int init_other(void)
 
     /* Array of stacked monster messages */
     mon_msg.clear();
-    mon_message_hist = C_ZNEW(MAX_STORED_MON_CODES, monster_message_history);
+    mon_message_hist.clear();
 
     /* Prepare monster movement array*/
-    mon_moment_info = C_ZNEW(z_info->m_max, move_moment_type);
+    mon_moment_info.clear();
 
     /*** Prepare dungeon arrays ***/
 
@@ -1342,8 +1342,8 @@ void cleanup_npp_games(void)
     FREE_ARRAY(x_list);
 
 
-    /* Prepare monster movement array*/
-    FREE_ARRAY(mon_moment_info);
+    /* CLear the monster movement array*/
+    mon_moment_info.clear();
 
     /* Free the "update_view()" array */
     FREE_ARRAY(view_g);
@@ -1361,7 +1361,7 @@ void cleanup_npp_games(void)
 
     /* Free the stacked monster messages */
     mon_msg.clear();
-    FREE_ARRAY(mon_message_hist);
+    mon_message_hist.clear();
 
     /*free the randart arrays*/
     free_randart_tables();

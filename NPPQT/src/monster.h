@@ -991,10 +991,6 @@ enum {
 };
 
 
-/* Maxinum number of stacked monster messages */
-#define MAX_STORED_MON_MSG		200
-#define MAX_STORED_MON_CODES	400
-
 /*
  * Monster Timed Effects
  */
