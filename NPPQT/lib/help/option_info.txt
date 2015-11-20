@@ -118,6 +118,10 @@ Gives you an "are you sure" message when you try to destroy an object.  In the o
 Asks for confirmation when you enter a command to leave a quest level (thereby risking quest failure).
 *******<end>
 
+*******death_char_dump
+When a character dies, prompt the player to save a screenshot and charater file of the character's final turn.
+*******<end>
+
 *******birth_maximize
 If maximize mode is ON, racial and class adjustments to vital statistics (stat) act as permanent modifiers.  A Dwarven priest will be able to raise his inherent wisdom to 18/150, but his intelligence only to 18/40.  Maximize mode makes races and classes play more differently, usually to the player's benefit; it is therefore recommended in most cases.
 *******<end>

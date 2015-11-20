@@ -213,10 +213,11 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     for (int i = 1; i < z_info->f_max; i++)
     {
         feature_type *f_ptr = &f_info[i];
+        feature_lore *f_l_ptr = &f_l_list[i];
 
         // Don't count non and unseen entries
         if (f_ptr->f_name.isEmpty()) continue;
-        if (!f_ptr->f_everseen && !p_ptr->is_wizard) continue;
+        if (!f_l_ptr->f_l_sights && !p_ptr->is_wizard) continue;
 
         terrain_table->insertRow(row);
         col = 0;

@@ -1099,10 +1099,11 @@ static void process_effect(int x_idx)
 
                 /* Animate the cloud */
                 if (player_can_see_bold(y, x) && !(x_ptr->x_flags & (EF1_HIDDEN)) &&
-                    (!dungeon_info[y][x].has_monster()) && one_in_(2))
+                    (!dungeon_info[y][x].has_monster()))
                 {
                     /* Redraw */
                     light_spot(y, x);
+                    shimmer_effects = TRUE;
                 }
 
                 break;
@@ -1130,6 +1131,28 @@ static void process_effect(int x_idx)
                     else x_ptr->x_countdown += randint(3);
                 }
 
+                /* Animate the trap*/
+                if (player_can_see_bold(y, x) && !(x_ptr->x_flags & (EF1_HIDDEN)) &&
+                    (!dungeon_info[y][x].has_monster()))
+                {
+                    /* Redraw */
+                    light_spot(y, x);
+                    shimmer_effects = TRUE;
+                }
+
+                break;
+            }
+
+            case EFFECT_GLACIER:
+            {
+                /* Animate the glacier */
+                if (player_can_see_bold(y, x) && !(x_ptr->x_flags & (EF1_HIDDEN)) &&
+                   (!dungeon_info[y][x].has_monster()))
+                {
+                    /* Redraw */
+                    light_spot(y, x);
+                    shimmer_effects = TRUE;
+                }
                 break;
             }
 
@@ -1291,6 +1314,8 @@ void process_effects(void)
 
     /* Paranoia */
     notice_stuff();
+
+    shimmer_effects = FALSE;
 
     /* Process all effects */
     for (i = 0; i < x_max; i++)

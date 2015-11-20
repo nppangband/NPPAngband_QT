@@ -827,7 +827,7 @@ void do_animation(void)
         (use_graphics == GRAPHICS_ORIGINAL) ||
         (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)) return;
 
-    for (i = 1; i < mon_max; i++)
+    if (shimmer_monsters) for (i = 1; i < mon_max; i++)
     {
         monster_type *m_ptr = &mon_list[i];
         monster_race *r_ptr = &r_info[m_ptr->r_idx];
@@ -839,6 +839,27 @@ void do_animation(void)
         m_ptr->m_color = add_preset_color(multi_hued_color(r_ptr));
 
         light_spot(m_ptr->fy, m_ptr->fx);
+    }
+
+    // Shimmer effects
+    if (shimmer_effects) for (i = 1; i < x_max; i++)
+    {
+        effect_type *x_ptr = &x_list[i];
+
+        if (!x_ptr->x_type) continue;
+
+        /* Ignore invisible effects */
+        if (x_ptr->x_flags & (EF1_HIDDEN)) continue;
+
+        /* Only certain effects are allowed */
+        if ((x_ptr->x_type == EFFECT_TRAP_SMART) ||
+            (x_ptr->x_type == EFFECT_GLACIER) ||
+            (x_ptr->x_type == EFFECT_LINGERING_CLOUD) ||
+            (x_ptr->x_type == EFFECT_PERMANENT_CLOUD))
+        {
+            /* Redraw */
+            light_spot(x_ptr->x_cur_y, x_ptr->x_cur_x);
+        }
     }
 }
 
@@ -1610,8 +1631,8 @@ void change_player_level(void)
     health_track(0);
 
     /* Reset shimmer flags */
-    shimmer_monsters = TRUE;
-    shimmer_objects = TRUE;
+    shimmer_monsters = FALSE;
+    shimmer_effects = FALSE;
 
     /* Reset repair flags */
     repair_mflag_show = TRUE;
@@ -1823,7 +1844,12 @@ static void process_game_turns(void)
         redraw_stuff();
 
         /* Handle reasons to break the loop */
-        if (p_ptr->player_turn) return;
+        if (p_ptr->player_turn &&
+            !(p_ptr->timed[TMD_PARALYZED] ||
+             (p_ptr->stun_status() == STUN_KNOCKED_OUT)))
+        {
+                return;
+        }
 
         if (p_ptr->is_dead) return;
         if (p_ptr->leaving_level) change_player_level();
@@ -1836,8 +1862,10 @@ static void redraw_hallucination()
 {
     QRect vis = visible_dungeon();
 
-    for (int i = 0; i < vis.height(); i++) {
-        for (int j = 0; j < vis.width(); j++) {
+    for (int i = 0; i < vis.height(); i++)
+    {
+        for (int j = 0; j < vis.width(); j++)
+        {
             int y = vis.y() + i;
             int x = vis.x() + j;
             int m_idx = dungeon_info[y][x].monster_idx;
@@ -1847,8 +1875,10 @@ static void redraw_hallucination()
                 continue;
             }
             int o_idx = dungeon_info[y][x].object_idx;
-            while (o_idx) {
-                if (o_list[o_idx].marked) {
+            while (o_idx)
+            {
+                if (o_list[o_idx].marked)
+                {
                     light_spot(y, x);
                     break;
                 }
@@ -1893,39 +1923,33 @@ void process_player_energy_aux(byte energy_used)
     }
 
     /* Shimmer monsters if needed */
-    if (shimmer_monsters)
+    if (shimmer_monsters) for (i = 1; i < mon_max; i++)
+
     {
-        /* Clear the flag */
-        shimmer_monsters = FALSE;
+        monster_type *m_ptr;
+        monster_race *r_ptr;
 
-        /* Shimmer multi-hued monsters */
-        for (i = 1; i < mon_max; i++)
-        {
-            monster_type *m_ptr;
-            monster_race *r_ptr;
+        /* Get the monster */
+        m_ptr = &mon_list[i];
 
-            /* Get the monster */
-            m_ptr = &mon_list[i];
+        /* Skip dead monsters */
+        if (!m_ptr->r_idx) continue;
 
-            /* Skip dead monsters */
-            if (!m_ptr->r_idx) continue;
+        // Visible monsters only
+        if (!m_ptr->ml) continue;
 
-            /* Get the monster race */
-            r_ptr = &r_info[m_ptr->r_idx];
+        /* Get the monster race */
+        r_ptr = &r_info[m_ptr->r_idx];
 
-            /* Skip non-multi-hued monsters */
-            if (!(r_ptr->flags1 & (RF1_ATTR_MULTI))) continue;
+        /* Skip non-multi-hued monsters */
+        if (!(r_ptr->flags1 & (RF1_ATTR_MULTI))) continue;
 
-            /* Reset the flag */
-            shimmer_monsters = TRUE;
-
-            /* Redraw regardless */
-            light_spot(m_ptr->fy, m_ptr->fx);
-        }
+        /* Redraw regardless */
+        light_spot(m_ptr->fy, m_ptr->fx);
     }
 
     /* Traverse effect array */
-    for (i = 1; i < x_max; i++)
+    if (shimmer_effects) for (i = 1; i < x_max; i++)
     {
         effect_type *x_ptr = &x_list[i];
 
@@ -1936,7 +1960,9 @@ void process_player_energy_aux(byte energy_used)
 
         /* Only certain effects are allowed */
         if ((x_ptr->x_type == EFFECT_TRAP_SMART) ||
-            (x_ptr->x_type == EFFECT_GLACIER))
+            (x_ptr->x_type == EFFECT_GLACIER) ||
+            (x_ptr->x_type == EFFECT_LINGERING_CLOUD) ||
+            (x_ptr->x_type == EFFECT_PERMANENT_CLOUD))
         {
             /* Redraw */
             light_spot(x_ptr->x_cur_y, x_ptr->x_cur_x);

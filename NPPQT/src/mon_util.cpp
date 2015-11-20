@@ -4200,7 +4200,7 @@ QString get_mon_msg_action(byte msg_code, bool do_plural)
         // Singular version
         int num_chars = first_end_bracket - middle_divider + 1;
         action.remove(middle_divider, num_chars);
-        action.remove(first_end_bracket, 1);
+        action.remove(first_start_bracket, 1);
     }
 
     /* Done */

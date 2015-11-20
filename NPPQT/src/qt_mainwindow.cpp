@@ -1055,7 +1055,7 @@ void MainWindow::create_actions()
 
     event_timer = new QTimer(this);
     event_timer->setSingleShot(FALSE);
-    event_timer->setInterval(250);
+    event_timer->setInterval(100);
     connect(event_timer, SIGNAL(timeout()), this, SLOT(timed_events()));
 
     new_game_nppangband = new QAction(tr("New Game - NPPAngband"), this);

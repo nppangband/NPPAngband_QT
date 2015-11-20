@@ -156,10 +156,6 @@ static void process_player_aux(void)
  * also reduces the number of times that the recall window must
  * be redrawn.
  *
- * Note that the code to check for user abort during repeated commands
- * and running and resting can be disabled entirely with an option, and
- * even if not disabled, it will only check during every 128th game turn
- * while resting, for efficiency.
  */
 void process_player(void)
 {
@@ -193,13 +189,11 @@ void process_player(void)
     pack_overflow();
 
     /* Paralyzed or Knocked Out */
-    if ((p_ptr->timed[TMD_PARALYZED]) || (p_ptr->stun_status() == STUN_KNOCKED_OUT))
+    if ((p_ptr->timed[TMD_PARALYZED]) ||
+        (p_ptr->stun_status() == STUN_KNOCKED_OUT))
     {
          /* Take a turn */
          p_ptr->p_energy -= BASE_ENERGY_MOVE;
-
-         // Cancel user interaction
-         p_ptr->player_turn = false;
     }
 
     /* Normal command */

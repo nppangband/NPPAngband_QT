@@ -611,8 +611,7 @@ void update_char_screen(QWidget *return_widget)
             second_num = p_ptr->state.known_to_a;
             first_num_string.setNum(first_num);
             second_num_string.setNum(second_num);
-            if (second_num < 0) second_num_string.prepend("-");
-            else second_num_string.prepend("+");
+            if (second_num > 0) second_num_string.prepend("+");
             this_lbl->setText(color_string((QString("<b>[%1, %2]</b>") .arg(first_num_string) .arg(second_num_string)), TERM_BLUE));
             continue;
         }
@@ -639,10 +638,8 @@ void update_char_screen(QWidget *return_widget)
             }
             first_num_string.setNum(first_num);
             second_num_string.setNum(second_num);
-            if (first_num < 0) first_num_string.prepend("-");
-            else first_num_string.prepend("+");
-            if (second_num < 0) second_num_string.prepend("-");
-            else second_num_string.prepend("+");
+            if (first_num > 0) first_num_string.prepend("+");
+            if (second_num > 0) second_num_string.prepend("+");
             this_lbl->setText(color_string((QString("<b>x(%1) [%2d%3] (%4, %5)</b>") .arg(p_ptr->state.num_blow) .arg(dd) .arg(ds) .arg(first_num_string) .arg(second_num_string)), TERM_BLUE));
             continue;
         }
@@ -684,10 +681,8 @@ void update_char_screen(QWidget *return_widget)
 
             first_num_string.setNum(first_num);
             second_num_string.setNum(second_num);
-            if (first_num < 0) first_num_string.prepend("-");
-            else first_num_string.prepend("+");
-            if (second_num < 0) second_num_string.prepend("-");
-            else second_num_string.prepend("+");
+            if (first_num > 0) first_num_string.prepend("+");
+            if (second_num > 0) second_num_string.prepend("+");
             QString output = (QString("<b>xS(%1) xM(%2) (%3, %4)</b>") .arg(p_ptr->state.num_fire) .arg(mult) .arg(first_num_string) .arg(second_num_string));
             //No bow
             if (!mult) output = "---------";

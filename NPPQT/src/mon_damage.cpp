@@ -48,7 +48,7 @@ static mon_timed_effect effects[] =
     {MON_MSG_CONFUSED, MON_MSG_NOT_CONFUSED, MON_MSG_MORE_CONFUSED, RF3_NO_CONF },
     /*TMD_MON_FEAR*/
     {MON_MSG_FLEE_IN_TERROR, MON_MSG_NOT_AFRAID, MON_MSG_MORE_AFRAID, RF3_NO_FEAR },
-    /*TMD_MON_SLOW*/
+    /*66*/
     {MON_MSG_SLOWED, MON_SNG_NOT_SLOWED, MON_MSG_MORE_SLOWED, RF3_NO_SLOW  },
     /*TMD_MON_FAST*/
     {MON_MSG_HASTED, MON_MSG_NOT_HASTED, MON_MSG_MORE_HASTED, 0L  },
@@ -302,15 +302,10 @@ static bool mon_set_timed(int m_idx, int idx, int v, u16b flag)
     {
          calc_monster_speed(m_ptr->fy, m_ptr->fx);
     }
-    /* Just waking up, clear all other effects */
-    else if ((idx == MON_TMD_SLEEP) && (v == 0))
+    /* Just waking up, clear some of the other effects */
+    else if ((idx != MON_TMD_SLEEP) && one_in_(2))
     {
-        m_ptr->m_timed[MON_TMD_CONF] = 0;
-        m_ptr->m_timed[MON_TMD_STUN] = 0;
-        m_ptr->m_timed[MON_TMD_FEAR] = 0;
-        m_ptr->m_timed[MON_TMD_SLOW] = 0;
-        m_ptr->m_timed[MON_TMD_FAST] = 0;
-        calc_monster_speed(m_ptr->fy, m_ptr->fx);
+        m_ptr->m_timed[MON_TMD_SLEEP] = 0;
     }
     if (m_ptr->m_timed[MON_TMD_SLEEP]) new_sleep = TRUE;
 
@@ -1220,6 +1215,8 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who, bool do
 
     /* Redraw (later) if needed */
     if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
+
+    if (!dam) return(FALSE);
 
     /* Allow the debugging of damage done. */
     if ((dam > 0) && (cheat_know))

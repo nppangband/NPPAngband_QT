@@ -173,7 +173,7 @@ extern s16b monster_level;
 extern s16b coin_type;
 extern byte object_generation_mode;
 extern bool shimmer_monsters;
-extern bool shimmer_objects;
+extern bool shimmer_effects;
 extern bool repair_mflag_mark;
 extern bool repair_mflag_show;
 

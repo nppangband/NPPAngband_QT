@@ -476,7 +476,7 @@ void MainWindow::create_statusbar(void)
 
     confused = new QAction(tr("Confused"), this);
     confused->setIcon(QIcon(":/icons/lib/icons/confused.png"));
-    confused->setToolTip("You are temporarily confused, which causes you to move in random directions, it also prevents spellcasting and reading scrolls, and reduces your chances sucessfully use wands, staves, and rods, and to disarm traps or unlock doors.");
+    confused->setToolTip("You are temporarily confused, which causes you to move in random directions, it also prevents running, spellcasting, reading scrolls, and reduces your chances sucessfully use wands, staves, and rods, and to disarm traps or unlock doors.");
     status_bar->addAction(confused);
     confused->setVisible(FALSE);
 

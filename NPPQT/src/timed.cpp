@@ -54,7 +54,7 @@ static timed_effect effects[] =
     /*TMD_PARALYZED*/
     { "You are paralysed!", "You can move again.",
             NULL, NULL,
-            0, 0, 0, MSG_PARALYZED, TRUE },
+            PR_STATUSBAR, 0, 0, MSG_PARALYZED, TRUE },
     /*TMD_CONFUSED*/
     { "You are confused!", "You are no longer confused.",
             "You are more confused!", "You feel a little less confused.",
