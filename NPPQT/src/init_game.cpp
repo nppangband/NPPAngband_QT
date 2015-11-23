@@ -1565,6 +1565,7 @@ void flavor_init(void)
 
                     /* Make random_syllable */
                     syllable = make_random_name(min, max);
+                    syllable.remove(" ");
 
                     /* Make second syllable lowercase */
                     if (q) syllable = syllable.toLower();

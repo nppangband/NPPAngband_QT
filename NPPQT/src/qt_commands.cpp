@@ -357,7 +357,7 @@ void KeyboardCommandList::add_dir_commands(QGridLayout *return_layout)
         command_desc *cmd_ptr;
         if (which_keyset == KEYSET_NEW) cmd_ptr = &dir_commands_new[x];
         else if (which_keyset == KEYSET_ANGBAND) cmd_ptr = &dir_commands_angband[x];
-        else /* KEYSET_ROGUE */ cmd_ptr = &list_commands_roguelike[x];
+        else /* KEYSET_ROGUE */ cmd_ptr = &dir_commands_roguelike[x];
 
         int col = 0;
 
@@ -442,6 +442,7 @@ KeyboardCommandList::KeyboardCommandList(void)
 
     if (which_keyset != KEYSET_ANGBAND)
     {
+        top_across->addStretch(1);
         QVBoxLayout *vlay_pad_dirs = new QVBoxLayout;
         add_dir_keyboard(vlay_pad_dirs, FALSE);
         top_across->addLayout(vlay_pad_dirs);
@@ -1115,6 +1116,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         case Qt::Key_Semicolon:
         {
             do_cmd_walk(DIR_UNKNOWN, FALSE);
+            break;
         }
         case Qt::Key_Colon:
         {
@@ -1390,6 +1392,7 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_Semicolon:
         {
             do_cmd_walk(DIR_UNKNOWN, FALSE);
+            break;
         }
         case Qt::Key_Colon:
         {

@@ -341,6 +341,22 @@ void display_player_scores(void)
     DisplayScores();
 }
 
+// Sort function for the total kills list
+// Sort by total kills, then monster level, then name
+static bool kill_list_sort(mon_kills first, mon_kills second)
+{
+    if (first.total_kills > second.total_kills) return (TRUE);
+    if (first.total_kills < second.total_kills) return (FALSE);
+
+    monster_race *r1_ptr = &r_info[first.mon_idx];
+    monster_race *r2_ptr = &r_info[second.mon_idx];
+    if (r1_ptr->level > r2_ptr->level) return (TRUE);
+    if (r1_ptr->level < r2_ptr->level) return (FALSE);
+    if (r1_ptr->r_name_full < r2_ptr->r_name_full) return (TRUE);
+
+    return (FALSE);
+}
+
 DisplayMonKillCount::DisplayMonKillCount(void)
 {
     QVector<mon_kills> mon_kill_list;
@@ -372,21 +388,9 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         return;
     }
 
-    //bubble sort, largest kill count at top
-    for (int i = 0; i < mon_kill_list.size(); i++)
-    {
-        for (int j = i+1; j < mon_kill_list.size(); j++)
-        {
-            if (mon_kill_list[i].total_kills >= mon_kill_list[j].total_kills) continue;
+    // Sort the listTab
+    qSort(mon_kill_list.begin(), mon_kill_list.end(), kill_list_sort);
 
-            mon_kills temp = mon_kill_list[j];
-            mon_kill_list[j] = mon_kill_list[i];
-            mon_kill_list[i] = temp;
-        }
-    }
-
-    kill_count_proxy_model = new QSortFilterProxyModel;
-    kill_count_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
     QVBoxLayout *main_layout = new QVBoxLayout;
 
     int col = 0;
@@ -451,8 +455,7 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         kill_count_table->setItem(i, col++, total_kills);
     }
 
-    kill_count_table->setSortingEnabled(TRUE);
-    kill_count_table->sortByColumn(3, Qt::DescendingOrder);
+    kill_count_table->setSortingEnabled(FALSE);
     kill_count_table->resizeColumnsToContents();
     kill_count_table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     main_layout->addWidget(kill_count_table);

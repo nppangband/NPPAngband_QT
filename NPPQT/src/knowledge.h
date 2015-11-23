@@ -49,7 +49,7 @@ private:
 private slots:
     // Receives the number of the button pressed.
     void button_press(int mon_race);
-    void filter_rows(int row, int col);
+    void filter_rows(int row, int col, int old_row, int old_col);
     bool mon_matches_mon_group(int r_idx, int group);
 };
 
@@ -74,7 +74,7 @@ private slots:
     // Receives the number of the button pressed.
     void button_press(int k_idx);
     void settings_press(int k_idx);
-    void filter_rows(int row, int col);
+    void filter_rows(int row, int col, int old_row, int old_col);
     int object_matches_group(int k_idx);
 };
 
@@ -99,7 +99,7 @@ private slots:
     // Receives the number of the button pressed.
     void button_press(int e_idx);
     void settings_press(int e_idx);
-    void filter_rows(int row, int col);
+    void filter_rows(int row, int col, int old_row, int old_col);
     bool ego_item_matches_group(int e_idx, int group);
 };
 
@@ -124,7 +124,7 @@ private slots:
     // Receives the number of the button pressed.
     void button_press(int a_idx);
     void settings_press(int a_idx);
-    void filter_rows(int row, int col);
+    void filter_rows(int row, int col, int old_row, int old_col);
     int artifact_matches_group(int a_idx);
 };
 
@@ -147,7 +147,7 @@ private:
 private slots:
     // Receives the number of the button pressed.
     void button_press(int f_idx);
-    void filter_rows(int row, int col);
+    void filter_rows(int row, int col, int old_row, int old_col);
     int terrain_matches_group(int f_idx);
 };
 
@@ -198,7 +198,6 @@ public:
 
 private:
     QTableWidget *kill_count_table;
-    QSortFilterProxyModel *kill_count_proxy_model;
 
 };
 

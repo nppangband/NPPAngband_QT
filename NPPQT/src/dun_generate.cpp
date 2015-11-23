@@ -3767,9 +3767,7 @@ void build_terrain(int y, int x, int feat)
 
         case FEAT_FLOOR_EARTH:
         {
-            if (k <= 1) newfeat = FEAT_LOOSE_ROCK;
-
-            else if (k <= 5) newfeat = FEAT_FLOOR_ROCK;
+            if (k <= 5) newfeat = FEAT_FLOOR_ROCK;
 
             else if (k <= 10) newfeat = FEAT_FLOOR_PEBBLES;
 

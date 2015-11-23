@@ -61,7 +61,7 @@ void MainWindow::create_sidebar()
 
     // Hitpoints
     QLabel *hp_label = new QLabel;
-    hp_label->setText(color_string("HP_LABEL", SBAR_NORMAL));
+    hp_label->setText(color_string("HIT POINTS", SBAR_NORMAL));
     hp_label->setObjectName("HP_LABEL");
     player_info_labels->addWidget(hp_label, Qt::AlignLeft);
     hp_label->setToolTip(get_help_topic("character_info", "Hit Points"));

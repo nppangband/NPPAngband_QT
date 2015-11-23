@@ -154,8 +154,6 @@ bool put_object_in_inventory(object_type *o_ptr)
 {
     QString o_name;
 
-    u16b msgt = TERM_WHITE;
-
 	int slot = inven_carry(o_ptr);
 
 	/*hack - don't pickup &nothings*/
@@ -178,7 +176,7 @@ bool put_object_in_inventory(object_type *o_ptr)
     o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL);
 
 	/* Message */
-    color_message(QString("You have %1 (%2).").arg(o_name).arg(index_to_label(slot)), msgt);
+    message(QString("You have %1 (%2).").arg(o_name).arg(index_to_label(slot)));
 
 	/* No longer marked "in use */
 	o_ptr->obj_in_use = FALSE;
@@ -563,6 +561,8 @@ void py_pickup(bool pickup)
 	/* Next, pick up items that are marked for auto-pickup.  */
     for (this_o_idx = dungeon_info[py][px].object_idx; this_o_idx; this_o_idx = next_o_idx)
 	{
+		bool do_continue = TRUE;
+
 		/* We are done */
 		if (pack_is_full()) break;
 
@@ -575,11 +575,13 @@ void py_pickup(bool pickup)
         if (k_info[o_ptr->k_idx].squelch == NO_SQUELCH_NEVER_PICKUP) continue;
 
 		/* Object is marked to always pickup */
-        if ((k_info[o_ptr->k_idx].squelch != NO_SQUELCH_ALWAYS_PICKUP) ||
-            !(k_info[o_ptr->k_idx].aware)) continue;
+		if ((k_info[o_ptr->k_idx].squelch == NO_SQUELCH_ALWAYS_PICKUP)  &&
+			(k_info[o_ptr->k_idx].aware)) do_continue = FALSE;
 
         /* Player doesn't want to pickup item  */
-        if (!get_item_allow(-this_o_idx, VERIFY_PICKUP)) continue;
+        if (get_item_allow(-this_o_idx, VERIFY_PICKUP)) do_continue = FALSE;
+
+		if (do_continue) continue;
 
 		/* Hack - Don't pick up mimic objects */
         if (o_ptr->is_mimic()) continue;

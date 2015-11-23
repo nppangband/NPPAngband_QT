@@ -164,7 +164,10 @@ QString output_messages(byte max_messages)
            this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
         }
 
-        next_message.prepend(color_string(this_message, message_list[i].msg_color));
+        QColor this_color = message_list[i].msg_color;
+        if (is_white(this_color)) this_color = Qt::black;
+
+        next_message.prepend(color_string(this_message, this_color));
 
         // See if the next message should go before this one.
         if ((i+1) < message_list.size())

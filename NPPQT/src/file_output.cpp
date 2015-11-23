@@ -39,7 +39,7 @@
 #define MODIFIERS_LABEL_LENGTH (MODIFIERS_TABLE_LENGTH - EQUIPPY_MODIFIERS_LENGTH)
 
 // Helper function to check if the color is white
-static bool is_white(QColor this_color)
+bool is_white(QColor this_color)
 {
     if (this_color.operator ==(defined_colors[TERM_WHITE])) return (TRUE);
     if (this_color.operator ==(defined_colors[TERM_LIGHT_GRAY])) return (TRUE);

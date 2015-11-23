@@ -290,11 +290,13 @@ void DisplayObjectKnowledge::settings_press(int k_idx)
     }
 }
 
-void DisplayObjectKnowledge::filter_rows(int row, int col)
+void DisplayObjectKnowledge::filter_rows(int row, int col, int old_row, int old_col)
 {
     int which_group = 0;
 
     (void)col;
+    (void)old_row;
+    (void)old_col;
     int i;
 
     // First find the group we want to filter for
@@ -490,7 +492,7 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     object_group_table->setSortingEnabled(FALSE);
     object_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     object_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(object_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
+    connect(object_group_table, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(filter_rows(int,int,int,int)));
     object_knowledge_hlay->addWidget(object_group_table);
 
     object_table->setSortingEnabled(TRUE);
@@ -511,7 +513,7 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     main_layout->addWidget(&buttons);
 
     //Filter for the first object group.
-    filter_rows(0,0);
+    filter_rows(0,0,0,0);
 
     QSize this_size = QSize(width()* 10 / 7, height() * 4 / 3);
 
@@ -586,11 +588,13 @@ void DisplayEgoItemKnowledge::settings_press(int e_idx)
     }
 }
 
-void DisplayEgoItemKnowledge::filter_rows(int row, int col)
+void DisplayEgoItemKnowledge::filter_rows(int row, int col, int old_row, int old_col)
 {
     int which_group = 0;
 
     (void)col;
+    (void)old_row;
+    (void)old_col;
     int i;
 
     // First find the group we want to filter for
@@ -774,7 +778,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     ego_item_group_table->setSortingEnabled(FALSE);
     ego_item_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     ego_item_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(ego_item_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
+    connect(ego_item_group_table, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(filter_rows(int,int,int,int)));
     ego_item_knowledge_hlay->addWidget(ego_item_group_table);
 
     ego_item_table->setSortingEnabled(TRUE);
@@ -794,7 +798,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     main_layout->addWidget(&buttons);
 
     //Filter for the first ego group.
-    filter_rows(0,0);
+    filter_rows(0,0,0,0);
 
     QSize this_size = QSize(width()* 19 / 14, height() * 4 / 3);
     resize(ui_max_widget_size(this_size));
@@ -851,11 +855,13 @@ void DisplayArtifactKnowledge::settings_press(int a_idx)
 }
 
 
-void DisplayArtifactKnowledge::filter_rows(int row, int col)
+void DisplayArtifactKnowledge::filter_rows(int row, int col, int old_row, int old_col)
 {
     int which_group = 0;
 
     (void)col;
+    (void)old_row;
+    (void)old_col;
     int i;
 
     // First find the group we want to filter for
@@ -1024,7 +1030,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     artifact_group_table->setSortingEnabled(FALSE);
     artifact_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     artifact_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(artifact_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
+    connect(artifact_group_table, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(filter_rows(int,int,int,int)));
     artifact_knowledge_hlay->addWidget(artifact_group_table);
 
     artifact_table->setSortingEnabled(TRUE);
@@ -1044,7 +1050,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     main_layout->addWidget(&buttons);
 
     //Filter for the first monster group.
-    filter_rows(0,0);
+    filter_rows(0,0,0,0);
 
     QSize this_size = QSize(width()* 7 / 5, height() * 4 / 3);
     resize(ui_max_widget_size(this_size));

@@ -178,11 +178,13 @@ void DisplayMonsterKnowledge::button_press(int mon_race)
     describe_monster(mon_race, p_ptr->is_wizard, NULL);
 }
 
-void DisplayMonsterKnowledge::filter_rows(int row, int col)
+void DisplayMonsterKnowledge::filter_rows(int row, int col, int old_row, int old_col)
 {
     int which_group = 0;
 
     (void)col;
+    (void)old_row;
+    (void)old_col;
     int i;
 
     // First find the group we want to filter for
@@ -394,7 +396,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     mon_group_table->setSortingEnabled(FALSE);
     mon_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     mon_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(mon_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
+    connect(mon_group_table, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(filter_rows(int,int,int,int)));
     mon_knowledge_hlay->addWidget(mon_group_table);
 
     monster_table->setSortingEnabled(TRUE);
@@ -414,7 +416,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     main_layout->addWidget(&buttons);
 
     //Flter for the first monster group.
-    filter_rows(0,0);
+    filter_rows(0, 0, 0, 0);
 
     QSize this_size = QSize(width()* 7 / 4, height() * 4 / 3);
 

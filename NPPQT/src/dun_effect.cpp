@@ -505,14 +505,14 @@ bool set_effect_glyph(byte y, byte x)
 }
 
 /*
- * Set a glyph.  Return false if it could not be set.
+ * Set some rubble.  Return false if it could not be set.
  */
 bool set_effect_rocks(int f_idx, byte y, byte x)
 {
     int x_idx = x_pop();
     u16b flags = (EF1_PERMANENT | EF1_SKIP);
 
-    //Hack - plan rubble doesn't have an object.
+    //Hack - plain rubble doesn't have an object.
     if (f_idx != FEAT_RUBBLE) flags |= EF1_OBJECT;
 
     /*All full*/

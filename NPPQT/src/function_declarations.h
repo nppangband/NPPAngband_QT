@@ -159,8 +159,9 @@ extern void process_player_energy(byte energy);
 extern void change_player_level(void);
 
 // file_output.cpp
-void save_screenshot(byte do_png);
-void save_character_file(void);
+extern bool is_white(QColor this_color);
+extern void save_screenshot(byte do_png);
+extern void save_character_file(void);
 
 // hotkeys.cpp
 extern void clear_all_hotkeys();

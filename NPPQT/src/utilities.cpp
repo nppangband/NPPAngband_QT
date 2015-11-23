@@ -472,7 +472,7 @@ QString format_object_weight(object_type *o_ptr)
     QString formatted_weight = (QString("%1.%2") .arg(object_weight/10) .arg(object_weight % 10));
 
     while (formatted_weight.length() < 6) formatted_weight.prepend(" ");
-    if (object_weight == 10) formatted_weight.append(" lb ");
+    if (object_weight == 10) formatted_weight.append(" lb");
     else formatted_weight.append(" lbs");
 
     return (formatted_weight);

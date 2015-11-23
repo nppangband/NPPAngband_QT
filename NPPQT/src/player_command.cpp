@@ -177,6 +177,12 @@ void process_command(int item, s16b command)
     // Paranoia
     if (command == CMD_MAX) return;
 
+    // Don't process for dead characters
+    if (p_ptr->is_dead)
+    {
+        if ((command != CMD_EXAMINE) && (command != CMD_SETTINGS)) return;
+    }
+
     // Now that we have a match, process the command.
     command_type *command_ptr = &command_info[command];
     cmd_arg args;

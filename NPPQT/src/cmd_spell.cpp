@@ -115,7 +115,11 @@ void SpellSelectDialog::available_spells(int mode)
         available_books[i] = FALSE;
 
         int idx = lookup_kind(cp_ptr->spell_book, i);
-        if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN | USE_STORE)) continue;
+        if (mode == BOOK_BROWSE)
+        {
+            if (!k_info[idx].everseen) continue;
+        }
+        else if (!object_kind_is_available(idx, USE_FLOOR | USE_INVEN | USE_STORE)) continue;
 
         for (int j = 0; j < SPELLS_PER_BOOK; j++)
         {

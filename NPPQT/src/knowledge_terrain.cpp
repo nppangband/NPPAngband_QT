@@ -118,11 +118,13 @@ void DisplayTerrainKnowledge::button_press(int f_idx)
     describe_feature(f_idx, do_spoiler);
 }
 
-void DisplayTerrainKnowledge::filter_rows(int row, int col)
+void DisplayTerrainKnowledge::filter_rows(int row, int col, int old_row, int old_col)
 {
     int which_group = 0;
 
     (void)col;
+    (void)old_row;
+    (void)old_col;
     int i;
 
     // First find the group we want to filter for
@@ -217,7 +219,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 
         // Don't count non and unseen entries
         if (f_ptr->f_name.isEmpty()) continue;
-        if (!f_l_ptr->f_l_sights && !p_ptr->is_wizard) continue;
+        if (!f_l_ptr->f_l_sights && !p_ptr->is_wizard && !f_ptr->f_everseen) continue;
 
         terrain_table->insertRow(row);
         col = 0;
@@ -282,7 +284,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     terrain_group_table->setSortingEnabled(FALSE);
     terrain_group_table->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     terrain_group_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(terrain_group_table, SIGNAL(cellClicked(int,int)), this, SLOT(filter_rows(int, int)));
+    connect(terrain_group_table, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(filter_rows(int,int,int,int)));
     terrain_knowledge_hlay->addWidget(terrain_group_table);
 
     terrain_table->setSortingEnabled(TRUE);
@@ -302,7 +304,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     main_layout->addWidget(&buttons);
 
     //Filter for the first terrain group.
-    filter_rows(0,0);
+    filter_rows(0,0,0,0);
 
     QSize this_size = QSize(width()* 9 / 8, height() * 4 / 3);
     resize(ui_max_widget_size(this_size));

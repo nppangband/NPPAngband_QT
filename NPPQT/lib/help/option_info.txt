@@ -82,7 +82,7 @@ This option activates a special color scheme for all "floor" grids which are nor
 *******view_perma_grids
 Memorize all permanently lit floor grids.  Turning this option off allows you to know which lit floor grids are in line of sight.  The "view_bright_lite" option works better for this purpose.
 
-*******view_torch_grids>
+*******view_torch_grids
 Memorize all floor grids that have ever been lit up by the player.  This is one way to help keep track of which areas you have explored.
 *******<end>
 
