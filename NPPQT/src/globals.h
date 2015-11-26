@@ -28,7 +28,6 @@ extern QChar summon_kin_type;
 extern monster_type *summoner;
 extern int which_keyset;
 extern int use_graphics;
-extern s16b image_count;
 
 extern s16b o_max;
 extern s16b o_cnt;
@@ -126,9 +125,8 @@ extern QVector<coord> redraw_coords;
 
 // Arrays for cave information
 extern int view_n;
-extern u16b *view_g;
-extern int fire_n;
-extern u16b *fire_g;
+extern QVector<coord> view_g;
+extern QVector<coord> fire_g;
 extern int temp_n;
 extern u16b *temp_g;
 extern byte *temp_y;

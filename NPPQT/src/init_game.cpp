@@ -622,8 +622,7 @@ static int init_other(void)
     reset_dungeon_info();
 
     /* Array of grids */
-    view_g = C_ZNEW(VIEW_MAX, u16b);
-    view_n = 0;
+    view_g.clear();
 
     /* Array of grids */
     temp_g = C_ZNEW(TEMP_MAX, u16b);
@@ -634,8 +633,7 @@ static int init_other(void)
     temp_x = ((byte*)(temp_g)) + TEMP_MAX;
 
     /* Array of grids */
-    fire_g = C_ZNEW(VIEW_MAX, u16b);
-    fire_n = 0;
+    fire_g.clear();
 
     /* has_LIGHT patch causes both temp_g and temp_x/y to be used
        in targetting mode: can't use the same memory any more. */
@@ -1346,10 +1344,10 @@ void cleanup_npp_games(void)
     mon_moment_info.clear();
 
     /* Free the "update_view()" array */
-    FREE_ARRAY(view_g);
+    view_g.clear();
 
     /* Free the other "update_view()" array */
-    FREE_ARRAY(fire_g);
+    fire_g.clear();
 
     /* Free the temp array */
     FREE_ARRAY(temp_g);

@@ -31,9 +31,6 @@ monster_type *summoner; 	/*Track the current summoner*/
 int which_keyset;       //  Use new, rogue, or angband keyset
 int use_graphics;		/* The "graphics" mode is enabled */
 
-s16b image_count;  		/* Grids until next random image    */
-                        /* Optimizes the hallucination code */
-
 QString current_savefile;
 
 
@@ -376,17 +373,15 @@ QVector<monster_message_history> mon_message_hist;
 QVector<coord> redraw_coords;
 
 /*
- * Array[VIEW_MAX] used by "update_view()"
+ * Vetor used by "update_view()"
  */
-int view_n = 0;
-u16b *view_g;
+QVector<coord> view_g;
 
 
 /*
- * Array[VIEW_MAX] used by "update_view()"
+ * Vector used by "update_view()"
  */
-int fire_n = 0;
-u16b *fire_g;
+QVector<coord> fire_g;
 
 /*
  * Arrays[TEMP_MAX] used for various things

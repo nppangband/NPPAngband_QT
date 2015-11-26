@@ -686,25 +686,16 @@ Repl::Repl(QString a, QString b)
     with = b;
 }
 
+// A list of unicode characters to convert to ASCII.
+//  Clearly not an inclusive list, but it should work to convert the game's monster, artifact, and ego-item names.
 QString to_ascii(QString src)
 {
-    Repl items[] = {
-        Repl("áäâà", "a"),
-        Repl("éëêè", "e"),
-        Repl("íîïì", "i"),
-        Repl("óöôò", "o"),
-        Repl("úûüù", "u"),
-        Repl("ñ", "n"),
-        Repl("", "")
-    };
+    QString original        = "àáâãäåĀÁÂÃÄÅçćċčÇĆĊČďđÐĎèéêëÈÉÊËìíîïÌÍÎÏñÑòóôõöøðÓÔÕÖØÒùúûüÙÚÛÜýÿÝ";
+    QString replacements    = "aaaaaaAAAAAAccccCCCCddDDeeeeEEEEiiiiIIIInNooooooOOOOOOOuuuuUUUUyyY";
 
-    for (int i = 0; !items[i].what.isEmpty(); i++) {
-        QString what = items[i].what;
-        QString with = items[i].with;
-        for (int j = 0; j < what.size(); j++) {
-            src = src.replace(what[j], with[0]);
-            src = src.replace(what[j].toUpper(), with[0].toUpper()); // Handle uppercase letters
-        }
+    for (int i = 0; i < original.length(); i++)
+    {
+        src = src.replace(original[i], replacements[i], Qt::CaseSensitive);
     }
 
     return src;

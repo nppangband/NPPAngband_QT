@@ -38,7 +38,7 @@ extern bool dtrap_edge(int y, int x);
 extern void map_info(s16b y, s16b x);
 extern void note_spot(int y, int x);
 extern void light_spot(int y, int x);
-extern coord make_coords(int x, int y);
+extern coord make_coords(int y, int x);
 extern void draw_coords(void);
 extern int vinfo_init(void);
 extern void forget_view(void);
@@ -160,6 +160,7 @@ extern void change_player_level(void);
 
 // file_output.cpp
 extern bool is_white(QColor this_color);
+extern bool is_black(QColor this_color);
 extern void save_screenshot(byte do_png);
 extern void save_character_file(void);
 

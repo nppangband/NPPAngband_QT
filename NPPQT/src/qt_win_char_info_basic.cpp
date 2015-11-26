@@ -26,6 +26,12 @@ void MainWindow::name_change(void)
 {
     QString new_name = get_string("Please enter a new name for your character.", "Enter new name", op_ptr->full_name);
 
+    if (new_name.contains("'"))
+    {
+        pop_up_message_box("The character name can not contain an apostrophe.");
+        new_name.remove("'");
+    }
+
     if (!new_name.length()) return;
 
     op_ptr->full_name = new_name;

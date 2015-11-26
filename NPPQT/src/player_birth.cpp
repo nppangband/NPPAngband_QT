@@ -792,6 +792,14 @@ void PlayerBirth::gender_changed(int new_gender)
 
 void PlayerBirth::name_changed(QString new_name)
 {
+    if (new_name.contains("'"))
+    {
+        pop_up_message_box("The character name can not contain an apostrophe.");
+        new_name.remove("'");
+    }
+
+    if (!new_name.length()) return;
+
     op_ptr->full_name = cur_name = new_name;
     update_screen();
 }

@@ -279,6 +279,12 @@ void PlayerScreenDialog::name_change(void)
 {
     QString new_name = get_string("Please enter a new name for your character.", "Enter new name", op_ptr->full_name);
 
+    if (new_name.contains("'"))
+    {
+        pop_up_message_box("The character name can not contain an apostrophe.");
+        new_name.remove("'");
+    }
+
     if (!new_name.length()) return;
 
     op_ptr->full_name = new_name;
@@ -826,7 +832,7 @@ void char_basic_info(QGridLayout *return_layout)
 
     // Add Player Gold
     QLabel *label_player_gold = new QLabel;
-    make_standard_label(label_player_gold, "GOLD:", TERM_DARK);
+    make_standard_label(label_player_gold, "GOLD:", TERM_GOLD);
     label_player_gold->setObjectName("GOLD_LABEL");
     label_player_gold->setToolTip(get_help_topic("character_info", "Gold"));
     QLabel *player_gold = new QLabel;
@@ -1402,7 +1408,7 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 {
 
                     QLabel *immune_label = new QLabel();
-                    make_standard_label(immune_label, "+", TERM_BLUE, this_font);
+                    make_standard_label(immune_label, "I", TERM_BLUE, this_font);
                     immune_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
                     return_layout->addWidget(immune_label, row, col, Qt::AlignCenter);
 

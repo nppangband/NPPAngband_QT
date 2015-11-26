@@ -50,6 +50,16 @@ bool is_white(QColor this_color)
     return (FALSE);
 }
 
+// Helper function to check if the color is black
+bool is_black(QColor this_color)
+{
+    if (this_color.operator ==(defined_colors[TERM_DARK])) return (TRUE);
+    if (this_color.operator ==(defined_colors[TERM_L_DARK])) return (TRUE);
+    if (this_color.operator ==(Qt::black)) return (TRUE);
+
+    return (FALSE);
+}
+
 static QString get_sidebar_string(int which_line)
 {
     QString label_string;
@@ -491,6 +501,9 @@ void save_character_file(void)
     default_file.append(default_name);
     default_file.append("_npp_char");
 
+    QString dark_text = "<font color='#000000'>";
+    QString white_text = "<font color='#ffffff'>";
+
     QString file_name = QFileDialog::getSaveFileName(0, "Select a savefile", default_file, "HTML (*.html)");
 
     if (file_name.isEmpty())
@@ -502,7 +515,7 @@ void save_character_file(void)
 
     QTextStream out(&char_info_file);
 
-    QString text = (QString("<b><h1>[%1 %2 Character Dump]</h1></b><br><br>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
+    QString text = (QString("<h1>[%1 %2 Character Dump]</h1></b><br>") .arg(VERSION_MODE_NAME) .arg(VERSION_STRING));
 
     //Hack - create the player screen from which all the data will be read
     PlayerScreenDialog dlg;
@@ -512,7 +525,7 @@ void save_character_file(void)
     out << QString("<!DOCTYPE html><html><head>");
     out << (QString("  <meta name='variant' value='%1'>") .arg(VERSION_MODE_NAME));
     out << (QString("  <meta name='variant_version' value='%1'>") .arg(VERSION_STRING));
-    out << (QString("  <meta name='character_name' value='%1'>") .arg(op_ptr->full_name));
+    out << (QString("  <meta name='character_name' value='%1'>") .arg(to_ascii(op_ptr->full_name)));
     out << (QString("  <meta name='race' value='%1'><br>") .arg(p_info[p_ptr->prace].pr_name));
     out << (QString("  <meta name='class' value='%1'>") .arg(c_info[p_ptr->pclass].cl_name));
     out << (QString("  <meta name='level' value='%1'>") .arg(p_ptr->lev));
@@ -522,7 +535,7 @@ void save_character_file(void)
     out << (QString("  <meta name='score' value='%1'>") .arg(p_ptr->current_score));
     out << (QString("  <meta name='fame' value='%1'>") .arg(p_ptr->q_fame));
     out << QString("</head>");
-    out << QString("<body style='color: #000; background: #fff;'>");
+    out << QString("<body style='color: #fff; background: #000;'>");
     out << QString("<pre>");
 
     out << text;
@@ -641,25 +654,38 @@ void save_character_file(void)
 
             QString this_name = this_lbl->objectName();
 
-            if (strings_match(this_name, basic_char_label)) basic_char_label = this_lbl->text();
-            if (strings_match(this_name, basic_char_info))  basic_char_info  = this_lbl->text();
-            if (strings_match(this_name, basic_data_label)) basic_data_label = this_lbl->text();
-            if (strings_match(this_name, basic_data_info))  basic_data_info  = this_lbl->text();
-            if (strings_match(this_name, stat_label))       stat_label       = this_lbl->text();
-            if (strings_match(this_name, stat_base))        stat_base        = this_lbl->text();
-            if (strings_match(this_name, stat_race))        stat_race        = this_lbl->text();
-            if (strings_match(this_name, stat_class))       stat_class       = this_lbl->text();
-            if (strings_match(this_name, stat_equip))       stat_equip       = this_lbl->text();
-            if (strings_match(this_name, stat_quest))       stat_quest       = this_lbl->text();
-            if (strings_match(this_name, stat_total))       stat_total       = this_lbl->text();
-            if (strings_match(this_name, stat_reduced))     stat_reduced     = this_lbl->text();
+            // It is converted to ASCII in case a player picks some unicode characters in their name.
+            QString this_text = to_ascii(this_lbl->text());
+
+            // Remove all specified white and dark text
+            if (this_text.contains(dark_text) || this_text.contains(white_text))
+            {
+                this_text.remove("</font>");
+                this_text.remove(dark_text);
+                this_text.remove(white_text);
+            }
+
+            // hack - replace dark text with white text
+            this_text.replace(dark_text, white_text, Qt::CaseInsensitive);
+
+            if (strings_match(this_name, basic_char_label)) basic_char_label = this_text;
+            if (strings_match(this_name, basic_char_info))  basic_char_info  = this_text;
+            if (strings_match(this_name, basic_data_label)) basic_data_label = this_text;
+            if (strings_match(this_name, basic_data_info))  basic_data_info  = this_text;
+            if (strings_match(this_name, stat_label))       stat_label       = this_text;
+            if (strings_match(this_name, stat_base))        stat_base        = this_text;
+            if (strings_match(this_name, stat_race))        stat_race        = this_text;
+            if (strings_match(this_name, stat_class))       stat_class       = this_text;
+            if (strings_match(this_name, stat_equip))       stat_equip       = this_text;
+            if (strings_match(this_name, stat_quest))       stat_quest       = this_text;
+            if (strings_match(this_name, stat_total))       stat_total       = this_text;
+            if (strings_match(this_name, stat_reduced))     stat_reduced     = this_text;
         }
 
         out << combine_strings(basic_char_label, basic_char_info, 25);
         out << combine_strings(basic_data_label, basic_data_info, 25);
         if (i < (A_MAX+1)) out << make_stat_string(stat_label, stat_base, stat_race, stat_class, stat_equip, stat_quest, stat_total, stat_reduced);
         out << QString("<br>");
-
     }
 
     out << QString("<br><br>");
@@ -701,10 +727,20 @@ void save_character_file(void)
 
             QString this_name = this_lbl->objectName();
 
-            if (strings_match(this_name, game_info_label))  game_info_label  = this_lbl->text();
-            if (strings_match(this_name, game_info_info))   game_info_info   = this_lbl->text();
-            if (strings_match(this_name, combat_info_label))combat_info_label = this_lbl->text();
-            if (strings_match(this_name, combat_info_info)) combat_info_info = this_lbl->text();
+            QString this_text = this_lbl->text();
+
+            // Remove all specified white and dark text
+            if (this_text.contains(dark_text) || this_text.contains(white_text))
+            {
+                this_text.remove("</font>");
+                this_text.remove(dark_text);
+                this_text.remove(white_text);
+            }
+
+            if (strings_match(this_name, game_info_label))  game_info_label  = this_text;
+            if (strings_match(this_name, game_info_info))   game_info_info   = this_text;
+            if (strings_match(this_name, combat_info_label))combat_info_label = this_text;
+            if (strings_match(this_name, combat_info_info)) combat_info_info = this_text;
         }
 
         out << combine_strings(game_info_label, game_info_info, 25);
@@ -713,7 +749,7 @@ void save_character_file(void)
     }
 
     // Print character description
-    QString desc = color_string(p_ptr->history, TERM_BLUE);
+    QString desc = color_string(to_ascii(p_ptr->history), TERM_BLUE);
     int first_space = desc.indexOf(' ', 90, Qt::CaseInsensitive);
     desc.replace(first_space, 1, QString("<br>"));
     out << QString("<br>") << desc << QString("<br><br>");
@@ -721,7 +757,7 @@ void save_character_file(void)
     // Print character description
     if (guild_quest_active())
     {
-        desc = color_string(describe_quest(guild_quest_level()), TERM_RED);
+        desc = color_string(to_ascii(describe_quest(guild_quest_level())), TERM_RED);
         first_space = desc.indexOf(' ', 60, Qt::CaseInsensitive);
         desc.replace(first_space, 1, QString("<br>"));
         out << QString("<br>") << desc << QString("<br><br>");
@@ -729,7 +765,7 @@ void save_character_file(void)
 
     if (p_ptr->is_dead)
     {
-        out << output_messages(15);
+        out << to_ascii(output_messages(15));
 
         QString("<br><br>");
     }
@@ -796,10 +832,20 @@ void save_character_file(void)
 
                     QString this_name = this_lbl->objectName();
 
+                    QString this_text = this_lbl->text();
+
+                    // Remove all specified white and dark text
+                    if (this_text.contains(dark_text) || this_text.contains(white_text))
+                    {
+                        this_text.remove("</font>");
+                        this_text.remove(dark_text);
+                        this_text.remove(white_text);
+                    }
+
                     if (!this_name.length()) continue;
                     if (strings_match(this_name, resist_output))
                     {
-                        resist_output = this_lbl->text();
+                        resist_output = this_text;
                         continue;
                     }
 
@@ -810,7 +856,7 @@ void save_character_file(void)
 
                         int column = this_name.toInt(&ok);
 
-                        if(ok) inven_chars[column] = this_lbl->text();
+                        if(ok) inven_chars[column] = this_text;
 
                         continue;
                     }
@@ -862,10 +908,20 @@ void save_character_file(void)
 
                     QString this_name = this_lbl->objectName();
 
+                    QString this_text = this_lbl->text();
+
+                    // Remove all specified white and dark text
+                    if (this_text.contains(dark_text) || this_text.contains(white_text))
+                    {
+                        this_text.remove("</font>");
+                        this_text.remove(dark_text);
+                        this_text.remove(white_text);
+                    }
+
                     if (!this_name.length()) continue;
                     if (strings_match(this_name, ability_output))
                     {
-                        ability_output = this_lbl->text();
+                        ability_output = this_text;
                         continue;
                     }
 
@@ -876,7 +932,7 @@ void save_character_file(void)
 
                         int column = this_name.toInt(&ok);
 
-                        if(ok) inven_chars[column] = this_lbl->text();
+                        if(ok) inven_chars[column] = this_text;
 
                         continue;
                     }
@@ -958,10 +1014,20 @@ void save_character_file(void)
 
                     QString this_name = this_lbl->objectName();
 
+                    QString this_text = this_lbl->text();
+
+                    // Remove all specified white and dark text
+                    if (this_text.contains(dark_text) || this_text.contains(white_text))
+                    {
+                        this_text.remove("</font>");
+                        this_text.remove(dark_text);
+                        this_text.remove(white_text);
+                    }
+
                     if (!this_name.length()) continue;
                     if (strings_match(this_name, nativity_output))
                     {
-                        nativity_output = this_lbl->text();
+                        nativity_output = this_text;
                         continue;
                     }
 
@@ -972,7 +1038,7 @@ void save_character_file(void)
 
                         int column = this_name.toInt(&ok);
 
-                        if(ok) inven_chars[column] = this_lbl->text();
+                        if(ok) inven_chars[column] = this_text;
 
                         continue;
                     }
@@ -1023,10 +1089,20 @@ void save_character_file(void)
 
                     QString this_name = this_lbl->objectName();
 
+                    QString this_text = this_lbl->text();
+
+                    // Remove all specified white and dark text
+                    if (this_text.contains(dark_text) || this_text.contains(white_text))
+                    {
+                        this_text.remove("</font>");
+                        this_text.remove(dark_text);
+                        this_text.remove(white_text);
+                    }
+
                     if (!this_name.length()) continue;
                     if (strings_match(this_name, modifiers_output))
                     {
-                        modifiers_output = this_lbl->text();
+                        modifiers_output = this_text;
                         continue;
                     }
 
@@ -1037,11 +1113,9 @@ void save_character_file(void)
 
                         int column = this_name.toInt(&ok);
 
-                        QString this_text = this_lbl->text();
+                        QString output_text  = set_html_string_length(this_text, 4, TRUE);
 
-                        this_text = set_html_string_length(this_text, 4, TRUE);
-
-                        inven_chars[column] = this_text;
+                        inven_chars[column] = output_text;
 
                         continue;
                     }
@@ -1067,12 +1141,12 @@ void save_character_file(void)
 
     for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
     {
-        QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+        QString o_name = to_ascii(object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL));
 
         out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
 
         /* Describe random object attributes */
-        out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br><br>");
+        out << format_line_breaks(to_ascii(identify_random_gen(&inventory[i]))) << QString("<br><br>");
     }
 
     out << QString("<br><br>");
@@ -1085,12 +1159,12 @@ void save_character_file(void)
         {
             if (!inventory[i].k_idx) break;
 
-            QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+            QString o_name = to_ascii(object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL));
 
             out << (QString("%1) %2<br>") .arg(i - QUIVER_START + 1) .arg(o_name));
 
             /* Describe random object attributes */
-            out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br><br>");
+            out << format_line_breaks(to_ascii(identify_random_gen(&inventory[i]))) << QString("<br><br>");
         }
 
         out << QString("<br><br>");
@@ -1102,12 +1176,12 @@ void save_character_file(void)
     {
         if (!inventory[i].k_idx) break;
 
-        QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+        QString o_name = to_ascii(object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL));
 
         out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
 
         /* Describe random object attributes */
-        out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br><br>");
+        out << format_line_breaks(to_ascii(identify_random_gen(&inventory[i]))) << QString("<br><br>");
     }
 
     out << QString("<br><br>");
@@ -1120,12 +1194,12 @@ void save_character_file(void)
 
         for (int i = 0; i < st_ptr->stock_num; i++)
         {
-            QString o_name = object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL);
+            QString o_name = to_ascii(object_desc(&inventory[i], ODESC_PREFIX | ODESC_FULL));
 
             out << (QString("%1) %2<br>") .arg(index_to_label(i)) .arg(o_name));
 
             /* Describe random object attributes */
-            out << format_line_breaks(identify_random_gen(&inventory[i])) << QString("<br>");
+            out << format_line_breaks(to_ascii(identify_random_gen(&inventory[i]))) << QString("<br>");
         }
 
         out << QString("<br><br>");
@@ -1154,7 +1228,7 @@ void save_character_file(void)
        out << depth_note;
 
        QString player_level = set_html_string_length((QString("%1") .arg(notes_ptr->player_level)), 16, TRUE);
-       out << player_level << blank_string(4) << notes_ptr->recorded_note << QString("<br>");;
+       out << player_level << blank_string(4) << to_ascii(notes_ptr->recorded_note) << QString("<br>");;
     }
 
     /* Dump options */
@@ -1188,6 +1262,18 @@ void save_character_file(void)
 
     out << QString("<br></pre></body></html>");
 
+    char_info_file.close();
+
+    char_info_file.open(QIODevice::ReadOnly);
+
+    // Finally, replace all black text with white text
+    QByteArray this_text = char_info_file.readAll();
+    QString file_text = this_text;
+
+    file_text = file_text.replace(white_text, dark_text);
+    char_info_file.close();
+    char_info_file.open(QIODevice::WriteOnly);
+    out << file_text;
     char_info_file.close();
 }
 
