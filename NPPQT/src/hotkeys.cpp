@@ -503,19 +503,15 @@ void HotKeyDialog::create_spell_choice_dropbox(QHBoxLayout *this_layout, int ste
 
 // Helper function to determine if the current object kind
 // should be included in a ComboBox object kinds
-bool HotKeyDialog::accept_object_kind(int k_idx, int tval, int step)
+bool HotKeyDialog::accept_object_kind(int k_idx, int tval)
 {
     object_kind *k_ptr = &k_info[k_idx];
-
-    hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
     /* Skip "empty" items */
     if (k_ptr->k_name.isEmpty()) return (FALSE);
     if (k_ptr->tval != tval) return (FALSE);
-    if (!k_ptr->everseen)
-    {
-        if (k_idx != hks_ptr->step_args.k_idx) return (FALSE);
-    }
+    if (!k_ptr->aware || !k_ptr->everseen) return (FALSE);
+
     return (TRUE);
 }
 
@@ -543,7 +539,7 @@ int HotKeyDialog::find_selected_k_idx(int choice, int step)
 
     for (int i = z_info->k_max-1; i > 0; i--)
     {
-        if (!accept_object_kind(i, this_tval, step)) continue;
+        if (!accept_object_kind(i, this_tval)) continue;
 
         if (choice == current_index) return (i);
 
@@ -630,12 +626,11 @@ void HotKeyDialog::create_object_kind_dropbox(QHBoxLayout *this_layout, int this
 
     for (int i = z_info->k_max-1; i > 0; i--)
     {
-        object_kind *k_ptr = &k_info[i];
 
-        if (!accept_object_kind(i, this_tval, this_step)) continue;
+        if (!accept_object_kind(i, this_tval)) continue;
 
         this_combobox->addItem(QString("%1") .arg(STEP_MULT * this_step + i));
-        this_combobox->setItemText(count, capitalize_first(k_ptr->k_name));
+        this_combobox->setItemText(count, capitalize_first(strip_name(i)));
 
         // Try to find the current index.
         if (i == hks_ptr->step_args.k_idx) current_index = count;
@@ -710,11 +705,11 @@ void HotKeyDialog::hotkey_step_obj_selection_changed(int new_target)
 
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
-    hks_ptr->step_args.direction = new_choice;
+    hks_ptr->step_args.choice = new_choice;
 
     QString button_name = QString("Specify During Use");
 
-    if (new_choice == OS_FIND_SPECIFIC_INSTRIPTION) button_name = QString("Use Object Inscribed With:");
+    if (new_choice == OS_FIND_SPECIFIC_INSCRIPTION) button_name = QString("Use Object Inscribed With:");
 
     // Manually turn the buttons true or false.
     QList<QRadioButton *> radio_list = this->findChildren<QRadioButton *>();
@@ -799,7 +794,7 @@ void HotKeyDialog::create_specific_object_choices(QHBoxLayout *this_layout, int 
     radio_specify_inscription->setToolTip("During hotkey execution, the first found object with this inscription will be used");
     radio_specify_inscription->setChecked(FALSE);
     vlay_obj_choose->addWidget(radio_specify_inscription);
-    group_specific_object->addButton(radio_specify_inscription, (this_step * STEP_MULT + OS_FIND_SPECIFIC_INSTRIPTION));
+    group_specific_object->addButton(radio_specify_inscription, (this_step * STEP_MULT + OS_FIND_SPECIFIC_INSCRIPTION));
 
     QLineEdit *search_inscription = new QLineEdit();
     search_inscription->setText(hks_ptr->step_args.string2);
@@ -1248,7 +1243,7 @@ void HotKeyDialog::hotkey_step_direction_changed(int new_dir)
 
         // Turn on or off if it is a match
         QString this_name = this_radio->toolTip();
-        if (this_name.contains(button_dir, Qt::CaseInsensitive) && (this_name.indexOf(button_dir, Qt::CaseInsensitive) == 0))
+        if (strings_match(this_name, button_dir))
         {
             this_radio->setChecked(TRUE);
         }
@@ -1611,7 +1606,7 @@ HotKeyDialog::HotKeyDialog(void)
     connect(group_target_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_target_changed(int)));
     group_specific_object = new QButtonGroup;
     group_specific_object->setExclusive(FALSE);
-    connect(group_specific_object, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_obj_selection_changed(int)));group_specific_object = new QButtonGroup;
+    connect(group_specific_object, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_obj_selection_changed(int)));
     group_resting_choices = new QButtonGroup;
     group_resting_choices->setExclusive(FALSE);
     connect(group_resting_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_rest_choice_changed(int)));
@@ -1925,13 +1920,28 @@ static void run_hotkey_step(int step)
         cmd_arg command_args;
         command_args.wipe();
 
-        command_args.item = find_inscribed_item(arg_ptr->string2, command);
-
-        // Didn't find the item
-        if (command_args.item == MAX_S16B)
+        if (arg_ptr->choice == OS_SELECT_DURING_USE)
         {
-            message(QString("Unable to locate an item inscribed with %1") .arg(arg_ptr->string2));
+            if (command == HK_FIRE_AMMO)
+            {
+                do_cmd_fire();
+            }
+            else // (command == HK_THROW)
+            {
+                do_cmd_throw();
+            }
             return;
+        }
+        else  // OS_FIND_SPECIFIC_INSCRIPTION
+        {
+            command_args.item = find_inscribed_item(arg_ptr->string2, command);
+
+            // Didn't find the item
+            if (command_args.item == MAX_S16B)
+            {
+                message(QString("Unable to locate an item inscribed with %1") .arg(arg_ptr->string2));
+                return;
+            }
         }
 
         if ((command == HK_FIRE_AMMO) || (command == HK_THROW))
@@ -1943,7 +1953,6 @@ static void run_hotkey_step(int step)
 
         if (command == HK_FIRE_AMMO) command_fire(command_args);
         else if (command == HK_THROW) command_throw(command_args);
-
     }
     else if (ht_ptr->hotkey_needs == HK_NEEDS_REST)
     {

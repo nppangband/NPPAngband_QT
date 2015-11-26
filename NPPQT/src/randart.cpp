@@ -3899,11 +3899,8 @@ void create_quest_artifact(object_type *o_ptr)
     object_into_artifact(o_ptr, a_ptr);
 
     /* Identify it fully */
-    object_aware(o_ptr);
-    object_known(o_ptr);
-
-    /* Mark the item as fully known, and as a quest item */
-    o_ptr->ident |= (IDENT_MENTAL | IDENT_QUEST);
+    o_ptr->mark_fully_known(FALSE);
+    o_ptr->ident |= (IDENT_QUEST);
 
     /* Extract the flags */
     o_ptr->update_object_flags();

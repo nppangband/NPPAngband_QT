@@ -3708,7 +3708,7 @@ bool make_fake_artifact(object_type *o_ptr, byte art_num)
     o_ptr->weight = a_ptr->weight;
 
     /*identify it*/
-    object_known(o_ptr);
+    o_ptr->mark_known(FALSE);
 
     /*make it a store item*/
     o_ptr->ident |= IDENT_STORE;
@@ -3992,9 +3992,7 @@ void make_object_fake(object_type *o_ptr, int k_idx, byte ego_num, bool update_t
     if (!k_info[k_idx].flavor)
     {
         /* Mark the item as fully known */
-        o_ptr->ident |= (IDENT_MENTAL);
-        object_aware(o_ptr);
-        object_known(o_ptr);
+        o_ptr->mark_fully_known(FALSE);
     }
 }
 

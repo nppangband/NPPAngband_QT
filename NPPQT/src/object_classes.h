@@ -134,6 +134,10 @@ class object_type
     bool is_wieldable();
     bool is_wearable();
     bool is_easy_know();
+    void mark_known(bool aware);
+    void mark_fully_known(bool aware);
+    void mark_aware();
+    void mark_tried();
     bool is_known();
     bool is_aware();
     bool is_tried();
@@ -255,7 +259,7 @@ public:
 
     byte squelch;		/* Squelch setting for the particular item */
 
-    bool everseen;		/* Used to despoilify squelch menus */
+    bool everseen;		/* Used to see if the player savefile have ever seen this item */
 
     object_kind();
     void object_kind_wipe();

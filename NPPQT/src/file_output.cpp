@@ -123,8 +123,17 @@ void save_screenshot(byte do_png)
 
 
     out << QString("<!DOCTYPE html><html><head><br>");
-    out << (QString("  <meta='generator' content='%1'><br>") .arg(text));
-    out << (QString("  <title>%1</title><br>") .arg(npp_dir_user.path()));
+    out << (QString("  <meta name='variant' value='%1'>") .arg(VERSION_MODE_NAME));
+    out << (QString("  <meta name='variant_version' value='%1'>") .arg(VERSION_STRING));
+    out << (QString("  <meta name='character_name' value='%1'>") .arg(op_ptr->full_name));
+    out << (QString("  <meta name='race' value='%1'><br>") .arg(p_info[p_ptr->prace].pr_name));
+    out << (QString("  <meta name='class' value='%1'>") .arg(c_info[p_ptr->pclass].cl_name));
+    out << (QString("  <meta name='level' value='%1'>") .arg(p_ptr->lev));
+    out << (QString("  <meta name='experience' value='%1'><br>") .arg(p_ptr->exp));
+    out << (QString("  <meta name='turncount' value='%1'>") .arg(p_ptr->game_turn));
+    out << (QString("  <meta name='max_depth' value='%1'>") .arg(p_ptr->max_depth));
+    out << (QString("  <meta name='score' value='%1'>") .arg(p_ptr->current_score));
+    out << (QString("  <meta name='fame' value='%1'>") .arg(p_ptr->q_fame));
     out << QString("</head><br><br>");
     out << QString("<body style='color: #fff; background: #000;'><br>");
     out << QString("<pre><br>");
@@ -501,8 +510,17 @@ void save_character_file(void)
     QList<QLabel *> lbl_list = dlg.findChildren<QLabel *>();
 
     out << QString("<!DOCTYPE html><html><head>");
-    out << (QString("  <meta='generator' content='%1'>") .arg(text));
-    out << (QString("  <title>%1</title>") .arg(npp_dir_user.path()));
+    out << (QString("  <meta name='variant' value='%1'>") .arg(VERSION_MODE_NAME));
+    out << (QString("  <meta name='variant_version' value='%1'>") .arg(VERSION_STRING));
+    out << (QString("  <meta name='character_name' value='%1'>") .arg(op_ptr->full_name));
+    out << (QString("  <meta name='race' value='%1'><br>") .arg(p_info[p_ptr->prace].pr_name));
+    out << (QString("  <meta name='class' value='%1'>") .arg(c_info[p_ptr->pclass].cl_name));
+    out << (QString("  <meta name='level' value='%1'>") .arg(p_ptr->lev));
+    out << (QString("  <meta name='experience' value='%1'><br>") .arg(p_ptr->exp));
+    out << (QString("  <meta name='turncount' value='%1'>") .arg(p_ptr->game_turn));
+    out << (QString("  <meta name='max_depth' value='%1'>") .arg(p_ptr->max_depth));
+    out << (QString("  <meta name='score' value='%1'>") .arg(p_ptr->current_score));
+    out << (QString("  <meta name='fame' value='%1'>") .arg(p_ptr->q_fame));
     out << QString("</head>");
     out << QString("<body style='color: #000; background: #fff;'>");
     out << QString("<pre>");

@@ -141,9 +141,8 @@ static void sense_inventory(void)
 
         if (feel == INSCRIP_AVERAGE)
         {
-            /* Identify it fully */
-            object_aware(o_ptr);
-            object_known(o_ptr);
+            /* Identify it */
+            o_ptr->mark_known(TRUE);
         }
 
         else

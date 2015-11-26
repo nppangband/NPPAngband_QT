@@ -340,8 +340,7 @@ static void add_arena_object(byte stage)
     if (i_ptr->is_ammo()) i_ptr->number /= 2;
 
     /* Identify it */
-    object_aware(i_ptr);
-    object_known(i_ptr);
+    i_ptr->mark_known(TRUE);
 
     /* Put it on the floor */
     floor_carry(y, x, i_ptr);
@@ -533,8 +532,7 @@ static bool add_labyrinth_monster_object(bool add_object, bool add_parchment)
         i_ptr->ident |= (IDENT_HIDE_CARRY | IDENT_QUEST);
 
         /* Identify it */
-        object_aware(i_ptr);
-        object_known(i_ptr);
+        i_ptr->mark_known(TRUE);
 
         (void)monster_carry(dungeon_info[y][x].monster_idx, i_ptr);
     }
@@ -563,8 +561,7 @@ static bool add_labyrinth_monster_object(bool add_object, bool add_parchment)
         if (i_ptr->is_ammo()) i_ptr->number /= 2;
 
         /* Identify it */
-        object_aware(i_ptr);
-        object_known(i_ptr);
+        i_ptr->mark_known(TRUE);
 
         /* Put it on the floor */
         floor_carry(y, x, i_ptr);

@@ -267,10 +267,6 @@ void extract_tiles(void)
                 if (k_ptr->tval == TV_CROWN && k_ptr->sval == SV_MORGOTH) art_num = ART_MORGOTH;
             }
             make_fake_artifact(o_ptr, art_num);
-            object_aware(o_ptr);
-            object_known(o_ptr);
-            o_ptr->ident |= (IDENT_MENTAL);
-            o_ptr->update_object_flags();
         }
         else
         {
@@ -281,10 +277,8 @@ void extract_tiles(void)
             if (!k_info[i].flavor)
             {
                 /* Mark the item as fully known */
-                o_ptr->ident |= (IDENT_MENTAL | IDENT_STORE);
-                object_aware(o_ptr);
-                object_known(o_ptr);
-                o_ptr->update_object_flags();
+                o_ptr->mark_fully_known(FALSE);
+                o_ptr->ident |= (IDENT_STORE);
             }
         }
 

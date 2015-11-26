@@ -711,19 +711,12 @@ bool do_service_make_randart(byte choice, u32b price)
         p_ptr->au -= price;
 
         /* Identify it fully */
-        object_aware(o_ptr);
-        object_known(o_ptr);
+        o_ptr->mark_fully_known(TRUE);
 
         /* Mark the history */
         o_ptr->origin_nature = ORIGIN_ACQUIRE;
         o_ptr->origin_r_idx = 0;
         o_ptr->origin_dlvl = 0;
-
-        /* Mark the item as fully known */
-        o_ptr->ident |= (IDENT_MENTAL);
-
-        /* Extract the flags */
-        o_ptr->update_object_flags();
 
         /*Let the player know what they just got*/
         object_info_screen(o_ptr);
@@ -833,7 +826,7 @@ bool do_service_buy_object(byte choice, u32b price)
     object_prep(i_ptr, k_idx);
 
     /* Identify it */
-    k_ptr->aware = TRUE;
+    i_ptr->mark_known(TRUE);
 
     /* Describe the result */
     o_name = object_desc(i_ptr, ODESC_FULL);
@@ -1053,19 +1046,12 @@ bool do_service_quest_art_reward(byte choice, u32b price)
     if (make_one_randart(o_ptr, rand_power, TRUE))
     {
         /* Identify it fully */
-        object_aware(o_ptr);
-        object_known(o_ptr);
+        o_ptr->mark_fully_known(TRUE);
 
         /* Mark the history */
         o_ptr->origin_nature = ORIGIN_REWARD;
         o_ptr->origin_r_idx = 0;
         o_ptr->origin_dlvl = q_ptr->base_level;
-
-        /* Mark the item as fully known */
-        o_ptr->ident |= (IDENT_MENTAL);
-
-        /* Extract the flags */
-        o_ptr->update_object_flags();
 
         /*Let the player know what they just got*/
         object_info_screen(o_ptr);
@@ -2313,19 +2299,18 @@ static void store_create_random(int which)
         /* Apply magic (dis-allow artifacts) */
         apply_magic(i_ptr, magic_level, FALSE, FALSE, FALSE, FALSE);
 
+        /* The object is "fully known" */
+        i_ptr->mark_fully_known(FALSE);
+
+        /* Item belongs to a store */
+        i_ptr->ident |= IDENT_STORE;
+
         /* Hack -- Charge lite's */
         if (i_ptr->tval == TV_LIGHT)
         {
             if (i_ptr->sval == SV_LIGHT_TORCH) i_ptr->timeout = FUEL_TORCH / 2;
             if (i_ptr->sval == SV_LIGHT_LANTERN) i_ptr->timeout = FUEL_LAMP / 2;
         }
-
-        /* The object is "fully known" */
-        object_known(i_ptr);
-        i_ptr->ident |= (IDENT_MENTAL);
-
-        /* Item belongs to a store */
-        i_ptr->ident |= IDENT_STORE;
 
         /* Remember history */
         object_history(i_ptr, ORIGIN_STORE, 0);
@@ -2339,7 +2324,6 @@ static void store_create_random(int which)
 
         /* No "worthless" items */
         if (object_value(i_ptr) <= 0) continue;
-
 
         /* Mass produce and/or Apply discount */
         mass_produce(i_ptr);

@@ -1748,9 +1748,8 @@ static bool thrown_potion_effects(object_type *o_ptr, bool *is_dead, bool *fear,
     {
         QString o_name;
 
-        /* Identify it fully */
-        object_aware(o_ptr);
-        object_known(o_ptr);
+        /* Identify it */
+        o_ptr->mark_known(TRUE);
 
         /* Description */
         o_name = object_desc(o_ptr, (ODESC_FULL | ODESC_SINGULAR));

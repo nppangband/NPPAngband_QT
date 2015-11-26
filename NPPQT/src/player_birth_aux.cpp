@@ -719,8 +719,7 @@ static void player_outfit(void)
             object_prep(i_ptr, k_idx);
             i_ptr->number = (byte)rand_range(e_ptr->min, e_ptr->max);
 
-            object_aware(i_ptr);
-            object_known(i_ptr);
+            i_ptr->mark_known(TRUE);
 
             i_ptr->has_been_seen();
             apply_autoinscription(i_ptr);
@@ -739,8 +738,7 @@ static void player_outfit(void)
     /* Hack -- Give the player some food */
     object_prep(i_ptr, lookup_kind(TV_FOOD, SV_FOOD_RATION));
     i_ptr->number = (byte)rand_range(3, 7);
-    object_aware(i_ptr);
-    object_known(i_ptr);
+    i_ptr->mark_known(TRUE);
     i_ptr->has_been_seen();
     apply_autoinscription(i_ptr);
     /* Remember history */
@@ -754,8 +752,7 @@ static void player_outfit(void)
     object_prep(i_ptr, lookup_kind(TV_LIGHT, SV_LIGHT_TORCH));
     apply_magic(i_ptr, 0, FALSE, FALSE, FALSE, FALSE);
     i_ptr->number = (byte)rand_range(3, 7);
-    object_aware(i_ptr);
-    object_known(i_ptr);
+    i_ptr->mark_known(TRUE);
     i_ptr->has_been_seen();
     apply_autoinscription(i_ptr);
     /* Remember history */

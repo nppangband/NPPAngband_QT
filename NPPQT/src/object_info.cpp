@@ -626,8 +626,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
 
     /* Assume a standard piece of ammunition for reporting purposes. */
     object_prep(j_ptr, lookup_kind(object_state.ammo_tval, SV_AMMO_NORMAL));
-    object_aware(j_ptr);
-    object_known(j_ptr);
+    j_ptr->mark_known(FALSE);
 
     j_name = object_desc(j_ptr, ODESC_COMBAT | ODESC_PLURAL);
 
@@ -726,8 +725,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
 
         /* Assume a standard piece of ammunition for reporting purposes. */
         object_prep(j_ptr, lookup_kind(TV_BOW, sval));
-        object_aware(j_ptr);
-        object_known(j_ptr);
+        j_ptr->mark_known(FALSE);
 
         /* Re-do the player state */
         calc_bonuses(object_inven, &object_state, TRUE);
@@ -1727,7 +1725,8 @@ QString format_object_history(object_type *o_ptr)
         case ORIGIN_STORE:
         {
             /* Hack -- Don't display store objects inside stores */
-            if (o_ptr->ident & (IDENT_STORE)) {
+            if (o_ptr->ident & (IDENT_STORE))
+            {
                 output.clear();
                 return (output);
             }
@@ -1931,9 +1930,6 @@ void desc_art_fake(int a_idx)
     if (lost)
     {
         make_fake_artifact(o_ptr, a_idx);
-        object_aware(o_ptr);
-        object_known(o_ptr);
-        o_ptr->ident |= (IDENT_MENTAL);
     }
 
     /* Print the artifact information */

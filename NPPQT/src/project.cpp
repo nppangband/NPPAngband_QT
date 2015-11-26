@@ -3557,7 +3557,7 @@ static bool project_o(int who, int y, int x, int dam, int typ)
                         o_ptr->pval = (0 - o_ptr->pval);
 
                         /* Identify */
-                        object_known(o_ptr);
+                        o_ptr->mark_known(TRUE);
 
                         /* Notice */
                         if (o_ptr->marked)

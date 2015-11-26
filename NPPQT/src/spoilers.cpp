@@ -237,9 +237,6 @@ void print_artifact_spoiler_file(void)
         object_type *o_ptr = &object_type_body;
 
         make_fake_artifact(o_ptr, i);
-        object_aware(o_ptr);
-        object_known(o_ptr);
-        o_ptr->ident |= (IDENT_MENTAL);
 
         QString o_name = object_desc(o_ptr, ODESC_PREFIX | ODESC_BASE | ODESC_SPOIL);
         o_name = capitalize_first(o_name);

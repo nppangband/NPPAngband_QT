@@ -1193,13 +1193,7 @@ static void create_reward_objects(quest_type *q_ptr, byte reward_type)
         }
 
         /* Identify it fully */
-        object_aware(o_ptr);
-        object_known(o_ptr);
-
-        /* Mark the item as fully known */
-        o_ptr->ident |= (IDENT_MENTAL);
-
-        o_ptr->update_object_flags();
+        o_ptr->mark_fully_known(FALSE);
 
         /* Give it to the guild */
         if (!guild_carry(o_ptr)) continue;

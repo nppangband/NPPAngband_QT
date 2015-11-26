@@ -1089,9 +1089,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
     if (f2 & (TR2_SUST_CON)) 		new_state->sustain_con = TRUE;
     if (f2 & (TR2_SUST_CHR)) 		new_state->sustain_chr = TRUE;
 
-
     new_state->p_flags_native_no_temp = new_state->p_flags_native_with_temp = fn;
-
 
     /*** Analyze equipment ***/
 
@@ -1107,7 +1105,7 @@ void calc_bonuses(object_type calc_inven[], player_state *new_state, bool id_onl
         if ((birth_swap_weapons) && (i == INVEN_SWAP_WEAPON)) continue;
 
         /* Extract the item flags */
-        object_known(o_ptr);
+        o_ptr->update_object_flags();
         if (id_only)
         {
             f1 = o_ptr->obj_flags_1;

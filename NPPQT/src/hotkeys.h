@@ -68,7 +68,7 @@ enum
 enum
 {
     OS_SELECT_DURING_USE = 0,
-    OS_FIND_SPECIFIC_INSTRIPTION,
+    OS_FIND_SPECIFIC_INSCRIPTION,
 };
 
 #define HK_VERIFY_YES   true
@@ -142,7 +142,7 @@ private:
     void create_spell_choice_dropbox(QHBoxLayout *this_layout, int step);
     void create_step_buttons(QHBoxLayout *this_layout, int step);
     int get_current_step(QString item_id);
-    bool accept_object_kind(int k_idx, int tval, int step);
+    bool accept_object_kind(int k_idx, int tval);
     bool accept_activation_object(object_type *o_ptr);
     int find_selected_k_idx(int choice, int step);
     object_type find_selected_activation(int choice, int step);

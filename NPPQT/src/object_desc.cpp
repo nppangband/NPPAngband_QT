@@ -214,7 +214,7 @@ static QString obj_desc_name(object_type *o_ptr, bool prefix, byte mode, bool sp
 
     object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
-    bool known = o_ptr->is_known() || (o_ptr->ident & IDENT_STORE) || spoil;
+    bool known = o_ptr->is_known() || spoil;
     bool aware = o_ptr->is_flavor_known() || (o_ptr->ident & IDENT_STORE) || spoil;
 
     QString modstr = obj_desc_get_modstr(o_ptr);
@@ -413,7 +413,7 @@ static bool obj_desc_show_armor(const object_type *o_ptr)
 
 static QString obj_desc_chest(object_type *o_ptr, QString buf)
 {
-    bool known = o_ptr->is_known() || (o_ptr->ident & IDENT_STORE);
+    bool known = o_ptr->is_known();
 
     if (o_ptr->tval != TV_CHEST) return (buf);
     if (!known) return (buf);
@@ -738,13 +738,6 @@ QString object_desc(object_type *o_ptr, byte mode)
 
     /* See if the object is "known" */
     known = o_ptr->is_known();
-
-    /* Object is in the inventory of a store */
-    if (o_ptr->ident & IDENT_STORE)
-    {
-        /* Pretend known */
-        known = TRUE;
-    }
 
     /*** Some things get really simple descriptions ***/
 

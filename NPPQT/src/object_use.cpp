@@ -1347,12 +1347,8 @@ static bool read_scroll(object_type *o_ptr, bool *ident)
                 *ident = TRUE;
                 used_up = TRUE;
 
-                /* Identify it fully */
-                object_aware(o_ptr);
-                object_known(o_ptr);
-
                 /* Mark the item as fully known */
-                o_ptr->ident |= (IDENT_MENTAL);
+                o_ptr->mark_fully_known(TRUE);
 
                 object_history(o_ptr, ORIGIN_ACQUIRE, 0);
 
@@ -3284,7 +3280,7 @@ void command_use(cmd_arg args)
     }
 
     /* Tried the object */
-    object_tried(o_ptr);
+    o_ptr->mark_tried();
 
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
@@ -3296,15 +3292,16 @@ void command_use(cmd_arg args)
     if (ident)
     {
         /* Successfully determined the object function */
-        if (!o_ptr->is_aware())
+        if (!o_ptr->is_known())
         {
             /* Object level */
             int lev = k_info[o_ptr->k_idx].k_level;
 
-            object_aware(o_ptr);
             gain_exp((lev + (p_ptr->lev / 2)) / p_ptr->lev);
             apply_autoinscription(o_ptr);
         }
+
+        o_ptr->mark_known(TRUE);
     }
 
     /* If the item is a null pointer or has been wiped, be done now */

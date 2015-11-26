@@ -185,8 +185,7 @@ static void death_knowledge(void)
         o_ptr = &inventory[i];
         if (!o_ptr->k_idx) continue;
 
-        object_aware(o_ptr);
-        object_known(o_ptr);
+        o_ptr->mark_fully_known(TRUE);
     }
 
     /* Know everything in the home */
@@ -195,14 +194,7 @@ static void death_knowledge(void)
         o_ptr = &st_ptr->stock[i];
         if (!o_ptr->k_idx) continue;
 
-        object_aware(o_ptr);
-        object_known(o_ptr);
-
-        /* Fully known */
-        o_ptr->ident |= (IDENT_MENTAL);
-
-        /* Extract the flags */
-        o_ptr->update_object_flags();
+        o_ptr->mark_fully_known(TRUE);
     }
 
     /* Hack -- Recalculate bonuses */

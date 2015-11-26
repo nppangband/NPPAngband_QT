@@ -58,7 +58,7 @@ static struct command_desc list_commands_new[] =
     {"Pickup Items", "+"},
     {"Quest Desription", "q"},
     {"Quit NPP Games", "CTRL-Q"},
-    {"Redraw Screen", "CTRL-E"},
+    {"Redraw Screen", "ALT-E"},
     {"Rest Until Fully Healed	", "r"},
     {"Rest To Recover All HP ", "CTRL-R"},
     {"Rest To Recover All SP", "ALT-R"},
@@ -314,7 +314,7 @@ static struct command_desc dir_commands_new[] =
 {
     {"Hold", "'h', or '5'"},
     {"Walk", "direction key"},
-    {"Walk With Flip Pickup", "(CTRL + ALT)direction key"},
+    {"Jump (Walk With Flip Pickup)", "(CTRL + ALT)direction key"},
     {"Run", "(Shift)direction key"},
     {"Alter", "(ALT)direction key"},
     {"Look (Change Panel)", "(CTRL)direction key"},
@@ -327,7 +327,7 @@ static struct command_desc dir_commands_angband[] =
 {
     {"Hold", "'h', or '5'"},
     {"Walk", "direction key"},
-    {"Walk With Flip Pickup", "(CTRL + ALT)direction key"},
+    {"Jump (Walk With Flip Pickup)", "(CTRL + ALT)direction key"},
     {"Run", "(Shift)direction key"},
     {"Alter", "(ALT)direction key"},
     {"Look (Change Panel)", "(CTRL)direction key"},
@@ -339,7 +339,7 @@ static struct command_desc dir_commands_angband[] =
 static struct command_desc dir_commands_roguelike[] =
 {
     {"Walk", "direction key"},
-    {"Walk With Flip Pickup", "(CTRL + ALT)direction key"},
+    {"Jump (Walk With Flip Pickup)", "(CTRL + ALT)direction key"},
     {"Run", "(Shift)direction key"},
     {"Alter", "(ALT)direction key"},
     {"Look (Change Panel)", "(CTRL)direction key"},
@@ -688,7 +688,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_E:
         {
-            if (ctrl_key)           ui_redraw_all();
+            if (alt_key)           ui_redraw_all();
             else if (shift_key)     do_cmd_all_objects(TAB_EQUIP);
             else if (!using_mods)   do_cmd_use_item();
             break;

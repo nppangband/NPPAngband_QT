@@ -760,19 +760,13 @@ void identify_pack(void)
     {
         object_type *o_ptr = &inventory[i];
 
-        bool aware = FALSE;
-
         /* Skip non-objects */
         if (!o_ptr->k_idx) continue;
 
-        /* Remember awareness */
-        if (o_ptr->is_aware()) aware = TRUE;
-
         /* Aware and Known */
-        object_aware(o_ptr);
-        object_known(o_ptr);
+        o_ptr->mark_known(TRUE);
 
-        if (!aware) apply_autoinscription(o_ptr);
+        apply_autoinscription(o_ptr);
     }
 
     /* Recalculate bonuses */
@@ -2376,21 +2370,11 @@ bool restore_level(void)
 void identify_object(object_type *o_ptr, bool star_ident)
 {
     /* Identify it */
-    object_aware(o_ptr);
-    object_known(o_ptr);
+    if (star_ident) o_ptr->mark_fully_known(TRUE);
+    else o_ptr->mark_known(TRUE);
 
     /* Apply an autoinscription, if necessary */
     apply_autoinscription(o_ptr);
-
-    /*   *identify the item if called for*/
-    if (star_ident)
-    {
-        /* Mark the item as fully known */
-        o_ptr->ident |= (IDENT_MENTAL);
-    }
-
-    /* Extract the flags */
-    o_ptr->update_object_flags();
 
     p_ptr->redraw |= (PR_WIN_OBJLIST);
 }
@@ -2411,14 +2395,8 @@ int do_ident_item(int item, object_type *o_ptr)
     int squelch = SQUELCH_NO;
     byte color = TERM_WHITE;
 
-    /* In Moria, mark the item as fully known */
-    if (game_mode == GAME_NPPMORIA) o_ptr->ident |= (IDENT_MENTAL);
-
-    /* Identify it */
-    object_aware(o_ptr);
-    object_known(o_ptr);
-
-    o_ptr->update_object_flags();
+    /* In Moria, mark the item as fully known, else identify it */
+    if (game_mode == GAME_NPPMORIA) o_ptr->mark_fully_known(TRUE);
 
     /* Apply an autoinscription, if necessary */
     apply_autoinscription(o_ptr);
@@ -4003,8 +3981,7 @@ bool brand_object(object_type *o_ptr, byte brand_type, bool do_enchant)
         if (do_enchant) enchant(o_ptr, rand_int(3) + 4, ENCH_TOHIT | ENCH_TODAM);
 
         /* Hack - Identify it */
-        object_aware(o_ptr);
-        object_known(o_ptr);
+        o_ptr->mark_known(TRUE);
 
         return (TRUE);
     }

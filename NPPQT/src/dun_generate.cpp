@@ -744,8 +744,7 @@ static void alloc_object(int set, int typ, int num)
                 /*Don't let the player see what the object it, and make it a quest item*/
                 i_ptr->ident |= (IDENT_HIDE_CARRY | IDENT_QUEST);
 
-                object_aware(i_ptr);
-                object_known(i_ptr);
+                i_ptr->mark_known(TRUE);
 
                 /* Give it to the floor */
                 (void)floor_carry(y, x, i_ptr);
@@ -9873,8 +9872,7 @@ static bool build_wilderness_level(void)
                 /*Don't let the player see what the object it, and make it a quest item*/
                 i_ptr->ident |= (IDENT_HIDE_CARRY | IDENT_QUEST);
 
-                object_aware(i_ptr);
-                object_known(i_ptr);
+                i_ptr->mark_known(TRUE);
 
                 (void)monster_carry(i, i_ptr);
 

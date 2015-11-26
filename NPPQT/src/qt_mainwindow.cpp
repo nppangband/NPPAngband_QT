@@ -1174,6 +1174,8 @@ void MainWindow::create_actions()
     connect(font_sidebar_select_act, SIGNAL(triggered()), this, SLOT(font_dialog_sidebar_window()));
 
     hotkey_manage = new QAction(tr("Manage Hotkeys"), this);
+    hotkey_manage->setIcon(QIcon(":/icons/lib/icons/hotkeys.png"));
+    hotkey_manage->setShortcut(tr("Ctrl+E"));
     hotkey_manage->setStatusTip(tr("Add, delete, or program hotkeys."));
     connect(hotkey_manage, SIGNAL(triggered()), this, SLOT(manage_hotkeys()));
 
@@ -1561,6 +1563,7 @@ void MainWindow::create_toolbars()
     file_toolbar->addAction(save_cur_char_as);
     file_toolbar->addAction(close_cur_char);
     file_toolbar->addAction(options_act);
+    file_toolbar->addAction(hotkey_manage);
     file_toolbar->addSeparator();
     file_toolbar->addAction(exit_npp);
 

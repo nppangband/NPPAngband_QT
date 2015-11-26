@@ -175,9 +175,6 @@ static QString get_artifact_display_name(int a_idx)
     /* Make fake artifact */
     o_ptr = &object_type_body;
     make_fake_artifact(o_ptr, a_idx);
-    object_aware(o_ptr);
-    object_known(o_ptr);
-    o_ptr->ident |= (IDENT_MENTAL);
 
     /* Get its name */
     return (object_desc(o_ptr, ODESC_PREFIX | ODESC_BASE | ODESC_SPOIL));

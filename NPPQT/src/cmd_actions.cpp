@@ -758,9 +758,6 @@ static void chest_death(int y, int x, s16b o_idx)
 
     /*Paranoia, delete chest theme*/
     o_ptr->xtra1 = 0;
-
-    /* Known */
-    object_known(o_ptr);
 }
 
 /*
@@ -1510,7 +1507,7 @@ void do_search(void)
                         message(QString("You have discovered a trap on the chest!"));
 
                         /* Know the trap */
-                        object_known(o_ptr);
+                        o_ptr->mark_known(FALSE);
 
                         /* Notice it */
                         disturb(FALSE, FALSE);
