@@ -33,7 +33,6 @@
  */
 static int (*get_energy_to_move)(int y, int x, byte which_flow, u32b elem_flag);
 
-#define FAST_CAVE_INFO(g) (dungeon_info[GRID_Y(g)][GRID_X(g)].cave_info)
 
 /*
  * Approximate distance between two points.
@@ -2044,28 +2043,28 @@ void forget_view(void)
 {
 
     /* Clear them all */
-    for (int i = 0; i < view_g.size(); i++)
+    for (int i = 0; i < view_grids.size(); i++)
     {
 
         /* Clear "CAVE_VIEW" and "CAVE_SEEN" flags */
-        dungeon_info[view_g[i].y][view_g[i].x].cave_info &= ~(CAVE_VIEW | CAVE_SEEN);
+        dungeon_info[view_grids[i].y][view_grids[i].x].cave_info &= ~(CAVE_VIEW | CAVE_SEEN);
 
         /* Redraw */
-        light_spot(view_g[i].y, view_g[i].x);
+        light_spot(view_grids[i].y, view_grids[i].x);
     }
 
     /* None left */
-    view_g.clear();
+    view_grids.clear();
 
     /* Clear the CAVE_FIRE flag */
-    for (int i = 0; i < fire_g.size(); i++)
+    for (int i = 0; i < fire_grids.size(); i++)
     {
         /* Clear */
-        dungeon_info[fire_g[i].y][fire_g[i].x].cave_info &= ~(CAVE_FIRE);
+        dungeon_info[fire_grids[i].y][fire_grids[i].x].cave_info &= ~(CAVE_FIRE);
     }
 
     /* None left */
-    fire_g.clear();
+    fire_grids.clear();
 }
 
 
@@ -2179,32 +2178,32 @@ void update_view(void)
     /*** Step 0 -- Begin ***/
 
     /* Save the old "view" grids for later */
-    for (i = 0; i < view_g.size(); i++)
+    for (i = 0; i < view_grids.size(); i++)
     {
-        prev_view_list.append(view_g[i]);
+        prev_view_list.append(view_grids[i]);
 
         /* Save "CAVE_SEEN" grids */
-        if (dungeon_info[view_g[i].y][view_g[i].x].cave_info & (CAVE_SEEN))
+        if (dungeon_info[view_grids[i].y][view_grids[i].x].cave_info & (CAVE_SEEN))
         {
-            prev_seen_list.append(view_g[i]);
+            prev_seen_list.append(view_grids[i]);
 
-            dungeon_info[view_g[i].y][view_g[i].x].cave_info |= (CAVE_TEMP);
+            dungeon_info[view_grids[i].y][view_grids[i].x].cave_info |= (CAVE_TEMP);
         }
 
         /* Clear "CAVE_VIEW" and "CAVE_SEEN" flags */
-        dungeon_info[view_g[i].y][view_g[i].x].cave_info &= ~(CAVE_VIEW | CAVE_SEEN);
+        dungeon_info[view_grids[i].y][view_grids[i].x].cave_info &= ~(CAVE_VIEW | CAVE_SEEN);
     }
 
     /* Reset the "view" array */
-    view_g.clear();
+    view_grids.clear();
 
     /* Clear the CAVE_FIRE flag */
-    for (i = 0; i < fire_g.size(); i++)
+    for (i = 0; i < fire_grids.size(); i++)
     {
         /* Clear */
-        dungeon_info[fire_g[i].y][fire_g[i].x].cave_info&= ~(CAVE_FIRE);
+        dungeon_info[fire_grids[i].y][fire_grids[i].x].cave_info&= ~(CAVE_FIRE);
     }
-    fire_g.clear();
+    fire_grids.clear();
 
     /* Extract "radius" value */
     radius = p_ptr->state.cur_light;
@@ -2250,7 +2249,7 @@ void update_view(void)
 
                         dun_ptr->cave_info |= (CAVE_SEEN | CAVE_VIEW | CAVE_EXPLORED);
 
-                        view_g.append(make_coords(fy+i, fx+j));
+                        view_grids.append(make_coords(fy+i, fx+j));
                     }
                 }
             }
@@ -2280,10 +2279,10 @@ void update_view(void)
     }
 
     /* Save in the "view" array */
-    view_g.append(make_coords(p_ptr->py, p_ptr->px));
+    view_grids.append(make_coords(p_ptr->py, p_ptr->px));
 
     /* Save in the "fire" array */
-    fire_g.append(make_coords(p_ptr->py, p_ptr->px));
+    fire_grids.append(make_coords(p_ptr->py, p_ptr->px));
 
     /*** Step 2a -- octants (CAVE_VIEW + CAVE_SEEN) ***/
 
@@ -2376,7 +2375,7 @@ void update_view(void)
                             }
                         }
 
-                        view_g.append(make_coords(GRID_Y(g), GRID_X(g)));
+                        view_grids.append(make_coords(GRID_Y(g), GRID_X(g)));
                     }
                 }
 
@@ -2416,7 +2415,7 @@ void update_view(void)
                         }
 
                         /* Save in array */
-                        view_g.append(make_coords(GRID_Y(g), GRID_X(g)));
+                        view_grids.append(make_coords(GRID_Y(g), GRID_X(g)));
                     }
                 }
             }
@@ -2520,7 +2519,7 @@ void update_view(void)
                     dun_ptr->cave_info |= (CAVE_FIRE);
 
                     /* Save in array */
-                    fire_g.append(make_coords(GRID_Y(g), GRID_X(g)));
+                    fire_grids.append(make_coords(GRID_Y(g), GRID_X(g)));
                 }
 
                 /* Handle non-projectable grids */
@@ -2559,9 +2558,9 @@ void update_view(void)
     if (p_ptr->timed[TMD_BLIND])
     {
         /* Process "new" grids */
-        for (i = 0; i < view_g.size(); i++)
+        for (i = 0; i < view_grids.size(); i++)
         {
-            dungeon_type *dun_ptr = &dungeon_info[view_g[i].y][view_g[i].x];
+            dungeon_type *dun_ptr = &dungeon_info[view_grids[i].y][view_grids[i].x];
 
             /* Grid cannot be "CAVE_SEEN" */
             dun_ptr->cave_info &= ~(CAVE_SEEN);
@@ -2569,18 +2568,18 @@ void update_view(void)
     }
 
     /* Process "new" grids */
-    for (i = 0; i < view_g.size(); i++)
+    for (i = 0; i < view_grids.size(); i++)
     {
-        dungeon_type *dun_ptr = &dungeon_info[view_g[i].y][view_g[i].x];
+        dungeon_type *dun_ptr = &dungeon_info[view_grids[i].y][view_grids[i].x];
 
         /* Was not "CAVE_SEEN", is now "CAVE_SEEN" */
         if ((dun_ptr->cave_info & (CAVE_SEEN)) && !(dun_ptr->cave_info & (CAVE_TEMP)))
         {
             /* Note */
-            note_spot(view_g[i].y, view_g[i].x);
+            note_spot(view_grids[i].y, view_grids[i].x);
 
             /* Redraw */
-            light_spot(view_g[i].y, view_g[i].x);
+            light_spot(view_grids[i].y, view_grids[i].x);
         }
     }
 

@@ -423,8 +423,10 @@ QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size)
 {
     QImage img(size.width(), size.height(), QImage::Format_ARGB32);
     // Fill with transparent color
-    for (int x = 0; x < size.width(); x++) {
-        for (int y = 0; y < size.height(); y++) {
+    for (int x = 0; x < size.width(); x++)
+    {
+        for (int y = 0; y < size.height(); y++)
+        {
             img.setPixel(x, y, QColor(0, 0, 0, 0).rgba());
         }
     }

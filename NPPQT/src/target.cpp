@@ -108,62 +108,20 @@ bool monster_target_exists()
 }
 
 /*
- * Sorting hook -- comp function -- by "distance to player"
+ * Sorting hook srt squares by "distance to player"
  *
- * We use "u" and "v" to point to arrays of "x" and "y" positions,
- * and sort the arrays by double-distance to the player.
+ * We use pythagoreans theorum to calculate the distance
  */
-static bool ang_sort_comp_distance(const void *u, const void *v, int a, int b)
+static bool coords_sort_distance(coord c1, coord c2)
 {
     int py = p_ptr->py;
     int px = p_ptr->px;
 
-    byte *x = (byte*)(u);
-    byte *y = (byte*)(v);
-
-    int da, db, kx, ky;
-
-    /* Absolute distance components */
-    kx = x[a]; kx -= px; kx = ABS(kx);
-    ky = y[a]; ky -= py; ky = ABS(ky);
-
-    /* Approximate Double Distance to the first point */
-    da = ((kx > ky) ? (kx + kx + ky) : (ky + ky + kx));
-
-    /* Absolute distance components */
-    kx = x[b]; kx -= px; kx = ABS(kx);
-    ky = y[b]; ky -= py; ky = ABS(ky);
-
-    /* Approximate Double Distance to the first point */
-    db = ((kx > ky) ? (kx + kx + ky) : (ky + ky + kx));
+    int dist1 = GET_SQUARE(py - c1.y) + GET_SQUARE(px - c1.x);
+    int dist2 = GET_SQUARE(py - c2.y) + GET_SQUARE(px - c2.x);
 
     /* Compare the distances */
-    return (da <= db);
-}
-
-
-/*
- * Sorting hook -- swap function -- by "distance to player"
- *
- * We use "u" and "v" to point to arrays of "x" and "y" positions,
- * and sort the arrays by distance to the player.
- */
-static void ang_sort_swap_distance(void *u, void *v, int a, int b)
-{
-    byte *x = (byte*)(u);
-    byte *y = (byte*)(v);
-
-    byte temp;
-
-    /* Swap "x" */
-    temp = x[a];
-    x[a] = x[b];
-    x[b] = temp;
-
-    /* Swap "y" */
-    temp = y[a];
-    y[a] = y[b];
-    y[b] = temp;
+    return (dist1 <= dist2);
 }
 
 /*
@@ -239,7 +197,7 @@ static void target_set_interactive_prepare(int mode)
     bool expand_look = (mode & (TARGET_LOOK)) ? TRUE : FALSE;
 
     /* Reset "temp" array */
-    clear_temp_array();
+    target_grids.clear();
 
     QRect vis = visible_dungeon();
 
@@ -249,9 +207,6 @@ static void target_set_interactive_prepare(int mode)
         for (x = vis.x(); x <= vis.x() + vis.width(); x++)
         {
             bool do_continue = FALSE;
-
-            /* Check overflow */
-            if (temp_n >= TEMP_MAX) continue;
 
             /* Check bounds */
             if (!in_bounds_fully(y, x)) continue;
@@ -291,18 +246,12 @@ static void target_set_interactive_prepare(int mode)
             }
 
             /* Save the location */
-            temp_x[temp_n] = x;
-            temp_y[temp_n] = y;
-            temp_n++;
+            target_grids.append(make_coords(y, x));
         }
     }
 
-    /* Set the sort hooks */
-    ang_sort_comp = ang_sort_comp_distance;
-    ang_sort_swap = ang_sort_swap_distance;
-
-    /* Sort the positions */
-    ang_sort(temp_x, temp_y, temp_n);
+    // Sort by distance
+    qSort(target_grids.begin(), target_grids.end(), coords_sort_distance);
 }
 
 /*
@@ -317,11 +266,11 @@ static s16b target_pick(int y1, int x1, int dy, int dx)
     int b_i = -1, b_v = 9999;
 
     /* Scan the locations */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < target_grids.size(); i++)
     {
         /* Point 2 */
-        x2 = temp_x[i];
-        y2 = temp_y[i];
+        x2 = target_grids[i].x;
+        y2 = target_grids[i].y;
 
         /* Directed distance */
         x3 = (x2 - x1);
@@ -521,13 +470,13 @@ bool target_set_interactive(int mode, int x, int y)
         ui_toolbar_show(TOOLBAR_TARGETING_INTERACTIVE);
 
         /* Interesting grids */
-        if (flag && temp_n)
+        if (flag && target_grids.size())
         {
             bool path_drawn = FALSE;
             int yy, xx;
 
-            y = temp_y[m];
-            x = temp_x[m];
+            y = target_grids[m].y;
+            x = target_grids[m].x;
 
             /* Dummy pointers to send to project_path */
             yy = y;
@@ -583,13 +532,13 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_Space:
                 case Qt::Key_Plus:
                 {
-                    if (++m == temp_n) m = 0;
+                    if (++m == target_grids.size()) m = 0;
                     break;
                 }
 
                 case Qt::Key_Minus:
                 {
-                    if (m-- == 0)  m = temp_n - 1;
+                    if (m-- == 0)  m = target_grids.size() - 1;
                     break;
                 }
                 case Qt::Key_Ampersand:
@@ -680,8 +629,8 @@ bool target_set_interactive(int mode, int x, int y)
             /* Hack -- move around */
             if (d)
             {
-                int old_y = temp_y[m];
-                int old_x = temp_x[m];
+                int old_y = target_grids[m].y;
+                int old_x = target_grids[m].x;
 
                 /* Find a new monster */
                 i = target_pick(old_y, old_x, ddy[d], ddx[d]);
@@ -886,7 +835,7 @@ bool target_set_interactive(int mode, int x, int y)
     }
 
     /* Forget */
-    temp_n = 0;
+    target_grids.clear();
 
     ui_toolbar_hide(TOOLBAR_TARGETING_INTERACTIVE);
 
@@ -1260,15 +1209,15 @@ bool target_set_closest(int mode)
     target_set_interactive_prepare(mode);
 
     /* If nothing was prepared, then return */
-    if (temp_n < 1)
+    if (!target_grids.size())
     {
         if (!(mode & TARGET_QUIET)) message(QString("No Available Target."));
         return FALSE;
     }
 
     /* Find the first monster in the queue */
-    y = temp_y[0];
-    x = temp_x[0];
+    y = target_grids[0].y;
+    x = target_grids[0].x;
     m_idx = dungeon_info[y][x].monster_idx;
 
     /* Target the monster, if possible */

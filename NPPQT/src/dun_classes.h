@@ -278,7 +278,7 @@ public:
     byte x;
 
     /* DF1_* flags */
-    byte flags;
+    bool new_grid;
 
     /*
      * Timed features use a counter. Each time the features are

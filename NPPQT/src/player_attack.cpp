@@ -1031,19 +1031,33 @@ void command_fire(cmd_arg args)
      }
 
      // Visuals
-     if (((y != p_ptr->py) || (x != p_ptr->px)) && player_can_see_bold(y, x)) {
+     if (((y != p_ptr->py) || (x != p_ptr->px)) && player_can_see_bold(p_ptr->py, p_ptr->px))
+     {
          u32b flg = 0;
-         if (i_ptr->tval == TV_SHOT) {
-             flg |= PROJECT_SHOT;
+         int end_square_y = p_ptr->py;
+         int end_square_x = p_ptr->px;
+         if (i_ptr->tval == TV_SHOT) flg |= PROJECT_SHOT;
+         else flg |= PROJECT_AMMO;
+
+         bool do_animate = FALSE;
+
+         // Find the last square in the player's sight
+         for (i = 0; i < path_n; ++i)
+         {
+             // First non-visible square
+             if (!player_can_see_bold(GRID_Y(path_g[i]), GRID_X(path_g[i]))) break;
+
+             do_animate = TRUE;
+             end_square_y = GRID_Y(path_g[i]);
+             end_square_x = GRID_X(path_g[i]);
          }
-         else {
-             flg |= PROJECT_AMMO;
-         }
-         ui_animate_bolt(p_ptr->py, p_ptr->px, y, x, GF_ARROW, flg);
+
+         if (do_animate) ui_animate_bolt(p_ptr->py, p_ptr->px, end_square_y, end_square_x, GF_ARROW, flg);
      }
 
      /* Handle monster */
-     if (hit_body) {
+     if (hit_body)
+     {
         monster_type *m_ptr = &mon_list[dungeon_info[y][x].monster_idx];
         monster_race *r_ptr = &r_info[m_ptr->r_idx];
         monster_lore *l_ptr = &l_list[m_ptr->r_idx];
@@ -1999,11 +2013,29 @@ void command_throw(cmd_arg args)
     }
 
     // Visuals
-    if ((y != p_ptr->py || x != p_ptr->px) && player_can_see_bold(y, x)) {
-        ui_animate_throw(p_ptr->py, p_ptr->px, y, x, i_ptr);
+    if ((y != p_ptr->py || x != p_ptr->px) && player_can_see_bold(y, x))
+    {
+        int end_square_y = p_ptr->py;
+        int end_square_x = p_ptr->px;
+
+        bool do_animate = FALSE;
+
+        // Find the last square in the player's sight
+        for (i = 0; i < path_n; ++i)
+        {
+            // First non-visible square
+            if (!player_can_see_bold(GRID_Y(path_g[i]), GRID_X(path_g[i]))) break;
+
+            do_animate = TRUE;
+            end_square_y = GRID_Y(path_g[i]);
+            end_square_x = GRID_X(path_g[i]);
+        }
+
+        if (do_animate) ui_animate_throw(p_ptr->py, p_ptr->px, end_square_y, end_square_x, i_ptr);
     }
 
-    if (hit_body) {
+    if (hit_body)
+    {
         monster_type *m_ptr = &mon_list[dungeon_info[y][x].monster_idx];
         monster_race *r_ptr = &r_info[m_ptr->r_idx];
         monster_lore *l_ptr = &l_list[m_ptr->r_idx];

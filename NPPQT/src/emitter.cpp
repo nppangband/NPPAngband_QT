@@ -142,12 +142,8 @@ public:
 BeamPoint::BeamPoint(QPointF newPoint, QPointF origin)
 {
     point = newPoint;
-    if (point == origin) {
-        length = 0;
-    }
-    else {
-        length = QLineF(origin, point).length();
-    }
+    if (point == origin) length = 0;
+    else length = QLineF(origin, point).length();
 }
 
 bool BeamPoint::operator <(const BeamPoint &b) const
@@ -157,10 +153,9 @@ bool BeamPoint::operator <(const BeamPoint &b) const
 
 void make_beam_aux(QPointF from, QPointF to, QList<QPointF> *points, qreal displace, qreal detail)
 {
-    if (displace < detail) {
-        points->append(to);
-    }
-    else {
+    if (displace < detail) points->append(to);
+    else
+    {
         qreal mid_x = (from.x() + to.x()) / 2;
         qreal mid_y = (from.y() + to.y()) / 2;
         mid_x += (rand_int(100) / 100.0 - 0.5) * displace;
@@ -180,12 +175,14 @@ QPolygonF make_beam(QPointF from, QPointF to)
     if (main_window->main_cell_hgt < 16) displace = 35;
     make_beam_aux(from, to, &points, displace, 5);
     QList<BeamPoint> bp;
-    for (int i = 0; i < points.size(); i++) {
+    for (int i = 0; i < points.size(); i++)
+    {
         bp.append(BeamPoint(points.at(i), from));
     }
     qSort(bp); // Sort it by distance to the source
     QPolygonF poly;
-    for (int i = 0; i < bp.size(); i++) {
+    for (int i = 0; i < bp.size(); i++)
+    {
         poly.append(bp.at(i).point);
     }
     return poly;
@@ -198,7 +195,8 @@ QPolygonF get_cloud_points(QPointF from, QPointF to, qreal step)
 
     QLineF line(from, to);
     qreal l = line.length();
-    while (l > 0) {
+    while (l > 0)
+    {
         line.setLength(l);
         poly.append(line.p2());
         l -= step;
@@ -230,20 +228,25 @@ void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     painter->setOpacity(0.5);
 
-    if (do_beam) {
+    if (do_beam)
+    {
         beam = make_beam(p1, p2);
-        for (int i = 1; i < beam.size(); i++) {
+        for (int i = 1; i < beam.size(); i++)
+        {
             QPolygonF poly = get_cloud_points(beam.at(i - 1), beam.at(i), 10);
-            for (int j = 1; j < poly.size(); j++) {
+            for (int j = 1; j < poly.size(); j++)
+            {
                 QPointF p = poly.at(j);
                 p -= QPointF(bs/2, bs/2);
                 painter->drawPixmap(p, pix);
             }
         }
     }
-    else {
+    else
+    {
         QPolygonF poly = get_cloud_points(p1, p2, 10);
-        for (int j = 1; j < poly.size(); j++) {
+        for (int j = 1; j < poly.size(); j++)
+        {
             QPointF p = poly.at(j);
             p -= QPointF(bs/2, bs/2);
             painter->drawPixmap(p, pix);
@@ -256,12 +259,8 @@ void BeamAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
              Qt::RoundCap, Qt::RoundJoin);
     painter->setPen(pen);
 
-    if (do_beam) {
-        painter->drawPolyline(beam);
-    }
-    else {
-        painter->drawLine(p1, p2);
-    }
+    if (do_beam) painter->drawPolyline(beam);
+    else painter->drawLine(p1, p2);
 
     painter->restore();
 }
@@ -305,16 +304,15 @@ NPPAnimation::~NPPAnimation()
 
 void NPPAnimation::start()
 {
-    if (anim) {
-        anim->start();
-    }
+    if (anim) anim->start();
 }
 
 BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg, object_type *o_ptr)
 {
     flg = new_flg;
     gf_type = new_gf_type;
-    if (gf_type > 0) {
+    if (gf_type > 0)
+    {
         int color_idx = gf_color(gf_type) % MAX_COLORS;
         color = defined_colors[color_idx];
     }
@@ -345,23 +343,28 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
                                       main_window->main_cell_hgt + 10));
         }
     }
-    else if (gf_type == GF_ARROW) {
-        if (flg & PROJECT_ROCK) {
+    else if (gf_type == GF_ARROW)
+    {
+        if (flg & PROJECT_ROCK)
+        {
             pix = tiles_projections->get_tile("boulder1.png");
             do_default = false;
         }
-        else if (flg & PROJECT_SHOT) {
+        else if (flg & PROJECT_SHOT)
+        {
             pix = tiles_projections->get_tile("shot1.png");
             do_default = false;
         }
-        else if (flg & PROJECT_AMMO) {
+        else if (flg & PROJECT_AMMO)
+        {
             pix = tiles_projections->get_tile("arrow1.png");
             pix = rotate_pix(pix, current_angle);
             do_default = false;
         }
     }
 
-    if (do_default) {
+    if (do_default)
+    {
         pix = rotate_pix(tiles_projections->get_tile("bolt1.png"), current_angle);
         pix = colorize_pix3(pix, color);
     }

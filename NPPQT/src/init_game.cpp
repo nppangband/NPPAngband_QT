@@ -621,27 +621,15 @@ static int init_other(void)
 
     reset_dungeon_info();
 
-    /* Array of grids */
-    view_g.clear();
-
-    /* Array of grids */
-    temp_g = C_ZNEW(TEMP_MAX, u16b);
-    temp_n = 0;
-
-    /* Hack -- use some memory twice */
-    temp_y = ((byte*)(temp_g)) + 0;
-    temp_x = ((byte*)(temp_g)) + TEMP_MAX;
-
-    /* Array of grids */
-    fire_g.clear();
-
-    /* has_LIGHT patch causes both temp_g and temp_x/y to be used
-       in targetting mode: can't use the same memory any more. */
-    temp_y = C_ZNEW(TEMP_MAX, byte);
-    temp_x = C_ZNEW(TEMP_MAX, byte);
+    /* Arrays of grids */
+    view_grids.clear();
+    fire_grids.clear();
+    project_grids.clear();
+    room_grids.clear();
+    target_grids.clear();
 
     /* Array of dynamic grids */
-    dyna_g = C_ZNEW(DYNA_MAX, dynamic_grid_type);
+    dyna_grids.clear();
 
     /* Array of stacked monster messages */
     mon_msg.clear();
@@ -1110,13 +1098,6 @@ static void init_rng()
         /* Basic seed */
         seed = (u32b)(time(NULL));
 
-#ifdef SET_UID
-
-        /* Mutate the seed on Unix machines */
-        seed = ((seed >> 3) * (getpid() << 1));
-
-#endif
-
         /* Use the complex RNG */
         Rand_quick = FALSE;
 
@@ -1284,8 +1265,6 @@ void init_npp_games(void)
 
 void cleanup_npp_games(void)
 {
-    int i;
-
     //clear_graphics();
 
     /* Free the allocation tables */
@@ -1297,7 +1276,7 @@ void cleanup_npp_games(void)
     if (store)
     {
         /* Free the store inventories */
-        for (i = 0; i < MAX_STORES; i++)
+        for (int i = 0; i < MAX_STORES; i++)
         {
             /* Get the store */
             store_type *st_ptr = &store[i];
@@ -1344,18 +1323,14 @@ void cleanup_npp_games(void)
     mon_moment_info.clear();
 
     /* Free the "update_view()" array */
-    view_g.clear();
+    view_grids.clear();
+    fire_grids.clear();
+    project_grids.clear();
+    room_grids.clear();
+    target_grids.clear();
 
-    /* Free the other "update_view()" array */
-    fire_g.clear();
-
-    /* Free the temp array */
-    FREE_ARRAY(temp_g);
-    FREE_ARRAY(temp_y);
-    FREE_ARRAY(temp_x);
-
-    /* Free the dynamic features array */
-    FREE_ARRAY(dyna_g);
+    /* CLear dynamic features */
+    dyna_grids.clear();
 
     /* Free the stacked monster messages */
     mon_msg.clear();
@@ -1380,16 +1355,14 @@ QString scroll_adj[MAX_TITLES];
  */
 static void flavor_assign_fixed(void)
 {
-    int i, j;
-
-    for (i = 1; i < z_info->flavor_max; i++)
+    for (int i = 1; i < z_info->flavor_max; i++)
     {
         flavor_type *flavor_ptr = &flavor_info[i];
 
         /* Skip random flavors */
         if (flavor_ptr->sval == SV_UNKNOWN) continue;
 
-        for (j = 0; j < z_info->k_max; j++)
+        for (int j = 0; j < z_info->k_max; j++)
         {
             /* Skip other objects */
             if ((k_info[j].tval == flavor_ptr->tval) &&

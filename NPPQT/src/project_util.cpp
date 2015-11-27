@@ -348,29 +348,26 @@ bool project_los(int y0, int x0, int dam, int typ)
 /*
  * This routine clears the entire "temp" set.
  */
-void clear_temp_array(void)
+void clear_project_grid_array(void)
 {
     int i;
 
     /* Apply flag changes */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < project_grids.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
-
         /* No longer in the array */
-        dungeon_info[y][x].cave_info &= ~(CAVE_TEMP);
+        dungeon_info[project_grids[i].y][project_grids[i].x].cave_info &= ~(CAVE_TEMP);
     }
 
     /* None left */
-    temp_n = 0;
+    project_grids.clear();
 }
 
 
 /*
  * Aux function -- see below
  */
-void cave_temp_mark(int y, int x, bool room)
+void project_grid_mark(int y, int x, bool room)
 {
     if(!in_bounds_fully(y, x)) return;
 
@@ -380,32 +377,27 @@ void cave_temp_mark(int y, int x, bool room)
     /* Option -- do not leave the current room */
     if ((room) && (!(dungeon_info[y][x].cave_info & (CAVE_ROOM)))) return;
 
-    /* Verify space */
-    if (temp_n == TEMP_MAX) return;
-
     /* Mark the grid */
     dungeon_info[y][x].cave_info |= (CAVE_TEMP);
 
     /* Add it to the marked set */
-    temp_y[temp_n] = y;
-    temp_x[temp_n] = x;
-    temp_n++;
+    project_grids.append(make_coords(y, x));
 }
 
 /*
  * Mark the nearby area with CAVE_TEMP flags.  Allow limited range.
  */
-void spread_cave_temp(int y1, int x1, int range, bool room, bool pass_walls)
+void spread_project_grid_mark(int y1, int x1, int range, bool room, bool pass_walls)
 {
     int i, y, x;
 
     /* Add the initial grid */
-    cave_temp_mark(y1, x1, room);
+    project_grid_mark(y1, x1, room);
 
     /* While grids are in the queue, add their neighbors */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < project_grids.size(); i++)
     {
-        x = temp_x[i], y = temp_y[i];
+        x = project_grids[i].x, y = project_grids[i].y;
 
         /* Walls get marked, but stop further spread, unless pass_walls is TRUE */
         if (!pass_walls && !cave_project_bold(y, x)) continue;
@@ -414,16 +406,16 @@ void spread_cave_temp(int y1, int x1, int range, bool room, bool pass_walls)
         if ((range) && (distance(y1, x1, y, x) >= range)) continue;
 
         /* Spread adjacent */
-        cave_temp_mark(y + 1, x, room);
-        cave_temp_mark(y - 1, x, room);
-        cave_temp_mark(y, x + 1, room);
-        cave_temp_mark(y, x - 1, room);
+        project_grid_mark(y + 1, x, room);
+        project_grid_mark(y - 1, x, room);
+        project_grid_mark(y, x + 1, room);
+        project_grid_mark(y, x - 1, room);
 
         /* Spread diagonal */
-        cave_temp_mark(y + 1, x + 1, room);
-        cave_temp_mark(y - 1, x - 1, room);
-        cave_temp_mark(y - 1, x + 1, room);
-        cave_temp_mark(y + 1, x - 1, room);
+        project_grid_mark(y + 1, x + 1, room);
+        project_grid_mark(y - 1, x - 1, room);
+        project_grid_mark(y - 1, x + 1, room);
+        project_grid_mark(y + 1, x - 1, room);
     }
 }
 

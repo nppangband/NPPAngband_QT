@@ -799,12 +799,11 @@ static void cave_temp_room_light(void)
 {
     int i;
 
-
     /* Apply flag changes */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < room_grids.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
+        int y = room_grids[i].y;
+        int x = room_grids[i].x;
 
         /* No longer in the array */
         dungeon_info[y][x].cave_info &= ~(CAVE_TEMP);
@@ -820,10 +819,10 @@ static void cave_temp_room_light(void)
     update_stuff();
 
     /* Process the grids */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < room_grids.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
+        int y = room_grids[i].y;
+        int x = room_grids[i].x;
 
         /* Redraw the grid */
         light_spot(y, x);
@@ -856,7 +855,7 @@ static void cave_temp_room_light(void)
     }
 
     /* None left */
-    temp_n = 0;
+    room_grids.clear();
 }
 
 
@@ -872,13 +871,11 @@ static void cave_temp_room_light(void)
  */
 static void cave_temp_room_unlite(void)
 {
-    int i;
-
     /* Apply flag changes */
-    for (i = 0; i < temp_n; i++)
+    for (int i = 0; i < room_grids.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
+        int y = room_grids[i].y;
+        int x = room_grids[i].x;
 
         /* No longer in the array */
         dungeon_info[y][x].cave_info &= ~(CAVE_TEMP);
@@ -904,20 +901,18 @@ static void cave_temp_room_unlite(void)
     /* Update stuff */
     update_stuff();
 
-    /* Process the grids */
-    for (i = 0; i < temp_n; i++)
+    /* Apply flag changes */
+    for (int i = 0; i < room_grids.size(); i++)
     {
-        int y = temp_y[i];
-        int x = temp_x[i];
+        int y = room_grids[i].y;
+        int x = room_grids[i].x;
 
         /* Redraw the grid */
         light_spot(y, x);
-
-
     }
 
     /* None left */
-    temp_n = 0;
+    room_grids.clear();
 }
 
 
@@ -934,16 +929,11 @@ static void cave_temp_room_aux(int y, int x)
     /* Do not "leave" the current room */
     if (!(dungeon_info[y][x].cave_info & (CAVE_ROOM))) return;
 
-    /* Paranoia -- verify space */
-    if (temp_n == TEMP_MAX) return;
-
     /* Mark the grid as "seen" */
     dungeon_info[y][x].cave_info |= (CAVE_TEMP);
 
     /* Add it to the "seen" set */
-    temp_y[temp_n] = y;
-    temp_x[temp_n] = x;
-    temp_n++;
+    room_grids.append(make_coords(y, x));
 }
 
 
@@ -2022,9 +2012,9 @@ void light_room(int y1, int x1)
     cave_temp_room_aux(y1, x1);
 
     /* While grids are in the queue, add their neighbors */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < room_grids.size(); i++)
     {
-        x = temp_x[i], y = temp_y[i];
+        x = room_grids[i].x, y = room_grids[i].y;
 
         /* Walls get lit, but stop light */
         if (!cave_project_bold(y, x)) continue;
@@ -2062,9 +2052,9 @@ void unlight_room(int y1, int x1)
     cave_temp_room_aux(y1, x1);
 
     /* Spread, breadth first */
-    for (i = 0; i < temp_n; i++)
+    for (i = 0; i < room_grids.size(); i++)
     {
-        x = temp_x[i], y = temp_y[i];
+        x = room_grids[i].x, y = room_grids[i].y;
 
         /* Walls get dark, but stop darkness */
         if (!cave_project_bold(y, x)) continue;

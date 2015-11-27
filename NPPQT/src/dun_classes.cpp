@@ -335,7 +335,8 @@ dynamic_grid_type::dynamic_grid_type()
  */
 void dynamic_grid_type::dynamic_grid_wipe()
 {
-    y = x = flags = counter = 0;
+    y = x = counter = 0;
+    new_grid = FALSE;
 }
 
 void reset_dungeon_info()

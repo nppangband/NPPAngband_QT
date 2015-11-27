@@ -21,7 +21,6 @@ extern u32b seed_randart;
 extern u32b seed_flavor;
 extern u32b seed_town;
 extern u32b seed_ghost;
-extern s16b num_repro;
 extern s16b object_level;
 extern s16b monster_level;
 extern QChar summon_kin_type;
@@ -42,7 +41,6 @@ extern u32b level_flag;
 extern bool good_item_flag;
 
 extern QString current_savefile;
-
 
 extern s16b add_wakeup_chance;
 extern s16b total_wakeup_chance;
@@ -92,10 +90,7 @@ extern option_entry options[OPT_MAX];
 
 extern s16b x_pop(void);
 
-
-
 extern byte squelch_level[SQUELCH_BYTES];
-
 
 extern quiver_group_type quiver_group[MAX_QUIVER_GROUPS];
 
@@ -123,22 +118,18 @@ extern QVector<move_moment_type> mon_moment_info;
 // Track which squares need to be drawn
 extern QVector<coord> redraw_coords;
 
-// Arrays for cave information
-extern int view_n;
-extern QVector<coord> view_g;
-extern QVector<coord> fire_g;
-extern int temp_n;
-extern u16b *temp_g;
-extern byte *temp_y;
-extern byte *temp_x;
+// Vector lists of dungeon grids
+extern QVector<coord> view_grids;
+extern QVector<coord> fire_grids;
+extern QVector<coord> project_grids;
+extern QVector<coord> room_grids;
+extern QVector<coord> target_grids;
+
 extern u32b mon_power_ave[MAX_DEPTH_ALL][CREATURE_TYPE_MAX];
 
-extern dynamic_grid_type *dyna_g;
-extern u16b dyna_cnt;
+extern QVector<dynamic_grid_type> dyna_grids;
 extern u16b dyna_next;
-extern bool dyna_full;
-extern byte dyna_center_y;
-extern byte dyna_center_x;
+
 
 extern dungeon_type dungeon_info[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 extern u16b cave_cost[MAX_FLOWS][MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
@@ -165,9 +156,6 @@ extern bool allow_altered_inventory;
 extern u32b dungeon_summon_mask_f7;
 
 
-extern s16b num_repro;
-extern s16b object_level;
-extern s16b monster_level;
 extern s16b coin_type;
 extern byte object_generation_mode;
 extern bool shimmer_monsters;

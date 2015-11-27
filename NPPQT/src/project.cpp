@@ -6972,7 +6972,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                 &arc_num);
 
             /* Mark the area nearby -- limit range, ignore rooms */
-            spread_cave_temp(y0, x0, rad, FALSE, (flg & (PROJECT_PASS)) != 0);
+            spread_project_grid_mark(y0, x0, rad, FALSE, (flg & (PROJECT_PASS)) != 0);
 
         }
 
@@ -6995,7 +6995,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
                     gd[grids++] = i;
 
                     /* Mark the grid (it will not be used again) */
-                    cave_temp_mark(gy[grids-1], gx[grids-1], FALSE);
+                    project_grid_mark(gy[grids-1], gx[grids-1], FALSE);
                 }
             }
 
@@ -7182,7 +7182,7 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
     }
 
     /* Clear the "temp" array  XXX */
-    clear_temp_array();
+    clear_project_grid_array();
 
     /* Calculate and store the actual damage at each distance. */
     for (i = 0; i <= MAX_RANGE; i++)
@@ -7380,8 +7380,8 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
         }
     }
 
-    /* Clear the "temp" array  (paranoia is good) */
-    clear_temp_array();
+    /* Clear the "temp" array */
+    clear_project_grid_array();
 
     /* Update stuff if needed */
     notice_stuff();

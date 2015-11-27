@@ -125,8 +125,7 @@ extern void place_random_door(int y, int x);
 extern void lore_do_probe_feature(int f_idx);
 extern dynamic_grid_type *get_dynamic_terrain(byte y, byte x);
 extern void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr);
-extern void wipe_dynamic_terrain(void);
-extern bool add_dynamic_terrain(byte y, byte x);
+extern void add_dynamic_terrain(byte y, byte x);
 extern void remove_dynamic_terrain(byte y, byte x);
 extern void process_dynamic_terrain(void);
 extern s16b select_powerful_race(void);
@@ -532,9 +531,9 @@ extern bool project_arc(int who, int rad, int y0, int x0, int y1, int x1,
 extern bool project_star(int who, int rad, int y0, int x0, int dam, int typ,
     u32b flg);
 extern bool project_los(int y0, int x0, int dam, int typ);
-extern void clear_temp_array(void);
-extern void cave_temp_mark(int y, int x, bool room);
-extern void spread_cave_temp(int y1, int x1, int range, bool room, bool pass_walls);
+extern void clear_project_grid_array(void);
+extern void project_grid_mark(int y, int x, bool room);
+extern void spread_project_grid_mark(int y1, int x1, int range, bool room, bool pass_walls);
 extern bool fire_bolt_beam_special(int typ, int dir, int dam, int rad, u32b flg);
 extern bool fire_effect_orb(int typ, int dir, int dam, int rad);
 extern bool fire_ball(int typ, int dir, int dam, int rad);

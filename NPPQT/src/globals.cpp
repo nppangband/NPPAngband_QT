@@ -20,7 +20,6 @@ u32b seed_flavor;		/* Hack -- consistent object colors */
 u32b seed_town;			/* Hack -- consistent town layout */
 u32b seed_ghost;			/* Hack -- consistent player_ghosts */
 
-s16b num_repro;			/* Current reproducer count */
 s16b object_level;		/* Current object creation level */
 s16b monster_level;		/* Current monster creation level */
 
@@ -372,27 +371,12 @@ QVector<monster_message_history> mon_message_hist;
 // List of squares to be re-drawn
 QVector<coord> redraw_coords;
 
-/*
- * Vetor used by "update_view()"
- */
-QVector<coord> view_g;
-
-
-/*
- * Vector used by "update_view()"
- */
-QVector<coord> fire_g;
-
-/*
- * Arrays[TEMP_MAX] used for various things
- *
- * Note that temp_g shares memory with temp_x and temp_y.
- */
-int temp_n = 0;
-u16b *temp_g;
-byte *temp_y;
-byte *temp_x;
-
+// Vector lists of dungeon grids
+QVector<coord> view_grids;
+QVector<coord> fire_grids;
+QVector<coord> project_grids;
+QVector<coord> room_grids;
+QVector<coord> target_grids;
 
 
 /*
@@ -407,30 +391,13 @@ u32b mon_power_ave[MAX_DEPTH_ALL][CREATURE_TYPE_MAX];
 /*
  * The array of dynamic grids. -DG-
  */
-dynamic_grid_type *dyna_g = NULL;
-
-/*
- * Current number of grids in dyna_g
- */
-u16b dyna_cnt = 0;
+QVector<dynamic_grid_type> dyna_grids;
 
 /*
  * The index of the entry that is after the last entry of dyna_g
  */
 u16b dyna_next = 0;
 
-/*
- * If dyna_full is FALSE, all the dynamic grids on the level are stored in
- * dyna_g. If it's TRUE, the contents of dyna_g are updated every certain
- * number of steps (see process_dynamic_terrain for this)
- */
-bool dyna_full = FALSE;
-
-/*
- * When dyna_full is TRUE, we need to track the center of the last update
- */
-byte dyna_center_y = 255;
-byte dyna_center_x = 255;
 
 byte num_trap_on_level;
 s16b player_ghost_num;

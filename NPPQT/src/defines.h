@@ -180,22 +180,7 @@ enum
 
 #define PY_MAX_LEVEL_MORIA 40
 
-/*
- * Maximum size of the "view" array (see "cave.c")
- * Note that the "view radius" will NEVER exceed 20, and even if the "view"
- * was octagonal, we would never require more than 1520 entries in the array.
- */
-#define VIEW_MAX 1536
 
-/*
- * Maximum size of the "temp" array (see "cave.c")
- * Note that we must be as large as "VIEW_MAX" for proper functioning
- * of the "update_view()" function, and we must also be as large as the
- * largest illuminatable room, but no room is larger than 800 grids.  We
- * must also be large enough to allow "good enough" use as a circular queue,
- * to calculate monster flow, but note that the flow code is "paranoid".
- */
-#define TEMP_MAX 1536
 
 /*
  * Maximum number of player "sex" types (see "table.c", etc)
@@ -232,40 +217,14 @@ typedef qint32          s32b;
 #define MAX_U32B    0
 #define MIN_U32B    4294967295
 
-/*
- * An array of 256 byte's
- */
-typedef byte byte_256[256];
 
-/*
- * An array of 256 u16b's
- */
-typedef u16b u16b_256[256];
 
-/*
- * An array of MAX_DUNGEON_WID byte's
- */
-typedef byte byte_wid[MAX_DUNGEON_WID];
-
-/*
- * An array of MAX_DUNGEON_WID s16b's
- */
-typedef s16b s16b_wid[MAX_DUNGEON_WID];
 
 /*
  * A matrix of MAX_DUNGEON_HGT * MAX_DUNGEON_WID u16b's
  */
 typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 
-
-/*
- * Maximum size of the "dyna_g" array.
- */
-#define DYNA_MAX 1536
-
-/* Flags for the "dynamic_grid_type" data type */
-#define DF1_OCCUPIED 0x01	/* The entry is being used */
-#define DF1_NEW_BORN 0x02	/* The dynamic feature was created recently */
 
 
 #define ENERGY_TO_MOVE		200

@@ -147,8 +147,8 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
     int spower;
     bool breath = FALSE;
     bool magic = FALSE;
-    int vn;
-    QString vp[64];
+    QVector<QString> vp;
+    vp.clear();
 
     output.clear();
 
@@ -159,63 +159,60 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
     /* Get spell power */
     spower = r_ptr->spell_power;
 
-    /* Collect innate attacks */
-    vn = 0;
-
-    if (l_ptr->r_l_flags4 & (RF4_SHRIEK))		vp[vn++] = "shriek for help";
+    if (l_ptr->r_l_flags4 & (RF4_SHRIEK))		vp.append("shriek for help");
 
     if (l_ptr->r_l_flags4 & (RF4_LASH))
     {
         if ((l_ptr->r_l_flags3 & (RF3_ANIMAL)) || (r_ptr->blow[0].effect == RBE_ACID))
-            vp[vn++] = "spit at you from a distance";
+            vp.append("spit at you from a distance");
         else
-            vp[vn++] = "lash you if nearby";
+            vp.append("lash you if nearby");
     }
 
     if (l_ptr->r_l_flags4 & (RF4_BOULDER))
     {
-        if (spower < 8) vp[vn++] = "throw rocks";
-        else vp[vn++] = "throw boulders";
+        if (spower < 8) vp.append("throw rocks");
+        else vp.append("throw boulders");
     }
 
     if (l_ptr->r_l_flags4 & (RF4_SHOT))
     {
-        if (spower < 4) vp[vn++] = "sling pebbles";
-        else if (spower < 10) vp[vn++] = "sling leaden pellets";
-        else vp[vn++] = "sling seeker shots";
+        if (spower < 4) vp.append("sling pebbles");
+        else if (spower < 10) vp.append("sling leaden pellets");
+        else vp.append("sling seeker shots");
     }
 
     if (l_ptr->r_l_flags4 & (RF4_ARROW))
     {
-        if (spower < 4) vp[vn++] = "shoot little arrows";
-        else if (spower < 10) vp[vn++] = "shoot arrows";
-        else vp[vn++] = "shoot seeker arrows";
+        if (spower < 4) vp.append("shoot little arrows");
+        else if (spower < 10) vp.append("shoot arrows");
+        else vp.append("shoot seeker arrows");
     }
 
     if (l_ptr->r_l_flags4 & (RF4_BOLT))
     {
-        if (spower < 4) vp[vn++] = "fire bolts";
-        else if (spower < 10) vp[vn++] = "fire crossbow quarrels";
-        else vp[vn++] = "fire seeker bolts";
+        if (spower < 4) vp.append("fire bolts");
+        else if (spower < 10) vp.append("fire crossbow quarrels");
+        else vp.append("fire seeker bolts");
     }
 
     if (l_ptr->r_l_flags4 & (RF4_MISSL))
     {
-        if (spower < 4) vp[vn++] = "fire little missiles";
-        else if (spower < 10) vp[vn++] = "fire missiles";
-        else vp[vn++] = "fire heavy missiles";
+        if (spower < 4) vp.append("fire little missiles");
+        else if (spower < 10) vp.append("fire missiles");
+        else vp.append("fire heavy missiles");
     }
 
-    if (l_ptr->r_l_flags4 & (RF4_PMISSL)) vp[vn++] = "whip poisoned darts";
+    if (l_ptr->r_l_flags4 & (RF4_PMISSL)) vp.append("whip poisoned darts");
 
     /* Describe innate attacks */
-    if (vn)
+    if (vp.size())
     {
         /* Intro */
         output.append(QString("%1") .arg(capitalize_first(wd_he[msex])));
 
         /* Scan */
-        for (n = 0; n < vn; n++)
+        for (n = 0; n < vp.size(); n++)
         {
             /* Intro */
             if (n == 0)
@@ -223,10 +220,9 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
                 output.append(" may ");
             }
 
-            else if (n < vn-1) output.append(", ");
+            else if (n < vp.size()-1) output.append(", ");
             else if (n == 1) output.append(" or ");
             else output.append(", or ");
-
 
             /* Dump */
             output.append(color_string(capitalize_first(vp[n]), TERM_RED));
@@ -237,37 +233,37 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
     }
 
     /* Collect breaths */
-    vn = 0;
+    vp.clear();
 
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_ACID))       vp[vn++] = "acid";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_ELEC))       vp[vn++] = "lightning";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_FIRE))       vp[vn++] = "fire";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_COLD))       vp[vn++] = "frost";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_POIS))       vp[vn++] = "poison";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_PLAS))       vp[vn++] = "plasma";
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_ACID))       vp.append("acid");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_ELEC))       vp.append("lightning");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_FIRE))       vp.append("fire");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_COLD))       vp.append("frost");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_POIS))       vp.append("poison");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_PLAS))       vp.append("plasma");
 
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_LIGHT))       vp[vn++] = "light";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_DARK))	   vp[vn++] = "darkness";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_CONFU))      vp[vn++] = "confusion";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_SOUND))      vp[vn++] = "sound";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_SHARD))      vp[vn++] = "shards";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_INER))       vp[vn++] = "inertia";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_GRAV))       vp[vn++] = "gravity";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_FORCE))      vp[vn++] = "force";
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_LIGHT))       vp.append("light");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_DARK))	   vp.append("darkness");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_CONFU))      vp.append("confusion");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_SOUND))      vp.append("sound");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_SHARD))      vp.append("shards");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_INER))       vp.append("inertia");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_GRAV))       vp.append("gravity");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_FORCE))      vp.append("force");
 
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_NEXUS))      vp[vn++] = "nexus";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_NETHR))      vp[vn++] = "nether";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_CHAOS))      vp[vn++] = "chaos";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_DISEN))      vp[vn++] = "disenchantment";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_TIME))       vp[vn++] = "time";
-    if (l_ptr->r_l_flags4 & (RF4_BRTH_MANA))       vp[vn++] = "mana";
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_NEXUS))      vp.append("nexus");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_NETHR))      vp.append("nether");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_CHAOS))      vp.append("chaos");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_DISEN))      vp.append("disenchantment");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_TIME))       vp.append("time");
+    if (l_ptr->r_l_flags4 & (RF4_BRTH_MANA))       vp.append("mana");
 
-    if (l_ptr->r_l_flags4 & (RF4_RF4XXX1))         vp[vn++] = "something";
-    if (l_ptr->r_l_flags4 & (RF4_RF4XXX2))            vp[vn++] = "something";
-    if (l_ptr->r_l_flags4 & (RF4_RF4XXX3))            vp[vn++] = "something";
+    if (l_ptr->r_l_flags4 & (RF4_RF4XXX1))         vp.append("something");
+    if (l_ptr->r_l_flags4 & (RF4_RF4XXX2))            vp.append("something");
+    if (l_ptr->r_l_flags4 & (RF4_RF4XXX3))            vp.append("something");
 
     /* Describe breaths */
-    if (vn)
+    if (vp.size())
     {
         /* Note breath */
         breath = TRUE;
@@ -276,11 +272,11 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
         output.append(QString("%1") .arg(capitalize_first(wd_he[msex])));
 
         /* Scan */
-        for (n = 0; n < vn; n++)
+        for (n = 0; n < vp.size(); n++)
         {
             /* Intro */
             if (n == 0) output.append(" may breathe ");
-            else if (n < vn-1) output.append(", ");
+            else if (n < vp.size()-1) output.append(", ");
             else if (n == 1) output.append(" or ");
             else output.append(", or ");
 
@@ -294,282 +290,282 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
 
 
     /* Collect spells */
-    vn = 0;
+    vp.clear();
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_ACID))
     {
         if (r_ptr->flags4 & (RF4_BRTH_ACID))
         {
-            if (spower < 40)	vp[vn++] = "breathe acid balls";
-            else 				vp[vn++] = "breathe enormous acid balls";
+            if (spower < 40)	vp.append("breathe acid balls");
+            else 				vp.append("breathe enormous acid balls");
         }
-        else if (spower < 10) vp[vn++] = "produce small acid balls";
-        else if (spower < 40) vp[vn++] = "produce acid balls";
-        else vp[vn++] = "produce acid storms";
+        else if (spower < 10) vp.append("produce small acid balls");
+        else if (spower < 40) vp.append("produce acid balls");
+        else vp.append("produce acid storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_ELEC))
     {
         if (r_ptr->flags4 & (RF4_BRTH_ELEC))
         {
-            if (spower < 40)	vp[vn++] = "breathe lightning balls";
-            else 				vp[vn++] = "breathe enormous lightning balls";
+            if (spower < 40)	vp.append("breathe lightning balls");
+            else 				vp.append("breathe enormous lightning balls");
         }
-        else if (spower < 10) vp[vn++] = "produce small lightning balls";
-        else if (spower < 40) vp[vn++] = "produce lightning balls";
-        else vp[vn++] = "produce lightning storms";
+        else if (spower < 10) vp.append("produce small lightning balls");
+        else if (spower < 40) vp.append("produce lightning balls");
+        else vp.append("produce lightning storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_FIRE))
     {
         if (r_ptr->flags4 & (RF4_BRTH_FIRE))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of flames";
-            else 				vp[vn++] = "breathe enormous balls of flames";
+            if (spower < 40)	vp.append("breathe balls of flames");
+            else 				vp.append("breathe enormous balls of flames");
         }
-        else if (spower < 10) vp[vn++] = "produce small fire balls";
-        else if (spower < 40) vp[vn++] = "produce fire balls";
-        else vp[vn++] = "produce fire storms";
+        else if (spower < 10) vp.append("produce small fire balls");
+        else if (spower < 40) vp.append("produce fire balls");
+        else vp.append("produce fire storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_COLD))
     {
         if (r_ptr->flags4 & (RF4_BRTH_COLD))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of frost";
-            else 				vp[vn++] = "breathe enormous balls of frost";
+            if (spower < 40)	vp.append("breathe balls of frost");
+            else 				vp.append("breathe enormous balls of frost");
         }
-        else if (spower < 10) vp[vn++] = "produce small frost balls";
-        else if (spower < 40) vp[vn++] = "produce frost balls";
-        else vp[vn++] = "produce frost storms";
+        else if (spower < 10) vp.append("produce small frost balls");
+        else if (spower < 40) vp.append("produce frost balls");
+        else vp.append("produce frost storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_POIS))
     {
         if (r_ptr->flags4 & (RF4_BRTH_POIS))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of poison";
-            else 				vp[vn++] = "breathe enormous balls of poison";
+            if (spower < 40)	vp.append("breathe balls of poison");
+            else 				vp.append("breathe enormous balls of poison");
         }
-        else if (spower < 10) vp[vn++] = "produce stinking clouds";
-        else if (spower < 40) vp[vn++] = "produce poison balls";
-        else vp[vn++] = "produce storms of poison";
+        else if (spower < 10) vp.append("produce stinking clouds");
+        else if (spower < 40) vp.append("produce poison balls");
+        else vp.append("produce storms of poison");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_LIGHT))
     {
         if (r_ptr->flags4 & (RF4_BRTH_LIGHT))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of light";
-            else 				vp[vn++] = "breathe brilliant balls of light";
+            if (spower < 40)	vp.append("breathe balls of light");
+            else 				vp.append("breathe brilliant balls of light");
         }
-        else if (spower < 10) vp[vn++] = "produce spheres of light";
-        else if (spower < 40) vp[vn++] = "produce explosions of light";
-        else vp[vn++] = "produce powerful explosions of light";
+        else if (spower < 10) vp.append("produce spheres of light");
+        else if (spower < 40) vp.append("produce explosions of light");
+        else vp.append("produce powerful explosions of light");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_DARK))
     {
         if (r_ptr->flags4 & (RF4_BRTH_DARK))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of darkness";
-            else 				vp[vn++] = "breathe enormous balls of darkness";
+            if (spower < 40)	vp.append("breathe balls of darkness");
+            else 				vp.append("breathe enormous balls of darkness");
         }
-        else if (spower < 20) vp[vn++] = "produce balls of darkness";
-        else if (spower < 70) vp[vn++] = "produce storms of darkness";
-        else vp[vn++] = "produce powerful storms of darkness";
+        else if (spower < 20) vp.append("produce balls of darkness");
+        else if (spower < 70) vp.append("produce storms of darkness");
+        else vp.append("produce powerful storms of darkness");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_CONFU))
     {
         if (r_ptr->flags4 & (RF4_BRTH_CONFU))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of confusion";
-            else 				vp[vn++] = "breathe massive balls of confusion";
+            if (spower < 40)	vp.append("breathe balls of confusion");
+            else 				vp.append("breathe massive balls of confusion");
         }
-        else if (spower < 10) vp[vn++] = "produce balls of confusion";
-        else if (spower < 40) vp[vn++] = "produce storms of confusion";
-        else vp[vn++] = "produce powerful storms of confusion";
+        else if (spower < 10) vp.append("produce balls of confusion");
+        else if (spower < 40) vp.append("produce storms of confusion");
+        else vp.append("produce powerful storms of confusion");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_SOUND))
     {
         if (r_ptr->flags4 & (RF4_BRTH_SOUND))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of noise";
-            else 				vp[vn++] = "breathe ear-splitting balls of noise";
+            if (spower < 40)	vp.append("breathe balls of noise");
+            else 				vp.append("breathe ear-splitting balls of noise");
         }
-        else if (spower < 10) vp[vn++] = "produce blasts of sound";
-        else if (spower < 40) vp[vn++] = "produce thunderclaps";
-        else vp[vn++] = "unleash storms of sound";
+        else if (spower < 10) vp.append("produce blasts of sound");
+        else if (spower < 40) vp.append("produce thunderclaps");
+        else vp.append("unleash storms of sound");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_SHARD))
     {
         if (r_ptr->flags4 & (RF4_BRTH_SHARD))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of shards";
-            else 				vp[vn++] = "breathe enormous balls of shards";
+            if (spower < 40)	vp.append("breathe balls of shards");
+            else 				vp.append("breathe enormous balls of shards");
         }
-        else if (spower < 10) vp[vn++] = "produce blasts of shards";
-        else if (spower < 50) vp[vn++] = "produce whirlwinds of shards";
-        else vp[vn++] = "call up storms of knives";
+        else if (spower < 10) vp.append("produce blasts of shards");
+        else if (spower < 50) vp.append("produce whirlwinds of shards");
+        else vp.append("call up storms of knives");
     }
     if (l_ptr->r_l_flags5 & (RF5_BALL_METEOR))
     {
-        if (spower < 10) vp[vn++] = "produce meteor showers";
-        else if (spower < 50) vp[vn++] = "produce meteor storms";
-        else vp[vn++] = "produce violent meteor storms";
+        if (spower < 10) vp.append("produce meteor showers");
+        else if (spower < 50) vp.append("produce meteor storms");
+        else vp.append("produce violent meteor storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_STORM))
     {
-        if (spower < 22) vp[vn++] = "produce little storms";
-        else if (spower < 40) vp[vn++] = "produce whirlpools";
-        else vp[vn++] = "call up raging storms";
+        if (spower < 22) vp.append("produce little storms");
+        else if (spower < 40) vp.append("produce whirlpools");
+        else vp.append("call up raging storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_NETHR))
     {
         if (r_ptr->flags4 & (RF4_BRTH_NETHR))
         {
-            if (spower < 40)	vp[vn++] = "breathe nether balls";
-            else 				vp[vn++] = "breathe enormous nether balls";
+            if (spower < 40)	vp.append("breathe nether balls");
+            else 				vp.append("breathe enormous nether balls");
         }
-        else if (spower < 22) vp[vn++] = "produce nether orbs";
-        else if (spower < 40) vp[vn++] = "produce nether balls";
-        else vp[vn++] = "invoke nether storms";
+        else if (spower < 22) vp.append("produce nether orbs");
+        else if (spower < 40) vp.append("produce nether balls");
+        else vp.append("invoke nether storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_CHAOS))
     {
         if (r_ptr->flags4 & (RF4_BRTH_CHAOS))
         {
-            if (spower < 40)	vp[vn++] = "breathe balls of chaos";
-            else 				vp[vn++] = "breathe enormous balls of chaos";
+            if (spower < 40)	vp.append("breathe balls of chaos");
+            else 				vp.append("breathe enormous balls of chaos");
         }
-        else if (spower < 13) vp[vn++] = "produce spheres of chaos";
-        else if (spower < 40) vp[vn++] = "produce explosions of chaos";
-        else vp[vn++] = "call up maelstroms of raw chaos";
+        else if (spower < 13) vp.append("produce spheres of chaos");
+        else if (spower < 40) vp.append("produce explosions of chaos");
+        else vp.append("call up maelstroms of raw chaos");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_MANA))
     {
-        if (spower < 25) vp[vn++] = "produce manabursts";
-        else if (spower < 50) vp[vn++] = "produce balls of mana";
-        else vp[vn++] = "invoke mana storms";
+        if (spower < 25) vp.append("produce manabursts");
+        else if (spower < 50) vp.append("produce balls of mana");
+        else vp.append("invoke mana storms");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BALL_WATER))
     {
-        if (spower < 16) vp[vn++] = "produce water balls";
-        else if (spower < 40) vp[vn++] = "produce water balls";
-        else vp[vn++] = "produce storms of water balls";
+        if (spower < 16) vp.append("produce water balls");
+        else if (spower < 40) vp.append("produce water balls");
+        else vp.append("produce storms of water balls");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_HOLY_ORB))
     {
-        if (spower < 25) vp[vn++] = "produce orbs of draining";
-        else if (spower < 50) vp[vn++] = "produce powerful orbs of draining";
-        else vp[vn++] = "produce large orbs of holy might";
+        if (spower < 25) vp.append("produce orbs of draining");
+        else if (spower < 50) vp.append("produce powerful orbs of draining");
+        else vp.append("produce large orbs of holy might");
     }
 
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_ACID))		vp[vn++] = "produce acid bolts";
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_ELEC))		vp[vn++] = "produce lightning bolts";
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_FIRE))		vp[vn++] = "produce fire bolts";
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_COLD))		vp[vn++] = "produce frost bolts";
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_POIS))		vp[vn++] = "produce poison bolts";
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_PLAS))		vp[vn++] = "produce plasma bolts";
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_ICE))		vp[vn++] = "produce ice bolts";
-    if (l_ptr->r_l_flags5 & (RF5_BOLT_WATER))	vp[vn++] = "produce water bolts";
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_ACID))		vp.append("produce acid bolts");
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_ELEC))		vp.append("produce lightning bolts");
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_FIRE))		vp.append("produce fire bolts");
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_COLD))		vp.append("produce frost bolts");
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_POIS))		vp.append("produce poison bolts");
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_PLAS))		vp.append("produce plasma bolts");
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_ICE))		vp.append("produce ice bolts");
+    if (l_ptr->r_l_flags5 & (RF5_BOLT_WATER))	vp.append("produce water bolts");
     if (l_ptr->r_l_flags5 & (RF5_BOLT_NETHR))
     {
-        if (spower < 40) vp[vn++] = "produces a nether bolt";
-        else vp[vn++] = "hurls black bolts of nether";
+        if (spower < 40) vp.append("produces a nether bolt");
+        else vp.append("hurls black bolts of nether");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BOLT_MANA))
     {
-        if (spower < 5) vp[vn++] = "fire magic missiles";
-        else vp[vn++] = "fire mana bolts";
+        if (spower < 5) vp.append("fire magic missiles");
+        else vp.append("fire mana bolts");
     }
     if (l_ptr->r_l_flags5 & (RF5_BOLT_GRAV))
     {
-        if (spower < 5) vp[vn++] = "fires gravity bolts";
-        else vp[vn++] = "shoots powerful bolts of gravity";
+        if (spower < 5) vp.append("fires gravity bolts");
+        else vp.append("shoots powerful bolts of gravity");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BEAM_ELEC))
     {
         if (r_ptr->flags4 & (RF4_BRTH_ELEC))
         {
-            vp[vn++] = "breathe lightning bolts";
+            vp.append("breathe lightning bolts");
         }
-        else vp[vn++] = "shoot sparks of lightning";
+        else vp.append("shoot sparks of lightning");
     }
     if (l_ptr->r_l_flags5 & (RF5_BEAM_ICE))
     {
         if (r_ptr->flags4 & (RF4_BRTH_ELEC))
         {
-            vp[vn++] = "breathe spears of ice";
+            vp.append("breathe spears of ice");
         }
-        else 	vp[vn++] = "shoot lances of ice";
+        else 	vp.append("shoot lances of ice");
     }
 
     if (l_ptr->r_l_flags5 & (RF5_BEAM_NETHR))
     {
         if (r_ptr->flags4 & (RF4_BRTH_NETHR))
         {
-            vp[vn++] = "breathe beams of nether";
+            vp.append("breathe beams of nether");
         }
-        else if (spower < 25) vp[vn++] = "shoot beams of nether";
-        else if (spower < 50) vp[vn++] = "hurl lances of nether";
-        else vp[vn++] = "shoot rays of death";
+        else if (spower < 25) vp.append("shoot beams of nether");
+        else if (spower < 50) vp.append("hurl lances of nether");
+        else vp.append("shoot rays of death");
     }
     if (l_ptr->r_l_flags5 & (RF5_BEAM_LAVA))
     {
         /* SLightly different message for breathers */
         if (r_ptr->flags4 & (RF4_BRTH_ALL))
         {
-            vp[vn++] = "breathe streams of fiery lava";
+            vp.append("breathe streams of fiery lava");
         }
-        else if (spower < 25) vp[vn++] = "shoots beams of molten magma";
-        else if (spower < 50) vp[vn++] = "shoots jets of lava";
-        else vp[vn++] = "shoots searing jets of lava";
+        else if (spower < 25) vp.append("shoots beams of molten magma");
+        else if (spower < 50) vp.append("shoots jets of lava");
+        else vp.append("shoots searing jets of lava");
     }
 
-    if (l_ptr->r_l_flags6 & RF6_HASTE)       vp[vn++] = "haste-self";
-    if (l_ptr->r_l_flags6 & (RF6_ADD_MANA))		vp[vn++] = "restore mana";
-    if (l_ptr->r_l_flags6 & RF6_HEAL)        vp[vn++] = "heal-self";
-    if (l_ptr->r_l_flags6 & (RF6_CURE))		vp[vn++] = "cure what ails it";
-    if (l_ptr->r_l_flags6 & RF6_BLINK)       vp[vn++] = "blink-self";
-    if (l_ptr->r_l_flags6 & RF6_TPORT)       vp[vn++] = "teleport-self";
-    if (l_ptr->r_l_flags6 & (RF6_TELE_SELF_TO))	vp[vn++] = "teleport toward you";
-    if (l_ptr->r_l_flags6 & RF6_TELE_TO)     vp[vn++] = "teleport to";
-    if (l_ptr->r_l_flags6 & RF6_TELE_AWAY)   vp[vn++] = "teleport away";
-    if (l_ptr->r_l_flags6 & RF6_TELE_LEVEL)  vp[vn++] = "teleport level";
-    if (l_ptr->r_l_flags6 & RF6_DARKNESS)    vp[vn++] = "create darkness";
-    if (l_ptr->r_l_flags6 & RF6_TRAPS)       vp[vn++] = "create traps";
+    if (l_ptr->r_l_flags6 & RF6_HASTE)       vp.append("haste-self");
+    if (l_ptr->r_l_flags6 & (RF6_ADD_MANA))		vp.append("restore mana");
+    if (l_ptr->r_l_flags6 & RF6_HEAL)        vp.append("heal-self");
+    if (l_ptr->r_l_flags6 & (RF6_CURE))		vp.append("cure what ails it");
+    if (l_ptr->r_l_flags6 & RF6_BLINK)       vp.append("blink-self");
+    if (l_ptr->r_l_flags6 & RF6_TPORT)       vp.append("teleport-self");
+    if (l_ptr->r_l_flags6 & (RF6_TELE_SELF_TO))	vp.append("teleport toward you");
+    if (l_ptr->r_l_flags6 & RF6_TELE_TO)     vp.append("teleport to");
+    if (l_ptr->r_l_flags6 & RF6_TELE_AWAY)   vp.append("teleport away");
+    if (l_ptr->r_l_flags6 & RF6_TELE_LEVEL)  vp.append("teleport level");
+    if (l_ptr->r_l_flags6 & RF6_DARKNESS)    vp.append("create darkness");
+    if (l_ptr->r_l_flags6 & RF6_TRAPS)       vp.append("create traps");
 
-    if (l_ptr->r_l_flags6 & (RF6_DRAIN_MANA))	vp[vn++] = "drain mana";
-    if (l_ptr->r_l_flags6 & (RF6_MIND_BLAST))	vp[vn++] = "cause mind blasting";
-    if (l_ptr->r_l_flags6 & (RF6_BRAIN_SMASH))	vp[vn++] = "cause brain smashing";
+    if (l_ptr->r_l_flags6 & (RF6_DRAIN_MANA))	vp.append("drain mana");
+    if (l_ptr->r_l_flags6 & (RF6_MIND_BLAST))	vp.append("cause mind blasting");
+    if (l_ptr->r_l_flags6 & (RF6_BRAIN_SMASH))	vp.append("cause brain smashing");
     if (l_ptr->r_l_flags6 & (RF6_WOUND))
     {
-        if (spower < 4) vp[vn++] = "cause light wounds";
-        else if (spower < 10) vp[vn++] = "cause medium wounds";
-        else if (spower < 20) vp[vn++] = "cause serious wounds";
-        else if (spower < 35) vp[vn++] = "cause critical wounds";
-        else vp[vn++] = "cause mortal wounds";
+        if (spower < 4) vp.append("cause light wounds");
+        else if (spower < 10) vp.append("cause medium wounds");
+        else if (spower < 20) vp.append("cause serious wounds");
+        else if (spower < 35) vp.append("cause critical wounds");
+        else vp.append("cause mortal wounds");
     }
-    if (l_ptr->r_l_flags6 & (RF6_HUNGER))		vp[vn++] = "cause hunger";
-    if (l_ptr->r_l_flags6 & (RF6_SCARE))		vp[vn++] = "terrify";
-    if (l_ptr->r_l_flags6 & (RF6_BLIND))		vp[vn++] = "blind";
-    if (l_ptr->r_l_flags6 & (RF6_CONF))		vp[vn++] = "confuse";
-    if (l_ptr->r_l_flags6 & (RF6_SLOW))		vp[vn++] = "slow";
-    if (l_ptr->r_l_flags6 & (RF6_HOLD))		vp[vn++] = "paralyze";
+    if (l_ptr->r_l_flags6 & (RF6_HUNGER))		vp.append("cause hunger");
+    if (l_ptr->r_l_flags6 & (RF6_SCARE))		vp.append("terrify");
+    if (l_ptr->r_l_flags6 & (RF6_BLIND))		vp.append("blind");
+    if (l_ptr->r_l_flags6 & (RF6_CONF))		vp.append("confuse");
+    if (l_ptr->r_l_flags6 & (RF6_SLOW))		vp.append("slow");
+    if (l_ptr->r_l_flags6 & (RF6_HOLD))		vp.append("paralyze");
 
-    m = vn;
+    m = vp.size();
 
     /* Summons are described somewhat differently. */
     if (l_ptr->r_l_flags7)
@@ -580,37 +576,37 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
         {
             if (r_ptr->flags1 & (RF1_UNIQUE))
             {
-                if (r_ptr->flags1 & (RF1_FEMALE)) vp[vn++] = "her minions";
-                else if (r_ptr->flags1 & (RF1_MALE)) vp[vn++] = "his minions";
-                else vp[vn++] = "its minions";
+                if (r_ptr->flags1 & (RF1_FEMALE)) vp.append("her minions");
+                else if (r_ptr->flags1 & (RF1_MALE)) vp.append("his minions");
+                else vp.append("its minions");
             }
             else
-                vp[vn++] = "similar monsters";
+                vp.append("similar monsters");
         }
-        if (l_ptr->r_l_flags7 & (RF7_S_MONSTER))		vp[vn++] = "a monster";
-        if (l_ptr->r_l_flags7 & (RF7_S_MONSTERS))	vp[vn++] = "monsters";
-        if (l_ptr->r_l_flags7 & (RF7_S_ANT))		vp[vn++] = "ants";
-        if (l_ptr->r_l_flags7 & (RF7_S_SPIDER))		vp[vn++] = "spiders";
-        if (l_ptr->r_l_flags7 & (RF7_S_HOUND))		vp[vn++] = "hounds";
-        if (l_ptr->r_l_flags7 & (RF7_S_ANIMAL))		vp[vn++] = "natural creatures";
-        if (l_ptr->r_l_flags7 & (RF7_S_HYDRA))		vp[vn++] = "hydras";
-        if (l_ptr->r_l_flags7 & (RF7_S_THIEF))		vp[vn++] = "thieves";
-        if (l_ptr->r_l_flags7 & (RF7_S_BERTBILLTOM))	vp[vn++] = "his friends";
-        if (l_ptr->r_l_flags7 & (RF7_S_DRAGON))		vp[vn++] = "a dragon";
-        if (l_ptr->r_l_flags7 & (RF7_S_HI_DRAGON))	vp[vn++] = "Ancient Dragons";
-        if (l_ptr->r_l_flags7 & (RF7_S_AINU))		vp[vn++] = "a maia";
-        if (l_ptr->r_l_flags7 & (RF7_S_DEMON))		vp[vn++] = "a demon";
-        if (l_ptr->r_l_flags7 & (RF7_S_HI_DEMON))	vp[vn++] = "Greater Demons";
-        if (l_ptr->r_l_flags7 & (RF7_S_UNIQUE))		vp[vn++] = "Unique Monsters";
-        if (l_ptr->r_l_flags7 & (RF7_S_HI_UNIQUE))	vp[vn++] = "Greater Unique Monsters";
-        if (l_ptr->r_l_flags7 & (RF7_S_UNDEAD))		vp[vn++] = "an undead";
-        if (l_ptr->r_l_flags7 & (RF7_S_HI_UNDEAD))	vp[vn++] = "Greater Undead";
-        if (l_ptr->r_l_flags7 & (RF7_S_WRAITH))		vp[vn++] = "the Ringwraiths";
+        if (l_ptr->r_l_flags7 & (RF7_S_MONSTER))		vp.append("a monster");
+        if (l_ptr->r_l_flags7 & (RF7_S_MONSTERS))	vp.append("monsters");
+        if (l_ptr->r_l_flags7 & (RF7_S_ANT))		vp.append("ants");
+        if (l_ptr->r_l_flags7 & (RF7_S_SPIDER))		vp.append("spiders");
+        if (l_ptr->r_l_flags7 & (RF7_S_HOUND))		vp.append("hounds");
+        if (l_ptr->r_l_flags7 & (RF7_S_ANIMAL))		vp.append("natural creatures");
+        if (l_ptr->r_l_flags7 & (RF7_S_HYDRA))		vp.append("hydras");
+        if (l_ptr->r_l_flags7 & (RF7_S_THIEF))		vp.append("thieves");
+        if (l_ptr->r_l_flags7 & (RF7_S_BERTBILLTOM))	vp.append("his friends");
+        if (l_ptr->r_l_flags7 & (RF7_S_DRAGON))		vp.append("a dragon");
+        if (l_ptr->r_l_flags7 & (RF7_S_HI_DRAGON))	vp.append("Ancient Dragons");
+        if (l_ptr->r_l_flags7 & (RF7_S_AINU))		vp.append("a maia");
+        if (l_ptr->r_l_flags7 & (RF7_S_DEMON))		vp.append("a demon");
+        if (l_ptr->r_l_flags7 & (RF7_S_HI_DEMON))	vp.append("Greater Demons");
+        if (l_ptr->r_l_flags7 & (RF7_S_UNIQUE))		vp.append("Unique Monsters");
+        if (l_ptr->r_l_flags7 & (RF7_S_HI_UNIQUE))	vp.append("Greater Unique Monsters");
+        if (l_ptr->r_l_flags7 & (RF7_S_UNDEAD))		vp.append("an undead");
+        if (l_ptr->r_l_flags7 & (RF7_S_HI_UNDEAD))	vp.append("Greater Undead");
+        if (l_ptr->r_l_flags7 & (RF7_S_WRAITH))		vp.append("the Ringwraiths");
 
     }
 
     /* Describe spells */
-    if (vn)
+    if (vp.size())
     {
         /* Note magic */
         magic = TRUE;
@@ -644,11 +640,11 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
         }
 
         /* Summons */
-        for (n = m; n < vn; n++)
+        for (n = m; n < vp.size(); n++)
         {
             if (n == 0) output.append(" which summon ");
             else if (n == m) output.append(", or summon ");
-            else if (n < vn-1) output.append(", ");
+            else if (n < vp.size()-1) output.append(", ");
             else if (n == m+1) output.append(" or ");
             else output.append(", or ");
 
@@ -1010,10 +1006,10 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
     int n;
 
-    int vn;
-    QString vp[64];
+    QVector<QString> vp;
     QString output;
     int msex = 0;
+    vp.clear();
 
     output.clear();
 
@@ -1022,36 +1018,35 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
     else if (r_ptr->flags1 & RF1_MALE) msex = 1;
 
     /* Collect special abilities. */
-    vn = 0;
     if (l_ptr->r_l_flags2 & RF2_HAS_LIGHT)
     {
         QString tester = "hkoOTtPp";
 
         /*humaniods carry torches, others glow*/
-        if (!tester.contains(r_ptr->d_char)) vp[vn++] = "radiate natural light";
-        else vp[vn++] = "use a light source";
+        if (!tester.contains(r_ptr->d_char)) vp.append("radiate natural light");
+        else vp.append("use a light source");
     }
-    if (l_ptr->r_l_flags2 & RF2_EVASIVE) vp[vn++] = "dodge attacks";
-    if (l_ptr->r_l_flags2 & RF2_OPEN_DOOR) vp[vn++] = "open doors";
-    if (l_ptr->r_l_flags2 & RF2_BASH_DOOR) vp[vn++] = "bash down doors";
-    if (l_ptr->r_l_flags2 & RF2_PASS_WALL) vp[vn++] = "pass through walls";
-    if (l_ptr->r_l_flags2 & RF2_KILL_WALL) vp[vn++] = "bore through walls";
-    if (l_ptr->r_l_flags2 & RF2_KILL_BODY) vp[vn++] = "destroy weaker monsters";
-    if (l_ptr->r_l_flags2 & RF2_TAKE_ITEM) vp[vn++] = "pick up objects";
-    if (l_ptr->r_l_flags2 & RF2_KILL_ITEM) vp[vn++] = "destroy objects";
+    if (l_ptr->r_l_flags2 & RF2_EVASIVE) vp.append("dodge attacks");
+    if (l_ptr->r_l_flags2 & RF2_OPEN_DOOR) vp.append("open doors");
+    if (l_ptr->r_l_flags2 & RF2_BASH_DOOR) vp.append("bash down doors");
+    if (l_ptr->r_l_flags2 & RF2_PASS_WALL) vp.append("pass through walls");
+    if (l_ptr->r_l_flags2 & RF2_KILL_WALL) vp.append("bore through walls");
+    if (l_ptr->r_l_flags2 & RF2_KILL_BODY) vp.append("destroy weaker monsters");
+    if (l_ptr->r_l_flags2 & RF2_TAKE_ITEM) vp.append("pick up objects");
+    if (l_ptr->r_l_flags2 & RF2_KILL_ITEM) vp.append("destroy objects");
 
     /* Describe special abilities. */
-    if (vn)
+    if (vp.size())
     {
         /* Intro */
         output.append(QString("%1") .arg(capitalize_first(wd_he[msex])));
 
         /* Scan */
-        for (n = 0; n < vn; n++)
+        for (n = 0; n < vp.size(); n++)
         {
             /* Intro */
             if (n == 0) output.append(" can ");
-            else if (n < vn-1) output.append(", ");
+            else if (n < vp.size()-1) output.append(", ");
             else output.append(" and ");
 
             /* Dump */
@@ -1131,26 +1126,26 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
     }
 
     /* Collect susceptibilities */
-    vn = 0;
-    if (l_ptr->r_l_flags3 & RF3_HURT_POIS) vp[vn++] = "poison";
-    if (l_ptr->r_l_flags3 & RF3_HURT_ACID) vp[vn++] = "acid";
-    if (l_ptr->r_l_flags3 & RF3_HURT_ROCK) vp[vn++] = "rock remover";
-    if (l_ptr->r_l_flags3 & RF3_HURT_LIGHT) vp[vn++] = "bright light";
-    if (l_ptr->r_l_flags3 & RF3_HURT_FIRE) vp[vn++] = "fire";
-    if (l_ptr->r_l_flags3 & RF3_HURT_COLD) vp[vn++] = "cold";
+    vp.clear();
+    if (l_ptr->r_l_flags3 & RF3_HURT_POIS) vp.append("poison");
+    if (l_ptr->r_l_flags3 & RF3_HURT_ACID) vp.append("acid");
+    if (l_ptr->r_l_flags3 & RF3_HURT_ROCK) vp.append("rock remover");
+    if (l_ptr->r_l_flags3 & RF3_HURT_LIGHT) vp.append("bright light");
+    if (l_ptr->r_l_flags3 & RF3_HURT_FIRE) vp.append("fire");
+    if (l_ptr->r_l_flags3 & RF3_HURT_COLD) vp.append("cold");
 
     /* Describe susceptibilities */
-    if (vn)
+    if (vp.size())
     {
         /* Intro */
         output.append(QString("%1") .arg(capitalize_first(wd_he[msex])));
 
         /* Scan */
-        for (n = 0; n < vn; n++)
+        for (n = 0; n < vp.size(); n++)
         {
             /* Intro */
             if (n == 0) output.append(" is hurt by ");
-            else if (n < vn-1) output.append(", ");
+            else if (n < vp.size()-1) output.append(", ");
             else output.append(" and ");
 
             /* Dump */
@@ -1163,31 +1158,31 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
 
 
     /* Collect immunities */
-    vn = 0;
-    if (l_ptr->r_l_flags3 & RF3_IM_ACID) vp[vn++] = "acid";
-    if (l_ptr->r_l_flags3 & RF3_IM_ELEC) vp[vn++] = "lightning";
-    if (l_ptr->r_l_flags3 & RF3_IM_FIRE) vp[vn++] = "fire";
-    if (l_ptr->r_l_flags3 & RF3_IM_COLD) vp[vn++] = "cold";
-    if (l_ptr->r_l_flags3 & RF3_IM_POIS) vp[vn++] = "poison";
-    if (l_ptr->r_l_flags3 & RF3_RES_CHAOS) vp[vn++] = "chaos";
-    if (l_ptr->r_l_flags3 & RF3_RES_NETHR) vp[vn++] = "nether";
-    if (l_ptr->r_l_flags3 & RF3_RES_WATER) vp[vn++] = "water";
-    if (l_ptr->r_l_flags3 & RF3_RES_PLAS) vp[vn++] = "plasma";
-    if (l_ptr->r_l_flags3 & RF3_RES_NEXUS) vp[vn++] = "nexus";
-    if (l_ptr->r_l_flags3 & RF3_RES_DISEN) vp[vn++] = "disenchantment";
+    vp.clear();
+    if (l_ptr->r_l_flags3 & RF3_IM_ACID) vp.append("acid");
+    if (l_ptr->r_l_flags3 & RF3_IM_ELEC) vp.append("lightning");
+    if (l_ptr->r_l_flags3 & RF3_IM_FIRE) vp.append("fire");
+    if (l_ptr->r_l_flags3 & RF3_IM_COLD) vp.append("cold");
+    if (l_ptr->r_l_flags3 & RF3_IM_POIS) vp.append("poison");
+    if (l_ptr->r_l_flags3 & RF3_RES_CHAOS) vp.append("chaos");
+    if (l_ptr->r_l_flags3 & RF3_RES_NETHR) vp.append("nether");
+    if (l_ptr->r_l_flags3 & RF3_RES_WATER) vp.append("water");
+    if (l_ptr->r_l_flags3 & RF3_RES_PLAS) vp.append("plasma");
+    if (l_ptr->r_l_flags3 & RF3_RES_NEXUS) vp.append("nexus");
+    if (l_ptr->r_l_flags3 & RF3_RES_DISEN) vp.append("disenchantment");
 
     /* Describe immunities */
-    if (vn)
+    if (vp.size())
     {
         /* Intro */
         output.append(QString("%1") .arg(capitalize_first(wd_he[msex])));
 
         /* Scan */
-        for (n = 0; n < vn; n++)
+        for (n = 0; n < vp.size(); n++)
         {
             /* Intro */
             if (n == 0) output.append(" resists ");
-            else if (n < vn-1) output.append(", ");
+            else if (n < vp.size()-1) output.append(", ");
             else output.append(" and ");
 
             /* Dump */
@@ -1199,25 +1194,25 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
     }
 
     /* Collect non-effects */
-    vn = 0;
-    if (l_ptr->r_l_flags3 & RF3_NO_SLOW) vp[vn++] = "slowed";
-    if (l_ptr->r_l_flags3 & RF3_NO_STUN) vp[vn++] = "stunned";
-    if (l_ptr->r_l_flags3 & RF3_NO_FEAR) vp[vn++] = "frightened";
-    if (l_ptr->r_l_flags3 & RF3_NO_CONF) vp[vn++] = "confused";
-    if (l_ptr->r_l_flags3 & RF3_NO_SLEEP) vp[vn++] = "slept";
+    vp.clear();
+    if (l_ptr->r_l_flags3 & RF3_NO_SLOW) vp.append("slowed");
+    if (l_ptr->r_l_flags3 & RF3_NO_STUN) vp.append("stunned");
+    if (l_ptr->r_l_flags3 & RF3_NO_FEAR) vp.append("frightened");
+    if (l_ptr->r_l_flags3 & RF3_NO_CONF) vp.append("confused");
+    if (l_ptr->r_l_flags3 & RF3_NO_SLEEP) vp.append("slept");
 
     /* Describe non-effects */
-    if (vn)
+    if (vp.size())
     {
         /* Intro */
         output.append(QString("%1") .arg(capitalize_first(wd_he[msex])));
 
         /* Scan */
-        for (n = 0; n < vn; n++)
+        for (n = 0; n < vp.size(); n++)
         {
             /* Intro */
             if (n == 0) output.append(" is highly resistant to being ");
-            else if (n < vn-1) output.append(", ");
+            else if (n < vp.size()-1) output.append(", ");
             else output.append(" or ");
 
             /* Dump */
@@ -1602,32 +1597,31 @@ static QString describe_monster_movement(int r_idx, const monster_lore *l_ptr)
     /*Print out the known native terrains*/
     if (l_ptr->r_l_native)
     {
-        int vn = 0;
         int n;
-        QString vp[16];
+        QVector<QString> vp;
 
         /* Intro */
         output.append(QString("%1 is native to ") .arg(capitalize_first(wd_he[msex])));
 
-        if (l_ptr->r_l_native & (RN1_N_LAVA)) vp[vn++] = "lava";
-        if (l_ptr->r_l_native & (RN1_N_ICE)) vp[vn++] = "ice";
-        if (l_ptr->r_l_native & (RN1_N_OIL)) vp[vn++] = "oil";
-        if (l_ptr->r_l_native & (RN1_N_FIRE)) vp[vn++] = "fire";
-        if (l_ptr->r_l_native & (RN1_N_SAND)) vp[vn++] = "sand";
-        if (l_ptr->r_l_native & (RN1_N_FOREST)) vp[vn++] = "forests";
-        if (l_ptr->r_l_native & (RN1_N_WATER)) vp[vn++] = "water";
-        if (l_ptr->r_l_native & (RN1_N_ACID)) vp[vn++] = "acid";
-        if (l_ptr->r_l_native & (RN1_N_MUD)) vp[vn++] = "mud";
+        if (l_ptr->r_l_native & (RN1_N_LAVA)) vp.append("lava");
+        if (l_ptr->r_l_native & (RN1_N_ICE)) vp.append("ice");
+        if (l_ptr->r_l_native & (RN1_N_OIL)) vp.append("oil");
+        if (l_ptr->r_l_native & (RN1_N_FIRE)) vp.append("fire");
+        if (l_ptr->r_l_native & (RN1_N_SAND)) vp.append("sand");
+        if (l_ptr->r_l_native & (RN1_N_FOREST)) vp.append("forests");
+        if (l_ptr->r_l_native & (RN1_N_WATER)) vp.append("water");
+        if (l_ptr->r_l_native & (RN1_N_ACID)) vp.append("acid");
+        if (l_ptr->r_l_native & (RN1_N_MUD)) vp.append("mud");
 
         /* Scan */
-        for (n = 0; n < vn; n++)
+        for (n = 0; n < vp.size(); n++)
         {
 
             /* Dump */
             output.append(color_string(vp[n], TERM_BLUE));
 
-            if (vn == n + 1) break;
-            else if (vn == n + 2) output.append(" and ");
+            if (vp.size() == n + 1) break;
+            else if (vp.size() == n + 2) output.append(" and ");
             else output.append(", ");
         }
 

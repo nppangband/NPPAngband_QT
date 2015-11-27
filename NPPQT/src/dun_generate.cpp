@@ -11421,7 +11421,7 @@ void generate_cave(void)
         mon_cnt = 0;
 
         /* Remove all dynamic features */
-        wipe_dynamic_terrain();
+        dyna_grids.clear();
 
         /* Paranoia. Clear the current elemental flags */
         level_flag = 0;

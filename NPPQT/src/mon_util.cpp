@@ -164,9 +164,6 @@ void delete_monster_idx(int i)
     /* Hack -- Reduce the racial counter */
     r_ptr->cur_num--;
 
-    /* Hack -- count the number of "reproducers" */
-    if (r_ptr->flags2 & (RF2_MULTIPLY)) num_repro--;
-
     /* Hack -- remove target monster */
     if (p_ptr->target_who == i) target_set_monster(0);
 
@@ -462,9 +459,6 @@ void wipe_mon_list(void)
 
     /* Reset "mon_cnt" */
     mon_cnt = 0;
-
-    /* Hack -- reset "reproducer" count */
-    num_repro = 0;
 
     /* Hack -- no more target */
     target_set_monster(0);
@@ -2472,9 +2466,6 @@ s16b monster_place(int y, int x, monster_type *n_ptr)
 
         /* Hack -- Notice new multi-hued monsters */
         if (r_ptr->flags1 & (RF1_ATTR_MULTI)) shimmer_monsters = TRUE;
-
-        /* Hack -- Count the number of "reproducers" */
-        if (r_ptr->flags2 & (RF2_MULTIPLY)) num_repro++;
 
         /* Protect flying monsters from dangerous terrain */
         if (!cave_no_dam_for_mon(y, x, r_ptr) && (r_ptr->flags3 & (RF3_FLYING)))

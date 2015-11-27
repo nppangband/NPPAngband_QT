@@ -2210,24 +2210,6 @@ void cheat_feature_lore(int f_idx, feature_lore *f_l_ptr)
 
 }
 
-
-/*
- * Reset the dyna_g array to its initial state. To be used every time a level
- * is generated
- */
-void wipe_dynamic_terrain(void)
-{
-    /* Wipe the dyna_g entries */
-    dyna_cnt = 0;
-    dyna_next = 0;
-
-    /* Turn dyna_full off */
-    dyna_full = FALSE;
-    dyna_center_y = 255;
-    dyna_center_x = 255;
-}
-
-
 /*
  * Returns a pointer to a dyna_g entry given its coordinates.
  * Returns NULL if the entry was not found.
@@ -2240,10 +2222,7 @@ dynamic_grid_type *get_dynamic_terrain(byte y, byte x)
     for (i = 0; i < dyna_next; i++)
     {
         /* Get the grid info */
-        dynamic_grid_type *g_ptr = &dyna_g[i];
-
-        /* Ignore removed grids */
-        if (!(g_ptr->flags & (DF1_OCCUPIED))) continue;
+        dynamic_grid_type *g_ptr = &dyna_grids[i];
 
         /* Found the coordinates */
         if ((g_ptr->y == y) && (g_ptr->x == x)) return (g_ptr);
@@ -2291,335 +2270,37 @@ static byte calculate_turn_count(u16b feat)
 
 
 /*
- * Add a new grid to the dyna_g array given its coordinates.
- * Returns TRUE on success
+ * Add a new grid to the dyna_grids array given its coordinates.
  */
-bool add_dynamic_terrain(byte y, byte x)
+void add_dynamic_terrain(byte y, byte x)
 {
-    int i;
-    dynamic_grid_type *g_ptr;
-
-    /* We don't have more space in dyna_g */
-    if (dyna_cnt >= DYNA_MAX)
-    {
-        /*
-         * Turn on dyna_full. From now on and until the generation of
-         * a new level, the contents of dyna_g will be updated every
-         * certain number of steps.
-         */
-        dyna_full = TRUE;
-
-        /* Hack - Force the rebuild of dyna_g */
-        dyna_center_y = 255;
-        dyna_center_x = 255;
-
-        /* Failure */
-        return (FALSE);
-    }
-
-    /*
-     * dyna_full is on, and the grid is too far away from the player.
-     * Ignore that grid.
-     */
-    if (dyna_full && character_dungeon &&
-        (distance(y, x, p_ptr->py, p_ptr->px) > MAX_SIGHT))
-    {
-        /* Failure */
-        return (FALSE);
-    }
-
-    /* We can add the grid at the end of dyna_g without problems */
-    if (dyna_next < DYNA_MAX)
-    {
-        i = dyna_next++;
-    }
-    /* We reached the end of dyna_g. Find a gap between entries */
-    else
-    {
-        /* Scan dyna_g */
-        for (i = 0; i < DYNA_MAX; i++)
-        {
-            /* We found an unused entry */
-            if (!(dyna_g[i].flags & (DF1_OCCUPIED))) break;
-        }
-    }
-
-    /* Get the new entry */
-    g_ptr = &dyna_g[i];
+    dynamic_grid_type this_dynamic_grid;
 
     /* Fill in the grid info */
-    g_ptr->y = y;
-    g_ptr->x = x;
-    g_ptr->flags = (DF1_OCCUPIED | DF1_NEW_BORN);
-    g_ptr->counter = calculate_turn_count(dungeon_info[y][x].feat);
+    this_dynamic_grid.y = y;
+    this_dynamic_grid.x = x;
+    this_dynamic_grid.new_grid = TRUE;
+    this_dynamic_grid.counter = calculate_turn_count(dungeon_info[y][x].feat);
 
-    /* One grid more */
-    ++dyna_cnt;
-
-    /* Success */
-    return (TRUE);
+    dyna_grids.append(this_dynamic_grid);
 }
 
 
 /*
- * Remove a grid from the dyna_g array given its coordinates
+ * Remove a grid from the dyna_grids array given its coordinates
  */
 void remove_dynamic_terrain(byte y, byte x)
 {
-    /* Get the dyna_g entry of that grid */
-    dynamic_grid_type *g_ptr = get_dynamic_terrain(y, x);
-
-    /* Got one? */
-    if (g_ptr)
+    for (int i = dyna_grids.size()-1; i >= 0; i--)
     {
-        /* Clear its fields */
-        g_ptr->dynamic_grid_wipe();
+        dynamic_grid_type *g_ptr = &dyna_grids[i];
 
-        /* Decrease the grid count */
-        if (dyna_cnt > 0) --dyna_cnt;
+        if (g_ptr->y != y) continue;
+        if (g_ptr->x != x) continue;
+
+        // Remove this grid, adjust the counter so an entry is not skipped
+        dyna_grids.removeAt(i);
     }
-}
-
-
-/*
- * Size of the "visited" array
- */
-#define MAX_VISITED ((MAX_SIGHT + 10) * 2 + 1)
-
-
-/*
- * Reset the dyna_g array and fill it with as many dynamic features close
- * to the player we can find (features out of the MAX_SIGHT range are ignored).
- * To be used when dyna_full is on.
- */
-static void collect_dynamic_terrain(void)
-{
-    int y, x, i, j, d;
-
-    int last_index, grid_count;
-    int this_cycle = 0, next_cycle = 1;
-    byte grid_table[2][2][8 * MAX_SIGHT];
-
-    bool visited[MAX_VISITED][MAX_VISITED];
-    int y2v, x2v;
-
-    dynamic_grid_type *g_ptr;
-
-    /* Remember the center of this update */
-    dyna_center_y = p_ptr->py;
-    dyna_center_x = p_ptr->px;
-
-    /* Wipe the contents of the dyna_g array. We keep timed terrain */
-    for (i = j = 0; i < dyna_next; i++)
-    {
-        /* Get the grid info */
-        g_ptr = &dyna_g[i];
-
-        /* Removed entry. Ignore */
-        if (!(g_ptr->flags & (DF1_OCCUPIED))) continue;
-
-        /* Non-timed terrain. Ignore */
-        if (!g_ptr->counter) continue;
-
-        /* Far timed terrain is removed */
-        if (distance(g_ptr->y, g_ptr->x, p_ptr->py, p_ptr->px) > MAX_SIGHT) continue;
-
-        /* Copy the timed terrain into its final position */
-        if (i > j)
-        {
-            COPY(&dyna_g[j], g_ptr, dynamic_grid_type);
-        }
-
-        /* We have one timed terrain more */
-        ++j;
-    }
-
-    /* The number of collected timed features is the new size of dyna_g */
-    dyna_next = dyna_cnt = j;
-
-    /* dyna_g is full of timed features. */
-    if (dyna_cnt >= DYNA_MAX) return;
-
-    /* Mark timed terrain */
-    for (i = 0; i < dyna_cnt; i++)
-    {
-        /* Get the grid info */
-        g_ptr = &dyna_g[i];
-
-        /* Mark the timed terrain (see later) */
-        dungeon_info[g_ptr->y][g_ptr->x].cave_info |= (CAVE_TEMP);
-    }
-
-    /* No visited grids yet */
-    for (y = 0; y < MAX_VISITED; y++)
-    {
-        for (x = 0; x < MAX_VISITED; x++)
-        {
-            visited[y][x] = FALSE;
-        }
-    }
-
-    /*
-     * These variables translate dungeon coordinates to the coordinates
-     * used in the "visited" array. Note that the center of the update
-     * is translated to the physical center of the "visited" array.
-     */
-    y2v = (MAX_VISITED / 2) - dyna_center_y;
-    x2v = (MAX_VISITED / 2) - dyna_center_x;
-
-    /* Add the center grid to the table */
-    grid_table[this_cycle][0][0] = dyna_center_y;
-    grid_table[this_cycle][1][0] = dyna_center_x;
-    grid_count = 1;
-
-    /* Mark the center grid as visited */
-    visited[MAX_VISITED / 2][MAX_VISITED / 2] = TRUE;
-
-    /* Add the center grid to dyna_g if necessary */
-    if (cave_ff3_match(dyna_center_y, dyna_center_x, FF3_DYNAMIC))
-    {
-        /* Get the grid info */
-        g_ptr = &dyna_g[dyna_cnt++];
-
-        /* Fill in the grid info (partially) */
-        g_ptr->y = dyna_center_y;
-        g_ptr->x = dyna_center_x;
-    }
-
-    /* Put the nearby dynamic features in dyna_g */
-    while (TRUE)
-    {
-        /* Get the number of input grids */
-        last_index = grid_count;
-
-        /* No more grids */
-        if (!last_index) break;
-
-        /* Reset the number of output grids */
-        grid_count = 0;
-
-        /* Process the input grids */
-        for (i = 0; i < last_index; i++)
-        {
-            /* Get the coordinates of the next input grid */
-            y = grid_table[this_cycle][0][i];
-            x = grid_table[this_cycle][1][i];
-
-            /* Check the adjacent grids */
-            for (d = 0; d < 8; d++)
-            {
-                /* Get coordinates */
-                int y2 = y + ddy_ddd[d];
-                int x2 = x + ddx_ddd[d];
-                int vy, vx, dx, dy, dist;
-
-                /* Ignore annoying locations */
-                if (!in_bounds(y2, x2)) continue;
-
-                /* Translate coordinates to use the "visited" array */
-                vy = y2v + y2;
-                vx = x2v + x2;
-
-                /* Ignore grids already visited */
-                if (visited[vy][vx]) continue;
-
-                /* Mark the grid as visited */
-                visited[vy][vx] = TRUE;
-
-                /*
-                 * IMPORTANT: ignore any dynamic feature out of line
-                 * of fire.
-                 * Reasons:
-                 * 1. Avoid possible dynamic-terrain-scum tactics.
-                 * Example: throwing a fire ball into an oil lake
-                 * followed by teleportation, etc.
-                 * 2. Efficiency (only the grids near to the player
-                 * are processed).
-                 */
-                if (!player_can_fire_bold(y2, x2)) continue;
-
-                /* Calculate the distance to the center */
-
-                /* Vertical distance */
-                dy = y2 - dyna_center_y;
-                if (dy < 0) dy = -dy;
-
-                /* Horizontal distance */
-                dx = x2 - dyna_center_x;
-                if (dx < 0) dx = -dx;
-
-                /* Final distance */
-                dist = (dy > dx) ? (dy + (dx>>1)): (dx + (dy>>1));
-
-                /* Out of range */
-                if (dist > MAX_SIGHT) continue;
-
-                /* Put the grid in dyna_g, if possible */
-                /*
-                 * We do this when:
-                 * 1. It's a dynamic grid.
-                 * 2. It isn't a timed grid already added.
-                 * 3. We have space in dyna_g
-                 */
-                if (cave_ff3_match(y2, x2, FF3_DYNAMIC) &&
-                    !(dungeon_info[y2][x2].cave_info & (CAVE_TEMP)) &&
-                    (dyna_cnt < DYNA_MAX))
-                {
-                    /* Claim a dyna_g entry */
-                    g_ptr = &dyna_g[dyna_cnt++];
-
-                    /* Fill in the grid info (partially) */
-                    g_ptr->y = y2;
-                    g_ptr->x = x2;
-                }
-
-                /* Add this grid to the table */
-                grid_table[next_cycle][0][grid_count] = y2;
-                grid_table[next_cycle][1][grid_count] = x2;
-
-                /* One more output grid */
-                ++grid_count;
-            }
-        }
-
-        /* Swap the table for the next iteration */
-        if (this_cycle == 0)
-        {
-            this_cycle = 1;
-            next_cycle = 0;
-        }
-        else
-        {
-            this_cycle = 0;
-            next_cycle = 1;
-        }
-    }
-
-    /* Complete the required info */
-    for (i = 0; i < dyna_cnt; i++)
-    {
-        /* Get the grid */
-        g_ptr = &dyna_g[i];
-
-        /* Old timed terrain */
-        if (dungeon_info[g_ptr->y][g_ptr->x].cave_info & (CAVE_TEMP))
-        {
-            /* We just clear the mark. Grid info is preserved */
-            dungeon_info[g_ptr->y][g_ptr->x].cave_info &= ~(CAVE_TEMP);
-        }
-        /* Regular terrain (or new timed terrain) */
-        else
-        {
-            /* Set some flags for the collected grids */
-            g_ptr->flags = (DF1_OCCUPIED | DF1_NEW_BORN);
-
-            /* Reset the counter */
-            g_ptr->counter = calculate_turn_count(dungeon_info[g_ptr->y][g_ptr->x].feat);
-        }
-    }
-
-    /* Set the new maximum size of dyna_g */
-    dyna_next = dyna_cnt;
 }
 
 
@@ -2630,7 +2311,6 @@ static void collect_dynamic_terrain(void)
  */
 static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
 {
-
     /* Get coordinates */
     int y = g_ptr->y;
     int x = g_ptr->x;
@@ -3014,66 +2694,15 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
 
 
 /*
- * Traverse the dynamic features stored in dyna_g and apply their effects.
+ * Traverse the dynamic features stored in dyna_grids and apply their effects.
  */
 void process_dynamic_terrain(void)
 {
-    int i, j;
-    u16b max;
-    bool full = FALSE;
-    dynamic_grid_type *g_ptr;
-
-    /* We have a level saturated with dynamic features, check rebuild */
-    if (dyna_full)
-    {
-        /* Get approximate distance to the center of the last update */
-        int dist_y = ABS(p_ptr->py - dyna_center_y);
-        int dist_x = ABS(p_ptr->px - dyna_center_x);
-        int dist = MAX(dist_y, dist_x);
-
-        /* Too far from the previous center, rebuild */
-        if (dist > 5) full = TRUE;
-    }
-
-    /*
-     * Rebuild dyna_g. We put in only the nearest dynamic features to the
-     * player.
-     */
-    if (full) collect_dynamic_terrain();
-
-    /* Common case. We don't have any dynamic features */
-    if (dyna_cnt == 0)
-    {
-        /* Reset the maximum size of dyna_g, for efficiency */
-        dyna_next = 0;
-
-        /* Done */
-        return;
-    }
-
-    /*
-     * Important. We make a local copy of dyna_next, since certain dynamic
-     * features can create other dynamic features when we apply the effect
-     */
-    max = dyna_next;
-
-    /*
-     * We clear the NEW_BORN flag. All dynamic features at this point
-     * are valid.
-     */
-    for (i = 0; i < max; i++)
-    {
-        dyna_g[i].flags &= ~(DF1_NEW_BORN);
-    }
-
     /* Process the stored dynamic features */
-    for (i = 0; i < max; i++)
+    for (int i = 0; i < dyna_grids.size(); i++)
     {
         /* Get the grid info */
-        g_ptr = &dyna_g[i];
-
-        /* Removed grid, ignore */
-        if (!(g_ptr->flags & (DF1_OCCUPIED))) continue;
+        dynamic_grid_type *g_ptr = &dyna_grids[i];
 
         /*
          * IMPORTANT: ignore any new dynamic feature created by another
@@ -3081,7 +2710,11 @@ void process_dynamic_terrain(void)
          * These new features will be processed in the next call to
          * this function.
          */
-        if (g_ptr->flags & (DF1_NEW_BORN)) continue;
+        if (g_ptr->new_grid)
+        {
+            g_ptr->new_grid = FALSE;
+            continue;
+        }
 
         /* Active timed terrain */
         /*
@@ -3095,7 +2728,7 @@ void process_dynamic_terrain(void)
             --g_ptr->counter;
 
             /* Do we need to apply the effect? */
-            if (g_ptr->counter > 0) continue;
+            if (g_ptr->counter) continue;
         }
         /* Regular terrain (or inactive timed terrain) */
         /*
@@ -3111,29 +2744,6 @@ void process_dynamic_terrain(void)
 
         /* Actually, apply the effect */
         process_dynamic_terrain_aux(g_ptr);
-    }
-
-    /* Compact the dyna_g array, if necessary */
-    if (dyna_next > (dyna_cnt + 30))
-    {
-        /* Remove any gaps in dyna_g */
-        for (i = j = 0; i < dyna_next; i++)
-        {
-            /* Found a gap, update only one of the indexes */
-            if (!(dyna_g[i].flags & (DF1_OCCUPIED))) continue;
-
-            /* Copy the grid info to its final position */
-            if (i > j)
-            {
-                COPY(&dyna_g[j], &dyna_g[i], dynamic_grid_type);
-            }
-
-            /* One dynamic feature more */
-            ++j;
-        }
-
-        /* Set the value of dyna_next to the new compacted size */
-        dyna_next = j;
     }
 }
 
