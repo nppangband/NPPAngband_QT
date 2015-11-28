@@ -2211,7 +2211,7 @@ static int read_savefile(void)
     }
 
     // Ensure the data is read and written consistently
-    in.setVersion(QDataStream::Qt_5_5);
+    in.setVersion(QDataStream::Qt_5_2);
 
     /* Extract version */
     rd_byte(&sf_major);
@@ -2260,7 +2260,7 @@ static bool load_scores(void)
     }
 
     // Ensure the data is read and written consistently
-    in.setVersion(QDataStream::Qt_5_5);
+    in.setVersion(QDataStream::Qt_5_2);
 
     /* Extract version */
     rd_byte(&sf_major);
@@ -2316,7 +2316,7 @@ static bool load_memory(void)
     }
 
     // Ensure the data is read and written consistently
-    in.setVersion(QDataStream::Qt_5_5);
+    in.setVersion(QDataStream::Qt_5_2);
 
     /* Extract version */
     rd_byte(&sf_major);
@@ -2613,7 +2613,7 @@ void do_hotkey_import(QString file_name)
     }
 
     // Ensure the data is read and written consistently
-    in.setVersion(QDataStream::Qt_5_5);
+    in.setVersion(QDataStream::Qt_5_2);
 
     byte this_game_mode;
     rd_byte(&this_game_mode);

@@ -463,7 +463,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
             average = (new_dd * ds) / 2 + plus;
 
             output.append(QString("   This weapon does %1d%2%3%4 damage (%5 avg) against %6 each hit.<br>")
-                          .arg(dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
+                          .arg(new_dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
         }
     }
 
@@ -485,7 +485,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
                 average = (new_dd * ds) / 2 + plus;
 
                 output.append(QString("   This weapon does %1d%2%3%4 damage (%5 avg) against creatures who %6 each hit.<br>")
-                              .arg(dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
+                              .arg(new_dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
             }
         }
     }
@@ -508,7 +508,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
             average = (new_dd * ds) / 2 + plus;
 
             output.append(QString("   This weapon does %1d%2%3%4 damage (%5 avg) against creatures who do not %6.<br>")
-                          .arg(dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
+                          .arg(new_dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
         }
     }
 
@@ -789,7 +789,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
             average = (new_dd * ds) / 2 + plus;
 
             output.append(QString("   This ammunition does %1d%2%3%4 damage (%5 avg) against %6 each hit.<br>")
-                          .arg(dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
+                          .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
         }
     }
 
@@ -811,7 +811,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
                 average = (new_dd * ds) / 2 + plus;
 
                 output.append(QString("   This ammunition does %1d%2%3%4 damage (%5 avg) against creatures who %6 each hit.<br>")
-                              .arg(dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
+                              .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
             }
         }
     }
@@ -835,7 +835,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
             average = (new_dd * ds) / 2 + plus;
 
             output.append(QString("   This ammunition does %1d%2%3%4 damage (%5 avg) against creatures who do not %6.<br>")
-                          .arg(dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
+                          .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
         }
     }
 
@@ -946,7 +946,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
             average = (new_dd * ds) / 2 + plus;
 
             output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg) against %6 each hit.<br>")
-                          .arg(dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
+                          .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
         }
     }
 
@@ -968,7 +968,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
                 average = (new_dd * ds) / 2 + plus;
 
                 output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg) against creatures who %6 each hit.<br>")
-                              .arg(dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
+                              .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
             }
         }
     }
@@ -992,7 +992,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
             average = (new_dd * ds) / 2 + plus;
 
             output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg) against creatures who do not %6.<br>")
-                            .arg(dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
+                            .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
         }
     }
 

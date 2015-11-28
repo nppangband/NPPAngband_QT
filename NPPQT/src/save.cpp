@@ -948,7 +948,7 @@ static bool wr_savefile(void)
     save_file.open(QIODevice::WriteOnly);
 
     // Ensure the data is read and written consistently
-    out.setVersion(QDataStream::Qt_5_5);
+    out.setVersion(QDataStream::Qt_5_2);
 
     /*** Actually write the file ***/
 
@@ -1136,7 +1136,7 @@ static bool wr_scores(void)
     save_file.open(QIODevice::WriteOnly);
 
     // Ensure the data is read and written consistently
-    out.setVersion(QDataStream::Qt_5_5);
+    out.setVersion(QDataStream::Qt_5_2);
 
     /*** Actually write the file ***/
 
@@ -1202,7 +1202,7 @@ static bool wr_memory(void)
     save_file.open(QIODevice::WriteOnly);
 
     // Ensure the data is read and written consistently
-    out.setVersion(QDataStream::Qt_5_5);
+    out.setVersion(QDataStream::Qt_5_2);
 
     /*** Actually write the file ***/
 
@@ -1294,7 +1294,7 @@ void do_hotkey_export(QString file_name)
     save_file.open(QIODevice::WriteOnly);
 
     // Ensure the data is read and written consistently
-    out.setVersion(QDataStream::Qt_5_5);
+    out.setVersion(QDataStream::Qt_5_2);
 
     /*** Actually write the file ***/
 
