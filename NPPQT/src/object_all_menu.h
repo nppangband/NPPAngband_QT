@@ -9,7 +9,7 @@
 #include <QLabel>
 #include <QScrollArea>
 #include <QTabWidget>
-
+#include <QRadioButton>
 
 
 
@@ -28,68 +28,47 @@ class AllObjectsDialog : public QDialog
 private:
 
     void update_header();
-    void update_all();
 
     // Header area
     QLabel *header_main;
     QLabel *header_weight1;
     QLabel *header_weight2;
+    QLabel *header_objects;
 
     // Message area
     QLabel *message_area;
 
     QWidget *top_widget;
-    QTabWidget *object_tabs;
-    QWidget *floor_tab;
-    QWidget *inven_tab;
-    QWidget *equip_tab;
 
     QScrollArea *scroll_box;
-    QScrollArea *scroll_floor;
-    QScrollArea *scroll_inven;
-    QScrollArea *scroll_equip;
 
     bool allow_floor;
     bool allow_inven;
     bool allow_equip;
     bool allow_quiver;
 
-    int floor_tab_idx;
-    int inven_tab_idx;
-    int equip_tab_idx;
-
     void confirm_tabs();
-    void hide_or_show_tabs();
-    void update_active_tabs();
     void link_pushbuttons();
 
     bool no_objects();
-    int start_tab;
-    int current_tab;
+    int current_list;
 
     // Layouts and labels
-    QVBoxLayout *floor_vlay;
-    QVBoxLayout *inven_vlay;
-    QVBoxLayout *equip_and_quiver_vlay;
-    QVBoxLayout *equip_vlay;
-    QVBoxLayout *quiver_vlay;
+    QRadioButton *floor_items;
+    QRadioButton *inven_items;
+    QRadioButton *equip_items;
+    QButtonGroup *object_selection;
 
-    QGridLayout *floor_list;
-    QGridLayout *inven_list;
-    QGridLayout *equip_list;
+    QGridLayout *object_list;
     QGridLayout *quiver_list;
 
-    QLabel *header_floor;
-    QLabel *header_inven;
-    QLabel *header_equip;
-    QLabel *header_quiver;
-    QLabel *empty_space;
+    QLabel *quiver_header;
 
 private slots:
-
     void move_left(void);
     void move_right(void);
     void button_click(void);
+    void switch_lists(int new_list);
 
 protected:
     void keyPressEvent(QKeyEvent* which_key);

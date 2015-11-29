@@ -218,7 +218,6 @@ void ObjectSelectDialog::build_floor_tab()
     QVBoxLayout *vlay_floor = new QVBoxLayout;
     floor_tab = new QWidget;
     scroll_floor = new QScrollArea;
-    floor_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     floor_tab->setLayout(vlay_floor);
     scroll_floor->setWidget(floor_tab);
     scroll_floor->setWidgetResizable(TRUE);
@@ -291,7 +290,6 @@ void ObjectSelectDialog::build_inven_tab()
     QVBoxLayout *vlay_inven = new QVBoxLayout;
     inven_tab = new QWidget;
     scroll_inven = new QScrollArea;
-    inven_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     inven_tab->setLayout(vlay_inven);
     scroll_inven->setWidget(inven_tab);
     scroll_inven->setWidgetResizable(TRUE);
@@ -364,7 +362,6 @@ void ObjectSelectDialog::build_equip_tab()
     QVBoxLayout *vlay_equip = new QVBoxLayout;
     equip_tab = new QWidget;
     scroll_equip = new QScrollArea;
-    equip_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     equip_tab->setLayout(vlay_equip);
     scroll_equip->setWidget(equip_tab);
     scroll_equip->setWidgetResizable(TRUE);
@@ -439,7 +436,6 @@ void ObjectSelectDialog::build_quiver_tab()
     QVBoxLayout *vlay_quiver = new QVBoxLayout;
     quiver_tab = new QWidget;
     scroll_quiver = new QScrollArea;
-    quiver_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     quiver_tab->setLayout(vlay_quiver);
     scroll_quiver->setWidget(quiver_tab);
     scroll_quiver->setWidgetResizable(TRUE);

@@ -34,35 +34,6 @@
  *
  */
 
-// Determine if the objects dialog needs redrawing
-static bool command_needs_reset(int command)
-{
-    switch (command)
-    {
-        case CMD_TAKEOFF:
-        case CMD_WIELD:
-        case CMD_ITEM_USE:
-        case CMD_SWAP:
-        case CMD_REFUEL:
-        case CMD_FIRE:
-        case CMD_FIRE_NEAR:
-        case CMD_DROP:
-        case CMD_PICKUP:
-        case CMD_CAST:
-        case CMD_DESTROY:
-        case CMD_INSCRIBE:
-        case CMD_UNINSCRIBE:
-        case CMD_ACTIVATE:
-        case CMD_THROW:
-        {
-            return (TRUE);
-        }
-        default: break;
-    }
-    return (FALSE);
-}
-
-
 void AllObjectsDialog::button_click()
 {
     QString item_id = QObject::sender()->objectName();
@@ -95,28 +66,63 @@ void AllObjectsDialog::button_click()
     // We aren't repeating the previous command
     p_ptr->player_previous_command_wipe();
 
-    bool reset = command_needs_reset(command_num);
-
-    if (reset) this->close();
-
     process_command(item_num, command_num);
     p_ptr->message_append_stop();
 
-    if (reset) do_cmd_all_objects(current_tab);
-    else update_dialog();
+    update_dialog();
 }
 
 void AllObjectsDialog::move_left()
 {
-    int which_tab = object_tabs->currentIndex();
-    object_tabs->setCurrentIndex(which_tab - 1);
+    if (current_list == TAB_FLOOR)
+    {
+        if (allow_equip || allow_quiver) current_list = TAB_EQUIP;
+        else if (allow_inven) current_list = TAB_INVEN;
+
+    }
+    else if (current_list == TAB_INVEN)
+    {
+        if (allow_floor) current_list = TAB_FLOOR;
+        else if (allow_equip || allow_quiver) current_list = TAB_EQUIP;
+
+    }
+    else if (current_list == TAB_EQUIP)
+    {
+        if (allow_inven) current_list = TAB_INVEN;
+        else if (allow_floor) current_list = TAB_FLOOR;
+
+    }
+    update_dialog();
+}
+
+void AllObjectsDialog::switch_lists(int new_list)
+{
+    current_list = new_list;
+    update_dialog();
 }
 
 void AllObjectsDialog::move_right()
 {
-    int which_tab = object_tabs->currentIndex();
-    object_tabs->setCurrentIndex(which_tab + 1);
+    if (current_list == TAB_FLOOR)
+    {
+        if (allow_inven) current_list = TAB_INVEN;
+        else if (allow_equip || allow_quiver) current_list = TAB_EQUIP;
+
+    }
+    else if (current_list == TAB_INVEN)
+    {
+        if (allow_equip || allow_quiver) current_list = TAB_EQUIP;
+        else if (allow_floor) current_list = TAB_FLOOR;
+
+    }
+    else if (current_list == TAB_EQUIP)
+    {
+        if (allow_floor) current_list = TAB_FLOOR;
+        else if (allow_inven) current_list = TAB_INVEN;
+    }
+    update_dialog();
 }
+
 
 // See if the user selected a button bia a keypress.
 void AllObjectsDialog::keyPressEvent(QKeyEvent* which_key)
@@ -214,6 +220,44 @@ void AllObjectsDialog::confirm_tabs()
         allow_quiver = TRUE;
         break;
     }
+
+    if (no_objects())
+    {
+        //Paranoia
+        close_dialog();
+        return;
+    }
+
+    // Update the radiobuttons
+    if (allow_floor) floor_items->show();
+    else   floor_items->hide();
+
+    if (allow_inven) inven_items->show();
+    else   inven_items->hide();
+
+    if (allow_equip || allow_quiver) equip_items->show();
+    else   equip_items->hide();
+
+    if ((current_list == TAB_FLOOR) && !allow_floor)
+    {
+        if (allow_inven) current_list = TAB_INVEN;
+        else /* allow_ equip || allow_quiver */ current_list = TAB_EQUIP;
+    }
+    else if (current_list == TAB_INVEN && !allow_inven)
+    {
+        if (allow_equip) current_list = TAB_EQUIP;
+        else /* allow_floor */ current_list = TAB_FLOOR;
+    }
+
+    else if (current_list == TAB_EQUIP && !allow_equip)
+    {
+        if (allow_inven) current_list = TAB_INVEN;
+        else /* allow_floor */ current_list = TAB_FLOOR;
+    }
+
+    if (current_list == TAB_FLOOR) floor_items->setChecked(TRUE);
+    if (current_list == TAB_INVEN) inven_items->setChecked(TRUE);
+    if (current_list == TAB_EQUIP) equip_items->setChecked(TRUE);
 }
 
 
@@ -262,102 +306,49 @@ void AllObjectsDialog::update_dialog()
 
     p_ptr->message_append_stop();
 
-    update_floor_list(floor_list, FALSE, TRUE);
-    update_inven_list(inven_list, FALSE, TRUE);
-    update_equip_list(equip_list, FALSE, TRUE);
-    update_quiver_list(quiver_list, FALSE, TRUE);
-    hide_or_show_tabs();
+    //clear the quiver layout
+    clear_layout(quiver_list);
+
+    if (current_list == TAB_FLOOR)
+    {
+        header_objects->setText("<br><b><h3>Floor Items</b></h3>");
+        update_floor_list(object_list, FALSE, TRUE);
+        quiver_header->hide();
+    }
+    else if (current_list == TAB_INVEN)
+    {
+        header_objects->setText("<br><b><h3>Inventory</b></h3>");
+        update_inven_list(object_list, FALSE, TRUE);
+        quiver_header->hide();
+    }
+    else if (current_list == TAB_EQUIP)
+    {
+        header_objects->setText("<br><b><h3>Equipment</b></h3>");
+        update_equip_list(object_list, FALSE, TRUE);
+        if (allow_quiver)
+        {
+            quiver_header->show();
+            update_quiver_list(quiver_list, FALSE, TRUE);
+        }
+        else quiver_header->hide();
+    }
+
     link_pushbuttons();
     update_message_area(message_area, 3);
 }
 
-void AllObjectsDialog::update_active_tabs()
-{
-    floor_tab_idx = object_tabs->indexOf(scroll_floor);
-    inven_tab_idx = object_tabs->indexOf(scroll_inven);
-    equip_tab_idx = object_tabs->indexOf(scroll_equip);
 
 
-}
-
-
-
-/*
- * Figure out which tabs to show or hide.  Try to keep
- * the current activated tab activated.
- * */
-void AllObjectsDialog::hide_or_show_tabs()
-{
-    confirm_tabs();
-    if (no_objects())
-    {
-        //Paranoia
-        close_dialog();
-        return;
-    }
-
-    int active_tab = object_tabs->currentIndex();
-
-    update_active_tabs();
-
-    // Fine the current active tab.
-    if (active_tab < 0) current_tab = TAB_INVEN;
-    else if (floor_tab_idx == active_tab) current_tab = TAB_FLOOR;
-    else if (inven_tab_idx == active_tab) current_tab = TAB_INVEN;
-    else if (equip_tab_idx == active_tab) current_tab = TAB_EQUIP;
-    else
-    {
-        //extreme paranoia
-        close_dialog();
-        return;
-    }
-
-    object_tabs->clear();
-
-    if (allow_floor) object_tabs->addTab(scroll_floor, "&Floor Items");
-    if (allow_inven) object_tabs->addTab(scroll_inven, "&Inventory");
-    if (allow_equip || allow_quiver)
-    {
-        object_tabs->addTab(scroll_equip, "&Equipment");
-        if (allow_equip) header_equip->show();
-        else header_equip->hide();
-        if (allow_quiver) header_quiver->show();
-        else header_quiver->hide();
-        if (allow_equip && allow_quiver) empty_space->show();
-        else empty_space->hide();
-    }
-
-    update_active_tabs();
-
-    if (start_tab == TAB_FLOOR && allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
-    else if (start_tab == TAB_INVEN && allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
-    else if (start_tab == TAB_EQUIP && allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
-    else if (current_tab == TAB_FLOOR && allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
-    else if (current_tab == TAB_INVEN && allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
-    else if (current_tab == TAB_EQUIP && allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
-    else if (allow_inven) object_tabs->setCurrentIndex(inven_tab_idx);
-    else if (allow_equip) object_tabs->setCurrentIndex(equip_tab_idx);
-    else if (allow_floor) object_tabs->setCurrentIndex(floor_tab_idx);
-    else object_tabs->setCurrentIndex(0);
-
-    // Re-record the current tab;
-    active_tab = object_tabs->currentIndex();
-    if (active_tab < 0) current_tab = TAB_INVEN;
-    else if (floor_tab_idx == active_tab) current_tab = TAB_FLOOR;
-    else if (inven_tab_idx == active_tab) current_tab = TAB_INVEN;
-    else if (equip_tab_idx == active_tab) current_tab = TAB_EQUIP;
-
-
-    // Only use the start tab once
-    start_tab = TABS_MAX;
-}
 
 
 AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 {
-    confirm_tabs();
+    (void) do_buttons;
 
-    start_tab = start_screen;
+    object_selection = new QButtonGroup(this);
+    object_selection->setExclusive(TRUE);
+
+    current_list = start_screen;
 
     // Handle no available objects.
     if (no_objects())
@@ -366,22 +357,24 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
         return;
     }
 
-    //Set up the main scroll bar
-    QVBoxLayout *top_layout = new QVBoxLayout;
-    QVBoxLayout *main_layout = new QVBoxLayout;
-    top_widget = new QWidget;
-    scroll_box = new QScrollArea;
-    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    top_widget->setLayout(main_layout);
+    // Set up a scrollable box.  Add widgets to "main_layout"
+    scroll_box = new QScrollArea(this);
+    top_widget = new QWidget(this);
     scroll_box->setWidget(top_widget);
     scroll_box->setWidgetResizable(TRUE);
+    QVBoxLayout *main_layout = new QVBoxLayout(this);
+    top_widget->setLayout(main_layout);
+    QHBoxLayout *top_layout = new QHBoxLayout(this);
     top_layout->addWidget(scroll_box);
+
+    setLayout(top_layout);
+
 
     //Build the header
     header_main = new QLabel("<b><h2>Object Menu</b></h2>");
     header_weight1 = new QLabel;
     header_weight2 = new QLabel;
-    main_layout->addWidget(header_main, Qt::AlignCenter);
+    main_layout->addWidget(header_main);
     main_layout->addWidget(header_weight1);
     main_layout->addWidget(header_weight2);
     update_header();
@@ -394,77 +387,35 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     this_palette.setColor(QPalette::Window, QColor(Qt::black));
     message_area->setPalette(this_palette);
     main_layout->addWidget(message_area);
-    message_area->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     update_message_area(message_area, 3);
 
-    // Set up the tabs
-    object_tabs = new QTabWidget;
-    main_layout->addWidget(object_tabs);
+    QHBoxLayout *radio_across = new QHBoxLayout;
+    main_layout->addLayout(radio_across);
+    floor_items = new QRadioButton("Floor Items");
+    object_selection->addButton(floor_items, TAB_FLOOR);
+    inven_items = new QRadioButton("Inventory");
+    object_selection->addButton(inven_items, TAB_INVEN);
+    equip_items = new QRadioButton("Equipment");
+    object_selection->addButton(equip_items, TAB_EQUIP);
+    connect(object_selection, SIGNAL(buttonClicked(int)), this, SLOT(switch_lists(int)));
+    radio_across->addWidget(floor_items);
+    radio_across->addWidget(inven_items);
+    radio_across->addWidget(equip_items);
+    radio_across->addStretch(1);
 
-    // Add the list of floor items
-    QVBoxLayout *floor_vlay = new QVBoxLayout;
-    floor_tab = new QWidget;
-    scroll_floor = new QScrollArea;
-    floor_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    floor_tab->setLayout(floor_vlay);
-    scroll_floor->setWidget(floor_tab);
-    scroll_floor->setWidgetResizable(TRUE);
-    header_floor = new QLabel(QString("<b><h1>Floor Items</b></h1>"));
-    header_floor->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
-    floor_vlay->addWidget(header_floor);
-    floor_list = new QGridLayout;
-    update_floor_list(floor_list, FALSE, do_buttons);
-    floor_vlay->addLayout(floor_list);
-    floor_vlay->addStretch(1);
+    header_objects = new QLabel("<br><b><h3>Inventory</b></h3>");
+    main_layout->addWidget(header_objects);
 
-    // Add the list of inventory
-    QVBoxLayout *inven_vlay = new QVBoxLayout;
-    inven_tab = new QWidget;
-    scroll_inven = new QScrollArea;
-    inven_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    inven_tab->setLayout(inven_vlay);
-    scroll_inven->setWidget(inven_tab);
-    scroll_inven->setWidgetResizable(TRUE);
-    header_inven = new QLabel(QString("<b><h1>Inventory</b></h1>"));
-    header_inven->setAlignment(Qt::AlignCenter | Qt::AlignTop);
-    inven_vlay->addWidget(header_inven);
-    inven_list = new QGridLayout;
-    update_inven_list(inven_list, FALSE, do_buttons);
-    inven_vlay->addLayout(inven_list);
-    inven_vlay->addStretch(1);
+    // Add the list for the items
+    object_list = new QGridLayout;
+    main_layout->addLayout(object_list);
 
-    // Add the equipment
-    QVBoxLayout *equip_and_quiver_vlay = new QVBoxLayout;
-    equip_tab = new QWidget;
-    scroll_equip = new QScrollArea;
-    equip_tab->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    equip_tab->setLayout(equip_and_quiver_vlay);
-    scroll_equip->setWidget(equip_tab);
-    scroll_equip->setWidgetResizable(TRUE);
-    QVBoxLayout *equip_vlay = new QVBoxLayout;
-    equip_and_quiver_vlay->addLayout(equip_vlay);
-    header_equip = new QLabel(QString("<b><h1>Equipment</b></h1>"));
-    header_equip->setAlignment(Qt::AlignCenter | Qt::AlignTop);
-    equip_vlay->addWidget(header_equip);
-    equip_list = new QGridLayout;
-    update_equip_list(equip_list, FALSE, do_buttons);
-    equip_vlay->addLayout(equip_list);
 
-    // Add a space
-    empty_space = new QLabel("empty");
-    empty_space->setText(" ");
-    equip_and_quiver_vlay->addWidget(empty_space);
-
-    // Add the quiver
-    QVBoxLayout *quiver_vlay = new QVBoxLayout;
-    equip_and_quiver_vlay->addLayout(quiver_vlay);
-    header_quiver = new QLabel(QString("<b><h1>Quiver</b></h1>"));
-    header_quiver->setAlignment(Qt::AlignCenter | Qt::AlignTop);
-    quiver_vlay->addWidget(header_quiver);
+    // Hack - special layout and for the quiver
+    quiver_header = new QLabel("<br><br><b><h3>Quiver</b></h3>");
+    main_layout->addWidget(quiver_header);
     quiver_list = new QGridLayout;
-    update_quiver_list(quiver_list, FALSE, do_buttons);
-    quiver_vlay->addLayout(quiver_list);
-    equip_and_quiver_vlay->addStretch(1);
+    main_layout->addLayout(quiver_list);
 
     QDialogButtonBox *buttons = new QDialogButtonBox();
     QPushButton *button_left = new QPushButton();
@@ -480,12 +431,13 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     buttons->addButton(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
 
-    top_layout->addWidget(buttons);
-    main_layout->addStretch(1000);
+    main_layout->addWidget(buttons);
 
-    hide_or_show_tabs();
+    update_dialog();
 
-    setLayout(top_layout);
+    main_layout->addStretch(1);
+
+
     setWindowTitle(tr("Object Menu"));
 
     link_pushbuttons();

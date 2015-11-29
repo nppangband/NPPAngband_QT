@@ -455,7 +455,7 @@ void do_buttons(QGridLayout *lay, object_type *o_ptr, s16b item_slot, s16b row, 
 void add_plain_label(QGridLayout *lay, QString label, int row, int col)
 {
     QLabel *lb = new QLabel(label);
-    lb->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    lb->setAlignment(Qt::AlignLeft);
     lay->addWidget(lb, row, col);
 }
 
