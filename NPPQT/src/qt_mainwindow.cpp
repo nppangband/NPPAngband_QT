@@ -159,8 +159,8 @@ void MainWindow::force_redraw()
 
 void MainWindow::update_cursor()
 {
-    cursor->moveTo(p_ptr->py, p_ptr->px);
-    cursor->setVisible(hilight_player);
+    if (targeting_mode <= MODE_TARGETING_AIMING) cursor->moveTo(p_ptr->py, p_ptr->px);
+    cursor->setVisible(hilight_player || (targeting_mode > MODE_TARGETING_AIMING));
 }
 
 QPixmap MainWindow::apply_shade(QString tile_id, QPixmap tile, QString shade_id)
@@ -172,10 +172,12 @@ QPixmap MainWindow::apply_shade(QString tile_id, QPixmap tile, QString shade_id)
 
     QPixmap pix;
 
-    if (shade_id == "dim") {
+    if (shade_id == "dim")
+    {
         pix = gray_pix(tile);
     }
-    else if (shade_id == "bright") {
+    else if (shade_id == "bright")
+    {
         pix = darken_pix(tile);
     }
     else {  // It should never happen
@@ -398,7 +400,7 @@ void MainWindow::redraw_screen()
     }
 }
 
-void MainWindow::redraw_all(void)
+void MainWindow::redraw_all()
 {    
     redraw_screen();
     update_cursor();
@@ -491,10 +493,9 @@ MainWindow::MainWindow()
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
 
-
     setAttribute(Qt::WA_DeleteOnClose);
 
-    ui_mode = UI_MODE_DEFAULT;
+    targeting_mode = MODE_NO_TARGETING;
 
     cursor = new DungeonCursor(this);
     do_25d_graphics = do_pseudo_ascii = do_wall_block = false;
@@ -710,12 +711,11 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     QString keystring = which_key->text();
 
     // Go to special key handling
-    if (ui_mode == UI_MODE_INPUT)
+    if (targeting_mode)
     {
         input.key = which_key->key();
         input.text = keystring;
         input.mode = INPUT_MODE_KEY;
-        ui_mode = UI_MODE_DEFAULT;
         ev_loop.quit();
         return;
     }
@@ -974,6 +974,11 @@ void MainWindow::command_list_keyboard()
 void MainWindow::command_list_mouse()
 {
     do_cmd_list_mouse_commands();
+}
+
+void MainWindow::command_list_targeting()
+{
+    do_cmd_list_targeting_commands();
 }
 
 // Activates and de-activates certain file_menu commands when a game is started.
@@ -1296,6 +1301,11 @@ void MainWindow::create_actions()
     help_mouse_list->setShortcut(Qt::Key_Slash);
     help_mouse_list->setStatusTip(tr("Show a list of all keybord commands"));
     connect(help_mouse_list, SIGNAL(triggered()), this, SLOT(command_list_mouse()));
+
+    help_targeting_list = new QAction(tr("&Show Targeting Commands"), this);
+    help_targeting_list->setShortcut(Qt::Key_Backslash);
+    help_targeting_list->setStatusTip(tr("Show a list of all targeting commands"));
+    connect(help_targeting_list, SIGNAL(triggered()), this, SLOT(command_list_targeting()));
 }
 
 void MainWindow::set_reg()
@@ -1548,7 +1558,7 @@ void MainWindow::create_menus()
     help_menu->addAction(help_about_Qt);
     help_menu->addAction(help_command_list);
     help_menu->addAction(help_mouse_list);
-
+    help_menu->addAction(help_targeting_list);
 }
 
 // Create the toolbars
@@ -1569,7 +1579,6 @@ void MainWindow::create_toolbars()
     file_toolbar->addSeparator();
     file_toolbar->addAction(exit_npp);
 
-    create_targetbar();
     create_statusbar();
 }
 

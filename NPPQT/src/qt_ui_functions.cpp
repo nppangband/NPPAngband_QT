@@ -108,8 +108,12 @@ bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x)
         int y = GRID_Y(path_g[i]);
         int x = GRID_X(path_g[i]);
 
-        // Don't touch the cursor
-        if (y == cur_tar_y && x == cur_tar_x) continue;
+        // Re-draw the cursor
+        if (y == cur_tar_y && x == cur_tar_x)
+        {
+            ui_show_cursor(y, x);
+            continue;
+        }
 
         QGraphicsRectItem *item = main_window->dungeon_scene->addRect(
                     x * main_window->main_cell_wid, y * main_window->main_cell_hgt,
@@ -162,15 +166,11 @@ UserInput ui_get_input()
         return temp;
     }
 
-    main_window->ui_mode = UI_MODE_INPUT;
-
     main_window->input.mode = INPUT_MODE_NONE;
 
     main_window->cursor->update();
 
     main_window->ev_loop.exec();
-
-    main_window->ui_mode = UI_MODE_DEFAULT;
 
     main_window->cursor->update();
 
@@ -639,10 +639,12 @@ void ui_animate_detection(int y, int x, int rad)
 
 void ui_show_cursor(int y, int x)
 {
-    if (y < 0 || x < 0) {
+    if (y < 0 || x < 0)
+    {
         main_window->update_cursor();
     }
-    else {
+    else
+    {
         main_window->cursor->moveTo(y, x);
         main_window->cursor->setVisible(true);
     }

@@ -247,8 +247,15 @@ typedef u16b u16b_dungeon[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
 #define MAX_SIGHT	20	/* Maximum view distance */
 #define MAX_RANGE	20	/* Maximum range (spells, etc) */
 
-#define TOOLBAR_TARGETING 1
-#define TOOLBAR_TARGETING_INTERACTIVE 2
+enum
+{
+    MODE_NO_TARGETING = 0,
+    MODE_TARGETING_DIRECTION,
+    MODE_TARGETING_AIMING,
+    MODE_TARGETING_INTERACTIVE,
+    MODE_TARGETING_MANUAL,
+};
+
 
 
 

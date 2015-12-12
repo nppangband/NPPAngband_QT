@@ -23,6 +23,7 @@
 #include <src/utilities.h>
 #include <src/help.h>
 
+
 // Taken from 32 bit colors in defines.h
 #define SBAR_NORMAL "#00FF00"
 #define SBAR_DRAINED "#FFFF00"
@@ -34,13 +35,16 @@ QVector<s16b> sidebar_monsters;
 
 void MainWindow::create_sidebar()
 {
+    targeting_glay = new QGridLayout();
     player_info_vlay = new QVBoxLayout();
     mon_health_vlay = new QVBoxLayout();
 
+    sidebar_vlay->addLayout(targeting_glay);
     sidebar_vlay->addLayout(player_info_vlay);
     sidebar_vlay->addLayout(mon_health_vlay);
     sidebar_vlay->addStretch(1);
 
+    create_targeting_sidebar();
 
     QHBoxLayout *player_info_hlay = new QHBoxLayout;
     player_info_vlay->addLayout(player_info_hlay);
@@ -533,13 +537,16 @@ void MainWindow::update_sidebar_player()
                 continue;
             }
 
-
             //update the spell points
             if (this_name.operator ==("SP_LABEL"))
             {
-                if (p_ptr->msp > 0)
+                if (p_ptr->msp)
                 {
-                    if (!this_lbl->isVisible()) this_lbl->show();
+                    if (!this_lbl->isVisible())
+                    {
+                        this_lbl->setText(color_string("SP", SBAR_NORMAL));
+                        this_lbl->show();
+                    }
                 }
                 else if (this_lbl->isVisible())
                 {
@@ -550,7 +557,7 @@ void MainWindow::update_sidebar_player()
             }
             if (this_name.operator ==("SP_INFO"))
             {
-                if (p_ptr->msp > 0)
+                if (p_ptr->msp)
                 {
                     if (!this_lbl->isVisible()) this_lbl->show();
 

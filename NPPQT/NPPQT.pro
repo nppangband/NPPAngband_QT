@@ -29,7 +29,7 @@ SOURCES +=  src/qt_main.cpp \
             src/qt_win_obj_recall.cpp \
             src/qt_sidebar.cpp \
             src/qt_statusbar.cpp \
-            src/qt_target_toolbar.cpp \
+            src/qt_targeting.cpp \
             src/qt_ui_functions.cpp \
             src/calcs.cpp \
             src/cmd_actions.cpp \

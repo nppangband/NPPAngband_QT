@@ -36,8 +36,21 @@ private:
     void add_mouse_commands(QVBoxLayout *return_layout);
 };
 
+class TargetCommandList : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit TargetCommandList(void);
+
+private:
+    void add_dir_targeting(QVBoxLayout *return_layout, bool keyboard);
+    void add_targeting_commands(QVBoxLayout *return_layout);
+};
+
 extern void do_cmd_list_keyboard_commands(void);
 extern void do_cmd_list_mouse_commands(void);
+extern void do_cmd_list_targeting_commands(void);
 extern void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);
 extern void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);
 extern void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key);

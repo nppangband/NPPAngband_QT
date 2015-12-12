@@ -23,6 +23,34 @@
 #include <src/object_all_menu.h>
 #include <src/messages.h>
 
+static struct command_desc list_commands_targeting[] =
+{
+    {" ", NULL},
+    {"<h3>All Targeting Modes</h3>", NULL},
+    {"Cancel targeting", "ESC, or 'x'"},
+    {"Targeting Help", "?"},
+    {" ", NULL},
+    {"<h3>Aiming, Interactive, and Manual Targeting Modes</h3>", NULL},
+    {"Toggle Between Interactive and Manual Targeting Mode", "'m' or '*'"},
+    {"Use the Closest Target", "'c' or ','"},
+    {"Select Closest Target", "'h' , '5' or '.'"},
+    {"Mouseclick on Square- Select grid and switch to manual targeting mode", NULL},
+    {"Second Mouseclick on same square - Select Square As Target", NULL},
+    {" ", NULL},
+    {"<h3>Interactive Targeting Mode</h3>", NULL},
+    {"Select Next Target", "'+' or <space>"},
+    {"Select Previous Target", "'-'"},
+    {"See Information on Current Square", "'!' or 'l'"},
+    {"Use Direction Keys to Move To Next Possible Target In That General Direction", NULL},
+    {" ", NULL},
+    {"<h3>Manual Targeting Mode</h3>", NULL},
+    {"Select Next Target", "'+' or <space>"},
+    {"Target Player", "'&' or 'p'"},
+    {"See Information on Current Square", "'!' or 'l'"},
+    {"Use Direction Keys to Move Target One Square In That Direction", NULL},
+    {NULL, NULL},
+};
+
 static struct command_desc list_commands_new[] =
 {
     {"Activate", "a"},
@@ -552,6 +580,110 @@ MouseCommandList::MouseCommandList(void)
     this->exec();
 }
 
+void TargetCommandList::add_dir_targeting(QVBoxLayout *return_layout, bool keyboard)
+{
+    QLabel *top_label = new QLabel;
+
+    QString this_title  = "Keypad Dirs";
+    if (keyboard) this_title = "Keyboard Dirs";
+    make_standard_label(top_label, this_title, TERM_BLUE);
+    return_layout->addWidget(top_label, Qt::AlignCenter);
+
+    QString letters = "7894 6123";
+    if (keyboard) letters = "tyug jvbn";
+
+    QGridLayout *dir_keyboard = new QGridLayout;
+    return_layout->addLayout(dir_keyboard);
+
+    int which_char = 0;
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            QLabel *this_label = new QLabel();
+            make_standard_label(this_label, QString(letters[which_char++]), TERM_BLUE);
+            dir_keyboard->addWidget(this_label, j, i, Qt::AlignCenter);
+        }
+    }
+
+    return_layout->addStretch(1000);
+}
+
+
+void TargetCommandList::add_targeting_commands(QVBoxLayout *return_layout)
+{
+    int x = 0;
+
+    while (TRUE)
+    {
+        command_desc *cmd_ptr = &list_commands_targeting[x++];
+
+        // Null pointer means we are done
+        if (!cmd_ptr->command_title.length()) break;
+
+        QLabel *this_title = new QLabel();
+        make_standard_label(this_title, QString(cmd_ptr->command_title), TERM_BLUE);
+        return_layout->addWidget(this_title, Qt::AlignLeft);
+    }
+
+    QLabel *dummy = new QLabel("   ");
+    return_layout->addWidget(dummy, x, 0);
+}
+
+TargetCommandList::TargetCommandList(void)
+{
+    //Set up the main scroll bar
+    QScrollArea *scroll_box = new QScrollArea(this);
+    QWidget *top_widget = new QWidget(this);
+    scroll_box->setWidget(top_widget);
+    scroll_box->setWidgetResizable(TRUE);
+    QVBoxLayout *main_layout = new QVBoxLayout(this);
+    top_widget->setLayout(main_layout);
+    QHBoxLayout *top_layout = new QHBoxLayout(this);
+    top_layout->addWidget(scroll_box);
+
+    setLayout(top_layout);
+
+    QLabel *targeting_prompt = new QLabel(color_string(QString("<h2>Targeting Commands</h2>"), TERM_BLUE));
+    main_layout->addWidget(targeting_prompt, Qt::AlignCenter);
+
+    QHBoxLayout *top_across = new QHBoxLayout;
+    main_layout->addLayout(top_across);
+
+    QVBoxLayout *vlay_key_dirs = new QVBoxLayout;
+    add_dir_targeting(vlay_key_dirs, TRUE);
+    top_across->addLayout(vlay_key_dirs);
+
+    top_across->addStretch(1);
+    QVBoxLayout *vlay_pad_dirs = new QVBoxLayout;
+    add_dir_targeting(vlay_pad_dirs, FALSE);
+    top_across->addLayout(vlay_pad_dirs);
+
+    top_across->addStretch(1);
+
+    QVBoxLayout *vlay_target_commands = new QVBoxLayout;
+    add_targeting_commands(vlay_target_commands);
+    main_layout->addLayout(vlay_target_commands);
+
+    QDialogButtonBox buttons;
+    buttons.setStandardButtons(QDialogButtonBox::Ok);
+    connect(&buttons, SIGNAL(accepted()), this, SLOT(close()));
+    main_layout->addWidget(&buttons);
+
+    main_layout->addStretch(1);
+    top_layout->addStretch(1);
+
+    setLayout(top_layout);
+    setWindowTitle(tr("Targeting Command List"));
+
+    QSize this_size = QSize(width(), height() * 1.5);
+    resize(ui_max_widget_size(this_size));
+    updateGeometry();
+
+    this->exec();
+}
+
 void do_cmd_list_keyboard_commands(void)
 {
     KeyboardCommandList();
@@ -560,6 +692,10 @@ void do_cmd_list_keyboard_commands(void)
 void do_cmd_list_mouse_commands(void)
 {
     MouseCommandList();
+}
+void do_cmd_list_targeting_commands(void)
+{
+    TargetCommandList();
 }
 
 static void process_move_key(int dir, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)

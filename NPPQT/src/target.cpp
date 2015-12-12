@@ -19,6 +19,7 @@
 #include "src/npp.h"
 #include "griddialog.h"
 #include "src/help.h"
+#include "src/command_list.h"
 #include <QObject>
 
 /*
@@ -199,6 +200,9 @@ static void target_set_interactive_prepare(int mode)
     /* Reset "temp" array */
     target_grids.clear();
 
+    // Not needed.
+    if (mode & (TARGET_GRID)) return;
+
     QRect vis = visible_dungeon();
 
     /* Scan the current panel */
@@ -306,6 +310,11 @@ static s16b target_pick(int y1, int x1, int dy, int dx)
 
 static void describe_grid_brief(int y, int x)
 {
+    if (y < 0) return;
+    if (y >= p_ptr->cur_map_hgt) return;
+    if (x < 0) return;
+    if (x >= p_ptr->cur_map_wid) return;
+
     dungeon_type *d_ptr = &dungeon_info[y][x];
     int m_idx = d_ptr->monster_idx;
     if (m_idx > 0 && mon_list[m_idx].ml) {
@@ -318,27 +327,32 @@ static void describe_grid_brief(int y, int x)
     int saved_o_idx = -1;
     int n = 0;
     int o_idx = d_ptr->object_idx;
-    while (o_idx) {
+    while (o_idx)
+    {
         object_type *o_ptr = o_list + o_idx;
-        if (o_ptr->marked) {
+        if (o_ptr->marked)
+        {
             saved_o_idx = o_idx;
             ++n;
         }
         o_idx = o_ptr->next_o_idx;
     }
 
-    if (n > 1) {
+    if (n > 1)
+    {
         message("You see a pile of objects.");
         return;
     }
 
-    if (n == 1) {
+    if (n == 1)
+    {
         QString name = object_desc(o_list + saved_o_idx, ODESC_PREFIX | ODESC_FULL);
         message("You see " + name + ".");
         return;
     }
 
-    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN)) {
+    if (d_ptr->cave_info & (CAVE_MARK | CAVE_SEEN))
+    {
         QString x_name;
         int x_idx = d_ptr->effect_idx;
         while (x_idx) {
@@ -362,6 +376,7 @@ static void describe_grid_brief(int y, int x)
         message(msg);
     }
 }
+
 
 /*
  * Handle "target" and "look".
@@ -414,39 +429,17 @@ bool target_set_interactive(int mode, int x, int y)
     int py = p_ptr->py;
     int px = p_ptr->px;
 
-    int i, d, m;
+    int i, d, target_count;
 
     bool done = FALSE;
-    bool flag = TRUE;
+    bool interactive = TRUE;
 
     u16b path_n;
     u16b path_g[PATH_SIZE];
     u16b path_gx[PATH_SIZE];
 
-    /* Temporarily turn off animate_flicker, must be re-set before exiting the function  */
-    //bool temp_animate_flicker = animate_flicker;
-    //animate_flicker = FALSE;
-
-    color_message("Entering interactive mode", TERM_SKY_BLUE);
-
-    /* If we haven't been given an initial location, start on the
-       player. */
-    if (x == -1 || y == -1)
-    {
-        x = p_ptr->px;
-        y = p_ptr->py;
-    }
-    /* If we /have/ been given an initial location, make sure we
-       honour it by going into "free targeting" mode. */
-    else
-    {
-        flag = FALSE;
-    }
-
     /* Cancel target */
     target_set_monster(0);
-
-    /* health_track(0); */
 
       /* All grids are selectable */
     if (mode & (TARGET_GRID))
@@ -455,28 +448,51 @@ bool target_set_interactive(int mode, int x, int y)
         mode &= ~(TARGET_LOOK | TARGET_KILL | TARGET_TRAP);
 
         /* Disable interesting grids */
-        flag = FALSE;
+       interactive = FALSE;
     }
 
     /* Prepare the "temp" array */
     target_set_interactive_prepare(mode);
 
+    /* If we haven't been given an initial location, start on the
+       player. */
+    if ((x == -1 || y == -1) && target_grids.size())
+    {
+        x = p_ptr->px;
+        y = p_ptr->py;
+        ui_targeting_show(MODE_TARGETING_INTERACTIVE);
+    }
+    /*
+     * If we /have/ been given an initial location, make sure we
+     * honour it by going into "free targeting" mode.
+     */
+    else
+    {
+        if (x == -1 || y == -1)
+        {
+            x = p_ptr->px;
+            y = p_ptr->py;
+        }
+
+        interactive = FALSE;
+        ui_targeting_show(MODE_TARGETING_MANUAL);
+    }
+
+
     /* Start near the player */
-    m = 0;
+    target_count = 0;
 
     /* Interact */
     while (!done)
     {
-        ui_toolbar_show(TOOLBAR_TARGETING_INTERACTIVE);
-
         /* Interesting grids */
-        if (flag && target_grids.size())
+        if (interactive && target_grids.size())
         {
             bool path_drawn = FALSE;
             int yy, xx;
 
-            y = target_grids[m].y;
-            x = target_grids[m].x;
+            y = target_grids[target_count].y;
+            x = target_grids[target_count].x;
 
             /* Dummy pointers to send to project_path */
             yy = y;
@@ -506,22 +522,34 @@ bool target_set_interactive(int mode, int x, int y)
 
             ui_show_cursor(-1, -1);
 
-
             /* Assume no "direction" */
             d = 0;
+
+            /*
+             * If we click, move the target location to the click and
+             * switch to "free targetting" mode by unsetting 'flag'.
+             * This means we get some info about wherever we've picked.
+             */
+            if (input.mode == INPUT_MODE_MOUSE)
+            {
+                x = input.x;
+                y = input.y;
+                color_message("Entering manual targeting mode", TERM_SKY_BLUE);
+                ui_targeting_show(MODE_TARGETING_MANUAL);
+                interactive = FALSE;
+                continue;
+            }
 
             /* Analyze */
             switch (input.key)
             {
                 case Qt::Key_Escape:
-                case Qt::Key_Q:
                 case Qt::Key_X:
                 {
-                    color_message(QObject::tr("Exiting interactive mode"), TERM_SKY_BLUE);
+                    color_message(QObject::tr("Exiting targeting mode"), TERM_SKY_BLUE);
                     done = TRUE;
                     break;
                 }
-                case Qt::Key_copyright:
                 case Qt::Key_C:
                 case Qt::Key_Comma:
                 {
@@ -532,23 +560,13 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_Space:
                 case Qt::Key_Plus:
                 {
-                    if (++m == target_grids.size()) m = 0;
+                    if (++target_count == target_grids.size()) target_count = 0;
                     break;
                 }
 
                 case Qt::Key_Minus:
                 {
-                    if (m-- == 0)  m = target_grids.size() - 1;
-                    break;
-                }
-                case Qt::Key_Ampersand:
-                case Qt::Key_P:
-                {
-                    /* Recenter around player */
-                    ui_center(p_ptr->py, p_ptr->px);
-
-                    y = py;
-                    x = px;
+                    if (target_count-- == 0)  target_count = target_grids.size() - 1;
                     break;
                 }
                 case Qt::Key_Exclam:
@@ -557,37 +575,22 @@ bool target_set_interactive(int mode, int x, int y)
                     GridDialog(y, x);
                     break;
                 }
-
-                /* If we click, move the target location to the click and
-                   switch to "free targetting" mode by unsetting 'flag'.
-                   This means we get some info about wherever we've picked. */
-                case 0:
-                {
-                    x = input.x;
-                    y = input.y;
-                    flag = FALSE;
-                    break;
-                }
-
+                case Qt::Key_Asterisk:
                 case Qt::Key_M:
                 {
-                    color_message("Exiting interactive mode", TERM_SKY_BLUE);
-                    flag = FALSE;
-                    done = TRUE;
+                    color_message("Entering manual targeting mode", TERM_SKY_BLUE);
+                    ui_targeting_show(MODE_TARGETING_MANUAL);
+                    interactive = FALSE;
                     break;
                 }
                 case Qt::Key_Question:
                 {
-                    QString help = get_help_topic(QString("target_info"), "Targeting Information");
-                    pop_up_message_box(help, QMessageBox::Information);
+                    do_cmd_list_targeting_commands();
                     break;
                 }
-
                 case Qt::Key_H:
                 case Qt::Key_5:
-                case Qt::Key_0:
                 case Qt::Key_Period:
-                case Qt::Key_NumberSign:
                 {
                     int m_idx = dungeon_info[y][x].monster_idx;
 
@@ -629,8 +632,8 @@ bool target_set_interactive(int mode, int x, int y)
             /* Hack -- move around */
             if (d)
             {
-                int old_y = target_grids[m].y;
-                int old_x = target_grids[m].x;
+                int old_y = target_grids[target_count].y;
+                int old_x = target_grids[target_count].x;
 
                 /* Find a new monster */
                 i = target_pick(old_y, old_x, ddy[d], ddx[d]);
@@ -662,7 +665,7 @@ bool target_set_interactive(int mode, int x, int y)
                 }
 
                 /* Use interesting grid if found */
-                if (i >= 0) m = i;
+                if (i >= 0) target_count = i;
             }
         }
 
@@ -694,23 +697,77 @@ bool target_set_interactive(int mode, int x, int y)
             /* Remove the path */
             if (path_drawn) ui_destroy_path();
 
-            ui_show_cursor(-1, -1);
-
-            /* Cancel tracking */
-            /* health_track(0); */
+            ui_show_cursor(y, x);
 
             /* Assume no direction */
             d = 0;
+
+            if (input.mode == INPUT_MODE_MOUSE)
+            {
+
+                /* We only target if we click somewhere where the cursor
+                   is already (i.e. a double-click without a time limit) */
+                if (input.x == x && input.y == y)
+                {
+                    // Handle a trap
+                    if (mode & (TARGET_TRAP))
+                    {
+                        if (cave_any_trap_bold(y, x))
+                        {
+                            target_set_location(y, x);
+                            done = TRUE;
+                        }
+                        continue;
+                    }
+
+                    /* Make an attempt to target the monster on the given
+                       square rather than the square itself (it seems this
+                       is the more likely intention of clicking on a
+                       monster). */
+                    int m_idx = dungeon_info[y][x].monster_idx;
+
+                    if ((m_idx > 0) && target_able(m_idx))
+                    {
+                        health_track(m_idx);
+                        target_set_monster(m_idx);
+                    }
+                    else
+                    {
+                        /* There is no monster, or it isn't targettable,
+                           so target the location instead. */
+                        target_set_location(y, x);
+                        done = TRUE;
+                    }
+                }
+                else
+                {
+                    /* Just move the cursor for now - another click will
+                       target. */
+                    x = input.x;
+                    y = input.y;
+                }
+                continue;
+            }
 
             /* Analyze the keypress */
             switch (input.key)
             {
                 case Qt::Key_Escape:
-                case Qt::Key_Q:
                 case Qt::Key_X:
                 {
-                    color_message(QObject::tr("Exiting interactive mode"), TERM_SKY_BLUE);
+                    color_message(QObject::tr("Exiting targeting mode"), TERM_SKY_BLUE);
                     done = TRUE;
+                    continue;
+                }
+                case Qt::Key_Asterisk:
+                case Qt::Key_M:
+                {
+                    if (((mode & (TARGET_GRID)) != TARGET_GRID) && target_grids.size())
+                    {
+                        color_message("Entering interactive targeting mode", TERM_SKY_BLUE);
+                        ui_targeting_show(MODE_TARGETING_INTERACTIVE);
+                        interactive = TRUE;
+                    }
                     break;
                 }
                 case Qt::Key_copyright:
@@ -740,47 +797,8 @@ bool target_set_interactive(int mode, int x, int y)
                     break;
                 }
 
-                case 0:
-                {
-
-                    /* We only target if we click somewhere where the cursor
-                       is already (i.e. a double-click without a time limit) */
-                    if (input.x == x && input.y == y)
-                    {
-                        /* Make an attempt to target the monster on the given
-                           square rather than the square itself (it seems this
-                           is the more likely intention of clicking on a
-                           monster). */
-                        int m_idx = dungeon_info[y][x].monster_idx;
-
-                        if ((m_idx > 0) && target_able(m_idx))
-                        {
-                            health_track(m_idx);
-                            target_set_monster(m_idx);
-                        }
-                        else
-                        {
-                            /* There is no monster, or it isn't targettable,
-                               so target the location instead. */
-                            target_set_location(y, x);
-                        }
-
-                        done = TRUE;
-                    }
-                    else
-                    {
-                        /* Just move the cursor for now - another click will
-                           target. */
-                        x = input.x;
-                        y = input.y;
-                    }
-                    break;
-                }
-
-                case Qt::Key_NumberSign:
                 case Qt::Key_H:
                 case Qt::Key_5:
-                case Qt::Key_0:
                 case Qt::Key_Period:
                 {
                     target_set_location(y, x);
@@ -790,8 +808,7 @@ bool target_set_interactive(int mode, int x, int y)
 
                 case Qt::Key_Question:
                 {
-                    QString help = get_help_topic(QString("target_info"), "Targeting Information");
-                    pop_up_message_box(help, QMessageBox::Information);
+                    do_cmd_list_targeting_commands();
                     break;
                 }
                 default:
@@ -837,13 +854,10 @@ bool target_set_interactive(int mode, int x, int y)
     /* Forget */
     target_grids.clear();
 
-    ui_toolbar_hide(TOOLBAR_TARGETING_INTERACTIVE);
+    ui_targeting_hide();
 
     /* Recenter around player */
     ui_ensure(py, px);
-
-    /* Re-set animate flicker */
-    //animate_flicker = temp_animate_flicker;
 
     /* Failure to set target */
     if (!p_ptr->target_set) return (FALSE);
@@ -1084,6 +1098,8 @@ bool get_aim_dir(int *dp, bool target_trap)
     int dir = 0;
     int old_dir;
 
+    bool done = FALSE;
+
     /* Initialize */
     (*dp) = 0;
 
@@ -1092,11 +1108,11 @@ bool get_aim_dir(int *dp, bool target_trap)
 
     else color_message(QObject::tr("Entering targetting mode"), TERM_YELLOW);
 
-    /* Ask until satisfied */
-    while (!dir)
-    {
-        ui_toolbar_show(TOOLBAR_TARGETING);
+    ui_targeting_show(MODE_TARGETING_AIMING);
 
+    /* Ask until satisfied */
+    while (!dir && !done)
+    {
         ui_show_cursor(p_ptr->py, p_ptr->px);        
 
         /* Get a command (or Cancel) */
@@ -1105,48 +1121,52 @@ bool get_aim_dir(int *dp, bool target_trap)
         // Paranoia
         if (input.mode == INPUT_MODE_NONE) break;
 
-        if (input.key == Qt::Key_Escape)
+        if ((input.key == Qt::Key_Escape) || (input.key == Qt::Key_X))
         {
             color_message(QObject::tr("Exiting targetting mode"), TERM_VIOLET);
             break;
         }
 
+        if (input.mode == INPUT_MODE_MOUSE)
+        {
+            /* Calculate approximate angle */
+            if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = DIR_TARGET;
+            else done = TRUE;
+            continue;
+        }
+
         /* Analyze */
         switch (input.key)
         {
-            case 0:
-            {
-                /* Mouse aiming */
-                if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = DIR_TARGET;
-                break;
-            }
+            case Qt::Key_M:
             case Qt::Key_Asterisk:
             {
                 /* Set new target, use target if legal */
                 int mode = TARGET_KILL;
                 if (target_trap) mode |= TARGET_TRAP;
                 if (target_set_interactive(mode, -1, -1)) dir = DIR_TARGET;
-                break;
+                else done = TRUE;
+                continue;
             }
-            case Qt::Key_copyright:
             case Qt::Key_C:
             case Qt::Key_Comma:
             {
                 /* Set to closest target */
-                if (target_set_closest(TARGET_KILL)) dir = DIR_TARGET;
+                if (target_set_closest(TARGET_KILL))
+                {
+                    dir = DIR_TARGET;
+                    continue;
+                }
                 break;
             }
             case Qt::Key_Question:
             {
-                QString help = get_help_topic(QString("target_info"), "Targeting Information");
-                pop_up_message_box(help, QMessageBox::Information);
-                break;
+                do_cmd_list_targeting_commands();
+                continue;
             }
             case Qt::Key_H:
             case Qt::Key_5:
-            case Qt::Key_0:
             case Qt::Key_Period:
-            case Qt::Key_NumberSign:
             {
                 /* Use current target, if set and legal */
                 if (target_okay()) dir = DIR_TARGET;
@@ -1164,7 +1184,7 @@ bool get_aim_dir(int *dp, bool target_trap)
         if (!dir) color_message("Illegal aim direction!", TERM_ORANGE);
     }
 
-    ui_toolbar_hide(TOOLBAR_TARGETING);
+    ui_targeting_hide();
 
     ui_show_cursor(-1, -1);
 
@@ -1267,6 +1287,8 @@ bool get_rep_dir(int *dp)
     if (!dir)
     {
         color_message(QObject::tr("Enter a direction"), TERM_YELLOW);
+
+        ui_targeting_show(MODE_TARGETING_DIRECTION);
     }
 
     /* Get a direction */
@@ -1276,9 +1298,15 @@ bool get_rep_dir(int *dp)
 
         if (input.mode == INPUT_MODE_KEY)
         {
-            if (input.key == Qt::Key_Escape) return false;
+            if ((input.key == Qt::Key_Escape) || (input.key == Qt::Key_X)) dir = DIR_TARGET;
 
-            dir = target_dir(input);
+            else if (input.key == Qt::Key_Question)
+            {
+                do_cmd_list_targeting_commands();
+                continue;
+            }
+
+            else dir = target_dir(input);
         }\
         /* Check mouse coordinates */
         else if (input.mode == INPUT_MODE_MOUSE)
@@ -1288,6 +1316,8 @@ bool get_rep_dir(int *dp)
             dir = ui_get_dir_from_slope(p_ptr->py, p_ptr->px, input.y, input.x);
         }
     }
+
+    ui_targeting_hide();
 
     if (!dir) color_message("Illegal direction", TERM_ORANGE);
 

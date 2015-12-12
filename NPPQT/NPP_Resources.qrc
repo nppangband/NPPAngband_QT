@@ -102,5 +102,8 @@
         <file>lib/icons/arrow-down.png</file>
         <file>lib/icons/arrow-up.png</file>
         <file>lib/icons/arrow-up-double.png</file>
+        <file>lib/icons/select.png</file>
+        <file>lib/icons/arrow-right-double.png</file>
+        <file>lib/icons/arrow-left-double.png</file>
     </qresource>
 </RCC>

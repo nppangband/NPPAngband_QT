@@ -27,8 +27,6 @@
 #include "src/cmds.h"
 #include <QTimer>
 
-#define UI_MODE_DEFAULT 0
-#define UI_MODE_INPUT 1
 
 #define MAX_RECENT_SAVEFILES    5
 
@@ -43,7 +41,6 @@ class DunOverheadGrid;
 class DungeonCursor;
 class QTextEdit;
 class QLineEdit;
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -53,7 +50,7 @@ public:
     QGraphicsView *graphics_view;
     QGraphicsScene *dungeon_scene;
 
-    int ui_mode;
+    int targeting_mode;
     UserInput input;
     QEventLoop ev_loop;
 
@@ -88,8 +85,6 @@ public:
     QDockWidget *message_dock;
     QDockWidget *sidebar_dock;
     QTextEdit *message_area;
-
-    QToolBar *target_toolbar;
     QToolBar *status_bar;
 
     QWidget *sidebar_widget;
@@ -99,6 +94,7 @@ public:
     QVBoxLayout *player_info_data;
     QVBoxLayout *player_info_vlay;
     QVBoxLayout *mon_health_vlay;
+    QGridLayout *targeting_glay;
 
     MainWindow();
 
@@ -113,7 +109,7 @@ public:
     void set_graphic_mode(int mode);
     void set_keymap_mode(int mode);
     void redraw_screen();
-    void redraw_all(void);
+    void redraw_all();
     void update_cursor();
     void force_redraw();
     bool panel_contains(int y, int x);    
@@ -122,6 +118,7 @@ public:
     QPixmap apply_shade(QString tile_id, QPixmap tile, QString shade_id);
     void wait_animation(int n_animations = 1);
     void animation_done();
+
     void create_sidebar();
     void update_sidebar_font();
     void update_sidebar_player();
@@ -138,8 +135,9 @@ public:
     void update_statusbar();
     void hide_statusbar();
     void show_statusbar();
-    void create_targetbar();
-    void update_targetbar(int toolbar);
+    void create_targeting_sidebar();
+    void hide_targeting_sidebar();
+    void show_targeting_sidebar();
     void save_png_screenshot(void);
 
 
@@ -164,16 +162,15 @@ private slots:
     void about();
     void command_list_keyboard();
     void command_list_mouse();
+    void command_list_targeting();
     void options_dialog();
     void font_dialog_main_window();
     void font_dialog_message_window();
     void font_dialog_sidebar_window();
 
-
     void manage_hotkeys();
     void export_hotkeys();
     void import_hotkeys();
-
 
     void slot_find_player();
     void slot_redraw();
@@ -182,8 +179,6 @@ private slots:
 
     void do_create_package();
     void do_extract_from_package();
-
-    void slot_targeting_button();
 
     void slot_simplified_keyset() {set_keymap_mode(KEYSET_NEW);}
     void slot_angband_keyset() {set_keymap_mode(KEYSET_ANGBAND);}
@@ -217,7 +212,8 @@ private slots:
 
     void timed_events();
 
-
+    void set_input_key(int this_key);
+    void target_choice();
 
 private:
 
@@ -324,6 +320,7 @@ private:
     QAction *help_about_Qt;
     QAction *help_command_list;
     QAction *help_mouse_list;
+    QAction *help_targeting_list;
     QAction *separator_act;
 
 
@@ -382,15 +379,6 @@ private:
     QAction *nativity;
     QAction *status_trap_detect;
 
-    // QActions for the targetbar
-    QAction *escape;
-    QAction *use_current;
-    QAction *target_closest;
-    QAction *target_interactive;
-    QAction *target_manually;
-    QAction *target_player;
-    QAction *view_grid_contents;
-    QAction *target_help;
 
 // Monster list window
 private:

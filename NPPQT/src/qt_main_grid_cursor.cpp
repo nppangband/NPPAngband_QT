@@ -47,7 +47,7 @@ void DungeonCursor::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     painter->save();
 
-    if (parent->ui_mode == UI_MODE_INPUT)
+    if (parent->targeting_mode)
     {
         painter->setOpacity(0.5);
         painter->setPen(Qt::NoPen);
@@ -150,7 +150,7 @@ static bool is_double_height_tile(int y, int x)
 
     if (use_graphics != GRAPHICS_RAYMOND_GAUSTADNES) return (FALSE);
     if (!d_ptr->double_height_monster) return (FALSE);
-    if (main_window->ui_mode == UI_MODE_INPUT) return (FALSE);
+    if (main_window->targeting_mode) return (FALSE);
     if (in_bounds(y-1, x))
     {
         dungeon_type *dun2_ptr = &dungeon_info[y-1][x];
@@ -674,29 +674,32 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (parent->anim_depth > 0) return;
 
     // Already running a command
-    if (main_window->executing_command && (parent->ui_mode != UI_MODE_INPUT)) return;
+    if (main_window->executing_command && (!parent->targeting_mode)) return;
 
-    main_window->executing_command = TRUE;
 
-    bool left_button = (event->button() & Qt::LeftButton);
-    bool right_button = (event->button() & Qt::RightButton);
-    bool middle_button = (event->button() & Qt::MiddleButton);
-    bool extra1 = (event->button() & Qt::XButton1);
-    bool extra2 = (event->button() & Qt::XButton2);
-
-    int old_x = parent->cursor->c_x;
-    int old_y = parent->cursor->c_y;
-    parent->grids[old_y][old_x]->update();
-    if (parent->ui_mode == UI_MODE_INPUT)
+    if (parent->targeting_mode)
     {
+        parent->input.key = 0;
         parent->input.x = c_x;
         parent->input.y = c_y;
         parent->input.mode = INPUT_MODE_MOUSE;
-        parent->ui_mode = UI_MODE_DEFAULT;
         parent->ev_loop.quit();
     }
     else if (!parent->ev_loop.isRunning())
     {
+
+        bool left_button = (event->button() & Qt::LeftButton);
+        bool right_button = (event->button() & Qt::RightButton);
+        bool middle_button = (event->button() & Qt::MiddleButton);
+        bool extra1 = (event->button() & Qt::XButton1);
+        bool extra2 = (event->button() & Qt::XButton2);
+
+        int old_x = parent->cursor->c_x;
+        int old_y = parent->cursor->c_y;
+        parent->grids[old_y][old_x]->update();
+
+        main_window->executing_command = TRUE;
+
         if (right_button)
         {
             parent->cursor->setVisible(true);
