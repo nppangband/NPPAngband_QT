@@ -709,7 +709,7 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         else if (left_button) do_cmd_findpath(c_y, c_x);
         else if (middle_button)
         {
-            do_cmd_walk(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x), FALSE);
+            do_cmd_walk(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x), always_pickup);
         }
         else if (extra1)
         {

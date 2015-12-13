@@ -172,7 +172,7 @@ void AllObjectsDialog::update_header()
 
 
 // Confirm which tabs should be displayed.
-void AllObjectsDialog::confirm_tabs()
+void AllObjectsDialog::confirm_tabs(bool status_check)
 {
     allow_floor = FALSE;
     allow_inven = FALSE;
@@ -220,6 +220,9 @@ void AllObjectsDialog::confirm_tabs()
         allow_quiver = TRUE;
         break;
     }
+
+    // We are just checking the status, not handling the dialog
+    if (status_check) return;
 
     if (no_objects())
     {
@@ -296,7 +299,7 @@ void AllObjectsDialog::link_pushbuttons()
 void AllObjectsDialog::update_dialog()
 {
     update_header();
-    confirm_tabs();
+    confirm_tabs(FALSE);
 
     if (no_objects())
     {
@@ -343,7 +346,8 @@ void AllObjectsDialog::update_dialog()
 
 AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 {
-    (void) do_buttons;
+    (void)do_buttons;
+    confirm_tabs(TRUE);
 
     object_selection = new QButtonGroup(this);
     object_selection->setExclusive(TRUE);

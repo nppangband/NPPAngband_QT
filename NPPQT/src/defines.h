@@ -502,10 +502,10 @@ enum
 #define TARGET_LOOK		0x02
 #define TARGET_XTRA		0x04
 #define TARGET_GRID		0x08
-#define TARGET_QUIET	0x08
+#define TARGET_QUIET	0x10
 #define TARGET_TRAP		0x20
 #define TARGET_PROBE	0x40
-
+// 0x80 Unused
 
 #define LEV_THEME_HEAD				11
 #define LEV_THEME_CREEPING_COIN		0	/*creeping coins*/

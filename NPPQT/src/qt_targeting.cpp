@@ -168,7 +168,7 @@ void MainWindow::hide_targeting_sidebar()
 void MainWindow::show_targeting_sidebar()
 {
     // Paranoia
-    if (targeting_mode == MODE_NO_TARGETING)
+    if ((targeting_mode == MODE_NO_TARGETING) || !show_targeting_buttons)
     {
         hide_targeting_sidebar();
         return;

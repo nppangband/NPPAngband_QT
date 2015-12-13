@@ -225,7 +225,7 @@ static void target_set_interactive_prepare(int mode)
             if (mode & (TARGET_KILL))
             {
                 /* Must contain a monster */
-                if (!(dungeon_info[y][x].monster_idx > 0)) do_continue = TRUE;
+                if (!dungeon_info[y][x].has_monster()) do_continue = TRUE;
 
                 /* Must be a targettable monster */
                 if (!target_able(dungeon_info[y][x].monster_idx)) do_continue = TRUE;

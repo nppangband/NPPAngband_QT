@@ -1060,7 +1060,7 @@ D:fires a ball of static!
 N:100:pile of rubble
 G:::TERM_WHITE
 X:1:1:5:0:1:0:0
-F:MOVE | CAN_TUNNEL | EFFECT | HURT_ROCK
+F:NOTICE | REMEMBER | CAN_TUNNEL | HURT_ROCK
 
 
 # XXX Record101 is unused XXX #
@@ -1069,7 +1069,7 @@ N:102:pile of rubble over an object
 G:::TERM_WHITE
 M:100
 X:1:1:5:0:1:0:0
-F:MOVE | CAN_TUNNEL | EFFECT | HURT_ROCK
+F:NOTICE | REMEMBER | CAN_TUNNEL | HURT_ROCK
 
 
 N:103:strange inscription

@@ -1264,7 +1264,7 @@ void BanishSelectDialog::add_monster_types(QGridLayout *return_layout)
         i++;
     }
 
-    banish_choice_group = new QButtonGroup;
+    banish_choice_group = new QButtonGroup(this);
     banish_choice_group->setExclusive(TRUE);
 
     count = qSqrt(count);
@@ -2387,6 +2387,7 @@ int do_ident_item(int item, object_type *o_ptr)
 
     /* In Moria, mark the item as fully known, else identify it */
     if (game_mode == GAME_NPPMORIA) o_ptr->mark_fully_known(TRUE);
+    else o_ptr->mark_known(TRUE);
 
     /* Apply an autoinscription, if necessary */
     apply_autoinscription(o_ptr);
@@ -2573,7 +2574,7 @@ bool identify_fully(void)
     }
 
     /* Mark the item as fully known */
-    o_ptr->ident |= (IDENT_MENTAL);
+    o_ptr->mark_fully_known(TRUE);
 
      o_ptr->update_object_flags();
 

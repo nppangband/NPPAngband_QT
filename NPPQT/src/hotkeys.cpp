@@ -1598,16 +1598,16 @@ HotKeyDialog::HotKeyDialog(void)
     load_new_hotkey(0);
 
     // Since these radio button groups can cover multiple steps, they are toggled manuallly.
-    group_directions = new QButtonGroup;
+    group_directions = new QButtonGroup(this);
     group_directions->setExclusive(FALSE);
     connect(group_directions, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_direction_changed(int)));
-    group_target_choices = new QButtonGroup;
+    group_target_choices = new QButtonGroup(this);
     group_target_choices->setExclusive(FALSE);
     connect(group_target_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_target_changed(int)));
-    group_specific_object = new QButtonGroup;
+    group_specific_object = new QButtonGroup(this);
     group_specific_object->setExclusive(FALSE);
     connect(group_specific_object, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_obj_selection_changed(int)));
-    group_resting_choices = new QButtonGroup;
+    group_resting_choices = new QButtonGroup(this);
     group_resting_choices->setExclusive(FALSE);
     connect(group_resting_choices, SIGNAL(buttonClicked(int)), this, SLOT(hotkey_step_rest_choice_changed(int)));
 
@@ -1821,8 +1821,8 @@ static void run_hotkey_step(int step)
     {
         // Do nothing
     }
-    else if (command == HK_TYPE_MOVE) do_cmd_walk(arg_ptr->direction, FALSE);
-    else if (command == HK_TYPE_JUMP) do_cmd_walk(arg_ptr->direction, TRUE);
+    else if (command == HK_TYPE_MOVE) do_cmd_walk(arg_ptr->direction, always_pickup);
+    else if (command == HK_TYPE_JUMP) do_cmd_walk(arg_ptr->direction, !always_pickup);
     else if (command == HK_TYPE_RUN) do_cmd_run(arg_ptr->direction);
     else if (command == HK_TYPE_ALTER) do_cmd_alter(arg_ptr->direction);
     else if (command == HK_TYPE_DISARM) do_cmd_disarm(arg_ptr->direction);

@@ -287,7 +287,7 @@ static void wr_monster_lore(int r_idx)
 /*
  * Write an "xtra" record
  */
-static void wr_xtra(int k_idx)
+static void wr_object_kind_info(int k_idx)
 {
     byte tmp8u = 0;
 
@@ -307,6 +307,8 @@ static void wr_xtra(int k_idx)
         tmp8u = k_ptr->use_verify[i];
         wr_byte(tmp8u);
     }
+
+    wr_string(k_ptr->autoinscribe);
 
 }
 
@@ -1001,7 +1003,7 @@ static bool wr_savefile(void)
     /* Dump the object memory */
     tmp16u = z_info->k_max;
     wr_u16b(tmp16u);
-    for (i = 0; i < tmp16u; i++) wr_xtra(i);
+    for (i = 0; i < tmp16u; i++) wr_object_kind_info(i);
 
     /* Hack -- Dump the quests */
     tmp16u = z_info->q_max;

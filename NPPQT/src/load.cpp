@@ -2065,6 +2065,8 @@ static int rd_savefile(void)
             rd_byte(&tmp8u);
             k_ptr->use_verify[i] = tmp8u;
         }
+
+        rd_string(&k_ptr->autoinscribe);
     }
     if (arg_fiddle) pop_up_message_box("Loaded Object Memory");
 

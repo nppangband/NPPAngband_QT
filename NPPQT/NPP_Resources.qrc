@@ -105,5 +105,6 @@
         <file>lib/icons/select.png</file>
         <file>lib/icons/arrow-right-double.png</file>
         <file>lib/icons/arrow-left-double.png</file>
-    </qresource>
+    <file>lib/icons/hotkeys.png</file>
+  </qresource>
 </RCC>

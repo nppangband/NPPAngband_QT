@@ -69,7 +69,7 @@ public:
     bool do_25d_graphics;
     bool do_pseudo_ascii;
     bool do_wall_block;
-
+    bool show_targeting_buttons;
     bool executing_command;
 
     // Scaled tiles
@@ -164,6 +164,7 @@ private slots:
     void command_list_mouse();
     void command_list_targeting();
     void options_dialog();
+    void toggle_show_targeting();
     void font_dialog_main_window();
     void font_dialog_message_window();
     void font_dialog_sidebar_window();
@@ -277,6 +278,7 @@ private:
     QAction *hotkey_manage;
     QAction *hotkey_export;
     QAction *hotkey_import;
+    QAction *show_targeting_act;
 
 
     //Commmands for the knowledge menu

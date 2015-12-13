@@ -498,7 +498,7 @@ MainWindow::MainWindow()
     targeting_mode = MODE_NO_TARGETING;
 
     cursor = new DungeonCursor(this);
-    do_25d_graphics = do_pseudo_ascii = do_wall_block = false;
+    show_targeting_buttons = do_25d_graphics = do_pseudo_ascii = do_wall_block = false;
 
     overhead_map_multiplier = dun_map_multiplier = main_multiplier = "1:1";
 
@@ -848,8 +848,8 @@ void MainWindow::hideEvent(QHideEvent *event)
 
 void MainWindow::showEvent(QShowEvent *event)
 {
-    if (show_obj_list) window_mon_list->show();
-    if (show_mon_list) window_obj_list->show();
+    if (show_obj_list) window_obj_list->show();
+    if (show_mon_list) window_mon_list->show();
     if (show_mon_recall) window_mon_recall->show();
     if (show_obj_recall) window_obj_recall->show();
     if (show_feat_recall) window_feat_recall->show();
@@ -880,6 +880,23 @@ void MainWindow::options_dialog()
     delete dlg;
     redraw_screen();
     handle_stuff();
+}
+
+void MainWindow::toggle_show_targeting()
+{
+    if (show_targeting_buttons)
+    {
+        show_targeting_act->setText("Show Targeting Buttons");
+        show_targeting_act->setStatusTip(tr("Display the targeting buttons in the sidebar when sleecting a target."));
+    }
+    else
+    {
+        show_targeting_act->setText("Hide Targeting Button");
+        show_targeting_act->setStatusTip(tr("Do not display the targeting buttons in the sidebar when sleecting a target."));
+    }
+
+    show_targeting_buttons = !show_targeting_buttons;
+    if (targeting_mode)show_targeting_sidebar();
 }
 
 void MainWindow::font_dialog_main_window()
@@ -1121,6 +1138,10 @@ void MainWindow::create_actions()
     options_act->setShortcut(Qt::Key_Equal);
     options_act->setIcon(QIcon(":/icons/lib/icons/options.png"));
     connect(options_act, SIGNAL(triggered()), this, SLOT(options_dialog()));
+
+    show_targeting_act = new QAction(tr("Hide Targeting Buttons"), this);
+    show_targeting_act->setStatusTip(tr("Do not display the targeting buttons in the sidebar when sleecting a target."));
+    connect(show_targeting_act, SIGNAL(triggered()), this, SLOT(toggle_show_targeting()));
 
     keymap_new = new QAction(tr("Simplified Command Set"), this);
     keymap_new->setStatusTip(tr("Use simplified keyset to enter commands (recommended for players new to Angband and variants"));
@@ -1456,7 +1477,7 @@ void MainWindow::create_menus()
     settings = menuBar()->addMenu(tr("&Settings"));
     settings->addAction(options_act);
 
-
+    settings->addAction(show_targeting_act);
 
     QMenu *choose_keymap = settings->addMenu("Choose Keyset");
     choose_keymap->addAction(keymap_new);
@@ -1640,6 +1661,8 @@ void MainWindow::read_settings()
 
     restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     recent_savefiles = settings.value("recentFiles").toStringList();
+    show_targeting_buttons = settings.value("target_buttons", false).toBool();
+    if (!show_targeting_buttons) toggle_show_targeting();
     do_25d_graphics = settings.value("graphics_25d", false).toBool();
     graphics_25d_act->setChecked(do_25d_graphics);
     do_pseudo_ascii = settings.value("pseudo_ascii", false).toBool();
@@ -1821,6 +1844,7 @@ void MainWindow::write_settings()
     settings.setValue("font_dun_map", font_dun_map.toString());
     settings.setValue("font_overhead_map", font_overhead_map.toString());
     settings.setValue("window_state", saveState());
+    settings.setValue("target_buttons", show_targeting_buttons);
     settings.setValue("graphics_25d", do_25d_graphics);
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("solid_block", do_wall_block);

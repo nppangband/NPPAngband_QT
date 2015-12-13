@@ -236,11 +236,7 @@ void player_death(void)
     QTime right_now = QTime::currentTime();
     QString long_day = QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString());
 
-    //TODO automatic character dump
-    if (death_char_dump)
-    {
-        save_screenshot(FALSE);
-    }
+
 
     write_death_note(long_day);
 
@@ -252,6 +248,12 @@ void player_death(void)
     p_ptr->player_turn = TRUE;
     redraw_stuff();
     p_ptr->player_turn = FALSE;
+
+    // Automatic character dump
+    if (death_char_dump)
+    {
+        save_screenshot(FALSE);
+    }
 
     PlayerDeathDialog();
 }

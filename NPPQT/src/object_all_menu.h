@@ -47,7 +47,7 @@ private:
     bool allow_equip;
     bool allow_quiver;
 
-    void confirm_tabs();
+    void confirm_tabs(bool status_check);
     void link_pushbuttons();
 
     bool no_objects();
