@@ -830,8 +830,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::hideEvent(QHideEvent *event)
 {
-    if (show_obj_list) window_mon_list->hide();
-    if (show_mon_list) window_obj_list->hide();
+    if (show_mon_list && window_mon_list) window_mon_list->hide();
+    if (show_obj_list && window_obj_list) window_obj_list->hide();
     if (show_mon_recall) window_mon_recall->hide();
     if (show_obj_recall) window_obj_recall->hide();
     if (show_feat_recall) window_feat_recall->hide();

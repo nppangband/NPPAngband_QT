@@ -146,7 +146,7 @@ void MainWindow::create_win_char_inventory()
     inven_list = new QGridLayout;
     main_vlay_inventory->addLayout(inven_list);
     // I have no idea why a stretch of 1 doesn't work here.
-    main_vlay_inventory->addStretch(500);
+    main_vlay_inventory->addStretch(1000);
 
     win_char_inventory_update();
 

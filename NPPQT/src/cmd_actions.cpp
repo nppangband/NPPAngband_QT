@@ -1574,6 +1574,8 @@ void do_cmd_search(void)
  *
  * Assumes that no monster is blocking the destination
  *
+ * Needs to first tunnel effects such as rubble or loose rock
+ *
  * Uses "twall" (above) to do all "terrain feature changing".
  *
  * Returns TRUE if repeated commands may continue
@@ -1581,6 +1583,10 @@ void do_cmd_search(void)
 static bool command_tunnel_aux(int y, int x)
 {
     bool more = FALSE;
+    bool tunneling_effect = FALSE;
+
+    int this_x_idx, next_x_idx;
+    effect_type *x_ptr;
 
     int feat;
 
@@ -1590,10 +1596,31 @@ static bool command_tunnel_aux(int y, int x)
 
     feat = dungeon_info[y][x].feat;
 
-    /* Verify legality */
-    if (!do_cmd_test(y, x, FS_TUNNEL, TRUE)) return (FALSE);
+    /* Scan all effects in the grid */
+    for (this_x_idx = dungeon_info[y][x].effect_idx; this_x_idx; this_x_idx = next_x_idx)
+    {
+        /* Get the effect */
+        x_ptr = &x_list[this_x_idx];
 
-    j = feat_state_power(feat, FS_TUNNEL);
+        /* Get the next effect */
+        next_x_idx = x_ptr->next_x_idx;
+
+        /* Accept this item */
+        if (!feat_ff1_match(x_ptr->x_f_idx, FF1_CAN_TUNNEL)) continue;
+
+        tunneling_effect = TRUE;
+        feat = x_ptr->x_f_idx;
+        break;
+    }
+
+    /* Verify legality */
+    if (!tunneling_effect)
+    {
+        if (!do_cmd_test(y, x, FS_TUNNEL, TRUE)) return (FALSE);
+    }
+
+    if (!tunneling_effect) j = feat_state_power(feat, FS_TUNNEL);
+    else j = 1;
 
     /* Sound XXX XXX XXX */
     sound(MSG_DIG);
@@ -1602,7 +1629,7 @@ static bool command_tunnel_aux(int y, int x)
     add_wakeup_chance = 1000;
 
     /* Permanent doors/rock */
-    if (cave_ff1_match(y, x, FF1_PERMANENT))
+    if (!tunneling_effect && cave_ff1_match(y, x, FF1_PERMANENT))
     {
         /* Stuck */
         find_secret(y, x);
@@ -1622,15 +1649,14 @@ static bool command_tunnel_aux(int y, int x)
     }
 
     /* Dig or tunnel */
-    else if (cave_ff1_match(y, x, FF1_CAN_TUNNEL))
+    else if (feat_ff1_match(feat, FF1_CAN_TUNNEL))
     {
-
         /*Mark the feature lore*/
         feature_lore *f_l_ptr = &f_l_list[feat];
         f_l_ptr->f_l_flags1 |= (FF1_CAN_TUNNEL);
 
         /* Dig */
-        if (p_ptr->state.skills[SKILL_DIGGING] > rand_int(40* j))
+        if (tunneling_effect || p_ptr->state.skills[SKILL_DIGGING] > rand_int(40* j))
         {
             sound(MSG_DIG);
 
@@ -1640,7 +1666,8 @@ static bool command_tunnel_aux(int y, int x)
             /* Give the message */
             message(QString("You have removed the " + name + "."));
 
-            cave_alter_feat(y, x, FS_TUNNEL);
+            if (!tunneling_effect) cave_alter_feat(y, x, FS_TUNNEL);
+            else delete_effect_idx(this_x_idx);
 
             /* Forget the square if marked */
             dungeon_info[y][x].cave_info &= ~(CAVE_MARK);
@@ -1707,9 +1734,6 @@ void command_tunnel(cmd_arg args)
     /* Get location */
     y = p_ptr->py + ddy[dir];
     x = p_ptr->px + ddx[dir];
-
-    /* Oops */
-    if (!do_cmd_test(y, x, FS_TUNNEL, TRUE)) return;
 
     /* Apply confusion */
     if (confuse_dir(&dir))

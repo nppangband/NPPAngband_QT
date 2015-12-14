@@ -317,6 +317,8 @@ GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value
     this_quantity->setRange(min, max);
     this_quantity->setValue(value);
 
+    current_quantity = value;
+
     main_layout->addWidget(this_quantity);
 
     connect(this_quantity, SIGNAL(valueChanged(int)), this, SLOT(update_quantity(int)));
@@ -358,9 +360,9 @@ s16b get_quantity(QString prompt, int max, int amt, bool allow_zero)
     if (prompt.isEmpty())
     {
         /* Build a prompt */
-        prompt = (QString("Please enter a quantity (0-%1)") .arg(max));
+        prompt = (QString("Please enter a quantity "));
     }
-    else prompt.append(QString(" (0-%1)") .arg(max));
+    prompt.append(QString(" %1-%2)") .arg(min) .arg(max));
 
     GetQuantityDialog dlg(prompt, min, max, amt);
 
