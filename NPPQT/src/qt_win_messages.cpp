@@ -85,6 +85,8 @@ void MainWindow::win_messages_create()
 
     window_messages->setAttribute(Qt::WA_DeleteOnClose);
     connect(window_messages, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_messages(QObject*)));
+
+    reset_message_display_marks();
 }
 
 

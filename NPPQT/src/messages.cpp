@@ -23,6 +23,12 @@
 // Holds all of the messages.
 QVector<message_type> message_list;
 
+// For the message window
+QString completed_lines;
+QString last_line;
+QString current_line;
+
+
 DisplayMessages::DisplayMessages(void)
 {
     QVBoxLayout *main_layout = new QVBoxLayout;
@@ -56,6 +62,9 @@ void reset_message_display_marks(void)
     {
         message_list[i].displayed = FALSE;
     }
+    completed_lines.clear();
+    last_line.clear();
+    current_line.clear();
 }
 
 /*
@@ -65,21 +74,15 @@ void update_message_window(QTextEdit *message_area, QFont message_font)
 {
     int start_point = message_list.size()-1;
 
-    message_area->setFont(message_font);
-
-    QString all_messages = message_area->toHtml();
-
-    if (all_messages.length() > 15000)
+    if (completed_lines.length() > 15000)
     {
         // Keep it to somwhat short
-        while (all_messages.length() > 15000)
+        while (completed_lines.length() > 15000)
         {
-            int breaknum = all_messages.indexOf(QString(">"));
+            int breaknum = completed_lines.indexOf(QString("</font>")) + 6;
 
-            if ((breaknum < all_messages.size()) && (breaknum > 0)) all_messages.remove(0, breaknum);
+            if ((breaknum < completed_lines.size()) && (breaknum > 0)) completed_lines.remove(0, breaknum);
         }
-
-        message_area->setHtml(all_messages);
     }
 
     for (int i = 0; i < message_list.size()-1; i++)
@@ -96,34 +99,42 @@ void update_message_window(QTextEdit *message_area, QFont message_font)
 
         if (message_list[i].repeats > 1)
         {
-            // Find it and remove it if needed, and remove up to the last html tag as well
-            if (message_list[i].displayed)
-            {
-                QString last_message = message_area->toHtml();
-
-                int last_index = last_message.lastIndexOf(this_message);
-
-                last_message.truncate(last_index);
-
-                message_area->setHtml(last_message);
-            }
-
+            // The code is set up that the repeated messages get their own line
+            current_line.clear();
+            last_line.clear();
             this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
+
+            this_message.append("<br>");
         }
-
-        // Add a linebreak if needed.
-        if (!message_list[i].append) this_message.append("<br>");
-        else this_message.append("  ");
-
-        message_list[i].displayed = TRUE;
 
         this_message = color_string(this_message, message_list[i].msg_color);
 
-        message_area->moveCursor(QTextCursor::End);
+        // Add a linebreak if needed, then add it to the permanent message string.
+        if (message_list[i].append || (message_list[i].repeats > 1))
+        {
+            if (current_line.length()) this_message.prepend("  ");
+            current_line.append(this_message);
+        }
+        else
+        {
+            this_message.append("<br>");
+            current_line.append(this_message);
 
-        message_area->insertHtml(this_message);
+            completed_lines.append(last_line);
+            last_line = current_line;
+            current_line.clear();
+            message_list[i].displayed = TRUE;
+        }
+
     }
 
+    QString complete_string = completed_lines;
+    complete_string.append(last_line);
+    complete_string.append(current_line);
+
+    // Update the message area
+    message_area->setFont(message_font);
+    message_area->setHtml(complete_string);
     message_area->moveCursor(QTextCursor::End);
 }
 
