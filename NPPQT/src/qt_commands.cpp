@@ -74,10 +74,10 @@ static struct command_desc list_commands_new[] =
     {"Inspect All Objects", "i"},
     {"Inspect Object", "I (shift-i)"},
     {"Jam a Door", "Q (shift-q}"},
-    {"Learn Magic Spells", "M (shift-m)"},
+    {"Learn Spells, Prayers, or Incantations", "M (shift-m)"},
     {"Look", "l"},
     {"Make/Modify Trap", "O (shift-o)"},
-    {"Message Log", "QTRL-L"},
+    {"Message Log", "CTRL-L"},
     {"New Game NPPAngband", "CTRL-A"},
     {"New Game NPPMoria", "CTRL-R"},
     {"Open Door", "o"},
@@ -109,7 +109,7 @@ static struct command_desc list_commands_new[] =
     {"Take Off Item", "W (shift-w) or '-'"},
     {"Target Closest", "'*' or ','"},
     {"Terminate Character", "(CTRL + ALT)-Q"},
-    {"Throw Item", "L (shift-l"},
+    {"Throw Item", "L (shift-l)"},
     {"Tunnel (set direction later)", "CTRL-O"},
     {"Uninscribe Item", "}"},
     {"Use Item", "e"},
@@ -125,30 +125,30 @@ static struct command_desc list_commands_angband[] =
     {"Activate", "A (shift-a)"},
     {"Aim a Wand", "a"},
     {"Alter", "+"},
-    {"Bash Door or Monster", " (shift-)"},
-    {"Browse Spellbooks", " "},
+    {"Bash Door or Monster", "B (shift-b)"},
+    {"Browse Spellbooks", "b"},
     {"Cast Magic Spells", "m"},
     {"Center Player", "ESC, or L (shift-l)"},
-    {"Character Screen", "C (shift c)"},
+    {"Character Screen", "C (shift-c)"},
     {"Close Door", "c"},
-    {"Destroy Item", "CTRL-D"},
+    {"Destroy Item", "k"},
     {"Disarm Trap", "D (shift-d)"},
     {"Drop Item", "d"},
     {"Eat Food", "E (shift-e)"},
-    {"Equipment (view", "e"},
+    {"Equipment (view)", "e"},
     {"Fire Ammunition",	"f"},
     {"Fire At Nearest",	"h"},
     {"Go Down Staircase", "<"},
-    {"Go Up Staircase	", ">"},
+    {"Go Up Staircase", ">"},
     {"Hold", "'_' or ','"},
     {"Inscribe Item", "{"},
     {"Inspect Inventory", "i"},
     {"Inspect Object", "I (shift-i)"},
     {"Jam a Door", "j"},
-    {"Learn Magic Spells", "G (shift-g)"},
+    {"Learn Spells, Prayers, or Incantations", "G (shift-g)"},
     {"Look", "l"},
     {"Make/Modify Trap", "O (shift-o)"},
-    {"Message Log", "QTRL-P"},
+    {"Message Log", "CTRL-P"},
     {"New Game NPPAngband", "CTRL-A"},
     {"New Game NPPMoria", "CTRL-R"},
     {"Open Door", "o"},
@@ -170,7 +170,7 @@ static struct command_desc list_commands_angband[] =
     {"Save Character As", "CTRL-W"},
     {"Save Character Dump", "SHIFT-ALT-C"},
     {"Save Screenshot (html file)", ")"},
-    {"Save Screenshot (png file", "("},
+    {"Save Screenshot (png file)", "("},
     {"Search", "s"},
     {"Search (Toggle)", "S (shift-s)"},
     {"Spike A Door", "j"},
@@ -178,7 +178,7 @@ static struct command_desc list_commands_angband[] =
     {"Take Notes", ":"},
     {"Take Off Item", "t"},
     {"Target CLosest", "'*'' or Apostrophe"},
-    {"Terminate Character", "(shift-Q)"},
+    {"Terminate Character", "Q (shift-q)"},
     {"Throw Item", "v"},
     {"Tunnel", "T (shift-t)"},
     {"Uninscribe Item", "}"},
@@ -199,7 +199,7 @@ static struct command_desc list_commands_roguelike[] =
     {"Aim a Wand", "z"},
     {"Alter", "+"},
     {"Bash Door or Monster", "f"},
-    {"Browse Spellbooks", "P (shift-p"},
+    {"Browse Spellbooks", "P (shift-p)"},
     {"Cast Magic Spells", "m"},
     {"Center Player", "ESC or W (shift-w)"},
     {"Character Screen", "C (shift c)"},
@@ -219,10 +219,10 @@ static struct command_desc list_commands_roguelike[] =
     {"Inspect Inventory", "i"},
     {"Inspect Object", "I (shift-i)"},
     {"Jam a Door", "S (shift-s)"},
-    {"Learn Magic Spells", "G (shift-g)"},
+    {"Learn Spells, Prayers, or Incantations", "G (shift-g)"},
     {"Look", "x"},
     {"Make/Modify Trap", "O (shift-o)"},
-    {"Message Log", "QTRL-P"},
+    {"Message Log", "CTRL-P"},
     {"New Game NPPAngband", "CTRL-A"},
     {"New Game NPPMoria", "CTRL-R"},
     {"Open Door", "o"},
@@ -252,7 +252,7 @@ static struct command_desc list_commands_roguelike[] =
     {"Take Notes", ":"},
     {"Take Off Item", "T (shift-t)"},
     {"Target Closest", "'*'' or Apostrophe"},
-    {"Terminate Character", "(shift-Q)"},
+    {"Terminate Character", "Q (shift-q)"},
     {"Throw Item", "v"},
     {"Tunnel", "CTRL-T"},
     {"Uninscribe Item", "}"},
@@ -321,6 +321,12 @@ void KeyboardCommandList::add_keyboard_commands(QGridLayout *return_layout)
 
         QLabel *this_key = new QLabel();
         make_standard_label(this_key, QString(cmd_ptr->command_key), TERM_BLUE);
+        // HTML throws off the display of this character
+        if (strings_match(QString(cmd_ptr->command_key), QString("<")))
+        {
+            this_key->setText("<");
+            this_key->setStyleSheet("color: blue; font-weight: bold;");
+        }
         return_layout->addWidget(this_key, row, col++, Qt::AlignLeft);
 
         if (col_count < 2)
@@ -468,7 +474,7 @@ KeyboardCommandList::KeyboardCommandList(void)
     add_dir_keyboard(vlay_key_dirs, TRUE);
     top_across->addLayout(vlay_key_dirs);
 
-    if (which_keyset != KEYSET_ANGBAND)
+    if (which_keyset != KEYSET_ROGUE)
     {
         top_across->addStretch(1);
         QVBoxLayout *vlay_pad_dirs = new QVBoxLayout;

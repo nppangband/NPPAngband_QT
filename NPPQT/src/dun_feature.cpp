@@ -430,7 +430,7 @@ u16b fire_trap_smart(int f_idx, int y, int x, byte mode, QString* desc)
             {
                 desc->append(("  If there is a clear line of sight to the player, this rune fires"));
                 if (f_ptr->f_power == 1) desc->append(" a magic missle");
-                else if (f_ptr->f_power == 3) desc->append("  an arrow");
+                else if (f_ptr->f_power == 3) desc->append("  a magical arrow");
                 desc->append(" at the player");
                 if (f_l_ptr->f_l_power > 20)
                 {

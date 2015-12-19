@@ -2621,6 +2621,9 @@ void do_cmd_buy(int this_store, cmd_arg args)
     /* Combine / Reorder the pack (later) */
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
+    /* Redraw stuff */
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT | PR_SIDEBAR_PL | PR_WIN_OBJLIST);
+
     /* The object no longer belongs to the store */
     i_ptr->ident &= ~(IDENT_STORE);
 

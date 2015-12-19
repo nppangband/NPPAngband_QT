@@ -29,8 +29,9 @@
 // The null entry at the end is essential for initializing the table of groups.
 static struct monster_group monster_group_nppmoria[] =
 {
-// Unique group gets special handling
-    { NULL,	"Uniques" },
+// Unique and "all" group gets special handling
+    { NULL,	"All" },//MON_GROUP_ALL
+    { NULL,	"Uniques" },//MON_GROUP_UNIQUE
     { "A",		"Ant Lions" },
     { "a",		"Ants" },
     { "B",		"Balrog" },
@@ -87,9 +88,9 @@ static struct monster_group monster_group_nppmoria[] =
 
 static struct monster_group monster_group_nppangband[] =
 {
-// Unique group gets special handling
-    {NULL,      "Uniques" },
-    { "A",		"Ainur/Maiar" },
+// Unique and "all" group gets special handling
+    { NULL,	"All" },//MON_GROUP_ALL
+    { NULL,	"Uniques" },//MON_GROUP_UNIQUE{ "A",		"Ainur/Maiar" },
     { "a",		"Ants" },
     { "b",		"Bats" },
     { "B",		"Birds" },
@@ -147,8 +148,9 @@ bool DisplayMonsterKnowledge::mon_matches_mon_group(int r_idx, int group)
 
     monster_race *r_ptr = &r_info[r_idx];
 
-    // Special handling for uniques
-    if (group == 0)
+    // Special handling for uniques and "all" section
+    if (group == MON_GROUP_ALL) return (TRUE);
+    if (group == MON_GROUP_UNIQUE)
     {
         return (r_ptr->is_unique());
     }
@@ -190,7 +192,6 @@ void DisplayMonsterKnowledge::filter_rows(int row, int col, int old_row, int old
     // First find the group we want to filter for
     for (i = 0; i < monster_group_info.size(); i++)
     {
-
         if (!monster_group_info[i]) continue;
         if (which_group == row) break;
         which_group++;
@@ -227,7 +228,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     main_layout->addLayout(mon_knowledge_hlay);
 
     // To track the monster race info button
-    mon_button_group = new QButtonGroup;
+    mon_button_group = new QButtonGroup(this);
     mon_button_group->setExclusive(FALSE);
 
     // Set the table and headers
@@ -272,9 +273,10 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
 
     //Gather information to populate the monster groups
     monster_group_info.clear();
-    //Automatically add a row for the uniques.
+    //Automatically add a row for the uniques and all.
     monster_group_info.append(FALSE);
-    int x = 1;
+    monster_group_info.append(FALSE);
+    int x = MON_GROUP_OTHERS;
     while (TRUE)
     {
         monster_group *mon_ptr;
@@ -360,7 +362,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         for(x = 0; x < monster_group_info.size(); x++)
         {
             if (mon_matches_mon_group(i, x)) monster_group_info[x] = TRUE;
-
         }
     }
 

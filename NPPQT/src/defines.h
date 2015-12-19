@@ -508,33 +508,39 @@ enum
 // 0x80 Unused
 
 #define LEV_THEME_HEAD				11
-#define LEV_THEME_CREEPING_COIN		0	/*creeping coins*/
-#define LEV_THEME_ORC				1	/*orc*/
-#define LEV_THEME_TROLL				2	/*troll*/
-#define LEV_THEME_OGRE				3	/*ogre*/
-#define LEV_THEME_HOUND				4	/*hound*/
-#define LEV_THEME_GIANT				5	/*giant*/
-#define LEV_THEME_DRAGON_YOUNG		6	/*young dragon*/
-#define LEV_THEME_DRAGON_ACID		7	/*acid dragon*/
-#define LEV_THEME_DRAGON_FIRE		8	/*fire dragon*/
-#define LEV_THEME_DRAGON_ELEC		9	/*electric dragon*/
-#define LEV_THEME_DRAGON_COLD		10	/*cold dragon*/
-#define LEV_THEME_DRAGON_POIS		11	/*poison dragon*/
-#define LEV_THEME_DRAGON_CHROMATIC	12	/*chromatic dragon*/
-#define LEV_THEME_DRAGON_MISC		13	/*dragon*/
-#define LEV_THEME_DRAGON_ANCIENT	14	/*ancient dragon*/
-#define LEV_THEME_JELLY				15	/*jelly*/
-#define LEV_THEME_ORC_NAGA_YEEK_KOBOLD	16 /*kobold, yeek, orc, and naga*/
-#define LEV_THEME_ANIMAL			17	/*animal*/
-#define LEV_THEME_HUMANOID			18	/*humanoid*/
-#define LEV_THEME_DEMON_MINOR		19	/*minor demon*/
-#define LEV_THEME_DEMON_ALL			20	/*demon*/
-#define LEV_THEME_DEMON_MAJOR		21	/*major demon*/
-#define LEV_THEME_CAVE_DWELLER		22	/*cave dweller*/
-#define LEV_THEME_UNDEAD			23	/*undead*/
-#define LEV_THEME_DRAGON_ELEMENTAL	24	/*Elemental Dragons*/
-#define LEV_THEME_VALAR_SERVANTS	25	/* Servants of the Valar*/
-#define LEV_THEME_TAIL				26
+enum
+{
+    LEV_THEME_CREEPING_COIN = 0,
+    LEV_THEME_ORC,
+    LEV_THEME_TROLL,
+    LEV_THEME_OGRE,
+    LEV_THEME_HOUND,
+    LEV_THEME_GIANT,
+    LEV_THEME_DRAGON_YOUNG,
+    LEV_THEME_DRAGON_ACID,
+    LEV_THEME_DRAGON_FIRE,
+    LEV_THEME_DRAGON_ELEC,
+    LEV_THEME_DRAGON_COLD,
+    LEV_THEME_DRAGON_POIS,
+    LEV_THEME_DRAGON_CHROMATIC,
+    LEV_THEME_DRAGON_MISC,
+    LEV_THEME_DRAGON_ANCIENT,
+    LEV_THEME_JELLY,
+    LEV_THEME_ORC_NAGA_YEEK_KOBOLD,
+    LEV_THEME_ANIMAL,
+    LEV_THEME_HUMANOID,
+    LEV_THEME_DEMON_MINOR,
+    LEV_THEME_DEMON_ALL,
+    LEV_THEME_DEMON_MAJOR,
+    LEV_THEME_CAVE_DWELLER,
+    LEV_THEME_UNDEAD,
+    LEV_THEME_DRAGON_ELEMENTAL,
+    LEV_THEME_VALAR_SERVANTS,
+    LEV_THEME_END,
+};
+
+
+#define LEV_THEME_TAIL				LEV_THEME_END
 
 #define PIT_LEVEL_BOOST				6
 #define NEST_LEVEL_BOOST			5

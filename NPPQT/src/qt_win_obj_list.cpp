@@ -228,7 +228,7 @@ void MainWindow::win_obj_list_update()
     }
 
     /* Note no visible objects */
-    if (!vis_obj_list.size())
+    if (!vis_obj_list.size() && !num_player)
     {
         obj_list_area->insertRow(0);
 

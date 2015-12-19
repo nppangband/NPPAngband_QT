@@ -613,9 +613,9 @@ extern QPixmap pseudo_ascii(QChar chr, QColor color, QFont font, QSizeF size);
 // qt_ui_functions.cpp
 extern QRect visible_dungeon();
 extern bool panel_contains(int y, int x);
-extern void ui_toolbar_show(int toolbar);
-extern void ui_toolbar_hide(int toolbar);
 extern UserInput ui_get_input();
+extern void ui_targeting_show(int mode);
+extern void ui_targeting_hide(void);
 extern void ui_activate_main_window();
 extern bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x);
 extern void ui_destroy_path();

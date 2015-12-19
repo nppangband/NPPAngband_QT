@@ -3011,8 +3011,16 @@ QString format_quest_indicator(byte *attr)
     /* Monster, pit/nest or themed level quests */
     else
     {
+        int remaining = q_ptr->q_max_num - q_ptr->q_num_killed;
         /* Show the remaining number of monsters */
-        dest = (QString("Qst:%1") .arg(q_ptr->q_max_num - q_ptr->q_num_killed));
+        dest = (QString("Qst:%1") .arg(remaining));
+        if ((q_ptr->q_type == QUEST_MONSTER) || (q_ptr->q_type == QUEST_GUARDIAN))
+        {
+            QString name = r_info[q_ptr->mon_idx].r_name_short;
+            if (remaining > 1) name = plural_aux(name);
+
+            dest.append(QString(" %1") .arg(r_info[q_ptr->mon_idx].r_name_short));
+        }
         *attr = TERM_L_RED;
     }
 

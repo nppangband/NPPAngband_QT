@@ -12,6 +12,12 @@
 #include <QSplitter>
 #include "src/npp.h"
 
+enum
+{
+    MON_GROUP_ALL = 0,
+    MON_GROUP_UNIQUE,
+    MON_GROUP_OTHERS,
+};
 
 typedef struct monster_group monster_group;
 typedef struct object_grouper object_grouper;
