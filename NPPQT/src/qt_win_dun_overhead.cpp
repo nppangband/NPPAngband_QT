@@ -393,6 +393,14 @@ void MainWindow::create_win_overhead_map()
     overhead_map_calc_cell_size();
 }
 
+void MainWindow::close_win_overhead_map_frame(QObject *this_object)
+{
+    (void)this_object;
+    window_overhead_map = NULL;
+    show_win_overhead_map = FALSE;
+    win_overhead_map->setText("Show Overhead Window");
+}
+
 /*
  *  Make the small_map shell
  */
@@ -434,15 +442,17 @@ void MainWindow::win_overhead_map_create()
         act->setChecked(true);
     }
 
-    //Disable the x button from closing the widget
-    window_overhead_map->setWindowFlags(Qt::WindowTitleHint);
+    window_overhead_map->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_overhead_map, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_overhead_map_frame(QObject*)));
 }
 
 void MainWindow::win_overhead_map_destroy()
 {
     if (!show_win_overhead_map) return;
+    if (!window_overhead_map) return;
     delete window_overhead_map;
     overhead_map_created = FALSE;
+    window_overhead_map = NULL;
 }
 
 void MainWindow::toggle_win_overhead_map_frame()

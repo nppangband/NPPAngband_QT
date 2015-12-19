@@ -165,9 +165,16 @@ void MainWindow::create_win_char_equipment()
 
     win_char_equipment_update();
     main_vlay_equipment->addStretch(1);
-
-
 }
+
+void MainWindow::close_win_char_equipment_frame(QObject *this_object)
+{
+    (void)this_object;
+    window_char_equipment = NULL;
+    show_char_equipment = FALSE;
+    win_char_equipment->setText("Show Character Equipment Screen");
+}
+
 
 /*
  *  Make the equip shell
@@ -193,19 +200,16 @@ void MainWindow::win_char_equipment_create()
     char_equipment_buttons->setStatusTip(tr("Displays or hides the command buttons."));
     connect(char_equipment_buttons, SIGNAL(triggered()), this, SLOT(toggle_equip_show_buttons()));
     char_equipment_settings->addAction(char_equipment_buttons);
+    window_char_equipment->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_char_equipment, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_char_equipment_frame(QObject*)));
 
-    // Hack - so the togggle works
-    equip_show_buttons = !equip_show_buttons;
-    toggle_equip_show_buttons();
-
-    //Disable the x button from closing the widget
-    window_char_equipment->setWindowFlags(Qt::WindowTitleHint);
 }
 
 void MainWindow::win_char_equipment_destroy()
 {
     if (!show_char_equipment) return;
     delete window_char_equipment;
+    window_char_equipment = NULL;
 }
 
 void MainWindow::toggle_win_char_equipment_frame()

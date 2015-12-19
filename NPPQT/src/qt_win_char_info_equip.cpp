@@ -127,6 +127,14 @@ void MainWindow::create_win_char_equip_info()
     win_char_info_equip_update();
 }
 
+void MainWindow::close_win_char_equip_frame(QObject *this_object)
+{
+    (void)this_object;
+    window_char_info_equip = NULL;
+    show_char_info_equip = FALSE;
+    win_char_equip_info->setText("Show Character Equipment Information");
+}
+
 /*
  *  Make the equip shell
  *  The game crashes if the labels are drawn before the character is created
@@ -147,14 +155,16 @@ void MainWindow::win_char_info_equip_create()
     connect(char_info_equip_font, SIGNAL(triggered()), this, SLOT(win_char_info_equip_font()));
     char_info_equip_settings->addAction(char_info_equip_font);
 
-    //Disable the x button from closing the widget
-    window_char_info_equip->setWindowFlags(Qt::WindowTitleHint);
+    window_char_info_equip->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_char_info_equip, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_char_equip_frame(QObject*)));
 }
 
 void MainWindow::win_char_info_equip_destroy()
 {
     if (!show_char_info_equip) return;
+    if (!window_char_info_equip) return;
     delete window_char_info_equip;
+    window_char_info_equip = NULL;
 }
 
 void MainWindow::toggle_win_char_equip_frame()

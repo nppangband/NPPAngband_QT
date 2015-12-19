@@ -50,7 +50,15 @@ void MainWindow::win_messages_update()
 {
     if (!show_messages_win) return;
     if (!character_generated) return;
-    update_message_area(win_messages_area, 30, font_win_messages);
+    update_message_window(win_messages_area, font_win_messages);
+}
+
+void MainWindow::close_win_messages(QObject *this_object)
+{
+    (void)this_object;
+    window_messages = NULL;
+    show_messages_win = FALSE;
+    win_messages->setText("Show Message Display Window");
 }
 
 /*
@@ -75,15 +83,18 @@ void MainWindow::win_messages_create()
     connect(win_messages_set_font, SIGNAL(triggered()), this, SLOT(win_messages_font()));
     messages_win_settings->addAction(win_messages_set_font);
 
-    //Disable the x button from closing the widget
-    window_messages->setWindowFlags(Qt::WindowTitleHint);
+    window_messages->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_messages, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_messages(QObject*)));
 }
 
 
 void MainWindow::win_messages_destroy()
 {
     if (!show_messages_win) return;
+    if (!window_messages) return;
     delete window_messages;
+    window_messages = NULL;
+    reset_message_display_marks();
 }
 
 void MainWindow::toggle_win_messages()

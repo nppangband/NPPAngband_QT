@@ -415,6 +415,14 @@ void MainWindow::create_win_dun_map()
     dun_map_calc_cell_size();
 }
 
+void MainWindow::close_win_dun_map_frame(QObject *this_object)
+{
+    (void)this_object;
+    window_dun_map = NULL;
+    show_win_dun_map = FALSE;
+    win_dun_map->setText("Show Map Window");
+}
+
 /*
  *  Make the small_map shell
  */
@@ -456,14 +464,16 @@ void MainWindow::win_dun_map_create()
         act->setChecked(true);
     }
 
-    //Disable the x button from closing the widget
-    window_dun_map->setWindowFlags(Qt::WindowTitleHint);
+    window_dun_map->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_dun_map, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_dun_map_frame(QObject*)));
 }
 
 void MainWindow::win_dun_map_destroy()
 {
     if (!show_win_dun_map) return;
+    if (!window_dun_map) return;
     delete window_dun_map;
+    window_dun_map = NULL;
     dun_map_created = FALSE;
 }
 

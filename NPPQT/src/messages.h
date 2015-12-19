@@ -15,6 +15,7 @@ struct message_type
     u16b repeats;
     s32b message_turn;
     bool append;
+    bool displayed;
 
 };
 
@@ -31,6 +32,8 @@ extern QVector<message_type> message_list;
 
 extern void update_message_area(QTextEdit *message_area, int max_messages, QFont message_font);
 extern void update_message_area(QLabel *message_label, int max_messages);
+extern void reset_message_display_marks(void);
+extern void update_message_window(QTextEdit *message_area, QFont message_font);
 extern void display_message_log(void);
 
 #endif // MESSAGES_H

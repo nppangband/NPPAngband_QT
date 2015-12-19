@@ -403,6 +403,7 @@ public:
 private slots:
     void win_mon_list_font();
     void toggle_win_mon_list();
+    void close_win_mon_list(QObject *this_object);
 
 // Object list window
 private:
@@ -425,6 +426,7 @@ public:
 private slots:
     void win_obj_list_font();
     void toggle_win_obj_list();
+    void close_win_obj_list(QObject *this_object);
 
 // Monster Recall window
 private:
@@ -447,6 +449,8 @@ public:
 private slots:
     void win_mon_recall_font();
     void toggle_win_mon_recall();
+    void close_win_mon_recall(QObject *this_object);
+
 
 // Object Recall window
 private:
@@ -469,6 +473,7 @@ public:
 private slots:
     void win_obj_recall_font();
     void toggle_win_obj_recall();
+    void close_win_obj_recall(QObject *this_object);
 
 // Feature Recall window
 private:
@@ -491,6 +496,7 @@ public:
 private slots:
     void win_feat_recall_font();
     void toggle_win_feat_recall();
+    void close_win_feat_recall(QObject *this_object);
 
 // Messages window
 private:
@@ -513,6 +519,8 @@ public:
 private slots:
     void win_messages_font();
     void toggle_win_messages();
+    void close_win_messages(QObject *this_object);
+
 
 
 // Character Information window
@@ -541,6 +549,7 @@ private slots:
     void win_char_info_basic_font();
     void toggle_win_char_info_frame();
     void name_change(void);
+    void close_win_char_info_frame(QObject *this_object);
 
 // Character Equipment Information window
 private:
@@ -572,6 +581,7 @@ public:
 private slots:
     void win_char_info_equip_font();
     void toggle_win_char_equip_frame();
+    void close_win_char_equip_frame(QObject *this_object);
 
 // Character Equipment window
 private:
@@ -603,6 +613,7 @@ private slots:
     void toggle_equip_show_buttons();
     void toggle_win_char_equipment_frame();
     void equip_button_click();
+    void close_win_char_equipment_frame(QObject *this_object);
 
 // Character Inventory window
 private:
@@ -633,6 +644,7 @@ private slots:
     void toggle_inven_show_buttons();
     void toggle_win_char_inventory_frame();
     void inven_button_click();
+    void close_win_char_inventory_frame(QObject *this_object);
 
     // Small map window
 private:
@@ -673,6 +685,7 @@ private slots:
     void toggle_win_dun_map_frame();
     void dun_map_multiplier_clicked(QAction *);
     void set_dun_map_graphics();
+    void close_win_dun_map_frame(QObject *this_object);
 
     // Overhead window
 private:
@@ -712,6 +725,7 @@ private slots:
     void toggle_win_overhead_map_frame();
     void overhead_map_multiplier_clicked(QAction *);
     void set_overhead_map_graphics();
+    void close_win_overhead_map_frame(QObject *this_object);
 
 };
 

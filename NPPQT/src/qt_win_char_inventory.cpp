@@ -149,8 +149,16 @@ void MainWindow::create_win_char_inventory()
     main_vlay_inventory->addStretch(1000);
 
     win_char_inventory_update();
-
 }
+
+void MainWindow::close_win_char_inventory_frame(QObject *this_object)
+{
+    (void)this_object;
+    window_char_inventory = NULL;
+    show_char_inventory = FALSE;
+    win_char_inventory->setText("Show Character Inventory Screen");
+}
+
 
 /*
  *  Make the inven shell
@@ -177,18 +185,16 @@ void MainWindow::win_char_inventory_create()
     connect(char_inventory_buttons, SIGNAL(triggered()), this, SLOT(toggle_inven_show_buttons()));
     char_inventory_settings->addAction(char_inventory_buttons);
 
-    // Hack - so the togggle works
-    inven_show_buttons = !inven_show_buttons;
-    toggle_inven_show_buttons();
-
-    //Disable the x button from closing the widget
-    window_char_inventory->setWindowFlags(Qt::WindowTitleHint);
+    window_char_inventory->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_char_inventory, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_char_inventory_frame(QObject*)));
 }
 
 void MainWindow::win_char_inventory_destroy()
 {
     if (!show_char_inventory) return;
+    if (!window_char_inventory) return;
     delete window_char_inventory;
+    window_char_inventory = NULL;
 }
 
 void MainWindow::toggle_win_char_inventory_frame()

@@ -1563,6 +1563,7 @@ static void rd_messages(void)
         rd_s32b(&msg_turn);
         msg_ptr->repeats = repeats;
         msg_ptr->message_turn = msg_turn;
+        msg_ptr->displayed = FALSE;
 
         rd_byte(&append);
         msg_ptr->append = append;

@@ -49,6 +49,85 @@ DisplayMessages::DisplayMessages(void)
     this->exec();
 }
 
+// Wipe the records of recorded messages when the message window is closed
+void reset_message_display_marks(void)
+{
+    for (int i = 0; i < message_list.size(); i++)
+    {
+        message_list[i].displayed = FALSE;
+    }
+}
+
+/*
+ * This is to update the message window.
+ */
+void update_message_window(QTextEdit *message_area, QFont message_font)
+{
+    int start_point = message_list.size()-1;
+
+    message_area->setFont(message_font);
+
+    QString all_messages = message_area->toHtml();
+
+    if (all_messages.length() > 15000)
+    {
+        // Keep it to somwhat short
+        while (all_messages.length() > 15000)
+        {
+            int breaknum = all_messages.indexOf(QString(">"));
+
+            if ((breaknum < all_messages.size()) && (breaknum > 0)) all_messages.remove(0, breaknum);
+        }
+
+        message_area->setHtml(all_messages);
+    }
+
+    for (int i = 0; i < message_list.size()-1; i++)
+    {
+        if (!message_list[i].displayed) continue;
+        start_point = i;
+        if (start_point > 0)start_point--;
+        break;
+    }
+
+    for (int i = start_point; i >= 0; i--)
+    {
+        QString this_message = message_list[i].message;
+
+        if (message_list[i].repeats > 1)
+        {
+            // Find it and remove it if needed, and remove up to the last html tag as well
+            if (message_list[i].displayed)
+            {
+                QString last_message = message_area->toHtml();
+
+                int last_index = last_message.lastIndexOf(this_message);
+
+                last_message.truncate(last_index);
+
+                message_area->setHtml(last_message);
+            }
+
+            this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
+        }
+
+        // Add a linebreak if needed.
+        if (!message_list[i].append) this_message.append("<br>");
+        else this_message.append("  ");
+
+        message_list[i].displayed = TRUE;
+
+        this_message = color_string(this_message, message_list[i].msg_color);
+
+        message_area->moveCursor(QTextCursor::End);
+
+        message_area->insertHtml(this_message);
+    }
+
+    message_area->moveCursor(QTextCursor::End);
+}
+
+
 void update_message_area(QTextEdit *message_area, int max_messages, QFont message_font)
 {
     int num_messages = 0;
@@ -144,6 +223,7 @@ void update_message_area(QLabel *message_label, int max_messages)
 
     message_label->setText(output);
 }
+
 
 QString output_messages(byte max_messages)
 {
@@ -244,6 +324,7 @@ static void add_message_to_vector(QString msg, QColor which_color)
         msg_ptr->repeats = 1;
         if (!p_ptr->message_append) msg_ptr->append = FALSE;
         else msg_ptr->append = TRUE;
+        msg_ptr->displayed = FALSE;
 
         // Add the message at the beginning of the list
         message_list.prepend(message_body);

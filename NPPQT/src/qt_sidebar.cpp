@@ -117,7 +117,7 @@ void MainWindow::create_sidebar()
 
     // gold
     QLabel *gold_label = new QLabel;
-    gold_label->setText(color_string("GOLD", SBAR_GOLD));
+    gold_label->setText(color_string("GOLD", SBAR_NORMAL));
     gold_label->setObjectName("GOLD_LABEL");
     gold_label->setToolTip(get_help_topic("character_info", "Gold"));
     player_info_labels->addWidget(gold_label, Qt::AlignLeft);
@@ -168,8 +168,6 @@ void MainWindow::create_sidebar()
     QLabel *quest_info = new QLabel;
     quest_info->setObjectName("QUEST");
     player_info_vlay->addWidget(quest_info, Qt::AlignLeft);
-
-
 }
 
 
@@ -692,7 +690,7 @@ void MainWindow::update_sidebar_player()
             if (this_name.operator ==("GOLD_INFO"))
             {
                 QString gold = number_to_formatted_string(p_ptr->au);
-                this_lbl->setText(color_string(gold, TERM_GOLD));
+                this_lbl->setText(color_string(gold, SBAR_NORMAL));
                 this_lbl->setAlignment(Qt::AlignRight);
                 continue;
             }

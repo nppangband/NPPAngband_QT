@@ -57,7 +57,15 @@ void MainWindow::win_mon_recall_update()
     mon_recall_area->moveCursor(QTextCursor::Start);
     QString mon_recall = get_monster_description(p_ptr->monster_race_idx, FALSE, NULL, TRUE);
     mon_recall_area->insertHtml(mon_recall);
+}
 
+
+void MainWindow::close_win_mon_recall(QObject *this_object)
+{
+    (void)this_object;
+    window_mon_recall = NULL;
+    show_mon_recall = FALSE;
+    win_mon_recall->setText("Show Monster Recall Window");
 }
 
 /*
@@ -82,8 +90,8 @@ void MainWindow::win_mon_recall_create()
     connect(mon_recall_set_font, SIGNAL(triggered()), this, SLOT(win_mon_recall_font()));
     mon_recall_win_settings->addAction(mon_recall_set_font);
 
-    //Disable the x button from closing the widget
-    window_mon_recall->setWindowFlags(Qt::WindowTitleHint);
+    window_mon_recall->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_mon_recall, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_mon_recall(QObject*)));
 }
 
 
@@ -91,6 +99,7 @@ void MainWindow::win_mon_recall_destroy()
 {
     if (!show_mon_recall) return;
     delete window_mon_recall;
+    window_mon_recall = NULL;
 }
 
 void MainWindow::toggle_win_mon_recall()

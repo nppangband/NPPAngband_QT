@@ -213,6 +213,14 @@ void MainWindow::create_win_char_info()
     update_label_basic_font();
 }
 
+void MainWindow::close_win_char_info_frame(QObject *this_object)
+{
+    (void)this_object;
+    window_char_info_basic = NULL;
+    show_char_info_basic = FALSE;
+    win_char_basic->setText("Show Basic Character Information");
+}
+
 /*
  *  Make the basic shell
  *  The game crashes if the labels are drawn before the character is created
@@ -233,14 +241,16 @@ void MainWindow::win_char_info_basic_create()
     connect(char_info_basic_font, SIGNAL(triggered()), this, SLOT(win_char_info_basic_font()));
     char_info_basic_settings->addAction(char_info_basic_font);
 
-    //Disable the x button from closing the widget
-    window_char_info_basic->setWindowFlags(Qt::WindowTitleHint);
+    window_char_info_basic->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_char_info_basic, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_char_info_frame(QObject*)));
 }
 
 void MainWindow::win_char_info_basic_destroy()
 {
     if (!show_char_info_basic) return;
+    if (!window_char_info_basic) return;
     delete window_char_info_basic;
+    window_char_info_basic = NULL;
 }
 
 void MainWindow::toggle_win_char_info_frame()

@@ -465,7 +465,14 @@ void MainWindow::win_mon_list_update()
     }
 
     mon_list_area->resizeColumnsToContents();
+}
 
+void MainWindow::close_win_mon_list(QObject *this_object)
+{
+    (void)this_object;
+    window_mon_list = NULL;
+    show_mon_list = FALSE;
+    win_mon_list->setText("Show Monster List Window");
 }
 
 /*
@@ -494,14 +501,15 @@ void MainWindow::win_mon_list_create()
     connect(mon_list_set_font, SIGNAL(triggered()), this, SLOT(win_mon_list_font()));
     mon_win_settings->addAction(mon_list_set_font);
 
-    //Disable the x button from closing the widget
-    window_mon_list->setWindowFlags(Qt::WindowTitleHint);
+    window_mon_list->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_mon_list, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_mon_list(QObject*)));
 }
 
 void MainWindow::win_mon_list_destroy()
 {
     if (!show_mon_list) return;
     delete window_mon_list;
+    window_mon_list = NULL;
 }
 
 void MainWindow::toggle_win_mon_list()

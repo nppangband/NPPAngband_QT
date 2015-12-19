@@ -57,7 +57,14 @@ void MainWindow::win_feat_recall_update()
 
     QString feat_recall = get_feature_description(p_ptr->feature_kind_idx, FALSE, TRUE);
     feat_recall_area->insertHtml(feat_recall);
+}
 
+void MainWindow::close_win_feat_recall(QObject *this_object)
+{
+    (void)this_object;
+    window_feat_recall = NULL;
+    show_feat_recall = FALSE;
+    win_feat_recall->setText("Show Feature Recall Window");
 }
 
 /*
@@ -82,8 +89,8 @@ void MainWindow::win_feat_recall_create()
     connect(feat_recall_set_font, SIGNAL(triggered()), this, SLOT(win_feat_recall_font()));
     feat_recall_win_settings->addAction(feat_recall_set_font);
 
-    //Disable the x button from closing the widget
-    window_feat_recall->setWindowFlags(Qt::WindowTitleHint);
+    window_feat_recall->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_feat_recall, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_feat_recall(QObject*)));
 }
 
 
@@ -91,6 +98,7 @@ void MainWindow::win_feat_recall_destroy()
 {
     if (!show_feat_recall) return;
     delete window_feat_recall;
+    window_feat_recall = NULL;
 }
 
 void MainWindow::toggle_win_feat_recall()

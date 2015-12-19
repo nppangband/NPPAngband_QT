@@ -81,7 +81,14 @@ void MainWindow::win_obj_recall_update()
 
 
     obj_recall_area->insertHtml(obj_recall);
+}
 
+void MainWindow::close_win_obj_recall(QObject *this_object)
+{
+    (void)this_object;
+    window_obj_recall = NULL;
+    show_obj_recall = FALSE;
+    win_obj_recall->setText("Show Object Recall Window");
 }
 
 /*
@@ -106,8 +113,8 @@ void MainWindow::win_obj_recall_create()
     connect(obj_recall_set_font, SIGNAL(triggered()), this, SLOT(win_obj_recall_font()));
     obj_recall_win_settings->addAction(obj_recall_set_font);
 
-    //Disable the x button from closing the widget
-    window_obj_recall->setWindowFlags(Qt::WindowTitleHint);
+    window_obj_recall->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_obj_recall, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_obj_recall(QObject*)));
 }
 
 
@@ -115,6 +122,7 @@ void MainWindow::win_obj_recall_destroy()
 {
     if (!show_obj_recall) return;
     delete window_obj_recall;
+    window_obj_recall = NULL;
 }
 
 void MainWindow::toggle_win_obj_recall()

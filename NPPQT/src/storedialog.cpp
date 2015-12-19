@@ -1175,20 +1175,25 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
 
     price = price_item(store_idx, o_ptr, !buy);
 
-    if (buying) {
+    if (buying && (store_idx != STORE_HOME))
+    {
         int money = p_ptr->au;
         max = money / MAX(price, 1);
         max = MIN(max, o_ptr->number);
     }
-    else {
-        max = o_ptr->number;
-    }
+    else max = o_ptr->number;
 
     QVBoxLayout *lay1 = new QVBoxLayout;
     this->setLayout(lay1);
 
     QString verb = tr("sell");
     if (buying) verb = tr("buy");
+
+    if (store_idx == STORE_HOME)
+    {
+        verb = tr("stash");
+        if (buying) verb = tr("retrieve");
+    }
 
     QString desc = object_desc(o_ptr, ODESC_FULL | ODESC_PREFIX);
     QString msg = tr("How many of the %2 do you want to %1?").arg(verb).arg(desc);
@@ -1261,7 +1266,7 @@ int StoreDialog::request_amt(object_type *o_ptr, bool buying)
     if (home)
     {
         verb = tr("stash");
-        if (buying) tr("retrieve");
+        if (buying) verb = tr("retrieve");
     }
 
     if (amt == 1)

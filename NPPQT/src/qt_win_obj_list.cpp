@@ -449,7 +449,14 @@ void MainWindow::win_obj_list_update()
     }
 
     obj_list_area->resizeColumnsToContents();
+}
 
+void MainWindow::close_win_obj_list(QObject *this_object)
+{
+    (void)this_object;
+    window_obj_list = NULL;
+    show_obj_list = FALSE;
+    win_obj_list->setText("Show Object List Window");
 }
 
 /*
@@ -478,14 +485,16 @@ void MainWindow::win_obj_list_create()
     connect(obj_list_set_font, SIGNAL(triggered()), this, SLOT(win_obj_list_font()));
     obj_win_settings->addAction(obj_list_set_font);
 
-    //Disable the x button from closing the widget
-    window_obj_list->setWindowFlags(Qt::WindowTitleHint);
+    window_obj_list->setAttribute(Qt::WA_DeleteOnClose);
+    connect(window_obj_list, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_obj_list(QObject*)));
 }
 
 void MainWindow::win_obj_list_destroy()
 {
     if (!show_obj_list) return;
+    if (!window_obj_list) return;
     delete window_obj_list;
+    window_obj_list = NULL;
 }
 
 void MainWindow::toggle_win_obj_list()
