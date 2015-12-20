@@ -1940,7 +1940,6 @@ QString feeling_themed_level[LEV_THEME_TAIL] =
 };
 
 
-
 /*
  * Hack -- the "basic" color names (see "TERM_xxx")
  */

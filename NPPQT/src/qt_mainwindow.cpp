@@ -560,8 +560,6 @@ MainWindow::MainWindow()
 
     setWindowFilePath(QString());
 
-
-
 }
 
 void MainWindow::setup_nppangband()

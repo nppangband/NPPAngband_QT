@@ -1115,7 +1115,6 @@ static void process_effect(int x_idx)
              */
             case EFFECT_TRAP_SMART:
             {
-
                 if (x_ptr->x_countdown > 1)	return;
 
                 /* Path is not in line of sight of the player. */

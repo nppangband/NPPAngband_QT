@@ -580,9 +580,9 @@ QString get_ego_name(object_type *o_ptr)
 /* Convert the values returned by squelch_itemp to string */
 QString squelch_to_label(int squelch)
 {
-    if (squelch == SQUELCH_YES) return ("(Squelched)");
+    if (squelch == SQUELCH_YES) return (" (Squelched)");
 
-    if (squelch == SQUELCH_FAILED) return ("(Squelch Failed)");
+    if (squelch == SQUELCH_FAILED) return (" (Squelch Failed)");
 
     return ("");
 }

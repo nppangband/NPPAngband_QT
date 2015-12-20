@@ -130,7 +130,7 @@ static void sense_inventory(void)
         /* Message (inventory) */
         else
         {
-            message(QString("You feel the %1 (%2) in your pack %3 %4...  %5") .arg(o_name)
+            message(QString("You feel the %1 (%2) in your pack %3 %4%5") .arg(o_name)
                     .arg(index_to_label(i))
                     .arg((o_ptr->number == 1) ? "is" : "are") .arg(inscrip_text[feel - INSCRIP_NULL])
                     .arg(squelch_to_label(squelch)));

@@ -2419,11 +2419,11 @@ int do_ident_item(int item, object_type *o_ptr)
     }
     else if (item >= 0)
     {
-        color_message(QString("In your pack: %1 (%2).  %3") .arg(o_name) .arg(index_to_label(item)) .arg(squelch_to_label(squelch)), color);
+        color_message(QString("In your pack: %1 (%2).%3") .arg(o_name) .arg(index_to_label(item)) .arg(squelch_to_label(squelch)), color);
     }
     else
     {
-        color_message(QString("On the ground: %1.  %2") .arg(o_name)  .arg(squelch_to_label(squelch)), color);
+        color_message(QString("On the ground: %1.%2") .arg(o_name)  .arg(squelch_to_label(squelch)), color);
     }
 
     /*

@@ -25,8 +25,11 @@ QVector<message_type> message_list;
 
 // For the message window
 QString completed_lines;
-QString last_line;
 QString current_line;
+
+// These two shouldn't be true at the same time
+bool msg_appended;
+bool msg_repeated;
 
 
 DisplayMessages::DisplayMessages(void)
@@ -63,12 +66,13 @@ void reset_message_display_marks(void)
         message_list[i].displayed = FALSE;
     }
     completed_lines.clear();
-    last_line.clear();
     current_line.clear();
+    msg_appended = msg_repeated = FALSE;
 }
 
 /*
  * This is to update the message window.
+ * This function must remember the prevous line printed, and handle the next line appropriately
  */
 void update_message_window(QTextEdit *message_area, QFont message_font)
 {
@@ -95,41 +99,107 @@ void update_message_window(QTextEdit *message_area, QFont message_font)
 
     for (int i = start_point; i >= 0; i--)
     {
-        QString this_message = message_list[i].message;
+        message_type *msg_ptr = &message_list[i];
 
-        if (message_list[i].repeats > 1)
+        QString this_message = msg_ptr->message;
+
+        // The code is set up that the repeated messages always get their own line
+        if (msg_ptr->repeats > 1)
         {
-            // The code is set up that the repeated messages get their own line
-            current_line.clear();
-            last_line.clear();
-            this_message.append(QString(" (x%1)") .arg(message_list[i].repeats));
+            // Finish the appended line and make it permanent
+            if (msg_appended)
+            {
+                current_line.append(QString("<br>"));
+                completed_lines.append(current_line);
+                this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
+                current_line = color_string(this_message, msg_ptr->msg_color);
+            }
+            // Replace the previous repeated line
+            else if (msg_repeated)
+            {
+                QString test_message;
+                test_message.clear();
+                if (i) test_message = message_list[i-1].message;
 
-            this_message.append("<br>");
+                if (strings_match(msg_ptr->message, test_message))
+                {
+                    this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
+                    current_line = color_string(this_message, msg_ptr->msg_color);
+                }
+                else
+                {
+                    completed_lines.append(current_line);
+                    this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
+                    current_line = color_string(this_message, msg_ptr->msg_color);
+                }
+
+            }
+            // Handle the previous plain line
+            else
+            {
+                completed_lines.append(current_line);
+                this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
+                current_line = color_string(this_message, msg_ptr->msg_color);
+            }
+            msg_repeated = TRUE;
+            msg_appended = FALSE;
         }
 
-        this_message = color_string(this_message, message_list[i].msg_color);
-
-        // Add a linebreak if needed, then add it to the permanent message string.
-        if (message_list[i].append || (message_list[i].repeats > 1))
+        // Append the current message.
+        else if (message_list[i].append)
         {
-            if (current_line.length()) this_message.prepend("  ");
-            current_line.append(this_message);
+            // Record the repeated line, start appending.
+            if (msg_repeated)
+            {
+                completed_lines.append(current_line);
+                current_line = color_string(this_message, msg_ptr->msg_color);
+            }
+            // Add to appended line.
+            else if (msg_appended)
+            {
+                current_line.append(QString("  %1") .arg(color_string(this_message, msg_ptr->msg_color)));
+            }
+            // Start the appended line
+            else
+            {
+                completed_lines.append(current_line);
+                current_line = color_string(this_message, msg_ptr->msg_color);
+            }
+            msg_appended = TRUE;
+            msg_repeated = FALSE;
+
         }
+        // We are ready to finish the line and make it permanent.
         else
         {
-            this_message.append("<br>");
-            current_line.append(this_message);
+            // Finish the appended line and make it permanent
+            if (msg_appended)
+            {
+                current_line.append(QString("  %1<br>") .arg(color_string(this_message, msg_ptr->msg_color)));
+                completed_lines.append(current_line);
+                current_line.clear();
+            }
+            else if (msg_repeated)
+            {
+                completed_lines.append(current_line);
+                this_message.append(QString("<br>"));
+                current_line = color_string(this_message, msg_ptr->msg_color);
+            }
 
-            completed_lines.append(last_line);
-            last_line = current_line;
-            current_line.clear();
-            message_list[i].displayed = TRUE;
+            else
+            {
+                completed_lines.append(current_line);
+                this_message.append(QString("<br>"));
+                current_line = color_string(this_message, msg_ptr->msg_color);
+            }
+
+            msg_appended = FALSE;
+            msg_repeated = FALSE;
         }
-
+        message_list[i].displayed = TRUE;
     }
 
     QString complete_string = completed_lines;
-    complete_string.append(last_line);
     complete_string.append(current_line);
 
     // Update the message area
