@@ -574,9 +574,23 @@ private:
     QGridLayout *ability_flags;
     QGridLayout *equip_mods;
     QGridLayout *nativity_flags;
+    void update_win_char_equip_set_lists();
+
 
 public:
     void win_char_info_equip_update();
+    QList<QLabel *> list_resist_flags;
+    QList<QLabel *> list_ability_flags;
+    QList<QLabel *> list_equip_flags;
+    QList<QLabel *> list_nativity_flags;
+    QList<QLabel *> list_resist_labels;
+    QList<QLabel *> list_ability_labels;
+    QList<QLabel *> list_equip_labels;
+    QList<QLabel *> list_nativity_labels;
+    QList<QLabel *> list_resist_equippy;
+    QList<QLabel *> list_ability_equippy;
+    QList<QLabel *> list_equip_equippy;
+    QList<QLabel *> list_nativity_equippy;
 
 private slots:
     void win_char_info_equip_font();

@@ -479,10 +479,9 @@
 #define INVEN_HANDS     34
 #define INVEN_FEET      35
 
-/*
- * Total number of inventory slots (hard-coded).
- */
+
 #define INVEN_TOTAL		36
+#define NUM_INVEN_SLOTS (INVEN_TOTAL - INVEN_WIELD)
 
 /* Used for the swap_weapons option */
 #define INVEN_MAIN_WEAPON	INVEN_WIELD
@@ -884,6 +883,7 @@ enum
      DIR_NORTH,
      DIR_NORTHEAST,
      DIR_CLOSEST,
+     DIR_TARGET_PLAYER,
 };
 
 

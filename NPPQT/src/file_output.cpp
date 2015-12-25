@@ -1073,14 +1073,14 @@ void save_character_file(void)
 
             else if (modifiers_table)
             {
-                QString modifiers_output = (QString("line_label_%1_%2") .arg(PVAL_MODIFIERS) .arg(row));
+                QString modifiers_output = (QString("line_label_%1") .arg(row));
                 QString inven_chars[EQUIPPY_TABLE_LENGTH-2];
                 for (int x = 0; x < (EQUIPPY_TABLE_LENGTH-2); x++)
                 {
                     inven_chars[x] = "   .";
                 }
 
-                QString test_string = (QString("obj_mod_info_%1_%2_") .arg(PVAL_MODIFIERS) .arg(row));
+                QString test_string = (QString("obj_mod_info_%1") .arg(row));
 
                 //Find the values
                 for (int x = 0; x < lbl_list.size(); x++)

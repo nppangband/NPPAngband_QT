@@ -592,7 +592,7 @@ void PlayerBirth::call_options_dialog()
 // Add a box for all birth options
 void PlayerBirth::add_option_boxes(QVBoxLayout *return_layout)
 {
-    group_options = new QButtonGroup;
+    group_options = new QButtonGroup(this);
     group_options->setExclusive(FALSE);
 
     QLabel *options_label = new QLabel("<h2>Birth Options</h2>");
@@ -679,7 +679,7 @@ void PlayerBirth::random_roll(void)
 
 void PlayerBirth::add_stat_choices(QVBoxLayout *return_layout)
 {
-    group_stat_choice = new QButtonGroup;
+    group_stat_choice = new QButtonGroup(this);
     group_stat_choice->setExclusive(TRUE);
 
     QLabel *stat_choice_label = new QLabel("<h2>Stat Gen Method</h2>");
@@ -735,7 +735,7 @@ void PlayerBirth::class_changed(int new_class)
 
 void PlayerBirth::add_classes(QVBoxLayout *return_layout)
 {
-    group_class = new QButtonGroup;
+    group_class = new QButtonGroup(this);
     group_class->setExclusive(TRUE);
 
     QLabel *class_label = new QLabel("<h2>Player Class</h2>");
@@ -765,7 +765,7 @@ void PlayerBirth::race_changed(int new_race)
 
 void PlayerBirth::add_races(QVBoxLayout *return_layout)
 {
-    group_race = new QButtonGroup;
+    group_race = new QButtonGroup(this);
     group_race->setExclusive(TRUE);
 
     QLabel *race_label = new QLabel("<h2>Player Race</h2>");
@@ -862,7 +862,7 @@ void PlayerBirth::add_genders(QVBoxLayout *return_layout)
     connect(player_name, SIGNAL(textChanged(QString)), this, SLOT(name_changed(QString)));
     return_layout->addWidget(player_name, Qt::AlignLeft);
 
-    group_gender = new QButtonGroup;
+    group_gender = new QButtonGroup(this);
     group_gender->setExclusive(TRUE);
 
     QLabel *gender_label = new QLabel("<h2>Player Gender</h2>");
@@ -941,7 +941,7 @@ void PlayerBirth::update_character(bool new_player, bool needs_stat_update)
 void PlayerBirth::update_screen(void)
 {
     update_stats_info();
-    update_char_screen(top_widget);
+    update_char_screen(top_widget, ui_message_window_font());
 }
 
 
@@ -1100,7 +1100,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     history_box->addWidget(history);
     main_layout->addStretch(1);
 
-    update_char_screen(top_widget);
+    update_char_screen(top_widget, ui_message_window_font());
 
     //Add a close button on the right side
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);

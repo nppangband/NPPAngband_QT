@@ -594,14 +594,14 @@ void generate_player(bool full)
     /* Initial hitpoints */
     p_ptr->mhp = p_ptr->hitdie;
 
-    /* Pre-calculate level 1 hitdice */
-    p_ptr->player_hp[0] = p_ptr->hitdie;
-
     if (!full) return;
 
-    /* Roll for age/height/weight */
-    get_ahw();
+    /* calculate hp */
+    p_ptr->player_hp[0] = p_ptr->hitdie;
+    update_hp_sp();
 
+    /* Roll for age/height/weight, history, and update hp. */
+    get_ahw();
     get_history();
 }
 

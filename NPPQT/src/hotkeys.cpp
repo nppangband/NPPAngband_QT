@@ -72,7 +72,7 @@ hotkey_type hotkey_actions[] =
     {HK_NEEDS_OBJECT_KIND, "Zap a Rod",TV_ROD},
     //HK_EAT_FOOD
     {HK_NEEDS_OBJECT_KIND, "Eat Food", TV_FOOD},
-    //HK_TYPE_CAST
+    //HK_CAST_SPELL
     {HK_NEEDS_SPELL, "Cast Spell", 0},
     // HK_ACTIVATE
     {HK_NEEDS_ACIVATION, "Activate", 0},
@@ -244,8 +244,9 @@ void HotKeyDialog::add_hotkeys_header()
     current_hotkey_name = new QComboBox;
     for (int i = 0; i < NUM_HOTKEYS; i++)
     {
+        QString hotkey_name = list_hotkeys[i].hotkey_list_name;
         current_hotkey_name->addItem(QString("%1") .arg(i));
-        current_hotkey_name->setItemText(i, list_hotkeys[i].hotkey_list_name);
+        current_hotkey_name->setItemText(i, hotkey_name);
     }
     hlay_header->addWidget(current_hotkey_name);
     connect(current_hotkey_name, SIGNAL(currentIndexChanged(int)), this, SLOT(active_hotkey_changed(int)));
@@ -1574,7 +1575,20 @@ void HotKeyDialog::display_hotkey_steps()
         for (int x = 0; x < HK_TYPE_END; x++)
         {
             this_combo_box->addItem(QString("%1") .arg(x));
-            this_combo_box->setItemText(x, hotkey_actions[x].name);
+
+            QString hotkey_name = hotkey_actions[x].name;
+
+            if (x == HK_CAST_SPELL)
+            {
+                if (cp_ptr->spell_book)
+                {
+                    QString noun = capitalize_first(cast_spell(MODE_SPELL_NOUN, cp_ptr->spell_book, 1, 0));
+                    QString verb = capitalize_first(cast_spell(MODE_SPELL_VERB, cp_ptr->spell_book, 1, 0));
+
+                    hotkey_name = (QString("%1 %2") .arg(verb) .arg(noun));
+                }
+            }
+            this_combo_box->setItemText(x, hotkey_name);
         }
         this_combo_box->setCurrentIndex(dialog_hotkey.hotkey_steps[i].step_commmand);
         connect(this_combo_box, SIGNAL(currentIndexChanged(int)), this, SLOT(active_hotkey_command_changed(int)));

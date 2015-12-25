@@ -521,6 +521,7 @@ static bool guild_carry(object_type *o_ptr)
     u32b o_value = object_value(o_ptr);
     u32b j_value;
 
+    o_ptr->ident |= IDENT_STORE;
     o_ptr->update_object_flags();
 
     /* First see if we already have one of these in stock */

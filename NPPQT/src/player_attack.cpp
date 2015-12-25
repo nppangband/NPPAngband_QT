@@ -1041,6 +1041,9 @@ void command_fire(cmd_arg args)
 
          bool do_animate = FALSE;
 
+         // Don't animate past the stopping point
+         path_n = i;
+
          // Find the last square in the player's sight
          for (i = 0; i < path_n; ++i)
          {
@@ -2019,6 +2022,9 @@ void command_throw(cmd_arg args)
         int end_square_x = p_ptr->px;
 
         bool do_animate = FALSE;
+
+        // Don't animate past the stopping point
+        path_n = i;
 
         // Find the last square in the player's sight
         for (i = 0; i < path_n; ++i)

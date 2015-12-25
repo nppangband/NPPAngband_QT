@@ -3650,13 +3650,11 @@ void build_terrain(int y, int x, int feat)
 
             else if (k <= 20) newfeat = FEAT_FOREST_SOIL;
 
-            else if (k <= 25) newfeat = oldfeat;
+            else if (k <= 30) newfeat = FEAT_FOREST_SOIL_DYNAMIC;
 
-            else if (k <= 35) newfeat = FEAT_FOREST_SOIL_DYNAMIC;
+            else if (k <= 40) newfeat = FEAT_GRASS;
 
-            else if (k <= 45) newfeat = FEAT_GRASS;
-
-            else if (k <= 50) newfeat = FEAT_GRASS_DYNAMIC;
+            else if (k <= 45) newfeat = FEAT_GRASS_DYNAMIC;
 
             break;
         }

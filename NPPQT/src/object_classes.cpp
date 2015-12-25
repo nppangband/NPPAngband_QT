@@ -923,6 +923,9 @@ void object_type::update_object_flags()
                 /* Flag 1 */
                 obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_SLAY,
                                             OBJECT_XTRA_BASE_SLAY);
+
+                known_obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_SLAY,
+                                            OBJECT_XTRA_BASE_SLAY);
                 break;
             }
             case OBJECT_XTRA_TYPE_KILL:
@@ -930,12 +933,17 @@ void object_type::update_object_flags()
                 /* Flag 1 */
                 obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_KILL,
                                             OBJECT_XTRA_BASE_KILL);
+
+                known_obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_KILL,
+                                                      OBJECT_XTRA_BASE_KILL);
                 break;
             }
             case OBJECT_XTRA_TYPE_BRAND:
             {
                 /* Flag 1 */
                 obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_BRAND,
+                                            OBJECT_XTRA_BASE_BRAND);
+                known_obj_flags_1 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_BRAND,
                                             OBJECT_XTRA_BASE_BRAND);
                 /*
                  * elemental brands also provide the appropriate resist
@@ -946,6 +954,9 @@ void object_type::update_object_flags()
                 obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_BRAND,
                                             OBJECT_XTRA_BASE_LOW_RESIST);
 
+                known_obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_BRAND,
+                                            OBJECT_XTRA_BASE_LOW_RESIST);
+
                 break;
             }
             case OBJECT_XTRA_TYPE_LOW_RESIST:
@@ -953,6 +964,9 @@ void object_type::update_object_flags()
                 /* Flag 2 */
                 obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_LOW_RESIST,
                                             OBJECT_XTRA_BASE_LOW_RESIST);
+
+                known_obj_flags_2 |= add_xtra2_flags(xtra2, OBJECT_XTRA_SIZE_LOW_RESIST,
+                                                     OBJECT_XTRA_BASE_LOW_RESIST);
                 break;
             }
             case OBJECT_XTRA_TYPE_NATIVE:
@@ -983,6 +997,7 @@ void object_type::update_object_flags()
         known_obj_flags_3 = obj_flags_3;
         known_obj_flags_native = obj_flags_native;
     }
+
 }
 
 // Return the object kind character

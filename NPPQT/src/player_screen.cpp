@@ -21,9 +21,13 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QPlainTextEdit>
+#include <QTextStream>
 #include <QList>
 #include <QPushButton>
 #include <QScrollArea>
+
+// The update code assumes the tables below are no longer than this #define
+#define  TABLES_MAX_ENTRIES     20
 
 // The null line is there to prevent crashes as the data is read;
 player_flag_record player_resist_table[] =
@@ -169,11 +173,8 @@ void make_standard_label(QLabel *this_label, QString title, byte preset_color)
     this_label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
 }
 
-static void make_ability_graph(QLabel *this_label, int min, int max, int value)
+static void make_ability_graph(QLabel *this_label, int min, int max, int value, QFont this_font)
 {
-    QFont this_font = ui_message_window_font();
-    this_font.setPointSize(12);
-
     QFontMetrics metrics(this_font);
     QSize this_size = metrics.size(Qt::TextSingleLine, "MMMMMMMMM");
     this_size.setHeight(this_size.height() *2/ 3);
@@ -221,33 +222,60 @@ static void make_ability_graph(QLabel *this_label, int min, int max, int value)
     this_label->setPixmap(this_img);
 }
 
+// This should only receive equipment labels created in the function below
+// For efficiency's sake, this is not checked
+static void update_equippy_labels(QList<QLabel *> this_list)
+{
+    for (int x = 0; x < this_list.size(); x++)
+    {
+        QLabel *this_lbl = this_list.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        this_name.remove("equippy_");
+        if (this_name[0].isDigit())
+        {
+            int this_num = this_name.toInt();
+            // We assume this is between INVEN_WIELD and INVEN_TOTAL
+            object_type *o_ptr = &inventory[this_num];
+            if (!o_ptr->k_idx)
+            {
+                this_lbl->setText("");
+                continue;
+            }
+
+            object_kind *k_ptr = &k_info[o_ptr->k_idx];
+            this_lbl->setText(QString("<b>%1</b>") .arg(color_string(k_ptr->d_char, k_ptr->color_num)));
+            QString obj_text = QString("%1: ") .arg(mention_use(this_num));
+            obj_text.append(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL));
+            this_lbl->setToolTip(obj_text);
+        }
+    }
+}
+
 // Draw the equipment labels
-static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool do_player, bool do_temp, QFont this_font)
+static void draw_equippy_labels(QGridLayout *return_layout, int row, int col, bool do_player, bool do_temp, QFont this_font)
 {
     // Leave one column for the labels.
     col ++;
 
+    QList<QLabel *> equippy;
+    equippy.clear();
+
     for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++, col++)
     {
-        object_type *o_ptr = &inventory[i];
-
-        if (!o_ptr->k_idx) continue;
-
-        object_kind *k_ptr = &k_info[o_ptr->k_idx];
-
         // Set up a tooltip and pixture and add it to the layout.
         QLabel *obj_label = new QLabel;
-        make_standard_label(obj_label, k_ptr->d_char, k_ptr->color_num, this_font);
-        QString obj_text = QString("%1: ") .arg(mention_use(i));
-        obj_text.append(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL));
-        obj_label->setToolTip(obj_text);
+        obj_label->setObjectName(QString("equippy_%1") .arg(i));
         return_layout->addWidget(obj_label, row, col, Qt::AlignCenter);
+        equippy.append(obj_label);
     }
 
     if (do_player)
     {
         QLabel *person_label = new QLabel;
         make_standard_label(person_label, "@", TERM_DARK, this_font);
+        person_label->setObjectName("equippy_p");
         person_label->setToolTip("Innate character traits.");
         return_layout->addWidget(person_label, row, col++);
     }
@@ -256,13 +284,17 @@ static void draw_equip_labels(QGridLayout *return_layout, int row, int col, bool
     {
         QLabel *temp_label = new QLabel("t");
         temp_label->setToolTip("Temporary character traits.");
+        temp_label->setObjectName("equippy_t");
         temp_label->setFont(this_font);
         return_layout->addWidget(temp_label, row, col++);
     }
 
     QLabel *filler = new QLabel(" ");
+    filler->setObjectName("equippy_f");
     filler->setFont(this_font);
     return_layout->addWidget(filler, 0, col);
+
+    update_equippy_labels(equippy);
 }
 
 QString stat_entry(int stat)
@@ -307,7 +339,7 @@ void PlayerScreenDialog::name_change(void)
 
 
 // Go through all the labels and update the ones that show data.
-void update_char_screen(QWidget *return_widget)
+void update_char_screen(QWidget *return_widget, QFont this_font)
 {
     QList<QLabel *> lbl_list = return_widget->findChildren<QLabel *>();
     for (int i = 0; i < lbl_list.size(); i++)
@@ -491,41 +523,45 @@ void update_char_screen(QWidget *return_widget)
         }
         if (this_name.operator ==("PLYR_Speed"))
         {
-            make_ability_graph(this_lbl, 0, pam_ptr->max_p_speed, calc_energy_gain(p_ptr->state.p_speed));
+            make_ability_graph(this_lbl, 0, pam_ptr->max_p_speed, calc_energy_gain(p_ptr->state.p_speed), this_font);
             continue;
         }
         if (this_name.operator ==("PLYR_Save"))
         {
-            make_ability_graph(this_lbl, 0, 100, p_ptr->state.skills[SKILL_SAVE]);
+            make_ability_graph(this_lbl, 0, 100, p_ptr->state.skills[SKILL_SAVE], this_font);
             continue;
         }
         if (this_name.operator ==("PLYR_Stealth"))
         {
             int stealth = (WAKEUP_MAX - p_ptr->base_wakeup_chance);
             if (p_ptr->state.aggravate) stealth = WAKEUP_MAX;
-            make_ability_graph(this_lbl, WAKEUP_MIN, WAKEUP_MAX, stealth);
+            make_ability_graph(this_lbl, WAKEUP_MIN, WAKEUP_MAX, stealth, this_font);
             continue;
         }
         if (this_name.operator ==("PLYR_Fight"))
         {
-            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_MELEE], p_ptr->state.skills[SKILL_TO_HIT_MELEE]);
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_MELEE], p_ptr->state.skills[SKILL_TO_HIT_MELEE], this_font);
             continue;
         }
         if (this_name.operator ==("PLYR_Bow"))
         {
-            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_BOW], p_ptr->state.skills[SKILL_TO_HIT_BOW]);
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_BOW], p_ptr->state.skills[SKILL_TO_HIT_BOW], this_font);
+            continue;
         }
         if (this_name.operator ==("PLYR_Throw"))
         {
-            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_THROW], p_ptr->state.skills[SKILL_TO_HIT_THROW]);
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_TO_HIT_THROW], p_ptr->state.skills[SKILL_TO_HIT_THROW], this_font);
+            continue;
         }
         if (this_name.operator ==("PLYR_Disarm"))
         {
-            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_DISARM], p_ptr->state.skills[SKILL_DISARM]);
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_DISARM], p_ptr->state.skills[SKILL_DISARM], this_font);
+            continue;
         }
         if (this_name.operator ==("PLYR_Magic"))
         {
-            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_DEVICE], p_ptr->state.skills[SKILL_DEVICE]);
+            make_ability_graph(this_lbl, 0, pam_ptr->max_skills[SKILL_DEVICE], p_ptr->state.skills[SKILL_DEVICE], this_font);
+            continue;
         }
         if (this_name.operator ==("PLYR_Level"))
         {
@@ -1338,105 +1374,90 @@ void char_ability_info(QGridLayout *return_layout)
     return_layout->addWidget(filler, 0, col + 2);
 }
 
-void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, int flag_set, QFont this_font)
+void update_equip_flags(QList<QLabel *> equippy_list, QList<QLabel *> flag_list, QList<QLabel *> label_list)
 {
+    update_equippy_labels(equippy_list);
+
     u32b f1, f2, f3, fn;
 
     /* Extract the player flags */
     player_flags(&f1, &f2, &f3, &fn);
-    int row = 0;
-    int x = 0;
 
-    // Clear out all the old marks
-    QList<QLabel *> all_lbl_list = this_widget->findChildren<QLabel *>();
+    bool did_resist[TABLES_MAX_ENTRIES];
+    bool did_temp_resist[TABLES_MAX_ENTRIES];
+    bool did_immunity[TABLES_MAX_ENTRIES];
 
-    // work backwards
-    for (int j = all_lbl_list.size() - 1; j >= 0; j--)
+    for (int x = 0; x < TABLES_MAX_ENTRIES; x++)
     {
-        QLabel *this_lbl = all_lbl_list.at(j);
+        did_resist[x] = FALSE;
+        did_temp_resist[x] = FALSE;
+        did_immunity[x] = FALSE;
+    }
+
+    for (int x = 0; x < flag_list.size(); x++)
+    {
+        QLabel *this_lbl = flag_list.at(x);
 
         QString this_name = this_lbl->objectName();
 
-        // Labels with an object name should be preserved.
-        if(!this_name.contains("obj_flag_info")) continue;
-        return_layout->removeWidget(this_lbl);
-        delete this_lbl;
-    }
+        this_name.remove("obj_flag_info_");
 
-    draw_equip_labels(return_layout, row, 0, TRUE, TRUE, this_font);
+        this_name.replace(QString("_"), QString(" "));
 
-    while (TRUE)
-    {
-        int col = 0;
+        QTextStream line_string (&this_name);
+
+        int flag_set, row, column;
+
+        line_string >> flag_set >> row >> column;
+
         player_flag_record *pfr_ptr;
-        if (flag_set == FLAGS_RESIST) pfr_ptr = &player_resist_table[x++];
-        else if (flag_set == FLAGS_ABILITY) pfr_ptr = &player_abilities_table[x++];
-        else pfr_ptr = &player_nativity_table[x++];  // (flag_set == FLAGS_NATIVITY)
+        if (flag_set == FLAGS_RESIST) pfr_ptr = &player_resist_table[row];
+        else if (flag_set == FLAGS_ABILITY) pfr_ptr = &player_abilities_table[row];
+        else pfr_ptr = &player_nativity_table[row];  // (flag_set == FLAGS_NATIVITY)
 
-        // We are done
-        if (pfr_ptr->name.isNull()) break;
-
-        row++;
-
-        // If in Moria, make sure the flag is used.
-        if (game_mode == GAME_NPPMORIA)
+        if (column < NUM_INVEN_SLOTS)
         {
-            if (!pfr_ptr->moria_flag) continue;
-        }
+            int inven_slot = column + INVEN_WIELD;
 
-        bool did_resist = FALSE;
-        bool did_temp_resist = FALSE;
-        bool did_immunity = FALSE;
+            object_type *o_ptr = &inventory[inven_slot];
 
-        for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
-        {
-            object_type *o_ptr = &inventory[i];
+            bool has_flag = FALSE;
 
-            bool has_this_flag = TRUE;
-
-            if (!o_ptr->tval && FALSE)
+            // Special code for Moria
+            if (game_mode == GAME_NPPMORIA)
             {
-                has_this_flag = FALSE;
+                if (!pfr_ptr->moria_flag) continue;
+                if (inven_slot == INVEN_SWAP_WEAPON)
+                {
+                    this_lbl->setText("");
+                    continue;
+                }
             }
 
-            col++;
+            if (!o_ptr->k_idx)
+            {
+                this_lbl->setText(color_string(".", TERM_DARK));
+                continue;
+            }
 
             // First, check for immunity
             if (pfr_ptr->extra_flag)
             {
                 if (o_ptr->known_obj_flags_2 & (pfr_ptr->extra_flag))
                 {
-
-                    QLabel *immune_label = new QLabel();
-                    make_standard_label(immune_label, "I", TERM_BLUE, this_font);
-                    immune_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    return_layout->addWidget(immune_label, row, col, Qt::AlignCenter);
-
-                    // Too messy to inlude in player_flag_table
-                    if (pfr_ptr->extra_flag == TR2_RES_ACID) immune_label->setToolTip(get_help_topic("character_info", "Acid Immunity"));
-                    else if (pfr_ptr->extra_flag == TR2_IM_ELEC) immune_label->setToolTip(get_help_topic("character_info", "Lightning Immunity"));
-                    else if (pfr_ptr->extra_flag == TR2_IM_FIRE) immune_label->setToolTip(get_help_topic("character_info", "Fire Immunity"));
-                    else if (pfr_ptr->extra_flag == TR2_IM_COLD) immune_label->setToolTip(get_help_topic("character_info", "Cold Immunity"));
-                    else if (pfr_ptr->extra_flag == TR2_IM_POIS) immune_label->setToolTip(get_help_topic("character_info", "Poison Immunity"));
-
-                    did_immunity = TRUE;
+                    this_lbl->setText(color_string("I", TERM_BLUE));
+                    did_immunity[row] = TRUE;
                     continue;
                 }
             }
-
-            if (!has_this_flag)
+            if (pfr_ptr->set == 1)
             {
-                // Do nothing.  Just skip everything below
-            }
-
-            else if (pfr_ptr->set == 1)
-            {
-                if ((o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
+                if (o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) has_flag = TRUE;
             }
 
             else if (pfr_ptr->set == 2)
             {
-                if ((o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
+                if (o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) has_flag = TRUE;
             }
 
             else if (pfr_ptr->set == 3)
@@ -1444,302 +1465,237 @@ void equip_flag_info_update(QWidget *this_widget, QGridLayout *return_layout, in
                 // Hack - special handling for cursed items
                 if (pfr_ptr->set & (TR3_CURSE_ALL))
                 {
-                    if (!(o_ptr->ident & (IDENT_CURSED))) has_this_flag = FALSE;
+                    if (o_ptr->ident & (IDENT_CURSED)) has_flag = TRUE;
                 }
-                else if ((o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
+                else if (o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) has_flag = TRUE;
             }
             else if (pfr_ptr->set == 4)
             {
-                if ((o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) != pfr_ptr->this_flag) has_this_flag = FALSE;
+                if (o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) has_flag = TRUE;
             }
-
-            QString label_string = ".";
-            byte attr = TERM_DARK;
-
-            if (has_this_flag)
+            if (has_flag)
             {
-                label_string = "+";
-                attr = TERM_GREEN;
-                did_resist = TRUE;
+                this_lbl->setText(color_string("+", TERM_GREEN));
+                did_resist[row] = TRUE;
             }
-
-            QLabel *resist_label = new QLabel();
-            make_standard_label(resist_label, label_string, attr, this_font);
-            resist_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-            return_layout->addWidget(resist_label, row, col, Qt::AlignCenter);
+            else this_lbl->setText(color_string(".", TERM_DARK));
         }
-
-        // Mark player resists
-        col++;
-
-        bool player_has_flag = FALSE;
-        bool player_has_immunity = FALSE;
-
-        if (pfr_ptr->set == 1)
+        // The player inate flags
+        else if (column == NUM_INVEN_SLOTS)
         {
-            if ((f1 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-            if (f1 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
-        }
-        if (pfr_ptr->set == 2)
-        {
-            if ((f2 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-            if (f2 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
-        }
-        if (pfr_ptr->set == 3)
-        {
-            if ((f3 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-            if (f3 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
-        }
-        if (pfr_ptr->set == 4)
-        {
-            if ((fn & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-            if (fn & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
+            bool player_has_flag = FALSE;
+            bool player_has_immunity = FALSE;
 
-            // Special hack for boiling mud and boiling water
-            if (flag_set == FLAGS_NATIVITY)
+            if (pfr_ptr->set == 1)
             {
-                if (pfr_ptr->this_flag == ELEMENT_BMUD)
-                {
-                    if (p_ptr->state.native_boiling_mud) player_has_flag = TRUE;
-                }
-                else if (pfr_ptr->this_flag == ELEMENT_BWATER)
-                {
-                    if (p_ptr->state.native_boiling_water) player_has_flag = TRUE;
-                }
+                if ((f1 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+                if (f1 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
             }
-        }
+            if (pfr_ptr->set == 2)
+            {
+                if ((f2 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+                if (f2 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
+            }
+            if (pfr_ptr->set == 3)
+            {
+                if ((f3 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+                if (f3 & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
+            }
+            if (pfr_ptr->set == 4)
+            {
+                if ((fn & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
+                if (fn & (pfr_ptr->extra_flag))  player_has_immunity = TRUE;
 
-        if (player_has_immunity)
-        {
-            QLabel *player_label = new QLabel;
-            make_standard_label(player_label, "+", TERM_GREEN, this_font);
-            player_label->setToolTip("Innate immunity");
-            player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-            return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
-            did_immunity = TRUE;
+                // Special hack for boiling mud and boiling water
+                if (flag_set == FLAGS_NATIVITY)
+                {
+                    if (pfr_ptr->this_flag == ELEMENT_BMUD)
+                    {
+                        if (p_ptr->state.native_boiling_mud) player_has_flag = TRUE;
+                    }
+                    else if (pfr_ptr->this_flag == ELEMENT_BWATER)
+                    {
+                        if (p_ptr->state.native_boiling_water) player_has_flag = TRUE;
+                    }
+                }
+            }
+            if (player_has_immunity)
+            {
+                this_lbl->setText(color_string("<b>I</b>", TERM_BLUE));
+                did_immunity[row] = TRUE;
+            }
+            else if (player_has_flag)
+            {
+                this_lbl->setText(color_string("<b>+</b>", TERM_GREEN));
+                did_resist[row] = TRUE;
+            }
+            else this_lbl->setText(color_string(".", TERM_DARK));
         }
-        else if (player_has_flag)
+        // Temporary resists
+        else if (column > NUM_INVEN_SLOTS)
         {
-            QLabel *player_label = new QLabel();
-            make_standard_label(player_label, "+", TERM_BLUE, this_font);
-            player_label->setToolTip("Innate resistance");
-            player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-            return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
-            did_resist = TRUE;
+            QString this_tool_tip;
+            this_tool_tip.clear();
+            bool this_temp_resist = FALSE;
+            if (flag_set == FLAGS_RESIST)
+            {
+                if (pfr_ptr->this_flag == TR2_RES_ACID)
+                {
+                    if (p_ptr->timed[TMD_OPP_ACID] && !redundant_timed_event(TMD_OPP_ACID))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You temporarily resist fire.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TR2_RES_ELEC)
+                {
+                    if (p_ptr->timed[TMD_OPP_ELEC] && !redundant_timed_event(TMD_OPP_ELEC))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You temporarily resist lightning.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TR2_RES_FIRE)
+                {
+                    if (p_ptr->timed[TMD_OPP_FIRE] && !redundant_timed_event(TMD_OPP_FIRE))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You temporarily resist fire.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TR2_RES_COLD)
+                {
+                    if (p_ptr->timed[TMD_OPP_COLD] && !redundant_timed_event(TMD_OPP_COLD))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You temporarily resist cold.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TR2_RES_POIS)
+                {
+                    if (p_ptr->timed[TMD_OPP_POIS] && !redundant_timed_event(TMD_OPP_POIS))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You temporarily resist poison.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TR2_RES_FEAR)
+                {
+                    if (p_ptr->timed[TMD_HERO] || p_ptr->timed[TMD_BERSERK])
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You are temporarily immune to fear.";
+                    }
+                }
+            }
+            else if (flag_set == FLAGS_ABILITY)
+            {
+                if (pfr_ptr->this_flag == TR3_SEE_INVIS)
+                {
+                    if ((p_ptr->timed[TMD_SINVIS])  && !redundant_timed_event(TMD_SINVIS))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You can temporarily see invisible creatures.";
+                    }
+                }
+            }
+            else if (flag_set == FLAGS_NATIVITY)
+            {
+                if (pfr_ptr->this_flag == TN1_NATIVE_LAVA)
+                {
+                    if ((p_ptr->timed[TMD_NAT_LAVA]) && !redundant_timed_event(TMD_NAT_LAVA))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You are temporarily native to lava terrains.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TN1_NATIVE_OIL)
+                {
+                    if ((p_ptr->timed[TMD_NAT_OIL]) && !redundant_timed_event(TMD_NAT_OIL))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You are temporarily native to oily terrains.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TN1_NATIVE_SAND)
+                {
+                    if ((p_ptr->timed[TMD_NAT_SAND]) && !redundant_timed_event(TMD_NAT_SAND))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You are temporarily native to sandy terrains.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TN1_NATIVE_FOREST)
+                {
+                    if ((p_ptr->timed[TMD_NAT_TREE]) && !redundant_timed_event(TMD_NAT_TREE))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You are temporarily native to forest terrains.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TN1_NATIVE_WATER)
+                {
+                    if ((p_ptr->timed[TMD_NAT_WATER]) && !redundant_timed_event(TMD_NAT_WATER))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You are temporarily native to watery terrains.";
+                    }
+                }
+                else if (pfr_ptr->this_flag == TN1_NATIVE_MUD)
+                {
+                    if ((p_ptr->timed[TMD_NAT_MUD]) && !redundant_timed_event(TMD_NAT_MUD))
+                    {
+                        this_temp_resist = TRUE;
+                        this_tool_tip = "You are temporarily native to muddy terrains.";
+                    }
+                }
+            }
+            if (this_temp_resist)
+            {
+                this_lbl->setText(color_string("<b>+</b>", TERM_PURPLE));
+                did_temp_resist[row] = TRUE;
+            }
+            else this_lbl->setText(color_string(".", TERM_DARK));
+            this_lbl->setToolTip(this_tool_tip);
         }
-        else
-        {
-            QLabel *player_label = new QLabel();
-            make_standard_label(player_label, ".", TERM_DARK, this_font);
-            player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-            return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
-        }
+    }
 
+    // Now update the label colors
+    for (int x = 0; x < label_list.size(); x++)
+    {
+        QLabel *this_lbl = label_list.at(x);
 
-        // Note corresponding temporary resists
-        col++;
-        if (flag_set == FLAGS_RESIST)
-        {
-            if (pfr_ptr->this_flag == TR2_RES_ACID)
-            {
-                if (p_ptr->timed[TMD_OPP_ACID] && !redundant_timed_event(TMD_OPP_ACID))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You temporarily resist fire.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TR2_RES_ELEC)
-            {
-                if (p_ptr->timed[TMD_OPP_ELEC] && !redundant_timed_event(TMD_OPP_ELEC))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You temporarily resist lightning.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TR2_RES_FIRE)
-            {
-                if (p_ptr->timed[TMD_OPP_FIRE] && !redundant_timed_event(TMD_OPP_FIRE))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You temporarily resist fire.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TR2_RES_COLD)
-            {
-                if (p_ptr->timed[TMD_OPP_COLD] && !redundant_timed_event(TMD_OPP_COLD))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You temporarily resist cold.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TR2_RES_POIS)
-            {
-                if (p_ptr->timed[TMD_OPP_POIS] && !redundant_timed_event(TMD_OPP_POIS))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You temporarily resist poison.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TR2_RES_FEAR)
-            {
-                if (p_ptr->timed[TMD_HERO] || p_ptr->timed[TMD_BERSERK])
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You are temporarily immune to fear.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-        }
-        else if (flag_set == FLAGS_ABILITY)
-        {
-            if (pfr_ptr->this_flag == TR3_SEE_INVIS)
-            {
-                if ((p_ptr->timed[TMD_SINVIS])  && !redundant_timed_event(TMD_SINVIS))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You can temporarily see invisible creatures.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-        }
-        else if (flag_set == FLAGS_NATIVITY)
-        {
-            if (pfr_ptr->this_flag == TN1_NATIVE_LAVA)
-            {
-                if ((p_ptr->timed[TMD_NAT_LAVA]) && !redundant_timed_event(TMD_NAT_LAVA))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You are temporarily native to lava terrains.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TN1_NATIVE_OIL)
-            {
-                if ((p_ptr->timed[TMD_NAT_OIL]) && !redundant_timed_event(TMD_NAT_OIL))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You are temporarily native to oily terrains.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TN1_NATIVE_SAND)
-            {
-                if ((p_ptr->timed[TMD_NAT_SAND]) && !redundant_timed_event(TMD_NAT_SAND))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You are temporarily native to sandy terrains.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TN1_NATIVE_FOREST)
-            {
-                if ((p_ptr->timed[TMD_NAT_TREE]) && !redundant_timed_event(TMD_NAT_TREE))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You are temporarily native to forest terrains.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TN1_NATIVE_WATER)
-            {
-                if ((p_ptr->timed[TMD_NAT_WATER]) && !redundant_timed_event(TMD_NAT_WATER))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You are temporarily native to watery terrains.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
-            }
-            else if (pfr_ptr->this_flag == TN1_NATIVE_MUD)
-            {
-                if ((p_ptr->timed[TMD_NAT_MUD]) && !redundant_timed_event(TMD_NAT_MUD))
-                {
-                    QLabel *temp_label = new QLabel;
-                    make_standard_label(temp_label, "+", TERM_PURPLE, this_font);
-                    temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-                    temp_label->setToolTip("You are temporarily native to muddy terrains.");
-                    return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-                    did_temp_resist = TRUE;
-                }
+        QString this_name = this_lbl->objectName();
 
-            }
-        }
+        this_name.remove("line_label_");
 
-        if (!did_temp_resist)
-        {
-            QLabel *temp_label = new QLabel;
-            make_standard_label(temp_label, ".", TERM_DARK, this_font);
-            temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col-1));
-            return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
-        }
+        this_name.replace(QString("_"), QString(" "));
+
+        QTextStream line_string (&this_name);
+
+        int flag_set, row;
+
+        line_string >> flag_set >> row;
+
+        player_flag_record *pfr_ptr;
+        if (flag_set == FLAGS_RESIST) pfr_ptr = &player_resist_table[row];
+        else if (flag_set == FLAGS_ABILITY) pfr_ptr = &player_abilities_table[row];
+        else pfr_ptr = &player_nativity_table[row];  // (flag_set == FLAGS_NATIVITY)
+
+        QString label_text = html_string_to_plain_text(this_lbl->text());
 
         int attr = TERM_DARK;
-        if (did_immunity) attr = TERM_BLUE;
-        else if (did_resist && did_temp_resist) attr = TERM_PURPLE;
-        else if (did_resist || did_temp_resist) attr = TERM_GREEN;
+        if (did_immunity[row]) attr = TERM_BLUE;
+        else if (did_resist[row] && did_temp_resist[row]) attr = TERM_PURPLE;
+        else if (did_resist[row] || did_temp_resist[row]) attr = TERM_GREEN;
 
-        // Hack reverse the colors for bad flags
+        // Hack different color for bad flags
         if (pfr_ptr->bad_flag)
         {
             if (attr != TERM_DARK) attr = TERM_RED;
         }
 
-        QList<QLabel *> lbl_list = this_widget->findChildren<QLabel *>();
-
-        for (int j = 0; j < lbl_list.size(); j++)
-        {
-            QLabel *this_lbl = lbl_list.at(j);
-
-            QString this_name = this_lbl->objectName();
-
-            //Not a named label
-            if (this_name.contains(QString("line_label_%1_%2") .arg(flag_set) .arg(row-1)))
-            {
-                this_lbl->setText(QString("<b>%1</b>") .arg(color_string(pfr_ptr->name, attr)));
-                this_lbl->setFont(this_font);
-                break;
-            }
-        }
+        this_lbl->setText(QString("<b>%1</b>") .arg(color_string(label_text, attr)));
     }
 }
 
@@ -1750,10 +1706,13 @@ void equip_flag_info(QWidget *this_widget, QGridLayout *return_layout, int flag_
 
     int x = 0;
 
-    u32b f1, f2, f3, fn;
+    QList<QLabel *> list_flags;
+    QList<QLabel *> list_equippy;
+    QList<QLabel *> list_labels;
 
-    /* Extract the player flags */
-    player_flags(&f1, &f2, &f3, &fn);
+    list_flags.clear();
+    list_equippy.clear();
+    list_labels.clear();
 
     if (flag_set == FLAGS_NATIVITY)
     {
@@ -1761,6 +1720,25 @@ void equip_flag_info(QWidget *this_widget, QGridLayout *return_layout, int flag_
         make_standard_label(nativity_to, "Nativity To:", TERM_BLUE, this_font);
         nativity_to->setObjectName("preserve");
         return_layout->addWidget(nativity_to, row, 0, Qt::AlignLeft);
+    }
+
+    draw_equippy_labels(return_layout, row, 0, TRUE, TRUE, this_font);
+
+    // Hack - compile the equippy list
+    QList<QLabel *> label_list = this_widget->findChildren<QLabel *>();
+
+    for (int i = 0; i < label_list.size(); i++)
+    {
+        QLabel *this_lbl = label_list.at(i);
+
+        QString this_name = this_lbl->objectName();
+
+        //Not a named label
+        if (!this_name.length()) continue;
+
+        if (!this_name.contains("equippy_")) continue;
+
+        list_equippy.append(this_lbl);
     }
 
     while (TRUE)
@@ -1775,6 +1753,7 @@ void equip_flag_info(QWidget *this_widget, QGridLayout *return_layout, int flag_
 
         // Just make the labels at this point
         row++;
+        int col = 0;
 
         // If in Moria, make sure the flag is used.
         if (game_mode == GAME_NPPMORIA)
@@ -1835,170 +1814,220 @@ void equip_flag_info(QWidget *this_widget, QGridLayout *return_layout, int flag_
             else if (pfr_ptr->this_flag == TN1_NATIVE_BWATER) line_label->setToolTip(get_help_topic("character_info", "Native Boiling Water"));
         }
         return_layout->addWidget(line_label, row, 0, Qt::AlignLeft);
+
+        list_labels.append(line_label);
+
+        for (int i = INVEN_WIELD; i < (INVEN_TOTAL); i++)
+        {
+            QLabel *this_label = new QLabel();
+            make_standard_label(this_label, ".", TERM_DARK, this_font);
+            this_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col++));
+            return_layout->addWidget(this_label, row, col, Qt::AlignCenter);
+            list_flags.append(this_label);
+        }
+
+        // Add player resists
+
+        QLabel *player_label = new QLabel;
+        make_standard_label(player_label, ".", TERM_DARK, this_font);
+        player_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col++));
+        return_layout->addWidget(player_label, row, col, Qt::AlignCenter);
+        list_flags.append(player_label);
+
+
+        // Add corresponding temporary resists
+        QLabel *temp_label = new QLabel;
+        make_standard_label(temp_label, ".", TERM_DARK, this_font);
+        temp_label->setObjectName(QString("obj_flag_info_%1_%2_%3") .arg(flag_set) .arg(row-1) .arg(col++));
+        return_layout->addWidget(temp_label, row, col, Qt::AlignCenter);
+        list_flags.append(temp_label);
     }
 
-    // Now fill it all in
-    equip_flag_info_update(this_widget, return_layout, flag_set, this_font);
+    update_equip_flags(list_equippy, list_flags, list_labels);
 }
 
-void equip_modifier_info_update(QWidget *this_widget, QGridLayout *return_layout, QFont this_font)
+void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_list, QList<QLabel *> label_list)
 {
-    int row = 0;
+    update_equippy_labels(equippy_list);
 
-    int x = 0;
+    u32b f1, f2, f3, fn;
 
-    // Clear out all the old marks
-    QList<QLabel *> all_lbl_list = this_widget->findChildren<QLabel *>();
+    /* Extract the player flags */
+    player_flags(&f1, &f2, &f3, &fn);
 
-    // work backwards
-    for (int j = all_lbl_list.size() - 1; j >= 0; j--)
+    bool has_modifier[TABLES_MAX_ENTRIES];
+    bool has_sustain[TABLES_MAX_ENTRIES];
+    int cumulative[TABLES_MAX_ENTRIES];
+
+    for (int x = 0; x < TABLES_MAX_ENTRIES; x++)
     {
-        QLabel *this_lbl = all_lbl_list.at(j);
-
-        // Labels with an object name should be preserved.
-        if(this_lbl->objectName().length()) continue;
-        return_layout->removeWidget(this_lbl);
-        delete this_lbl;
+        has_modifier[x] = FALSE;
+        has_sustain[x] = FALSE;
+        cumulative[x] = 0;
     }
 
-    draw_equip_labels(return_layout, row, 0, FALSE, FALSE, this_font);
-
-    while (TRUE)
+    for (int x = 0; x < flag_list.size(); x++)
     {
-        int col = 1;
-        player_flag_record *pfr_ptr;
-        pfr_ptr = &player_pval_table[x++];
+        QLabel *this_lbl = flag_list.at(x);
 
-        // We are done
-        if (pfr_ptr->name.isNull()) break;
+        QString this_name = this_lbl->objectName();
 
-        row++;
+        this_name.remove("obj_mod_info_");
 
-        // If in Moria, make sure the flag is used.
+        this_name.replace(QString("_"), QString(" "));
+
+        QTextStream line_string (&this_name);
+
+        int row, column;
+
+        line_string >> row >> column;
+
+        player_flag_record *pfr_ptr = &player_pval_table[row];
+
+        int inven_slot = column + INVEN_WIELD;
+
+        object_type *o_ptr = &inventory[inven_slot];
+
+        bool this_sustain = FALSE;
+        bool this_modifier = FALSE;
+
+        // Special code for Moria
         if (game_mode == GAME_NPPMORIA)
         {
             if (!pfr_ptr->moria_flag) continue;
+            if (inven_slot == INVEN_SWAP_WEAPON)
+            {
+                this_lbl->setText("");
+                continue;
+            }
         }
 
-        bool has_extra_flag = FALSE;
-        int cumulative = 0;
-
-        for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++, col++)
+        if (!o_ptr->k_idx)
         {
-            object_type *o_ptr = &inventory[i];
+            this_lbl->setText(color_string(".", TERM_DARK));
+            continue;
+        }
 
-            bool this_flag = FALSE;
-            bool this_extra_flag = FALSE;
-
-            if (!o_ptr->tval)
+        // First, check for sustain
+        if (pfr_ptr->extra_flag)
+        {
+            if (o_ptr->known_obj_flags_2 & (pfr_ptr->extra_flag))
             {
-                QLabel *pval_label = new QLabel();
-                make_standard_label(pval_label, ".", TERM_DARK, this_font);
-                pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
-                return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
-                continue;
+                this_sustain = TRUE;
             }
+        }
 
-            // First, check for sustain
-            if (pfr_ptr->extra_flag)
-            {
-                if (o_ptr->known_obj_flags_2 & (pfr_ptr->extra_flag))
-                {
-                    this_extra_flag = has_extra_flag = TRUE;
-                }
-            }
+        // CHeck if this equipment has the applicable flag
+        if (pfr_ptr->set == 1)
+        {
+            if (o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) this_modifier = TRUE;
+        }
+        else if (pfr_ptr->set == 2)
+        {
+            if (o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) this_modifier = TRUE;
+        }
+        else if (pfr_ptr->set == 3)
+        {
+            if (o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) this_modifier = TRUE;
+        }
+        else if (pfr_ptr->set == 4)
+        {
+            if (o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) this_modifier = TRUE;
+        }
 
-            // CHeck if this equipment has the applicable flag
-            if (pfr_ptr->set == 1)
-            {
-                if (o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) this_flag = TRUE;
-            }
-            else if (pfr_ptr->set == 2)
-            {
-                if (o_ptr->known_obj_flags_2 & (pfr_ptr->this_flag)) this_flag = TRUE;
-            }
-            else if (pfr_ptr->set == 3)
-            {
-                if (o_ptr->known_obj_flags_3 & (pfr_ptr->this_flag)) this_flag = TRUE;
-            }
-            else if (pfr_ptr->set == 4)
-            {
-                if (o_ptr->known_obj_flags_native & (pfr_ptr->this_flag)) this_flag = TRUE;
-            }
-
-            // Nothing to mark
-            if (!this_flag && !this_extra_flag)
-            {
-                QLabel *pval_label = new QLabel();
-                make_standard_label(pval_label, ".", TERM_DARK, this_font);
-                pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
-                return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
-                continue;
-            }
-
-            int attr = TERM_DARK;
-            QString pval_num = (QString("%1") .arg(o_ptr->pval));
-
-            if (o_ptr->pval > 0 && this_flag)
-            {
-                attr = TERM_GREEN;
-                pval_num.prepend("+");
-            }
-            else if (o_ptr->pval < 0 && this_flag) attr = TERM_RED;
-
-            // Sustained stat
-            if (this_extra_flag)
-            {
-                // Handle cases where the stat is sustained but not modified
-                if (!this_flag)
-                {
-                    pval_num = "s";
-                }
-
-                if (o_ptr->pval < 0)    attr = TERM_ORANGE;
-                else if (o_ptr->pval > 0)      attr = TERM_BLUE;
-
-                pval_num = (QString("<u>%1</u>") .arg(pval_num));
-            }
-
-            set_html_string_length(pval_num, 3, TRUE);
-
-            QLabel *pval_label = new QLabel();
-            make_standard_label(pval_label, pval_num, attr, this_font);
-            if (this_extra_flag) pval_label->setToolTip(QString("Your %1 is sustained.") .arg(stat_names_full[row-1]));
-            pval_label->setObjectName(QString("obj_mod_info_%1_%2_%3") .arg(PVAL_MODIFIERS) .arg(row-1) .arg(col-1));
-            return_layout->addWidget(pval_label, row, col, Qt::AlignCenter);
-
-            cumulative += o_ptr->pval;
+        if (this_sustain) has_sustain[row] = TRUE;
+        else if (this_modifier) has_modifier[row] = TRUE;
+        // Nothing to mark.
+        else
+        {
+            this_lbl->setText(color_string(".", TERM_DARK));
+            continue;
         }
 
         int attr = TERM_DARK;
-        if (cumulative > 0) attr = TERM_GREEN;
-        if (cumulative < 0) attr = TERM_RED;
-        if (has_extra_flag)
+        QString pval_num = (QString("%1") .arg(o_ptr->pval));
+
+        if (o_ptr->pval > 0 && this_modifier)
         {
-            if (cumulative < 0) attr = TERM_ORANGE;
-            else attr = TERM_BLUE;
+            attr = TERM_GREEN;
+            pval_num.prepend("+");
         }
+        else if (o_ptr->pval < 0 && this_modifier) attr = TERM_RED;
 
-        QList<QLabel *> lbl_list = this_widget->findChildren<QLabel *>();
-
-        for (int j = 0; j < lbl_list.size(); j++)
+        // Sustained stat
+        if (this_sustain)
         {
-            QLabel *this_lbl = lbl_list.at(j);
-
-            QString this_name = this_lbl->objectName();
-
-            //Not a named label
-            if (this_name.contains(QString("line_label_%1_%2") .arg(PVAL_MODIFIERS) .arg(row-1)))
+            // Handle cases where the stat is sustained but not modified
+            if (!this_modifier)
             {
-                this_lbl->setText(QString("<b>%1</b>") .arg(color_string(pfr_ptr->name, attr)));
-                this_lbl->setFont(this_font);
-                break;
+                pval_num = "s";
             }
+
+            if (o_ptr->pval < 0)    attr = TERM_ORANGE;
+            else if (o_ptr->pval > 0)      attr = TERM_BLUE;
+
+            pval_num = (QString("<u>%1</u>") .arg(pval_num));
+
+            this_lbl->setToolTip(QString("Your %1 is sustained.") .arg(stat_names_full[row-1]));
         }
+        else this_lbl->setToolTip(QString(""));
+        pval_num.prepend("<b>");
+        pval_num.append("</b>");
+
+        set_html_string_length(pval_num, 3, TRUE);
+        this_lbl->setText(color_string(pval_num, attr));
+
+        cumulative[row] += o_ptr->pval;
     }
+
+    // Now update the label colors
+    for (int x = 0; x < label_list.size(); x++)
+    {
+        QLabel *this_lbl = label_list.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        this_name.remove("line_label_");
+
+        this_name.replace(QString("_"), QString(" "));
+
+        QTextStream line_string (&this_name);
+
+        int row;
+
+        line_string >> row;
+
+        QString label_text = html_string_to_plain_text(this_lbl->text());
+
+        if (!has_modifier[row])
+        {
+            this_lbl->setText(color_string(label_text, TERM_DARK));
+            continue;
+        }
+
+        player_flag_record *pfr_ptr = &player_pval_table[row];
+
+        int attr = TERM_DARK;
+
+        if (has_sustain[row])
+        {
+            if (cumulative[row] < 0) attr = TERM_ORANGE;
+            else if (cumulative[row] > 0) attr = TERM_BLUE;
+        }
+        else if (cumulative[row] > 0) attr = TERM_GREEN;
+        else if (cumulative[row] < 0) attr = TERM_RED;
+
+        // Hack different color for bad flags
+        if (pfr_ptr->bad_flag)
+        {
+            if (attr != TERM_DARK) attr = TERM_RED;
+        }
+
+        this_lbl->setText(QString("<b>%1</b>") .arg(color_string(label_text, attr)));
+    }
+
 }
+
 // This grid should be only for fields that are part of the TR1_PVAL_MASK flag
 void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont this_font)
 {
@@ -2006,10 +2035,36 @@ void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont
 
     int x = 0;
 
+    QList<QLabel *> list_flags;
+    QList<QLabel *> list_equippy;
+    QList<QLabel *> list_labels;
+
+    list_flags.clear();
+    list_equippy.clear();
+    list_labels.clear();
+
+    draw_equippy_labels(return_layout, row, 0, FALSE, FALSE, this_font);
+
+    // Hack - compile the equippy list
+    QList<QLabel *> label_list = this_widget->findChildren<QLabel *>();
+
+    for (int i = 0; i < label_list.size(); i++)
+    {
+        QLabel *this_lbl = label_list.at(i);
+
+        QString this_name = this_lbl->objectName();
+
+        //Not a named label
+        if (!this_name.length()) continue;
+
+        if (!this_name.contains("equippy_")) continue;
+
+        list_equippy.append(this_lbl);
+    }
+
     while (TRUE)
     {
-        player_flag_record *pfr_ptr;
-        pfr_ptr = &player_pval_table[x++];
+        player_flag_record *pfr_ptr = &player_pval_table[x++];;
 
         // We are done
         if (pfr_ptr->name.isNull()) break;
@@ -2024,7 +2079,7 @@ void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont
 
         QLabel *line_label = new QLabel;
         make_standard_label(line_label, pfr_ptr->name, TERM_WHITE, this_font);
-        line_label->setObjectName(QString("line_label_%1_%2") .arg(PVAL_MODIFIERS) .arg(row-1));
+        line_label->setObjectName(QString("line_label_%1") .arg(row-1));
 
         if (pfr_ptr->set == 1)
         {
@@ -2039,9 +2094,21 @@ void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont
             else if (pfr_ptr->this_flag == TR1_MIGHT)   line_label->setToolTip(get_help_topic("character_info", "Extra Might"));
         }
         return_layout->addWidget(line_label, row, 0, Qt::AlignLeft);
+        list_labels.append(line_label);
+
+        int col = 0;
+
+        for (int i = INVEN_WIELD; i < INVEN_TOTAL; i++)
+        {
+            QLabel *this_label = new QLabel();
+            make_standard_label(this_label, ".", TERM_DARK, this_font);
+            this_label->setObjectName(QString("obj_mod_info_%1_%2") .arg(row-1) .arg(col++));
+            return_layout->addWidget(this_label, row, col, Qt::AlignRight);
+            list_flags.append(this_label);
+        }
     }
 
-    equip_modifier_info_update(this_widget, return_layout, this_font);
+    update_equip_modifiers(list_equippy, list_flags, list_labels);
 }
 
 PlayerScreenDialog::PlayerScreenDialog(void)
@@ -2173,7 +2240,7 @@ PlayerScreenDialog::PlayerScreenDialog(void)
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
     top_layout->addWidget(buttons);
 
-    update_char_screen(top_widget);
+    update_char_screen(top_widget, ui_message_window_font());
 
     setLayout(top_layout);
     setWindowTitle(tr("Player Information"));

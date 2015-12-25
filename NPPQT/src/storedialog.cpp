@@ -1407,7 +1407,7 @@ StatDialog::StatDialog(int service, byte *stat_selected)
         // or make a label
         else
         {
-            QLabel *self_label = new QLabel(stat_names[stats[i]]);
+            QLabel *self_label = new QLabel(stat_names[i]);
             stat_layout->addWidget(self_label, row, col++);
         }
 

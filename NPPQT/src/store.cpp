@@ -2722,6 +2722,8 @@ void do_cmd_reward(int this_store, cmd_arg args)
     o_ptr = &st_ptr->stock[item];
     k_ptr = &k_info[o_ptr->k_idx];
 
+    o_ptr->mark_fully_known(TRUE);
+
     /* Mark the history */
     o_ptr->origin_nature = ORIGIN_REWARD;
     o_ptr->origin_r_idx = 0;

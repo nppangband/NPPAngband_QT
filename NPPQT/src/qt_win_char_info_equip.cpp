@@ -62,10 +62,77 @@ void MainWindow::win_char_info_equip_update()
 {
     if (!character_generated) return;
     if (!show_char_info_equip) return;
-    equip_flag_info_update(resist_widget, resist_flags, FLAGS_RESIST, font_char_equip_info);
-    equip_flag_info_update(ability_widget, ability_flags, FLAGS_ABILITY, font_char_equip_info);
-    equip_flag_info_update(nativity_widget, nativity_flags, FLAGS_NATIVITY, font_char_equip_info);
-    equip_modifier_info_update(equip_widget, equip_mods, font_char_equip_info);
+    update_equip_flags(list_resist_equippy, list_resist_flags, list_resist_labels);
+    update_equip_flags(list_ability_equippy, list_ability_flags, list_ability_labels);
+    update_equip_flags(list_nativity_equippy, list_nativity_flags, list_nativity_labels);
+    update_equip_modifiers(list_equip_equippy, list_equip_flags, list_equip_labels);
+}
+
+// The update function above assumes these lists have been made correctly
+// This is necessary for efficiency.  The game will likely crash if
+// these lists are made incorrectly.
+void MainWindow::update_win_char_equip_set_lists()
+{
+    list_resist_flags.clear();
+    list_ability_flags.clear();
+    list_equip_flags.clear();
+    list_nativity_flags.clear();
+    list_resist_labels.clear();
+    list_ability_labels.clear();
+    list_equip_labels.clear();
+    list_nativity_labels.clear();
+    list_resist_equippy.clear();
+    list_ability_equippy.clear();
+    list_equip_equippy.clear();
+    list_nativity_equippy.clear();
+
+    QList<QLabel *> lbl_list = resist_widget->findChildren<QLabel *>();
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        if (this_name.contains("equippy"))      list_resist_equippy.append(this_lbl);
+        if (this_name.contains("obj_flag_info"))list_resist_flags.append(this_lbl);
+        if (this_name.contains("line_label"))   list_resist_labels.append(this_lbl);
+    }
+
+    lbl_list = ability_widget->findChildren<QLabel *>();
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        if (this_name.contains("equippy"))      list_ability_equippy.append(this_lbl);
+        if (this_name.contains("obj_flag_info"))list_ability_flags.append(this_lbl);
+        if (this_name.contains("line_label"))   list_ability_labels.append(this_lbl);
+    }
+
+    lbl_list = equip_widget->findChildren<QLabel *>();
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        if (this_name.contains("equippy"))      list_equip_equippy.append(this_lbl);
+        if (this_name.contains("obj_mod_info")) list_equip_flags.append(this_lbl);
+        if (this_name.contains("line_label"))   list_equip_labels.append(this_lbl);
+    }
+
+    lbl_list = nativity_widget->findChildren<QLabel *>();
+    for (int x = 0; x < lbl_list.size(); x++)
+    {
+        QLabel *this_lbl = lbl_list.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        if (this_name.contains("equippy"))      list_nativity_equippy.append(this_lbl);
+        if (this_name.contains("obj_flag_info"))list_nativity_flags.append(this_lbl);
+        if (this_name.contains("line_label"))   list_nativity_labels.append(this_lbl);
+    }
 }
 
 void MainWindow::create_win_char_equip_info()
@@ -123,8 +190,7 @@ void MainWindow::create_win_char_equip_info()
     equip_flag_info(ability_widget, ability_flags, FLAGS_ABILITY, font_char_equip_info);
     equip_flag_info(nativity_widget, nativity_flags, FLAGS_NATIVITY, font_char_equip_info);
     equip_modifier_info(equip_widget, equip_mods, font_char_equip_info);
-
-    win_char_info_equip_update();
+    update_win_char_equip_set_lists();
 }
 
 void MainWindow::close_win_char_equip_frame(QObject *this_object)
@@ -133,6 +199,18 @@ void MainWindow::close_win_char_equip_frame(QObject *this_object)
     window_char_info_equip = NULL;
     show_char_info_equip = FALSE;
     win_char_equip_info->setText("Show Character Equipment Information");
+    list_resist_flags.clear();
+    list_ability_flags.clear();
+    list_equip_flags.clear();
+    list_nativity_flags.clear();
+    list_resist_labels.clear();
+    list_ability_labels.clear();
+    list_equip_labels.clear();
+    list_nativity_labels.clear();
+    list_resist_equippy.clear();
+    list_ability_equippy.clear();
+    list_equip_equippy.clear();
+    list_nativity_equippy.clear();
 }
 
 /*

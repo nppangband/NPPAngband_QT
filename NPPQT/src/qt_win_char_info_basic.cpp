@@ -143,7 +143,7 @@ void MainWindow::win_char_info_basic_update()
 {
     if (!character_generated) return;
     if (!show_char_info_basic) return;
-    update_char_screen(window_char_info_basic);
+    update_char_screen(window_char_info_basic, font_char_basic_info);
 }
 
 void MainWindow::create_win_char_info()
@@ -209,7 +209,7 @@ void MainWindow::create_win_char_info()
     vlay_stat_info->addLayout(stat_info);
     vlay_stat_info->addStretch(1);
 
-    update_char_screen(window_char_info_basic);
+    update_char_screen(window_char_info_basic, font_char_basic_info);
     update_label_basic_font();
 }
 
