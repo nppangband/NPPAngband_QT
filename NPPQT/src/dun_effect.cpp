@@ -518,7 +518,7 @@ bool set_effect_rocks(int f_idx, byte y, byte x)
     /*All full*/
     if (!x_idx) return (FALSE);
 
-    effect_prep(x_idx, EFFECT_ROCKS, f_idx, y, x, 1, 1, 0, SOURCE_TRAP, flags);
+    effect_prep(x_idx, EFFECT_ROCKS, f_idx, y, x, 1, 1, 0, SOURCE_OTHER, flags);
 
     /* RE-do the flow */
     p_ptr->update |= (PU_FLOW_DOORS | PU_FLOW_NO_DOORS);

@@ -1660,6 +1660,8 @@ static bool command_tunnel_aux(int y, int x)
         {
             sound(MSG_DIG);
 
+            bool put_object = FALSE;
+
             /* Get the name */
             name = feature_desc(feat, FALSE, TRUE);
 
@@ -1667,7 +1669,17 @@ static bool command_tunnel_aux(int y, int x)
             message(QString("You have removed the " + name + "."));
 
             if (!tunneling_effect) cave_alter_feat(y, x, FS_TUNNEL);
-            else delete_effect_idx(this_x_idx);
+            else
+            {
+                if (cave_hidden_object_bold(y, x)) put_object = TRUE;
+                delete_effect_idx(this_x_idx);
+            }
+
+            if (put_object)
+            {
+                message(QString("You have found something!"));
+                place_object(y, x, FALSE, FALSE, DROP_TYPE_UNTHEMED);
+            }
 
             /* Forget the square if marked */
             dungeon_info[y][x].cave_info &= ~(CAVE_MARK);

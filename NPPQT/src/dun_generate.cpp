@@ -3462,6 +3462,7 @@ void build_terrain(int y, int x, int feat)
 {
     int oldfeat, newfeat;
     int k;
+    int effect_rock = 0;
 
     feature_type *f_ptr;
     feature_type *f2_ptr;
@@ -3719,7 +3720,8 @@ void build_terrain(int y, int x, int feat)
 
             else if (k <= 20)
             {
-                set_effect_rocks(FEAT_LOOSE_ROCK, y, x);
+                newfeat = FEAT_FLOOR_ROCK;
+                effect_rock = FEAT_LOOSE_ROCK;
             }
 
             else if (k <= 25) newfeat = FEAT_FLOOR_ROCK;
@@ -3785,6 +3787,8 @@ void build_terrain(int y, int x, int feat)
 
     /* Set the new feature */
     cave_set_feat(y, x, newfeat);
+
+    if (effect_rock) set_effect_rocks(effect_rock, y, x);
 
 }
 
