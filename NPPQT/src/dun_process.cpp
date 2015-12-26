@@ -68,7 +68,6 @@ static void sense_inventory(void)
     /* Check everything */
     for (i = 0; i < ALL_INVEN_TOTAL; i++)
     {
-
         int squelch = SQUELCH_NO;
 
         o_ptr = &inventory[i];
@@ -122,7 +121,7 @@ static void sense_inventory(void)
         sound(MSG_PSEUDOID);
         if (i >= INVEN_WIELD)
         {
-            message(QString("You feel the %1 (%2) you are %3 %4 %5...") .arg(o_name)
+            message(QString("You feel the %1 (%2) you are %3 %4 %5.") .arg(o_name)
                        .arg(index_to_label(i)) .arg(describe_use(i))
                        .arg((o_ptr->number == 1) ? "is" : "are") .arg(inscrip_text[feel - INSCRIP_NULL]));
         }
@@ -130,7 +129,7 @@ static void sense_inventory(void)
         /* Message (inventory) */
         else
         {
-            message(QString("You feel the %1 (%2) in your pack %3 %4%5") .arg(o_name)
+            message(QString("You feel the %1 (%2) in your pack %3 %4%5.") .arg(o_name)
                     .arg(index_to_label(i))
                     .arg((o_ptr->number == 1) ? "is" : "are") .arg(inscrip_text[feel - INSCRIP_NULL])
                     .arg(squelch_to_label(squelch)));

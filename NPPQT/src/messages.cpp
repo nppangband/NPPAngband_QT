@@ -26,10 +26,9 @@ QVector<message_type> message_list;
 // For the message window
 QString completed_lines;
 QString current_line;
+QString current_repeat;
+QString current_append;
 
-// These two shouldn't be true at the same time
-bool msg_appended;
-bool msg_repeated;
 
 
 DisplayMessages::DisplayMessages(void)
@@ -67,12 +66,25 @@ void reset_message_display_marks(void)
     }
     completed_lines.clear();
     current_line.clear();
-    msg_appended = msg_repeated = FALSE;
+    current_append.clear();
+    current_repeat.clear();
+}
+
+// End an appended line
+void stop_message_window_append(void)
+{
+    if (!p_ptr->playing) return;
+    if (!current_append.length()) return;
+
+    current_append.append("<br>");
+    completed_lines.append(current_append);
+    current_append.clear();
 }
 
 /*
  * This is to update the message window.
- * This function must remember the prevous line printed, and handle the next line appropriately
+ * Only one of the three strings (current line, current_repeat, current_append)
+ * should carry a line at any given time
  */
 void update_message_window(QTextEdit *message_area, QFont message_font)
 {
@@ -97,7 +109,16 @@ void update_message_window(QTextEdit *message_area, QFont message_font)
         break;
     }
 
-    for (int i = start_point; i >= 0; i--)
+    // First make sure we have appended any old messages
+    if (current_append.length() && !p_ptr->message_append)
+    {
+        current_append.append("<br>");
+        completed_lines.append(current_append);
+        current_append.clear();
+    }
+
+    // FIrst check if we have already displayed the message.
+    if (!message_list[0].displayed) for (int i = start_point; i >= 0; i--)
     {
         message_type *msg_ptr = &message_list[i];
 
@@ -106,101 +127,88 @@ void update_message_window(QTextEdit *message_area, QFont message_font)
         // The code is set up that the repeated messages always get their own line
         if (msg_ptr->repeats > 1)
         {
-            // Finish the appended line and make it permanent
-            if (msg_appended)
+            // First flush any appended messages
+            if (current_append.length())
             {
-                current_line.append(QString("<br>"));
-                completed_lines.append(current_line);
-                this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
-                current_line = color_string(this_message, msg_ptr->msg_color);
+                current_append.append(QString("<br>"));
+                completed_lines.append(current_append);
+                current_append.clear();
             }
-            // Replace the previous repeated line
-            else if (msg_repeated)
-            {
-                QString test_message;
-                test_message.clear();
-                if (i) test_message = message_list[i-1].message;
 
-                if (strings_match(msg_ptr->message, test_message))
-                {
-                    this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
-                    current_line = color_string(this_message, msg_ptr->msg_color);
-                }
-                else
+            // Now make sure any previous message is handled.
+            if (current_line.length())
+            {
+                QString this_current_line = html_string_to_plain_text(current_line);
+
+                // If the message is not merely a repeat of the current line, record it.
+                if (!strings_match(this_current_line, this_message))
                 {
                     completed_lines.append(current_line);
-                    this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
-                    current_line = color_string(this_message, msg_ptr->msg_color);
                 }
+                current_line.clear();
+            }
 
-            }
-            // Handle the previous plain line
-            else
-            {
-                completed_lines.append(current_line);
-                this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
-                current_line = color_string(this_message, msg_ptr->msg_color);
-            }
-            msg_repeated = TRUE;
-            msg_appended = FALSE;
+            // Now make the repeated line
+            this_message.append(QString(" (x%1)<br>") .arg(msg_ptr->repeats));
+            current_repeat = color_string(this_message, msg_ptr->msg_color);
         }
 
-        // Append the current message.
-        else if (message_list[i].append)
+        // // handle an apended line.
+        else if (msg_ptr->append)
         {
-            // Record the repeated line, start appending.
-            if (msg_repeated)
+            // Flush the repeated line if necessary.
+            if (current_repeat.length())
             {
-                completed_lines.append(current_line);
-                current_line = color_string(this_message, msg_ptr->msg_color);
+                completed_lines.append(current_repeat);
+                current_repeat.clear();
             }
-            // Add to appended line.
-            else if (msg_appended)
+            // Now make sure any previous message is handled.
+            if (current_line.length())
             {
-                current_line.append(QString("  %1") .arg(color_string(this_message, msg_ptr->msg_color)));
-            }
-            // Start the appended line
-            else
-            {
-                completed_lines.append(current_line);
-                current_line = color_string(this_message, msg_ptr->msg_color);
-            }
-            msg_appended = TRUE;
-            msg_repeated = FALSE;
-
-        }
-        // We are ready to finish the line and make it permanent.
-        else
-        {
-            // Finish the appended line and make it permanent
-            if (msg_appended)
-            {
-                current_line.append(QString("  %1<br>") .arg(color_string(this_message, msg_ptr->msg_color)));
                 completed_lines.append(current_line);
                 current_line.clear();
             }
-            else if (msg_repeated)
+
+            // Now handle the apended line
+            current_append.append(QString("  %1") .arg(color_string(this_message, msg_ptr->msg_color)));
+        }
+        // Make a normal line
+        else
+        {
+            // This is the last of an appended message
+            if (current_append.length())
+            {
+                current_append.append(QString("  %1<br>") .arg(color_string(this_message, msg_ptr->msg_color)));
+                completed_lines.append(current_append);
+                current_append.clear();
+                this_message.clear();
+            }
+            // Flush the repeated line if necessary.
+            if (current_repeat.length())
+            {
+                completed_lines.append(current_repeat);
+                current_repeat.clear();
+            }
+            // Make sure any previous message is handled.
+            if (current_line.length())
             {
                 completed_lines.append(current_line);
-                this_message.append(QString("<br>"));
-                current_line = color_string(this_message, msg_ptr->msg_color);
+                current_line.clear();
             }
-
-            else
+            if (this_message.length())
             {
-                completed_lines.append(current_line);
-                this_message.append(QString("<br>"));
                 current_line = color_string(this_message, msg_ptr->msg_color);
+                current_line.append("<br>");
             }
 
-            msg_appended = FALSE;
-            msg_repeated = FALSE;
         }
         message_list[i].displayed = TRUE;
     }
 
     QString complete_string = completed_lines;
     complete_string.append(current_line);
+    complete_string.append(current_repeat);
+    complete_string.append(current_append);
 
     // Update the message area
     message_area->setFont(message_font);
@@ -367,7 +375,7 @@ void display_message_log(void)
 /*
  * Add a message
  * This should be the only function to add to the message list, to make sure
- * it never gets larger than 200 messages.
+ * it never gets larger than 400 messages.
  */
 static void add_message_to_vector(QString msg, QColor which_color)
 {
@@ -388,9 +396,11 @@ static void add_message_to_vector(QString msg, QColor which_color)
         // Point to the last message
         message_type *msg_one = &message_list[0];
 
+        // If they are a match, just make them repeat
         if (strings_match(msg_one->message, msg) && (msg_one->msg_color == which_color) && !p_ptr->message_append)
         {
             msg_one->repeats++;
+            msg_one->displayed = FALSE;
             add_message = FALSE;
         }
     }
@@ -440,7 +450,7 @@ int html_length(QString this_string)
 // This is so long messages are handled properly.
 static void add_message(QString this_string, QColor this_color)
 {
-    if (html_length(this_string) < 70)
+    if (html_length(this_string) < 100)
     {
         add_message_to_vector(this_string, this_color);
         return;

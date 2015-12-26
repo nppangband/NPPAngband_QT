@@ -3960,7 +3960,7 @@ bool brand_object(object_type *o_ptr, byte brand_type, bool do_enchant)
         }
 
         /* Describe */
-        message(QString("A %1 aura surrounds the %1.") .arg(act) .arg(o_name));
+        message(QString("A %1 aura surrounds the %2.") .arg(act) .arg(o_name));
 
         /* Combine / Reorder the pack (later) */
         p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);

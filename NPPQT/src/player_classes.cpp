@@ -222,6 +222,8 @@ void player_type::message_append_stop()
 {
     message_append = FALSE;
     if (!message_list.empty()) message_list[0].append = FALSE;
+
+    stop_message_window_append();
 }
 
 u16b player_type::cut_status()

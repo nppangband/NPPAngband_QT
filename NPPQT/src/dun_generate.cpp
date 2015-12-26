@@ -3720,7 +3720,6 @@ void build_terrain(int y, int x, int feat)
             else if (k <= 20)
             {
                 set_effect_rocks(FEAT_LOOSE_ROCK, y, x);
-                return;
             }
 
             else if (k <= 25) newfeat = FEAT_FLOOR_ROCK;

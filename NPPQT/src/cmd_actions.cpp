@@ -106,7 +106,7 @@ void do_cmd_go_up(void)
     int decrease = 0;
 
     // Paranoia
-    if (!p_ptr->playing) return;
+    if (!character_dungeon) return;
 
     feature_type *f_ptr= &f_info[dungeon_info[p_ptr->py][p_ptr->px].feat];
 
@@ -180,7 +180,7 @@ void do_cmd_go_down(void)
     int increase = 0;
 
     // Paranoia
-    if (!p_ptr->playing) return;
+    if (!character_dungeon) return;
 
     feature_type *f_ptr= &f_info[dungeon_info[p_ptr->py][p_ptr->px].feat];
 

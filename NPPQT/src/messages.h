@@ -31,11 +31,13 @@ public:
 extern QVector<message_type> message_list;
 extern QString completed_lines;
 extern QString current_line;
-extern bool msg_appended;
-extern bool msg_repeated;
+extern QString current_repeat;
+extern QString current_append;
+
 extern void reset_message_display_marks(void);
 extern void update_message_area(QTextEdit *message_area, int max_messages, QFont message_font);
 extern void update_message_area(QLabel *message_label, int max_messages);
+extern void stop_message_window_append(void);
 extern void update_message_window(QTextEdit *message_area, QFont message_font);
 extern void display_message_log(void);
 
