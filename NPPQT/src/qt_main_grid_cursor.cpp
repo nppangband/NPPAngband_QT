@@ -22,6 +22,9 @@
 #include <src/player_screen.h>
 #include <src/object_all_menu.h>
 #include <QGraphicsSceneMouseEvent>
+#include <QApplication>
+
+
 
 DungeonCursor::DungeonCursor(MainWindow *_parent)
 {
@@ -79,6 +82,11 @@ void DungeonCursor::moveTo(int _y, int _x)
 }
 
 void DungeonCursor::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    event->ignore(); // Pass event to the grid
+}
+
+void DungeonCursor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     event->ignore(); // Pass event to the grid
 }
@@ -667,8 +675,98 @@ QPainterPath DungeonGrid::shape() const
     return p;
 }
 
+void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
+{
+    // Already running a command
+    if (main_window->executing_command && (!parent->targeting_mode)) return;
+
+    if (parent->targeting_mode)
+    {
+        parent->input.key = 0;
+        parent->input.x = c_x;
+        parent->input.y = c_y;
+        parent->input.mode = INPUT_MODE_MOUSE_SINGLE_CLICK;
+        parent->ev_loop.quit();
+    }
+    else if (!parent->ev_loop.isRunning())
+    {
+        int old_x = parent->cursor->c_x;
+        int old_y = parent->cursor->c_y;
+        parent->grids[old_y][old_x]->update();
+
+        main_window->executing_command = TRUE;
+
+        if (mouse_event.right_click)
+        {
+            parent->cursor->setVisible(true);
+            parent->cursor->moveTo(c_y, c_x);
+            GridDialog dlg(c_y, c_x);
+        }
+        else if (mouse_event.left_click) do_cmd_findpath(c_y, c_x);
+        else if (mouse_event.middle_click)
+        {
+            do_cmd_walk(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x), !always_pickup);
+        }
+        else if (mouse_event.extra_button_1)
+        {
+            do_cmd_all_objects(TAB_INVEN);
+        }
+        else if (mouse_event.extra_button_2)
+        {
+            do_cmd_character_screen();
+        }
+    }
+
+    handle_stuff();
+
+    main_window->executing_command = FALSE;
+}
+
+
+// Use a timer to dintinguish between single and double clicks
 void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if (!character_dungeon) return;
+    if (p_ptr->in_store) return;
+    if (parent->anim_depth > 0) return;
+
+    // Record the mouseclick information
+    main_window->single_mouseclick_info.mouse_click_y = c_y;
+    main_window->single_mouseclick_info.mouse_click_x = c_x;
+    main_window->single_mouseclick_info.left_click = (event->button() & Qt::LeftButton);
+    main_window->single_mouseclick_info.right_click = (event->button() & Qt::RightButton);
+    main_window->single_mouseclick_info.middle_click = (event->button() & Qt::MiddleButton);
+    main_window->single_mouseclick_info.extra_button_1 = (event->button() & Qt::XButton1);
+    main_window->single_mouseclick_info.extra_button_2 = (event->button() & Qt::XButton2);
+    //  There are many other QGraphicsSceneMouseEvent properties that could be added if needed
+
+    if (!main_window->single_click_timer->isActive())
+    {
+        bool do_timer = TRUE;
+
+        // First comfirm we should be setting the timer
+        if (main_window->executing_command)
+        {
+            if (!main_window->targeting_mode) do_timer = FALSE;
+            else
+            {
+                if (parent->input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK) do_timer = FALSE;
+            }
+        }
+
+        if (do_timer)
+        {
+            main_window->single_click_timer->start(QApplication::doubleClickInterval());
+        }
+    }
+
+    QGraphicsItem::mousePressEvent(event);
+}
+
+void DungeonGrid::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    main_window->single_click_timer->stop();
+
     if (!character_dungeon) return;
     if (p_ptr->in_store) return;
     if (parent->anim_depth > 0) return;
@@ -676,17 +774,17 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // Already running a command
     if (main_window->executing_command && (!parent->targeting_mode)) return;
 
-
     if (parent->targeting_mode)
     {
         parent->input.key = 0;
         parent->input.x = c_x;
         parent->input.y = c_y;
-        parent->input.mode = INPUT_MODE_MOUSE;
+        parent->input.mode = INPUT_MODE_MOUSE_DOUBLE_CLICK;
         parent->ev_loop.quit();
     }
     else if (!parent->ev_loop.isRunning())
     {
+        main_window->executing_command = TRUE;
 
         bool left_button = (event->button() & Qt::LeftButton);
         bool right_button = (event->button() & Qt::RightButton);
@@ -698,32 +796,31 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
         int old_y = parent->cursor->c_y;
         parent->grids[old_y][old_x]->update();
 
-        main_window->executing_command = TRUE;
-
         if (right_button)
         {
-            parent->cursor->setVisible(true);
-            parent->cursor->moveTo(c_y, c_x);
-            GridDialog dlg(c_y, c_x);
+
         }
-        else if (left_button) do_cmd_findpath(c_y, c_x);
+        else if (left_button)
+        {
+
+        }
         else if (middle_button)
         {
-            do_cmd_walk(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x), !always_pickup);
+
         }
         else if (extra1)
         {
-            do_cmd_all_objects(TAB_INVEN);
+
         }
         else if (extra2)
         {
-            do_cmd_character_screen();
+
         }
     }
 
     handle_stuff();
 
-    QGraphicsItem::mousePressEvent(event);
+    QGraphicsItem::mouseDoubleClickEvent(event);
 
     main_window->executing_command = FALSE;
 }

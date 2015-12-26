@@ -696,6 +696,88 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
+void MainWindow::wheelEvent(QWheelEvent* event)
+{
+    if (!character_dungeon) return;
+    if (p_ptr->in_store) return;
+    if (anim_depth > 0) return;
+
+  // Go to special key handling
+    if (targeting_mode)
+    {
+        if (event->delta() > 0) input.key = Qt::Key_Plus;
+        else                    input.key = Qt::Key_Minus;
+        input.text.clear();
+        input.mode = INPUT_MODE_MOUSE_WHEEL;
+        ev_loop.quit();
+        return;
+    }
+
+    if (executing_command) return;
+
+    // Increase or decrease the size of the tile multiplier
+    executing_command = TRUE;
+
+    // Go through and find the active multiplier
+    QString active_multiplier;
+    active_multiplier.clear();
+    QString new_multiplier;
+    new_multiplier.clear();
+    int current_slot = -1;
+    QList<QAction *> list_multipliers = multipliers->actions();
+    for (int x = 0; x < list_multipliers.size(); x++)
+    {
+        if (!list_multipliers.at(x)->isChecked()) continue;
+        // Found it
+        active_multiplier = list_multipliers.at(x)->objectName();
+        break;
+    }
+
+    // Now find the slot on the list
+    for (int i = 0; !mult_list[i].isEmpty(); i++)
+    {
+        if (!strings_match(active_multiplier, mult_list[i])) continue;
+        // Break when we find it
+        current_slot = i;
+        break;
+    }
+
+    // Paranoia
+    if (current_slot < 0)
+    {
+        // Do nothing
+    }
+    // Increasing wheel click
+    else if (event->delta() > 0)
+    {
+        if (mult_list[current_slot+1].length())
+        {
+            new_multiplier = mult_list[current_slot+1];
+        }
+    }
+    //Decreasing wheel click
+    else
+    {
+        // First check if we are not at the bottom of the list
+        if (current_slot)
+        {
+            new_multiplier = mult_list[current_slot-1];
+        }
+    }
+
+    // Now find the action and select it
+    if (new_multiplier.length()) for (int x = 0; x < list_multipliers.size(); x++)
+    {
+        if (!strings_match(new_multiplier, list_multipliers.at(x)->objectName())) continue;
+        // Found it.
+        list_multipliers.at(x)->trigger();
+        break;
+    }
+
+    handle_stuff();
+
+    executing_command = FALSE;
+}
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
@@ -1080,6 +1162,10 @@ void MainWindow::create_actions()
     event_timer->setInterval(100);
     connect(event_timer, SIGNAL(timeout()), this, SLOT(timed_events()));
 
+    single_click_timer = new QTimer(this);
+    single_click_timer->setSingleShot(TRUE);
+    connect(single_click_timer, SIGNAL(timeout()), this, SLOT(single_click_events()));
+
     new_game_nppangband = new QAction(tr("New Game - NPPAngband"), this);
     new_game_nppangband->setStatusTip(tr("Start a new game of NPPAngband."));
     new_game_nppangband->setIcon(QIcon(":/icons/lib/icons/New_game_NPPAngband.png"));
@@ -1427,6 +1513,12 @@ void MainWindow::timed_events()
     if (executing_command) return;
 
     do_animation();
+}
+
+// Call to handle a single slick (so they are not confused with double clicks)
+void MainWindow::single_click_events()
+{
+    grids[single_mouseclick_info.mouse_click_y][single_mouseclick_info.mouse_click_x]->handle_single_click(single_mouseclick_info);
 }
 
 

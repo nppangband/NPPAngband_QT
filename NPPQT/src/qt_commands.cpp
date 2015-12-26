@@ -30,12 +30,16 @@ static struct command_desc list_commands_targeting[] =
     {"Cancel targeting", "ESC, or 'x'"},
     {"Targeting Help", "?"},
     {" ", NULL},
+    {"<h3>Directional Targeting Modes</h3>", NULL},
+    {"Any Mouseclick - Select Direction of selected square relative to the player.", NULL},
+    {" ", NULL},
     {"<h3>Aiming, Interactive, and Manual Targeting Modes</h3>", NULL},
     {"Toggle Between Interactive and Manual Targeting Mode", "'m' or '*'"},
     {"Use the Closest Target", "'c' or ','"},
     {"Select Closest Target", "'h' , '5' or '.'"},
-    {"Mouseclick on Square- Select grid and switch to manual targeting mode", NULL},
-    {"Second Mouseclick on same square - Select Square As Target", NULL},
+    {"Mouse Double-click - Select Target", NULL},
+    {"Single Mouseclick on Square- Select grid and switch to manual targeting mode", NULL},
+    {"Second Single Mouseclick on same square - Select Square As Target", NULL},
     {" ", NULL},
     {"<h3>Interactive Targeting Mode</h3>", NULL},
     {"Select Next Target", "'+' or <space>"},
@@ -516,11 +520,12 @@ KeyboardCommandList::KeyboardCommandList(void)
 
 static struct command_desc list_commands_mouse[] =
 {
-    {"Left Click on a known dungeon square to run to that spot.", NULL},
-    {"Middle Click on any dungeon square to walk one square in that direction.", NULL},
-    {"Right click on a dungeon square ot learn about the contents of that square", NULL},
-    {"Click Extra Button 1 to bring up the object handling dialog", NULL},
-    {"Click Extra Button 2 to bring up the character screen dialog", NULL},
+    {"Use the mouse wheel to increase or decrease the size of a dungeon square on the main window.", NULL},
+    {"Single-Left Click on a known dungeon square to run to that spot.", NULL},
+    {"Single-Middle Click on any dungeon square to walk one square in that direction.", NULL},
+    {"Single-Right click on a dungeon square ot learn about the contents of that square", NULL},
+    {"Single-Click Extra Button 1 to bring up the object handling dialog", NULL},
+    {"Single-Click Extra Button 2 to bring up the character screen dialog", NULL},
 
     // The null entry at the end is essential for initializing the table of groups.
     {NULL, NULL},

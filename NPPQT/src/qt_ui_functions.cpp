@@ -99,20 +99,53 @@ void ui_resize_to_contents(QWidget *widget)
 
 bool ui_draw_path(u16b path_n, u16b *path_g, int cur_tar_y, int cur_tar_x)
 {
-    if (path_n < 1) return false;
-
-    QPen pen(QColor("yellow"));
+    if (path_n < 1) return (FALSE);
 
     for (int i = 0; i < path_n; i++)
     {
         int y = GRID_Y(path_g[i]);
         int x = GRID_X(path_g[i]);
 
+        dungeon_type *dun_ptr = &dungeon_info[y][x];
+
         // Re-draw the cursor
         if (y == cur_tar_y && x == cur_tar_x)
         {
             ui_show_cursor(y, x);
             continue;
+        }
+
+        QPen pen(add_preset_color(TERM_WHITE));
+
+        /* Choose a colour. */
+        /* Visible monsters are orange. */
+        if (dun_ptr->has_monster() && mon_list[dun_ptr->monster_idx].ml)
+        {
+            pen.setColor(add_preset_color(TERM_ORANGE));
+        }
+
+        /* Known objects are yellow. */
+        else if (dun_ptr->has_object() && o_list[dun_ptr->object_idx].marked)
+        {
+            pen.setColor(add_preset_color(TERM_YELLOW));
+        }
+
+        /* Effects are green */
+        else if (dun_ptr->has_effect() && (dun_ptr->cave_info & (CAVE_SEEN | CAVE_MARK)))
+        {
+            pen.setColor(add_preset_color(TERM_GREEN));
+        }
+
+        /* Known walls are blue. */
+        else if (!cave_project_bold(y,x) &&
+                ((dun_ptr->cave_info & (CAVE_MARK)) ||	player_can_see_bold(y,x)))
+        {
+            pen.setColor(add_preset_color(TERM_GREEN));
+        }
+        /* Unknown squares are grey. */
+        else if (!(dun_ptr->cave_info & (CAVE_MARK)) && !player_can_see_bold(y,x))
+        {
+            pen.setColor(add_preset_color(TERM_L_DARK));
         }
 
         QGraphicsRectItem *item = main_window->dungeon_scene->addRect(
@@ -180,7 +213,7 @@ UserInput ui_get_input()
     }
     else
     {
-        main_window->input.key = 0;
+        if (main_window->input.mode != INPUT_MODE_MOUSE_WHEEL) main_window->input.key = 0;
         main_window->input.text.clear();
     }
 

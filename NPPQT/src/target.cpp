@@ -525,13 +525,43 @@ bool target_set_interactive(int mode, int x, int y)
             /* Assume no "direction" */
             d = 0;
 
+            // Use the mouse wheel to go through targets
+            if (input.mode == INPUT_MODE_MOUSE_WHEEL)
+            {
+                if (input.key == Qt::Key_Plus)
+                {
+                    if (++target_count == target_grids.size()) target_count = 0;
+                }
+                else if (input.key == Qt::Key_Minus)
+                {
+                    if (target_count-- == 0)  target_count = target_grids.size() - 1;
+                }
+                continue;
+            }
+
+            // double-click - automatically target if appropriate
+            if (input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK)
+            {
+                target_set_location(y, x);
+                done = TRUE;
+                continue;
+            }
+
             /*
              * If we click, move the target location to the click and
              * switch to "free targetting" mode by unsetting 'flag'.
              * This means we get some info about wherever we've picked.
              */
-            if (input.mode == INPUT_MODE_MOUSE)
+            if (input.mode == INPUT_MODE_MOUSE_SINGLE_CLICK)
             {
+                // If clicking twice on the same square, accept
+                if (input.x == x && input.y == y)
+                {
+                    target_set_location(y, x);
+                    done = TRUE;
+                    continue;
+                }
+
                 x = input.x;
                 y = input.y;
                 color_message("Entering manual targeting mode", TERM_SKY_BLUE);
@@ -702,42 +732,24 @@ bool target_set_interactive(int mode, int x, int y)
             /* Assume no direction */
             d = 0;
 
-            if (input.mode == INPUT_MODE_MOUSE)
-            {
+             if (input.mode == INPUT_MODE_MOUSE_WHEEL) continue;
 
+            // double-click - automatically target if appropriate
+            if (input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK)
+            {
+                target_set_location(y, x);
+                done = TRUE;
+                continue;
+            }
+
+            if (input.mode == INPUT_MODE_MOUSE_SINGLE_CLICK)
+            {
                 /* We only target if we click somewhere where the cursor
                    is already (i.e. a double-click without a time limit) */
                 if (input.x == x && input.y == y)
                 {
-                    // Handle a trap
-                    if (mode & (TARGET_TRAP))
-                    {
-                        if (cave_any_trap_bold(y, x))
-                        {
-                            target_set_location(y, x);
-                            done = TRUE;
-                        }
-                        continue;
-                    }
-
-                    /* Make an attempt to target the monster on the given
-                       square rather than the square itself (it seems this
-                       is the more likely intention of clicking on a
-                       monster). */
-                    int m_idx = dungeon_info[y][x].monster_idx;
-
-                    if ((m_idx > 0) && target_able(m_idx))
-                    {
-                        health_track(m_idx);
-                        target_set_monster(m_idx);
-                    }
-                    else
-                    {
-                        /* There is no monster, or it isn't targettable,
-                           so target the location instead. */
-                        target_set_location(y, x);
-                        done = TRUE;
-                    }
+                    target_set_location(y, x);
+                    done = TRUE;
                 }
                 else
                 {
@@ -1126,8 +1138,21 @@ bool get_aim_dir(int *dp, bool target_trap)
             color_message(QObject::tr("Exiting targetting mode"), TERM_VIOLET);
             break;
         }
+        // Do nothing
+        if (input.mode == INPUT_MODE_MOUSE_WHEEL)
+        {
+            continue;
+        }
 
-        if (input.mode == INPUT_MODE_MOUSE)
+        // Skip interactive mode and directly choose target.
+        if (input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK)
+        {
+            target_set_location(input.y, input.x);
+            dir = DIR_TARGET;
+            continue;
+        }
+
+        if (input.mode == INPUT_MODE_MOUSE_SINGLE_CLICK)
         {
             /* Calculate approximate angle */
             if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = DIR_TARGET;
@@ -1307,11 +1332,17 @@ bool get_rep_dir(int *dp)
             }
 
             else dir = target_dir(input);
-        }\
-        /* Check mouse coordinates */
-        else if (input.mode == INPUT_MODE_MOUSE)
-        {
+        }
 
+        // Do nothing
+        else  if (input.mode == INPUT_MODE_MOUSE_WHEEL)
+        {
+            continue;
+        }
+        /* Check mouse coordinates */
+        else if ((input.mode == INPUT_MODE_MOUSE_SINGLE_CLICK) ||
+                 (input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK))
+        {
             /* Calculate approximate angle */
             dir = ui_get_dir_from_slope(p_ptr->py, p_ptr->px, input.y, input.x);
         }

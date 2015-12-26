@@ -30,9 +30,15 @@ typedef struct slays_structure slays_structure;
 typedef struct brands_structure brands_structure;
 typedef struct mon_susceptibility_struct mon_susceptibility_struct;
 
-#define INPUT_MODE_NONE 0
-#define INPUT_MODE_KEY 1
-#define INPUT_MODE_MOUSE 2
+enum
+{
+    INPUT_MODE_NONE = 0,
+    INPUT_MODE_KEY,
+    INPUT_MODE_MOUSE_SINGLE_CLICK,
+    INPUT_MODE_MOUSE_DOUBLE_CLICK,
+    INPUT_MODE_MOUSE_WHEEL,
+};
+
 
 class UserInput
 {

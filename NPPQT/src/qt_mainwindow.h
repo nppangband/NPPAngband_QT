@@ -20,12 +20,12 @@
 #include <QTextEdit>
 #include <QMenuBar>
 #include <QTimer>
+#include <QGraphicsSceneMouseEvent>
 #include "defines.h"
 #include "structures.h"
 #include "src/object_dialog.h"
 #include "nppdialog.h"
 #include "src/cmds.h"
-#include <QTimer>
 
 
 #define MAX_RECENT_SAVEFILES    5
@@ -41,6 +41,21 @@ class DunOverheadGrid;
 class DungeonCursor;
 class QTextEdit;
 class QLineEdit;
+
+// Maany other details of the mouseclick could be added if necessary
+class mouse_click_info
+{
+public:
+    bool left_click;
+    bool right_click;
+    bool middle_click;
+    bool extra_button_1;
+    bool extra_button_2;
+    int mouse_click_y;
+    int mouse_click_x;
+
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -143,6 +158,7 @@ public:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void wheelEvent(QWheelEvent* event);
     void keyPressEvent(QKeyEvent* which_key);
     bool eventFilter(QObject *obj, QEvent *event);
     void hideEvent(QHideEvent *event);
@@ -212,7 +228,7 @@ private slots:
 
 
     void timed_events();
-
+    void single_click_events();
     void set_input_key(int this_key);
     void target_choice();
 
@@ -238,6 +254,13 @@ private:
 
     // Handle timed events
     QTimer *event_timer;
+public:
+// To distinguish single clicks from double clicks
+    QTimer *single_click_timer;
+    mouse_click_info single_mouseclick_info;
+
+
+private:
 
     //Functions and variables that handle opening and saving files, as well as maintain the
     //  5 most recent savefile list.
@@ -761,6 +784,7 @@ public:
 
 class DunOverheadGrid: public QGraphicsItem
 {
+
 public:
     DunOverheadGrid(int _x, int _y);
 
@@ -781,6 +805,8 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mouseSingleClickEvent();
     QPainterPath shape() const;
 
     void cellSizeChanged();
@@ -789,6 +815,9 @@ public:
     int c_x, c_y;
 
     QPixmap shade_tile(QPixmap this_tile, u16b flags, QString tile_name);
+
+    void handle_single_click(mouse_click_info mouse_event);
+
 };
 
 class DungeonCursor: public QGraphicsItem
@@ -800,6 +829,7 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QPainterPath shape() const;
 
     DungeonCursor(MainWindow *_parent);
