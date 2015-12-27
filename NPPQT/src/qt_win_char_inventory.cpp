@@ -133,6 +133,7 @@ void MainWindow::win_char_inventory_update()
 
     update_inven_list(inven_list, FALSE, inven_show_buttons);
     if (inven_show_buttons) inven_link_pushbuttons();
+    update_label_inventory_font();
 }
 
 void MainWindow::create_win_char_inventory()

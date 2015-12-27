@@ -520,10 +520,9 @@ KeyboardCommandList::KeyboardCommandList(void)
 
 static struct command_desc list_commands_mouse[] =
 {
-    {"Use the mouse wheel to increase or decrease the size of a dungeon square on the main window.", NULL},
     {"Single-Left Click on a known dungeon square to run to that spot.", NULL},
     {"Single-Middle Click on any dungeon square to walk one square in that direction.", NULL},
-    {"Single-Right click on a dungeon square ot learn about the contents of that square", NULL},
+    {"Single-Right Click on a dungeon square to learn about the contents of that square", NULL},
     {"Single-Click Extra Button 1 to bring up the object handling dialog", NULL},
     {"Single-Click Extra Button 2 to bring up the character screen dialog", NULL},
 

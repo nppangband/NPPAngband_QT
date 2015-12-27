@@ -540,13 +540,13 @@ void MainWindow::update_sidebar_player()
             {
                 if (p_ptr->msp)
                 {
-                    if (!this_lbl->isVisible())
+                    if (!this_lbl->text().length())
                     {
                         this_lbl->setText(color_string("SP", SBAR_NORMAL));
                         this_lbl->show();
                     }
                 }
-                else if (this_lbl->isVisible())
+                else if (this_lbl->text().length())
                 {
                     this_lbl->setText("");
                     this_lbl->hide();

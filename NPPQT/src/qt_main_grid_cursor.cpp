@@ -81,6 +81,11 @@ void DungeonCursor::moveTo(int _y, int _x)
     setPos(c_x * parent->main_cell_wid, c_y * parent->main_cell_hgt);
 }
 
+void DungeonCursor::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    event->ignore();
+}
+
 void DungeonCursor::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     event->ignore(); // Pass event to the grid
@@ -722,6 +727,10 @@ void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
     main_window->executing_command = FALSE;
 }
 
+void DungeonGrid::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    event->ignore();
+}
 
 // Use a timer to dintinguish between single and double clicks
 void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)

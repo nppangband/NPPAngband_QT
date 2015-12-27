@@ -508,6 +508,7 @@ MainWindow::MainWindow()
     graphics_view->installEventFilter(this);
     setCentralWidget(graphics_view);
 
+
     // Set up the message area
     message_dock = new QDockWidget;
     message_area = new QTextEdit;
@@ -690,7 +691,14 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     {
         this->keyPressEvent(dynamic_cast<QKeyEvent *>(event));
 
-        return true;
+        return (TRUE);
+    }
+
+    if (event->type() == QEvent::Wheel)
+    {
+        this->wheelEvent(dynamic_cast<QWheelEvent *>(event));
+
+        return (TRUE);
     }
 
     return QObject::eventFilter(obj, event);
@@ -713,10 +721,15 @@ void MainWindow::wheelEvent(QWheelEvent* event)
         return;
     }
 
+    /*
+     * This code works, but scrolling the graphicsview gets in the way.
+     * Unable to disable scroll bar
+     *
     if (executing_command) return;
 
     // Increase or decrease the size of the tile multiplier
     executing_command = TRUE;
+
 
     // Go through and find the active multiplier
     QString active_multiplier;
@@ -777,6 +790,9 @@ void MainWindow::wheelEvent(QWheelEvent* event)
     handle_stuff();
 
     executing_command = FALSE;
+
+    * End of disabled code
+    */
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
@@ -1785,7 +1801,7 @@ void MainWindow::read_settings()
     font_win_obj_recall.fromString(load_font);
     load_font = settings.value("font_window_feat_recall", font_win_feat_recall ).toString();
     font_win_feat_recall.fromString(load_font);
-    load_font = settings.value("font_window_messages", font_win_messages ).toString();
+    load_font = settings.value("font_win_messages", font_win_messages ).toString();
     font_win_messages.fromString(load_font);
     load_font = settings.value("font_char_basic", font_char_basic_info ).toString();
     font_char_basic_info.fromString(load_font);
@@ -1886,7 +1902,6 @@ void MainWindow::read_settings()
     }
 
     show_win_dun_map = settings.value("show_dun_map_window", false).toBool();
-
     if (show_win_dun_map)
     {
         dun_map_use_graphics = settings.value("graphics_dun_map", false).toBool();
@@ -1918,6 +1933,13 @@ void MainWindow::write_settings()
     QSettings settings("NPPGames", "NPPQT");
     settings.setValue("mainWindowGeometry", saveGeometry());
     settings.setValue("recentFiles", recent_savefiles);
+    settings.setValue("target_buttons", show_targeting_buttons);
+    settings.setValue("graphics_25d", do_25d_graphics);
+    settings.setValue("pseudo_ascii", do_pseudo_ascii);
+    settings.setValue("solid_block", do_wall_block);
+    settings.setValue("use_graphics", use_graphics);
+    settings.setValue("which_keyset", which_keyset);
+    settings.setValue("tile_multiplier", main_multiplier);
     settings.setValue("font_window_main", font_main_window.toString());
     settings.setValue("font_window_messages", font_message_window.toString());
     settings.setValue("font_window_sidebar", font_sidebar_window.toString());
@@ -1926,7 +1948,7 @@ void MainWindow::write_settings()
     settings.setValue("font_window_mon_recall", font_win_mon_recall.toString());
     settings.setValue("font_window_obj_recall", font_win_obj_recall.toString());
     settings.setValue("font_window_feat_recall", font_win_feat_recall.toString());
-    settings.setValue("font_window_messages", font_win_messages.toString());
+    settings.setValue("font_win_messages", font_win_messages.toString());
     settings.setValue("font_char_basic", font_char_basic_info.toString());
     settings.setValue("font_char_equip_info", font_char_equip_info.toString());
     settings.setValue("font_char_equipment", font_char_equipment.toString());
@@ -1934,16 +1956,7 @@ void MainWindow::write_settings()
     settings.setValue("font_dun_map", font_dun_map.toString());
     settings.setValue("font_overhead_map", font_overhead_map.toString());
     settings.setValue("window_state", saveState());
-    settings.setValue("target_buttons", show_targeting_buttons);
-    settings.setValue("graphics_25d", do_25d_graphics);
-    settings.setValue("pseudo_ascii", do_pseudo_ascii);
-    settings.setValue("solid_block", do_wall_block);
-    settings.setValue("use_graphics", use_graphics);
-    settings.setValue("which_keyset", which_keyset);
-    settings.setValue("tile_multiplier", main_multiplier);
     settings.setValue("show_mon_list_window", show_mon_list);
-    settings.setValue("show_win_dun_map_window", show_win_dun_map);
-    settings.setValue("show_win_dun_overhead_window", show_win_overhead_map);
     if (show_mon_list)
     {
         settings.setValue("winMonListGeometry", window_mon_list->saveGeometry());

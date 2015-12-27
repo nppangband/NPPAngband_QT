@@ -443,6 +443,8 @@ static void roll_hp(void)
     max_value = (z_info->max_level * (p_ptr->hitdie - 1) * 5) / 8;
     max_value += z_info->max_level;
 
+    p_ptr->player_hp[0] = p_ptr->hitdie;
+
     /* Roll out the hitpoints */
     while (TRUE)
     {
@@ -592,12 +594,14 @@ void generate_player(bool full)
     p_ptr->hitdie = rp_ptr->r_mhp + cp_ptr->c_mhp;
 
     /* Initial hitpoints */
-    p_ptr->mhp = p_ptr->hitdie;
+    p_ptr->chp = p_ptr->mhp = p_ptr->hitdie;
+
+    p_ptr->player_hp[0] = p_ptr->hitdie;
 
     if (!full) return;
 
     /* calculate hp */
-    p_ptr->player_hp[0] = p_ptr->hitdie;
+
     update_hp_sp();
 
     /* Roll for age/height/weight, history, and update hp. */

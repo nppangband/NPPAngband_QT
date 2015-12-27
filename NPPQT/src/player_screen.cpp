@@ -1489,22 +1489,22 @@ void update_equip_flags(QList<QLabel *> equippy_list, QList<QLabel *> flag_list,
             if (pfr_ptr->set == 1)
             {
                 if ((f1 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-                if ((f1 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag)  player_has_immunity = TRUE;
+                if ((f1 & (pfr_ptr->extra_flag)))  player_has_immunity = TRUE;
             }
             if (pfr_ptr->set == 2)
             {
                 if ((f2 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-                if ((f2 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag)  player_has_immunity = TRUE;
+                if ((f2 & (pfr_ptr->extra_flag)))  player_has_immunity = TRUE;
             }
             if (pfr_ptr->set == 3)
             {
                 if ((f3 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-                if ((f3 & (pfr_ptr->this_flag)) == pfr_ptr->this_flag)  player_has_immunity = TRUE;
+                if ((f3 & (pfr_ptr->extra_flag)))  player_has_immunity = TRUE;
             }
             if (pfr_ptr->set == 4)
             {
                 if ((fn & (pfr_ptr->this_flag)) == pfr_ptr->this_flag) player_has_flag = TRUE;
-                if ((fn & (pfr_ptr->this_flag)) == pfr_ptr->this_flag)  player_has_immunity = TRUE;
+                if ((fn & (pfr_ptr->extra_flag)))  player_has_immunity = TRUE;
 
                 // Special hack for boiling mud and boiling water
                 if (flag_set == FLAGS_NATIVITY)

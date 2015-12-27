@@ -134,6 +134,7 @@ void MainWindow::win_char_equipment_update()
     update_equip_list(equip_list, FALSE, equip_show_buttons);
     update_quiver_list(quiver_list, FALSE, equip_show_buttons);
     if (equip_show_buttons) equip_link_pushbuttons();
+    update_label_equipment_font();
 }
 
 void MainWindow::create_win_char_equipment()

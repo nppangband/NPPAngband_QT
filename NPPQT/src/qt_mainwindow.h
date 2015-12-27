@@ -53,7 +53,6 @@ public:
     bool extra_button_2;
     int mouse_click_y;
     int mouse_click_x;
-
 };
 
 class MainWindow : public QMainWindow
@@ -804,6 +803,7 @@ public:
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void wheelEvent(QGraphicsSceneWheelEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void mouseSingleClickEvent();
@@ -828,6 +828,7 @@ public:
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void wheelEvent(QGraphicsSceneWheelEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     QPainterPath shape() const;
