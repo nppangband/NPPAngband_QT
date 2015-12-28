@@ -63,6 +63,18 @@ void AllObjectsDialog::button_click()
 
     p_ptr->message_append_start();
 
+    // Close this dialog
+    if ((command_num == CMD_FIRE) || (command_num == CMD_THROW) ||
+        (command_num == CMD_CAST))
+    {
+        this->close_dialog();
+    }
+
+    else if (command_num == CMD_ITEM_USE)
+    {
+        if (obj_needs_aim(object_from_item_idx(item_num))) this->close_dialog();
+    }
+
     // We aren't repeating the previous command
     p_ptr->player_previous_command_wipe();
 

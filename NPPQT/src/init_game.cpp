@@ -1549,7 +1549,7 @@ void flavor_init(void)
                 if ((buf.length() + 1 + tmp.length()) > 15) break;
 
                 /* Add a space */
-                buf.append(" ");
+                if (buf.length()) buf.append(" ");
 
                 /* Add the word */
                 buf.append (tmp);

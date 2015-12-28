@@ -216,7 +216,7 @@ static QString describe_slay(object_type *o_ptr, u32b f1)
     /* Describe */
     if (slcnt)
     {
-        for (int i = 0; i < slcnt; i++)  slays[i] = color_string(slays[i], TERM_L_BLUE);
+        for (int i = 0; i < slcnt; i++)  slays[i] = color_string(slays[i], TERM_ORANGE_PEEL);
 
         /* Output intro */
         output.append("It slays ");
@@ -348,7 +348,7 @@ static QString describe_resist(const object_type *o_ptr, u32b f2, u32b f3)
     if (f2 & (TR2_RES_DISEN)) vp[vn++] = "disenchantment";
     if (f3 & (TR3_HOLD_LIFE)) vp[vn++] = "life draining";
 
-    for (int i = 0; i < vn; i++)  vp[i] = color_string(vp[i], TERM_ORANGE);
+    for (int i = 0; i < vn; i++)  vp[i] = color_string(vp[i], TERM_PURPLE);
 
     /* Describe resistances */
     output.append(output_desc_list("It provides resistance to ", vp, vn));
@@ -1094,40 +1094,40 @@ static QString describe_misc_magic(object_type *o_ptr, u32b f3)
     {
         if (o_ptr->ident & IDENT_PERFECT_BALANCE)
         {
-            good[gc++] = ("can be thrown hard and fast");
+            good[gc++] = color_string("can be thrown hard and fast", TERM_GREEN);
         }
-        else good[gc++] = ("can be thrown effectively");
+        else good[gc++] = color_string("can be thrown effectively", TERM_GREEN);
     }
 
     /* Collect stuff which can't be categorized */
-    if (f3 & (TR3_BLESSED))     good[gc++] = "is blessed by the gods";
-    if (f3 & (TR3_IMPACT))      good[gc++] = "creates earthquakes on impact";
-    if (f3 & (TR3_SLOW_DIGEST)) good[gc++] = "slows your metabolism";
-    if (f3 & (TR3_FEATHER))     good[gc++] = "makes you fall like a feather";
+    if (f3 & (TR3_BLESSED))     good[gc++] = color_string("is blessed by the gods", TERM_GREEN);
+    if (f3 & (TR3_IMPACT))      good[gc++] = color_string("creates earthquakes on impact", TERM_GREEN);
+    if (f3 & (TR3_SLOW_DIGEST)) good[gc++] = color_string("slows your metabolism", TERM_GREEN);
+    if (f3 & (TR3_FEATHER))     good[gc++] = color_string("makes you fall like a feather", TERM_GREEN);
     if (((o_ptr->tval == TV_LIGHT) && o_ptr->is_artifact()) || (f3 & (TR3_LIGHT)))
-        good[gc++] = "lights the dungeon around you";
-    if (f3 & (TR3_REGEN))       good[gc++] = "speeds your regeneration";
+        good[gc++] = color_string("lights the dungeon around you", TERM_GREEN);
+    if (f3 & (TR3_REGEN))       good[gc++] = color_string("speeds your regeneration", TERM_GREEN);
 
     /* Describe */
     output.append(output_desc_list("It ", good, gc));
 
     /* Collect granted powers */
     gc = 0;
-    if (f3 & (TR3_FREE_ACT))  good[gc++] = "immunity to paralysis";
-    if (f3 & (TR3_TELEPATHY)) good[gc++] = "the power of telepathy";
-    if (f3 & (TR3_SEE_INVIS)) good[gc++] = "the ability to see invisible things";
+    if (f3 & (TR3_FREE_ACT))  good[gc++] = color_string("immunity to paralysis", TERM_GREEN);
+    if (f3 & (TR3_TELEPATHY)) good[gc++] = color_string("the power of telepathy", TERM_GREEN);
+    if (f3 & (TR3_SEE_INVIS)) good[gc++] = color_string("the ability to see invisible things", TERM_GREEN);
 
     /* Collect penalties */
-    if (f3 & (TR3_AGGRAVATE)) bad[bc++] = "aggravates creatures around you";
-    if (f3 & (TR3_DRAIN_EXP)) bad[bc++] = "drains experience";
-    if (f3 & (TR3_TELEPORT))  bad[bc++] = "induces random teleportation";
+    if (f3 & (TR3_AGGRAVATE)) bad[bc++] = color_string("aggravates creatures around you", TERM_L_RED);
+    if (f3 & (TR3_DRAIN_EXP)) bad[bc++] = color_string("drains experience", TERM_L_RED);
+    if (f3 & (TR3_TELEPORT))  bad[bc++] = color_string("induces random teleportation", TERM_L_RED);
 
     /* Deal with cursed stuff */
     if (o_ptr->is_cursed())
     {
-        if (f3 & (TR3_PERMA_CURSE)) bad[bc++] = "is permanently cursed";
-        else if (f3 & (TR3_HEAVY_CURSE)) bad[bc++] = "is heavily cursed";
-        else if (o_ptr->is_known()) bad[bc++] = "is cursed";
+        if (f3 & (TR3_PERMA_CURSE)) bad[bc++] = color_string("is permanently cursed", TERM_L_RED);
+        else if (f3 & (TR3_HEAVY_CURSE)) bad[bc++] = color_string("is heavily cursed", TERM_L_RED);
+        else if (o_ptr->is_known()) bad[bc++] = color_string("is cursed", TERM_L_RED);
     }
 
     /* Describe */
@@ -1574,7 +1574,7 @@ QString screen_out_head(object_type *o_ptr)
         output.append(a_info[o_ptr->art_num].a_text);
     }
     /* Display the known object description */
-    else if (o_ptr->is_aware() || o_ptr->is_known())
+    else if (o_ptr->is_aware() || o_ptr->is_known() || p_ptr->is_wizard)
     {
         if (!k_info[o_ptr->k_idx].k_text.isEmpty())
         {
@@ -1583,7 +1583,8 @@ QString screen_out_head(object_type *o_ptr)
         }
 
         /* Display an additional ego-item description */
-        if (o_ptr->is_ego_item() && o_ptr->is_known() && !e_info[o_ptr->ego_num].e_text.isEmpty())
+        if (o_ptr->is_ego_item() && (o_ptr->is_known() || p_ptr->is_wizard) &&
+                !e_info[o_ptr->ego_num].e_text.isEmpty())
         {
             output.append("<br><br>   ");
             output.append(e_info[o_ptr->ego_num].e_text);

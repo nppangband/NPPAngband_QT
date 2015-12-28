@@ -4120,7 +4120,7 @@ bool build_wall(int dir, int dam)
 
 bool wall_to_mud(int dir, int dam)
 {
-    u32b flg = PROJECT_BEAM | PROJECT_GRID | PROJECT_ITEM;
+    u32b flg = PROJECT_BEAM | PROJECT_GRID | PROJECT_ITEM | PROJECT_EFCT;
     return (fire_bolt_beam_special(GF_KILL_WALL, dir, dam, MAX_RANGE, flg));
 }
 

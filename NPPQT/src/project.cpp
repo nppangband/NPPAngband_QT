@@ -3158,7 +3158,6 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
 
                     message(QString("The %1 dissolves.") .arg(name));
                     obvious = TRUE;
-
                 }
 
                 /* Destroy the wall/door */
@@ -6325,6 +6324,8 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
             if ((dam > 1200) || always) (void)set_effect_lingering_cloud(FEAT_EFFECT_SMOKE, y, x, dam, source, effect_flag);
             break;
         }
+
+
         /* Fire leaves smoke */
         case GF_ACID:
         case GF_ELEC:
@@ -6352,6 +6353,42 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
             }
 
             break;
+        }
+        case GF_KILL_WALL:
+        {
+            /* Get the first effect */
+            u16b x_idx = dungeon_info[y][x].effect_idx;
+
+            /* Scan the effects on that grid */
+            while (x_idx)
+            {
+                u16b this_x_idx = x_idx;
+
+                /* Get the effect data */
+                effect_type *x_ptr = &x_list[this_x_idx];
+
+                /* Point to the next effect */
+                x_idx = x_ptr->next_x_idx;
+
+                if (feat_ff2_match(x_ptr->x_f_idx, FF2_HURT_ROCK))
+                {
+                    /* Check line of sight */
+                    if (player_has_los_bold(y, x))
+                    {
+                        /*Mark the feature lore*/
+                        QString name = feature_desc(x_ptr->x_f_idx, FALSE, TRUE);
+                        feature_lore *f_l_ptr = &f_l_list[x_ptr->x_f_idx];
+                        f_l_ptr->f_l_flags2 |= (FF2_HURT_ROCK);
+
+                        message(QString("The %1 dissolves.") .arg(name));
+                    }
+
+                    /*Delete it*/
+                    delete_effect_idx(this_x_idx);
+                }
+            }
+
+        break;
         }
 
         /* Standard damage -- also poisons player */
@@ -6487,8 +6524,6 @@ static bool project_x(int who, int y, int x, int dam, int typ, u32b project_flg)
                     /*Delete it*/
                     delete_effect_idx(this_x_idx);
                 }
-
-
             }
 
             break;

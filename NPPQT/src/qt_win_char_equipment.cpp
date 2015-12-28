@@ -82,6 +82,17 @@ void MainWindow::update_label_equipment_font()
         QLabel *this_lbl = lbl_list.at(i);
         this_lbl->setFont(font_char_equipment);
     }
+
+    // Now make the buttons about the same size
+    QFontMetrics metrics(font_char_equipment);
+    QSize button_size((metrics.width('M') + 2), (metrics.height() + 2));
+    QList<QPushButton *> pushbutton_list = window_char_equipment->findChildren<QPushButton *>();
+    for (int i = 0; i < pushbutton_list.size(); i++)
+    {
+        QPushButton *this_button = pushbutton_list.at(i);
+        if (!this_button->objectName().length()) continue;
+        this_button->setIconSize(button_size);
+    }
 }
 
 void MainWindow::set_font_char_equipment(QFont newFont)
@@ -109,10 +120,7 @@ void MainWindow::equip_link_pushbuttons()
     for (int i = 0; i < pushbutton_list.size(); i++)
     {
         QPushButton *this_button = pushbutton_list.at(i);
-
-        // Just the objects
         if (!this_button->objectName().length()) continue;
-
         connect(this_button, SIGNAL(pressed()), this, SLOT(equip_button_click()));
     }
 }
@@ -203,7 +211,6 @@ void MainWindow::win_char_equipment_create()
     char_equipment_settings->addAction(char_equipment_buttons);
     window_char_equipment->setAttribute(Qt::WA_DeleteOnClose);
     connect(window_char_equipment, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_char_equipment_frame(QObject*)));
-
 }
 
 void MainWindow::win_char_equipment_destroy()

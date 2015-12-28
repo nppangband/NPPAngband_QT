@@ -1171,6 +1171,7 @@ static bool wr_scores(void)
         wr_s16b(player_scores_list[i].max_level);
         wr_s16b(player_scores_list[i].max_depth);
         wr_s32b(player_scores_list[i].max_exp);
+        wr_u16b(player_scores_list[i].fame);
         wr_string(player_scores_list[i].death_how);
     }
 

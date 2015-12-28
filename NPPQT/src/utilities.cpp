@@ -648,6 +648,7 @@ void display_info_window(byte mode, int index, QString info)
     message_box.setStandardButtons(QMessageBox::Ok);
     message_box.setDefaultButton(QMessageBox::Ok);
     message_box.setInformativeText("Press 'OK' to continue.");
+    message_box.setStyleSheet("background-color: lightGray;");
 
     //Get the pixmap, depending on if we are displaying an object, terrain, or monster.
     if (mode == DISPLAY_INFO_FEATURE)

@@ -1965,7 +1965,7 @@ void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_l
                 pval_num = "s";
             }
 
-            if (o_ptr->pval < 0)    attr = TERM_ORANGE;
+            if (o_ptr->pval < 0)    attr = TERM_ORANGE_PEEL;
             else if (o_ptr->pval > 0)      attr = TERM_BLUE;
 
             pval_num = (QString("<u>%1</u>") .arg(pval_num));
@@ -2013,7 +2013,7 @@ void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_l
 
         if (has_sustain[row])
         {
-            if (cumulative[row] < 0) attr = TERM_ORANGE;
+            if (cumulative[row] < 0) attr = TERM_ORANGE_PEEL;
             else if (cumulative[row] > 0) attr = TERM_BLUE;
         }
         else if (cumulative[row] > 0) attr = TERM_GREEN;

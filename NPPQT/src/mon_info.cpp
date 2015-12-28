@@ -625,7 +625,7 @@ QString describe_monster_spells(int r_idx, const monster_lore *l_ptr)
         output.append(" magical, casting spells");
 
         /* Adverb */
-        if (l_ptr->r_l_flags2 & RF2_SMART) output.append(color_string(" intelligently", TERM_ORANGE));
+        if (l_ptr->r_l_flags2 & RF2_SMART) output.append(color_string(" intelligently", TERM_PURPLE));
 
         /* Normal spells */
         for (n = 0; n < m; n++)
@@ -1149,7 +1149,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
             else output.append(" and ");
 
             /* Dump */
-            output.append(color_string(vp[n], TERM_GOLD));
+            output.append(color_string(vp[n], TERM_COPPER));
         }
 
         /* End */
@@ -1216,7 +1216,7 @@ static QString describe_monster_abilities(int r_idx, const monster_lore *l_ptr)
             else output.append(" or ");
 
             /* Dump */
-            output.append(color_string(vp[n], TERM_GOLD));
+            output.append(color_string(vp[n], TERM_ORANGE_PEEL));
         }
         /* End */
         output.append(".  ");

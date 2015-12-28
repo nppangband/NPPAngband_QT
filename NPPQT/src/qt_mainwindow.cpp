@@ -348,7 +348,6 @@ void MainWindow::init_scene()
     main_tile_hgt = main_tile_wid = 0;
     main_cell_hgt = main_cell_wid = 0;
 
-
     QBrush brush(QColor("black"));
     dungeon_scene->setBackgroundBrush(brush);    
 

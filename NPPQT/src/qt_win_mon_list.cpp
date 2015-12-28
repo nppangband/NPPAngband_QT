@@ -164,7 +164,7 @@ void MainWindow::win_mon_list_update()
         QTableWidgetItem *header1 = new QTableWidgetItem("You can't believe");
         header1->setTextAlignment(Qt::AlignLeft);
         header1->setFont(font_win_mon_list);
-        header1->setTextColor(defined_colors[TERM_ORANGE]);
+        header1->setTextColor(defined_colors[TERM_ORANGE_PEEL]);
         mon_list_area->setItem(0, 0, header1);
 
         QTableWidgetItem *header2 = new QTableWidgetItem("what you are seeing!");

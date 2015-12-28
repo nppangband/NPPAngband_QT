@@ -36,7 +36,7 @@ static QString squelch_status[SQUELCH_OPT_MAX] =
 
 static const byte squelch_status_color[SQUELCH_OPT_MAX] =
 {
-    TERM_YELLOW,
+    TERM_COPPER,
     TERM_L_GREEN,
     TERM_L_UMBER,
     TERM_L_RED,
@@ -334,11 +334,11 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     main_layout->addLayout(object_knowledge_hlay);
 
     // To track the object kind info button
-    object_button_group = new QButtonGroup;
+    object_button_group = new QButtonGroup(this);
     object_button_group->setExclusive(FALSE);
 
     // To track the object settings info button
-    object_settings_group = new QButtonGroup;
+    object_settings_group = new QButtonGroup(this);
     object_button_group->setExclusive(FALSE);
 
     // Set the table and headers
@@ -632,11 +632,11 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     main_layout->addLayout(ego_item_knowledge_hlay);
 
     // To track the ego_item info button
-    ego_item_button_group = new QButtonGroup;
+    ego_item_button_group = new QButtonGroup(this);
     ego_item_button_group->setExclusive(FALSE);
 
     // To track the ego_item squelch toggle button
-    ego_item_squelch_toggle = new QButtonGroup;
+    ego_item_squelch_toggle = new QButtonGroup(this);
     ego_item_squelch_toggle->setExclusive(FALSE);
 
     // Set the table and headers
@@ -898,11 +898,11 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     main_layout->addLayout(artifact_knowledge_hlay);
 
     // To track the artifact info button
-    artifact_button_group = new QButtonGroup;
+    artifact_button_group = new QButtonGroup(this);
     artifact_button_group->setExclusive(FALSE);
 
     // To track the artifact settings button
-    artifact_settings_group = new QButtonGroup;
+    artifact_settings_group = new QButtonGroup(this);
     artifact_settings_group->setExclusive(FALSE);
 
     // Set the table and headers

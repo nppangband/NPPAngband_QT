@@ -99,7 +99,7 @@ quality_name_struct quality_values[SQUELCH_MAX] =
     { SQUELCH_CURSED,	"Squelch cursed" },
     { SQUELCH_AVERAGE,	"Squelch cursed and average" },
     { SQUELCH_GOOD_STRONG,	"Squelch good, average, and cursed" },
-    { SQUELCH_GOOD_WEAK,	"Squelch good pseudo-id, average, and cursed" },
+    { SQUELCH_GOOD_WEAK,	"Squelch good (identified items only), average, and cursed" },
     { SQUELCH_ALL,	"Squelch all but artifacts" },
 };
 

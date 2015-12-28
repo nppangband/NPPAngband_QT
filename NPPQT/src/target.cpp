@@ -43,7 +43,7 @@ static bool target_able_trap(int y, int x)
 /*
  * Determine is a monster makes a reasonable target
  *
- * The concept of "targetting" was stolen from "Morgul" (?)
+ * The concept of "targeting" was stolen from "Morgul" (?)
  *
  * The player can target any location, or any "target-able" monster.
  *
@@ -227,7 +227,7 @@ static void target_set_interactive_prepare(int mode)
                 /* Must contain a monster */
                 if (!dungeon_info[y][x].has_monster()) do_continue = TRUE;
 
-                /* Must be a targettable monster */
+                /* Must be a targetable monster */
                 if (!target_able(dungeon_info[y][x].monster_idx)) do_continue = TRUE;
             }
 
@@ -391,7 +391,7 @@ static void describe_grid_brief(int y, int x)
  * panels which are adjacent to the one currently scanned, but this is
  * overkill for this function.  XXX XXX
  *
- * Hack -- targetting/observing an "outer border grid" may induce
+ * Hack -- targeting/observing an "outer border grid" may induce
  * problems, so this is not currently allowed.
  *
  * The player can use the direction keys to move among "interesting"
@@ -549,7 +549,7 @@ bool target_set_interactive(int mode, int x, int y)
 
             /*
              * If we click, move the target location to the click and
-             * switch to "free targetting" mode by unsetting 'flag'.
+             * switch to "free targeting" mode by unsetting 'flag'.
              * This means we get some info about wherever we've picked.
              */
             if (input.mode == INPUT_MODE_MOUSE_SINGLE_CLICK)
@@ -1118,7 +1118,7 @@ bool get_aim_dir(int *dp, bool target_trap)
     /* Hack -- auto-target if requested */
     if (use_old_target && target_okay() && !dir) dir = DIR_TARGET;
 
-    else color_message(QObject::tr("Entering targetting mode"), TERM_YELLOW);
+    else color_message(QObject::tr("Entering targeting mode"), TERM_YELLOW);
 
     ui_targeting_show(MODE_TARGETING_AIMING);
 
@@ -1135,7 +1135,7 @@ bool get_aim_dir(int *dp, bool target_trap)
 
         if ((input.key == Qt::Key_Escape) || (input.key == Qt::Key_X))
         {
-            color_message(QObject::tr("Exiting targetting mode"), TERM_VIOLET);
+            color_message(QObject::tr("Exiting targeting mode"), TERM_VIOLET);
             break;
         }
         // Do nothing
@@ -1250,7 +1250,7 @@ bool target_set_closest(int mode)
     /* Cancel old target */
     target_set_monster(0);
 
-    /* Get ready to do targetting */
+    /* Get ready to do targeting */
     target_set_interactive_prepare(mode);
 
     /* If nothing was prepared, then return */
