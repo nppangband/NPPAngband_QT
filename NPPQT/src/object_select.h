@@ -37,7 +37,7 @@ protected:
 
 private slots:
     // For the object select group pushbuttons.
-    void object_select_button_press(int item);
+    void object_select_button_press();
     // for the other buttons
     void info_buttons_click();
     void move_left(void);
@@ -56,9 +56,6 @@ private:
     QScrollArea *scroll_inven;
     QScrollArea *scroll_equip;
     QScrollArea *scroll_quiver;
-
-
-    QButtonGroup *object_select_group;
 
     // Functions to build the actual tabs
     void build_floor_tab();

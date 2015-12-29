@@ -2036,9 +2036,9 @@ void process_player_energy_aux(byte energy_used)
     // process game turns until it is the player's turn again, or the player is dead;
     process_game_turns();
 
-    redraw_stuff();
-
     depth_counter = 0;
+
+    ui_redraw_all();
 
     if (p_ptr->is_dead)
     {

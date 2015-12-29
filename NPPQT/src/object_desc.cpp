@@ -685,7 +685,7 @@ static QString obj_desc_inscrip(object_type *o_ptr, QString buf)
 
     /* Use the "unknown" inscription */
     else if (!known && o_ptr->can_be_pseudo_ided() &&
-            (o_ptr->discount < INSCRIP_NULL))
+            (o_ptr->discount < INSCRIP_NULL  && !p_ptr->is_wizard))
     {
         u[n++] = "unknown";
     }

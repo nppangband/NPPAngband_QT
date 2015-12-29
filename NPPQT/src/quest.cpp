@@ -765,7 +765,7 @@ QString get_rep_guild(void)
         case 4:
         case 5:
         {
-            attr = TERM_YELLOW;
+            attr = TERM_ORANGE_PEEL;
             title = "fair";
             break;
         }
@@ -774,7 +774,7 @@ QString get_rep_guild(void)
         case 7:
         case 8:
         {
-            attr = TERM_YELLOW;
+            attr = TERM_EARTH_YELLOW;
             title = "good";
             break;
         }
@@ -783,7 +783,7 @@ QString get_rep_guild(void)
         case 10:
         case 11:
         {
-            attr = TERM_YELLOW;
+            attr = TERM_EARTH_YELLOW;
             title = "very good";
             break;
         }

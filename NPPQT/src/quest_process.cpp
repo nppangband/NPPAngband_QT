@@ -169,6 +169,9 @@ static bool monster_arena_labyrinth_okay(int r_idx)
     /* no stationary */
     if (r_ptr->flags1 & (RF1_NEVER_MOVE)) return (FALSE);
 
+    // Group monsters are too weak individually
+    if (r_ptr->flags1 & (RF1_FRIEND | RF1_FRIENDS | RF1_ESCORT | RF1_ESCORTS)) return (FALSE);
+
     /* Okay */
     return (TRUE);
 }
@@ -237,7 +240,7 @@ static bool add_arena_monster(bool new_squares, byte stage, s32b cur_quest_monst
     /* Pick a monster, using the given level */
     r_idx = get_mon_num(mon_lev, y, x, 0L);
 
-    /* One out of 10 monsters, make sure they are a little harder */
+    /* One out of 5 monsters, make sure they are a little harder */
     if ((cur_quest_monsters % 5) == 3)
     {
         s16b r2_idx = get_mon_num(mon_lev, y, x, 0L);

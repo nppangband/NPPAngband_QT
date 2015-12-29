@@ -114,7 +114,7 @@ void ObjectSettingsDialog::add_object_verifications(byte settings_mode)
 
     if (do_object_type)
     {
-        object_type_group = new QButtonGroup();
+        object_type_group = new QButtonGroup(this);
         object_type_group->setExclusive(FALSE);
         QLabel *object_type_label = new QLabel(QString("<b><big>   Object Settings   </big></b>"));
         object_type_label->setAlignment(Qt::AlignCenter);
@@ -124,7 +124,7 @@ void ObjectSettingsDialog::add_object_verifications(byte settings_mode)
 
     if (do_object_kind)
     {
-        object_kind_group = new QButtonGroup();
+        object_kind_group = new QButtonGroup(this);
         object_kind_group->setExclusive(FALSE);
         QLabel *object_kind_label = new QLabel(QString("<b><big>   Object Template Settings   </big></b>"));
         object_kind_label->setAlignment(Qt::AlignCenter);
@@ -192,7 +192,7 @@ void ObjectSettingsAux::add_ego_buttons(QVBoxLayout *ego_buttons)
 
     ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
 
-    ego_group = new QButtonGroup();
+    ego_group = new QButtonGroup(this);
 
     QLabel *ego_label = new QLabel(QString("<b><big>   Ego Item Settings   </big></b>"));
     ego_label->setAlignment(Qt::AlignCenter);
@@ -235,7 +235,7 @@ void ObjectSettingsAux::add_quality_buttons(QVBoxLayout *quality_buttons)
     bool limited_types = FALSE;
     if (squelch_type == PS_TYPE_AMULET) limited_types = TRUE;
     else if (squelch_type == PS_TYPE_RING) limited_types = TRUE;
-    quality_group = new QButtonGroup();
+    quality_group = new QButtonGroup(this);
     QLabel *quality_label = new QLabel(QString("<b><big>   Quality Squelch Settings   </big></b>"));
     quality_label->setAlignment(Qt::AlignCenter);
     quality_label->setToolTip("The settings below allow the player to automatically destroy an item on identification, or pseudo-id, based on the quality of that item.");
@@ -251,22 +251,25 @@ void ObjectSettingsAux::add_quality_buttons(QVBoxLayout *quality_buttons)
     quality_average->setToolTip("Automatically destroy cursed or average items of this type  upon identification or pseudo-id.");
     quality_good_strong = new QRadioButton(quality_values[SQUELCH_GOOD_STRONG].name);
     quality_good_strong->setToolTip("Automatically destroy cursed, average, or good items of this type upon identification or pseudo-id.");
-    quality_good_weak = new QRadioButton(quality_values[SQUELCH_GOOD_WEAK].name);
-    quality_good_weak->setToolTip("Automatically destroy cursed, average, or good items of this type upon identification or pseudo-id.");
+    if (!cp_ptr->pseudo_id_heavy())
+    {
+        quality_good_weak = new QRadioButton(quality_values[SQUELCH_GOOD_WEAK].name);
+        quality_good_weak->setToolTip("Automatically destroy cursed, average, or good items of this type upon identification or pseudo-id.");
+        quality_group->addButton(quality_good_weak, SQUELCH_GOOD_WEAK);
+    }
     quality_all_but_artifact = new QRadioButton(quality_values[SQUELCH_ALL].name);
     quality_all_but_artifact->setToolTip("Automatically destroy all items of this type, except artifacts, upon identification or pseudo-id.");
     if (squelch_level[squelch_type] == SQUELCH_NONE) quality_none->setChecked(TRUE);
     else if (squelch_level[squelch_type] == SQUELCH_CURSED) quality_cursed->setChecked(TRUE);
     else if (squelch_level[squelch_type] == SQUELCH_AVERAGE) quality_average->setChecked(TRUE);
     else if (squelch_level[squelch_type] == SQUELCH_GOOD_STRONG) quality_good_strong->setChecked(TRUE);
-    else if (squelch_level[squelch_type] == SQUELCH_GOOD_WEAK) quality_good_weak->setChecked(TRUE);
+    else if (squelch_level[squelch_type] == SQUELCH_GOOD_WEAK && !cp_ptr->pseudo_id_heavy()) quality_good_weak->setChecked(TRUE);
     else quality_all_but_artifact->setChecked(TRUE); // SQUELCH_ALL
 
     quality_group->addButton(quality_none, SQUELCH_NONE);
     quality_group->addButton(quality_cursed, SQUELCH_CURSED);
     quality_group->addButton(quality_average, SQUELCH_AVERAGE);
     quality_group->addButton(quality_good_strong, SQUELCH_GOOD_STRONG);
-    quality_group->addButton(quality_good_weak, SQUELCH_GOOD_WEAK);
     quality_group->addButton(quality_all_but_artifact, SQUELCH_ALL);
 
     quality_buttons->addWidget(quality_none);
@@ -274,8 +277,9 @@ void ObjectSettingsAux::add_quality_buttons(QVBoxLayout *quality_buttons)
     if (!limited_types)
     {
         quality_buttons->addWidget(quality_average);
-        if (cp_ptr->pseudo_id_heavy()) quality_buttons->addWidget(quality_good_strong);
-        else quality_buttons->addWidget(quality_good_weak);
+        if (!cp_ptr->pseudo_id_heavy()) quality_buttons->addWidget(quality_good_weak);
+        quality_buttons->addWidget(quality_good_strong);
+
     }
     quality_buttons->addWidget(quality_all_but_artifact);
 
@@ -291,7 +295,7 @@ void ObjectSettingsAux::update_squelch_setting(int id)
 
 void ObjectSettingsAux::add_squelch_buttons(QVBoxLayout *squelch_buttons)
 {
-    squelch_group = new QButtonGroup();
+    squelch_group = new QButtonGroup(this);
     QLabel *squelch_label = new QLabel(QString("<b><big>   Object Squelch Settings   </big></b>"));
     squelch_label->setAlignment(Qt::AlignCenter);
     squelch_label->setToolTip("The settings below allow the player to specify if they want to automatically destroy, pickup, or ignore an item when the player walks over it.");

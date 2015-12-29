@@ -28,9 +28,12 @@
 #include <src/cmds.h>
 
 // For the object select group.
-void ObjectSelectDialog::object_select_button_press(int item)
+void ObjectSelectDialog::object_select_button_press()
 {
-    selected_item = item;
+    QString item_id = QObject::sender()->objectName();
+
+    selected_item = item_id.toInt();
+
     this->accept();
 }
 
@@ -116,7 +119,9 @@ void ObjectSelectDialog::keyPressEvent(QKeyEvent* which_key)
     QList<QPushButton *> buttons = tab->findChildren<QPushButton *>();
     for (int i = 0; i < buttons.size(); i++)
     {
-        if (buttons.at(i)->text().startsWith(key_pressed))
+        QString text = buttons.at(i)->text();
+
+        if (text.startsWith(key_pressed))
         {
             buttons.at(i)->click();
             break;
@@ -163,8 +168,9 @@ void ObjectSelectDialog::add_object_button(object_type *o_ptr, s16b item_slot, Q
     QPushButton *object_button = new QPushButton(desc);
     object_button->setStyleSheet(style);
     object_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    object_button->setObjectName(QString("%1") .arg(item_slot));
     lay->addWidget(object_button, row, col);
-    object_select_group->addButton(object_button, item_slot);
+    connect(object_button, SIGNAL(pressed()), this, SLOT(object_select_button_press()));
 }
 
 void ObjectSelectDialog::link_pushbuttons()
@@ -552,10 +558,6 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     equip_items_count(mode);
     quiver_items_count(mode);
 
-    // To keep track of which item was selected
-    object_select_group = new QButtonGroup(this);
-    object_select_group->setExclusive(FALSE);
-
     // Handle no available objects.
     if (!allow_floor && !allow_inven && !allow_equip && !allow_quiver)
     {
@@ -594,8 +596,6 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
         object_tabs->addTab(scroll_quiver, "&Quiver");
         tab_order.append(TAB_QUIVER);
     }
-
-    connect(object_select_group, SIGNAL(buttonClicked(int)), this, SLOT(object_select_button_press(int)));
 
     QDialogButtonBox *buttons = new QDialogButtonBox();
     QPushButton *button_left = new QPushButton();
