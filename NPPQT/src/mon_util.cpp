@@ -2464,9 +2464,6 @@ s16b monster_place(int y, int x, monster_type *n_ptr)
         /* Get the new race */
         r_ptr = &r_info[m_ptr->r_idx];
 
-        /* Hack -- Notice new multi-hued monsters */
-        if (r_ptr->flags1 & (RF1_ATTR_MULTI)) shimmer_monsters = TRUE;
-
         /* Protect flying monsters from dangerous terrain */
         if (!cave_no_dam_for_mon(y, x, r_ptr) && (r_ptr->flags3 & (RF3_FLYING)))
         {

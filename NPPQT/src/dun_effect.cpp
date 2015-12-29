@@ -1103,7 +1103,6 @@ static void process_effect(int x_idx)
                 {
                     /* Redraw */
                     light_spot(y, x);
-                    shimmer_effects = TRUE;
                 }
 
                 break;
@@ -1136,7 +1135,6 @@ static void process_effect(int x_idx)
                 {
                     /* Redraw */
                     light_spot(y, x);
-                    shimmer_effects = TRUE;
                 }
 
                 break;
@@ -1150,7 +1148,6 @@ static void process_effect(int x_idx)
                 {
                     /* Redraw */
                     light_spot(y, x);
-                    shimmer_effects = TRUE;
                 }
                 break;
             }
@@ -1313,8 +1310,6 @@ void process_effects(void)
 
     /* Paranoia */
     notice_stuff();
-
-    shimmer_effects = FALSE;
 
     /* Process all effects */
     for (i = 0; i < x_max; i++)

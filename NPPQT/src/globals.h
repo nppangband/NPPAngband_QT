@@ -158,8 +158,6 @@ extern u32b dungeon_summon_mask_f7;
 
 extern s16b coin_type;
 extern byte object_generation_mode;
-extern bool shimmer_monsters;
-extern bool shimmer_effects;
 extern bool repair_mflag_mark;
 extern bool repair_mflag_show;
 

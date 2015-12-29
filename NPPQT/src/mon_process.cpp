@@ -1078,9 +1078,6 @@ static void recover_monster(monster_type *m_ptr)
         else mon_dec_timed(m_idx, MON_TMD_SLOW, 1 , MON_TMD_FLG_NOMESSAGE);
     }
 
-    // Mark if we need to shimmer monsters
-    if (visible && (r_ptr->flags1 & (RF1_ATTR_MULTI))) shimmer_monsters = TRUE;
-
     /* Hack -- Update the health and mana bar (always) */
     if (m_ptr->sidebar) p_ptr->redraw |= (PR_SIDEBAR_MON);
 
@@ -1154,8 +1151,6 @@ void process_entities(void)
             mon_moment_info.append(this_mon_move);
         }
     }
-
-    shimmer_monsters = FALSE;
 
     /* Process the monsters */
     for (i = 1; i < mon_max; i++)

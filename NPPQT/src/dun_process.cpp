@@ -818,14 +818,14 @@ static void decrease_timeouts(void)
  */
 void do_animation(void)
 {
-    int i;
+    if (!character_dungeon) return;
 
     // No animation with graphics
     if ((use_graphics == GRAPHICS_DAVID_GERVAIS) ||
         (use_graphics == GRAPHICS_ORIGINAL) ||
         (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)) return;
 
-    if (shimmer_monsters) for (i = 1; i < mon_max; i++)
+    for (int i = 1; i < mon_max; i++)
     {
         monster_type *m_ptr = &mon_list[i];
         monster_race *r_ptr = &r_info[m_ptr->r_idx];
@@ -834,13 +834,13 @@ void do_animation(void)
         if (!m_ptr->ml) continue;
         if (!(r_ptr->flags1 & (RF1_ATTR_MULTI))) continue;
 
-        m_ptr->m_color = add_preset_color(multi_hued_color(r_ptr));
+        dungeon_info[m_ptr->fy][m_ptr->fx].monster_color = m_ptr->m_color = add_preset_color(multi_hued_color(r_ptr));
 
-        light_spot(m_ptr->fy, m_ptr->fx);
+        ui_redraw_grid(m_ptr->fy, m_ptr->fx);
     }
 
     // Shimmer effects
-    if (shimmer_effects) for (i = 1; i < x_max; i++)
+    for (int i = 1; i < x_max; i++)
     {
         effect_type *x_ptr = &x_list[i];
 
@@ -1628,10 +1628,6 @@ void change_player_level(void)
     /* Cancel the health bar */
     health_track(0);
 
-    /* Reset shimmer flags */
-    shimmer_monsters = FALSE;
-    shimmer_effects = FALSE;
-
     /* Reset repair flags */
     repair_mflag_show = TRUE;
     repair_mflag_mark = TRUE;
@@ -1921,8 +1917,7 @@ void process_player_energy_aux(byte energy_used)
     }
 
     /* Shimmer monsters if needed */
-    if (shimmer_monsters) for (i = 1; i < mon_max; i++)
-
+    for (i = 1; i < mon_max; i++)
     {
         monster_type *m_ptr;
         monster_race *r_ptr;
@@ -1947,7 +1942,7 @@ void process_player_energy_aux(byte energy_used)
     }
 
     /* Traverse effect array */
-    if (shimmer_effects) for (i = 1; i < x_max; i++)
+    for (i = 1; i < x_max; i++)
     {
         effect_type *x_ptr = &x_list[i];
 

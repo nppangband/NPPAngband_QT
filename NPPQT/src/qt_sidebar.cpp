@@ -830,12 +830,69 @@ void MainWindow::sidebar_display_mon(int m_idx)
     int font_hgt = metrics.height() + FONT_EXTRA;
     int font_wid = metrics.width('M') + FONT_EXTRA;
 
+    // Direction
+    QLabel *dir_label = new QLabel();
+    QPixmap this_pixmap;
+    // Give it a directional arrow icon
+    switch (ui_get_dir_from_slope(p_ptr->py, p_ptr->px, m_ptr->fy, m_ptr->fx))
+    {
+        case 6:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-east.png"));
+            break;
+        }
+        case 9:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-northeast.png"));
+            break;
+        }
+        case 8:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-north.png"));
+            break;
+        }
+        case 7:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-northwest.png"));
+            break;
+        }
+        case 4:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-west.png"));
+            break;
+        }
+        case 1:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-southwest.png"));
+            break;
+        }
+        case 2:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-south.png"));
+            break;
+        }
+        case 3:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-southeast.png"));
+            break;
+        }
+        default:
+        {
+            this_pixmap = (QPixmap(":/icons/lib/icons/arrow-east.png"));
+            break;
+        }
+    }
+
+    // Using font_hgt for width is deliberate, so the pixmap is square.
+    this_pixmap = this_pixmap.scaled(font_hgt, font_hgt);
+    dir_label->setPixmap(this_pixmap);
+    mon_hlayout->addWidget(dir_label, Qt::AlignLeft);
+
     QLabel *mon_pic = new QLabel;
     if (use_graphics)
     {
-
         QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);
-        pix = pix.scaled(main_cell_hgt, main_cell_wid);
+        pix = pix.scaled(font_hgt, font_wid);
         mon_pic->setPixmap(pix);
     }
     else

@@ -203,6 +203,8 @@ void ObjectSelectDialog::floor_items_count(int mode, int sq_y, int sq_x)
         /* Get the next object */
         next_o_idx = o_ptr->next_o_idx;
 
+        if (!o_ptr->k_idx) continue;
+
         /* Verify item tester */
         if (!get_item_okay(0 - this_o_idx)) continue;
 
@@ -551,7 +553,7 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
     quiver_items_count(mode);
 
     // To keep track of which item was selected
-    object_select_group = new QButtonGroup();
+    object_select_group = new QButtonGroup(this);
     object_select_group->setExclusive(FALSE);
 
     // Handle no available objects.

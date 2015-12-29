@@ -263,7 +263,8 @@ void MainWindow::win_obj_list_update()
     {
         obj_list_area->insertRow(row++);
 
-        QString player_message = ("YOU ARE STANDING ON:");
+        QString player_message = (QString("YOU ARE STANDING ON %1 OBJECTS:") .arg(num_player));
+        if (num_player == 1) player_message = "YOU ARE STANDING ON 1 OBJECT:";
         QTableWidgetItem *in_los = new QTableWidgetItem(player_message);
         in_los->setFont(font_win_obj_list);
         in_los->setTextColor(defined_colors[TERM_L_BLUE]);
@@ -320,7 +321,8 @@ void MainWindow::win_obj_list_update()
     if (vis_obj_list.size())
     {
         obj_list_area->insertRow(row);
-        QTableWidgetItem *label_see = new QTableWidgetItem("YOU CAN SEE:");
+        QTableWidgetItem *label_see = new QTableWidgetItem(QString("YOU CAN SEE %1 OBJECTS:") .arg(vis_obj_list.size()));
+        if (vis_obj_list.size() == 1) label_see->setText("YOU CAN SEE 1 OBJECT:");
         label_see->setFont(font_win_obj_list);
         label_see->setTextColor(defined_colors[TERM_L_BLUE]);
         label_see->setTextAlignment(Qt::AlignLeft);
@@ -383,7 +385,7 @@ void MainWindow::win_obj_list_update()
         }
         if (dir_x)
         {
-            if (dir_x > 0)direction.append("E");
+            if (dir_x < 0)direction.append("E");
             else direction.append("W");
             direction.append(QString("%1 ") .arg(ABS(dir_x)));
         }

@@ -1523,10 +1523,9 @@ void MainWindow::display_kill_count()
 
 void MainWindow::timed_events()
 {
-    if(!animate_flicker) return;
+    if (!animate_flicker) return;
     if (!character_dungeon) return;
     if (executing_command) return;
-
     do_animation();
 }
 

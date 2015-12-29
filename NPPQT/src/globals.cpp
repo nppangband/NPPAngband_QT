@@ -48,8 +48,6 @@ s16b coin_type;			/* Hack -- force coin type */
 
 byte object_generation_mode;/* Hack -- use different depth check, prevent embedded chests */
 
-bool shimmer_monsters;	/* Hack -- optimize multi-hued monsters */
-bool shimmer_effects;	/* Hack -- optimize multi-hued effects */
 bool repair_mflag_show;	/* Hack -- repair monster flags (show) */
 bool repair_mflag_mark;	/* Hack -- repair monster flags (mark) */
 

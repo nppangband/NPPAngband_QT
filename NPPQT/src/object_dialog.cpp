@@ -503,11 +503,15 @@ void update_floor_list(QGridLayout *lay, bool label, bool buttons)
 
     clear_layout(lay);
 
-    s16b this_o_idx, next_o_idx = 0;
+    s16b this_o_idx, next_o_idx;
 
     for (this_o_idx = dungeon_info[p_ptr->py][p_ptr->px].object_idx; this_o_idx; this_o_idx = next_o_idx)
     {
         object_type *o_ptr = &o_list[this_o_idx];
+
+        /* Get the next object */
+        next_o_idx = o_ptr->next_o_idx;
+
         if (!o_ptr->k_idx) continue;
 
         int col = 0;
