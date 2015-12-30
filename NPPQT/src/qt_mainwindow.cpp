@@ -716,6 +716,9 @@ void MainWindow::wheelEvent(QWheelEvent* event)
   // Go to special key handling
     if (targeting_mode)
     {
+        // Temporary until the wheel mode can be figured out.
+        return;
+
         if (event->delta() > 0) input.key = Qt::Key_Plus;
         else                    input.key = Qt::Key_Minus;
         input.text.clear();
