@@ -560,6 +560,10 @@ MainWindow::MainWindow()
 
     setWindowFilePath(QString());
 
+    // Deactivate the unused context menu
+    setContextMenuPolicy(Qt::NoContextMenu);
+
+
 }
 
 void MainWindow::setup_nppangband()
