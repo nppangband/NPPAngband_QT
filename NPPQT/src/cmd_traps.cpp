@@ -301,7 +301,7 @@ void command_make_trap(cmd_arg args)
 
     if (!in_bounds(y, x)) return;
 
-    if (cave_trappable_bold(y, x) && !dungeon_info[y][x].monster_idx > 0)
+    if (cave_trappable_bold(y, x) && !(dungeon_info[y][x].monster_idx > 0))
     {
         /*two traps for advanced rogues, one for lower level*/
         if (p_ptr->lev >= 26) max_traps = 2;

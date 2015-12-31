@@ -5770,8 +5770,8 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
                 }
 
                 /* Reduce damage if missile did not get deflected. */
-                else dam -= (dam * ((p_ptr->state.ac + (p_ptr->state.to_a < 150) ?
-                                 p_ptr->state.ac + p_ptr->state.to_a : 150)) / 250);
+                else dam -= (dam * ((p_ptr->state.ac + p_ptr->state.to_a) < 150 ?
+                                 (p_ptr->state.ac + p_ptr->state.to_a) : 150 / 250));
             }
 
             if (dam)

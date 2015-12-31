@@ -27,6 +27,14 @@
  */
 #define TURN_RANGE      3
 
+/* Build a structure to hold movement data */
+typedef struct move_data move_data;
+struct move_data
+{
+    int move_chance;
+    bool move_bash;
+};
+
 
 /*
  * Calculate minimum and desired combat ranges.  -BR-
@@ -2819,13 +2827,7 @@ bool make_move(monster_type *m_ptr, int *ty, int *tx, bool fear, bool *bash)
      */
     if (TRUE)
     {
-        /* Build a structure to hold movement data */
-        typedef struct move_data move_data;
-        struct move_data
-        {
-            int move_chance;
-            bool move_bash;
-        };
+
         move_data moves_data[8];
 
 
