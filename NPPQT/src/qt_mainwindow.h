@@ -13,6 +13,7 @@
 #include <QImage>
 #include <QFontDatabase>
 #include <QKeyEvent>
+#include <QWheelEvent>
 #include <QTableWidget>
 #include <QActionGroup>
 #include <QEventLoop>
@@ -190,8 +191,8 @@ private slots:
 
     void slot_find_player();
     void slot_redraw();
-    void toggle_searching() {do_cmd_toggle_search();}
-    void click_study() {do_cmd_study(-1);}
+    void toggle_searching();
+    void click_study();
 
     void do_create_package();
     void do_extract_from_package();

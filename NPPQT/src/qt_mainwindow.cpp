@@ -339,6 +339,21 @@ void MainWindow::set_font_sidebar_window(QFont newFont)
     update_sidebar_font();
 }
 
+void MainWindow::toggle_searching()
+{
+    if (!character_dungeon) return;
+    if (executing_command) return;
+    do_cmd_toggle_search();
+}
+
+void MainWindow::click_study()
+{
+    if (!character_dungeon) return;
+    if (executing_command) return;
+    do_cmd_study(-1);
+
+}
+
 void MainWindow::init_scene()
 {
     QFontMetrics metrics(font_main_window);
@@ -1280,8 +1295,9 @@ void MainWindow::create_actions()
     graphics_25d_act = new QAction(tr("Use 2.5D graphics"), this);
     graphics_25d_act->setCheckable(true);
     graphics_25d_act->setChecked(false);
-    graphics_25d_act->setStatusTip(tr("Use 2.5D graphics.  This option is only available with the Raymond Gaustadnes tileset."));
+    graphics_25d_act->setStatusTip(tr("Use 2.5D graphics.  Feature development in progress."));
     connect(graphics_25d_act, SIGNAL(changed()), this, SLOT(set_25d_graphics()));
+    graphics_25d_act->setDisabled(TRUE);
 
     pseudo_ascii_act = new QAction(tr("Pseudo-Ascii monsters"), this);
     pseudo_ascii_act->setCheckable(true);

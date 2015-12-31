@@ -291,7 +291,8 @@ void MainWindow::win_mon_list_update()
 
     mon_list_area->insertRow(row++);
 
-    QTableWidgetItem *in_los = new QTableWidgetItem("MONSTERS IN LOS");
+    QTableWidgetItem *in_los = new QTableWidgetItem(QString("%1 MONSTERS IN LOS") .arg(los_count));
+    if (los_count == 1) in_los->setText("1 MONSTER IN LOS");
     in_los->setFont(font_win_mon_list);
     in_los->setTextColor(defined_colors[TERM_L_BLUE]);
     in_los->setTextAlignment(Qt::AlignLeft);
@@ -369,7 +370,8 @@ void MainWindow::win_mon_list_update()
     }
 
     mon_list_area->insertRow(row);
-    QTableWidgetItem *out_los = new QTableWidgetItem("MONSTERS OUT OF LOS");
+    QTableWidgetItem *out_los = new QTableWidgetItem(QString("%1 MONSTERS OUT OF LOS") .arg(total_count - los_count));
+    if ((total_count - los_count) == 1) out_los->setText("1 MONSTER OUT OF LOS");
     out_los->setFont(font_win_mon_list);
     out_los->setTextColor(defined_colors[TERM_L_BLUE]);
     out_los->setTextAlignment(Qt::AlignLeft);
