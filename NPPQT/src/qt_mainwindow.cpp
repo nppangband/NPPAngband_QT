@@ -126,6 +126,7 @@ void MainWindow::wait_animation(int n_animations)
     }
 }
 
+
 void MainWindow::animation_done()
 {
     if (--anim_depth < 1)

@@ -409,6 +409,7 @@ void BoltAnimation::start()
     NPPAnimation::start();
 }
 
+
 BoltAnimation::~BoltAnimation()
 {
     if (scene()) scene()->removeItem(this);
@@ -982,7 +983,8 @@ QRectF DetectionAnimation::boundingRect() const
 
 void DetectionAnimation::do_timeout()
 {
-    if (++steps > 5) {
+    if (++steps > 5)
+    {
         stop();
         return;
     }

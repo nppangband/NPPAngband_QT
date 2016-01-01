@@ -714,13 +714,13 @@ static void process_move_key(int dir, bool shift_key, bool alt_key, bool ctrl_ke
 
 
     // Flip pickup
-    if (ctrl_key && alt_key) do_cmd_walk(dir, always_pickup);
+    if (ctrl_key && alt_key) do_cmd_walk(dir, TRUE);
     else if (ctrl_key && shift_key) do_cmd_tunnel(dir);
     else if (ctrl_key) ui_change_panel(dir);
     else if (alt_key) do_cmd_alter(dir);
     else if (shift_key)  do_cmd_run(dir);
     else if (meta_key) do_cmd_tunnel(dir);
-    else do_cmd_walk(dir, !always_pickup);
+    else do_cmd_walk(dir, FALSE);
 }
 
 void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_key, bool meta_key)
@@ -1250,7 +1250,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_Minus:
         {
-            do_cmd_walk(DIR_UNKNOWN, always_pickup);
+            do_cmd_walk(DIR_UNKNOWN, TRUE);
             break;
         }
         case Qt::Key_Underscore:
@@ -1261,7 +1261,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_Semicolon:
         {
-            do_cmd_walk(DIR_UNKNOWN, !always_pickup);
+            do_cmd_walk(DIR_UNKNOWN, FALSE);
             break;
         }
         case Qt::Key_Colon:
@@ -1526,7 +1526,7 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         }
         case Qt::Key_Minus:
         {
-            do_cmd_walk(DIR_UNKNOWN, always_pickup);
+            do_cmd_walk(DIR_UNKNOWN, TRUE);
             break;
         }
         case Qt::Key_Underscore:
@@ -1537,7 +1537,7 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         }
         case Qt::Key_Semicolon:
         {
-            do_cmd_walk(DIR_UNKNOWN, !always_pickup);
+            do_cmd_walk(DIR_UNKNOWN, FALSE);
             break;
         }
         case Qt::Key_Colon:

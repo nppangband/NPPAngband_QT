@@ -433,7 +433,9 @@ DisplayMonKillCount::DisplayMonKillCount(void)
         // Symbol (or tile if tiles are used)
         QString mon_symbol = (QString("'%1'") .arg(r_ptr->d_char));
         QTableWidgetItem *mon_ltr = new QTableWidgetItem(mon_symbol);
-        if (use_graphics)
+        if ((use_graphics == GRAPHICS_DAVID_GERVAIS) ||
+            (use_graphics == GRAPHICS_ORIGINAL) ||
+            (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES))
         {
             QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);
             mon_ltr->setIcon(pix);

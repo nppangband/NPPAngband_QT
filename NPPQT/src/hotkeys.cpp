@@ -1835,8 +1835,8 @@ static void run_hotkey_step(int step)
     {
         // Do nothing
     }
-    else if (command == HK_TYPE_MOVE) do_cmd_walk(arg_ptr->direction, always_pickup);
-    else if (command == HK_TYPE_JUMP) do_cmd_walk(arg_ptr->direction, !always_pickup);
+    else if (command == HK_TYPE_MOVE) do_cmd_walk(arg_ptr->direction, FALSE);
+    else if (command == HK_TYPE_JUMP) do_cmd_walk(arg_ptr->direction, TRUE);
     else if (command == HK_TYPE_RUN) do_cmd_run(arg_ptr->direction);
     else if (command == HK_TYPE_ALTER) do_cmd_alter(arg_ptr->direction);
     else if (command == HK_TYPE_DISARM) do_cmd_disarm(arg_ptr->direction);

@@ -319,7 +319,9 @@ void StoreDialog::reset_quest_status()
     quest_picture->show();
 
     monster_race *r_ptr = &r_info[q_info[GUILD_QUEST_SLOT].mon_idx];
-    if (use_graphics)
+    if ((use_graphics == GRAPHICS_DAVID_GERVAIS) ||
+        (use_graphics == GRAPHICS_ORIGINAL) ||
+        (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES))
     {
         QPixmap pix = ui_get_tile(r_ptr->tile_id, TRUE);
         quest_picture->setPixmap(pix);
