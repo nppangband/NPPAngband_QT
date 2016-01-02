@@ -395,7 +395,7 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         /* Skip "empty" and unknown objects, and gold */
         if (!k_ptr->k_name.length()) continue;
         if (k_ptr->tval == TV_GOLD) continue;
-        if ((!k_ptr->everseen || !k_ptr->aware) && !p_ptr->is_wizard) continue;
+        if (!k_ptr->everseen || !k_ptr->aware) continue;
         // Handled in artifact knowledge
         if (k_ptr->k_flags3 & (TR3_INSTA_ART)) continue;
 
@@ -689,7 +689,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
 
         /* Skip "empty" and unknown objects, and gold */
         if (!e_ptr->e_name.length()) continue;
-        if (!e_ptr->everseen && !p_ptr->is_wizard) continue;
+        if (!e_ptr->everseen) continue;
 
         ego_item_table->insertRow(row);
         col = 0;
@@ -954,7 +954,7 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
 
         /* This slot is already being used */
         if ((a_ptr->tval + a_ptr->sval) == 0) continue;
-        if (!artifact_is_known(i) && !p_ptr->is_wizard) continue;
+        if (!artifact_is_known(i)) continue;
 
         /*  Don't do quest artifacts*/
         if (i == QUEST_ART_SLOT) continue;

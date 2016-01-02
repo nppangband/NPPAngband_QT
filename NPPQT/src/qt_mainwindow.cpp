@@ -529,6 +529,7 @@ MainWindow::MainWindow()
     message_area = new QTextEdit;
     message_area->setReadOnly(true);
     message_area->setStyleSheet("background-color: black;");
+    message_area->setTextInteractionFlags(Qt::NoTextInteraction);
     message_dock->setWidget(message_area);
     message_dock->setAllowedAreas(Qt::TopDockWidgetArea);
     message_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);

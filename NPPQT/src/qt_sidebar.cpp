@@ -482,16 +482,14 @@ void MainWindow::update_sidebar_player()
             {
                 if (this_name.contains(QString("STAT_LABEL_%1") .arg(i)))
                 {
-                    QString stat_string;
+                    QString stat_string = stat_names[i];
 
                     QColor this_color = SBAR_NORMAL;
-                    if (p_ptr->stat_base_cur[i] < p_ptr->stat_base_max[i]) this_color = SBAR_DRAINED;
-
-                    if (p_ptr->stat_base_cur[i] < p_ptr->stat_base_max[i])
+                    if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
                     {
+                        this_color = SBAR_DRAINED;
                         stat_string = stat_names_reduced[i];
                     }
-                    else stat_string = stat_names[i];
 
                     if (p_ptr->stat_base_max[i] >= 18+100)
                     {
@@ -505,11 +503,16 @@ void MainWindow::update_sidebar_player()
                 if (this_name.contains(QString("STAT_INFO_%1") .arg(i)))
                 {
                     QColor this_color = SBAR_NORMAL;
-                    if (p_ptr->stat_base_cur[i] < p_ptr->stat_base_max[i]) this_color = SBAR_DRAINED;
+                    if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i]) this_color = SBAR_DRAINED;
 
-                    QString stat_string = cnv_stat(p_ptr->state.stat_loaded_cur[i]);
+                    QString stat_string = color_string(cnv_stat(p_ptr->state.stat_loaded_cur[i]), this_color);
 
-                    this_lbl->setText(color_string(stat_string, this_color));
+                    if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
+                    {
+                        stat_string.append(color_string(QString("/ %1") .arg(cnv_stat(p_ptr->state.stat_loaded_max[i])), SBAR_NORMAL));
+                    }
+
+                    this_lbl->setText(stat_string);
                     this_lbl->setAlignment(Qt::AlignRight);
                     continue;
                 }

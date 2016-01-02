@@ -167,7 +167,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     main_layout->addLayout(terrain_knowledge_hlay);
 
     // To track the feature info button
-    terrain_button_group = new QButtonGroup;
+    terrain_button_group = new QButtonGroup(this);
     terrain_button_group->setExclusive(FALSE);
 
     // Set the table and headers
@@ -219,7 +219,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 
         // Don't count non and unseen entries
         if (f_ptr->f_name.isEmpty()) continue;
-        if (!f_l_ptr->f_l_sights && !p_ptr->is_wizard && !f_ptr->f_everseen) continue;
+        if (!f_l_ptr->f_l_sights && !f_ptr->f_everseen) continue;
 
         terrain_table->insertRow(row);
         col = 0;

@@ -453,10 +453,7 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 
     main_layout->addStretch(1);
 
-
     setWindowTitle(tr("Object Menu"));
-
-    link_pushbuttons();
 
     QSize this_size = QSize(width() * 3 / 2, height() * 4);
     resize(ui_max_widget_size(this_size));

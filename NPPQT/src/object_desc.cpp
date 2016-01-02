@@ -86,8 +86,6 @@ static QString obj_desc_get_basename(object_type *o_ptr, bool aware, bool plural
 
     bool show_flavor = k_ptr->flavor ? TRUE : FALSE;
 
-    if (p_ptr->is_wizard) aware = TRUE;
-
     if (o_ptr->ident & IDENT_STORE) show_flavor = FALSE;
     if (aware && !show_flavors) show_flavor = FALSE;
 
@@ -685,7 +683,7 @@ static QString obj_desc_inscrip(object_type *o_ptr, QString buf)
 
     /* Use the "unknown" inscription */
     else if (!known && o_ptr->can_be_pseudo_ided() &&
-            (o_ptr->discount < INSCRIP_NULL  && !p_ptr->is_wizard))
+            (o_ptr->discount < INSCRIP_NULL))
     {
         u[n++] = "unknown";
     }
@@ -728,7 +726,7 @@ static QString obj_desc_inscrip(object_type *o_ptr, QString buf)
 QString object_desc(object_type *o_ptr, byte mode)
 {
     bool prefix = mode & ODESC_PREFIX;
-    bool spoil = ((mode & (ODESC_SPOIL)) || p_ptr->is_wizard);
+    bool spoil = ((mode & (ODESC_SPOIL)));
     QString buf;
 
     bool known;

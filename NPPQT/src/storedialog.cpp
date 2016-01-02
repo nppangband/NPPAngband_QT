@@ -1020,7 +1020,11 @@ void StoreDialog::process_service(QString id)
 
     p_ptr->message_append_start();
 
-    if (!services_info[service].service_function(service, serv_price)) return;
+    if (!services_info[service].service_function(service, serv_price))
+    {
+        update_message_area(message_area, 3);
+        return;
+    }
 
     reset_all();
 }
@@ -1036,7 +1040,11 @@ void StoreDialog::process_quest(QString id)
 
     p_ptr->message_append_start();
 
-    if (!guild_purchase(quest_idx)) return;
+    if (!guild_purchase(quest_idx))
+    {
+        update_message_area(message_area, 3);
+        return;
+    }
 
     reset_all();
 

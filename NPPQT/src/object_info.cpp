@@ -1568,13 +1568,12 @@ QString screen_out_head(object_type *o_ptr)
     /* Display the known artifact description */
     if (!birth_rand_artifacts &&
         o_ptr->is_known_artifact() && !a_info[o_ptr->art_num].a_text.isEmpty())
-
     {
         output.append("<br><br>   ");
         output.append(a_info[o_ptr->art_num].a_text);
     }
     /* Display the known object description */
-    else if (o_ptr->is_aware() || o_ptr->is_known() || p_ptr->is_wizard)
+    else if (o_ptr->is_aware() || o_ptr->is_known())
     {
         if (!k_info[o_ptr->k_idx].k_text.isEmpty())
         {
@@ -1583,7 +1582,7 @@ QString screen_out_head(object_type *o_ptr)
         }
 
         /* Display an additional ego-item description */
-        if (o_ptr->is_ego_item() && (o_ptr->is_known() || p_ptr->is_wizard) &&
+        if (o_ptr->is_ego_item() && (o_ptr->is_known()) &&
                 !e_info[o_ptr->ego_num].e_text.isEmpty())
         {
             output.append("<br><br>   ");

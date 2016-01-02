@@ -3670,6 +3670,7 @@ DisplaySelfKnowledge::DisplaySelfKnowledge()
     main_layout->addWidget(message_area);
     message_area->setReadOnly(true);
     message_area->setStyleSheet("background-color: black;");
+    message_area->setTextInteractionFlags(Qt::NoTextInteraction);
 
     message_area->clear();
 

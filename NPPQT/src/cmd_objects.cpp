@@ -895,6 +895,17 @@ void command_refuel(cmd_arg args)
     // Command cancelled
     if(!args.verify) return;
 
+    if (j_ptr->sval == SV_LIGHT_LANTERN)
+    {
+        p_ptr->message_append_start();
+        if (do_cmd_refill_lamp_from_terrain())
+        {
+            p_ptr->player_previous_command_update(CMD_REFUEL, args);
+            process_player_energy(BASE_ENERGY_MOVE / 2);
+            return;
+        }
+    }
+
     int item = args.item;
     object_type *o_ptr = object_from_item_idx(item);
 
@@ -916,14 +927,8 @@ void command_refuel(cmd_arg args)
     /* It's a lamp */
     else if (j_ptr->sval == SV_LIGHT_LANTERN)
     {
-
-
-        /* First we check if the lamp can be filled from the oil on the floor */
-        if (!do_cmd_refill_lamp_from_terrain())
-        {
-            p_ptr->message_append_start();
-            refill_lamp(j_ptr, o_ptr, item);
-        }
+        p_ptr->message_append_start();
+        refill_lamp(j_ptr, o_ptr, item);
     }
 
     /* It's a torch */
@@ -1407,15 +1412,3 @@ void do_cmd_read_scroll(void)
     command_use(args);
 }
 
-/*
- * Handle the user command to destroy an item
- */
-void do_cmd_refill(void)
-{
-    // Paranoia
-    if (!p_ptr->playing) return;
-
-    cmd_arg args = select_item(ACTION_REFILL);
-
-    command_use(args);
-}

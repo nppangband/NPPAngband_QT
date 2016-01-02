@@ -79,6 +79,7 @@ void MainWindow::win_feat_recall_create()
     feat_recall_area = new QTextEdit;
     feat_recall_area->setReadOnly(TRUE);
     feat_recall_area->setStyleSheet("background-color: lightGray;");
+    feat_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
     feat_recall_vlay->addWidget(feat_recall_area);
     feat_recall_menubar = new QMenuBar;
     feat_recall_vlay->setMenuBar(feat_recall_menubar);

@@ -177,7 +177,6 @@ extern void do_cmd_zap_rod(void);
 extern void do_cmd_eat_food(void);
 extern void do_cmd_quaff_potion(void);
 extern void do_cmd_read_scroll(void);
-extern void do_cmd_refill(void);
 
 // cmd_misc.cpp
 extern void do_cmd_feeling(void);

@@ -404,7 +404,7 @@ void update_char_screen(QWidget *return_widget, QFont this_font)
             }
             if (this_name.contains(QString("st_total_%1") .arg(i)))
             {
-                QString stat_final = (QString("<b>%1</b>") .arg(cnv_stat(p_ptr->state.stat_loaded_cur[i])));
+                QString stat_final = (QString("<b>%1</b>") .arg(cnv_stat(p_ptr->state.stat_loaded_max[i])));
                 stat_final.append(" ");
                 stat_final = color_string(stat_final, TERM_BLUE);
                 this_lbl->setText(stat_final);

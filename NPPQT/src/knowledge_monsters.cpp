@@ -299,7 +299,7 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
         monster_lore *l_ptr = &l_list[i];
 
         // Don't count non-entries
-        if ((!cheat_know) && !l_ptr->sights && !p_ptr->is_wizard) continue;
+        if ((!cheat_know) && !l_ptr->sights) continue;
         if (!r_ptr->r_speed) continue;
 
         monster_table->insertRow(row);

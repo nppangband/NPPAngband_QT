@@ -80,6 +80,7 @@ void MainWindow::win_mon_recall_create()
     mon_recall_area = new QTextEdit;
     mon_recall_area->setReadOnly(TRUE);
     mon_recall_area->setStyleSheet("background-color: lightGray;");
+    mon_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
     mon_recall_vlay->addWidget(mon_recall_area);
     mon_recall_menubar = new QMenuBar;
     mon_recall_vlay->setMenuBar(mon_recall_menubar);

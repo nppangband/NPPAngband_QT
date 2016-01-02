@@ -103,6 +103,7 @@ void MainWindow::win_obj_recall_create()
     obj_recall_area = new QTextEdit;
     obj_recall_area->setReadOnly(TRUE);
     obj_recall_area->setStyleSheet("background-color: lightGray;");
+    obj_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
     obj_recall_vlay->addWidget(obj_recall_area);
     obj_recall_menubar = new QMenuBar;
     obj_recall_vlay->setMenuBar(obj_recall_menubar);
