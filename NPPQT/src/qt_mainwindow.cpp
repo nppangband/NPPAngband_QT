@@ -119,7 +119,7 @@ void MainWindow::wait_animation(int n_animations)
     {
         if (anim_loop.isRunning()) qDebug("Already running animation");
         //qDebug("Animation loop %x", (int)&anim_loop);
-        if (anim_loop.exec() == -1)
+        if (anim_loop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::WaitForMoreEvents))
         {
             qDebug("Exec failed");
         }
