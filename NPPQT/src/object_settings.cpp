@@ -189,6 +189,7 @@ void ObjectSettingsAux::update_ego_setting(int id)
 void ObjectSettingsAux::add_ego_buttons(QVBoxLayout *ego_buttons)
 {
     if (!o_ptr->ego_num) return;
+    if (!o_ptr->is_known()) return;
 
     ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
 
