@@ -101,7 +101,7 @@ public:
     QWidget *message_dock_widget;
     QHBoxLayout *message_dock_hlay;
     QDockWidget *sidebar_dock;
-    QTextEdit *message_area;
+    QLabel *message_area;
     QLabel *message_label;
 
     QToolBar *status_bar;

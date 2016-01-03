@@ -306,6 +306,7 @@ void MainWindow::set_font_main_window(QFont newFont)
 void MainWindow::set_font_message_window(QFont newFont)
 {
     font_message_window = newFont;
+    message_area->setFont(newFont);
     message_label->setFont(newFont);
     ui_update_messages();
 }
@@ -325,15 +326,15 @@ void MainWindow::toggle_searching()
 
 void MainWindow::update_message_label(QString message)
 {
-    message = (QString("****<b><h1>%1</h1></b>****") .arg(message));
     message_label->show();
+    message = (QString("<b><h2>%1</h2></b>") .arg(message));
     message_label->setText(message);
 }
 
 void MainWindow::clear_message_label()
 {
-    message_label->setText("");
     message_label->hide();
+    message_label->setText("");
 }
 
 void MainWindow::click_study()
@@ -524,10 +525,9 @@ MainWindow::MainWindow()
     message_dock_hlay = new QHBoxLayout;
     message_dock_widget->setLayout(message_dock_hlay);
 
-    message_area = new QTextEdit;
-    message_area->setReadOnly(true);
+    message_area = new QLabel("");
+    message_area->setFont(font_message_window);
     message_area->setStyleSheet("background-color: black;");
-    message_area->setTextInteractionFlags(Qt::NoTextInteraction);
     message_dock_hlay->addWidget(message_area);
 
     message_label = new QLabel();
@@ -656,9 +656,7 @@ void MainWindow::save_character_as()
 
 void MainWindow::update_messages()
 {
-    update_message_area(message_area, 3, font_message_window);
-
-    message_area->moveCursor(QTextCursor::End);
+    update_message_area(message_area, 3);
 }
 
 
@@ -699,7 +697,7 @@ void MainWindow::save_and_close()
     // close game
     cleanup_npp_games();
 
-    message_area->clear();
+    message_area->setText("");
     update_titlebar();
 
     cursor->setVisible(false);
