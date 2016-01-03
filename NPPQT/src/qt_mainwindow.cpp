@@ -104,13 +104,6 @@ static QPixmap darken_pix(QPixmap src)
 }
 
 
-void MainWindow::slot_redraw()
-{
-    QString txt = get_string("Enter text to convert", "With accents please...", "");
-    txt = to_ascii(txt);
-    message(txt);
-}
-
 void MainWindow::wait_animation(int n_animations)
 {
     anim_depth += n_animations;
@@ -118,11 +111,6 @@ void MainWindow::wait_animation(int n_animations)
     if (anim_depth == n_animations)
     {
         if (anim_loop.isRunning()) qDebug("Already running animation");
-        //qDebug("Animation loop %x", (int)&anim_loop);
-        if (anim_loop.processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::WaitForMoreEvents))
-        {
-            qDebug("Exec failed");
-        }
     }
 }
 
@@ -902,12 +890,9 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     //Hotkeys are checked first
     if (check_hotkey_commands(which_key->key(), shift_key, alt_key, ctrl_key, meta_key))
     {
-        handle_stuff();
-        executing_command = FALSE;
-        return;
+        // Fall through
     }
-
-    if (which_keyset == KEYSET_NEW)
+    else if (which_keyset == KEYSET_NEW)
     {
         commands_new_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
     }

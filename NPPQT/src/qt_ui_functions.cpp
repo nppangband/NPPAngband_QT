@@ -363,13 +363,6 @@ void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int
     main_window->wait_animation();
 }
 
-void MainWindow::slot_find_player()
-{
-    if (!character_dungeon) return;
-
-    ui_center(p_ptr->py, p_ptr->px);
-    update_cursor();
-}
 
 QPixmap ui_make_blank()
 {

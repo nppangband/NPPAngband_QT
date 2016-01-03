@@ -390,11 +390,6 @@ void MainWindow::create_statusbar(void)
     addToolBar(Qt::BottomToolBarArea, status_bar);
     hide_statusbar();
 
-    QSize tool_size = status_bar->iconSize();
-    tool_size.setHeight(tool_size.height()*3/2);
-    tool_size.setWidth(tool_size.width()*3/2);
-    status_bar->setIconSize(tool_size);
-
     QString status = QString("The Word of Recall spell has been cast, and the player is about to be:<br><br>");
     status.append("1) If the player is in the dungeon, the player will be recalled back to town, or:<br><br>");
     status.append("2) If the player is in the town, the player will be recalled back to the dungeon recall depth.<br><br>");

@@ -196,8 +196,6 @@ private slots:
     void export_hotkeys();
     void import_hotkeys();
 
-    void slot_find_player();
-    void slot_redraw();
     void toggle_searching();
     void click_study();
 
