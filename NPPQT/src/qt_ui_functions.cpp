@@ -319,48 +319,54 @@ void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
 {
     BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
     main_window->dungeon_scene->addItem(ball);
-    ball->start();
     main_window->wait_animation();
+    ball->start();
+
 }
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
 {
     ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
     main_window->dungeon_scene->addItem(arc);
-    arc->start();
     main_window->wait_animation();
+    arc->start();
+
 }
 
 void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
 {
     BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
     main_window->dungeon_scene->addItem(beam);
-    beam->start();
     main_window->wait_animation();
+    beam->start();
+
 }
 
 void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
 {
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
     main_window->dungeon_scene->addItem(bolt);
-    bolt->start();
     main_window->wait_animation();
+    bolt->start();
+
 }
 
 void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
 {
     BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
     main_window->dungeon_scene->addItem(bolt);
-    bolt->start();
     main_window->wait_animation();
+    bolt->start();
+
 }
 
 void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
 {
     StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
     main_window->dungeon_scene->addItem(star);
-    star->start();
     main_window->wait_animation();
+    star->start();
+
 }
 
 
@@ -382,11 +388,12 @@ void ui_animate_accomplishment(int y, int x, int gf_type)
     HaloAnimation *h1 = new HaloAnimation(y, x);
     main_window->dungeon_scene->addItem(h1);
     h1->setZValue(900);
+    main_window->wait_animation(2);
 
     b1->start();
     h1->start();
 
-    main_window->wait_animation(2);
+
 }
 
 QFont ui_main_window_font()
@@ -663,8 +670,9 @@ void ui_animate_detection(int y, int x, int rad)
 {
     DetectionAnimation *anim = new DetectionAnimation(y, x, rad);
     main_window->dungeon_scene->addItem(anim);
-    anim->start();
     main_window->wait_animation();
+    anim->start();
+
 }
 
 void ui_show_cursor(int y, int x)

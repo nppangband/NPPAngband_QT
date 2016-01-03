@@ -126,6 +126,7 @@ BeamAnimation::BeamAnimation(QPointF from, QPointF to, int new_gf_type)
     anim->setStartValue(0);
     anim->setEndValue(50);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
+    connect(anim, SIGNAL(finished()), &this_loop, SLOT(quit()));
     this->setVisible(false);
     setZValue(300);
 }
@@ -304,7 +305,12 @@ NPPAnimation::~NPPAnimation()
 
 void NPPAnimation::start()
 {
-    if (anim) anim->start();
+    if (anim)
+    {
+        anim->start();
+        this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    }
+
 }
 
 BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new_flg, object_type *o_ptr)
@@ -384,6 +390,7 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
     anim->setEndValue(to - adj);
 
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
+    connect(anim, SIGNAL(finished()), &this_loop, SLOT(quit()));
 }
 
 void BoltAnimation::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -462,6 +469,7 @@ BallAnimation::BallAnimation(QPointF where, int newRadius, int newGFType, u32b f
     maxLength = ((newRadius * 2 + 1) * main_window->main_cell_hgt) * 0.5;
     anim->setEndValue(maxLength);
     connect(anim, SIGNAL(finished()), this, SLOT(deleteLater()));
+    connect(anim, SIGNAL(finished()), &this_loop, SLOT(quit()));
 }
 
 qreal BallAnimation::getLength()
@@ -616,11 +624,13 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
 
     timer.setInterval(delay * 20);
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+    connect(&timer, SIGNAL(timeout()), &this_loop, SLOT(quit()));
 }
 
 void ArcAnimation::start()
 {
     timer.start();
+    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void ArcAnimation::finish()
@@ -772,11 +782,13 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
 
     timer.setInterval(40);
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+    connect(&timer, SIGNAL(timeout()), &this_loop, SLOT(quit()));
 }
 
 void StarAnimation::start()
 {
     timer.start();
+    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void StarAnimation::stop()
@@ -874,6 +886,7 @@ HaloAnimation::HaloAnimation(int y, int x)
     timer.setInterval(70);
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+    connect(&timer, SIGNAL(timeout()), &this_loop, SLOT(quit()));
 
     this->setVisible(false);
 }
@@ -881,6 +894,7 @@ HaloAnimation::HaloAnimation(int y, int x)
 void HaloAnimation::start()
 {
     timer.start();
+    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void HaloAnimation::stop()
@@ -959,6 +973,7 @@ DetectionAnimation::DetectionAnimation(int y, int x, int rad)
     opacity = 0.7;
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(do_timeout()));
+    connect(&timer, SIGNAL(timeout()), &this_loop, SLOT(quit()));
 
     this->setVisible(false);
 }
@@ -966,6 +981,7 @@ DetectionAnimation::DetectionAnimation(int y, int x, int rad)
 void DetectionAnimation::start()
 {
     timer.start();
+    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void DetectionAnimation::stop()

@@ -10,6 +10,7 @@
 #include <QPropertyAnimation>
 #include <QHash>
 #include <QTimer>
+#include <QEventLoop>
 
 class NPPAnimation: public QObject
 {
@@ -19,6 +20,7 @@ public:
 
     QPropertyAnimation *anim;
     NPPAnimation *next;
+    QEventLoop this_loop;
 
     virtual ~NPPAnimation();
 
@@ -124,6 +126,7 @@ public:
     int rad;
     QTimer timer;
     QList<QPixmap> tiles;
+    QEventLoop this_loop;
 
     ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, int newRad, u32b flg);
     void start();
@@ -152,6 +155,7 @@ public:
     QList<BallParticle*> particles;
     int gf_type;
     QHash<int, bool> valid;
+    QEventLoop this_loop;
 
     StarAnimation(QPointF newCenter, int radius, int newGFType, int gy[], int gx[], int grids);
 
@@ -176,6 +180,7 @@ public:
     QPixmap haloPix;
     QPixmap curPix;
     int c_y, c_x;
+    QEventLoop this_loop;
 
     HaloAnimation(int y, int x);
 
@@ -202,6 +207,7 @@ public:
     QTimer timer;
     int size;
     int steps;
+    QEventLoop this_loop;
 
     DetectionAnimation(int y, int x, int rad);
 

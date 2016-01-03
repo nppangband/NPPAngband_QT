@@ -107,25 +107,12 @@ static QPixmap darken_pix(QPixmap src)
 void MainWindow::wait_animation(int n_animations)
 {
     anim_depth += n_animations;
-
-    if (anim_depth == n_animations)
-    {
-        if (anim_loop.isRunning()) qDebug("Already running animation");
-    }
 }
 
 
 void MainWindow::animation_done()
 {
-    if (--anim_depth < 1)
-    {
-        if (!anim_loop.isRunning()) qDebug("Anim loop isn't running");
-        //qDebug("Quitting %1", anim_depth);
-        anim_loop.quit();
-        anim_depth = 0;
-        // MEGA HACK - Process some pending events (not user input) to (hopefully) avoid strange behavior
-        anim_loop.processEvents(QEventLoop::ExcludeUserInputEvents, 100);
-    }
+    anim_depth--;
 }
 
 void MainWindow::do_create_package()
