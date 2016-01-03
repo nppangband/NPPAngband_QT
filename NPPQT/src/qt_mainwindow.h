@@ -98,13 +98,18 @@ public:
     DungeonCursor *cursor;
 
     QDockWidget *message_dock;
+    QWidget *message_dock_widget;
+    QHBoxLayout *message_dock_hlay;
     QDockWidget *sidebar_dock;
     QTextEdit *message_area;
+    QLabel *message_label;
+
     QToolBar *status_bar;
 
     QWidget *sidebar_widget;
-    QScrollArea *sidebar_scroll;
     QVBoxLayout *sidebar_vlay;
+    QScrollArea *sidebar_scroll;
+
     QVBoxLayout *player_info_labels;
     QVBoxLayout *player_info_data;
     QVBoxLayout *player_info_vlay;
@@ -119,6 +124,8 @@ public:
     void set_font_main_window(QFont newFont);
     void set_font_message_window(QFont newFont);
     void set_font_sidebar_window(QFont newFont);
+    void update_message_label(QString message);
+    void clear_message_label(void);
     void calculate_cell_size();
     void destroy_tiles();
     void set_graphic_mode(int mode);
@@ -357,8 +364,6 @@ private:
     // Actions for the statusbar
     // buttons for status bar
     QAction *recall;
-    QAction *resting;
-    QAction *repeating;
     QAction *searching;
     QAction *status_cut;
     QAction *status_stun;

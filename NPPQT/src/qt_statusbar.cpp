@@ -28,25 +28,6 @@ void MainWindow::update_statusbar(void)
     if (p_ptr->word_recall) recall->setVisible(TRUE);
     else recall->setVisible(FALSE);
 
-    if (p_ptr->is_resting())
-    {
-        resting->setVisible(TRUE);
-        if (p_ptr->player_args.choice == REST_TURNCOUNT)
-        {
-            resting->setIconText(QString(" %1") .arg(p_ptr->player_args.repeats));
-        }
-        else resting->setIconText("");
-
-    }
-    else resting->setVisible(FALSE);
-
-    if (p_ptr->command_previous_args.repeats)
-    {
-        repeating->setVisible(TRUE);
-        repeating->setIconText(QString(" x%1") .arg(p_ptr->command_previous_args.repeats));
-    }
-    else repeating->setVisible(FALSE);
-
     searching->setVisible(TRUE);
     if (p_ptr->searching)
     {
@@ -423,16 +404,6 @@ void MainWindow::create_statusbar(void)
     recall->setIcon(QIcon(":/icons/lib/icons/recall.png"));
     status_bar->addAction(recall);
     recall->setVisible(FALSE);
-
-    resting = new QAction(tr("Resting"), this);
-    resting->setIcon(QIcon(":/icons/lib/icons/rest.png"));
-    status_bar->addAction(resting);
-    resting->setVisible(FALSE);
-
-    repeating = new QAction(tr("Repeat"), this);
-    repeating->setIcon(QIcon(":/icons/lib/icons/repeat.png"));
-    status_bar->addAction(repeating);
-    repeating->setVisible(FALSE);
 
     searching = new QAction(tr("Searching"), this);
     searching->setIcon(QIcon(":icons/lib/icons/search.png"));

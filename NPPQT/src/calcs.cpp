@@ -2059,7 +2059,10 @@ void redraw_stuff(void)
     /* Character is not ready yet, no screen updates */
     if (!character_generated) return;
 
-    if (p_ptr->redraw & PR_MAP) ui_redraw_all();
+    if (p_ptr->redraw & (PR_MAP))
+    {
+        if (!p_ptr->is_resting()) ui_redraw_all();
+    }
 
     if (p_ptr->redraw & (PR_WIN_EQUIPMENT))
     {
@@ -2118,7 +2121,10 @@ void redraw_stuff(void)
 
     if (p_ptr->redraw & (PR_WIN_CHAR_EQUIP_INFO)) ui_update_char_equip_info_window();
 
-    if (p_ptr->redraw & (PR_DRAW)) draw_coords();
+    if (p_ptr->redraw & (PR_DRAW))
+    {
+        if (!p_ptr->is_resting()) draw_coords();
+    }
 }
 
 

@@ -422,8 +422,6 @@ static void add_message_to_vector(QString msg, QColor which_color)
     }
 
     p_ptr->redraw |= (PR_MESSAGES | PR_WIN_MESSAGES);
-
-    redraw_stuff();
 }
 
 int html_length(QString this_string)

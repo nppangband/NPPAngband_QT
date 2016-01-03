@@ -816,6 +816,7 @@ static bool do_cmd_open_chest(int y, int x, s16b o_idx)
         if (rand_int(100) < j)
         {
             message("You have picked the lock.");
+            ui_clear_message_label();
             gain_exp(1);
             flag = TRUE;
         }
@@ -825,7 +826,7 @@ static bool do_cmd_open_chest(int y, int x, s16b o_idx)
         {
             /* We may continue repeating */
             more = TRUE;
-            message("You failed to pick the lock.");
+            ui_update_message_label(color_string("You failed to pick the lock.", TERM_ORANGE_PEEL));
         }
     }
 
@@ -1066,8 +1067,8 @@ static bool do_cmd_disarm_chest(int y, int x, s16b o_idx)
     {
         /* We may keep trying */
         more = TRUE;
-        //if (flush_failure) flush();
-        message("You failed to disarm the chest.");
+
+        ui_update_message_label(color_string("You failed to disarm the chest.", TERM_ORANGE_PEEL));
     }
 
     /* Failure -- Set off the trap */
@@ -1153,7 +1154,7 @@ static bool command_disarm_aux(int y, int x, bool disarm)
             message(QString("You have desanctified the %1.").arg(name));
 
         /* Normal message otherwise */
-        else message(QString("You have %1ed the %2.").arg(act).arg(name));
+        else ui_update_message_label(color_string((QString("You have %1ed the %2.").arg(act).arg(name)), TERM_ORANGE));
 
         /* If a Rogue's monster trap, decrement the trap count. */
         if (feat_ff2_match(feat, FF2_TRAP_MON)) num_trap_on_level--;
@@ -1716,7 +1717,7 @@ static bool command_tunnel_aux(int y, int x)
             name = feature_desc(feat, FALSE, TRUE);
 
             /* We may continue tunneling */
-            message(QString("You dig into the " + name + "."));
+            ui_update_message_label(color_string(QString("You dig into the %1.") .arg(name), TERM_ORANGE_PEEL));
 
             more = TRUE;
         }
@@ -2235,8 +2236,10 @@ void command_rest(cmd_arg args)
 {
     if (!p_ptr->is_resting())
     {
-        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
+    if (args.repeats) ui_update_message_label(color_string(QString("Resting %1") .arg(args.repeats), TERM_BLUE));
+    else ui_update_message_label(color_string("Resting", TERM_BLUE));
 
     p_ptr->player_previous_command_update(CMD_RESTING, args);
 
@@ -2249,7 +2252,7 @@ void command_rest(cmd_arg args)
     if (p_ptr->should_stop_resting())
     {
         disturb(FALSE, FALSE);
-        p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
+        p_ptr->redraw |= (PR_SIDEBAR_PL);
     }
 
     /* Handle stuff */
@@ -2438,6 +2441,8 @@ void command_run(cmd_arg args)
     if (args.verify) dir = args.direction;
 
     int energy = run_step(dir);
+
+    ui_update_message_label(color_string("Running", TERM_GREEN));
 
     if (energy > 0) process_player_energy(energy);
 

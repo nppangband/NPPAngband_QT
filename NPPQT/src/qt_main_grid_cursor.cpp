@@ -729,6 +729,7 @@ void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
 
 void DungeonGrid::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
+    main_window->clear_message_label();
     event->ignore();
 }
 
@@ -768,7 +769,7 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
             main_window->single_click_timer->start(QApplication::doubleClickInterval());
         }
     }
-
+    main_window->clear_message_label();
     QGraphicsItem::mousePressEvent(event);
 }
 
@@ -830,6 +831,6 @@ void DungeonGrid::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     handle_stuff();
 
     QGraphicsItem::mouseDoubleClickEvent(event);
-
+    main_window->clear_message_label();
     main_window->executing_command = FALSE;
 }

@@ -674,6 +674,8 @@ extern void ui_center(int y, int x);
 extern void ui_player_moved();
 extern QSize ui_grid_size();
 extern void ui_png_screenshot(void);
+extern void ui_update_message_label(QString message);
+extern void ui_clear_message_label(void);
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

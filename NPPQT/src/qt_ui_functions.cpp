@@ -457,6 +457,7 @@ void ui_update_monlist()
 {
     if (!p_ptr->player_turn) return;
     if (p_ptr->is_running()) return;
+    if (p_ptr->is_resting()) return;
     main_window->win_mon_list_update();
     p_ptr->redraw &= ~(PR_WIN_MONLIST);
 }
@@ -465,6 +466,7 @@ void ui_update_objlist()
 {
     if (!p_ptr->player_turn) return;
     if (p_ptr->is_running()) return;
+    if (p_ptr->is_resting()) return;
     main_window->win_obj_list_update();
     p_ptr->redraw &= ~(PR_WIN_OBJLIST);
 }
@@ -472,6 +474,7 @@ void ui_update_objlist()
 void ui_update_mon_recall()
 {
     if (p_ptr->is_running()) return;
+    if (p_ptr->is_resting()) return;
     main_window->win_mon_recall_update();
     p_ptr->redraw &= ~(PR_WIN_MON_RECALL);
 }
@@ -486,6 +489,7 @@ void ui_update_obj_recall()
 void ui_update_feat_recall()
 {
     if (p_ptr->is_running()) return;
+    if (p_ptr->is_resting()) return;
     main_window->win_feat_recall_update();
     p_ptr->redraw &= ~(PR_WIN_FEAT_RECALL);
 }
@@ -695,10 +699,19 @@ QSize ui_max_widget_size(QSize this_size)
     return_size.setHeight(MIN(this_size.height(), (return_size.height() * 17 / 20)));
 
     return (return_size);
-
 }
 
 void ui_png_screenshot(void)
 {
     main_window->save_png_screenshot();
+}
+
+void ui_update_message_label(QString message)
+{
+    main_window->update_message_label(message);
+}
+
+void ui_clear_message_label()
+{
+    main_window->clear_message_label();
 }

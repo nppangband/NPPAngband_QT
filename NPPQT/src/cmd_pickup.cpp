@@ -570,8 +570,6 @@ void py_pickup(bool pickup)
 		/* Get the next object */
 		next_o_idx = o_ptr->next_o_idx;
 
-        int this_squelch = k_info[o_ptr->k_idx].squelch;
-
         if (k_info[o_ptr->k_idx].squelch != NO_SQUELCH_ALWAYS_PICKUP) continue;
 
 		/* Object is marked to always pickup */

@@ -331,6 +331,7 @@ void MainWindow::set_font_main_window(QFont newFont)
 void MainWindow::set_font_message_window(QFont newFont)
 {
     font_message_window = newFont;
+    message_label->setFont(newFont);
     ui_update_messages();
 }
 
@@ -345,6 +346,19 @@ void MainWindow::toggle_searching()
     if (!character_dungeon) return;
     if (executing_command) return;
     do_cmd_toggle_search();
+}
+
+void MainWindow::update_message_label(QString message)
+{
+    message = (QString("****<b><h1>%1</h1></b>****") .arg(message));
+    message_label->show();
+    message_label->setText(message);
+}
+
+void MainWindow::clear_message_label()
+{
+    message_label->setText("");
+    message_label->hide();
 }
 
 void MainWindow::click_study()
@@ -526,14 +540,27 @@ MainWindow::MainWindow()
 
     // Set up the message area
     message_dock = new QDockWidget;
+    message_dock_widget = new QWidget;
+    message_dock->setWidget(message_dock_widget);
+    message_dock->setAllowedAreas(Qt::TopDockWidgetArea);
+    message_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    addDockWidget(Qt::TopDockWidgetArea, message_dock);
+
+    message_dock_hlay = new QHBoxLayout;
+    message_dock_widget->setLayout(message_dock_hlay);
+
     message_area = new QTextEdit;
     message_area->setReadOnly(true);
     message_area->setStyleSheet("background-color: black;");
     message_area->setTextInteractionFlags(Qt::NoTextInteraction);
-    message_dock->setWidget(message_area);
-    message_dock->setAllowedAreas(Qt::TopDockWidgetArea);
-    message_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    addDockWidget(Qt::TopDockWidgetArea, message_dock);
+    message_dock_hlay->addWidget(message_area);
+
+    message_label = new QLabel();
+    message_label->setFont(font_message_window);
+    message_dock_hlay->addWidget(message_label);
+    message_label->setStyleSheet("background-color: black;");
+    clear_message_label();
+
 
     // Set up the sidebar area, make it scrollable in case there are alot of monsters
     sidebar_widget = new QWidget;
@@ -811,7 +838,7 @@ void MainWindow::wheelEvent(QWheelEvent* event)
     }
 
     handle_stuff();
-
+    clear_message_label();
     executing_command = FALSE;
 
     * End of disabled code
@@ -895,6 +922,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     else pop_up_message_box("invalid keyset");
 
     handle_stuff();
+    clear_message_label();
 
     executing_command = FALSE;
 }

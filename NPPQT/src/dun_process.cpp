@@ -839,6 +839,8 @@ void do_animation(void)
         ui_redraw_grid(m_ptr->fy, m_ptr->fx);
     }
 
+    if (use_graphics == GRAPHICS_PSEUDO) return;
+
     // Shimmer effects
     for (int i = 1; i < x_max; i++)
     {
@@ -2038,8 +2040,6 @@ void process_player_energy_aux(byte energy_used)
 
     depth_counter = 0;
 
-    ui_redraw_all();
-
     if (p_ptr->is_dead)
     {
         player_death_close_game();
@@ -2070,7 +2070,7 @@ void process_player_energy(byte energy_used)
         if (p_ptr->should_stop_resting())
         {
             disturb(FALSE, FALSE);
-            p_ptr->redraw |= (PR_STATUSBAR | PR_SIDEBAR_PL);
+            p_ptr->redraw |= (PR_SIDEBAR_PL);
             return;
         }
     }

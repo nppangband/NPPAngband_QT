@@ -461,6 +461,7 @@ bool target_set_interactive(int mode, int x, int y)
         x = p_ptr->px;
         y = p_ptr->py;
         ui_targeting_show(MODE_TARGETING_INTERACTIVE);
+        ui_update_message_label(color_string("Interactive Target Mode", TERM_L_RED));
     }
     /*
      * If we /have/ been given an initial location, make sure we
@@ -476,6 +477,7 @@ bool target_set_interactive(int mode, int x, int y)
 
         interactive = FALSE;
         ui_targeting_show(MODE_TARGETING_MANUAL);
+        ui_update_message_label(color_string("Manual Target Mode", TERM_L_RED));
     }
 
 
@@ -564,7 +566,7 @@ bool target_set_interactive(int mode, int x, int y)
 
                 x = input.x;
                 y = input.y;
-                color_message("Entering manual targeting mode", TERM_SKY_BLUE);
+                ui_update_message_label(color_string("Interactive Target Mode", TERM_L_RED));
                 ui_targeting_show(MODE_TARGETING_MANUAL);
                 interactive = FALSE;
                 continue;
@@ -576,7 +578,6 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_Escape:
                 case Qt::Key_X:
                 {
-                    color_message(QObject::tr("Exiting targeting mode"), TERM_SKY_BLUE);
                     done = TRUE;
                     break;
                 }
@@ -608,7 +609,7 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_Asterisk:
                 case Qt::Key_M:
                 {
-                    color_message("Entering manual targeting mode", TERM_SKY_BLUE);
+                    ui_update_message_label(color_string("Manual Target Mode", TERM_L_RED));
                     ui_targeting_show(MODE_TARGETING_MANUAL);
                     interactive = FALSE;
                     break;
@@ -767,7 +768,6 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_Escape:
                 case Qt::Key_X:
                 {
-                    color_message(QObject::tr("Exiting targeting mode"), TERM_SKY_BLUE);
                     done = TRUE;
                     continue;
                 }
@@ -776,7 +776,7 @@ bool target_set_interactive(int mode, int x, int y)
                 {
                     if (((mode & (TARGET_GRID)) != TARGET_GRID) && target_grids.size())
                     {
-                        color_message("Entering interactive targeting mode", TERM_SKY_BLUE);
+                        ui_update_message_label(color_string("Interactive Target Mode", TERM_L_RED));
                         ui_targeting_show(MODE_TARGETING_INTERACTIVE);
                         interactive = TRUE;
                     }
@@ -986,6 +986,7 @@ int target_dir(UserInput input)
 
     if (input.mode != INPUT_MODE_KEY) return 0;
 
+
     /* Already a direction? */
     if (!input.text.isEmpty() && input.text.at(0).isDigit())
     {
@@ -1118,7 +1119,7 @@ bool get_aim_dir(int *dp, bool target_trap)
     /* Hack -- auto-target if requested */
     if (use_old_target && target_okay() && !dir) dir = DIR_TARGET;
 
-    else color_message(QObject::tr("Entering targeting mode"), TERM_YELLOW);
+    else ui_update_message_label(color_string("Please select a target.", TERM_L_RED));
 
     ui_targeting_show(MODE_TARGETING_AIMING);
 
@@ -1135,7 +1136,6 @@ bool get_aim_dir(int *dp, bool target_trap)
 
         if ((input.key == Qt::Key_Escape) || (input.key == Qt::Key_X))
         {
-            color_message(QObject::tr("Exiting targeting mode"), TERM_VIOLET);
             break;
         }
         // Do nothing
@@ -1212,6 +1212,8 @@ bool get_aim_dir(int *dp, bool target_trap)
     ui_targeting_hide();
 
     ui_show_cursor(-1, -1);
+
+    ui_clear_message_label();
 
     /* No direction */
     if (!dir) return (FALSE);
@@ -1311,7 +1313,7 @@ bool get_rep_dir(int *dp)
 
     if (!dir)
     {
-        color_message(QObject::tr("Enter a direction"), TERM_YELLOW);
+        ui_update_message_label(color_string("Please select a direction.", TERM_L_RED));
 
         ui_targeting_show(MODE_TARGETING_DIRECTION);
     }
@@ -1351,6 +1353,8 @@ bool get_rep_dir(int *dp)
     ui_targeting_hide();
 
     if (!dir) color_message("Illegal direction", TERM_ORANGE);
+
+    ui_clear_message_label();
 
     if (dir == DIR_TARGET) return false;
 
