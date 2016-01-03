@@ -520,11 +520,15 @@ KeyboardCommandList::KeyboardCommandList(void)
 
 static struct command_desc list_commands_mouse[] =
 {
-    {"Single-Left Click on a known dungeon square to run to that spot.", NULL},
-    {"Single-Middle Click on any dungeon square to walk one square in that direction.", NULL},
-    {"Single-Right Click on a dungeon square to learn about the contents of that square", NULL},
-    {"Single-Click Extra Button 1 to bring up the object handling dialog", NULL},
-    {"Single-Click Extra Button 2 to bring up the character screen dialog", NULL},
+    {"<h3>Single Clicks</h3>", NULL},
+    {"Left Click on a known dungeon square to run to that spot.", NULL},
+    {"Middle Click on any unknown dungeon square to walk one square in that direction.", NULL},
+    {"Right Click on a dungeon square to learn about the contents of that square", NULL},
+    {"Click Extra Button 1 to bring up the object handling dialog", NULL},
+    {"Click Extra Button 2 to bring up the character screen dialog", NULL},
+    {" ", NULL},
+    {"<h3>Double Clicks</h3>", NULL},
+    {"TBD", NULL},
 
     // The null entry at the end is essential for initializing the table of groups.
     {NULL, NULL},
