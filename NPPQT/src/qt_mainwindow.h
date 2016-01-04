@@ -98,11 +98,13 @@ public:
     DungeonCursor *cursor;
 
     QWidget *main_widget;
+    QHBoxLayout *main_widget_hlay;
+    // The vlay goes inside the hlay
+    QVBoxLayout *main_sidebar_vlay;
     QVBoxLayout *main_widget_vlay;
 
 
     QHBoxLayout *message_area_hlay;
-    QDockWidget *sidebar_dock;
     QLabel *message_area;
     QLabel *message_label;
 

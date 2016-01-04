@@ -145,8 +145,9 @@ void MainWindow::hide_targeting_sidebar()
         QPushButton *this_pushbutton = pushbuttons.at(i);
 
         QString this_text = this_pushbutton->objectName();
+        if (!this_text.length()) continue;
 
-        this_pushbutton->setMaximumWidth(metrics.width("M") * 3.2);
+        this_pushbutton->setMaximumWidth(metrics.width("M") * 4);
 
         if (strings_match(this_text, "NorthWest")) this_pushbutton->hide();
         else if (strings_match(this_text, "North")) this_pushbutton->hide();

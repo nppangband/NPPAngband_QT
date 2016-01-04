@@ -510,8 +510,34 @@ MainWindow::MainWindow()
     // Set the main area
     main_widget = new QWidget;
     setCentralWidget(main_widget);
+    main_widget_hlay = new QHBoxLayout;
+    main_widget->setLayout(main_widget_hlay);
+    main_sidebar_vlay = new QVBoxLayout;
     main_widget_vlay = new QVBoxLayout;
-    main_widget->setLayout(main_widget_vlay);
+    main_widget_hlay->addLayout(main_sidebar_vlay);
+    main_widget_hlay->addLayout(main_widget_vlay);
+
+
+
+    // Set up the sidebar area, make it scrollable in case there are alot of monsters
+    sidebar_widget = new QWidget;
+    sidebar_scroll = new QScrollArea;
+    QPalette this_pal;
+    this_pal.setColor(QPalette::Background, Qt::black);
+    sidebar_widget->setAutoFillBackground(TRUE);
+    sidebar_widget->setPalette(this_pal);
+    sidebar_scroll->setPalette(this_pal);
+    main_sidebar_vlay->addWidget(sidebar_scroll);
+    sidebar_scroll->setWidget(sidebar_widget);
+    sidebar_scroll->setWidgetResizable(TRUE);
+    sidebar_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    sidebar_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    sidebar_vlay = new QVBoxLayout;
+    sidebar_widget->setLayout(sidebar_vlay);
+
+    create_sidebar();
+
 
     // Set up the message area
     message_area_hlay = new QHBoxLayout;
@@ -528,36 +554,12 @@ MainWindow::MainWindow()
     message_label->setStyleSheet("background-color: black;");
     clear_message_label();
 
+    // Set up the main dungeon area
     dungeon_scene = new QGraphicsScene;
     graphics_view = new QGraphicsView(dungeon_scene);
     graphics_view->installEventFilter(this);
 
     main_widget_vlay->addWidget(graphics_view);
-
-
-    // Set up the sidebar area, make it scrollable in case there are alot of monsters
-    sidebar_widget = new QWidget;
-    sidebar_dock = new QDockWidget;
-    sidebar_dock->setAllowedAreas(Qt::LeftDockWidgetArea);
-    sidebar_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    sidebar_scroll = new QScrollArea;
-    QPalette this_pal;
-    this_pal.setColor(QPalette::Background, Qt::black);
-    sidebar_widget->setAutoFillBackground(TRUE);
-    sidebar_widget->setPalette(this_pal);
-    sidebar_scroll->setPalette(this_pal);
-    sidebar_dock->setWidget(sidebar_scroll);
-    sidebar_scroll->setWidget(sidebar_widget);
-    sidebar_scroll->setWidgetResizable(TRUE);
-    sidebar_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    sidebar_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    sidebar_vlay = new QVBoxLayout;
-    sidebar_widget->setLayout(sidebar_vlay);
-
-    create_sidebar();
-
-    addDockWidget(Qt::LeftDockWidgetArea, sidebar_dock);
 
     // Set up all the folder directories
     create_directories();
@@ -921,9 +923,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         save_character();
         pop_up_message_box("Game saved");
     }
-
-    // We don't need to set settings for the dock
-    delete sidebar_dock;
 
     write_settings();
 
@@ -2214,7 +2213,7 @@ void MainWindow::save_png_screenshot(void)
 {
     QRect dungeon_frame = graphics_view->geometry();
 
-    QRect screen_grab(sidebar_dock->pos(), dungeon_frame.bottomRight());
+    QRect screen_grab(sidebar_widget->pos(), dungeon_frame.bottomRight());
 
     QPixmap screenshot = main_window->grab(screen_grab);
 
