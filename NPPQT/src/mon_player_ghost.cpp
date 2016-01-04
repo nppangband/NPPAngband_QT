@@ -535,7 +535,7 @@ void prepare_ghost_name(void)
     /* Paranoia */
     if ((player_ghost_num < 0) || (player_ghost_num >= z_info->ghost_template_max))
     {
-        player_ghost_name = "Nobody";
+        player_ghost_name.clear();
         return;
     }
 
@@ -773,7 +773,7 @@ void remove_player_ghost(void)
     r_ptr->max_num = 0;
     player_ghost_num = -1;
     ghost_r_idx = 0;
-    player_ghost_name[0] = '\0';
+    player_ghost_name.clear();
     seed_ghost = rand_int(0x10000000);
 }
 

@@ -1026,7 +1026,7 @@ void monster_death(int m_idx, int who)
         {
             /*paranoia*/
             /* Check there is a name/ghost first */
-            if (player_ghost_name[0] == '\0')
+            if (!player_ghost_name.length())
             {
                 /*Make sure the name has been created*/
                 prepare_ghost_name();

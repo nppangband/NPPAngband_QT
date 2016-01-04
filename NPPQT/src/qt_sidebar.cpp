@@ -1023,6 +1023,8 @@ void MainWindow::update_sidebar_mon()
 
     int font_wid = metrics.width('M') + FONT_EXTRA;
     sidebar_scroll->setFixedWidth(font_wid*18);
+    sidebar_widget->setFixedWidth(font_wid*18);
+
 
     for (int i = 0; i < sidebar_monsters.size(); i++)
     {

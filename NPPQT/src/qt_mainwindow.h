@@ -97,9 +97,11 @@ public:
 
     DungeonCursor *cursor;
 
-    QDockWidget *message_dock;
-    QWidget *message_dock_widget;
-    QHBoxLayout *message_dock_hlay;
+    QWidget *main_widget;
+    QVBoxLayout *main_widget_vlay;
+
+
+    QHBoxLayout *message_area_hlay;
     QDockWidget *sidebar_dock;
     QLabel *message_area;
     QLabel *message_label;

@@ -137,11 +137,16 @@ void MainWindow::target_choice()
 void MainWindow::hide_targeting_sidebar()
 {
     QList<QPushButton *> pushbuttons = sidebar_widget->findChildren<QPushButton *>();
+
+    QFontMetrics metrics(font_sidebar_window);
+
     for (int i = 0; i < pushbuttons.size(); i++)
     {
         QPushButton *this_pushbutton = pushbuttons.at(i);
 
         QString this_text = this_pushbutton->objectName();
+
+        this_pushbutton->setMaximumWidth(metrics.width("M") * 3.2);
 
         if (strings_match(this_text, "NorthWest")) this_pushbutton->hide();
         else if (strings_match(this_text, "North")) this_pushbutton->hide();

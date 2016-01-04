@@ -508,33 +508,31 @@ MainWindow::MainWindow()
     overhead_map_multiplier = dun_map_multiplier = main_multiplier = "1:1";
 
     // Set the main area
-    dungeon_scene = new QGraphicsScene;
-    graphics_view = new QGraphicsView(dungeon_scene);
-    graphics_view->installEventFilter(this);
-    setCentralWidget(graphics_view);
-
+    main_widget = new QWidget;
+    setCentralWidget(main_widget);
+    main_widget_vlay = new QVBoxLayout;
+    main_widget->setLayout(main_widget_vlay);
 
     // Set up the message area
-    message_dock = new QDockWidget;
-    message_dock_widget = new QWidget;
-    message_dock->setWidget(message_dock_widget);
-    message_dock->setAllowedAreas(Qt::TopDockWidgetArea);
-    message_dock->setFeatures(QDockWidget::NoDockWidgetFeatures);
-    addDockWidget(Qt::TopDockWidgetArea, message_dock);
-
-    message_dock_hlay = new QHBoxLayout;
-    message_dock_widget->setLayout(message_dock_hlay);
+    message_area_hlay = new QHBoxLayout;
+    main_widget_vlay->addLayout(message_area_hlay);
 
     message_area = new QLabel("");
     message_area->setFont(font_message_window);
     message_area->setStyleSheet("background-color: black;");
-    message_dock_hlay->addWidget(message_area);
+    message_area_hlay->addWidget(message_area);
 
-    message_label = new QLabel();
+    message_label = new QLabel("");
     message_label->setFont(font_message_window);
-    message_dock_hlay->addWidget(message_label);
+    message_area_hlay->addWidget(message_label);
     message_label->setStyleSheet("background-color: black;");
     clear_message_label();
+
+    dungeon_scene = new QGraphicsScene;
+    graphics_view = new QGraphicsView(dungeon_scene);
+    graphics_view->installEventFilter(this);
+
+    main_widget_vlay->addWidget(graphics_view);
 
 
     // Set up the sidebar area, make it scrollable in case there are alot of monsters
@@ -551,6 +549,8 @@ MainWindow::MainWindow()
     sidebar_dock->setWidget(sidebar_scroll);
     sidebar_scroll->setWidget(sidebar_widget);
     sidebar_scroll->setWidgetResizable(TRUE);
+    sidebar_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    sidebar_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     sidebar_vlay = new QVBoxLayout;
     sidebar_widget->setLayout(sidebar_vlay);
@@ -922,8 +922,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         pop_up_message_box("Game saved");
     }
 
-    // We don't need to set settings for the docks
-    delete message_dock;
+    // We don't need to set settings for the dock
     delete sidebar_dock;
 
     write_settings();
