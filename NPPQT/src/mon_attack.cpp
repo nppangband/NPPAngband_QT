@@ -143,8 +143,8 @@ bool make_attack_normal(monster_type *m_ptr)
 
     bool alive = TRUE;
 
-
     s32b gold;
+
 
     object_type *o_ptr;
 

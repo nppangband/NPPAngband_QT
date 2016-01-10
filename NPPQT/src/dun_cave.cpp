@@ -4033,7 +4033,7 @@ void cave_set_feat(int y, int x, u16b feat)
             /* Take any accumulated damage from terrain */
             process_player_terrain_damage();
         }
-    }
+    }     
 
     /* Change the feature */
     cave_set_feat_aux(y, x, feat);

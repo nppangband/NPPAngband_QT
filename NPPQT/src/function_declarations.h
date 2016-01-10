@@ -379,7 +379,6 @@ extern void object_absorb(object_type *o_ptr, object_type *j_ptr);
 extern void object_copy_amt(object_type *dst, object_type *src, int amt);
 extern s16b floor_carry(int y, int x, object_type *j_ptr);
 extern bool drop_near(object_type *j_ptr, int chance, int y, int x);
-extern void inven_item_charges(int item);
 extern void inven_item_describe(int item);
 extern void inven_item_increase(int item, int num);
 extern int get_tag_num(int o_idx, QChar cmd, byte *tag_num);
@@ -391,7 +390,6 @@ extern int sort_quiver(int slot);
 extern void open_quiver_slot(int slot);
 extern bool quiver_carry_okay(object_type *o_ptr, int num, int item);
 extern void inven_item_optimize(int item);
-extern void floor_item_charges(int item);
 extern void floor_item_describe(int item);
 extern void floor_item_increase(int item, int num);
 extern void floor_item_optimize(int item);
@@ -664,6 +662,8 @@ extern void ui_update_char_score();
 extern void ui_update_char_turncount();
 extern void player_death_close_game(void);
 extern bool ui_use_25d_graphics(void);
+extern bool ui_using_tiles(void);
+extern bool ui_using_monster_tiles(void);
 extern void ui_redraw_grid(int y, int x);
 extern void ui_redraw_all();
 extern void ui_ensure(int y, int x);
@@ -676,6 +676,7 @@ extern QSize ui_grid_size();
 extern void ui_png_screenshot(void);
 extern void ui_update_message_label(QString message);
 extern void ui_clear_message_label(void);
+
 
 /* randart.c */
 extern QString make_random_name(byte min_length, byte max_length);

@@ -3100,6 +3100,26 @@ static bool use_object(object_type *o_ptr, bool *ident, int dir)
 }
 
 
+/*
+ * Describe the charges on an item in the inventory.
+ */
+void staff_wand_item_charges(object_type *o_ptr)
+{
+    /* Require staff/wand */
+    if ((o_ptr->tval != TV_STAFF) && (o_ptr->tval != TV_WAND)) return;
+
+    /* Require known item */
+    if (!o_ptr->is_known()) return;
+
+    QString o_name = object_desc(o_ptr, ODESC_BASE);
+
+    /* Print a message */
+    if (!o_ptr->pval) message(QString("The %1 has no charges remaining") .arg(o_name));
+    else if (o_ptr->pval == 1) message(QString("The %1 has one charge remaining") .arg(o_name));
+    else message(QString("The %1 has %2 charges remaining.") .arg(o_name) .arg(o_ptr->pval));
+}
+
+
 /*** Using items the traditional way ***/
 
 
@@ -3326,10 +3346,7 @@ void command_use(cmd_arg args)
         o_ptr->pval--;
 
         /* Describe charges */
-        if (item >= 0)
-            inven_item_charges(item);
-        else
-            floor_item_charges(0 - item);
+        staff_wand_item_charges(o_ptr);
 
     }
     else if (used && use == USE_SINGLE)

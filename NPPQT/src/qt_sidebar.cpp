@@ -892,10 +892,7 @@ void MainWindow::sidebar_display_mon(int m_idx)
     mon_hlayout->addWidget(dir_label, Qt::AlignLeft);
 
     QLabel *mon_pic = new QLabel;
-    if (((use_graphics == GRAPHICS_DAVID_GERVAIS) ||
-        (use_graphics == GRAPHICS_ORIGINAL) ||
-        (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)) &&
-            !do_pseudo_ascii)
+    if (ui_using_monster_tiles())
     {
         QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);
         pix = pix.scaled(font_hgt, font_wid);

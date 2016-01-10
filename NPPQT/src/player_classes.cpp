@@ -194,6 +194,7 @@ bool player_type::should_stop_resting()
         if (timed[TMD_SLOW])  return (FALSE);
         if (timed[TMD_PARALYZED])  return (FALSE);
         if (timed[TMD_IMAGE])  return (FALSE);
+        if (word_recall) return (FALSE);
         if (food > PY_FOOD_UPPER)  return (TRUE);
 
         return (TRUE);

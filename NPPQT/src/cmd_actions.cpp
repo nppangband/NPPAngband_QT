@@ -2446,6 +2446,8 @@ void command_run(cmd_arg args)
 
     if (energy > 0) process_player_energy(energy);
 
+    // Re-check if the player is on-screen if they have stopped running
+    else if (!panel_contains(p_ptr->py, p_ptr->px)) p_ptr->update |= (PU_PANEL);
 }
 
 void do_cmd_run(int dir)

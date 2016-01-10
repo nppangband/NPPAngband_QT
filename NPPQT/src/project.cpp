@@ -5728,53 +5728,27 @@ bool project_p(int who, int y, int x, int dam, int typ, QString msg)
         /* Arrow --  */
         case GF_ARROW:
         {
-            if (who > SOURCE_MONSTER_START)
+            /* Test for a miss or armour deflection. */
+            if ((randint1(100) < p_ptr->state.ac) && one_in_(2))
             {
+                message(QString("It glances off your armour."));
 
-                /* Source monster */
-                monster_type *m_ptr;
-                monster_race *r_ptr;
-
-                /* Get the source monster */
-                m_ptr = &mon_list[who];
-
-                /* Get the monster race. */
-                r_ptr = &r_info[m_ptr->r_idx];
-
-                /* Test for a miss or armour deflection. */
-                if ((p_ptr->state.ac + ((p_ptr->state.to_a < 150) ? p_ptr->state.ac + p_ptr->state.to_a : 150)) >
-                  randint((10 + r_ptr->level) * 5))
-                {
-                    if ((p_ptr->state.ac > 9) && (one_in_(2)))
-                    {
-                        message(QString("It glances off your armour."));
-                    }
-                    else message(QString("It misses."));
-
-                    /* No damage. */
-                    dam = 0;
-                }
+                /* No damage. */
+                dam = 0;
             }
 
-            if (dam)
-            {
-                /* Test for a deflection. */
-                if ((inventory[INVEN_ARM].k_idx) &&
+            /* Test for a deflection. */
+            else if ((inventory[INVEN_ARM].k_idx) &&
                     (inventory[INVEN_ARM].ac  > rand_int(50)))
-                {
+            {
 
-                    message(QString("It ricochets off your shield."));
+                message(QString("It ricochets off your shield."));
 
-                    /* No damage. */
-                    dam = 0;
-                }
-
-                /* Reduce damage if missile did not get deflected. */
-                else dam -= (dam * ((p_ptr->state.ac + p_ptr->state.to_a) < 150 ?
-                                 (p_ptr->state.ac + p_ptr->state.to_a) : 150 / 250));
+                /* No damage. */
+                dam = 0;
             }
 
-            if (dam)
+            else
             {
                 if (blind) message(QString("You are hit by something sharp!"));
                 take_hit(dam, killer);

@@ -552,6 +552,7 @@ MainWindow::MainWindow()
     message_label->setFont(font_message_window);
     message_area_hlay->addWidget(message_label);
     message_label->setStyleSheet("background-color: black;");
+    message_label->setWordWrap(TRUE);
     clear_message_label();
 
     // Set up the main dungeon area
@@ -2078,7 +2079,6 @@ void MainWindow::load_file(const QString &file_name)
             {
                 update_file_menu_game_active();
                 launch_game();
-                ui_player_moved();
                 graphics_view->setFocus();
                 redraw_all();
                 update_sidebar_font();
@@ -2090,6 +2090,7 @@ void MainWindow::load_file(const QString &file_name)
                 if (show_char_inventory) create_win_char_inventory();
                 if (show_win_dun_map) create_win_dun_map();
                 if (show_win_overhead_map) create_win_overhead_map();
+                ui_player_moved();
 
                 //hack - draw everything
                 p_ptr->player_turn = TRUE;
@@ -2116,7 +2117,6 @@ void MainWindow::launch_birth(bool quick_start)
         update_file_menu_game_active();
         launch_game();
         save_character();
-        ui_player_moved();
         graphics_view->setFocus();
         redraw_all();
         update_sidebar_font();
@@ -2126,6 +2126,7 @@ void MainWindow::launch_birth(bool quick_start)
         if (show_char_inventory) create_win_char_inventory();
         if (show_win_dun_map) create_win_dun_map();
         if (show_win_overhead_map) create_win_overhead_map();
+        ui_player_moved();
 
         // The main purpose of this greeting is to avoid crashes
         // due to the message vector being empty.

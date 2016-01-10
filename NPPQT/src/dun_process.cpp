@@ -821,9 +821,7 @@ void do_animation(void)
     if (!character_dungeon) return;
 
     // No animation with graphics
-    if ((use_graphics == GRAPHICS_DAVID_GERVAIS) ||
-        (use_graphics == GRAPHICS_ORIGINAL) ||
-        (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES)) return;
+    if (ui_using_tiles()) return;
 
     for (int i = 1; i < mon_max; i++)
     {

@@ -669,8 +669,70 @@ MakeFeatureDialog::MakeFeatureDialog(void)
         return;
     }
 
+    if (feat_ff2_match(i, FF2_EFFECT))
+    {
+        feature_type *f_ptr = &f_info[i];
+
+        int gf_type = f_ptr->x_gf_type;
+
+        if (feat_ff2_match(i, FF2_TRAP_SMART))
+        {
+            QString dummy_string;
+            u16b flags = fire_trap_smart(i, y, x, MODE_FLAGS, &dummy_string);
+
+            set_effect_trap_smart(i, y, x, flags);
+        }
+        else if (feat_ff2_match(i, FF2_TRAP_PASSIVE)) set_effect_trap_passive(i, y, x);
+        else if (feat_ff2_match(i, FF2_TRAP_MON)) set_effect_trap_player(i, y, x);
+        else if (i == FEAT_GLYPH_WARDING) set_effect_glyph(y, x);
+        else if (i == FEAT_WALL_GLACIER) set_effect_glacier(i, y, x, SOURCE_EFFECT, 0);
+        else if (i == FEAT_WALL_INSCRIPTION) set_effect_inscription(i, y, x, SOURCE_EFFECT, 0);
+        else if ((i == FEAT_RUBBLE) || (i == FEAT_RUBBLE_HIDDEN_OBJECT) ||
+                 (i == FEAT_LOOSE_ROCK)) set_effect_rocks(i, y, x);
+        else if (i == FEAT_EFFECT_SMOKE) set_effect_lingering_cloud(FEAT_EFFECT_SMOKE, y, x, 100, SOURCE_OTHER, 0);
+         else if (i == FEAT_EFFECT_FOG) set_effect_permanent_cloud(i, y, x, 0, 0);
+
+        // This list should be kept current with the function project_x
+        else switch (gf_type)
+        {
+            case GF_COLD:
+            case GF_ACID:
+            case GF_ELEC:
+            case GF_POIS:
+            case GF_BWATER:
+            case GF_BMUD:
+            case GF_FIRE:
+            case GF_LAVA:
+            case GF_SPORE:
+            case GF_NETHER:
+            case GF_CHAOS:
+            case GF_DISENCHANT:
+            case GF_NEXUS:
+            case GF_TIME:
+            case GF_CONFUSION:
+            case GF_SHARD:
+            {
+                set_effect_lingering_cloud(i, y, x, 50, SOURCE_OTHER, 0);
+                break;
+            }
+            case GF_GRAVITY:
+            case GF_INERTIA_NPP:
+            case GF_LIFE_DRAIN:
+            case GF_LIGHT:
+            case GF_DARK:
+            case GF_ELEC_BURST:
+            case GF_METEOR:
+            {
+
+                set_effect_shimmering_cloud(i, y, x, 50, 50, SOURCE_OTHER, 0);
+                break;
+            }
+            default :break;
+        }
+    }
+
     /* Create the feature */
-    cave_set_feat(y, x, i);
+    else cave_set_feat(y, x, i);
 }
 
 // Completely cure the player

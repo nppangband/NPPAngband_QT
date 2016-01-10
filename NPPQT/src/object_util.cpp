@@ -2541,25 +2541,6 @@ bool drop_near(object_type *j_ptr, int chance, int y, int x)
     return (TRUE);
 }
 
-
-/*
- * Describe the charges on an item in the inventory.
- */
-void inven_item_charges(int item)
-{
-    object_type *o_ptr = &inventory[item];
-
-    /* Require staff/wand */
-    if ((o_ptr->tval != TV_STAFF) && (o_ptr->tval != TV_WAND)) return;
-
-    /* Require known item */
-    if (!o_ptr->is_known()) return;
-
-    /* Print a message */
-    message(QString("You have %1 charge%2 remaining.") .arg(o_ptr->pval) .arg((o_ptr->pval != 1) ? "s" : ""));
-}
-
-
 /*
  * Describe an item in the inventory.
  */
@@ -3192,24 +3173,6 @@ void inven_item_optimize(int item)
 
     /* Inventory has changed, so disable repeat command */
     cmd_disable_repeat();
-}
-
-
-/*
- * Describe the charges on an item on the floor.
- */
-void floor_item_charges(int item)
-{
-    object_type *o_ptr = &o_list[item];
-
-    /* Require staff/wand */
-    if ((o_ptr->tval != TV_STAFF) && (o_ptr->tval != TV_WAND)) return;
-
-    /* Require known item */
-    if (!o_ptr->is_known()) return;
-
-    /* Print a message */
-    message(QString("There are %1 charge%2 remaining.") .arg(o_ptr->pval) .arg((o_ptr->pval != 1) ? "s" : ""));
 }
 
 

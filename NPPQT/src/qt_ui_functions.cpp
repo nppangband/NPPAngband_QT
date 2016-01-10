@@ -222,6 +222,17 @@ UserInput ui_get_input()
     return main_window->input;
 }
 
+static bool screen_needs_recentering(QRect vis)
+{
+    int py = p_ptr->py;
+    int px = p_ptr->px;
+    if (py < (vis.y() + PANEL_CHANGE_OFFSET_Y)) return (TRUE);
+    if (py >= (vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y)) return (TRUE);
+    if (px < (vis.x() + PANEL_CHANGE_OFFSET_X)) return (TRUE);
+    if (px >= (vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)) return (TRUE);
+    return (FALSE);
+}
+
 void ui_player_moved()
 {
     if (!character_dungeon) return;
@@ -238,22 +249,14 @@ void ui_player_moved()
         return;
     }
 
-    QRect vis = visible_dungeon();
-    if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
-            || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
-            || px < vis.x() + PANEL_CHANGE_OFFSET_X
-            || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
+    if (screen_needs_recentering(visible_dungeon()))
     {
         ui_center(py, px);
     }
 
     if (main_window->dun_map_created)
     {
-        vis = main_window->visible_dun_map();
-        if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
-                || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
-                || px < vis.x() + PANEL_CHANGE_OFFSET_X
-                || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
+        if (screen_needs_recentering(main_window->visible_dun_map()))
         {
             main_window->dun_map_center(py, px);
         }
@@ -262,11 +265,7 @@ void ui_player_moved()
 
     if (main_window->overhead_map_created)
     {
-        vis = main_window->visible_overhead_map();
-        if (py < vis.y() + PANEL_CHANGE_OFFSET_Y
-                || py >= vis.y() + vis.height() - PANEL_CHANGE_OFFSET_Y
-                || px < vis.x() + PANEL_CHANGE_OFFSET_X
-                || px >= vis.x() + vis.width() - PANEL_CHANGE_OFFSET_X)
+        if (screen_needs_recentering(main_window->visible_overhead_map()))
         {
             main_window->overhead_map_center(py, px);
         }
@@ -640,6 +639,21 @@ bool ui_use_25d_graphics(void)
     if (!main_window->do_25d_graphics) return (FALSE);
 
     return (TRUE);
+}
+
+bool ui_using_tiles()
+{
+    if (use_graphics == GRAPHICS_RAYMOND_GAUSTADNES) return (TRUE);
+    if (use_graphics == GRAPHICS_DAVID_GERVAIS) return (TRUE);
+    if (use_graphics == GRAPHICS_ORIGINAL) return (TRUE);
+    return (FALSE);
+}
+
+// pseudo_graphics uses letters for mosnters.
+bool ui_using_monster_tiles()
+{
+    if (main_window->do_pseudo_ascii) return (FALSE);
+    return (ui_using_tiles());
 }
 
 
