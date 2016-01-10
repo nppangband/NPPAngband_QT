@@ -309,7 +309,9 @@ QString describe_use(int i)
         return p;
     }
 
-    switch (i)
+    if (i >= QUIVER_START) p = "carrying in your quiver";
+
+    else switch (i)
     {
         case INVEN_WIELD:	p = "attacking monsters with"; break;
         case INVEN_BOW:		p = "shooting missiles with"; break;
