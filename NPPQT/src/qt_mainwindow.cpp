@@ -546,13 +546,14 @@ MainWindow::MainWindow()
     message_area = new QLabel("");
     message_area->setFont(font_message_window);
     message_area->setStyleSheet("background-color: black;");
+    message_area->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     message_area_hlay->addWidget(message_area);
 
     message_label = new QLabel("");
     message_label->setFont(font_message_window);
     message_area_hlay->addWidget(message_label);
     message_label->setStyleSheet("background-color: black;");
-    message_label->setWordWrap(TRUE);
+    message_label->setWordWrap(TRUE);    
     clear_message_label();
 
     // Set up the main dungeon area
