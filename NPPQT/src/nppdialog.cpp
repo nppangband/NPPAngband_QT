@@ -1,3 +1,12 @@
+
+/*
+ * Copyright (c) 2014 Ben Harrison, James E. Wilson, Robert A. Koeneke
+ * 						Jeff Greene, Diego Gonzalez
+ *
+ * Please see copyright.txt for complete copyright and licensing restrictions.
+ *
+ */
+
 #include "nppdialog.h"
 #include <QScrollArea>
 #include <QDesktopWidget>

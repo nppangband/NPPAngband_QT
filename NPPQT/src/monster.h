@@ -7,9 +7,8 @@
 /*
  * Copyright (c) 2010 Jeff Greene, Diego Gonzalez
  *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.  Other copyrights may also apply.
+ * Please see copyright.txt for complete copyright and licensing restrictions.
+ *
  */
 
 

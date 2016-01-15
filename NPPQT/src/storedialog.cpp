@@ -1,3 +1,12 @@
+/* File: qt_mainwindow.cpp */
+
+/*
+ * Copyright (c) 2014 Jeff Greene, Diego Gonzalez
+ *
+ * Please see copyright.txt for complete copyright and licensing restrictions.
+ *
+ */
+
 #include "storedialog.h"
 #include <QKeyEvent>
 

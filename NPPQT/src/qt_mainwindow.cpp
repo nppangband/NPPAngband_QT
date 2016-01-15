@@ -3,16 +3,8 @@
 /*
  * Copyright (c) 2014 Jeff Greene, Diego Gonzalez
  *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
+ * Please see copyright.txt for complete copyright and licensing restrictions.
  *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 3, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
  */
 
 
@@ -1084,7 +1076,7 @@ void MainWindow::about()
 {
    QMessageBox::about(this, tr("About NPPAngband and NPPMoria"),
             tr("<h2>NPPAngband and NPPMoria"
-               "<p>Copyright (c) 2003-2015 Jeff Greene and Diego González.</h2>"
+               "<p>Copyright (c) 2003-2016 Jeff Greene and Diego González.</h2>"
 
                "<p>For resources and links to places you can talk about the game, please see:"
                "<p>http://forum.nppangband.org/ -- the NPPAngband Forums"
