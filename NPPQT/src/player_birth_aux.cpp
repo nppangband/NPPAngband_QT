@@ -7,7 +7,6 @@
  * Please see copyright.txt for complete copyright and licensing restrictions.
  *
  */
- */
 
 #include "npp.h"
 #include "store.h"
