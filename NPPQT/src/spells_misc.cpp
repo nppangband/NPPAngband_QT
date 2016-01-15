@@ -96,7 +96,7 @@ bool warding_glyph(void)
     {
         QString name;
 
-        name = feature_desc(dungeon_info[py][px].feat, FALSE, TRUE);
+        name = feature_desc(dungeon_info[py][px].feature_idx, FALSE, TRUE);
 
         if (dungeon_info[py][px].object_idx) message(QString("The object resists the spell."));
         else if (cave_any_trap_bold(py,px))
@@ -125,7 +125,7 @@ bool warding_glyph(void)
     {
         QString name;
 
-        name = feature_desc(dungeon_info[py][px].feat, FALSE, TRUE);
+        name = feature_desc(dungeon_info[py][px].feature_idx, FALSE, TRUE);
 
         message(QString("The %1 resists the spell.") .arg(name));
 
@@ -186,12 +186,12 @@ bool create_elements(int cy, int cx, int range)
                 if (n >= N_ELEMENTS(elements))
                 {
                     /* Replace features sometimes */
-                    if (one_in_(2)) elements[rand_int(n)] = dungeon_info[y][x].feat;
+                    if (one_in_(2)) elements[rand_int(n)] = dungeon_info[y][x].feature_idx;
                 }
                 else
                 {
                     /* Save the feature */
-                    elements[n++] = dungeon_info[y][x].feat;
+                    elements[n++] = dungeon_info[y][x].feature_idx;
                 }
             }
         }
@@ -1465,7 +1465,7 @@ bool probing(void)
     /*We selected a terrain*/
     if (!p_ptr->target_who)
     {
-        int f_idx = dungeon_info[p_ptr->target_row][p_ptr->target_col].feat;
+        int f_idx = dungeon_info[p_ptr->target_row][p_ptr->target_col].feature_idx;
 
         /*Learn about the feature*/
         lore_do_probe_feature(f_idx);
@@ -1579,7 +1579,7 @@ void destroy_area(int y1, int x1, int r)
                 /* Burn stuff */
                 if (cave_ff2_match(y, x, FF2_HURT_FIRE))
                 {
-                    feat = feat_state(dungeon_info[y][x].feat,
+                    feat = feat_state(dungeon_info[y][x].feature_idx,
                         FS_HURT_FIRE);
                 }
 
@@ -4451,7 +4451,7 @@ bool read_minds(void)
                     dungeon_info[yy][xx].cave_info |= (CAVE_MARK | CAVE_GLOW);
 
                     /* Remember the feature */
-                    f_info[dungeon_info[yy][xx].feat].f_everseen = TRUE;
+                    f_info[dungeon_info[yy][xx].feature_idx].f_everseen = TRUE;
 
                     /* Get the first object on the floor */
                     o_idx = dungeon_info[yy][xx].object_idx;
@@ -4651,7 +4651,7 @@ bool master_elements(int dam, int dir)
         info = &spell_info[i];
 
         /* Get the LF1_* flag of the grid ocuppied by the player */
-        flags = get_level_flag(dungeon_info[p_ptr->py][p_ptr->px].feat);
+        flags = get_level_flag(dungeon_info[p_ptr->py][p_ptr->px].feature_idx);
 
         /* Boost chance? */
         if (flags & info->level_flags)
@@ -4992,7 +4992,7 @@ bool call_huorns(void)
             if (!in_bounds(y2, x2)) continue;
 
             /* Ignore other features */
-            if (dungeon_info[y2][x2].feat != FEAT_TREE) continue;
+            if (dungeon_info[y2][x2].feature_idx != FEAT_TREE) continue;
 
             /*if (!player_can_fire_bold(y2, x2)) continue;*/
 
@@ -5180,7 +5180,7 @@ bool call_huorns(void)
                 if (dungeon_info[y3][x3].monster_idx) continue;
 
                 /* Ignore other trees */
-                if (dungeon_info[y3][x3].feat == FEAT_TREE) continue;
+                if (dungeon_info[y3][x3].feature_idx == FEAT_TREE) continue;
 
                 /* Ignore permanent features */
                 if (cave_ff1_match(y3, x3, FF1_PERMANENT)) continue;

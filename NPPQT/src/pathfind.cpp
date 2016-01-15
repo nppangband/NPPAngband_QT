@@ -24,7 +24,7 @@ static void clear_path(void)
 byte energy_to_move(int y, int x)
 {
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /*We have not done this flow yet*/
     if (!dungeon_info[y][x].path_cost)
@@ -513,7 +513,7 @@ static bool run_test(void)
             s16b x_idx;
 
             /* Get feature */
-            feat = dungeon_info[row][col].feat;
+            feat = dungeon_info[row][col].feature_idx;
 
             /* Get mimiced feature */
             feat = f_info[feat].f_mimic;
@@ -628,7 +628,7 @@ static bool run_test(void)
             col = px + ddx[new_dir];
 
             /* Get feature */
-            feat = dungeon_info[row][col].feat;
+            feat = dungeon_info[row][col].feature_idx;
 
             /* Get mimiced feature */
             feat = f_info[feat].f_mimic;
@@ -664,7 +664,7 @@ static bool run_test(void)
             col = px + ddx[new_dir];
 
             /* Get feature */
-            feat = dungeon_info[row][col].feat;
+            feat = dungeon_info[row][col].feature_idx;
 
             /* Get mimiced feature */
             feat = f_info[feat].f_mimic;

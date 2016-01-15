@@ -97,39 +97,39 @@ bool dungeon_type::has_visible_monster()
 
 bool dungeon_type::is_wall(bool known)
 {
-    int this_feat = feat;
-    if (known) this_feat = f_info[feat].f_mimic;
+    int this_feat = feature_idx;
+    if (known) this_feat = f_info[feature_idx].f_mimic;
     return (f_info[this_feat].is_wall());
 }
 
 bool dungeon_type::is_door(void)
 {
-    return (f_info[feat].is_door());
+    return (f_info[feature_idx].is_door());
 }
 
 bool dungeon_type::is_secret_door(void)
 {
-    return (f_info[feat].is_secret_door());
+    return (f_info[feature_idx].is_secret_door());
 }
 
 bool dungeon_type::is_known_door(void)
 {
-    return (f_info[feat].is_known_door());
+    return (f_info[feature_idx].is_known_door());
 }
 
 bool dungeon_type::is_known_closed_door(void)
 {
-    return (f_info[feat].is_known_closed_door());
+    return (f_info[feature_idx].is_known_closed_door());
 }
 
 bool dungeon_type::is_closed_door(void)
 {
-    return (f_info[feat].is_closed_door());
+    return (f_info[feature_idx].is_closed_door());
 }
 
 bool dungeon_type::is_jammed_door(void)
 {
-    return (f_info[feat].is_jammed_door());
+    return (f_info[feature_idx].is_jammed_door());
 }
 
 dungeon_type::dungeon_type()
@@ -139,7 +139,7 @@ dungeon_type::dungeon_type()
 
 bool dungeon_type::is_stairs(void)
 {
-    return (f_info[feat].is_stairs());
+    return (f_info[feature_idx].is_stairs());
 }
 
 /*
@@ -152,7 +152,7 @@ bool dungeon_type::is_stairs(void)
  */
 void dungeon_type::dungeon_square_wipe()
 {
-    feat = effect_idx = monster_idx = object_idx = 0;
+    feature_idx = effect_idx = monster_idx = object_idx = 0;
     path_cost = cave_info = 0;
     special_lighting = obj_special_symbol = 0;
     ui_flags = 0;

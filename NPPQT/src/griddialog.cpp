@@ -129,7 +129,7 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
 
         col = 0;
 
-        int feat = d_ptr->feat;
+        int feat = d_ptr->feature_idx;
         feat = f_info[feat].f_mimic;
         feature_type *f_ptr = f_info + feat;
 

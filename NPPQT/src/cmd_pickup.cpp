@@ -459,7 +459,7 @@ void py_pickup(bool pickup)
     QString o_name;
 
 	/* Are we allowed to pick up anything here? */
-    if (!(f_info[dungeon_info[py][px].feat].f_flags1 & (FF1_DROP))) return;
+    if (!(f_info[dungeon_info[py][px].feature_idx].f_flags1 & (FF1_DROP))) return;
 
 	/*
 	 * As a precaution, first, check for mimics, and reveal them.
@@ -729,7 +729,7 @@ int move_player(int dir, int jumping)
 	x = px + ddx[dir];
 
 	/* Get the feature */
-    f_ptr = &f_info[dungeon_info[y][x].feat];
+    f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
 	/* Hack -- attack monsters */
     if (dungeon_info[y][x].monster_idx > 0)
@@ -849,9 +849,9 @@ int move_player(int dir, int jumping)
 	}
 
 	/* Some terrain prevents flying. */
-    else if (!(feat_ff2_match(dungeon_info[y][x].feat, FF2_CAN_FLY)) && (p_ptr->timed[TMD_FLYING]))
+    else if (!(feat_ff2_match(dungeon_info[y][x].feature_idx, FF2_CAN_FLY)) && (p_ptr->timed[TMD_FLYING]))
 	{
-        int feat = dungeon_info[y][x].feat;
+        int feat = dungeon_info[y][x].feature_idx;
 
 		/* Discover unknown terrain */
 		if (!cave_flag_bold(y, x, CAVE_MARK))
@@ -920,7 +920,7 @@ int move_player(int dir, int jumping)
 		x = px = p_ptr->px;
 
 		/*Get ready to mark lore*/
-        f_l_ptr = &f_l_list[dungeon_info[p_ptr->py][p_ptr->px].feat];
+        f_l_ptr = &f_l_list[dungeon_info[p_ptr->py][p_ptr->px].feature_idx];
 
 		/*Check if the player is native*/
 		if (is_player_native(y, x))
@@ -931,7 +931,7 @@ int move_player(int dir, int jumping)
                 if (f_l_ptr->f_l_native_moves < UCHAR_MAX ) f_l_ptr->f_l_native_moves ++;
 
 				/*record the energy*/
-                used_energy = f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].native_energy_move;
+                used_energy = f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx].native_energy_move;
 			}
 		}
 		else
@@ -942,7 +942,7 @@ int move_player(int dir, int jumping)
                 if (f_l_ptr->f_l_non_native_moves < UCHAR_MAX ) f_l_ptr->f_l_non_native_moves ++;
 
 				/*record the energy*/
-                used_energy = f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].non_native_energy_move;
+                used_energy = f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx].non_native_energy_move;
 			}
 		}
 
@@ -970,7 +970,7 @@ int move_player(int dir, int jumping)
 
 			/* Hack -- Enter store */
             //p_ptr->command_new = '_';
-            int feat_idx = dungeon_info[y][x].feat;
+            int feat_idx = dungeon_info[y][x].feature_idx;
             int store_idx = f_info[feat_idx].f_power;
             launch_store(store_idx);
             return (0);
@@ -990,7 +990,7 @@ int move_player(int dir, int jumping)
 			find_secret(y, x);
 
 			/* Get the feature again */
-            f_ptr = &f_info[dungeon_info[y][x].feat];
+            f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 		}
 
 		/* Record the energy for flying creatures.*/

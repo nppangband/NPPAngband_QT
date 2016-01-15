@@ -47,7 +47,7 @@ bool do_cmd_test(int y, int x, int action, bool do_message)
     }
 
     /* Get memorised feature */
-    f_ptr = &f_info[dungeon_info[y][x].feat];
+    f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     switch (action)
     {
@@ -108,7 +108,7 @@ void do_cmd_go_up(void)
     // Paranoia
     if (!character_dungeon) return;
 
-    feature_type *f_ptr= &f_info[dungeon_info[p_ptr->py][p_ptr->px].feat];
+    feature_type *f_ptr= &f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx];
 
     /* Verify stairs */
     if (!cave_up_stairs(p_ptr->py, p_ptr->px))
@@ -182,7 +182,7 @@ void do_cmd_go_down(void)
     // Paranoia
     if (!character_dungeon) return;
 
-    feature_type *f_ptr= &f_info[dungeon_info[p_ptr->py][p_ptr->px].feat];
+    feature_type *f_ptr= &f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx];
 
     /*find out if entering a quest level*/
     quest = quest_check(p_ptr->depth);
@@ -302,7 +302,7 @@ static int count_feats(int *y, int *x, int action)
         if (!(dungeon_info[yy][xx].cave_info & (CAVE_MARK))) continue;
 
         /* Get the mimiced feature */
-        f_ptr = &f_info[dungeon_info[yy][xx].feat];
+        f_ptr = &f_info[dungeon_info[yy][xx].feature_idx];
 
         if (action < FS_FLAGS2)
         {
@@ -347,7 +347,7 @@ static bool command_open_aux(int y, int x)
 
     bool more = FALSE;
 
-    int feat = dungeon_info[y][x].feat;
+    int feat = dungeon_info[y][x].feature_idx;
 
     int door_power;
 
@@ -361,7 +361,7 @@ static bool command_open_aux(int y, int x)
         find_secret(y, x);
 
         /* Get the new door */
-        feat = dungeon_info[y][x].feat;
+        feat = dungeon_info[y][x].feature_idx;
 
         /* Update the visuals */
         p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
@@ -1451,7 +1451,7 @@ void do_search(void)
             if (rand_int(100) < chance)
             {
                 /* Get the feature */
-                int feat = dungeon_info[y][x].feat;
+                int feat = dungeon_info[y][x].feature_idx;
 
                 /* Reveal interesting secret features */
                 if (feat_ff1_match(feat, FF1_SECRET) &&
@@ -1595,7 +1595,7 @@ static bool command_tunnel_aux(int y, int x)
 
     int j;
 
-    feat = dungeon_info[y][x].feat;
+    feat = dungeon_info[y][x].feature_idx;
 
     /* Scan all effects in the grid */
     for (this_x_idx = dungeon_info[y][x].effect_idx; this_x_idx; this_x_idx = next_x_idx)
@@ -1636,7 +1636,7 @@ static bool command_tunnel_aux(int y, int x)
         find_secret(y, x);
 
         // Get the feature again
-        feat = dungeon_info[y][x].feat;
+        feat = dungeon_info[y][x].feature_idx;
 
         /* Update the visuals */
         p_ptr->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
@@ -1839,7 +1839,7 @@ static bool do_cmd_close_aux(int y, int x)
 {
     bool more = FALSE;
 
-    int feat = dungeon_info[y][x].feat;
+    int feat = dungeon_info[y][x].feature_idx;
 
     /* Verify legality */
     if (!do_cmd_test(y, x, FS_CLOSE, TRUE)) return (FALSE);
@@ -1857,7 +1857,7 @@ static bool do_cmd_close_aux(int y, int x)
         /* Stuck */
         find_secret(y,x);
 
-        feat = dungeon_info[y][x].feat;
+        feat = dungeon_info[y][x].feature_idx;
 
         /* Update the visuals */
         p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS | PU_FLOW_NO_DOORS | PU_FLOW_DOORS);
@@ -1997,7 +1997,7 @@ void command_alter(cmd_arg args)
     if (!in_bounds_fully(y, x)) return;
 
     /* Original feature */
-    feat = dungeon_info[y][x].feat;
+    feat = dungeon_info[y][x].feature_idx;
 
     /* Must have knowledge to know feature XXX XXX */
     if (!(dungeon_info[y][x].cave_info & (CAVE_MARK))) feat = FEAT_NONE;
@@ -2172,7 +2172,7 @@ void command_spike(cmd_arg args)
     }
 
     /* Go for it */
-    int feat = dungeon_info[y][x].feat;
+    int feat = dungeon_info[y][x].feature_idx;
 
     /*Mark the feature lore*/
     feature_lore *f_l_ptr = &f_l_list[feat];
@@ -2393,7 +2393,7 @@ static bool do_cmd_walk_test(int y, int x)
     QString name;
 
     /* Get feature */
-    feat = dungeon_info[y][x].feat;
+    feat = dungeon_info[y][x].feature_idx;
 
     /* Get mimiced feature Playtesting */
     /*feat = f_info[feat].f_mimic;*/
@@ -2498,7 +2498,7 @@ void do_cmd_run(int dir)
  */
 static bool found_dangerous_grid(int y, int x)
 {
-    u16b feat = dungeon_info[y][x].feat;
+    u16b feat = dungeon_info[y][x].feature_idx;
     int gf_type;
 
     /* Grid is occupied by a monster. Perform a melee attack */
@@ -2678,7 +2678,7 @@ static bool do_cmd_bash_aux(int y, int x)
 {
     int bash, temp;
 
-    int feat = dungeon_info[y][x].feat;
+    int feat = dungeon_info[y][x].feature_idx;
 
     QString name;
 
@@ -2703,7 +2703,7 @@ static bool do_cmd_bash_aux(int y, int x)
         find_secret(y, x);
 
         /* Get the new door */
-        feat = dungeon_info[y][x].feat;
+        feat = dungeon_info[y][x].feature_idx;
 
         /* Update the visuals */
         p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_MONSTERS);
@@ -2922,7 +2922,7 @@ void command_hold(cmd_arg args)
         /* Disturb */
         disturb(TRUE, TRUE);
 
-        int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+        int feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
         int store_idx = f_info[feat].f_power;
         launch_store(store_idx);
 

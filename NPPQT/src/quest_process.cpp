@@ -836,12 +836,12 @@ void process_wilderness_quest(void)
     {
         for (x = 1; x < (p_ptr->cur_map_wid - 1); x++)
         {
-            if (dungeon_info[y][x].feat == FEAT_WALL_CRACKED_OVER_BOILING_WATER)
+            if (dungeon_info[y][x].feature_idx == FEAT_WALL_CRACKED_OVER_BOILING_WATER)
             {
                 ice_or_mud++;
                 continue;
             }
-            else if (dungeon_info[y][x].feat == FEAT_WALL_CRACKED_OVER_BOILING_MUD)
+            else if (dungeon_info[y][x].feature_idx == FEAT_WALL_CRACKED_OVER_BOILING_MUD)
             {
                 ice_or_mud--;
                 continue;
@@ -864,7 +864,7 @@ void process_wilderness_quest(void)
             bool do_wall = FALSE;
 
             /* Get the feature */
-            u16b feat = dungeon_info[y][x].feat;
+            u16b feat = dungeon_info[y][x].feature_idx;
             u16b new_feat;
 
             /* Already fully transformed */
@@ -895,7 +895,7 @@ void process_wilderness_quest(void)
 
                 int yy = y + ddy_ddd[i];
                 int xx = x + ddx_ddd[i];
-                u16b feat2 = dungeon_info[yy][xx].feat;
+                u16b feat2 = dungeon_info[yy][xx].feature_idx;
                 if (!in_bounds_fully(yy, xx)) continue;
 
                 /* Don't fill in around stairs */

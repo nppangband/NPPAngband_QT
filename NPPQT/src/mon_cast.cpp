@@ -40,7 +40,7 @@ static int summon_possible(int y1, int x1)
             if (distance(y1, x1, y, x) > 2) continue;
 
             /* Hack: no summon on glyph of warding */
-            if (f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_GLYPH)) continue;
+            if (f_info[dungeon_info[y][x].feature_idx].f_flags1 & (FF1_GLYPH)) continue;
 
             /* Require empty floor grid in line of sight */
             if (cave_empty_bold(y, x) && los(y1, x1, y, x))
@@ -4086,7 +4086,7 @@ bool cave_exist_mon(const monster_race *r_ptr, int y, int x, bool occupied_ok, b
     if (!in_bounds(y, x)) return (FALSE);
 
     /* Check location */
-    f_ptr = &f_info[dungeon_info[y][x].feat];
+    f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /* The grid is already occupied. */
     if (dungeon_info[y][x].has_monster())

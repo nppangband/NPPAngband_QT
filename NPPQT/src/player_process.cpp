@@ -40,7 +40,7 @@ void process_player_terrain_damage(void)
         QString name,  kb_str;
 
         /* Get the feature */
-        int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+        int feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
 
         /* Uncomment this if you want a damage cap */
         /*dam = MIN(dam, f_info[feat].dam_non_native);*/

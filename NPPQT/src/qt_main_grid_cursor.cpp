@@ -475,7 +475,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 else if (is_door)
                 {
                     // Use the actual tile
-                    int this_feat = f_info[d2_ptr->feat].f_mimic;
+                    int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
                     this_tile = f_info[this_feat].tile_id;
                 }
 
@@ -522,7 +522,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 else if (is_door)
                 {
                     // Use the actual tile
-                    int this_feat = f_info[d2_ptr->feat].f_mimic;
+                    int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
                     this_tile = f_info[this_feat].tile_id;
                 }
 
@@ -568,7 +568,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 else if (is_door)
                 {
                     // Use the actual tile
-                    int this_feat = f_info[d2_ptr->feat].f_mimic;
+                    int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
                     this_tile = f_info[this_feat].tile_id;
                 }
 

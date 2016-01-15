@@ -419,13 +419,13 @@ static bool detect_terrain(int y, int x)
 {
 
     /* Check the terrain*/
-    if (feat_ff3_match(dungeon_info[y][x].feat, TERRAIN_MASK))
+    if (feat_ff3_match(dungeon_info[y][x].feature_idx, TERRAIN_MASK))
     {
         /* Memorize the grid */
         dungeon_info[y][x].cave_info |= (CAVE_MARK | CAVE_GLOW);
 
         /* We have seen the feature */
-        f_info[dungeon_info[y][x].feat].f_everseen = TRUE;
+        f_info[dungeon_info[y][x].feature_idx].f_everseen = TRUE;
     }
 
     else return FALSE;
@@ -441,10 +441,10 @@ static bool detect_map(int y, int x)
     int i;
 
     /* All non-walls are "checked"*/
-    if (!(f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_WALL)))
+    if (!(f_info[dungeon_info[y][x].feature_idx].f_flags1 & (FF1_WALL)))
     {
         /* Memorize normal features */
-        if (f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_REMEMBER))
+        if (f_info[dungeon_info[y][x].feature_idx].f_flags1 & (FF1_REMEMBER))
         {
             /* Memorize the object */
             dungeon_info[y][x].cave_info |= (CAVE_MARK);
@@ -457,7 +457,7 @@ static bool detect_map(int y, int x)
             int xx = x + ddx_ddd[i];
 
             /* Memorize walls (etc) */
-            if (f_info[dungeon_info[yy][xx].feat].f_flags1 & (FF1_REMEMBER))
+            if (f_info[dungeon_info[yy][xx].feature_idx].f_flags1 & (FF1_REMEMBER))
             {
                 /* Memorize the walls */
                 dungeon_info[yy][xx].cave_info |= (CAVE_MARK);

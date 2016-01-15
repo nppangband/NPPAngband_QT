@@ -686,7 +686,7 @@ void calc_stealth(void)
     p_ptr->state.skills[SKILL_STEALTH] += (cp_ptr->x_stl * p_ptr->lev / 10);
 
     /*Feature affects skill*/
-    p_ptr->state.skills[SKILL_STEALTH] += f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].f_stealth_adj;
+    p_ptr->state.skills[SKILL_STEALTH] += f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx].f_stealth_adj;
 
     /* Limit Skill -- stealth from 0 to 30 */
     if (p_ptr->state.skills[SKILL_STEALTH] > 30) p_ptr->state.skills[SKILL_STEALTH] = 30;

@@ -34,7 +34,7 @@ public:
     dungeon_type();
 
     //  the 4 layers of the dungeon, the last 3 are indexes to lists which store the information
-    s16b feat;
+    s16b feature_idx;
     s16b object_idx;
     u16b effect_idx;
     s16b monster_idx;

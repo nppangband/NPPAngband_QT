@@ -1727,7 +1727,7 @@ static int rd_dungeon(void)
             feature_type *f_ptr;
 
             /* Extract "feat" */
-            dungeon_info[y][x].feat = tmp8u;            
+            dungeon_info[y][x].feature_idx = tmp8u;
 
             update_los_proj_move(y, x);
 

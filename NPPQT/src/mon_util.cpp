@@ -598,10 +598,10 @@ s16b get_mon_num(int level, int y, int x, byte mp_flags)
     bool native_only = true;
 
     /* Cache damage to non-native monsters */
-    u16b dam_non_native = f_info[dungeon_info[y][x].feat].dam_non_native;
+    u16b dam_non_native = f_info[dungeon_info[y][x].feature_idx].dam_non_native;
 
     /*Get the terrain native flags*/
-    u32b native_flags = f_info[dungeon_info[y][x].feat].f_flags3;
+    u32b native_flags = f_info[dungeon_info[y][x].feature_idx].f_flags3;
 
     /*filter out non-terrain flags*/
     native_flags &= TERRAIN_MASK;
@@ -2099,8 +2099,8 @@ s16b monster_carry(int m_idx, object_type *j_ptr)
  */
 static bool player_terrain_changed(int y1, int x1, int y2, int x2)
 {
-    int feat1 = dungeon_info[y1][x1].feat;
-    int feat2 = dungeon_info[y2][x2].feat;
+    int feat1 = dungeon_info[y1][x1].feature_idx;
+    int feat2 = dungeon_info[y2][x2].feature_idx;
     u32b elem_flags1 = feat_ff3_match(feat1, TERRAIN_MASK);
     u32b elem_flags2 = feat_ff3_match(feat2, TERRAIN_MASK);
 
@@ -2121,7 +2121,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
     monster_type *m_ptr;
     monster_race *r_ptr;
 
-    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y2][x2].feat];
+    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y2][x2].feature_idx];
 
     /* Monsters */
     int m1 = dungeon_info[y1][x1].monster_idx;
@@ -2176,7 +2176,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if ((player_can_observe()) && (f_l_ptr->f_l_stealth_adj < UCHAR_MAX)) f_l_ptr->f_l_stealth_adj++;
 
         /*Automatically track the feature the player is on unless player is tracking a feature*/
-        if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y2][x2].feat);
+        if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y2][x2].feature_idx);
 
         /* Update the trap detection status */
         p_ptr->redraw |= (PR_STATUSBAR | PR_WIN_OBJLIST);
@@ -2233,7 +2233,7 @@ void monster_swap(int y1, int x1, int y2, int x2)
         if ((player_can_observe()) && (f_l_ptr->f_l_stealth_adj < UCHAR_MAX)) f_l_ptr->f_l_stealth_adj++;
 
         /*Automatically track the feature the player is on unless player is tracking a feature*/
-        if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y1][x1].feat);
+        if ((!p_ptr->target_set) || (p_ptr->target_who != 0)) feature_kind_track(dungeon_info[y1][x1].feature_idx);
 
         /* Update the trap detection status, itemlist */
         p_ptr->redraw |= (PR_STATUSBAR | PR_WIN_OBJLIST);
@@ -2268,7 +2268,7 @@ bool player_place(int y, int x)
     dungeon_info[y][x].monster_idx = -1;
 
     /* Hack -- track this feature */
-    feature_kind_track(dungeon_info[y][x].feat);
+    feature_kind_track(dungeon_info[y][x].feature_idx);
 
     /* Success */
     return (TRUE);
@@ -2302,7 +2302,7 @@ void monster_hide(monster_type *m_ptr)
             QString m_name;
             QString feat_name;
             /* Get the feature */
-            u16b feat = dungeon_info[y][x].feat;
+            u16b feat = dungeon_info[y][x].feature_idx;
 
             /* Get the terrain lore */
             feature_lore *f_l_ptr = &f_l_list[feat];
@@ -2396,7 +2396,7 @@ void monster_unhide(monster_type *m_ptr)
         QString feat_name;
 
         /* Get the feature */
-        u16b feat = dungeon_info[y][x].feat;
+        u16b feat = dungeon_info[y][x].feature_idx;
 
         /* Get the terrain lore */
         feature_lore *f_l_ptr = &f_l_list[feat];

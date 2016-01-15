@@ -335,7 +335,7 @@ void MainWindow::update_statusbar(void)
     if (p_ptr->timed[TMD_SLAY_ELEM]) elemental_weapon->setVisible(TRUE);
     else elemental_weapon->setVisible(FALSE);
 
-    int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+    int feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
     u32b elem_flags1 = feat_ff3_match(feat, TERRAIN_MASK);
 
     if (elem_flags1)

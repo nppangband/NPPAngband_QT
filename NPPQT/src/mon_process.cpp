@@ -361,7 +361,7 @@ static void get_town_target(monster_type *m_ptr)
                 {
 
                     /* Is our store */
-                    if (f_info[dungeon_info[y][x].feat].f_power == i)
+                    if (f_info[dungeon_info[y][x].feature_idx].f_power == i)
                     {
                         m_ptr->target_y = y;
                         m_ptr->target_x = x;
