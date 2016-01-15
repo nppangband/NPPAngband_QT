@@ -897,7 +897,7 @@ int cave_passable_mon(monster_type *m_ptr, int y, int x, bool *bash)
     is_native = is_monster_native(y, x, r_ptr);
 
     /* Check location */
-    feat = dungeon_info[y][x].feat;
+    feat = dungeon_info[y][x].feature_idx;
 
     /*
      * Don't move through permanent walls.
@@ -1372,9 +1372,9 @@ static void get_move_advance(monster_type *m_ptr, int *ty, int *tx)
             {
                 if (is_monster_native(y, x, r_ptr))
                 {
-                    this_cost += (f_info[dungeon_info[y][x].feat].native_energy_move);
+                    this_cost += (f_info[dungeon_info[y][x].feature_idx].native_energy_move);
                 }
-                else this_cost += (f_info[dungeon_info[y][x].feat].non_native_energy_move);
+                else this_cost += (f_info[dungeon_info[y][x].feature_idx].non_native_energy_move);
             }
             /*Is it the best route?*/
             if (this_cost < lowest_cost)
@@ -2173,7 +2173,7 @@ bool get_move(monster_type *m_ptr, int *ty, int *tx, bool *fear, bool must_use_t
 
         /*Are we taking damage where we are?*/
         if (!cave_no_dam_for_mon(m_ptr->fy, m_ptr->fx, r_ptr) &&
-                       !MONSTER_CAN_FLY(m_ptr, dungeon_info[m_ptr->fy][m_ptr->fx].feat))
+                       !MONSTER_CAN_FLY(m_ptr, dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx))
         {
             /*Move towards the player*/
             *fear = FALSE;
@@ -2593,8 +2593,8 @@ static void make_confused_move(monster_type *m_ptr, int y, int x)
     if (!cave_passable_bold(y, x))
     {
         /* Feature is a (known) door */
-        if ((f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_DOOR)) &&
-            (!(f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_SECRET))))
+        if ((f_info[dungeon_info[y][x].feature_idx].f_flags1 & (FF1_DOOR)) &&
+            (!(f_info[dungeon_info[y][x].feature_idx].f_flags1 & (FF1_SECRET))))
         {
             if (seen && confused)
                 message(QString("%1 bangs into a door.") .arg(capitalize_first(m_name)));
@@ -3245,7 +3245,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
     {
 
         /* Get the feature in the grid that the monster is trying to enter. */
-        feat = dungeon_info[ny][nx].feat;
+        feat = dungeon_info[ny][nx].feature_idx;
 
         /*
          * Monster doesn't want to hide in the feature.
@@ -3257,7 +3257,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
             cave_alter_feat(ny, nx, FS_SECRET);
 
             /* Rescan the feature */
-            feat = dungeon_info[ny][nx].feat;
+            feat = dungeon_info[ny][nx].feature_idx;
 
             /* Update visuals */
             if (player_can_see_bold(ny, nx)) do_view = TRUE;
@@ -3545,7 +3545,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
         if (player_can_observe() && (m_ptr->ml) && (!(m_ptr->mflag & (MFLAG_FLYING))))
         {
 
-            feature_lore *f_l_ptr = &f_l_list[dungeon_info[m_ptr->fy][m_ptr->fx].feat];
+            feature_lore *f_l_ptr = &f_l_list[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx];
 
             /*Check if the monster is native*/
             if (is_monster_native(m_ptr->fy, m_ptr->fx, r_ptr))
@@ -3625,7 +3625,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
         /* Take or kill objects on the floor */
         if (((r_ptr->flags2 & (RF2_TAKE_ITEM)) ||
              (r_ptr->flags2 & (RF2_KILL_ITEM))) &&
-            (f_info[dungeon_info[ny][nx].feat].f_flags1 & (FF1_DROP)))
+            (f_info[dungeon_info[ny][nx].feature_idx].f_flags1 & (FF1_DROP)))
         {
             u32b flg3 = 0L;
 
@@ -3763,13 +3763,13 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
     /* Learn things from observable monster */
     if ((m_ptr->ml) && player_can_observe())
     {
-        const feature_type *f_ptr = &f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat];
-        feature_lore *f_l_ptr = &f_l_list[dungeon_info[m_ptr->fy][m_ptr->fx].feat];
+        const feature_type *f_ptr = &f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx];
+        feature_lore *f_l_ptr = &f_l_list[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx];
 
         /*Mark the monster lore*/
         if (do_move)
         {
-            u32b native = f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat].f_flags3;
+            u32b native = f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx].f_flags3;
             native &= r_ptr->r_native;
             l_ptr->r_l_native |= native;
         }
@@ -3812,7 +3812,7 @@ s16b process_move(monster_type *m_ptr, int ty, int tx, bool bash)
 
     if (is_monster_native(m_ptr->fy, m_ptr->fx, r_ptr))
     {
-        return(f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat].native_energy_move);
+        return(f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx].native_energy_move);
     }
-    else return(f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat].non_native_energy_move);
+    else return(f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx].non_native_energy_move);
 }

@@ -1635,7 +1635,7 @@ bool object_hates_feature(int feat, object_type *o_ptr)
  */
 bool object_hates_location(int y, int x, object_type *o_ptr)
 {
-    int feat = dungeon_info[y][x].feat;
+    int feat = dungeon_info[y][x].feature_idx;
 
     return object_hates_feature(feat, o_ptr);
 }
@@ -2526,7 +2526,7 @@ static int terrain_adjust_damage(int dam, int spell_type, int y, int x,
         QString name;
 
         /* Get the feature's name */
-        name = feature_desc(dungeon_info[y][x].feat, FALSE, TRUE);
+        name = feature_desc(dungeon_info[y][x].feature_idx, FALSE, TRUE);
 
         /* Damage was increased */
         if (dam > old_dam)
@@ -2578,7 +2578,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
     QString name;
 
     /* Get the name */
-    name = feature_desc(dungeon_info[y][x].feat, FALSE, TRUE);
+    name = feature_desc(dungeon_info[y][x].feature_idx, FALSE, TRUE);
 
     /* Unused parameters */
     (void)dist;
@@ -2677,7 +2677,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                  * Hack -- If the terrain has an explicit K: line for HURT_ROCK
                  * it can resists the stone to mud spell (example: sand dunes)
                  */
-                if (feat_state_explicit_power(dungeon_info[y][x].feat, FS_HURT_ROCK) > 0)
+                if (feat_state_explicit_power(dungeon_info[y][x].feature_idx, FS_HURT_ROCK) > 0)
                 {
                     action = FS_HURT_ROCK;
                 }
@@ -2698,7 +2698,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
     if (action != FS_FLAGS_END)
     {
         /* Get the power */
-        int power = feat_state_power(dungeon_info[y][x].feat, action);
+        int power = feat_state_power(dungeon_info[y][x].feature_idx, action);
 
         /* Analyze resistance to the action */
         if ((power < 1) || (rand_int(power) < dam))
@@ -2721,7 +2721,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags2 |= (FF2_HURT_ACID);
 
                     message(QString("The %1 dissolves.") .arg(name));
@@ -2744,7 +2744,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags2 |= (FF2_HURT_FIRE);
 
                     /* Show a proper message */
@@ -2781,7 +2781,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags2 |= (FF2_HURT_COLD);
 
                     message(QString("The %1 freezes.") .arg(name));
@@ -2802,7 +2802,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags2 |= (FF2_HURT_ELEC);
 
                     message(QString("The %1 is struck by lightening.") .arg(name));
@@ -2826,7 +2826,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags2 |= (FF2_HURT_COLD);
 
                     if (cave_ff3_match(y, x, FF3_FIRE))
@@ -2852,7 +2852,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags2 |= (FF2_HURT_WATER);
 
                     /* Show a proper message */
@@ -2893,7 +2893,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags3 |= (FF3_HURT_BOIL_WATER);
 
                     message(QString("The %1 evapourates.") .arg(name));
@@ -2954,7 +2954,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags3 |= (FF3_HURT_POIS);
 
                     message(QString("The %1 is poisoned.") .arg(name));
@@ -3019,7 +3019,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags1 |= (FF1_CAN_OPEN);
 
                     message(QString("Click!"));
@@ -3046,7 +3046,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                     if (dungeon_info[y][x].is_door())
                     {
                         /*Mark the feature lore*/
-                        feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                        feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                         f_l_ptr->f_l_flags1 |= (FF1_CAN_TUNNEL);
                     }
                     /* Destroy the trap */
@@ -3105,7 +3105,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags1 |= (FF1_CAN_CLOSE);
 
                     obvious = TRUE;
@@ -3121,13 +3121,13 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
             /* Jam doors */
             while (cave_ff1_match(y, x, FF1_CAN_SPIKE))
             {
-                int feat = dungeon_info[y][x].feat;
+                int feat = dungeon_info[y][x].feature_idx;
 
                 /* Check line of sight */
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags1 |= (FF1_CAN_SPIKE);
 
                     obvious = TRUE;
@@ -3137,7 +3137,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 cave_alter_feat(y, x, FS_SPIKE);
 
                 /* Paranoia */
-                if (feat == dungeon_info[y][x].feat) break;
+                if (feat == dungeon_info[y][x].feature_idx) break;
             }
 
             break;
@@ -3153,7 +3153,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
                 if (player_has_los_bold(y, x))
                 {
                     /*Mark the feature lore*/
-                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+                    feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
                     f_l_ptr->f_l_flags2 |= (FF2_HURT_ROCK);
 
                     message(QString("The %1 dissolves.") .arg(name));
@@ -3231,7 +3231,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
         /* Make bridge */
         case GF_BRIDGE:
         {
-            int old_feat = dungeon_info[y][x].feat;
+            int old_feat = dungeon_info[y][x].feature_idx;
 
             if (cave_ff1_match(y, x, FF1_SECRET))
             {
@@ -3240,7 +3240,7 @@ static bool project_f(int who, int y, int x, int dist, int dam, int typ, int flg
 
             cave_alter_feat(y, x, FS_BRIDGE);
 
-            name = feature_desc(dungeon_info[y][x].feat, FALSE, TRUE);
+            name = feature_desc(dungeon_info[y][x].feature_idx, FALSE, TRUE);
 
             if (!name.contains("stone bridge"))
             {
@@ -5139,7 +5139,7 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
             /*Mark the lore*/
             if ((m_ptr->ml) && player_can_observe() && (dungeon_info[y][x].cave_info & (CAVE_MARK)))
             {
-                u32b native = f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat].f_flags3;
+                u32b native = f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx].f_flags3;
                 native &= r_ptr->r_native;
                 l_ptr->r_l_native |= native;
             }

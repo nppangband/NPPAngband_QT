@@ -660,7 +660,7 @@ static void alloc_object(int set, int typ, int num)
                     if (!cave_clean_bold(y, x)) continue;
 
                     /* Hack -- Ensure object/gold creation */
-                    if (f_info[dungeon_info[y][x].feat].dam_non_native > 0) continue;
+                    if (f_info[dungeon_info[y][x].feature_idx].dam_non_native > 0) continue;
 
                     break;
                 }
@@ -804,7 +804,7 @@ static bool build_streamer(u16b feat, int chance)
             }
 
             /* Only convert "granite" walls */
-            if (!f_info[dungeon_info[ty][tx].feat].f_name.contains("granite")) continue;
+            if (!f_info[dungeon_info[ty][tx].feature_idx].f_name.contains("granite")) continue;
 
             /* We'll add the given vein type */
             new_feat = feat;
@@ -3302,7 +3302,7 @@ static void mark_g_vault(int y0, int x0, int hgt, int wid)
      */
 
     /* We need a perimeter of outer walls surrounding the vault */
-    if (dungeon_info[y1][x1].feat != FEAT_WALL_GRANITE_OUTER) return;
+    if (dungeon_info[y1][x1].feature_idx != FEAT_WALL_GRANITE_OUTER) return;
 
     /* Create the queue */
     grid_queue_create(que_ptr, 500);
@@ -3346,7 +3346,7 @@ static void mark_g_vault(int y0, int x0, int hgt, int wid)
 
             /* But keep processing only certain grid types */
             if (cave_ff1_match(yy, xx, FF1_FLOOR) ||
-                (dungeon_info[yy][xx].feat == FEAT_WALL_GRANITE_OUTER))
+                (dungeon_info[yy][xx].feature_idx == FEAT_WALL_GRANITE_OUTER))
             {
                 /* Append that grid to the queue */
                 grid_queue_push(que_ptr, yy, xx);
@@ -3468,7 +3468,7 @@ void build_terrain(int y, int x, int feat)
     feature_type *f2_ptr;
 
     /* Get the feature */
-    oldfeat = dungeon_info[y][x].feat;
+    oldfeat = dungeon_info[y][x].feature_idx;
     f_ptr = &f_info[oldfeat];
 
     /* Set the new feature */
@@ -5435,7 +5435,7 @@ static void build_type_starburst(int y0, int x0, bool giant_room)
                 int x = rand_spread(x0, range);
 
                 /* Verify center */
-                if (dungeon_info[y][x].feat == FEAT_FLOOR)
+                if (dungeon_info[y][x].feature_idx == FEAT_FLOOR)
                 {
                     build_pool(y, x, feat, giant_room);
 
@@ -5544,16 +5544,16 @@ static void build_tunnel(int row1, int col1, int row2, int col2)
         }
 
         /* Avoid the edge of the dungeon */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_PERM_SOLID) continue;
+        if (dungeon_info[tmp_row][tmp_col].feature_idx == FEAT_WALL_PERM_SOLID) continue;
 
         /* Avoid the edge of vaults */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_PERM_OUTER) continue;
+        if (dungeon_info[tmp_row][tmp_col].feature_idx == FEAT_WALL_PERM_OUTER) continue;
 
         /* Avoid "solid" granite walls */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_GRANITE_SOLID) continue;
+        if (dungeon_info[tmp_row][tmp_col].feature_idx == FEAT_WALL_GRANITE_SOLID) continue;
 
         /* Pierce "outer" walls of rooms */
-        if (dungeon_info[tmp_row][tmp_col].feat == FEAT_WALL_GRANITE_OUTER)
+        if (dungeon_info[tmp_row][tmp_col].feature_idx == FEAT_WALL_GRANITE_OUTER)
         {
             /* We can pierce 2 outer walls at the same time */
             int outer_x[2], outer_y[2], num_outer = 0;
@@ -5563,15 +5563,15 @@ static void build_tunnel(int row1, int col1, int row2, int col2)
             x = tmp_col + col_dir;
 
             /* Hack -- Avoid outer/solid permanent walls */
-            if (dungeon_info[y][x].feat == FEAT_WALL_PERM_SOLID) continue;
-            if (dungeon_info[y][x].feat == FEAT_WALL_PERM_OUTER) continue;
+            if (dungeon_info[y][x].feature_idx == FEAT_WALL_PERM_SOLID) continue;
+            if (dungeon_info[y][x].feature_idx == FEAT_WALL_PERM_OUTER) continue;
 
             /* Hack -- Avoid solid granite walls */
-            if (dungeon_info[y][x].feat == FEAT_WALL_GRANITE_SOLID) continue;
+            if (dungeon_info[y][x].feature_idx == FEAT_WALL_GRANITE_SOLID) continue;
 
             /* Check if we have only 2 consecutive outer walls */
             /* This is important to avoid disconnected rooms */
-            if (dungeon_info[y][x].feat == FEAT_WALL_GRANITE_OUTER)
+            if (dungeon_info[y][x].feature_idx == FEAT_WALL_GRANITE_OUTER)
             {
                 /* Get the "next" location (again) */
                 int yy = y + row_dir;
@@ -5616,7 +5616,7 @@ static void build_tunnel(int row1, int col1, int row2, int col2)
                     for (x = col1 - 1; x <= col1 + 1; x++)
                     {
                         /* Convert adjacent "outer" walls as "solid" walls */
-                        if (dungeon_info[y][x].feat == FEAT_WALL_GRANITE_OUTER)
+                        if (dungeon_info[y][x].feature_idx == FEAT_WALL_GRANITE_OUTER)
                         {
                             /* Change the wall to a "solid" wall */
                             cave_set_feat(y, x, FEAT_WALL_GRANITE_SOLID);
@@ -5833,7 +5833,7 @@ static bool new_player_spot_safe(void)
         if (dungeon_info[y][x].cave_info & (CAVE_ICKY | CAVE_ROOM)) continue;
 
         /* Get the feature */
-        f_ptr = &f_info[dungeon_info[y][x].feat];
+        f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
         /*
          * The spot must be a wall. Note that we do not need to call
@@ -5855,7 +5855,7 @@ static bool new_player_spot_safe(void)
             if (dungeon_info[yy][xx].cave_info & (CAVE_ICKY | CAVE_ROOM)) break;
 
             /* Get the feature */
-            f_ptr = &f_info[dungeon_info[yy][xx].feat];
+            f_ptr = &f_info[dungeon_info[yy][xx].feature_idx];
 
             /* We need walls */
             if (!_feat_ff1_match(f_ptr, FF1_WALL)) break;
@@ -6842,7 +6842,7 @@ static void build_river(int feat, int y, int x)
         if (!in_bounds_fully(y, x)) break;
 
         /* Get the previous content of the grid */
-        old_feat = dungeon_info[y][x].feat;
+        old_feat = dungeon_info[y][x].feature_idx;
 
         /* Stop at permanent feature */
         if (feat_ff1_match(old_feat, FF1_PERMANENT)) break;
@@ -6873,7 +6873,7 @@ static void build_river(int feat, int y, int x)
                 if (!in_bounds_fully(yy, xx)) continue;
 
                 /* Get the previous content of the grid */
-                old_feat = dungeon_info[yy][xx].feat;
+                old_feat = dungeon_info[yy][xx].feature_idx;
 
                 /* Avoid permanent features */
                 if (feat_ff1_match(old_feat, FF1_PERMANENT)) continue;
@@ -7721,7 +7721,7 @@ static bool pick_transform_center(coord *marked_grids, int num_marked_grids,
             for (x = 0; x < p_ptr->cur_map_wid; x++)
             {
                 /* Get the feature */
-                u16b feat = dungeon_info[y][x].feat;
+                u16b feat = dungeon_info[y][x].feature_idx;
 
                 /* It must be an elemental feature */
                 if (!feat_ff3_match(feat, TERRAIN_MASK)) continue;
@@ -7967,7 +7967,7 @@ static void transform_regions(coord *grids, int num_grids, feature_selector_type
                 if (dungeon_info[yy][xx].cave_info & (CAVE_ICKY)) continue;
 
                 /* Get the current feature */
-                feat = dungeon_info[yy][xx].feat;
+                feat = dungeon_info[yy][xx].feature_idx;
 
                 /* Certain features are forbidden */
                 if (feat_ff1_match(feat, FF1_PERMANENT | FF1_DOOR | FF1_STAIRS | FF1_HAS_GOLD)) continue;
@@ -8455,7 +8455,7 @@ static void transform_walls_regions(void)
             if ((dungeon_info[y][x].cave_info & (CAVE_ROOM | CAVE_ICKY)) != (CAVE_ROOM)) continue;
 
             /* Get the current feature */
-            feat = dungeon_info[y][x].feat;
+            feat = dungeon_info[y][x].feature_idx;
 
             /* Ignore non-walls */
             if (!feat_ff1_match(feat, FF1_WALL)) continue;
@@ -10329,7 +10329,7 @@ void update_arena_level(byte stage)
             if (!in_bounds_fully(y, x)) continue;
 
             /* Really set the feature */
-            if (dungeon_info[y][x].feat != FEAT_WALL_PERM_SOLID) continue;
+            if (dungeon_info[y][x].feature_idx != FEAT_WALL_PERM_SOLID) continue;
 
             /* Look in all directions to see if it borders a floor space */
             for (d = 0; d < 8; d++)
@@ -11436,7 +11436,7 @@ void generate_cave(void)
                 dungeon_info[y][x].cave_info = 0;
 
                 /* No features */
-                dungeon_info[y][x].feat = 0;
+                dungeon_info[y][x].feature_idx = 0;
 
                 /* No objects */
                 dungeon_info[y][x].object_idx = 0;
@@ -11446,7 +11446,6 @@ void generate_cave(void)
 
                 /* No monsters */
                 dungeon_info[y][x].effect_idx = 0;
-
 
                 for(i = 0; i < MAX_FLOWS; i++)
                 {
@@ -11621,7 +11620,6 @@ void generate_cave(void)
                     okay = FALSE;
                 }
             }
-
         }
 
         /* Accept */

@@ -263,7 +263,7 @@ static void monster_terrain_damage(void)
         monster_type *m_ptr = &mon_list[i];
         monster_race *r_ptr = &r_info[m_ptr->r_idx];
         /* Get the feature */
-        u16b feat = dungeon_info[m_ptr->fy][m_ptr->fx].feat;
+        u16b feat = dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx;
         feature_type *f_ptr = &f_info[feat];
 
         /* Skip dead monsters */
@@ -745,7 +745,7 @@ static void put_out_fires(void)
         for (x1 = MAX(1, p_ptr->px - MAX_SIGHT); x1 <= x2; x1++)
         {
             /* Get the feature */
-            feat = dungeon_info[y1][x1].feat;
+            feat = dungeon_info[y1][x1].feature_idx;
 
             /* Must be in the line of fire (to avoid abuses) */
             if (!player_can_fire_bold(y1, x1)) continue;
@@ -1051,7 +1051,7 @@ static void process_world(void)
     /*** Damage over Time ***/
 
     /* Get the feature */
-    feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+    feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
 
     /* If paralyzed, we drown in deep */
     if ((p_ptr->timed[TMD_PARALYZED] || (p_ptr->stun_status() == STUN_KNOCKED_OUT)) &&
@@ -1225,7 +1225,7 @@ static void process_world(void)
     if (p_ptr->timed[TMD_FLYING])
     {
         if ((p_ptr->timed[TMD_FLYING] <= 3) && (p_ptr->timed[TMD_FLYING] > 0) &&
-            (!p_ptr->state.ffall || ((f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].dam_non_native > 0) &&
+            (!p_ptr->state.ffall || ((f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx].dam_non_native > 0) &&
              !is_player_native(p_ptr->py, p_ptr->px))))
         {
             color_message(QString("You are about to stop flying."), MSG_LOSING_FLYING);
@@ -1812,7 +1812,7 @@ static void process_game_turns(void)
         /* Update terrain damage every game turn */
         if ((!is_player_native(p_ptr->py, p_ptr->px)) && (!p_ptr->timed[TMD_FLYING]))
         {
-            p_ptr->cumulative_terrain_damage += f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].dam_non_native;
+            p_ptr->cumulative_terrain_damage += f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx].dam_non_native;
         }
 
         /*** Process player & monsters, break when it is the player's turn to move ***/

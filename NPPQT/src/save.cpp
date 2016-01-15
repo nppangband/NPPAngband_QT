@@ -844,7 +844,7 @@ static void wr_dungeon(void)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             /* Extract a byte */
-            tmp8u = dungeon_info[y][x].feat;
+            tmp8u = dungeon_info[y][x].feature_idx;
 
             /* If the run is broken, or too full, flush it */
             if ((tmp8u != prev_char) || (count == UCHAR_MAX))

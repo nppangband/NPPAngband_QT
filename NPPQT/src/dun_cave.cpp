@@ -786,7 +786,7 @@ static bool is_wall_southeast(int y, int x)
 static void map_terrain(s16b y, s16b x)
 {
     dungeon_type *dun_ptr = &dungeon_info[y][x];
-    s16b feat = dun_ptr->feat;
+    s16b feat = dun_ptr->feature_idx;
     bool det_trap_edge = dtrap_edge(y, x);
     u16b info = dun_ptr->cave_info;
     feature_type *f_ptr;
@@ -1090,7 +1090,7 @@ static void map_effects(s16b y, s16b x)
         else if (x_ptr->x_type == EFFECT_PERMANENT_CLOUD)
         {
             /* Get the feature under the cloud */
-            u16b feat2 = dungeon_info[y][x].feat;
+            u16b feat2 = dungeon_info[y][x].feature_idx;
 
             /* Not boring floor? */
             if ((feat2 != FEAT_FLOOR) && (feat2 != FEAT_COBBLESTONE_FLOOR))
@@ -1316,7 +1316,7 @@ void map_info(s16b y, s16b x)
  */
 void note_spot(int y, int x)
 {
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     object_type *o_ptr;
 
@@ -2603,7 +2603,7 @@ void update_view(void)
 static int get_energy_no_doors(int y, int x, byte which_flow, u32b elem_flag)
 {
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /*Unused*/
     (void)elem_flag;
@@ -2631,7 +2631,7 @@ static int get_energy_pass_doors(int y, int x, byte which_flow, u32b elem_flag)
 {
 
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /*Use the elem_flag for a completey different purpose. */
     elem_flag = _feat_ff3_match(f_ptr, TERRAIN_MASK);
@@ -2668,7 +2668,7 @@ static int get_energy_pass_doors(int y, int x, byte which_flow, u32b elem_flag)
 static int get_energy_elemental_flow(int y, int x, byte which_flow, u32b elem_flag)
 {
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /*We have not done this flow yet*/
     if (cave_cost[which_flow][y][x] == 0)
@@ -2702,7 +2702,7 @@ static int get_energy_elemental_flow(int y, int x, byte which_flow, u32b elem_fl
 static int get_energy_elemental_flow_no_doors(int y, int x, byte which_flow, u32b elem_flag)
 {
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /*We have not done this flow yet*/
     if (cave_cost[which_flow][y][x] == 0)
@@ -2731,7 +2731,7 @@ static int get_energy_flying(int y, int x, byte which_flow, u32b elem_flag)
 {
 
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /* Use the elem_flag for a completey different purpose */
     elem_flag = _feat_ff2_match(f_ptr, FF2_CAN_FLY);
@@ -2768,7 +2768,7 @@ static int get_energy_flying_no_doors(int y, int x, byte which_flow, u32b elem_f
 {
 
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /* Use the elem_flag for a completey different purpose */
     elem_flag = _feat_ff2_match(f_ptr, FF2_CAN_FLY);
@@ -2805,7 +2805,7 @@ static int get_energy_pass_walls(int y, int x, byte which_flow, u32b elem_flag)
 {
 
     /*Quick pointer*/
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /*Unused*/
     (void)elem_flag;
@@ -3478,7 +3478,7 @@ void wiz_light(void)
         for (x = 0; x < p_ptr->cur_map_wid-1; x++)
         {
             /* Process all non-walls, but don't count rubble */
-            if (!(f_info[dungeon_info[y][x].feat].f_flags1 & (FF1_WALL)))
+            if (!(f_info[dungeon_info[y][x].feature_idx].f_flags1 & (FF1_WALL)))
             {
                 /* Scan all neighbors */
                 for (i = 0; i < 9; i++)
@@ -3490,7 +3490,7 @@ void wiz_light(void)
                     dungeon_info[yy][xx].cave_info |= (CAVE_GLOW);
 
                     /* Memorize normal features */
-                    if (f_info[dungeon_info[yy][xx].feat].f_flags1 & (FF1_REMEMBER))
+                    if (f_info[dungeon_info[yy][xx].feature_idx].f_flags1 & (FF1_REMEMBER))
                     {
                         /* Memorize the grid */
                         dungeon_info[yy][xx].mark_square();
@@ -3573,7 +3573,7 @@ void town_illuminate(bool daytime)
             bool always_lit = FALSE;
 
             /* Obvious */
-            if (dungeon_info[y][x].feat != FEAT_COBBLESTONE_FLOOR) always_lit = TRUE;
+            if (dungeon_info[y][x].feature_idx != FEAT_COBBLESTONE_FLOOR) always_lit = TRUE;
 
             /* Glyphs and visible traps */
             else if (cave_any_trap_bold(y, x) &&
@@ -3669,7 +3669,7 @@ void town_illuminate(bool daytime)
  */
 void update_los_proj_move(int y, int x)
 {
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
     u16b x_idx;
     u32b mask = 0;
     u32b old_flags;
@@ -3746,7 +3746,7 @@ void update_los_proj_move(int y, int x)
 static void cave_set_feat_aux(int y, int x, u16b feat)
 {
     /* Old feature */
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /* New feature */
     feature_type *f2_ptr = &f_info[feat];
@@ -3774,7 +3774,7 @@ static void cave_set_feat_aux(int y, int x, u16b feat)
     }
 
     /* Really set the feature */
-    dungeon_info[y][x].feat = feat;
+    dungeon_info[y][x].feature_idx = feat;
 
     /* Remove inscriptions */
     if (dungeon_info[y][x].effect_idx > 0)
@@ -3878,7 +3878,7 @@ static void cave_set_feat_aux(int y, int x, u16b feat)
     if ((p_ptr->py == y) && (p_ptr->px == x))
     {
         /*Track the new feature*/
-        feature_kind_track(dungeon_info[y][x].feat);
+        feature_kind_track(dungeon_info[y][x].feature_idx);
 
         /* Recalculate bonuses */
         p_ptr->update |= (PU_BONUS);
@@ -3916,7 +3916,7 @@ void cave_alter_feat(int y, int x, int action)
     int newfeat;
 
     /* Set old feature */
-    int oldfeat = dungeon_info[y][x].feat;
+    int oldfeat = dungeon_info[y][x].feature_idx;
 
     /*Mark the feature lore*/
     feature_type *f_ptr = &f_info[oldfeat];
@@ -3925,7 +3925,7 @@ void cave_alter_feat(int y, int x, int action)
     feature_lore *f_l_ptr = &f_l_list[oldfeat];
 
     /* Get the new feat */
-    newfeat = feat_state(dungeon_info[y][x].feat, action);
+    newfeat = feat_state(dungeon_info[y][x].feature_idx, action);
 
     /* Mark the transition in the feature_lore */
     if ((player_can_see_bold(y, x)) && player_can_observe())
@@ -4015,7 +4015,7 @@ void cave_set_feat(int y, int x, u16b feat)
     int i, j;
 
     /* Old Feature */
-    u16b old_feat = dungeon_info[y][x].feat;
+    u16b old_feat = dungeon_info[y][x].feature_idx;
     feature_type *f_ptr = &f_info[old_feat];
 
     /* New Feature */

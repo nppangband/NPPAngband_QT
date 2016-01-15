@@ -2134,7 +2134,7 @@ s16b floor_carry(int y, int x, object_type *j_ptr)
         if (player_can_see_bold(y,x))
         {
             /*Mark the feature lore*/
-            feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+            feature_lore *f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
             f_l_ptr->f_l_flags1 |= (FF1_DROP);
         }
     }
@@ -4749,7 +4749,7 @@ bool object_kind_is_available(int k_idx, int mode)
 
     if (use_store)
     {
-        int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+        int feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
         int store_idx = f_info[feat].f_power;
         store_type *st_ptr = &store[store_idx];
 

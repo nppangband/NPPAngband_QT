@@ -183,7 +183,7 @@ static bool target_set_interactive_accept(int y, int x)
     }
 
     /* Check grid type with dungeon capabilities */
-    return ((*dun_cap->can_target_feature)(dungeon_info[y][x].feat));
+    return ((*dun_cap->can_target_feature)(dungeon_info[y][x].feature_idx));
 }
 
 /*
@@ -243,7 +243,7 @@ static void target_set_interactive_prepare(int mode)
              */
             if ((p_ptr->target_row > 0) || (p_ptr->target_col > 0))
             {
-                if (dungeon_info[p_ptr->target_row][p_ptr->target_col].feat == dungeon_info[y][x].feat)
+                if (dungeon_info[p_ptr->target_row][p_ptr->target_col].feature_idx == dungeon_info[y][x].feature_idx)
                 {
                     if (cave_ff3_match(y, x, TERRAIN_MASK)) continue;
                 }
@@ -366,7 +366,7 @@ static void describe_grid_brief(int y, int x)
         }
 
         QString f_name;
-        int feat = d_ptr->feat;
+        int feat = d_ptr->feature_idx;
         feat = f_info[feat].f_mimic;
         f_name = feature_desc(feat, true, false);
         QString msg = "You see ";

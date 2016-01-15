@@ -336,7 +336,7 @@ static void dam_dice_aux(object_type *o_ptr, int *dd, const monster_type *m_ptr,
     {
 
         /* Get the feature's name */
-        QString name = feature_desc(dungeon_info[y][x].feat, FALSE, TRUE);
+        QString name = feature_desc(dungeon_info[y][x].feature_idx, FALSE, TRUE);
 
         /* Damage was increased */
         if (terrain_flag > 0)
@@ -1344,7 +1344,7 @@ void do_cmd_fire_at_nearest(void)
 static bool do_flavor_breakage(const object_type *o_ptr, int y, int x)
 {
     /* Get the feature */
-    feature_type *f_ptr = &f_info[dungeon_info[y][x].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
     /* Analyze object */
     switch (o_ptr->tval)
@@ -1392,7 +1392,7 @@ static bool do_flavor_breakage(const object_type *o_ptr, int y, int x)
                 message(QString("The torch sets the dungeon on fire!"));
 
                 /* Get the fire feature */
-                f_ptr = &f_info[dungeon_info[y][x].feat];
+                f_ptr = &f_info[dungeon_info[y][x].feature_idx];
 
                 /* Hurt objects sensitive to fire on the floor */
                 if (_feat_ff3_match(f_ptr, FF3_FIRE) && (f_ptr->dam_non_native > 0))

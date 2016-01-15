@@ -489,7 +489,7 @@ enum
 #define feat_ff1_match(f_idx, flags) _feat_ff1_match(f_info + (f_idx), flags)
 
 #define cave_ff1_match(y, x, flags) \
-_feat_ff1_match(f_info + dungeon_info[y][x].feat, flags)
+_feat_ff1_match(f_info + dungeon_info[y][x].feature_idx, flags)
 
 
 #define _feat_ff2_match(f_ptr, flags) ((f_ptr)->f_flags2 & (flags))
@@ -497,14 +497,14 @@ _feat_ff1_match(f_info + dungeon_info[y][x].feat, flags)
 #define feat_ff2_match(f_idx, flags) _feat_ff2_match(f_info + (f_idx), flags)
 
 #define cave_ff2_match(y, x, flags) \
-_feat_ff2_match(f_info + dungeon_info[y][x].feat, flags)
+_feat_ff2_match(f_info + dungeon_info[y][x].feature_idx, flags)
 
 #define _feat_ff3_match(f_ptr, flags) ((f_ptr)->f_flags3 & (flags))
 
 #define feat_ff3_match(f_idx, flags) _feat_ff3_match(f_info + (f_idx), flags)
 
 #define cave_ff3_match(y, x, flags) \
-_feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
+_feat_ff3_match(f_info + dungeon_info[y][x].feature_idx, flags)
 
 
 
@@ -558,13 +558,13 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
 /*
  * Determines if a monster is FULLY native to a certain location.
  */
-#define is_monster_native(Y, X, RACE) is_monster_native_aux(dungeon_info[Y][X].feat, (RACE)->r_native)
+#define is_monster_native(Y, X, RACE) is_monster_native_aux(dungeon_info[Y][X].feature_idx, (RACE)->r_native)
 
 
 /*
  * Determines if the player is FULLY native to a certain location.
  */
-#define is_player_native(Y, X) is_monster_native_aux(dungeon_info[Y][X].feat, p_ptr->state.p_flags_native_with_temp)
+#define is_player_native(Y, X) is_monster_native_aux(dungeon_info[Y][X].feature_idx, p_ptr->state.p_flags_native_with_temp)
 
 
 /*
@@ -680,7 +680,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
     !cave_ff1_match(Y, X, FF1_PERMANENT) && \
     !cave_player_trap_bold(Y, X) && \
     (is_player_native(Y, X) || \
-        (f_info[dungeon_info[Y][X].feat].dam_non_native == 0)) && \
+        (f_info[dungeon_info[Y][X].feature_idx].dam_non_native == 0)) && \
     (dungeon_info[Y][X].monster_idx == 0))
 
 /*
@@ -721,7 +721,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
     cave_passable_bold(Y, X) && \
     !cave_any_trap_bold(Y, X) && \
     !cave_hidden_object_bold(Y, X) &&\
-    (f_info[dungeon_info[Y][X].feat].dam_non_native == 0) && \
+    (f_info[dungeon_info[Y][X].feature_idx].dam_non_native == 0) && \
     (dungeon_info[Y][X].object_idx == 0) && \
     (dungeon_info[Y][X].monster_idx == 0))
 
@@ -750,14 +750,14 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
  * Determine if a "legal" grid is a "shop" grid
  */
 #define cave_shop_bold(Y,X) \
-     (f_info[dungeon_info[Y][X].feat].f_flags1 & (FF1_SHOP))
+     (f_info[dungeon_info[Y][X].feature_idx].f_flags1 & (FF1_SHOP))
 
 
 /*
  * Determine if a "legal" grid is a "wall" grid
  */
 #define cave_wall_bold(Y,X) \
-     (f_info[dungeon_info[Y][X].feat].f_flags1 & (FF1_WALL))
+     (f_info[dungeon_info[Y][X].feature_idx].f_flags1 & (FF1_WALL))
 
 
 /*
@@ -781,7 +781,7 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feat, flags)
  * Line 4-5 -- shop doors
  */
 #define cave_perma_bold(Y,X) \
-    (f_info[dungeon_info[Y][X].feat].f_flags1  & (FF1_PERMANENT))
+    (f_info[dungeon_info[Y][X].feature_idx].f_flags1  & (FF1_PERMANENT))
 
 
 

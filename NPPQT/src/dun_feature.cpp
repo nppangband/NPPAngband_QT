@@ -91,8 +91,8 @@ QString feature_desc(u16b feat, bool add_prefix, bool get_mimic)
  */
 int feat_adjust_combat_for_player(int chance, bool being_attacked)
 {
-    feature_type *f_ptr = &f_info[dungeon_info[p_ptr->py][p_ptr->px].feat];
-    feature_lore *f_l_ptr = &f_l_list[dungeon_info[p_ptr->py][p_ptr->px].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx];
+    feature_lore *f_l_ptr = &f_l_list[dungeon_info[p_ptr->py][p_ptr->px].feature_idx];
 
     int bonus;
 
@@ -153,8 +153,8 @@ int feat_adjust_combat_for_monster(const monster_type *m_ptr, int chance,
     monster_race *r_ptr = &r_info[m_ptr->r_idx];
     monster_lore *l_ptr = &l_list[m_ptr->r_idx];
 
-    feature_type *f_ptr = &f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat];
-    feature_lore *f_l_ptr = &f_l_list[dungeon_info[m_ptr->fy][m_ptr->fx].feat];
+    feature_type *f_ptr = &f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx];
+    feature_lore *f_l_ptr = &f_l_list[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx];
 
     int bonus;
 
@@ -172,7 +172,7 @@ int feat_adjust_combat_for_monster(const monster_type *m_ptr, int chance,
         /* Mark the monster lore */
         if((m_ptr->ml) && player_can_observe())
         {
-            u32b native = f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feat].f_flags3;
+            u32b native = f_info[dungeon_info[m_ptr->fy][m_ptr->fx].feature_idx].f_flags3;
             native &= r_ptr->r_native;
             l_ptr->r_l_native |= native;
         }
@@ -219,8 +219,8 @@ void find_secret(int y, int x)
     feature_lore *f_l_ptr;
 
     /* Get feature */
-    f_ptr = &f_info[dungeon_info[y][x].feat];
-    f_l_ptr = &f_l_list[dungeon_info[y][x].feat];
+    f_ptr = &f_info[dungeon_info[y][x].feature_idx];
+    f_l_ptr = &f_l_list[dungeon_info[y][x].feature_idx];
 
     if (f_l_ptr->f_l_sights < UCHAR_MAX) f_l_ptr->f_l_sights++;
 
@@ -1306,16 +1306,16 @@ void feat_near(int feat, int y, int x)
             if (!los(y, x, ty, tx)) continue;
 
             /* Prevent overwriting permanents */
-            if (f_info[dungeon_info[ty][tx].feat].f_flags1 & (FF1_PERMANENT)) continue;
+            if (f_info[dungeon_info[ty][tx].feature_idx].f_flags1 & (FF1_PERMANENT)) continue;
 
             /* Don't like non-floor space */
-            if (!(f_info[dungeon_info[ty][tx].feat].f_flags1 & (FF1_FLOOR))) continue;
+            if (!(f_info[dungeon_info[ty][tx].feature_idx].f_flags1 & (FF1_FLOOR))) continue;
 
             /* Don't like objects */
             if (dungeon_info[ty][tx].has_object()) continue;
 
             /* Calculate score */
-            s = 1000 - (d - dungeon_info[ty][tx].feat);
+            s = 1000 - (d - dungeon_info[ty][tx].feature_idx);
 
             /* Skip bad values */
             if (s < bs) continue;
@@ -1785,6 +1785,9 @@ s16b get_feat_num(int level)
         /* Keep the "best" one */
         if (table[i].level < table[j].level) i = j;
     }
+
+    // hack
+    if (!table[i].index) return(FEAT_FLOOR);
 
     /* Result */
     return (table[i].index);
@@ -2280,7 +2283,7 @@ void add_dynamic_terrain(byte y, byte x)
     this_dynamic_grid.y = y;
     this_dynamic_grid.x = x;
     this_dynamic_grid.new_grid = TRUE;
-    this_dynamic_grid.counter = calculate_turn_count(dungeon_info[y][x].feat);
+    this_dynamic_grid.counter = calculate_turn_count(dungeon_info[y][x].feature_idx);
 
     dyna_grids.append(this_dynamic_grid);
 }
@@ -2316,7 +2319,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
     int x = g_ptr->x;
 
     /* Get the feature */
-    u16b feat = dungeon_info[y][x].feat;
+    u16b feat = dungeon_info[y][x].feature_idx;
     u16b feat2;
 
     /*We need to remember is the player saw this.*/
@@ -2343,7 +2346,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
             if (!in_bounds(yy, xx)) continue;
 
             /* Get the feature */
-            feat2 = dungeon_info[yy][xx].feat;
+            feat2 = dungeon_info[yy][xx].feature_idx;
 
             /* Feature can burn */
             if (feat_ff2_match(feat2, FF2_HURT_FIRE))
@@ -2660,7 +2663,7 @@ static void process_dynamic_terrain_aux(dynamic_grid_type *g_ptr)
             if (!in_bounds(yy, xx)) continue;
 
             /* Get the feature */
-            feat2 = dungeon_info[yy][xx].feat;
+            feat2 = dungeon_info[yy][xx].feature_idx;
 
             /* Feature can burn */
             if (feat_ff2_match(feat2, FF2_HURT_FIRE))
@@ -3057,7 +3060,7 @@ void decipher_strange_inscription(int x_idx)
     if ((p_ptr->depth > 10) && one_in_(75))
     {
         /* Get the feature under the effect */
-        u16b feat = dungeon_info[x_ptr->x_cur_y][x_ptr->x_cur_x].feat;
+        u16b feat = dungeon_info[x_ptr->x_cur_y][x_ptr->x_cur_x].feature_idx;
         /* Hurt the player for 20% of his/her max HP */
         int dam = p_ptr->mhp / 5;
         int gf_type;
@@ -3156,7 +3159,7 @@ void hit_silent_watcher(int y, int x)
  */
 bool hit_wall(int y, int x, bool do_action)
 {
-    u16b feat = dungeon_info[y][x].feat;
+    u16b feat = dungeon_info[y][x].feature_idx;
     u16b dam = f_info[feat].dam_non_native;
     QString name;
 
@@ -3318,7 +3321,7 @@ void update_level_flag(void)
         for (x = 1; x < (p_ptr->cur_map_wid - 1); x++)
         {
             /* Cache the feature */
-            u16b feat = dungeon_info[y][x].feat;
+            u16b feat = dungeon_info[y][x].feature_idx;
 
             /* Is it an elemental feature? */
             if (feat_ff3_match(feat, TERRAIN_MASK))

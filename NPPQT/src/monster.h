@@ -849,7 +849,7 @@
  */
 #define cave_no_dam_for_mon(Y, X, M) \
     (is_monster_native(Y, X, M) || \
-    f_info[dungeon_info[Y][X].feat].dam_non_native == 0)
+    f_info[dungeon_info[Y][X].feature_idx].dam_non_native == 0)
 
 
 /*

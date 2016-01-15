@@ -132,7 +132,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     else if (!home)
     {
         owner_type *ot_ptr = &b_info[(store_idx * z_info->b_max) + store[store_idx].owner];
-        int feat = dungeon_info[p_ptr->py][p_ptr->px].feat;
+        int feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
         QString shop_name = f_info[feat].f_name;
         setWindowTitle(shop_name);
         QString msg = QString("<b>%1</b> - %2 (%3)").arg(shop_name).arg(ot_ptr->owner_name)
@@ -1179,7 +1179,7 @@ QuantityDialog::QuantityDialog(object_type *op, bool buy)
 
     amt = 0;
 
-    int store_idx = f_info[dungeon_info[p_ptr->py][p_ptr->px].feat].f_power;
+    int store_idx = f_info[dungeon_info[p_ptr->py][p_ptr->px].feature_idx].f_power;
 
     price = price_item(store_idx, o_ptr, !buy);
 
