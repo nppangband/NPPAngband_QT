@@ -9,6 +9,7 @@
 #include <src/player_scores.h>
 #include <src/messages.h>
 #include <QTime>
+#include <QApplication>
 
 // was init.2
 
@@ -136,6 +137,16 @@ void create_directories()
 {
 
     npp_dir_base.setPath(QDir::currentPath());
+
+    // OSX currentPath() currently isn't working properly.  Fix the path
+    QString test_string = npp_dir_base.path();
+    if (test_string.length() < 3)
+    {
+        QString this_path = (QApplication::applicationFilePath());
+        int cut_index = this_path.indexOf(QString("/NPPG"), 1, Qt::CaseSensitive);
+        this_path.resize(cut_index);
+        npp_dir_base.setPath(this_path);
+    }
 
     npp_dir_bone.setPath(QString(npp_dir_base.path() .append("/lib/bone/")));
     npp_dir_edit.setPath(QString(npp_dir_base.path() .append("/lib/edit/")));
