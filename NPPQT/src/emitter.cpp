@@ -381,8 +381,9 @@ BoltAnimation::BoltAnimation(QPointF from, QPointF to, int new_gf_type, u32b new
     anim = new QPropertyAnimation(this, "pos");   
 
     int d = QLineF(from, to).length();
-    int dur = d * delay * 1.2; // +20%
-    if (dur < 250) dur = 250;  // minimum    
+    int dur = d * 0.8;
+    if (dur < 120) dur = 120;  // minimum
+
     anim->setDuration(dur);    
 
     QPointF adj = QPointF(pix.width() / 2, pix.height() / 2);
