@@ -16,7 +16,6 @@
 #include <QGroupBox>
 #include <QSpinBox>
 #include <QCoreApplication>
-#include <QScrollArea>
 #include <QLabel>
 #include <QPixmap>
 #include "npp.h"

@@ -16,7 +16,6 @@
 #include <QTextStream>
 #include <QList>
 #include <QPushButton>
-#include <QScrollArea>
 
 // The update code assumes the tables below are no longer than this #define
 #define  TABLES_MAX_ENTRIES     20
@@ -2105,18 +2104,15 @@ void equip_modifier_info(QWidget *this_widget, QGridLayout *return_layout, QFont
     update_equip_modifiers(list_equippy, list_flags, list_labels);
 }
 
-PlayerScreenDialog::PlayerScreenDialog(void)
+PlayerScreenDialog::PlayerScreenDialog(void): NPPDialog()
 {
     //Set up the main scroll bar
-    QVBoxLayout *top_layout = new QVBoxLayout;
+    central = new QWidget;
     QVBoxLayout *main_layout = new QVBoxLayout;
-    QWidget *top_widget = new QWidget;
-    QScrollArea *scroll_box = new QScrollArea;
-    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    top_widget->setLayout(main_layout);
-    scroll_box->setWidget(top_widget);
-    scroll_box->setWidgetResizable(TRUE);
-    top_layout->addWidget(scroll_box);
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
 
     // Title Box
     QVBoxLayout *title_line = new QVBoxLayout;
@@ -2232,16 +2228,13 @@ PlayerScreenDialog::PlayerScreenDialog(void)
 
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
-    top_layout->addWidget(buttons);
+    main_layout->addWidget(buttons);
 
-    update_char_screen(top_widget, ui_message_window_font());
+    update_char_screen(central, ui_message_window_font());
 
-    setLayout(top_layout);
     setWindowTitle(tr("Player Information"));
 
-    QSize this_size = QSize(width() * 21 / 8, height() * 5 / 3);
-    resize(ui_max_widget_size(this_size));
-    updateGeometry();
+    this->clientSizeUpdated();
 }
 
 

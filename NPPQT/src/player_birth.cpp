@@ -15,7 +15,7 @@
 #include <QList>
 #include <QPushButton>
 #include <QSpinBox>
-#include <QScrollArea>
+
 
 int points_spent;
 int stats[A_MAX];
@@ -933,7 +933,7 @@ void PlayerBirth::update_character(bool new_player, bool needs_stat_update)
 void PlayerBirth::update_screen(void)
 {
     update_stats_info();
-    update_char_screen(top_widget, ui_message_window_font());
+    update_char_screen(central, ui_message_window_font());
 }
 
 
@@ -983,21 +983,17 @@ void PlayerBirth::setup_character()
 
 
 // Build the birth dialog
-PlayerBirth::PlayerBirth(bool quickstart)
+PlayerBirth::PlayerBirth(bool quickstart): NPPDialog()
 {
     quick_start = quickstart;
     hold_update = FALSE;
 
-    //Set up the main scroll bar
-    QVBoxLayout *top_layout = new QVBoxLayout;
+    central = new QWidget;
     QVBoxLayout *main_layout = new QVBoxLayout;
-    top_widget = new QWidget;
-    QScrollArea *scroll_box = new QScrollArea;
-    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    top_widget->setLayout(main_layout);
-    scroll_box->setWidget(top_widget);
-    scroll_box->setWidgetResizable(TRUE);
-    top_layout->addWidget(scroll_box);
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
 
     // Setup the character, only after hlay choices are completed
     setup_character();
@@ -1092,7 +1088,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     history_box->addWidget(history);
     main_layout->addStretch(1);
 
-    update_char_screen(top_widget, ui_message_window_font());
+    update_char_screen(central, ui_message_window_font());
 
     //Add a close button on the right side
     QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -1100,11 +1096,7 @@ PlayerBirth::PlayerBirth(bool quickstart)
     connect(buttons, SIGNAL(accepted()), this, SLOT(accept_char()));
     main_layout->addWidget(buttons);
 
-    setLayout(top_layout);
-
-    QSize this_size = QSize(width() * 21 / 8, height() * 5 / 3);
-    resize(ui_max_widget_size(this_size));
-    updateGeometry();
+    this->clientSizeUpdated();
 
     this->exec();
 }

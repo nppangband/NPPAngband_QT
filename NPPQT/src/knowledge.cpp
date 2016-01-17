@@ -17,7 +17,6 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QHeaderView>
-#include <QScrollArea>
 
 void qtablewidget_add_palette(QTableWidget *this_tablewidget)
 {
@@ -36,9 +35,15 @@ void qpushbutton_dark_background(QPushButton *this_pushbutton)
 }
 
 
-DisplayNotesFile::DisplayNotesFile(void)
+DisplayNotesFile::DisplayNotesFile(void): NPPDialog()
 {
+    central = new QWidget;
     QVBoxLayout *main_layout = new QVBoxLayout;
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
+
     QGridLayout *notes_info = new QGridLayout;
 
     main_layout->addLayout(notes_info);
@@ -93,6 +98,8 @@ DisplayNotesFile::DisplayNotesFile(void)
     setLayout(main_layout);
     setWindowTitle(tr("Notes and Accomplishments"));
 
+    this->clientSizeUpdated();
+
     this->exec();
 }
 
@@ -104,7 +111,7 @@ void display_notes_file(void)
     DisplayNotesFile();
 }
 
-DisplayHomeInven::DisplayHomeInven(void)
+DisplayHomeInven::DisplayHomeInven(void): NPPDialog()
 {
     // First handle an empty home
     store_type *st_ptr = &store[STORE_HOME];
@@ -114,16 +121,13 @@ DisplayHomeInven::DisplayHomeInven(void)
         return;
     }
 
-    //Set up the main scroll bar
-    QVBoxLayout *top_layout = new QVBoxLayout;
+    central = new QWidget;
     QVBoxLayout *main_layout = new QVBoxLayout;
-    QWidget *top_widget = new QWidget;
-    QScrollArea *scroll_box = new QScrollArea;
-    top_widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    top_widget->setLayout(main_layout);
-    scroll_box->setWidget(top_widget);
-    scroll_box->setWidgetResizable(TRUE);
-    top_layout->addWidget(scroll_box);
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
+
 
     /* Display contents of the home */
     for (int i = 0; i < st_ptr->stock_num; i++)
@@ -147,13 +151,9 @@ DisplayHomeInven::DisplayHomeInven(void)
     connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    setLayout(top_layout);
     setWindowTitle(tr("Home Inventory"));
 
-    QSize this_size = QSize(width()* 1.5, height() * 2);
-
-    resize(ui_max_widget_size(this_size));
-    updateGeometry();
+    this->clientSizeUpdated();
 
     this->exec();
 }
@@ -168,11 +168,18 @@ void display_home_inventory(void)
 
 
 
-DisplayScores::DisplayScores(void)
+DisplayScores::DisplayScores(void): NPPDialog()
 {
+
+    central = new QWidget;
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
+
     scores_proxy_model = new QSortFilterProxyModel;
     scores_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
-    QVBoxLayout *main_layout = new QVBoxLayout;
 
     //Copy the vector, add the player and sort it.
     QVector<high_score> score_list;

@@ -444,7 +444,7 @@ void KeyboardCommandList::add_dir_keyboard(QVBoxLayout *return_layout, bool keyb
 
 
 
-KeyboardCommandList::KeyboardCommandList(void)
+KeyboardCommandList::KeyboardCommandList(void): NPPDialog()
 {
     central = new QWidget;
     QVBoxLayout *main_layout = new QVBoxLayout;

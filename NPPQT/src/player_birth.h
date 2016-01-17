@@ -4,6 +4,7 @@
 #include <src/player_screen.h>
 #include <QButtonGroup>
 #include <QLineEdit>
+#include <src/nppdialog.h>
 
 
 
@@ -43,7 +44,7 @@ public:
 
 
 
-class PlayerBirth : public QDialog
+class PlayerBirth : public NPPDialog
 {
     Q_OBJECT
 
@@ -59,7 +60,7 @@ private:
     // try not to update the character more than once each action
     bool hold_update;
 
-    QWidget *top_widget;
+    QWidget *central;
     QGridLayout *glay_char_basic;
     QGridLayout *glay_char_data;
     QGridLayout *glay_ability_info;

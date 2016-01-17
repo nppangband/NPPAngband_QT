@@ -347,7 +347,7 @@ void AllObjectsDialog::update_dialog()
 
 
 
-AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
+AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen): NPPDialog()
 {
     (void)do_buttons;
     confirm_tabs(TRUE);
@@ -365,17 +365,12 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
     }
 
     // Set up a scrollable box.  Add widgets to "main_layout"
-    scroll_box = new QScrollArea(this);
-    top_widget = new QWidget(this);
-    scroll_box->setWidget(top_widget);
-    scroll_box->setWidgetResizable(TRUE);
-    QVBoxLayout *main_layout = new QVBoxLayout(this);
-    top_widget->setLayout(main_layout);
-    QHBoxLayout *top_layout = new QHBoxLayout(this);
-    top_layout->addWidget(scroll_box);
-
-    setLayout(top_layout);
-
+    central = new QWidget;
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
 
     //Build the header
     header_main = new QLabel("<b><h2>Object Menu</b></h2>");
@@ -446,9 +441,7 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen)
 
     setWindowTitle(tr("Object Menu"));
 
-    QSize this_size = QSize(width() * 3 / 2, height() * 4);
-    resize(ui_max_widget_size(this_size));
-    updateGeometry();
+    this->clientSizeUpdated();
 
     this->exec();
 }
