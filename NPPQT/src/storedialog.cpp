@@ -52,7 +52,7 @@ void launch_store(int store_idx)
     }
 
     StoreDialog *dlg = new StoreDialog(store_idx);
-    dlg->exec();
+    dlg->exec_saved("StoreDialog");
     delete dlg;
     p_ptr->in_store = FALSE;
     p_ptr->message_append_stop();
