@@ -443,7 +443,7 @@ AllObjectsDialog::AllObjectsDialog(bool do_buttons, int start_screen): NPPDialog
 
     this->clientSizeUpdated();
 
-    this->exec();
+    this->exec_saved("AllObjects");
 }
 
 
