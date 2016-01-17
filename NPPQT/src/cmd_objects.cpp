@@ -1016,7 +1016,7 @@ static void swap_weapons(void)
     process_player_energy(BASE_ENERGY_MOVE);
 }
 
-/* Search the backpack for a weapon with @x and wield it*/
+/* Search the backpack for a weapon with marked as a swap weapon and wield it*/
 static void wield_swap_weapon(void)
 {
     int i;
@@ -1063,12 +1063,12 @@ static void wield_swap_weapon(void)
     }
 
     /* Didn't find anything */
-    pop_up_message_box("Please inscribe a weapon with '@x' in order to swap it.");
+    pop_up_message_box("Please go to object settings for a weapon and select 'Use as Swap Weapon' to swap it.");
 }
 
 /*
  * Depending on game options, either swap weapons between the main weapon
- * slot and the swap weapon slot, or search for weapon with the @x inscription and wield it
+ * slot and the swap weapon slot, or search for weapon marked as a swap weapon and wield it
  */
 void command_swap(cmd_arg args)
 {

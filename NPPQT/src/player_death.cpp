@@ -228,8 +228,6 @@ void player_death(void)
     QTime right_now = QTime::currentTime();
     QString long_day = QString("%1 at %2") .arg(today.toString()) .arg(right_now.toString());
 
-
-
     write_death_note(long_day);
 
     print_tomb();
@@ -244,6 +242,7 @@ void player_death(void)
     // Automatic character dump
     if (death_char_dump)
     {
+        save_character_file();
         save_screenshot(FALSE);
     }
 
