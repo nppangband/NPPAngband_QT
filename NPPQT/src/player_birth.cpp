@@ -561,6 +561,12 @@ void PlayerBirth::option_changed(int index)
             btn->click();
         }
     }
+
+    if (index == OPT_birth_money)
+    {
+        get_money();
+        update_screen();
+    }
 }
 
 void PlayerBirth::call_options_dialog()

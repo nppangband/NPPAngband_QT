@@ -142,6 +142,7 @@ extern bool buy_stat(int choice);
 extern void sell_stat(int choice);
 extern void generate_stats(void);
 extern void generate_player(bool full);
+extern void get_money();
 extern void roll_player(void);
 extern bool has_prev_character();
 extern void save_prev_character();

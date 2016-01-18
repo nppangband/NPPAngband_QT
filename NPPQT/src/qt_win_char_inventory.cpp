@@ -131,7 +131,7 @@ void MainWindow::win_char_inventory_update()
     if (!character_generated) return;
     if (!show_char_inventory) return;
 
-    update_inven_list(inven_list, FALSE, inven_show_buttons);
+    update_inven_list(inven_list, TRUE, inven_show_buttons);
     if (inven_show_buttons) inven_link_pushbuttons();
     update_label_inventory_font();
 }

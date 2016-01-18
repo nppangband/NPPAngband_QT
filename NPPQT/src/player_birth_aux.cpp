@@ -546,12 +546,11 @@ static void get_ahw(void)
 /*
  * Get the player's starting money
  */
-static void get_money(void)
+void get_money(void)
 {
     if (birth_money)
     {
-        p_ptr->au_birth = 200;
-        p_ptr->au = 500;
+        p_ptr->au = p_ptr->au_birth = 500;
     }
     else
     {
