@@ -1277,6 +1277,9 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who, bool do
             else message(QString("%1 has been slain") .arg(capitalize_first(m_name)));
         }
 
+        /* Generate treasure */
+        monster_death(m_idx, who);
+
         if ((who == SOURCE_PLAYER) || (who == SOURCE_TRAP))
         {
 
@@ -1301,9 +1304,6 @@ bool mon_take_hit(int m_idx, int dam, bool *fear, QString note, int who, bool do
             /* Gain experience */
             gain_exp(new_exp);
         }
-
-        /* Generate treasure */
-        monster_death(m_idx, who);
 
         /* When the player kills a Unique, it stays dead */
         if (r_ptr->flags1 & (RF1_UNIQUE))
