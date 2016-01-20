@@ -223,8 +223,16 @@ bool project_star(int who, int rad, int y0, int x0, int dam, int typ, u32b flg)
  */
 static void adjust_target(int dir, int y0, int x0, int *y1, int *x1)
 {
+
+    // First target closest, if there is anything there
+    if (dir == DIR_CLOSEST && target_okay())
+    {
+        *y1 = p_ptr->target_row;
+        *x1 = p_ptr->target_col;
+    }
+
     /* If no direction is given, and a target is, use the target. */
-    if ((dir == DIR_TARGET) && target_okay())
+    else if ((dir == DIR_TARGET) && target_okay())
     {
         *y1 = p_ptr->target_row;
         *x1 = p_ptr->target_col;

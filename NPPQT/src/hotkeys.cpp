@@ -1793,10 +1793,16 @@ static int extract_hotkey_dir(int dir, bool trap_spell)
     // First target closest, if there is anything there
     if (dir == DIR_CLOSEST)
     {
-        if (target_set_closest(TARGET_KILL | TARGET_QUIET))
+        int mode = TARGET_QUIET;
+
+        if (trap_spell) mode |= TARGET_KILL;
+        else mode |= TARGET_TRAP;
+
+        if (target_set_closest(mode))
         {
-            return(DIR_TARGET);
+            return(DIR_CLOSEST);
         }
+        else dir = DIR_UNKNOWN;
     }
     if (dir == DIR_TARGET)
     {

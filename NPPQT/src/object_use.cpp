@@ -3236,6 +3236,16 @@ void command_use(cmd_arg args)
     {
         dir = args.direction;
 
+        if (dir == DIR_CLOSEST)
+        {
+            int mode = TARGET_QUIET;
+
+            if (!obj_aim_trap(o_ptr)) mode |= TARGET_KILL;
+            else mode |= TARGET_TRAP;
+
+            if (!target_set_closest(mode)) dir = DIR_UNKNOWN;
+        }
+
         if (dir == DIR_UNKNOWN)
         {
             if (!get_aim_dir(&dir, obj_aim_trap(o_ptr))) return;
