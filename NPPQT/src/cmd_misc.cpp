@@ -132,7 +132,7 @@ void do_cmd_repeat(void)
         }
     }
 
-    if (!command_ptr->keep_direction())
+    if (!command_ptr->keep_direction() && (p_ptr->command_previous_args.direction != DIR_TARGET))
     {
         p_ptr->command_previous_args.direction = DIR_UNKNOWN;
     }

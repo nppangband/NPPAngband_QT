@@ -297,7 +297,7 @@ GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value
 {
     QVBoxLayout *main_layout = new QVBoxLayout;
 
-    QLabel *header_main = new QLabel(QString("<b><h2>%1  %2-%3</b></h2>") .arg(prompt) .arg(min) .arg(max));
+    QLabel *header_main = new QLabel(QString("<b><h2>%1</b></h2>") .arg(prompt));
     header_main->setAlignment(Qt::AlignCenter);
     main_layout->addWidget(header_main);
 
@@ -333,8 +333,6 @@ GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value
     main_layout->addWidget(buttons);
 
     setLayout(main_layout);
-    setWindowTitle(tr("Verify Destroy"));
-
 }
 
 /*
@@ -353,7 +351,7 @@ s16b get_quantity(QString prompt, int max, int amt, bool allow_zero)
         /* Build a prompt */
         prompt = (QString("Please enter a quantity "));
     }
-    prompt.append(QString(" %1-%2)") .arg(min) .arg(max));
+    prompt.append(QString(" (%1-%2)") .arg(min) .arg(max));
 
     GetQuantityDialog dlg(prompt, min, max, amt);
 

@@ -80,6 +80,9 @@ void stop_message_window_append(void)
  */
 void update_message_window(QTextEdit *message_area, QFont message_font)
 {
+    // Paranoia
+    if (!message_list.size()) return;
+
     int start_point = message_list.size()-1;
 
     if (completed_lines.length() > 15000)
