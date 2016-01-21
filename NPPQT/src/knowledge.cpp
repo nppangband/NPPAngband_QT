@@ -76,8 +76,13 @@ DisplayNotesFile::DisplayNotesFile(void): NPPDialog()
         notes_type *notes_ptr = &notes_log[i];
         QLabel *game_turn = new QLabel(number_to_formatted_string(notes_ptr->game_turn));
         notes_info->addWidget(game_turn, row, col++, Qt::AlignRight | Qt::AlignTop);
-        // Format the depth, unless the player is in town
-        if (notes_ptr->dun_depth) depth_note = number_to_formatted_string(notes_ptr->dun_depth * 50);
+        // Format the depth, handle objects from chests and quest rewards.
+        if (notes_ptr->dun_depth)
+        {
+            if (notes_ptr->dun_depth == CHEST_LEVEL) depth_note = "Chest";
+            else if (notes_ptr->dun_depth == QUEST_LEVEL) depth_note = "Quest";
+            else depth_note = number_to_formatted_string(notes_ptr->dun_depth * 50);
+        }
         QLabel *game_depth = new QLabel(depth_note);
         notes_info->addWidget(game_depth, row, col++, Qt::AlignRight | Qt::AlignTop);
         QLabel *player_level = new QLabel(QString("%1 ") .arg(notes_ptr->player_level));

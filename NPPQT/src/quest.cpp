@@ -2772,7 +2772,7 @@ void write_quest_note(bool success)
             race_name = plural_aux(race_name);
         }
 
-        if (r_ptr->flags1 == RF1_UNIQUE)
+        if (r_ptr->is_unique())
         {
             if (success)
             {

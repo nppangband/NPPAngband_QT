@@ -846,44 +846,57 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     bool ctrl_key = modifiers.testFlag(Qt::ControlModifier);
     bool alt_key = modifiers.testFlag(Qt::AltModifier);
     bool meta_key = modifiers.testFlag(Qt::MetaModifier);
+    bool keypad_used = modifiers.testFlag(Qt::KeypadModifier);
 
     if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))    shift_key = TRUE;
     if (QApplication::queryKeyboardModifiers() & (Qt::ControlModifier))  ctrl_key = TRUE;
     if (QApplication::queryKeyboardModifiers() & (Qt::AltModifier))      alt_key = TRUE;
     if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     meta_key = TRUE;
+    if (QApplication::queryKeyboardModifiers() & (Qt::KeypadModifier))   keypad_used = TRUE;
 
-    // EXPERIMENTAL - Detect shift modifiers with keypad
-    // VERY IMPORTANT: We assume that the numlock key is alwasy pressed (normally)
-    // because the code needed to tell us that exactly is very very platform dependent
-    if (!shift_key && modifiers.testFlag(Qt::KeypadModifier))
+    /*if (keypad_used && ctrl_key)  pop_up_message_box("numlock and ctrl");
+    else if (keypad_used && alt_key) pop_up_message_box("numlock and alt");
+    else if (keypad_used && meta_key) pop_up_message_box("numlock and meta");
+    else if (keypad_used && shift_key) pop_up_message_box("numlock and shift");
+    else if (keypad_used) pop_up_message_box("numlock");*/
+
+    int key_pressed = which_key->key();
+
+    // Translate some of the keypad keys
+    if (keypad_used)
     {
-        Qt::Key code = Qt::Key(which_key->key());
 
-        QList<Qt::Key> lNumPadKeys = QList<Qt::Key>() << Qt::Key_Insert
-            << Qt::Key_End << Qt::Key_Down << Qt::Key_PageDown
-            << Qt::Key_Left << Qt::Key_Clear << Qt::Key_Right
-            << Qt::Key_Home << Qt::Key_Up << Qt::Key_PageUp
-            << Qt::Key_Delete;
-
-        if (lNumPadKeys.contains(code)) shift_key = TRUE;
+        switch (key_pressed)
+        {
+            case Qt::Key_End:       {key_pressed = Qt::Key_1; break;}
+            case Qt::Key_Down:      {key_pressed = Qt::Key_2; break;}
+            case Qt::Key_PageDown:  {key_pressed = Qt::Key_3; break;}
+            case Qt::Key_Left:      {key_pressed = Qt::Key_4; break;}
+            case Qt::Key_Right:     {key_pressed = Qt::Key_6; break;}
+            case Qt::Key_Home:      {key_pressed = Qt::Key_7; break;}
+            case Qt::Key_Up:        {key_pressed = Qt::Key_8; break;}
+            case Qt::Key_PageUp:    {key_pressed = Qt::Key_9; break;}
+            case Qt::Key_Insert:    {key_pressed = Qt::Key_0; break;}
+            default: break;
+        }
     }
 
     //Hotkeys are checked first
-    if (check_hotkey_commands(which_key->key(), shift_key, alt_key, ctrl_key, meta_key))
+    if (check_hotkey_commands(key_pressed, shift_key, alt_key, ctrl_key, meta_key))
     {
         // Fall through
     }
     else if (which_keyset == KEYSET_NEW)
     {
-        commands_new_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
+        commands_new_keyset(key_pressed, shift_key, alt_key, ctrl_key, meta_key);
     }
     else if (which_keyset == KEYSET_ANGBAND)
     {
-        commands_angband_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
+        commands_angband_keyset(key_pressed, shift_key, alt_key, ctrl_key, meta_key);
     }
     else if (which_keyset == KEYSET_ROGUE)
     {
-        commands_roguelike_keyset(which_key->key(), shift_key, alt_key, ctrl_key, meta_key);
+        commands_roguelike_keyset(key_pressed, shift_key, alt_key, ctrl_key, meta_key);
     }
     else pop_up_message_box("invalid keyset");
 
