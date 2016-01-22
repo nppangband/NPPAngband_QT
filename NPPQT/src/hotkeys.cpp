@@ -1795,7 +1795,7 @@ static int extract_hotkey_dir(int dir, bool trap_spell)
     {
         int mode = TARGET_QUIET;
 
-        if (trap_spell) mode |= TARGET_KILL;
+        if (!trap_spell) mode |= TARGET_KILL;
         else mode |= TARGET_TRAP;
 
         if (target_set_closest(mode))
