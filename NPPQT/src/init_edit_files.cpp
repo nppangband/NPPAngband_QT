@@ -2003,6 +2003,8 @@ int parse_f_info(QString line_info)
         if (count == 1) change_feat = process_single_value(line_info, FALSE);
         else process_2_ints(line_info, &change_feat, &change_power);
 
+        if (!change_feat) return (PARSE_ERROR_INVALID_FEATURE_TRANSITION);
+
         /* Is this default entry? */
         if (action.contains("DEFAULT"))
         {
