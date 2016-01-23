@@ -75,6 +75,7 @@ static QString err_str[PARSE_ERROR_MAX] =
     "missing record header",
     "non-sequential records",
     "value not a number",
+    "unrecognized feature transition"
     "obsolete file",
     "value out of bounds",
     "out of memory",
