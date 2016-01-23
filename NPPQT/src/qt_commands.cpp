@@ -795,7 +795,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_C:
         case Qt::Key_0:
-        case Qt::Key_Insert
+        case Qt::Key_Insert:
         {
             if (shift_key && alt_key) save_character_file();
             else if (shift_key)     do_cmd_character_screen();
