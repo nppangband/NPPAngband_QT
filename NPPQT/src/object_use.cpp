@@ -3286,12 +3286,9 @@ void command_use(cmd_arg args)
         /* Clear the item mark */
         o_ptr->obj_in_use = FALSE;
 
-        // Don't repeat command if we just actived an object
-        if (!used || (use !=USE_TIMEOUT))
-        {
-            p_ptr->player_previous_command_update(CMD_ITEM_USE, args);
-            p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
-        }
+        // Set up the repeat
+        p_ptr->player_previous_command_update(CMD_ITEM_USE, args);
+        p_ptr->command_previous_args.k_idx = o_ptr->k_idx;
 
         /* Quit if the item wasn't used and no knowledge was gained */
         if (!used && (was_aware || !ident))
@@ -3315,16 +3312,14 @@ void command_use(cmd_arg args)
     if (ident)
     {
         /* Successfully determined the object function */
-        if (!o_ptr->is_known())
+        if (!o_ptr->is_aware())
         {
             /* Object level */
             int lev = k_info[o_ptr->k_idx].k_level;
-
+            o_ptr->mark_aware();
             gain_exp((lev + (p_ptr->lev / 2)) / p_ptr->lev);
             apply_autoinscription(o_ptr);
         }
-
-        o_ptr->mark_known(TRUE);
     }
 
     /* If the item is a null pointer or has been wiped, be done now */
