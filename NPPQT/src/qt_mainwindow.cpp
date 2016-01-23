@@ -874,6 +874,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     // However the keys below can only be pressed on the keypad if the shift key is pressed.
     if (keypad_used && numlock_on && !shift_key)
     {
+
+
         switch (key_pressed)
         {
             case Qt::Key_End:

@@ -782,6 +782,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_5:
         case Qt::Key_H:
+        case Qt::Key_Clear:
         {
             do_cmd_hold();
             break;
@@ -794,6 +795,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_C:
         case Qt::Key_0:
+        case Qt::Key_Insert
         {
             if (shift_key && alt_key) save_character_file();
             else if (shift_key)     do_cmd_character_screen();
@@ -1033,6 +1035,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
             break;
         }
         case Qt::Key_5:
+        case Qt::Key_Clear:
         {
             do_cmd_hold();
             break;
@@ -1117,6 +1120,7 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
         }
         case Qt::Key_N:
         case Qt::Key_0:
+        case Qt::Key_Insert:
         {
             if (!using_mods)        do_cmd_repeat();
             break;

@@ -614,6 +614,7 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_H:
                 case Qt::Key_5:
                 case Qt::Key_Period:
+                case Qt::Key_Clear:
                 {
                     int m_idx = dungeon_info[y][x].monster_idx;
 
@@ -804,6 +805,7 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_H:
                 case Qt::Key_5:
                 case Qt::Key_Period:
+                case Qt::Key_Clear:
                 {
                     target_set_location(y, x);
                     done = TRUE;
@@ -1197,6 +1199,7 @@ bool get_aim_dir(int *dp, bool target_trap)
             case Qt::Key_H:
             case Qt::Key_5:
             case Qt::Key_Period:
+            case Qt::Key_Clear:
             {
                 /* Use current target, if set and legal */
                 if (target_okay()) dir = DIR_TARGET;
