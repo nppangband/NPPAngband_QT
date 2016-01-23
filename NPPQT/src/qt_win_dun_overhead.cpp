@@ -391,6 +391,7 @@ void MainWindow::close_win_overhead_map_frame(QObject *this_object)
     window_overhead_map = NULL;
     show_win_overhead_map = FALSE;
     win_overhead_map->setText("Show Overhead Window");
+    overhead_map_created = FALSE;
 }
 
 /*

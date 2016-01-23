@@ -361,6 +361,9 @@ void update_mon_sidebar_list(void)
         /* Already recorded target monster */
         if (i == p_ptr->health_who) continue;
 
+        /* Already recorded target monster */
+        if (i == p_ptr->target_who) continue;
+
         /* Now decide which list to include them in first adjacent monsters*/
         if ((GET_SQUARE((p_ptr->py - m_ptr->fy)) + GET_SQUARE((p_ptr->px - m_ptr->fx))) < 2)
         {
@@ -390,6 +393,20 @@ void update_mon_sidebar_list(void)
             mon_list[p_ptr->health_who].sidebar = TRUE;
         }
     }
+
+    /* The targeted and health monster can be different */
+    if (p_ptr->target_who  && (p_ptr->health_who != p_ptr->target_who))
+    {
+        /* Must be visible */
+        if (mon_list[p_ptr->target_who].ml)
+        {
+            sidebar_monsters.append(p_ptr->target_who);
+
+            /* We are tracking this one */
+            mon_list[p_ptr->target_who].sidebar = TRUE;
+        }
+    }
+
 
     /*  Sort adjacent monsters */
     qSort(adjacent_monsters.begin(), adjacent_monsters.end(), sidebar_mon_sort);

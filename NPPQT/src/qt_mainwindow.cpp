@@ -40,6 +40,13 @@
 #include "tilebag.h"
 #include <src/messages.h>
 
+// Needed to check for keypresses
+#ifdef Q_OS_WIN
+
+#include "windows.h"
+
+#endif // Q_OS_WIN
+
 
 MainWindow *main_window = 0;
 
@@ -840,6 +847,8 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
 
     executing_command = TRUE;
 
+    int key_pressed = which_key->key();
+
     Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
 
     bool shift_key = modifiers.testFlag(Qt::ShiftModifier);
@@ -847,6 +856,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     bool alt_key = modifiers.testFlag(Qt::AltModifier);
     bool meta_key = modifiers.testFlag(Qt::MetaModifier);
     bool keypad_used = modifiers.testFlag(Qt::KeypadModifier);
+    bool numlock_on = FALSE;
 
     if (QApplication::queryKeyboardModifiers() & (Qt::ShiftModifier))    shift_key = TRUE;
     if (QApplication::queryKeyboardModifiers() & (Qt::ControlModifier))  ctrl_key = TRUE;
@@ -854,29 +864,32 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     if (QApplication::queryKeyboardModifiers() & (Qt::MetaModifier))     meta_key = TRUE;
     if (QApplication::queryKeyboardModifiers() & (Qt::KeypadModifier))   keypad_used = TRUE;
 
-    /*if (keypad_used && ctrl_key)  pop_up_message_box("numlock and ctrl");
-    else if (keypad_used && alt_key) pop_up_message_box("numlock and alt");
-    else if (keypad_used && meta_key) pop_up_message_box("numlock and meta");
-    else if (keypad_used && shift_key) pop_up_message_box("numlock and shift");
-    else if (keypad_used) pop_up_message_box("numlock");*/
+    // Check for keypresses
+#ifdef Q_OS_WIN
+    if (GetKeyState(VK_NUMLOCK) == 1) numlock_on = TRUE;
+    if (GetKeyState(VK_CAPITAL) == 1) shift_key = TRUE;
+#endif // Q_OS_WIN
 
-    int key_pressed = which_key->key();
-
-    // Translate some of the keypad keys
-    if (keypad_used)
+    // Numlock interferes with the shift key detection.
+    // However the keys below can only be pressed on the keypad if the shift key is pressed.
+    if (keypad_used && numlock_on && !shift_key)
     {
-
         switch (key_pressed)
         {
-            case Qt::Key_End:       {key_pressed = Qt::Key_1; break;}
-            case Qt::Key_Down:      {key_pressed = Qt::Key_2; break;}
-            case Qt::Key_PageDown:  {key_pressed = Qt::Key_3; break;}
-            case Qt::Key_Left:      {key_pressed = Qt::Key_4; break;}
-            case Qt::Key_Right:     {key_pressed = Qt::Key_6; break;}
-            case Qt::Key_Home:      {key_pressed = Qt::Key_7; break;}
-            case Qt::Key_Up:        {key_pressed = Qt::Key_8; break;}
-            case Qt::Key_PageUp:    {key_pressed = Qt::Key_9; break;}
-            case Qt::Key_Insert:    {key_pressed = Qt::Key_0; break;}
+            case Qt::Key_End:
+            case Qt::Key_Down:
+            case Qt::Key_PageDown:
+            case Qt::Key_Left:
+            case Qt::Key_Clear:
+            case Qt::Key_Right:
+            case Qt::Key_Home:
+            case Qt::Key_Up:
+            case Qt::Key_PageUp:
+            case Qt::Key_Insert:
+            {
+                shift_key = TRUE;
+                break;
+            }
             default: break;
         }
     }

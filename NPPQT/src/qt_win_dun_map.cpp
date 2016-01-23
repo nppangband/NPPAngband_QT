@@ -411,6 +411,7 @@ void MainWindow::close_win_dun_map_frame(QObject *this_object)
 {
     (void)this_object;
     window_dun_map = NULL;
+    dun_map_created = FALSE;
     show_win_dun_map = FALSE;
     win_dun_map->setText("Show Map Window");
 }
