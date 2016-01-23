@@ -965,7 +965,7 @@ DetectionAnimation::DetectionAnimation(int y, int x, int rad)
     c_y = adj.y();
     c_x = adj.x();
 
-    timer.setInterval(70);
+    timer.setInterval(60);
 
     steps = 0;
 
@@ -1000,14 +1000,14 @@ QRectF DetectionAnimation::boundingRect() const
 
 void DetectionAnimation::do_timeout()
 {
-    if (++steps > 5)
+    if (++steps > 3)
     {
         stop();
         return;
     }
 
     if (steps > 1) {
-        angle += 3;
+        angle += 2;
         currentPix = rotate_pix(detectionPix, angle);
 
         opacity = MIN(opacity + 0.20, 1.0);
