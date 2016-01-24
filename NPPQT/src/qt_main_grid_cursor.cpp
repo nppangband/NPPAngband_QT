@@ -714,6 +714,7 @@ void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
         }
     }
 
+    notice_stuff();
     handle_stuff();
 
     main_window->executing_command = FALSE;
@@ -820,6 +821,7 @@ void DungeonGrid::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         }
     }
 
+    notice_stuff();
     handle_stuff();
 
     QGraphicsItem::mouseDoubleClickEvent(event);

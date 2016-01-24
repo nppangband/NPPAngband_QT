@@ -339,6 +339,8 @@ void command_uninscribe(cmd_arg args)
 
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
     p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
+
+    notice_stuff();
 }
 
 /*
@@ -409,6 +411,8 @@ void command_inscribe(cmd_arg args)
 
     /* Redraw stuff */
     p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
+
+    notice_stuff();
 
 }
 

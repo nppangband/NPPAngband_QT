@@ -37,10 +37,11 @@ static int get_inscribed_ammo_slot(const object_type *o_ptr)
     if (!first_f) return 0;
 
     //if next character is a number, convert it to one
+    if (o_ptr->inscription.length() >= first_f+1) return (0);
     QChar which_slot = o_ptr->inscription[first_f+1];
     if (!which_slot.isDigit())return 0;
 
-    int slot = letter_to_number(which_slot);
+    int slot = which_slot.digitValue();
 
     return (QUIVER_START + slot);
 }
@@ -257,16 +258,16 @@ QString mention_use(int slot)
         case INVEN_HANDS: return "On hands";
         case INVEN_FEET:  return "On feet";
 
-        case QUIVER_START + 0: return "In quiver [f0]";
-        case QUIVER_START + 1: return "In quiver [f1]";
-        case QUIVER_START + 2: return "In quiver [f2]";
-        case QUIVER_START + 3: return "In quiver [f3]";
-        case QUIVER_START + 4: return "In quiver [f4]";
-        case QUIVER_START + 5: return "In quiver [f5]";
-        case QUIVER_START + 6: return "In quiver [f6]";
-        case QUIVER_START + 7: return "In quiver [f7]";
-        case QUIVER_START + 8: return "In quiver [f8]";
-        case QUIVER_START + 9: return "In quiver [f9]";
+        case QUIVER_START + 0: return "In quiver [0]";
+        case QUIVER_START + 1: return "In quiver [1]";
+        case QUIVER_START + 2: return "In quiver [2]";
+        case QUIVER_START + 3: return "In quiver [3]";
+        case QUIVER_START + 4: return "In quiver [4]";
+        case QUIVER_START + 5: return "In quiver [5]";
+        case QUIVER_START + 6: return "In quiver [6]";
+        case QUIVER_START + 7: return "In quiver [7]";
+        case QUIVER_START + 8: return "In quiver [8]";
+        case QUIVER_START + 9: return "In quiver [9]";
     }
 
     return "In pack";
@@ -2607,7 +2608,7 @@ void inven_item_increase(int item, int num)
  * is cmd. If cmd is 0 then "x" can be anything.
  * Returns FALSE if the object doesn't have a valid tag.
  */
-int get_tag_num(int o_idx, QChar cmd, byte *tag_num)
+int get_tag_num(int o_idx, byte *tag_num)
 {
     object_type *o_ptr = &inventory[o_idx];
     QString inscrip = o_ptr->inscription;
@@ -2634,20 +2635,18 @@ int get_tag_num(int o_idx, QChar cmd, byte *tag_num)
         if (s.isDigit())
         {
             /* Convert to number */
-            *tag_num = letter_to_number(s);
+            *tag_num = s.digitValue();
             return TRUE;
         }
 
-        if (inscrip.length() <= first_index) continue;
-
-        QChar z = inscrip[first_index + 1];
-
-        /* Found "@xn"? */
-        if (cmd.isNull() || (operator==(s, cmd) && z.isDigit()))
+        if (s.isLetter())
         {
-            /* Convert to number */
-            *tag_num = letter_to_number(z);
-            return TRUE;
+            int convert = letter_to_number(s);
+            if ((convert >=0) && (convert < 10))
+            {
+                *tag_num = convert;
+                return (TRUE);
+            }
         }
     }
 
@@ -2796,7 +2795,7 @@ int sort_quiver(int slot)
         i_group = quiver_get_group(i_ptr);
 
         /* Get the real tag of the object, if any */
-        if (get_tag_num(i, quiver_group[i_group].cmd, &tag))
+        if (get_tag_num(i, &tag))
         {
             /* Determine the portion of the table to be used */
             j = first_locked;

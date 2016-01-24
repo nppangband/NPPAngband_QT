@@ -915,6 +915,7 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     }
     else pop_up_message_box("invalid keyset");
 
+    notice_stuff();
     handle_stuff();
     clear_message_label();
 

@@ -5063,6 +5063,9 @@ bool project_m(int who, int y, int x, int damage, int typ, u32b flg)
     /* Get the actual monster name */
     m_name = monster_desc(m_ptr, 0);
 
+    // Update the monster race window if needed.
+    if (p_ptr->monster_race_idx == m_ptr->r_idx) p_ptr->redraw |= (PR_WIN_MON_RECALL);
+
     /* Check for death */
     if (damage > m_ptr->hp)
     {
