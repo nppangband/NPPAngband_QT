@@ -280,7 +280,7 @@ void player_type::player_type_wipe()
     player_command_wipe();
     player_previous_command_wipe();
     new_spells = 0;
-    notice = update = redraw = window = 0;
+    notice = update = redraw = 0;
     au_birth = 0;
     for (i = 0; i < A_MAX; i++) stat_birth[i] = 0;
     ht_birth = wt_birth = sc_birth = 0;

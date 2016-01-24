@@ -79,7 +79,7 @@ static int check_devices(object_type *o_ptr)
         message(QString("The %1 has no charges left.") .arg(msg));
         o_ptr->ident |= (IDENT_EMPTY);
         p_ptr->notice |= (PN_COMBINE | PN_REORDER);
-        p_ptr->window |= (PR_WIN_INVENTORY);
+        p_ptr->redraw |= (PR_WIN_INVENTORY);
 
         return FALSE;
     }
@@ -3159,7 +3159,7 @@ void command_use(cmd_arg args)
             message(QString("That wand has no charges."));
             o_ptr->ident |= (IDENT_EMPTY);
             p_ptr->notice |= (PN_COMBINE | PN_REORDER);
-            p_ptr->window |= (PR_WIN_INVENTORY);
+            p_ptr->redraw |= (PR_WIN_INVENTORY);
             return;
         }
 
@@ -3174,7 +3174,7 @@ void command_use(cmd_arg args)
             message(QString("That staff has no charges."));
             o_ptr->ident |= (IDENT_EMPTY);
             p_ptr->notice |= (PN_COMBINE | PN_REORDER);
-            p_ptr->window |= (PR_WIN_INVENTORY);
+            p_ptr->redraw |= (PR_WIN_INVENTORY);
             return;
         }
 
@@ -3306,7 +3306,7 @@ void command_use(cmd_arg args)
     p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);
 
     /* Window stuff */
-    p_ptr->window |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
+    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
     /* Handle first-time use */
     if (ident)

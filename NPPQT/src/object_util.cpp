@@ -3005,7 +3005,7 @@ int sort_quiver(int slot)
         }
 
         /* Window stuff */
-        p_ptr->window |= (PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_EQUIPMENT);
 
         /* Message */
         if (!slot) message(QString("You reorganize your quiver."));
@@ -3969,7 +3969,7 @@ void combine_quiver(void)
     if (flag)
     {
         /* Window stuff */
-        p_ptr->window |= (PR_WIN_EQUIPMENT);
+        p_ptr->redraw |= (PR_WIN_EQUIPMENT);
 
         /* Message */
         message(QString("You combine your quiver."));
