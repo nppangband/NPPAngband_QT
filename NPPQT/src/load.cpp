@@ -224,10 +224,7 @@ static int rd_item(object_type *o_ptr)
     rd_u32b(&o_ptr->xtra2);
 
     /* Inscription */
-    rd_string(&buf);
-
-    /* Save the inscription */
-    if (buf.length()) o_ptr->inscription = buf;
+    rd_string(&o_ptr->inscription);
 
     // Read the object verify bool array
     for (int i = 0; i < VERIFY_MAX; i++)

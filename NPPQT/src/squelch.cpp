@@ -372,7 +372,7 @@ static QString expand_inscription(object_type *o_ptr)
             dest.append(format_object_flags(o_ptr, mode_list[found]));
         }
 
-        src[src.indexOf(':')] = ' ';
+        src.remove(src.indexOf(':'), 1);
     }
 
     return (dest);

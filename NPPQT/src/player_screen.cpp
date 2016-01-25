@@ -2172,7 +2172,7 @@ PlayerScreenDialog::PlayerScreenDialog(void): NPPDialog()
     main_layout->addLayout(player_hist);
     QString desc = color_string((QString("<br><b>%1</b><br>") .arg(p_ptr->history)), TERM_BLUE);
     int first_space = desc.indexOf(' ', 95, Qt::CaseInsensitive);
-    desc.replace(first_space, 1, QString("<br>"));
+    if (first_space >=0) desc.replace(first_space, 1, QString("<br>"));
     QLabel *player_desc = new QLabel(desc);
     player_hist->addWidget(player_desc);
 

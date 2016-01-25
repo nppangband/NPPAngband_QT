@@ -145,7 +145,7 @@ void create_directories()
     {
         QString this_path = (QApplication::applicationFilePath());
         int cut_index = this_path.indexOf(QString("/NPPG"), 1, Qt::CaseSensitive);
-        this_path.resize(cut_index);
+        if (cut_index >=0) this_path.resize(cut_index);
         npp_dir_base.setPath(this_path);
     }
 

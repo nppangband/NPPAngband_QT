@@ -30,20 +30,41 @@ QChar index_to_label(int i)
 
 static int get_inscribed_ammo_slot(const object_type *o_ptr)
 {
+    if (!o_ptr->k_idx) return FALSE;
     if (o_ptr->inscription.isEmpty()) return 0;
+    QString inscrip = o_ptr->inscription;
 
-    // Look for the first 'f'.
-    int first_f = o_ptr->inscription.indexOf("f");
-    if (!first_f) return 0;
+    while (inscrip.contains('@'))
+    {
+        /* Find the first '@' */
+        int first_index = inscrip.indexOf('@');
 
-    //if next character is a number, convert it to one
-    if (o_ptr->inscription.length() >= first_f+1) return (0);
-    QChar which_slot = o_ptr->inscription[first_f+1];
-    if (!which_slot.isDigit())return 0;
+        // clear the '@'
+        inscrip.remove(first_index, 1);
 
-    int slot = which_slot.digitValue();
+        //Paranoia
+        if (inscrip.length() < first_index) continue;
 
-    return (QUIVER_START + slot);
+        QChar s = inscrip[first_index];
+
+        /* Found "@n"? */
+        if (s.isDigit())
+        {
+            /* Convert to number */
+            return (QUIVER_START + s.digitValue());
+        }
+
+        if (s.isLetter())
+        {
+            int convert = letter_to_number(s);
+            if ((convert >=0) && (convert < 10))
+            {
+                return (QUIVER_START + convert);
+            }
+        }
+    }
+
+    return (0);
 }
 
 

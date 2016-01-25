@@ -179,7 +179,7 @@ QString store_welcome(int store_idx)
     /* Extract the first name of the store owner (stop before the first space) */
     QString short_name = owner_name;
     int j = short_name.indexOf(' ');
-    short_name.truncate(j);
+    if (j >=0) short_name.truncate(j);
 
     welcome.prepend(short_name);
 
