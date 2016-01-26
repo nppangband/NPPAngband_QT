@@ -1183,12 +1183,7 @@ void lore_do_probe_monster(int m_idx)
     /*increase the information*/
     lore_probe_monster_aux(m_ptr->r_idx);
 
-    /* Update monster recall window */
-    if (p_ptr->monster_race_idx == m_ptr->r_idx)
-    {
-        /* Window stuff */
-        p_ptr->redraw |= (PR_WIN_MON_RECALL);
-    }
+    monster_race_track(m_ptr->r_idx);
 }
 
 

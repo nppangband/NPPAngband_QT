@@ -1147,7 +1147,7 @@ static bool command_disarm_aux(int y, int x, bool disarm)
             message(QString("You have desanctified the %1.").arg(name));
 
         /* Normal message otherwise */
-        else ui_update_message_label(color_string((QString("You have %1ed the %2.").arg(act).arg(name)), TERM_ORANGE));
+        else message(color_string((QString("You have %1ed the %2.").arg(act).arg(name)), TERM_ORANGE));
 
         /* If a Rogue's monster trap, decrement the trap count. */
         if (feat_ff2_match(feat, FF2_TRAP_MON)) num_trap_on_level--;
@@ -1172,7 +1172,7 @@ static bool command_disarm_aux(int y, int x, bool disarm)
     {
 
         /* Message */
-        message(QString("You failed to %1 the %2.").arg(act).arg(name));
+        ui_update_message_label(QString("You failed to %1 the %2.").arg(act).arg(name));
 
         /* We may keep trying */
         more = TRUE;

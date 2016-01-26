@@ -3,6 +3,7 @@
 
 #include <src/player.h>
 #include <src/object_classes.h>
+#include <src/mon_classes.h>
 #include <QString>
 
 class magic_type
@@ -456,6 +457,8 @@ public:
     s16b health_who;		/* Health bar trackee */
 
     s16b monster_race_idx;	/* Monster race trackee */
+    s16b monster_race_idx_old;  // Track if monster race changed
+    monster_lore mon_race_idx_lore;
 
     s16b object_idx;    /* Object trackee */
     s16b object_kind_idx;	/* Object kind trackee */

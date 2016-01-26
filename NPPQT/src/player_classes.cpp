@@ -272,7 +272,9 @@ void player_type::player_type_wipe()
     create_stair = cur_map_hgt = cur_map_wid = FALSE;
     total_weight = 0;
     inven_cnt = equip_cnt = pack_size_reduce = quiver_remainder = quiver_slots = 0;
-    target_set = target_who = target_row = target_col = health_who = monster_race_idx = 0;
+    target_set = target_who = target_row = target_col = health_who = 0;
+    monster_race_idx = monster_race_idx_old = 0;
+    mon_race_idx_lore.monster_lore_wipe();
     object_idx = object_kind_idx = feature_kind_idx = 0;
     running_withpathfind = FALSE;
     run_cur_dir = run_old_dir = 0;

@@ -462,12 +462,20 @@ void ui_update_objlist()
     p_ptr->redraw &= ~(PR_WIN_OBJLIST);
 }
 
+// If something has changed, update the monster recall window
 void ui_update_mon_recall()
 {
     if (p_ptr->is_running()) return;
     if (p_ptr->is_resting()) return;
-    main_window->win_mon_recall_update();
     p_ptr->redraw &= ~(PR_WIN_MON_RECALL);
+
+    p_ptr->monster_race_idx_old = p_ptr->monster_race_idx;
+    if (p_ptr->monster_race_idx)
+    {
+        p_ptr->mon_race_idx_lore.monster_lore_copy(&l_list[p_ptr->monster_race_idx]);
+    }
+    else p_ptr->mon_race_idx_lore.monster_lore_wipe();
+    main_window->win_mon_recall_update();
 }
 
 void ui_update_obj_recall()
