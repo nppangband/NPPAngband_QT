@@ -361,12 +361,6 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
 
     row = col = 0;
 
-    if (!monster_table->columnCount())
-    {
-        pop_up_message_box("You are not yet aware of any creatures");
-        return;
-    }
-
     //Now populate the monster_group table
     for (int i = 0; i < monster_group_info.size(); i++)
     {
@@ -419,7 +413,16 @@ DisplayMonsterKnowledge::DisplayMonsterKnowledge(void)
     setLayout(main_layout);
     setWindowTitle(tr("Monster Knowledge"));
 
-    this->exec();
+    /*
+     * We make this check here after the dialog box is fully
+     * created to avoid any potential memory leaks.
+     */
+    if (!monster_table->columnCount())
+    {
+        pop_up_message_box("You are not yet aware of any creatures");
+        return;
+    }
+    else this->exec();
 }
 
 void display_monster_knowledge(void)

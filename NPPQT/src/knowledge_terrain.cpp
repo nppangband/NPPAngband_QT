@@ -305,7 +305,16 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     setLayout(main_layout);
     setWindowTitle(tr("Terrain Knowledge"));
 
-    this->exec();
+    /*
+     * We make this check here after the dialog box is fully
+     * created to avoid any potential memory leaks.
+     * This should never happen, since the player is born aware of the terrain they are standing on.
+     */
+    if (!terrain_table->columnCount())
+    {
+        pop_up_message_box("You are not yet aware of any terrains");
+    }
+    else this->exec();
 }
 
 void display_terrain_knowledge(void)

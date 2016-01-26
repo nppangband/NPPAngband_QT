@@ -512,7 +512,15 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     setLayout(main_layout);
     setWindowTitle(tr("Object Knowledge"));
 
-    this->exec();
+    /*
+     * We make this check here after the dialog box is fully
+     * created to avoid any potential memory leaks.
+     */
+    if (!object_table->columnCount())
+    {
+        pop_up_message_box("You are not yet aware of any objects");
+    }
+    else this->exec();
 }
 
 void display_object_knowledge(void)
@@ -736,12 +744,6 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
         }
     }
 
-    if (!ego_item_table->rowCount())
-    {
-        pop_up_message_box("You are not currently aware of any ego items");
-        return;
-    }
-
     connect(ego_item_button_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
     connect(ego_item_squelch_toggle, SIGNAL(buttonClicked(int)), this, SLOT(settings_press(int)));
 
@@ -793,11 +795,18 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     resize(ui_max_widget_size(this_size));
     updateGeometry();
 
-
     setLayout(main_layout);
     setWindowTitle(tr("Ego Item Knowledge"));
 
-    this->exec();
+    /*
+     * We make this check here after the dialog box is fully
+     * created to avoid any potential memory leaks.
+     */
+    if (!ego_item_table->rowCount())
+    {
+        pop_up_message_box("You are not currently aware of any ego items");
+    }
+    else this->exec();
 }
 
 
@@ -989,12 +998,6 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
         artifact_group_info[artifact_matches_group(i)] = TRUE;
     }
 
-    if (!artifact_table->rowCount())
-    {
-        pop_up_message_box("You are not currently aware of any artifacts");
-        return;
-    }
-
     connect(artifact_button_group, SIGNAL(buttonClicked(int)), this, SLOT(button_press(int)));
     connect(artifact_settings_group, SIGNAL(buttonClicked(int)), this, SLOT(settings_press(int)));
 
@@ -1048,7 +1051,15 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
     setLayout(main_layout);
     setWindowTitle(tr("Object Knowledge"));
 
-    this->exec();
+    /*
+     * We make this check here after the dialog box is fully
+     * created to avoid any potential memory leaks.
+     */
+    if (!artifact_table->rowCount())
+    {
+        pop_up_message_box("You are not currently aware of any artifacts");
+    }
+    else this->exec();
 }
 
 void display_artifact_knowledge(void)
