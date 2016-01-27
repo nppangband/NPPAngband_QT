@@ -626,7 +626,7 @@ void MainWindow::start_game_nppmoria()
 void MainWindow::open_current_savefile()
 {
     // Let the user select the savefile
-    QString file_name = QFileDialog::getOpenFileName(this, tr("Select a savefile"), npp_dir_save.path(), tr("NPP (*.npp)"));
+    QString file_name = QFileDialog::getOpenFileName(this, tr("Select a savefile to open"), npp_dir_save.path(), tr("NPP (*.npp)"));
     if (file_name.isEmpty()) return;
 
     load_file(file_name);
@@ -649,7 +649,7 @@ void MainWindow::save_character_as()
     default_file.append("/");
     default_file.append(default_name);
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Select a savefile"), default_file, tr("NPP (*.npp)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File As"), default_file, tr("NPP (*.npp)"));
 
     if (fileName.isEmpty())
         return;
@@ -874,8 +874,6 @@ void MainWindow::keyPressEvent(QKeyEvent* which_key)
     // However the keys below can only be pressed on the keypad if the shift key is pressed.
     if (keypad_used && numlock_on && !shift_key)
     {
-
-
         switch (key_pressed)
         {
             case Qt::Key_End:
@@ -2248,7 +2246,7 @@ void MainWindow::save_png_screenshot(void)
     default_file.append(default_name);
     default_file.append("_npp_scr");
 
-    QString file_name = QFileDialog::getSaveFileName(this, tr("Select a savefile"), default_file, tr("PNG (*.png)"));
+    QString file_name = QFileDialog::getSaveFileName(this, tr("Save PNG Screenshot As"), default_file, tr("PNG (*.png)"));
 
     if (file_name.isEmpty())
         return;

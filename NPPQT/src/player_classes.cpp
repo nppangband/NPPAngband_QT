@@ -268,7 +268,7 @@ void player_type::player_type_wipe()
     history.clear();
     total_winner = panic_save = 0;
     is_dead = terminated = player_turn = is_wizard = FALSE;
-    playing =  in_store = message_append = leaving_level = autosave = FALSE;
+    playing = in_death_menu = in_store = message_append = leaving_level = autosave = FALSE;
     create_stair = cur_map_hgt = cur_map_wid = FALSE;
     total_weight = 0;
     inven_cnt = equip_cnt = pack_size_reduce = quiver_remainder = quiver_slots = 0;

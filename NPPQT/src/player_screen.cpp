@@ -2241,9 +2241,11 @@ PlayerScreenDialog::PlayerScreenDialog(void): NPPDialog()
 
 void do_cmd_character_screen()
 {
-    PlayerScreenDialog dlg;
 
-    dlg.exec();
+    if (!p_ptr->playing && !p_ptr->in_death_menu) return;
+    PlayerScreenDialog *dlg = new PlayerScreenDialog();
 
+    dlg->exec();
+    delete dlg;
 
 }

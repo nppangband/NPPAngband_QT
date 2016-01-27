@@ -29,7 +29,7 @@ class ObjectSelectDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ObjectSelectDialog(int *item, QString prompt, int mode, bool *success, bool *cancelled, int sq_y, int sq_x);
+    explicit ObjectSelectDialog(int *item, QString prompt, QString failure_message, int mode, bool *success, int sq_y, int sq_x);
 
 
 protected:

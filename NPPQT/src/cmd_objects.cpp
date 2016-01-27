@@ -441,7 +441,7 @@ void command_examine(cmd_arg args)
 void do_cmd_examine(void)
 {
     // Paranoia
-    if (!p_ptr->playing) return;
+    if (!p_ptr->playing && !p_ptr->in_death_menu) return;
 
     select_item(ACTION_EXAMINE);
 }

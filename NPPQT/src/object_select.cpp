@@ -533,16 +533,8 @@ byte ObjectSelectDialog::find_starting_tab(int mode)
 }
 
 
-ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool *success, bool *cancelled, int sq_y, int sq_x)
+ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, QString failure_message, int mode, bool *success, int sq_y, int sq_x)
 {
-    object_tabs = new QTabWidget;
-
-    main_prompt = new QLabel(QString("<b><big>%1</big></b>") .arg(prompt));
-    main_prompt->setAlignment(Qt::AlignCenter);
-
-    // Start with a clean slate
-    tab_order.clear();
-
     // First, find the eligible objects
     floor_items_count(mode, sq_y, sq_x);
     inven_items_count(mode);
@@ -558,9 +550,19 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
         /* Report failure */
         *success = FALSE;
 
+        pop_up_message_box(failure_message);
+
         /* Done here */
         return;
     }
+
+    object_tabs = new QTabWidget;
+
+    main_prompt = new QLabel(QString("<b><big>%1</big></b>") .arg(prompt));
+    main_prompt->setAlignment(Qt::AlignCenter);
+
+    // Start with a clean slate
+    tab_order.clear();
 
     // Build, then add the tabs as necessary
     if (allow_floor)
@@ -622,14 +624,12 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
 
     if (!this->exec())
     {
-        *cancelled = TRUE;
         *success = FALSE;
     }
     else
     {
         *item = selected_item;
         *success = TRUE;
-        *cancelled = FALSE;
     }
 }
 
@@ -692,13 +692,12 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, int mode, bool
 bool get_item(int *cp, QString pmt, QString str, int mode)
 {
     bool success = FALSE;
-    bool cancelled = FALSE;
 
     /* No item selected */
     *cp = 0;
 
     /* Go to menu */
-    ObjectSelectDialog(cp, pmt, mode, &success, &cancelled, p_ptr->py, p_ptr->px);
+    ObjectSelectDialog(cp, pmt, str, mode, &success, p_ptr->py, p_ptr->px);
 
     /* Hack -- Cancel "display" */
     p_ptr->command_see = FALSE;
@@ -715,9 +714,6 @@ bool get_item(int *cp, QString pmt, QString str, int mode)
     /* Make sure the equipment/inventory windows are up to date */
     p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT);
 
-    /* Warning if needed */
-    if (!success && !cancelled && !str.isEmpty()) message(str);
-
     /* Result */
     return (success);
 }
@@ -730,7 +726,6 @@ bool get_item(int *cp, QString pmt, QString str, int mode)
 bool get_item_beside(int *cp, QString pmt, QString str, int sq_y, int sq_x)
 {
     bool success = FALSE;
-    bool cancelled = FALSE;
 
     /* No item selected */
     *cp = 0;
@@ -739,7 +734,7 @@ bool get_item_beside(int *cp, QString pmt, QString str, int sq_y, int sq_x)
     if (!in_bounds_fully(sq_y, sq_x)) success = FALSE;
 
     /* Go to menu */
-    ObjectSelectDialog(cp, pmt, (USE_FLOOR), &success, &cancelled, sq_y, sq_x);
+    ObjectSelectDialog(cp, pmt, str, (USE_FLOOR), &success, sq_y, sq_x);
 
     /* Hack -- Cancel "display" */
     p_ptr->command_see = FALSE;
@@ -752,9 +747,6 @@ bool get_item_beside(int *cp, QString pmt, QString str, int sq_y, int sq_x)
 
     /* Forget the item_tester_hook restriction */
     item_tester_hook = NULL;
-
-    /* Warning if needed */
-    if (!success && !cancelled && !str.isEmpty()) message(str);
 
     /* Result */
     return (success);

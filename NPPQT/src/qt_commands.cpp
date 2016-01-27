@@ -493,7 +493,6 @@ KeyboardCommandList::KeyboardCommandList(void): NPPDialog()
     connect(&buttons, SIGNAL(accepted()), this, SLOT(close()));
     main_layout->addWidget(&buttons);
 
-    setLayout(main_layout);
     setWindowTitle(tr("Command List"));
 
     this->clientSizeUpdated();
@@ -560,7 +559,6 @@ MouseCommandList::MouseCommandList(void): NPPDialog()
 
     main_layout->addStretch(1);
 
-    setLayout(main_layout);
     setWindowTitle(tr("Mouse Command List"));
 
     this->clientSizeUpdated();

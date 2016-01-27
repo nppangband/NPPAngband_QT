@@ -1427,8 +1427,6 @@ static bool coords_sort(coord first, coord second)
     // Y coords are equal
     if (first.x > second.x) return (TRUE);
     return (FALSE);
-
-
 }
 
 coord make_coords(int y, int x)

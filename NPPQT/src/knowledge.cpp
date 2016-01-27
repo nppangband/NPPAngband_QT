@@ -100,7 +100,6 @@ DisplayNotesFile::DisplayNotesFile(void): NPPDialog()
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(buttons);
 
-    setLayout(main_layout);
     setWindowTitle(tr("Notes and Accomplishments"));
 
     this->clientSizeUpdated();
@@ -111,7 +110,7 @@ DisplayNotesFile::DisplayNotesFile(void): NPPDialog()
 void display_notes_file(void)
 {
     // Paranoia
-    if (!p_ptr->playing) return;
+    if (!p_ptr->playing && !p_ptr->in_death_menu) return;
 
     DisplayNotesFile();
 }
@@ -166,7 +165,7 @@ DisplayHomeInven::DisplayHomeInven(void): NPPDialog()
 void display_home_inventory(void)
 {
     // Paranoia
-    if (!p_ptr->playing) return;
+    if (!p_ptr->playing && !p_ptr->in_death_menu) return;
 
     DisplayHomeInven();
 }
@@ -200,21 +199,12 @@ DisplayScores::DisplayScores(void): NPPDialog()
     }
     if (!score_list.size())
     {
-        pop_up_message_box("There are no player scores yet.");
+        pop_up_message_box("There are no player scores to display.");
         return;
     }
-    for (int i = 0; i < score_list.size(); i++)
-    {
-        for (int j = i+1; j < score_list.size(); j++)
-        {
-            if (score_list[i].score >= score_list[j].score) continue;
 
-            high_score temp = score_list[j];
-            score_list[j] = score_list[i];
-            score_list[i] = temp;
-
-        }
-    }
+    // Sort the scores
+    qSort(player_scores_list.begin(), player_scores_list.end(), scores_sort);
 
     int col = 0;
 
@@ -331,7 +321,6 @@ DisplayScores::DisplayScores(void): NPPDialog()
     resize(ui_max_widget_size(this_size));
     updateGeometry();
 
-    setLayout(main_layout);
     setWindowTitle("Player Scores");
 
     this->exec();
@@ -340,7 +329,7 @@ DisplayScores::DisplayScores(void): NPPDialog()
 void display_player_scores(void)
 {
     // Paranoia
-    if (!p_ptr->playing) return;
+    if (!p_ptr->playing && !p_ptr->in_death_menu) return;
 
     DisplayScores();
 }
