@@ -166,6 +166,12 @@ void create_directories()
     npp_dir_user.setPath(QString(npp_dir_lib.path() .append("/user/")));
     npp_dir_graf.setPath(QString(npp_dir_lib.path() .append("/graf/")));
 
+    /*
+     * Make sure the save and user directories exist.
+     * mkdir does nothing and returns FALSE if the directories already exist.
+     */
+    (void)npp_dir_save.mkdir(npp_dir_save.path());
+    (void)npp_dir_user.mkdir(npp_dir_user.path());
 }
 
 
