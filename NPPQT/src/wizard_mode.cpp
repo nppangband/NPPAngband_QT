@@ -46,9 +46,7 @@ static bool wiz_alloc_artifact(object_type *o_ptr, int art_num)
 
 EditObjectDialog::EditObjectDialog(void)
 {
-    QVBoxLayout *vlay = new QVBoxLayout;
 
-    QGridLayout *edit_info = new QGridLayout;
 
     object_type *o_ptr;
     int item;
@@ -72,6 +70,10 @@ EditObjectDialog::EditObjectDialog(void)
     {
         o_ptr = &o_list[0 - item];
     }
+
+    QVBoxLayout *vlay = new QVBoxLayout;
+
+    QGridLayout *edit_info = new QGridLayout;
 
     QLabel *obj_label = new QLabel(QString("<b><big>Editing %1</big></b>") .arg(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL)));
     obj_label->setAlignment(Qt::AlignCenter);

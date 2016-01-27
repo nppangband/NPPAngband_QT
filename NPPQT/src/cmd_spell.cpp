@@ -313,10 +313,7 @@ void SpellSelectDialog::build_spellbook_dialog(int mode)
 // This assumes the check that the player can cast has already been done.
 SpellSelectDialog::SpellSelectDialog(int *spell, int start_sval, QString prompt, int mode, bool *cannot, bool *cancelled)
 {
-    spell_dialog = new QTabWidget;
 
-    main_prompt = new QLabel(QString("<b><big>%1</big></b>") .arg(prompt));
-    main_prompt->setAlignment(Qt::AlignCenter);
 
     // Start with a clean slate
     usable_spells = FALSE;
@@ -346,6 +343,11 @@ SpellSelectDialog::SpellSelectDialog(int *spell, int start_sval, QString prompt,
         /* Report failure */
          return;
     }
+
+    spell_dialog = new QTabWidget;
+
+    main_prompt = new QLabel(QString("<b><big>%1</big></b>") .arg(prompt));
+    main_prompt->setAlignment(Qt::AlignCenter);
 
     // Passed all the pre-dialog checks.
     *cannot = FALSE;

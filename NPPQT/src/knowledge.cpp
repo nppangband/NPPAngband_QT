@@ -174,17 +174,6 @@ void display_home_inventory(void)
 
 DisplayScores::DisplayScores(void): NPPDialog()
 {
-
-    central = new QWidget;
-    QVBoxLayout *main_layout = new QVBoxLayout;
-    central->setLayout(main_layout);
-    main_layout->setSpacing(10);
-    // IMPORTANT: it must be called AFTER setting the layout
-    this->setClient(central);
-
-    scores_proxy_model = new QSortFilterProxyModel;
-    scores_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
-
     //Copy the vector, add the player and sort it.
     QVector<high_score> score_list;
     for (int i = 0; i < player_scores_list.size(); i++)
@@ -202,6 +191,16 @@ DisplayScores::DisplayScores(void): NPPDialog()
         pop_up_message_box("There are no player scores to display.");
         return;
     }
+
+    central = new QWidget;
+    QVBoxLayout *main_layout = new QVBoxLayout;
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
+
+    scores_proxy_model = new QSortFilterProxyModel;
+    scores_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
 
     // Sort the scores
     qSort(player_scores_list.begin(), player_scores_list.end(), scores_sort);
