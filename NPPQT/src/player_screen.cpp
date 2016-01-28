@@ -1910,7 +1910,7 @@ void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_l
             }
         }
 
-        // CHeck if this equipment has the applicable flag
+        // Check if this equipment has the applicable flag
         if (pfr_ptr->set == 1)
         {
             if (o_ptr->known_obj_flags_1 & (pfr_ptr->this_flag)) this_modifier = TRUE;
@@ -1973,6 +1973,19 @@ void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_l
         cumulative[row] += o_ptr->pval;
     }
 
+    // Hack - now add the inate player sustains
+    for (int x = 0; x < A_MAX; x++)
+    {
+        player_flag_record *pfr_ptr = &player_pval_table[x];
+
+        // Check if the player has this particular stat sustain.
+        if (f2 & (pfr_ptr->extra_flag))
+        {
+                has_sustain[x] = TRUE;
+                has_modifier[x] = TRUE;
+        }
+    }
+
     // Now update the label colors
     for (int x = 0; x < label_list.size(); x++)
     {
@@ -1992,7 +2005,7 @@ void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_l
 
         QString label_text = html_string_to_plain_text(this_lbl->text());
 
-        if (!has_modifier[row])
+        if (!has_modifier[row] & !has_sustain[row])
         {
             this_lbl->setText(color_string(label_text, TERM_DARK));
             continue;
@@ -2006,6 +2019,11 @@ void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_l
         {
             if (cumulative[row] < 0) attr = TERM_ORANGE_PEEL;
             else if (cumulative[row] > 0) attr = TERM_BLUE;
+            else
+            {
+                label_text = QString("<u>%1</u>") .arg(label_text);
+                attr = TERM_BLUE;
+            }
         }
         else if (cumulative[row] > 0) attr = TERM_GREEN;
         else if (cumulative[row] < 0) attr = TERM_RED;
