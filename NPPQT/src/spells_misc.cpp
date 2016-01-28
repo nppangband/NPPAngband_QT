@@ -2476,7 +2476,7 @@ static bool item_tester_unknown(object_type *o_ptr)
 
 static bool item_tester_unknown_star(object_type *o_ptr)
 {
-    if (o_ptr->ident & IDENT_MENTAL)
+    if (o_ptr->is_known_fully())
         return FALSE;
     else
         return TRUE;
@@ -2628,7 +2628,7 @@ void recharge_staff_wand(object_type *o_ptr, int percent)
     o_ptr->pval += recharge_amount;
 
     /* *Identified* items keep the knowledge about the charges */
-    if (!(o_ptr->ident & IDENT_MENTAL))
+    if (!o_ptr->is_known_fully())
     {
         /* We no longer "know" the item */
         o_ptr->ident &= ~(IDENT_KNOWN);

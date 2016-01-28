@@ -1625,7 +1625,6 @@ static int rd_dungeon(void)
 
     byte count;
     byte tmp8u;
-    u16b tmp16u;
 
     u16b limit;
 
@@ -1646,8 +1645,7 @@ static int rd_dungeon(void)
     /* Paranoia */
     allow_altered_inventory = FALSE;
 
-    rd_u16b(&tmp16u);
-
+    rd_s16b(&p_ptr->create_stair);
 
     /* Ignore illegal dungeons */
     if ((depth < 0) || (depth >= MAX_DEPTH))
