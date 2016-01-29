@@ -995,8 +995,8 @@ void object_type::update_object_flags()
         {
             artifact_type *a_ptr = &a_info[art_num];
 
-            known_obj_flags_1 = (a_ptr->a_flags1 & (TR1_PVAL_MASK));
-            known_obj_flags_3 = (a_ptr->a_flags3 & (TR3_IGNORE_MASK));
+            known_obj_flags_1 |= (a_ptr->a_flags1 & (TR1_PVAL_MASK));
+            known_obj_flags_3 |= (a_ptr->a_flags3 & (TR3_IGNORE_MASK));
         }
     }
 

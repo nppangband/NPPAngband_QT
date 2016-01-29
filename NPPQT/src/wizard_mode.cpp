@@ -93,10 +93,12 @@ EditObjectDialog::EditObjectDialog(void)
     QSpinBox *pval_spinner = new QSpinBox;
     pval_spinner->setRange(-99,99);
     pval_spinner->setValue(o_ptr->pval);
-    if (o_ptr->is_wieldable())
+    edit_info->addWidget(pval_label, 2, 0);
+    edit_info->addWidget(pval_spinner, 2, 1);
+    if (!o_ptr->is_wieldable())
     {
-        edit_info->addWidget(pval_label, 2, 0);
-        edit_info->addWidget(pval_spinner, 2, 1);
+        pval_label->hide();
+        pval_spinner->hide();
     }
 
     // To-hit
@@ -104,11 +106,13 @@ EditObjectDialog::EditObjectDialog(void)
     QSpinBox *to_h_spinner = new QSpinBox;
     to_h_spinner->setRange(-99,99);
     to_h_spinner->setValue(o_ptr->to_h);
+    edit_info->addWidget(to_h_label, 3, 0);
+    edit_info->addWidget(to_h_spinner, 3, 1);
 
-    if (o_ptr->is_wieldable() || o_ptr->is_ammo())
+    if (!o_ptr->is_wieldable() && !o_ptr->is_ammo())
     {
-        edit_info->addWidget(to_h_label, 3, 0);
-        edit_info->addWidget(to_h_spinner, 3, 1);
+        to_h_label->hide();
+        to_h_spinner->hide();
     }
 
     // To-damage
@@ -116,10 +120,14 @@ EditObjectDialog::EditObjectDialog(void)
     QSpinBox *to_d_spinner = new QSpinBox;
     to_d_spinner->setRange(-99,99);
     to_d_spinner->setValue(o_ptr->to_d);
-    if (o_ptr->is_wieldable() || o_ptr->is_ammo())
+    edit_info->addWidget(to_d_label, 4, 0);
+    edit_info->addWidget(to_d_spinner, 4, 1);
+    if (!o_ptr->is_wieldable() && !o_ptr->is_ammo())
     {
-        edit_info->addWidget(to_d_label, 4, 0);
-        edit_info->addWidget(to_d_spinner, 4, 1);
+        to_h_label->hide();
+        to_h_spinner->hide();
+        to_d_label->hide();
+        to_d_spinner->hide();
     }
 
     // Armor Class
@@ -127,10 +135,12 @@ EditObjectDialog::EditObjectDialog(void)
     QSpinBox *to_ac_spinner = new QSpinBox;
     to_ac_spinner->setRange(-99,99);
     to_ac_spinner->setValue(o_ptr->to_d);
-    if (o_ptr->is_wieldable())
+    edit_info->addWidget(to_ac_label, 5, 0);
+    edit_info->addWidget(to_ac_spinner, 5, 1);
+    if (!o_ptr->is_wieldable())
     {
-        edit_info->addWidget(to_ac_label, 5, 0);
-        edit_info->addWidget(to_ac_spinner, 5, 1);
+        to_ac_label->hide();
+        to_ac_spinner->hide();
     }
 
 

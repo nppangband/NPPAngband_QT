@@ -426,7 +426,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
     }
     plus = object_state.known_to_d + (o_ptr->is_known() ? o_ptr->to_d : 0);
     crit_hit_percent = critical_hit_chance(o_ptr, object_state, TRUE) / (CRIT_HIT_CHANCE / 100);
-    average = (dd * ds) / 2 + plus;
+    average = ((ds + 1) / 2) * dd + plus;
 
     output.append("<br>");
 
@@ -452,7 +452,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
         {
             int new_dd = dd * si->multiplier;
 
-            average = (new_dd * ds) / 2 + plus;
+            average = ((ds + 1) / 2) * new_dd + plus;
 
             output.append(QString("   This weapon does %1d%2%3%4 damage (%5 avg) against %6 each hit.<br>")
                           .arg(new_dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
@@ -474,7 +474,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
             {
                 int new_dd = dd * si->multiplier;
 
-                average = (new_dd * ds) / 2 + plus;
+                average = ((ds + 1) / 2) * new_dd+ plus;
 
                 output.append(QString("   This weapon does %1d%2%3%4 damage (%5 avg) against creatures who %6 each hit.<br>")
                               .arg(new_dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
@@ -497,7 +497,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
         {
             int new_dd = dd * bi->multiplier;
 
-            average = (new_dd * ds) / 2 + plus;
+            average = ((ds + 1) / 2) * new_dd + plus;
 
             output.append(QString("   This weapon does %1d%2%3%4 damage (%5 avg) against creatures who do not %6.<br>")
                           .arg(new_dd)  .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
@@ -510,7 +510,7 @@ static QString describe_weapon(object_type *o_ptr, u32b f1, bool extra_info, boo
         const mon_susceptibility_struct *ms = &mon_suscept[i];
         if (f1 & (ms->brand_flag))
         {
-            average = (dd * ds) / 2;
+            average = ((ds + 1) / 2) * dd;
 
             output.append(QString("   This weapon does an additional %1d%2 (%3 avg) damage against creatures who are susceptible to %4.<br>")
                           .arg(dd)  .arg(ds) .arg(average)  .arg(ms->brand_susceptibility));
@@ -654,7 +654,7 @@ static QString describe_bow_slot(object_type *o_ptr, u32b f3, bool extra_info)
 
     if (plus < 0) plus = 0;
 
-    average = (dd * ds) / 2 + plus;
+    average = ((ds + 1) / 2) * dd + plus;
 
     /* Now calculate and print out average damage */
     output.append(QString("   Firing %1 from this %2 does %3d%4%5%6 damage (%7 avg), with a critical hit chance of %8 percent.<br>")
@@ -756,7 +756,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
 
     if (plus < 0) plus = 0;
 
-    average = (dd * ds) / 2 + plus;
+    average = ((ds + 1) / 2) * dd + plus;
 
     /* Now calculate and print out average damage */
     output.append(QString("   Firing this ammunition from %1 does %2d%3%4%5 damage (%6 avg), with a critical hit chance of %7 percent.<br>")
@@ -778,7 +778,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
         {
             int new_dd = dd * si->multiplier;
 
-            average = (new_dd * ds) / 2 + plus;
+            average = ((ds + 1) / 2) * new_dd + plus;
 
             output.append(QString("   This ammunition does %1d%2%3%4 damage (%5 avg) against %6 each hit.<br>")
                           .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
@@ -800,7 +800,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
             {
                 int new_dd = dd * si->multiplier;
 
-                average = (new_dd * ds) / 2 + plus;
+                average = ((ds + 1) / 2) * new_dd + plus;
 
                 output.append(QString("   This ammunition does %1d%2%3%4 damage (%5 avg) against creatures who %6 each hit.<br>")
                               .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
@@ -824,7 +824,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
         {
             int new_dd = dd * bi->multiplier;
 
-            average = (new_dd * ds) / 2 + plus;
+            average = ((ds + 1) / 2) * new_dd + plus;
 
             output.append(QString("   This ammunition does %1d%2%3%4 damage (%5 avg) against creatures who do not %6.<br>")
                           .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
@@ -837,7 +837,7 @@ static QString describe_ammo(object_type *o_ptr, u32b f1, u32b f3, bool extra_in
         const mon_susceptibility_struct *ms = &mon_suscept[i];
         if (f1 & (ms->brand_flag))
         {
-            average = (dd * ds) / 2;
+            average = ((ds + 1) / 2) * dd;
 
             output.append(QString("   This ammunition does an additional %1d%2 damage (%3 avg) against creatures who are susceptible to %4.<br>")
                           .arg(dd) .arg(ds) .arg(average) .arg(ms->brand_susceptibility));
@@ -912,7 +912,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
         plus *= -1;
     }
 
-    average = (dd * ds) / 2 + plus;
+    average = ((ds + 1) / 2) * dd + plus;
 
     /* Now calculate and print out average damage */
     output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg), with a critical hit chance of %6 percent.<br>")
@@ -935,7 +935,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
         {
             int new_dd = dd * si->multiplier;
 
-            average = (new_dd * ds) / 2 + plus;
+            average = ((ds + 1) / 2) * new_dd + plus;
 
             output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg) against %6 each hit.<br>")
                           .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
@@ -957,7 +957,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
             {
                 int new_dd = dd * si->multiplier;
 
-                average = (new_dd * ds) / 2 + plus;
+                average = ((ds + 1) / 2) * new_dd + plus;
 
                 output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg) against creatures who %6 each hit.<br>")
                               .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(si->slay_race));
@@ -981,7 +981,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
         {
             int new_dd = dd * bi->multiplier;
 
-            average = (new_dd * ds) / 2 + plus;
+            average = ((ds + 1) / 2) * new_dd + plus;
 
             output.append(QString("   Throwing this weapon does %1d%2%3%4 damage (%5 avg) against creatures who do not %6.<br>")
                             .arg(new_dd) .arg(ds) .arg(plus_minus) .arg(plus) .arg(average) .arg(bi->brand_resist));
@@ -994,7 +994,7 @@ static QString describe_throwing_weapon(object_type *o_ptr, u32b f1, u32b f3, bo
         const mon_susceptibility_struct *ms = &mon_suscept[i];
         if (f1 & (ms->brand_flag))
         {
-            average = (dd * ds) / 2;
+            average = ((ds + 1) / 2) * dd;
 
             output.append(QString("   Throwing this weapon does an additional %1d%2 damage (%3 avg) against creatures who are susceptible to %4.<br>")
                             .arg(dd) .arg(ds) .arg(average) .arg(ms->brand_susceptibility));
