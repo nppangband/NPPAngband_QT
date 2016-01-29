@@ -64,6 +64,19 @@ bool dungeon_type::has_monster()
     return (FALSE);
 }
 
+bool dungeon_type::has_visible_terrain()
+{
+    feature_type *f_ptr = &f_info[FEAT_NONE];
+
+    if (dun_char != f_ptr->d_char) return true;
+    if (dun_color != f_ptr->d_color) return true;
+    if (use_graphics)
+    {
+        if (!strings_match(dun_tile, f_ptr->tile_id)) return true;
+    }
+    return false;
+}
+
 bool dungeon_type::has_visible_object()
 {
     if (object_char != ' ') return true;

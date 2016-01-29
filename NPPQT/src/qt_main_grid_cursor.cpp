@@ -283,6 +283,13 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     //Double check that there isn't something drawn above.  If double height tile and nothing above, use the space.
     if (is_double_height_tile(c_y, c_x)) double_height_mon = TRUE;
 
+    // Nothing to draw
+    if (empty && !double_height_mon && !double_height_mon_below && !d_ptr->has_visible_terrain())
+    {
+        painter->restore();
+        return;
+    }
+
     if (use_graphics)
     {
         // Draw background tile
@@ -600,7 +607,10 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     if (!done_fg && (!empty || !done_bg))
     {
         // Fill with a solid color for walls if that option is set
-        if (main_window->do_wall_block  && operator==(square_char, QChar(Qt::Key_NumberSign)))
+        if (main_window->do_wall_block  &&
+                ((operator==(square_char, QChar(Qt::Key_NumberSign))) ||
+                 (operator==(square_char, QChar(Qt::Key_Percent))) ||
+                 (operator==(square_char, QChar(Qt::Key_Asterisk)))))
         {
             // An outside slightly shaded
             QRect outside_shade(QPoint(0, 0), QPoint(parent->main_cell_wid, parent->main_cell_hgt));
@@ -608,11 +618,28 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             painter->setOpacity(.85);
             painter->drawRect(outside_shade);
 
-            QPixmap pix(parent->main_cell_wid-1, parent->main_cell_hgt-1);
             QRect paste_to(QPoint(1, 1), QPoint(parent->main_cell_wid-1, parent->main_cell_hgt-1));
-            pix.fill(square_color);
+
             painter->setOpacity(1);
-            painter->drawPixmap(paste_to, pix, pix.rect());
+            QBrush this_brush;
+            if (operator==(square_char, QChar(Qt::Key_Percent)))
+            {
+                this_brush.setStyle(Qt::Dense5Pattern);
+                painter->setBrush(this_brush);
+            }
+            else if (operator==(square_char, QChar(Qt::Key_Asterisk)))
+            {
+                this_brush.setStyle(Qt::Dense4Pattern);
+                painter->setBrush(this_brush);
+            }
+            else this_brush.setStyle(Qt::SolidPattern);
+            this_brush.setColor(square_color);
+            painter->setBrush(this_brush);
+
+            painter->fillRect(paste_to, this_brush);
+
+            painter->restore();
+            painter->save();
         }
         else
         {

@@ -1401,7 +1401,7 @@ void light_spot(int y, int x)
     map_info(y, x);
 
     // Possibly draw the square above it
-    if (redraw_above || d_ptr->double_height_monster || d_ptr->is_wall(TRUE))
+    if (redraw_above || (d_ptr->is_wall(TRUE) && ui_use_25d_graphics()))
     {
         if (in_bounds(y-1, x)) map_info(y-1, x);
     }
@@ -1413,7 +1413,7 @@ void light_spot(int y, int x)
     ui_redraw_grid(y, x);
 
     // Possibly draw the square above it
-    if (redraw_above || d_ptr->double_height_monster || d_ptr->is_wall(TRUE))
+    if (redraw_above || (d_ptr->is_wall(TRUE) && ui_use_25d_graphics()))
     {
         if (in_bounds(y-1, x)) redraw_coords.append(make_coords(y-1, x));
     }

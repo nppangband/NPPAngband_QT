@@ -76,6 +76,7 @@ public:
     bool has_effect();
     bool has_monster();
 
+    bool has_visible_terrain();
     bool has_visible_object();
     bool has_visible_effect();
     bool has_visible_monster();

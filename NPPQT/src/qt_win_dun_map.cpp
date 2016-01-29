@@ -82,6 +82,8 @@ void DunMapGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         key2 = d_ptr->object_tile;
     }
 
+    if (empty && !d_ptr->has_visible_terrain()) return;
+
     bool done_bg = false;
     bool done_fg = false;
 
