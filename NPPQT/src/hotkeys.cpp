@@ -399,7 +399,7 @@ void HotKeyDialog::create_targeting_choices(QHBoxLayout *this_layout, int step)
 {
     hotkey_step *hks_ptr = &dialog_hotkey.hotkey_steps[step];
 
-    QVBoxLayout *vlay_targets = new QVBoxLayout;
+    QVBoxLayout *vlay_targets = new QVBoxLayout();
     vlay_targets->setObjectName(QString("vlay_targeting_step_%1") .arg(step));
     this_layout->addLayout(vlay_targets);
 
@@ -1293,10 +1293,20 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     // Add a header
     QLabel *header_dir = new QLabel("<b>Direction:</b>");
     vlay_direction->addWidget(header_dir);
+
+    //  Not all classes can set traps
+    if (hks_ptr->step_commmand == HK_TYPE_MAKE_TRAP)
+    {
+        if (!(cp_ptr->flags & (CF_SET_TRAPS)))
+        {
+            header_dir->setText("<b>You cannot set traps!</b>");
+            vlay_direction->addStretch(1);
+            return;
+        }
+    }
+
     QGridLayout *gridlay_direction = new QGridLayout;
     vlay_direction->addLayout(gridlay_direction);
-
-
 
     // Add all the buttons
     QRadioButton *north_west = new QRadioButton;
@@ -1380,7 +1390,7 @@ void HotKeyDialog::create_direction_pad(QHBoxLayout *this_layout, int step)
     else south_east->setChecked(FALSE);
     south_east->setObjectName(QString("direction_step_%1") .arg(step));
 
-
+    vlay_direction->addStretch(1);
 }
 
 // Add buttons for inserting and deleting steps
