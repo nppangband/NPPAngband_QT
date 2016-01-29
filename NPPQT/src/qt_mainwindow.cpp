@@ -320,7 +320,12 @@ void MainWindow::toggle_searching()
 {
     if (!character_dungeon) return;
     if (executing_command) return;
+    executing_command = TRUE;
     do_cmd_toggle_search();
+    notice_stuff();
+    handle_stuff();
+    clear_message_label();
+    executing_command = FALSE;
 }
 
 void MainWindow::update_message_label(QString message)
@@ -340,8 +345,12 @@ void MainWindow::click_study()
 {
     if (!character_dungeon) return;
     if (executing_command) return;
+    executing_command = TRUE;
     do_cmd_study(-1);
-
+    notice_stuff();
+    handle_stuff();
+    clear_message_label();
+    executing_command = FALSE;
 }
 
 void MainWindow::init_scene()

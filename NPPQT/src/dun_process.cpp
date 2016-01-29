@@ -1840,8 +1840,6 @@ static void process_game_turns(void)
 
         if (p_ptr->is_dead) return;
         if (p_ptr->leaving_level) change_player_level();
-
-
     }
 }
 
