@@ -338,7 +338,7 @@ static QString describe_resist(const object_type *o_ptr, u32b f2, u32b f3)
     if (f3 & (TR3_HOLD_LIFE)) vp.append("life draining");
 
     // Nothing to report
-    if (vp.size()) return (output);
+    if (!vp.size()) return (output);
 
     for (int i = 0; i < vp.size(); i++)  vp[i] = color_string(vp[i], TERM_PURPLE);
 
@@ -1442,6 +1442,9 @@ static QString describe_nativity(object_type *o_ptr, u32b fn)
     if (fn & (TN1_NATIVE_WATER)) vp.append("water");
     if (fn & (TN1_NATIVE_ACID)) vp.append("acid");
     if (fn & (TN1_NATIVE_MUD)) vp.append("mud");
+
+    // Nothing to report
+    if (!vp.size()) return (output);
 
     /* Describe nativities */
     output.append(output_desc_list("It makes you native to terrains made of ", vp, FALSE));
