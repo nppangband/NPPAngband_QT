@@ -338,11 +338,17 @@ void do_cmd_make_trap(int dir)
 {
     if (!character_dungeon) return;
 
+    /* Oops */
+    if (!(cp_ptr->flags & CF_SET_TRAPS))
+    {
+        message(QString("You don't have the ability to set traps!"));
+        return;
+    }
+
     if (dir == DIR_UNKNOWN)
     {
         if (!get_rep_dir(&dir)) return;
     }
-
 
     cmd_arg args;
     args.wipe();
