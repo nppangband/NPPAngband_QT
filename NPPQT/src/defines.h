@@ -116,9 +116,6 @@ enum
 #endif // FALSE
 
 
-
-#define SIDEBAR_MONSTER_MAX	15
-
 /*
  * There is a 1/160 chance per round of creating a new monster
  */

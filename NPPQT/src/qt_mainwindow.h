@@ -114,6 +114,12 @@ public:
     QVBoxLayout *sidebar_vlay;
     QScrollArea *sidebar_scroll;
 
+    QList<QLabel *> list_sidebar_labels;
+    QList<QLabel *> list_sidebar_mon_direction;
+    QList<QLabel *> list_sidebar_mon_pics;
+    QList<QLabel *> list_sidebar_mon_name;
+    QList<QLabel *> list_sidebar_mon_health;
+
     QVBoxLayout *player_info_labels;
     QVBoxLayout *player_info_data;
     QVBoxLayout *player_info_vlay;
@@ -149,7 +155,7 @@ public:
     void update_sidebar_font();
     void update_sidebar_player();
     void update_sidebar_mon();
-    void sidebar_display_mon(int m_idx);
+    void sidebar_display_mon(int index);
     QString return_sidebar_text(bool label, int row);
     void update_sidebar_all() {update_sidebar_mon(); update_sidebar_player();}
     void hide_sidebar();

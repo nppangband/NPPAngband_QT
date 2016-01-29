@@ -21,7 +21,7 @@
 #define SBAR_DRAINED "#FFFF00"
 #define SBAR_GOLD   "#FFD700"
 
-#define SIDEBAR_MON_MAX     15
+#define SIDEBAR_MONSTER_MAX     15
 
 QVector<s16b> sidebar_monsters;
 
@@ -35,6 +35,12 @@ void MainWindow::create_sidebar()
     sidebar_vlay->addLayout(player_info_vlay);
     sidebar_vlay->addLayout(mon_health_vlay);
     sidebar_vlay->addStretch(1);
+
+    list_sidebar_labels.clear();
+    list_sidebar_mon_direction.clear();
+    list_sidebar_mon_pics.clear();
+    list_sidebar_mon_name.clear();
+    list_sidebar_mon_health.clear();
 
     create_targeting_sidebar();
 
@@ -54,6 +60,8 @@ void MainWindow::create_sidebar()
     QLabel *level_info = new QLabel;
     level_info->setObjectName("LEVEL_INFO");
     player_info_data->addWidget(level_info, Qt::AlignRight);
+    list_sidebar_labels.append(level_label);
+    list_sidebar_labels.append(level_info);
 
     // Hitpoints
     QLabel *hp_label = new QLabel;
@@ -64,6 +72,8 @@ void MainWindow::create_sidebar()
     QLabel *hp_info = new QLabel;
     hp_info->setObjectName("HP_INFO");
     player_info_data->addWidget(hp_info, Qt::AlignRight);
+    list_sidebar_labels.append(hp_label);
+    list_sidebar_labels.append(hp_info);
 
     // SpellPoints
     QLabel *sp_label = new QLabel;
@@ -76,6 +86,8 @@ void MainWindow::create_sidebar()
     player_info_data->addWidget(sp_info, Qt::AlignRight);
     sp_label->hide();
     sp_info->hide();
+    list_sidebar_labels.append(sp_label);
+    list_sidebar_labels.append(sp_info);
 
     // Current Experience
     QLabel *exp_cur_label = new QLabel;
@@ -86,6 +98,8 @@ void MainWindow::create_sidebar()
     QLabel *exp_cur_info = new QLabel;
     exp_cur_info->setObjectName("EXP_CUR_INFO");
     player_info_data->addWidget(exp_cur_info, Qt::AlignRight);
+    list_sidebar_labels.append(exp_cur_label);
+    list_sidebar_labels.append(exp_cur_info);
 
     // Max Experience
     QLabel *exp_max_label = new QLabel;
@@ -96,6 +110,8 @@ void MainWindow::create_sidebar()
     QLabel *exp_max_info = new QLabel;
     exp_max_info->setObjectName("EXP_MAX_INFO");
     player_info_data->addWidget(exp_max_info, Qt::AlignRight);
+    list_sidebar_labels.append(exp_max_label);
+    list_sidebar_labels.append(exp_max_info);
 
     // Next Level
     QLabel *exp_next_label = new QLabel;
@@ -106,6 +122,8 @@ void MainWindow::create_sidebar()
     QLabel *exp_next_info = new QLabel;
     exp_next_info->setObjectName("EXP_NEXT_INFO");
     player_info_data->addWidget(exp_next_info, Qt::AlignRight);
+    list_sidebar_labels.append(exp_next_label);
+    list_sidebar_labels.append(exp_next_info);
 
     // gold
     QLabel *gold_label = new QLabel;
@@ -116,18 +134,23 @@ void MainWindow::create_sidebar()
     QLabel *gold_info = new QLabel;
     gold_info->setObjectName("GOLD_INFO");
     player_info_data->addWidget(gold_info, Qt::AlignRight);
+    list_sidebar_labels.append(gold_label);
+    list_sidebar_labels.append(gold_info);
 
     // stats
     for (int i = 0; i < A_MAX; i++)
     {
-        QLabel *this_label = new QLabel;
-        QString label_name = (QString("STAT_LABEL_%1") .arg(i));
-        this_label->setObjectName(label_name);
-        this_label->setToolTip(stat_entry(i));
-        player_info_labels->addWidget(this_label, Qt::AlignLeft);
+        QLabel *stat_label = new QLabel;
+        QString stat_name = (QString("STAT_LABEL_%1") .arg(i));
+        stat_label->setObjectName(stat_name);
+        stat_label->setToolTip(stat_entry(i));
+        player_info_labels->addWidget(stat_label, Qt::AlignLeft);
         QLabel *stat_info = new QLabel;
         stat_info->setObjectName(QString("STAT_INFO_%1") .arg(i));
         player_info_data->addWidget(stat_info, Qt::AlignRight);
+
+        list_sidebar_labels.append(stat_label);
+        list_sidebar_labels.append(stat_info);
     }
 
     // Armor Class
@@ -139,27 +162,69 @@ void MainWindow::create_sidebar()
     QLabel *ac_info = new QLabel;
     ac_info->setObjectName("ARMOR CLASS");
     player_info_data->addWidget(ac_info, Qt::AlignRight);
+    list_sidebar_labels.append(ac_label);
+    list_sidebar_labels.append(ac_info);
 
     // speed
     QLabel *speed_info = new QLabel;
     speed_info->setObjectName("SPEED");
     speed_info->setToolTip(get_help_topic("character_info", "Speed"));
     player_info_vlay->addWidget(speed_info, Qt::AlignLeft);
+    list_sidebar_labels.append(speed_info);
 
     // depth
     QLabel *depth_info = new QLabel;
     depth_info->setObjectName("DEPTH");
     player_info_vlay->addWidget(depth_info, Qt::AlignLeft);
+    list_sidebar_labels.append(depth_info);
 
     // feeling
     QLabel *feeling_info = new QLabel;
     feeling_info->setObjectName("FEELING");
     player_info_vlay->addWidget(feeling_info, Qt::AlignLeft);
+    list_sidebar_labels.append(feeling_info);
 
     // quest
     QLabel *quest_info = new QLabel;
     quest_info->setObjectName("QUEST");
     player_info_vlay->addWidget(quest_info, Qt::AlignLeft);
+    list_sidebar_labels.append(quest_info);
+
+    clear_layout(mon_health_vlay);
+
+    // Make the labels for the sidebar
+    for (int i = 0; i < SIDEBAR_MONSTER_MAX; i++)
+    {
+        QHBoxLayout *this_hlayout = new QHBoxLayout;
+        mon_health_vlay->addLayout(this_hlayout);
+
+        QLabel *dir_label = new QLabel();
+        dir_label->setObjectName(QString("sidebar_mon_dir_%1") .arg(i));
+        this_hlayout->addWidget(dir_label);
+        dir_label->hide();
+        list_sidebar_mon_direction.append(dir_label);
+
+        QLabel *pic_label = new QLabel();
+        pic_label->setObjectName(QString("sidebar_mon_pic_%1") .arg(i));
+        this_hlayout->addWidget(pic_label);
+        pic_label->hide();
+        list_sidebar_mon_pics.append(pic_label);
+
+        QLabel *name_label = new QLabel();
+        name_label->setObjectName(QString("sidebar_mon_name_%1") .arg(i));
+        name_label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+        this_hlayout->addWidget(name_label, Qt::AlignLeft);
+        this_hlayout->addStretch(10);
+        name_label->hide();
+        list_sidebar_mon_name.append(name_label);
+
+        QLabel *health_label = new QLabel();
+        health_label->setObjectName(QString("sidebar_mon_health_%1") .arg(i));
+        health_label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+        mon_health_vlay->addWidget(health_label);
+        health_label->hide();
+        list_sidebar_mon_health.append(health_label);
+    }
 }
 
 
@@ -324,8 +389,8 @@ static bool sidebar_mon_sort(const s16b mon1, const s16b mon2)
     return (FALSE);
 }
 
-static /* Figure out which monsters to display in the sidebar */
-void update_mon_sidebar_list(void)
+/* Figure out which monsters to display in the sidebar */
+static void update_mon_sidebar_list(void)
 {
     monster_type *m_ptr;
     monster_race *r_ptr;
@@ -475,280 +540,277 @@ void MainWindow::update_sidebar_player()
     if (!p_ptr->playing) return;
 
     // Update the player sidebar info
-    QList<QLabel *> lbl_list = sidebar_widget->findChildren<QLabel *>();
+    for (int x = 0; x < list_sidebar_labels.size(); x++)
     {
-        for (int x = 0; x < lbl_list.size(); x++)
+        QLabel *this_lbl = list_sidebar_labels.at(x);
+
+        QString this_name = this_lbl->objectName();
+
+        //Not a named label
+        if (!this_name.length()) continue;
+
+        // Update all of the stats
+        if (this_name.contains("STAT_")) for (int i = 0; i < A_MAX; i++)
         {
-            QLabel *this_lbl = lbl_list.at(x);
-
-            QString this_name = this_lbl->objectName();
-
-            //Not a named label
-            if (!this_name.length()) continue;
-
-            // Update all of the stats
-            if (this_name.contains("STAT_")) for (int i = 0; i < A_MAX; i++)
+            if (this_name.contains(QString("STAT_LABEL_%1") .arg(i)))
             {
-                if (this_name.contains(QString("STAT_LABEL_%1") .arg(i)))
-                {
-                    QString stat_string = stat_names[i];
-
-                    QColor this_color = SBAR_NORMAL;
-                    if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
-                    {
-                        this_color = SBAR_DRAINED;
-                        stat_string = stat_names_reduced[i];
-                    }
-
-                    if (p_ptr->stat_base_max[i] >= 18+100)
-                    {
-                        stat_string[3] = '!';
-                    }
-
-                    this_lbl->setText(color_string(stat_string, this_color));
-
-                    continue;
-                }
-                if (this_name.contains(QString("STAT_INFO_%1") .arg(i)))
-                {
-                    QColor this_color = SBAR_NORMAL;
-                    if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i]) this_color = SBAR_DRAINED;
-
-                    QString stat_string = color_string(cnv_stat(p_ptr->state.stat_loaded_cur[i]), this_color);
-
-                    if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
-                    {
-                        stat_string.append(color_string(QString("/ %1") .arg(cnv_stat(p_ptr->state.stat_loaded_max[i])), SBAR_NORMAL));
-                    }
-
-                    this_lbl->setText(stat_string);
-                    this_lbl->setAlignment(Qt::AlignRight);
-                    continue;
-                }
-            }
-            // Update the hit points
-            if (this_name.operator ==("LEVEL_INFO"))
-            {
-                QString level = QString("%1").arg(p_ptr->lev);
-
-                this_lbl->setText(color_string(level, SBAR_NORMAL));
-                this_lbl->setAlignment(Qt::AlignRight);
-                continue;
-            }
-            // Update the hit points
-            if (this_name.operator ==("HP_INFO"))
-            {
-                QString hp = QString("%1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
-
-                int this_color = player_hp_attr();
-
-                this_lbl->setText(color_string(hp, this_color));
-                this_lbl->setAlignment(Qt::AlignRight);
-                continue;
-            }
-
-            //update the spell points
-            if (this_name.operator ==("SP_LABEL"))
-            {
-                if (p_ptr->msp)
-                {
-                    if (!this_lbl->text().length())
-                    {
-                        this_lbl->setText(color_string("SP", SBAR_NORMAL));
-                        this_lbl->show();
-                    }
-                }
-                else if (this_lbl->text().length())
-                {
-                    this_lbl->setText("");
-                    this_lbl->hide();
-                }
-                continue;
-            }
-            if (this_name.operator ==("SP_INFO"))
-            {
-                if (p_ptr->msp)
-                {
-                    if (!this_lbl->isVisible()) this_lbl->show();
-
-                    int this_color = player_sp_attr();
-                    QString sp = QString("%1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
-                    this_lbl->setText(color_string(sp, this_color));
-                    this_lbl->setAlignment(Qt::AlignRight);
-                }
-                else if (this_lbl->isVisible())
-                {
-                    this_lbl->setText("");
-                    this_lbl->hide();
-                }
-                continue;
-            }
-            if (this_name.operator ==("EXP_CUR_LABEL"))
-            {
-
-                QColor this_color;
-                QString this_text;
-                if (p_ptr->exp < p_ptr->max_exp)
-                {
-                    this_color = SBAR_DRAINED;
-                    this_text = "Cur Exp";
-                }
-                else
-                {
-                    this_color = SBAR_NORMAL;
-                    this_text = "CUR EXP";
-                }
-                this_lbl->setText(color_string(this_text, this_color));
-                continue;
-            }
-            if (this_name.operator ==("EXP_CUR_INFO"))
-            {
-
-                QColor this_color;
-                QString this_text = number_to_formatted_string(p_ptr->exp);
-
-                if (p_ptr->exp < p_ptr->max_exp) this_color = SBAR_DRAINED;
-                else this_color = SBAR_NORMAL;
-
-                this_lbl->setText(color_string(this_text, this_color));
-                this_lbl->setAlignment(Qt::AlignRight);
-                continue;
-            }
-            if (this_name.operator ==("EXP_MAX_LABEL"))
-            {
-                if (p_ptr->exp == p_ptr->max_exp)
-                {
-                    this_lbl->setText("");
-                    if (this_lbl->isVisible()) this_lbl->hide();
-                    continue;
-                }
-
-                if (!this_lbl->isVisible()) this_lbl->show();
+                QString stat_string = stat_names[i];
 
                 QColor this_color = SBAR_NORMAL;
-                QString this_text = "Max Esp";
-                this_lbl->setText(color_string(this_text, this_color));
-                continue;
-            }
-            if (this_name.operator ==("EXP_MAX_INFO"))
-            {
-                if (p_ptr->exp == p_ptr->max_exp)
-                {
-                    this_lbl->setText("");
-                    if (this_lbl->isVisible()) this_lbl->hide();
-                    continue;
-                }
-
-                if (!this_lbl->isVisible()) this_lbl->show();
-
-                QColor this_color = SBAR_NORMAL;
-
-                QString this_text = number_to_formatted_string(p_ptr->max_exp);
-
-                this_lbl->setText(color_string(this_text, this_color));
-                this_lbl->setAlignment(Qt::AlignRight);
-                continue;
-            }
-            if (this_name.operator ==("EXP_NEXT_LABEL"))
-            {
-                if (p_ptr->lev == z_info->max_level)
-                {
-                    this_lbl->setText("");
-                    if (this_lbl->isVisible()) this_lbl->hide();
-                    continue;
-                }
-
-                if (!this_lbl->isVisible()) this_lbl->show();
-
-                QColor this_color;
-                QString this_text;
-                if (p_ptr->exp < p_ptr->max_exp)
+                if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
                 {
                     this_color = SBAR_DRAINED;
-                    this_text = "Next Level";
-                }
-                else
-                {
-                    this_color = SBAR_NORMAL;
-                    this_text = "NEXT LEVEL";
-                }
-                this_lbl->setText(color_string(this_text, this_color));
-                continue;
-            }
-            if (this_name.operator ==("EXP_NEXT_INFO"))
-            {
-                if (p_ptr->lev == z_info->max_level)
-                {
-                    this_lbl->setText("");
-                    if (this_lbl->isVisible()) this_lbl->hide();
-                    continue;
+                    stat_string = stat_names_reduced[i];
                 }
 
+                if (p_ptr->stat_base_max[i] >= 18+100)
+                {
+                    stat_string[3] = '!';
+                }
+
+                this_lbl->setText(color_string(stat_string, this_color));
+
+                continue;
+            }
+            if (this_name.contains(QString("STAT_INFO_%1") .arg(i)))
+            {
+                QColor this_color = SBAR_NORMAL;
+                if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i]) this_color = SBAR_DRAINED;
+
+                QString stat_string = color_string(cnv_stat(p_ptr->state.stat_loaded_cur[i]), this_color);
+
+                if (p_ptr->state.stat_loaded_cur[i] < p_ptr->state.stat_loaded_max[i])
+                {
+                    stat_string.append(color_string(QString("/ %1") .arg(cnv_stat(p_ptr->state.stat_loaded_max[i])), SBAR_NORMAL));
+                }
+
+                this_lbl->setText(stat_string);
+                this_lbl->setAlignment(Qt::AlignRight);
+                continue;
+            }
+        }
+        // Update the hit points
+        if (this_name.operator ==("LEVEL_INFO"))
+        {
+            QString level = QString("%1").arg(p_ptr->lev);
+
+            this_lbl->setText(color_string(level, SBAR_NORMAL));
+            this_lbl->setAlignment(Qt::AlignRight);
+            continue;
+        }
+        // Update the hit points
+        if (this_name.operator ==("HP_INFO"))
+        {
+            QString hp = QString("%1/%2").arg(p_ptr->chp).arg(p_ptr->mhp);
+
+            int this_color = player_hp_attr();
+
+            this_lbl->setText(color_string(hp, this_color));
+            this_lbl->setAlignment(Qt::AlignRight);
+            continue;
+        }
+
+        //update the spell points
+        if (this_name.operator ==("SP_LABEL"))
+        {
+            if (p_ptr->msp)
+            {
+                if (!this_lbl->text().length())
+                {
+                    this_lbl->setText(color_string("SP", SBAR_NORMAL));
+                    this_lbl->show();
+                }
+            }
+            else if (this_lbl->text().length())
+            {
+                this_lbl->setText("");
+                this_lbl->hide();
+            }
+            continue;
+        }
+        if (this_name.operator ==("SP_INFO"))
+        {
+            if (p_ptr->msp)
+            {
                 if (!this_lbl->isVisible()) this_lbl->show();
 
-                QColor this_color;
-
-                s32b xp = (get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L) - p_ptr->exp;
-
-                QString this_text = number_to_formatted_string(xp);
-
-                if (p_ptr->exp < p_ptr->max_exp) this_color = SBAR_DRAINED;
-                else this_color = SBAR_NORMAL;
-
-                this_lbl->setText(color_string(this_text, this_color));
+                int this_color = player_sp_attr();
+                QString sp = QString("%1/%2").arg(p_ptr->csp).arg(p_ptr->msp);
+                this_lbl->setText(color_string(sp, this_color));
                 this_lbl->setAlignment(Qt::AlignRight);
-                continue;
             }
-            if (this_name.operator ==("GOLD_INFO"))
+            else if (this_lbl->isVisible())
             {
-                QString gold = number_to_formatted_string(p_ptr->au);
-                this_lbl->setText(color_string(gold, SBAR_NORMAL));
-                this_lbl->setAlignment(Qt::AlignRight);
-                continue;
+                this_lbl->setText("");
+                this_lbl->hide();
             }
-            if (this_name.operator ==("ARMOR CLASS"))
+            continue;
+        }
+        if (this_name.operator ==("EXP_CUR_LABEL"))
+        {
+
+            QColor this_color;
+            QString this_text;
+            if (p_ptr->exp < p_ptr->max_exp)
             {
-                int known_ac = p_ptr->state.known_ac + p_ptr->state.known_to_a;
-                QString ac = number_to_formatted_string(known_ac);
-                this_lbl->setText(color_string(ac, SBAR_NORMAL));
-                this_lbl->setAlignment(Qt::AlignRight);
-                continue;
+                this_color = SBAR_DRAINED;
+                this_text = "Cur Exp";
             }
-            if (this_name.operator ==("SPEED"))
+            else
             {
-                prt_speed(this_lbl);
-                continue;
+                this_color = SBAR_NORMAL;
+                this_text = "CUR EXP";
             }
-            if (this_name.operator ==("DEPTH"))
+            this_lbl->setText(color_string(this_text, this_color));
+            continue;
+        }
+        if (this_name.operator ==("EXP_CUR_INFO"))
+        {
+
+            QColor this_color;
+            QString this_text = number_to_formatted_string(p_ptr->exp);
+
+            if (p_ptr->exp < p_ptr->max_exp) this_color = SBAR_DRAINED;
+            else this_color = SBAR_NORMAL;
+
+            this_lbl->setText(color_string(this_text, this_color));
+            this_lbl->setAlignment(Qt::AlignRight);
+            continue;
+        }
+        if (this_name.operator ==("EXP_MAX_LABEL"))
+        {
+            if (p_ptr->exp == p_ptr->max_exp)
             {
-                QString depth;
-                if (!p_ptr->depth) depth = "Town";
-                else depth = QString("%1' (L%2)").arg(p_ptr->depth * 50).arg(p_ptr->depth);
-                this_lbl->setText(color_string(depth, SBAR_NORMAL));
+                this_lbl->setText("");
+                if (this_lbl->isVisible()) this_lbl->hide();
                 continue;
             }
-            if (this_name.operator ==("FEELING"))
+
+            if (!this_lbl->isVisible()) this_lbl->show();
+
+            QColor this_color = SBAR_NORMAL;
+            QString this_text = "Max Esp";
+            this_lbl->setText(color_string(this_text, this_color));
+            continue;
+        }
+        if (this_name.operator ==("EXP_MAX_INFO"))
+        {
+            if (p_ptr->exp == p_ptr->max_exp)
             {
-                prt_feeling(this_lbl);
+                this_lbl->setText("");
+                if (this_lbl->isVisible()) this_lbl->hide();
                 continue;
             }
-            if (this_name.operator ==("QUEST"))
+
+            if (!this_lbl->isVisible()) this_lbl->show();
+
+            QColor this_color = SBAR_NORMAL;
+
+            QString this_text = number_to_formatted_string(p_ptr->max_exp);
+
+            this_lbl->setText(color_string(this_text, this_color));
+            this_lbl->setAlignment(Qt::AlignRight);
+            continue;
+        }
+        if (this_name.operator ==("EXP_NEXT_LABEL"))
+        {
+            if (p_ptr->lev == z_info->max_level)
             {
-                byte attr;
-                QString quest = format_quest_indicator(&attr);
-                if (!quest.length())
-                {
-                    this_lbl->setText("");
-                    if (this_lbl->isVisible()) this_lbl->hide();
-                }
-                else
-                {
-                    if (!this_lbl->isVisible()) this_lbl->show();
-                    this_lbl->setText(color_string(quest, attr));
-                    this_lbl->setToolTip(describe_quest(guild_quest_level()));
-                }
+                this_lbl->setText("");
+                if (this_lbl->isVisible()) this_lbl->hide();
                 continue;
             }
+
+            if (!this_lbl->isVisible()) this_lbl->show();
+
+            QColor this_color;
+            QString this_text;
+            if (p_ptr->exp < p_ptr->max_exp)
+            {
+                this_color = SBAR_DRAINED;
+                this_text = "Next Level";
+            }
+            else
+            {
+                this_color = SBAR_NORMAL;
+                this_text = "NEXT LEVEL";
+            }
+            this_lbl->setText(color_string(this_text, this_color));
+            continue;
+        }
+        if (this_name.operator ==("EXP_NEXT_INFO"))
+        {
+            if (p_ptr->lev == z_info->max_level)
+            {
+                this_lbl->setText("");
+                if (this_lbl->isVisible()) this_lbl->hide();
+                continue;
+            }
+
+            if (!this_lbl->isVisible()) this_lbl->show();
+
+            QColor this_color;
+
+            s32b xp = (get_experience_by_level(p_ptr->lev-1) * p_ptr->expfact / 100L) - p_ptr->exp;
+
+            QString this_text = number_to_formatted_string(xp);
+
+            if (p_ptr->exp < p_ptr->max_exp) this_color = SBAR_DRAINED;
+            else this_color = SBAR_NORMAL;
+
+            this_lbl->setText(color_string(this_text, this_color));
+            this_lbl->setAlignment(Qt::AlignRight);
+            continue;
+        }
+        if (this_name.operator ==("GOLD_INFO"))
+        {
+            QString gold = number_to_formatted_string(p_ptr->au);
+            this_lbl->setText(color_string(gold, SBAR_NORMAL));
+            this_lbl->setAlignment(Qt::AlignRight);
+            continue;
+        }
+        if (this_name.operator ==("ARMOR CLASS"))
+        {
+            int known_ac = p_ptr->state.known_ac + p_ptr->state.known_to_a;
+            QString ac = number_to_formatted_string(known_ac);
+            this_lbl->setText(color_string(ac, SBAR_NORMAL));
+            this_lbl->setAlignment(Qt::AlignRight);
+            continue;
+        }
+        if (this_name.operator ==("SPEED"))
+        {
+            prt_speed(this_lbl);
+            continue;
+        }
+        if (this_name.operator ==("DEPTH"))
+        {
+            QString depth;
+            if (!p_ptr->depth) depth = "Town";
+            else depth = QString("%1' (L%2)").arg(p_ptr->depth * 50).arg(p_ptr->depth);
+            this_lbl->setText(color_string(depth, SBAR_NORMAL));
+            continue;
+        }
+        if (this_name.operator ==("FEELING"))
+        {
+            prt_feeling(this_lbl);
+            continue;
+        }
+        if (this_name.operator ==("QUEST"))
+        {
+            byte attr;
+            QString quest = format_quest_indicator(&attr);
+            if (!quest.length())
+            {
+                this_lbl->setText("");
+                if (this_lbl->isVisible()) this_lbl->hide();
+            }
+            else
+            {
+                if (!this_lbl->isVisible()) this_lbl->show();
+                this_lbl->setText(color_string(quest, attr));
+                this_lbl->setToolTip(describe_quest(guild_quest_level()));
+            }
+            continue;
         }
     }
 }
@@ -830,20 +892,50 @@ QString MainWindow::return_sidebar_text(bool label, int row)
 }
 
 
-void MainWindow::sidebar_display_mon(int m_idx)
+void MainWindow::sidebar_display_mon(int index)
 {
-    monster_type *m_ptr = mon_list + m_idx;
-    monster_race *r_ptr = r_info + m_ptr->r_idx;
+    QLabel *dir_label = list_sidebar_mon_direction.at(index);
+    QLabel *mon_pic = list_sidebar_mon_pics.at(index);
+    QLabel *mon_name = list_sidebar_mon_name.at(index);
+    QLabel *mon_health = list_sidebar_mon_health.at(index);
+    int m_idx = sidebar_monsters.at(index);
 
-    QHBoxLayout *mon_hlayout = new QHBoxLayout;
+    // Display nothing
+    if (p_ptr->timed[TMD_IMAGE] || !m_idx)
+    {
+        dir_label->hide();
+        mon_pic->hide();
+        mon_name->hide();
+        mon_health->hide();
+        return;
+    }
+
+    monster_type *m_ptr = &mon_list[m_idx];
+    monster_race *r_ptr = &r_info[m_ptr->r_idx];
 
     QFontMetrics metrics(font_sidebar_window);
 
     int font_hgt = metrics.height() + FONT_EXTRA;
     int font_wid = metrics.width('M') + FONT_EXTRA;
 
+    int dir_y = p_ptr->py - m_ptr->fy;
+    int dir_x = p_ptr->px - m_ptr->fx;
+    QString direction;
+    direction.clear();
+    if (dir_y)
+    {
+        if (dir_y < 0)direction.append("S");
+        else direction.append("N");
+        direction.append(QString("%1 ") .arg(ABS(dir_y)));
+    }
+    if (dir_x)
+    {
+        if (dir_x < 0)direction.append("E");
+        else direction.append("W");
+        direction.append(QString("%1 ") .arg(ABS(dir_x)));
+    }
+
     // Direction
-    QLabel *dir_label = new QLabel();
     QPixmap this_pixmap;
     // Give it a directional arrow icon
     switch (ui_get_dir_from_slope(p_ptr->py, p_ptr->px, m_ptr->fy, m_ptr->fx))
@@ -898,13 +990,14 @@ void MainWindow::sidebar_display_mon(int m_idx)
     // Using font_hgt for width is deliberate, so the pixmap is square.
     this_pixmap = this_pixmap.scaled(font_hgt, font_hgt);
     dir_label->setPixmap(this_pixmap);
-    mon_hlayout->addWidget(dir_label, Qt::AlignLeft);
+    dir_label->setToolTip(direction);
+    dir_label->show();
 
-    QLabel *mon_pic = new QLabel;
+    // Get the monster picture or letter
     if (ui_using_monster_tiles())
     {
         QPixmap pix = ui_get_tile(r_ptr->tile_id, FALSE);
-        pix = pix.scaled(font_hgt, font_wid);
+        pix = pix.scaled(font_hgt, font_hgt);
         mon_pic->setPixmap(pix);
     }
     else
@@ -912,20 +1005,16 @@ void MainWindow::sidebar_display_mon(int m_idx)
         mon_pic->setText(color_string(QString("'%1' ") .arg(r_ptr->d_char), r_ptr->d_color));
         mon_pic->setFont(font_sidebar_window);
     }
-    mon_hlayout->addWidget(mon_pic, Qt::AlignLeft);
+    mon_pic->show();
 
-    QLabel *mon_name = new QLabel(color_string(r_ptr->r_name_short, r_ptr->d_color));
-    mon_name->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+
+    //Display the monster name
+    mon_name->setText(color_string(r_ptr->r_name_short, r_ptr->d_color));
     mon_name->setToolTip(get_monster_description(m_ptr->r_idx, FALSE, NULL, FALSE));
     mon_name->setFont(font_sidebar_window);
-    mon_hlayout->addWidget(mon_name, Qt::AlignLeft);
-    mon_hlayout->addStretch(10);
+    mon_name->show();
 
-    mon_health_vlay->addLayout(mon_hlayout);
-
-    QLabel *mon_health = new QLabel;
-    mon_health->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-
+    // Dispay the monster current health/mana status bar
     int w = font_wid*14;
     int h = font_hgt;
     QPixmap mon_health_bar(w, h);
@@ -1010,21 +1099,16 @@ void MainWindow::sidebar_display_mon(int m_idx)
     mon_health->setToolTip(tooltip);
 
     mon_health->setPixmap(mon_health_bar);
-
-    mon_health_vlay->addWidget(mon_health);
+    mon_health->show();
 }
 
 
 void MainWindow::update_sidebar_mon()
 {
-
-
-    clear_layout(mon_health_vlay);
-
-    //Halluc
-    if (p_ptr->timed[TMD_IMAGE]) return;
-
     update_mon_sidebar_list();
+
+    // Ensure the Vector is large enough to avoid crashes below
+    while (sidebar_monsters.size() < SIDEBAR_MONSTER_MAX) sidebar_monsters.append(0);
 
     QFontMetrics metrics(font_sidebar_window);
 
@@ -1032,10 +1116,9 @@ void MainWindow::update_sidebar_mon()
     sidebar_scroll->setFixedWidth(font_wid*18);
     sidebar_widget->setFixedWidth(font_wid*18);
 
-
-    for (int i = 0; i < sidebar_monsters.size(); i++)
+    for (int i = 0; i < SIDEBAR_MONSTER_MAX; i++)
     {
-       sidebar_display_mon(sidebar_monsters.at(i));
+       sidebar_display_mon(i);
     }
 }
 
