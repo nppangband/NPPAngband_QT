@@ -2291,11 +2291,11 @@ RestDialog::RestDialog(int *_choice)
 {
     choice = *_choice = 0;
 
-    QVBoxLayout *lay1 = new QVBoxLayout;
+    QPointer<QVBoxLayout> lay1 = new QVBoxLayout;
     this->setLayout(lay1);
     //lay1->setContentsMargins(0, 0, 0, 0);
 
-    QLabel *lb = new QLabel("Pick the rest type");
+    QPointer<QLabel> lb = new QLabel("Pick the rest type");
     lb->setStyleSheet("font-weight: bold;");
     lay1->addWidget(lb);
 
@@ -2317,7 +2317,7 @@ RestDialog::RestDialog(int *_choice)
         QString lb = number_to_letter(i);
         lb += ") ";
         lb += choices[i].name;
-        QPushButton *btn = new QPushButton(lb);
+        QPointer<QPushButton> btn = new QPushButton(lb);
         btn->setProperty("choice", choices[i].value);
         btn->setStyleSheet("text-align: left");
         connect(btn, SIGNAL(clicked()), this, SLOT(on_clicked()));
@@ -2325,7 +2325,7 @@ RestDialog::RestDialog(int *_choice)
         lay1->addWidget(btn);
     }
 
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Cancel);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
     lay1->addWidget(buttons);
 

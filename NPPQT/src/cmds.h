@@ -7,6 +7,7 @@
 #include "src/player.h"
 #include <QKeyEvent>
 #include <QTabWidget>
+#include <QPointer>
 
 enum
 {
@@ -44,12 +45,10 @@ private slots:
 
 private:
 
-    QTabWidget *spell_dialog;
-    QWidget *spell_tab;
-    QLabel *main_prompt;
+    QPointer<QTabWidget> spell_dialog;
 
-    QButtonGroup *spell_select_group;
-    QButtonGroup *spell_help_group;
+    QPointer<QButtonGroup> spell_select_group;
+    QPointer<QButtonGroup> spell_help_group;
 
 
     // Functions to build the actual tabs

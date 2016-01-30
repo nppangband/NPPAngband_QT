@@ -417,6 +417,7 @@ void ui_update_sidebar_player()
 void ui_update_sidebar_mon()
 {
     if (!p_ptr->player_turn) return;
+    if (character_xtra) return;
     main_window->update_sidebar_mon();
     p_ptr->redraw &= ~(PR_SIDEBAR_MON);
 }
@@ -449,6 +450,7 @@ void ui_update_monlist()
     if (!p_ptr->player_turn) return;
     if (p_ptr->is_running()) return;
     if (p_ptr->is_resting()) return;
+    if (character_xtra) return;
     main_window->win_mon_list_update();
     p_ptr->redraw &= ~(PR_WIN_MONLIST);
 }
@@ -458,6 +460,7 @@ void ui_update_objlist()
     if (!p_ptr->player_turn) return;
     if (p_ptr->is_running()) return;
     if (p_ptr->is_resting()) return;
+    if (character_xtra) return;
     main_window->win_obj_list_update();
     p_ptr->redraw &= ~(PR_WIN_OBJLIST);
 }
@@ -467,6 +470,7 @@ void ui_update_mon_recall()
 {
     if (p_ptr->is_running()) return;
     if (p_ptr->is_resting()) return;
+    if (character_xtra) return;
     p_ptr->redraw &= ~(PR_WIN_MON_RECALL);
 
     p_ptr->monster_race_idx_old = p_ptr->monster_race_idx;
@@ -481,6 +485,7 @@ void ui_update_mon_recall()
 void ui_update_obj_recall()
 {
     if (p_ptr->is_running()) return;
+    if (character_xtra) return;
     main_window->win_obj_recall_update();
     p_ptr->redraw &= ~(PR_WIN_OBJ_RECALL);
 }
@@ -489,6 +494,7 @@ void ui_update_feat_recall()
 {
     if (p_ptr->is_running()) return;
     if (p_ptr->is_resting()) return;
+    if (character_xtra) return;
     main_window->win_feat_recall_update();
     p_ptr->redraw &= ~(PR_WIN_FEAT_RECALL);
 }
