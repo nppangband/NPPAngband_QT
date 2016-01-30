@@ -321,8 +321,8 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
 {
     object_proxy_model = new QSortFilterProxyModel;
     object_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
-    QVBoxLayout *main_layout = new QVBoxLayout;
-    QHBoxLayout *object_knowledge_hlay = new QHBoxLayout;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+    QPointer<QHBoxLayout> object_knowledge_hlay = new QHBoxLayout;
     main_layout->addLayout(object_knowledge_hlay);
 
     // To track the object kind info button
@@ -433,14 +433,14 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
         object_table->setItem(row, col++, squelch);
 
         // object info
-        QPushButton *info_button = new QPushButton();
+        QPointer<QPushButton> info_button = new QPushButton();
         qpushbutton_dark_background(info_button);
         info_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         object_table->setCellWidget(row, col++, info_button);
         object_button_group->addButton(info_button, i);
 
         // object settings
-        QPushButton *settings_button = new QPushButton();
+        QPointer<QPushButton> settings_button = new QPushButton();
         qpushbutton_dark_background(settings_button);
         settings_button->setIcon(QIcon(":/icons/lib/icons/settings_dark.png"));
         object_table->setCellWidget(row, col++, settings_button);
@@ -496,10 +496,9 @@ DisplayObjectKnowledge::DisplayObjectKnowledge(void)
     object_knowledge_hlay->addWidget(object_table);
 
     //Add a close button on the right side
-    QDialogButtonBox buttons;
-    buttons.setStandardButtons(QDialogButtonBox::Close);
-    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
-    main_layout->addWidget(&buttons);
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(buttons);
 
     //Filter for the first object group.
     filter_rows(0,0,0,0);
@@ -627,8 +626,8 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
 {
     ego_item_proxy_model = new QSortFilterProxyModel;
     ego_item_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
-    QVBoxLayout *main_layout = new QVBoxLayout;
-    QHBoxLayout *ego_item_knowledge_hlay = new QHBoxLayout;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+    QPointer<QHBoxLayout> ego_item_knowledge_hlay = new QHBoxLayout;
     main_layout->addLayout(ego_item_knowledge_hlay);
 
     // To track the ego_item info button
@@ -715,14 +714,14 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
         ego_item_table->setItem(row, col++, squelch);
 
         // Ego info
-        QPushButton *info_button = new QPushButton();
+        QPointer<QPushButton> info_button = new QPushButton();
         qpushbutton_dark_background(info_button);
         info_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         ego_item_table->setCellWidget(row, col++, info_button);
         ego_item_button_group->addButton(info_button, i);
 
         // Ego settings
-        QPushButton *settings_button = new QPushButton();
+        QPointer<QPushButton> settings_button = new QPushButton();
         qpushbutton_dark_background(settings_button);
         settings_button->setIcon(QIcon(":/icons/lib/icons/settings_dark.png"));
         settings_button->setStatusTip("Toggle Squelch Status");
@@ -783,10 +782,9 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     ego_item_knowledge_hlay->addWidget(ego_item_table);
 
     //Add a close button on the right side
-    QDialogButtonBox buttons;
-    buttons.setStandardButtons(QDialogButtonBox::Close);
-    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
-    main_layout->addWidget(&buttons);
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(buttons);
 
     //Filter for the first ego group.
     filter_rows(0,0,0,0);
@@ -894,8 +892,8 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
 {
     artifact_proxy_model = new QSortFilterProxyModel;
     artifact_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
-    QVBoxLayout *main_layout = new QVBoxLayout;
-    QHBoxLayout *artifact_knowledge_hlay = new QHBoxLayout;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+    QPointer<QHBoxLayout> artifact_knowledge_hlay = new QHBoxLayout;
     main_layout->addLayout(artifact_knowledge_hlay);
 
     // To track the artifact info button
@@ -973,14 +971,14 @@ DisplayArtifactKnowledge::DisplayArtifactKnowledge(void)
         artifact_table->setItem(row, col++, art_kind);
 
         // artifact info
-        QPushButton *info_button = new QPushButton();
+        QPointer<QPushButton> info_button = new QPushButton();
         qpushbutton_dark_background(info_button);
         info_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         artifact_table->setCellWidget(row, col++, info_button);
         artifact_button_group->addButton(info_button, i);
 
         // artifact settings
-        QPushButton *settings_button = new QPushButton();
+        QPointer<QPushButton> settings_button = new QPushButton();
         qpushbutton_dark_background(settings_button);
         settings_button->setIcon(QIcon(":/icons/lib/icons/settings_dark.png"));
         artifact_table->setCellWidget(row, col++, settings_button);

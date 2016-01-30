@@ -154,8 +154,8 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
 {
     terrain_proxy_model = new QSortFilterProxyModel;
     terrain_proxy_model->setSortCaseSensitivity(Qt::CaseSensitive);
-    QVBoxLayout *main_layout = new QVBoxLayout;
-    QHBoxLayout *terrain_knowledge_hlay = new QHBoxLayout;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+    QPointer<QHBoxLayout> terrain_knowledge_hlay = new QHBoxLayout;
     main_layout->addLayout(terrain_knowledge_hlay);
 
     // To track the feature info button
@@ -236,7 +236,7 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
         terrain_table->setItem(row, col++, feat_ltr);
 
         // feature info
-        QPushButton *new_button = new QPushButton();
+        QPointer<QPushButton> new_button = new QPushButton();
         qpushbutton_dark_background(new_button);
         new_button->setIcon(QIcon(":/icons/lib/icons/help_dark.png"));
         terrain_table->setCellWidget(row, col++, new_button);
@@ -290,10 +290,9 @@ DisplayTerrainKnowledge::DisplayTerrainKnowledge(void)
     terrain_knowledge_hlay->addWidget(terrain_table);
 
     //Add a close button on the right side
-    QDialogButtonBox buttons;
-    buttons.setStandardButtons(QDialogButtonBox::Close);
-    connect(&buttons, SIGNAL(rejected()), this, SLOT(close()));
-    main_layout->addWidget(&buttons);
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(buttons);
 
     //Filter for the first terrain group.
     filter_rows(0,0,0,0);
