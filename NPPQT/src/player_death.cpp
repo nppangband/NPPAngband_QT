@@ -78,70 +78,70 @@ void PlayerDeathDialog::death_spoilers(void)
 
 PlayerDeathDialog::PlayerDeathDialog(void)
 {
-    QVBoxLayout *vlay = new QVBoxLayout;
+    QPointer<QVBoxLayout> vlay = new QVBoxLayout;
 
-    QLabel *obj_label = new QLabel(QString("<b><big>Press 'Close' when ready:</big></b>"));
+    QPointer<QLabel> obj_label = new QLabel(QString("<b><big>Press 'Close' when ready:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
     vlay->addWidget(obj_label);
 
     vlay->addStretch(1);
 
     // Add the "Character Screen" button
-    QPushButton *char_screen_button = new QPushButton("Character Information");
+    QPointer<QPushButton> char_screen_button = new QPushButton("Character Information");
     char_screen_button->setToolTip("View player screen.");
     connect(char_screen_button, SIGNAL(clicked()), this, SLOT(death_player_info()));
     vlay->addWidget(char_screen_button);
 
     // Add the "Information" button
-    QPushButton *info_button = new QPushButton("  Equipment and Inventory Information  ");
+    QPointer<QPushButton> info_button = new QPushButton("  Equipment and Inventory Information  ");
     info_button->setToolTip("View equipment, inventory.");
     connect(info_button, SIGNAL(clicked()), this, SLOT(death_inven_info()));
     vlay->addWidget(info_button);
 
     // Add the  "Home Inventory" button
-    QPushButton *home_button = new QPushButton("Home Inventory");
+    QPointer<QPushButton> home_button = new QPushButton("Home Inventory");
     home_button->setToolTip("View inventory in player's home.");
     connect(home_button, SIGNAL(clicked()), this, SLOT(death_home_inven()));
     vlay->addWidget(home_button);
 
     // Add the "Messages" button
-    QPushButton *message_button = new QPushButton("Messages");
+    QPointer<QPushButton> message_button = new QPushButton("Messages");
     message_button->setToolTip("View recent messages.");
     connect(message_button, SIGNAL(clicked()), this, SLOT(death_messages()));
     vlay->addWidget(message_button);
 
     // Add the "Character Dump" button
-    QPushButton *file_dump_button = new QPushButton("Character Dump");
+    QPointer<QPushButton> file_dump_button = new QPushButton("Character Dump");
     file_dump_button->setToolTip("Create a final character dump.");
     connect(file_dump_button, SIGNAL(clicked()), this, SLOT(death_file_dump()));
     vlay->addWidget(file_dump_button);
 
     // Add the "Screenshot" button
-    QPushButton *screenshot_button = new QPushButton("Screenshot");
+    QPointer<QPushButton> screenshot_button = new QPushButton("Screenshot");
     screenshot_button->setToolTip("Create a final screenshot.");
     connect(screenshot_button, SIGNAL(clicked()), this, SLOT(death_screenshot()));
     vlay->addWidget(screenshot_button);
 
     // Add the "Scores" button
-    QPushButton *scores_button = new QPushButton("View Scores");
+    QPointer<QPushButton> scores_button = new QPushButton("View Scores");
     scores_button->setToolTip("View the scores for all characters.");
     connect(scores_button, SIGNAL(clicked()), this, SLOT(death_scores()));
     vlay->addWidget(scores_button);
 
     // Add the "Examine" button
-    QPushButton *examine_button = new QPushButton("Examine Items");
+    QPointer<QPushButton> examine_button = new QPushButton("Examine Items");
     examine_button->setToolTip("Examine Items in Player Inventory and Backpack.");
     connect(examine_button, SIGNAL(clicked()), this, SLOT(death_examine()));
     vlay->addWidget(examine_button);
 
     // Add the "View Notes" button
-    QPushButton *notes_button = new QPushButton("View Notes");
+    QPointer<QPushButton> notes_button = new QPushButton("View Notes");
     notes_button->setToolTip("View a log of all notes from the game.");
     connect(notes_button, SIGNAL(clicked()), this, SLOT(death_notes()));
     vlay->addWidget(notes_button);
 
     // Add the "Spoilers" button
-    QPushButton *spoilers_button = new QPushButton("Create Spoilers");
+    QPointer<QPushButton> spoilers_button = new QPushButton("Create Spoilers");
     spoilers_button->setToolTip("Create spoiler files.");
     connect(spoilers_button, SIGNAL(clicked()), this, SLOT(death_spoilers()));
     vlay->addWidget(spoilers_button);
@@ -149,7 +149,7 @@ PlayerDeathDialog::PlayerDeathDialog(void)
     vlay->addStretch(1);
 
     //Add a close button on the right side
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
     vlay->addWidget(buttons);
 

@@ -1274,7 +1274,7 @@ void BanishSelectDialog::add_monster_types(QGridLayout *return_layout)
 
         QString mon_name = (QString("%1 - %2") .arg(banish_ptr->mon_symbol) .arg(banish_ptr->mon_race));
 
-        QRadioButton *this_radiobutton = new QRadioButton(mon_name);
+        QPointer<QRadioButton> this_radiobutton = new QRadioButton(mon_name);
         if (!i) this_radiobutton->setChecked(TRUE);
         banish_choice_group->addButton(this_radiobutton, i);
         return_layout->addWidget(this_radiobutton, row++, col, Qt::AlignLeft);
@@ -1301,14 +1301,14 @@ BanishSelectDialog::BanishSelectDialog(void)
 
     monster_banish_choices *banish_ptr;
 
-    QVBoxLayout *vlay = new QVBoxLayout;
+    QPointer<QVBoxLayout> vlay = new QVBoxLayout;
 
-    QLabel *obj_label = new QLabel(QString("<b><big>Please select a monster type to banish:</big></b>"));
+    QPointer<QLabel> obj_label = new QLabel(QString("<b><big>Please select a monster type to banish:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
     vlay->addWidget(obj_label);
     vlay->addStretch();
 
-    QGridLayout *banish_choices = new QGridLayout;
+    QPointer<QGridLayout> banish_choices = new QGridLayout;
     vlay->addLayout(banish_choices);
     add_monster_types(banish_choices);
 
@@ -3657,8 +3657,8 @@ DisplaySelfKnowledge::DisplaySelfKnowledge()
 
 
     // Display the info
-    QVBoxLayout *main_layout = new QVBoxLayout;
-    QTextEdit *message_area = new QTextEdit;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+    QPointer<QTextEdit> message_area = new QTextEdit;
 
     main_layout->addWidget(message_area);
     message_area->setReadOnly(true);
@@ -3674,7 +3674,7 @@ DisplaySelfKnowledge::DisplaySelfKnowledge()
         message_area->insertPlainText(QString("%1<br>") .arg(info.at(x)));
     }
 
-    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(buttons);
 

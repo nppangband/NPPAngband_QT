@@ -5,6 +5,7 @@
 #include <QDate>
 #include "src/npp.h"
 #include "src/store.h"
+#include <QPointer>
 
 
 
