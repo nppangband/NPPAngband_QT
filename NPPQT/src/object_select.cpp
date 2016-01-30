@@ -156,7 +156,7 @@ void ObjectSelectDialog::add_object_button(object_type *o_ptr, s16b item_slot, Q
     QString style = QString("color: %1;").arg(get_object_color(o_ptr).name());
     style.append(QString("text-align: left; font-weight: bold;"));
 
-    QPushButton *object_button = new QPushButton(desc);
+    QPointer<QPushButton> object_button = new QPushButton(desc);
     object_button->setStyleSheet(style);
     object_button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     object_button->setObjectName(QString("%1") .arg(item_slot));
@@ -214,21 +214,21 @@ void ObjectSelectDialog::floor_items_count(int mode, int sq_y, int sq_x)
 // Make the tab for the widget
 void ObjectSelectDialog::build_floor_tab()
 {
-    QVBoxLayout *vlay_floor = new QVBoxLayout;
+    QPointer<QVBoxLayout> vlay_floor = new QVBoxLayout;
     floor_tab = new QWidget;
     scroll_floor = new QScrollArea;
     floor_tab->setLayout(vlay_floor);
     scroll_floor->setWidget(floor_tab);
     scroll_floor->setWidgetResizable(TRUE);
 
-    QGridLayout *object_layout = new QGridLayout;
+    QPointer<QGridLayout> object_layout = new QGridLayout;
     vlay_floor->addLayout(object_layout);
     vlay_floor->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("<b><big>Floor Items</big></b>");
-    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
-    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
+    QPointer<QLabel> object_header = new QLabel("<b><big>Floor Items</big></b>");
+    QPointer<QLabel> weight_header = new QLabel("<b><big>Weight</big></b>");
+    QPointer<QLabel> help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -286,21 +286,21 @@ void ObjectSelectDialog::inven_items_count(int mode)
 
 void ObjectSelectDialog::build_inven_tab()
 {
-    QVBoxLayout *vlay_inven = new QVBoxLayout;
+    QPointer<QVBoxLayout> vlay_inven = new QVBoxLayout;
     inven_tab = new QWidget;
     scroll_inven = new QScrollArea;
     inven_tab->setLayout(vlay_inven);
     scroll_inven->setWidget(inven_tab);
     scroll_inven->setWidgetResizable(TRUE);
 
-    QGridLayout *object_layout = new QGridLayout;
+    QPointer<QGridLayout> object_layout = new QGridLayout;
     vlay_inven->addLayout(object_layout);
     vlay_inven->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("<b><big>Inventory Items</big></b>");
-    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
-    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
+    QPointer<QLabel> object_header = new QLabel("<b><big>Inventory Items</big></b>");
+    QPointer<QLabel> weight_header = new QLabel("<b><big>Weight</big></b>");
+    QPointer<QLabel> help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -358,21 +358,21 @@ void ObjectSelectDialog::equip_items_count(int mode)
 
 void ObjectSelectDialog::build_equip_tab()
 {
-    QVBoxLayout *vlay_equip = new QVBoxLayout;
+    QPointer<QVBoxLayout> vlay_equip = new QVBoxLayout;
     equip_tab = new QWidget;
     scroll_equip = new QScrollArea;
     equip_tab->setLayout(vlay_equip);
     scroll_equip->setWidget(equip_tab);
     scroll_equip->setWidgetResizable(TRUE);
 
-    QGridLayout *object_layout = new QGridLayout;
+    QPointer<QGridLayout> object_layout = new QGridLayout;
     vlay_equip->addLayout(object_layout);
     vlay_equip->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("<b><big>Equipment Items</big></b>");
-    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
-    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
+    QPointer<QLabel> object_header = new QLabel("<b><big>Equipment Items</big></b>");
+    QPointer<QLabel> weight_header = new QLabel("<b><big>Weight</big></b>");
+    QPointer<QLabel> help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -432,21 +432,21 @@ void ObjectSelectDialog::quiver_items_count(int mode)
 
 void ObjectSelectDialog::build_quiver_tab()
 {
-    QVBoxLayout *vlay_quiver = new QVBoxLayout;
+    QPointer<QVBoxLayout> vlay_quiver = new QVBoxLayout;
     quiver_tab = new QWidget;
     scroll_quiver = new QScrollArea;
     quiver_tab->setLayout(vlay_quiver);
     scroll_quiver->setWidget(quiver_tab);
     scroll_quiver->setWidgetResizable(TRUE);
 
-    QGridLayout *object_layout = new QGridLayout;
+    QPointer<QGridLayout> object_layout = new QGridLayout;
     vlay_quiver->addLayout(object_layout);
     vlay_quiver->addStretch(1);
 
     // Give each one titles
-    QLabel *object_header = new QLabel("<b><big>Quiver Items</big></b>");
-    QLabel *weight_header = new QLabel("<b><big>Weight</big></b>");
-    QLabel *help_header = new QLabel("<b><big>Info</big></b>");
+    QPointer<QLabel> object_header = new QLabel("<b><big>Quiver Items</big></b>");
+    QPointer<QLabel> weight_header = new QLabel("<b><big>Weight</big></b>");
+    QPointer<QLabel> help_header = new QLabel("<b><big>Info</big></b>");
     object_header->setAlignment(Qt::AlignLeft);
     weight_header->setAlignment(Qt::AlignRight);
     help_header->setAlignment(Qt::AlignHCenter);
@@ -590,13 +590,13 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, QString failur
         tab_order.append(TAB_QUIVER);
     }
 
-    QDialogButtonBox *buttons = new QDialogButtonBox();
-    QPushButton *button_left = new QPushButton();
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox();
+    QPointer<QPushButton> button_left = new QPushButton();
     button_left->setText("<");
     button_left->setToolTip("Pressing '<' also moves the active tab to the left.");
     connect(button_left, SIGNAL(clicked()), this, SLOT(move_left()));
     buttons->addButton(button_left, QDialogButtonBox::ActionRole);
-    QPushButton *button_right = new QPushButton();
+    QPointer<QPushButton> button_right = new QPushButton();
     button_right->setText(">");
     button_right->setToolTip("Pressing '>' also moves the active tab to the right.");
     connect(button_right, SIGNAL(clicked()), this, SLOT(move_right()));
@@ -608,7 +608,7 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, QString failur
     byte tab_idx = find_starting_tab(mode);
     object_tabs->setCurrentIndex(tab_idx);
 
-    QVBoxLayout *main_layout = new QVBoxLayout;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
 
     main_layout->addWidget(main_prompt);
     main_layout->addWidget(object_tabs);

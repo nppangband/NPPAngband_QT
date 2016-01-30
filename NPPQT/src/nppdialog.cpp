@@ -47,7 +47,7 @@ NPPDialog::NPPDialog(QWidget *parent, int _padding, qreal _max_ratio) :
     scrollArea->setWidgetResizable(TRUE);
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QPointer<QVBoxLayout> layout = new QVBoxLayout;
     this->setLayout(layout);
 
     layout->addWidget(scrollArea);
