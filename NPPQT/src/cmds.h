@@ -141,7 +141,6 @@ extern void do_cmd_findpath(int y, int x);
 // cmd_traps.cpp
 extern bool make_monster_trap(void);
 extern void py_set_trap(int y, int x);
-extern bool py_modify_trap(int y, int x);
 extern void command_make_trap(cmd_arg args);
 extern void do_cmd_make_trap(int dir);
 
