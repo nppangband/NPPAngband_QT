@@ -22,12 +22,12 @@
 
 OptionsDialog::OptionsDialog()
 {    
-    QWidget *central = new QWidget;
-    QVBoxLayout *lay1 = new QVBoxLayout;
+    QPointer<QWidget> central = new QWidget;
+    QPointer<QVBoxLayout> lay1 = new QVBoxLayout;
     central->setLayout(lay1);
     this->setClient(central);
 
-    QTabWidget *tabs = new QTabWidget;
+    QPointer<QTabWidget> tabs = new QTabWidget;
     lay1->addWidget(tabs);
 
     QString titles[] = {
@@ -40,8 +40,8 @@ OptionsDialog::OptionsDialog()
     };
 
     for (int t = 0; titles[t] != ""; t++)  {
-        QWidget *wid2 = new QWidget;
-        QVBoxLayout *lay2 = new QVBoxLayout;
+        QPointer<QWidget> wid2 = new QWidget;
+        QPointer<QVBoxLayout> lay2 = new QVBoxLayout;
         wid2->setLayout(lay2);
 
         tabs->addTab(wid2, titles[t]);
@@ -62,7 +62,7 @@ OptionsDialog::OptionsDialog()
             option_entry *opt = options + idx;
             if (opt->name.isEmpty()) continue;
 
-            QCheckBox *chk = new QCheckBox(opt->name + " - " + opt->description);
+            QPointer<QCheckBox> chk = new QCheckBox(opt->name + " - " + opt->description);
             chk->setChecked(op_ptr->opt[idx]);
             chk->setProperty("opt_idx", idx);
             chk->setToolTip(get_help_topic(QString("option_info"), opt->name));
@@ -82,33 +82,33 @@ OptionsDialog::OptionsDialog()
         lay2->addStretch(1);
     }
 
-    QWidget *wid3 = new QWidget;
-    QHBoxLayout *lay3 = new QHBoxLayout;
+    QPointer<QWidget> wid3 = new QWidget;
+    QPointer<QHBoxLayout> lay3 = new QHBoxLayout;
     wid3->setLayout(lay3);
 
     lay1->addWidget(wid3);
 
     lay3->addStretch(1);
 
-    QPushButton *btn1 = new QPushButton(tr("Save"));
+    QPointer<QPushButton> btn1 = new QPushButton(tr("Save"));
     lay3->addWidget(btn1);
     connect(btn1, SIGNAL(clicked()), this, SLOT(on_save()));
 
-    QPushButton *btn2 = new QPushButton(tr("Cancel"));
+    QPointer<QPushButton> btn2 = new QPushButton(tr("Cancel"));
     lay3->addWidget(btn2);
     connect(btn2, SIGNAL(clicked()), this, SLOT(reject()));
 
-    QWidget *wid4 = new QWidget;
-    QGridLayout *lay4 = new QGridLayout;
+    QPointer<QWidget> wid4 = new QWidget;
+    QPointer<QGridLayout> lay4 = new QGridLayout;
     lay4->setColumnStretch(1, 1);
     wid4->setLayout(lay4);
 
     tabs->addTab(wid4, "Misc.");
 
-    QLabel *lb = new QLabel("Hitpoint warning");
+    QPointer<QLabel> lb = new QLabel("Hitpoint warning");
     lay4->addWidget(lb, 0, 0);
 
-    QSpinBox *spin1 = new QSpinBox;
+    QPointer<QSpinBox> spin1 = new QSpinBox;
     spin1->setObjectName("spin_hp_warn");
     spin1->setMinimum(0);
     spin1->setMaximum(9);
@@ -131,7 +131,7 @@ void OptionsDialog::on_save()
         op_ptr->opt[idx] = chk->isChecked();
     }
 
-    QSpinBox *spin1 = this->findChild<QSpinBox *>("spin_hp_warn");
+    QPointer<QSpinBox> spin1 = this->findChild<QSpinBox *>("spin_hp_warn");
     op_ptr->hitpoint_warn = spin1->value();
 
     this->accept();
