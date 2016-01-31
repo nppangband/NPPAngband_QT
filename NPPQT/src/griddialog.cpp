@@ -205,8 +205,8 @@ GridDialog::GridDialog(int _y, int _x): NPPDialog()
     lay3->setContentsMargins(0, 0, 0, 0);
     area3->setLayout(lay3);
 
-    spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
-    lay3->addItem(spacer);
+    QSpacerItem *spacer2 = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed);
+    lay3->addItem(spacer2);
 
     QPointer<QPushButton> btn_close = new QPushButton("Ok");
     lay3->addWidget(btn_close);

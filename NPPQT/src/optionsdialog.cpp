@@ -125,7 +125,8 @@ OptionsDialog::OptionsDialog()
 void OptionsDialog::on_save()
 {
     QList<QCheckBox *> ops = this->findChildren<QCheckBox *>();
-    for (int i = 0; i < ops.size(); i++) {
+    for (int i = 0; i < ops.size(); i++)
+    {
         QCheckBox *chk = ops.at(i);
         int idx = chk->property("opt_idx").toInt();
         op_ptr->opt[idx] = chk->isChecked();

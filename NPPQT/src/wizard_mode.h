@@ -35,7 +35,7 @@ private slots:
 
 private:
 
-    QComboBox *art_choice;
+    QPointer<QComboBox> art_choice;
     QString get_artifact_display_name(int a_idx);
 
     int art_num;
@@ -53,7 +53,7 @@ private slots:
 
 private:
 
-    QComboBox *obj_choice;
+    QPointer<QComboBox> obj_choice;
     QString get_object_display_name(int o_idx);
 
     int obj_num;
@@ -71,7 +71,7 @@ private slots:
 
 private:
 
-    QComboBox *mon_choice;
+    QPointer<QComboBox> mon_choice;
     QString get_mon_display_name(int r_idx);
 
     int mon_num;
@@ -89,7 +89,7 @@ private slots:
 
 private:
 
-    QComboBox *feat_choice;
+    QPointer<QComboBox> feat_choice;
     QString get_feat_display_name(int f_idx);
 
     int feat_num;
@@ -104,10 +104,10 @@ public:
     explicit WizardModeDialog(void);
 
 private:
-    QLabel *main_prompt;
-    QLabel *player_section;
-    QLabel *dungeon_section;
-    QLabel *object_section;
+    QPointer<QComboBox> main_prompt;
+    QPointer<QComboBox> player_section;
+    QPointer<QComboBox> dungeon_section;
+    QPointer<QComboBox> object_section;
 
     QDialogButtonBox *buttons;
 

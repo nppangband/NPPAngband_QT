@@ -7,6 +7,7 @@
 #include <QColor>
 #include <QSpinBox>
 #include <QDialog>
+#include <QPointer>
 
 typedef struct letters_and_numbers letters_and_numbers;
 
@@ -45,7 +46,7 @@ private slots:
 
 private:
 
-    QSpinBox *this_quantity;
+    QPointer<QSpinBox> this_quantity;
 };
 
 

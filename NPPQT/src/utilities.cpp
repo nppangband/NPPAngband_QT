@@ -295,9 +295,9 @@ void GetQuantityDialog::update_quantity(int new_value)
 
 GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value)
 {
-    QVBoxLayout *main_layout = new QVBoxLayout;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
 
-    QLabel *header_main = new QLabel(QString("<b><h2>%1</b></h2>") .arg(prompt));
+    QPointer<QLabel> header_main = new QLabel(QString("<b><h2>%1</b></h2>") .arg(prompt));
     header_main->setAlignment(Qt::AlignCenter);
     main_layout->addWidget(header_main);
 
@@ -315,13 +315,13 @@ GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value
     connect(this_quantity, SIGNAL(valueChanged(int)), this, SLOT(update_quantity(int)));
 
     // Add buttons for min value, max value, OK, and cancel
-    QDialogButtonBox *buttons = new QDialogButtonBox();
-    QPushButton *min_button = new QPushButton();
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox();
+    QPointer<QPushButton> min_button = new QPushButton();
     min_button->setText(QString("Min - %1") .arg(min));
     min_button->setToolTip("Use the minimum possible value");
     connect(min_button, SIGNAL(clicked()), this, SLOT(min_number_button()));
     buttons->addButton(min_button, QDialogButtonBox::ActionRole);
-    QPushButton *max_button = new QPushButton();
+    QPointer<QPushButton> max_button = new QPushButton();
     max_button->setText(QString("Max - %1") .arg(max));
     max_button->setToolTip("Use the maximum possible value");
     connect(max_button, SIGNAL(clicked()), this, SLOT(max_number_button()));
