@@ -3,6 +3,7 @@
 
 #include <QComboBox>
 #include <QDialogButtonBox>
+#include <QPointer>
 
 #include "src/npp.h"
 
@@ -104,10 +105,10 @@ public:
     explicit WizardModeDialog(void);
 
 private:
-    QPointer<QComboBox> main_prompt;
-    QPointer<QComboBox> player_section;
-    QPointer<QComboBox> dungeon_section;
-    QPointer<QComboBox> object_section;
+    QPointer<QLabel> main_prompt;
+    QPointer<QLabel> player_section;
+    QPointer<QLabel> dungeon_section;
+    QPointer<QLabel> object_section;
 
     QDialogButtonBox *buttons;
 

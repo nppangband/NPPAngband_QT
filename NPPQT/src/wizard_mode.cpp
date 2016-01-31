@@ -75,13 +75,13 @@ EditObjectDialog::EditObjectDialog(void)
 
     QPointer<QGridLayout> edit_info = new QGridLayout;
 
-    QPointer<QComboBox> obj_label = new QLabel(QString("<b><big>Editing %1</big></b>") .arg(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL)));
+    QPointer<QLabel>  obj_label = new QLabel(QString("<b><big>Editing %1</big></b>") .arg(object_desc(o_ptr, ODESC_PREFIX | ODESC_FULL)));
     obj_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(obj_label);
 
     // Edit quantity
-    QPointer<QComboBox> quant_label = new QLabel("Edit quantity");
+    QPointer<QLabel>  quant_label = new QLabel("Edit quantity");
     QPointer<QSpinBox> quant_spinner = new QSpinBox;
     quant_spinner->setRange(1,MAX_STACK_SIZE);
     quant_spinner->setValue(o_ptr->number);
@@ -89,7 +89,7 @@ EditObjectDialog::EditObjectDialog(void)
     edit_info->addWidget(quant_spinner, 1, 1);
 
     // Pval
-    QPointer<QComboBox> pval_label = new QLabel("Edit pval");
+    QPointer<QLabel>  pval_label = new QLabel("Edit pval");
     QPointer<QSpinBox> pval_spinner = new QSpinBox;
     pval_spinner->setRange(-99,99);
     pval_spinner->setValue(o_ptr->pval);
@@ -102,7 +102,7 @@ EditObjectDialog::EditObjectDialog(void)
     }
 
     // To-hit
-    QPointer<QComboBox> to_h_label = new QLabel("Edit To-Hit");
+    QPointer<QLabel>  to_h_label = new QLabel("Edit To-Hit");
     QPointer<QSpinBox> to_h_spinner = new QSpinBox;
     to_h_spinner->setRange(-99,99);
     to_h_spinner->setValue(o_ptr->to_h);
@@ -116,7 +116,7 @@ EditObjectDialog::EditObjectDialog(void)
     }
 
     // To-damage
-    QPointer<QComboBox> to_d_label = new QLabel("Edit To-Dam");
+    QPointer<QLabel>  to_d_label = new QLabel("Edit To-Dam");
     QPointer<QSpinBox> to_d_spinner = new QSpinBox;
     to_d_spinner->setRange(-99,99);
     to_d_spinner->setValue(o_ptr->to_d);
@@ -131,7 +131,7 @@ EditObjectDialog::EditObjectDialog(void)
     }
 
     // Armor Class
-    QPointer<QComboBox> to_ac_label = new QLabel("Edit Armor Class");
+    QPointer<QLabel>  to_ac_label = new QLabel("Edit Armor Class");
     QPointer<QSpinBox> to_ac_spinner = new QSpinBox;
     to_ac_spinner->setRange(-99,99);
     to_ac_spinner->setValue(o_ptr->to_d);
@@ -179,7 +179,7 @@ EditCharacterDialog::EditCharacterDialog(void)
 
     // First allow the 6 stats to be edited
     // Strength
-    QPointer<QComboBox> str_label = new QLabel("Strength");
+    QPointer<QLabel>  str_label = new QLabel("Strength");
     QPointer<QSpinBox> str_spinner = new QSpinBox;
     str_spinner->setRange(3,118);
     str_spinner->setValue(p_ptr->stat_base_cur[A_STR]);
@@ -187,7 +187,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(str_spinner, 1, 1);
 
     // Intelligence
-    QPointer<QComboBox> int_label = new QLabel("Intelligence");
+    QPointer<QLabel>  int_label = new QLabel("Intelligence");
     QPointer<QSpinBox> int_spinner = new QSpinBox;
     int_spinner->setRange(3,118);
     int_spinner->setValue(p_ptr->stat_base_cur[A_INT]);
@@ -195,7 +195,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(int_spinner, 2, 1);
 
     // Wisdom
-    QPointer<QComboBox> wis_label = new QLabel("Wisdom");
+    QPointer<QLabel>  wis_label = new QLabel("Wisdom");
     QPointer<QSpinBox> wis_spinner = new QSpinBox;
     wis_spinner->setRange(3,118);
     wis_spinner->setValue(p_ptr->stat_base_cur[A_WIS]);
@@ -203,7 +203,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(wis_spinner, 3, 1);
 
     // Dexterity
-    QPointer<QComboBox> dex_label = new QLabel("Dexterity");
+    QPointer<QLabel>  dex_label = new QLabel("Dexterity");
     QPointer<QSpinBox> dex_spinner = new QSpinBox;
     dex_spinner->setRange(3,118);
     dex_spinner->setValue(p_ptr->stat_base_cur[A_DEX]);
@@ -211,7 +211,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(dex_spinner, 4, 1);
 
     // Constitution
-    QPointer<QComboBox> con_label = new QLabel("Constitution");
+    QPointer<QLabel>  con_label = new QLabel("Constitution");
     QPointer<QSpinBox> con_spinner = new QSpinBox;
     con_spinner->setRange(3,118);
     con_spinner->setValue(p_ptr->stat_base_cur[A_CON]);
@@ -219,7 +219,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(con_spinner, 5, 1);
 
     // Charisma
-    QPointer<QComboBox> chr_label = new QLabel("Charisma");
+    QPointer<QLabel>  chr_label = new QLabel("Charisma");
     QPointer<QSpinBox> chr_spinner = new QSpinBox;
     chr_spinner->setRange(3,118);
     chr_spinner->setValue(p_ptr->stat_base_cur[A_CHR]);
@@ -227,7 +227,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(chr_spinner, 6, 1);
 
     // Gold
-    QPointer<QComboBox> gold_label = new QLabel("Gold");
+    QPointer<QLabel>  gold_label = new QLabel("Gold");
     QPointer<QSpinBox> gold_spinner = new QSpinBox;
     gold_spinner->setRange(0,500000000);
     gold_spinner->setValue(p_ptr->au);
@@ -236,7 +236,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(gold_spinner, 7, 1);
 
     // Experience
-    QPointer<QComboBox> exp_label = new QLabel("Experience");
+    QPointer<QLabel>  exp_label = new QLabel("Experience");
     QPointer<QSpinBox> exp_spinner = new QSpinBox;
     exp_spinner->setRange(0,10000000);
     exp_spinner->setValue(p_ptr->max_exp);
@@ -245,7 +245,7 @@ EditCharacterDialog::EditCharacterDialog(void)
     edit_info->addWidget(exp_spinner, 8, 1);
 
         // Experience
-    QPointer<QComboBox> fame_label = new QLabel("Fame");
+    QPointer<QLabel>  fame_label = new QLabel("Fame");
     QPointer<QSpinBox> fame_spinner = new QSpinBox;
     fame_spinner->setRange(0,5000);
     fame_spinner->setValue(p_ptr->q_fame);
@@ -325,7 +325,7 @@ MakeArtifactDialog::MakeArtifactDialog(void)
     object_type *i_ptr = &object_type_body;
 
 
-    QPointer<QComboBox> obj_label = new QLabel(QString("<b><big>Please select an artifact:</big></b>"));
+    QPointer<QLabel>  obj_label = new QLabel(QString("<b><big>Please select an artifact:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(obj_label);
@@ -428,7 +428,7 @@ MakeObjectDialog::MakeObjectDialog(void)
     object_type *i_ptr = &object_type_body;
 
 
-    QPointer<QComboBox> obj_label = new QLabel(QString("<b><big>Please select an object:</big></b>"));
+    QPointer<QLabel>  obj_label = new QLabel(QString("<b><big>Please select an object:</big></b>"));
     obj_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(obj_label);
@@ -520,7 +520,7 @@ MakeMonsterDialog::MakeMonsterDialog(void)
     mon_choice = new QComboBox;
     int y, x;
 
-    QPointer<QComboBox> mon_label = new QLabel(QString("<b><big>Please select a monster:</big></b>"));
+    QPointer<QLabel>  mon_label = new QLabel(QString("<b><big>Please select a monster:</big></b>"));
     mon_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(mon_label);
@@ -608,7 +608,7 @@ MakeFeatureDialog::MakeFeatureDialog(void)
     QPointer<QVBoxLayout> vlay = new QVBoxLayout;
     feat_choice = new QComboBox;
 
-    QPointer<QComboBox> feat_label = new QLabel(QString("<b><big>Please select a feature:</big></b>"));
+    QPointer<QLabel>  feat_label = new QLabel(QString("<b><big>Please select a feature:</big></b>"));
     feat_label->setAlignment(Qt::AlignCenter);
 
     vlay->addWidget(feat_label);
