@@ -44,44 +44,44 @@ void MainWindow::create_sidebar()
 
     create_targeting_sidebar();
 
-    QHBoxLayout *player_info_hlay = new QHBoxLayout;
+    QPointer<QHBoxLayout> player_info_hlay = new QHBoxLayout;
     player_info_vlay->addLayout(player_info_hlay);
-    QVBoxLayout *player_info_labels = new QVBoxLayout;
-    QVBoxLayout *player_info_data = new QVBoxLayout;
+    QPointer<QVBoxLayout> player_info_labels = new QVBoxLayout;
+    QPointer<QVBoxLayout> player_info_data = new QVBoxLayout;
     player_info_hlay->addLayout(player_info_labels);
     player_info_hlay->addLayout(player_info_data);
 
     // Level
-    QLabel *level_label = new QLabel;
+    QPointer<QLabel> level_label = new QLabel;
     level_label->setText(color_string("LEVEL", SBAR_NORMAL));
     level_label->setObjectName("LEVEL_LABEL");
     player_info_labels->addWidget(level_label, Qt::AlignLeft);
     level_label->setToolTip(get_help_topic("character_info", "Player Level"));
-    QLabel *level_info = new QLabel;
+    QPointer<QLabel> level_info = new QLabel;
     level_info->setObjectName("LEVEL_INFO");
     player_info_data->addWidget(level_info, Qt::AlignRight);
     list_sidebar_labels.append(level_label);
     list_sidebar_labels.append(level_info);
 
     // Hitpoints
-    QLabel *hp_label = new QLabel;
+    QPointer<QLabel> hp_label = new QLabel;
     hp_label->setText(color_string("HIT POINTS", SBAR_NORMAL));
     hp_label->setObjectName("HP_LABEL");
     player_info_labels->addWidget(hp_label, Qt::AlignLeft);
     hp_label->setToolTip(get_help_topic("character_info", "Hit Points"));
-    QLabel *hp_info = new QLabel;
+    QPointer<QLabel> hp_info = new QLabel;
     hp_info->setObjectName("HP_INFO");
     player_info_data->addWidget(hp_info, Qt::AlignRight);
     list_sidebar_labels.append(hp_label);
     list_sidebar_labels.append(hp_info);
 
     // SpellPoints
-    QLabel *sp_label = new QLabel;
+    QPointer<QLabel> sp_label = new QLabel;
     sp_label->setText(color_string("SP", SBAR_NORMAL));
     player_info_labels->addWidget(sp_label, Qt::AlignLeft);
     sp_label->setObjectName("SP_LABEL");
     sp_label->setToolTip(get_help_topic("character_info", "Spell Points"));
-    QLabel *sp_info = new QLabel;
+    QPointer<QLabel> sp_info = new QLabel;
     sp_info->setObjectName("SP_INFO");
     player_info_data->addWidget(sp_info, Qt::AlignRight);
     sp_label->hide();
@@ -90,48 +90,48 @@ void MainWindow::create_sidebar()
     list_sidebar_labels.append(sp_info);
 
     // Current Experience
-    QLabel *exp_cur_label = new QLabel;
+    QPointer<QLabel> exp_cur_label = new QLabel;
     exp_cur_label->setText(color_string("CUR EXP ", SBAR_NORMAL));
     exp_cur_label->setObjectName("EXP_CUR_LABEL");
     exp_cur_label->setToolTip(get_help_topic("character_info", "Player Current Experience"));
     player_info_labels->addWidget(exp_cur_label, Qt::AlignLeft);
-    QLabel *exp_cur_info = new QLabel;
+    QPointer<QLabel> exp_cur_info = new QLabel;
     exp_cur_info->setObjectName("EXP_CUR_INFO");
     player_info_data->addWidget(exp_cur_info, Qt::AlignRight);
     list_sidebar_labels.append(exp_cur_label);
     list_sidebar_labels.append(exp_cur_info);
 
     // Max Experience
-    QLabel *exp_max_label = new QLabel;
+    QPointer<QLabel> exp_max_label = new QLabel;
     exp_max_label->setText(color_string("MAX EXP", SBAR_NORMAL));
     exp_max_label->setObjectName("EXP_MAX_LABEL");
     exp_max_label->setToolTip(get_help_topic("character_info", "Player Maximum Experience"));
     player_info_labels->addWidget(exp_max_label, Qt::AlignLeft);
-    QLabel *exp_max_info = new QLabel;
+    QPointer<QLabel> exp_max_info = new QLabel;
     exp_max_info->setObjectName("EXP_MAX_INFO");
     player_info_data->addWidget(exp_max_info, Qt::AlignRight);
     list_sidebar_labels.append(exp_max_label);
     list_sidebar_labels.append(exp_max_info);
 
     // Next Level
-    QLabel *exp_next_label = new QLabel;
+    QPointer<QLabel> exp_next_label = new QLabel;
     exp_next_label->setText(color_string("EXP", SBAR_NORMAL));
     exp_next_label->setObjectName("EXP_NEXT_LABEL");
     exp_next_label->setToolTip(get_help_topic("character_info", "Player Experience Advance"));
     player_info_labels->addWidget(exp_next_label, Qt::AlignLeft);
-    QLabel *exp_next_info = new QLabel;
+    QPointer<QLabel> exp_next_info = new QLabel;
     exp_next_info->setObjectName("EXP_NEXT_INFO");
     player_info_data->addWidget(exp_next_info, Qt::AlignRight);
     list_sidebar_labels.append(exp_next_label);
     list_sidebar_labels.append(exp_next_info);
 
     // gold
-    QLabel *gold_label = new QLabel;
+    QPointer<QLabel> gold_label = new QLabel;
     gold_label->setText(color_string("GOLD", SBAR_NORMAL));
     gold_label->setObjectName("GOLD_LABEL");
     gold_label->setToolTip(get_help_topic("character_info", "Gold"));
     player_info_labels->addWidget(gold_label, Qt::AlignLeft);
-    QLabel *gold_info = new QLabel;
+    QPointer<QLabel> gold_info = new QLabel;
     gold_info->setObjectName("GOLD_INFO");
     player_info_data->addWidget(gold_info, Qt::AlignRight);
     list_sidebar_labels.append(gold_label);
@@ -140,12 +140,12 @@ void MainWindow::create_sidebar()
     // stats
     for (int i = 0; i < A_MAX; i++)
     {
-        QLabel *stat_label = new QLabel;
+        QPointer<QLabel> stat_label = new QLabel;
         QString stat_name = (QString("STAT_LABEL_%1") .arg(i));
         stat_label->setObjectName(stat_name);
         stat_label->setToolTip(stat_entry(i));
         player_info_labels->addWidget(stat_label, Qt::AlignLeft);
-        QLabel *stat_info = new QLabel;
+        QPointer<QLabel> stat_info = new QLabel;
         stat_info->setObjectName(QString("STAT_INFO_%1") .arg(i));
         player_info_data->addWidget(stat_info, Qt::AlignRight);
 
@@ -154,38 +154,38 @@ void MainWindow::create_sidebar()
     }
 
     // Armor Class
-    QLabel *ac_label = new QLabel;
+    QPointer<QLabel> ac_label = new QLabel;
     ac_label->setText(color_string("AC", SBAR_NORMAL));
     ac_label->setObjectName("AC_LABEL");
     ac_label->setToolTip(get_help_topic("character_info", "Armor Class"));
     player_info_labels->addWidget(ac_label, Qt::AlignLeft);
-    QLabel *ac_info = new QLabel;
+    QPointer<QLabel> ac_info = new QLabel;
     ac_info->setObjectName("ARMOR CLASS");
     player_info_data->addWidget(ac_info, Qt::AlignRight);
     list_sidebar_labels.append(ac_label);
     list_sidebar_labels.append(ac_info);
 
     // speed
-    QLabel *speed_info = new QLabel;
+    QPointer<QLabel> speed_info = new QLabel;
     speed_info->setObjectName("SPEED");
     speed_info->setToolTip(get_help_topic("character_info", "Speed"));
     player_info_vlay->addWidget(speed_info, Qt::AlignLeft);
     list_sidebar_labels.append(speed_info);
 
     // depth
-    QLabel *depth_info = new QLabel;
+    QPointer<QLabel> depth_info = new QLabel;
     depth_info->setObjectName("DEPTH");
     player_info_vlay->addWidget(depth_info, Qt::AlignLeft);
     list_sidebar_labels.append(depth_info);
 
     // feeling
-    QLabel *feeling_info = new QLabel;
+    QPointer<QLabel> feeling_info = new QLabel;
     feeling_info->setObjectName("FEELING");
     player_info_vlay->addWidget(feeling_info, Qt::AlignLeft);
     list_sidebar_labels.append(feeling_info);
 
     // quest
-    QLabel *quest_info = new QLabel;
+    QPointer<QLabel> quest_info = new QLabel;
     quest_info->setObjectName("QUEST");
     player_info_vlay->addWidget(quest_info, Qt::AlignLeft);
     list_sidebar_labels.append(quest_info);
@@ -195,22 +195,22 @@ void MainWindow::create_sidebar()
     // Make the labels for the sidebar
     for (int i = 0; i < SIDEBAR_MONSTER_MAX; i++)
     {
-        QHBoxLayout *this_hlayout = new QHBoxLayout;
+        QPointer<QHBoxLayout> this_hlayout = new QHBoxLayout;
         mon_health_vlay->addLayout(this_hlayout);
 
-        QLabel *dir_label = new QLabel();
+        QPointer<QLabel> dir_label = new QLabel();
         dir_label->setObjectName(QString("sidebar_mon_dir_%1") .arg(i));
         this_hlayout->addWidget(dir_label);
         dir_label->hide();
         list_sidebar_mon_direction.append(dir_label);
 
-        QLabel *pic_label = new QLabel();
+        QPointer<QLabel> pic_label = new QLabel();
         pic_label->setObjectName(QString("sidebar_mon_pic_%1") .arg(i));
         this_hlayout->addWidget(pic_label);
         pic_label->hide();
         list_sidebar_mon_pics.append(pic_label);
 
-        QLabel *name_label = new QLabel();
+        QPointer<QLabel> name_label = new QLabel();
         name_label->setObjectName(QString("sidebar_mon_name_%1") .arg(i));
         name_label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
         this_hlayout->addWidget(name_label, Qt::AlignLeft);
@@ -218,7 +218,7 @@ void MainWindow::create_sidebar()
         name_label->hide();
         list_sidebar_mon_name.append(name_label);
 
-        QLabel *health_label = new QLabel();
+        QPointer<QLabel> health_label = new QLabel();
         health_label->setObjectName(QString("sidebar_mon_health_%1") .arg(i));
         health_label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
         mon_health_vlay->addWidget(health_label);
@@ -1191,7 +1191,11 @@ void MainWindow::update_titlebar()
             str = "NPPMoria";
         }
 
-        str += " - Playing a ";
+        str += " - Playing ";
+
+        str += op_ptr->full_name;
+
+        str += " the ";
 
         str += rp_ptr->pr_name;
 

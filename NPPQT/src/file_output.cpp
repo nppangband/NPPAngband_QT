@@ -1277,6 +1277,8 @@ void save_character_file(void)
     char_info_file.open(QIODevice::WriteOnly);
     out << file_text;
     char_info_file.close();
+
+    dlg.deleteLater();
 }
 
 #ifdef USEFUL_UNUSED_CODE

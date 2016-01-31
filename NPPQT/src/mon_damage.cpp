@@ -510,7 +510,7 @@ void check_experience(void)
         p_ptr->update |= (PU_BONUS | PU_HP | PU_MANA | PU_SPELLS);
 
         /* Redraw some stuff */
-        p_ptr->redraw |= (PR_TITLEBAR | PR_WIN_MON_RECALL);
+        p_ptr->redraw |= (PR_WIN_MON_RECALL);
     }
 
     /* Gain levels while possible */

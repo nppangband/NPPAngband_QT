@@ -446,7 +446,7 @@ void MainWindow::win_dun_map_create()
 
     for (int i = 0; !mult_list[i].isEmpty(); i++)
     {
-        QAction *act = dun_map_submenu->addAction(mult_list[i]);
+        QPointer<QAction> act = dun_map_submenu->addAction(mult_list[i]);
         act->setObjectName(mult_list[i]);
         act->setCheckable(true);
         dun_map_multipliers->addAction(act);

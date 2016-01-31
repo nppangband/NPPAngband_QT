@@ -424,7 +424,7 @@ void MainWindow::win_overhead_map_create()
 
     for (int i = 0; !oh_mult[i].isEmpty(); i++)
     {
-        QAction *act = overhead_map_submenu->addAction(oh_mult[i]);
+        QPointer<QAction> act = overhead_map_submenu->addAction(oh_mult[i]);
         act->setObjectName(oh_mult[i]);
         act->setCheckable(true);
         overhead_map_multipliers->addAction(act);

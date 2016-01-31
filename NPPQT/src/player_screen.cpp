@@ -326,6 +326,8 @@ void PlayerScreenDialog::name_change(void)
             return;
         }
     }
+
+    p_ptr->redraw |= PR_TITLEBAR;
 }
 
 
