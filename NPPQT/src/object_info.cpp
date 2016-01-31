@@ -1065,12 +1065,8 @@ static QString describe_sustains(object_type *o_ptr, u32b f2)
     if (!list.size()) return (output);
 
     /* Describe immunities */
-    if (list.size())
-        output.append("It sustains all your stats.  ");
-    else
-        output.append(output_desc_list("It sustains your ", list, FALSE));
-
-
+    if (list.size() == A_MAX) output.append("It sustains all your stats.  ");
+    else output.append(output_desc_list("It sustains your ", list, FALSE));
 
     /* We are done here */
     return (output);

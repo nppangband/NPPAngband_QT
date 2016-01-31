@@ -1961,7 +1961,7 @@ void update_equip_modifiers(QList<QLabel *> equippy_list, QList<QLabel *> flag_l
 
             pval_num = (QString("<u>%1</u>") .arg(pval_num));
 
-            this_lbl->setToolTip(QString("Your %1 is sustained.") .arg(stat_names_full[row-1]));
+            this_lbl->setToolTip(QString("Your %1 is sustained.") .arg(stat_names_full[row]));
         }
         else this_lbl->setToolTip(QString(""));
         pval_num.prepend("<b>");
