@@ -308,7 +308,7 @@ QPixmap ui_get_tile(QString tile_id, bool allow_double_height)
 
 void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
 {
-    BallAnimation *ball = new BallAnimation(QPointF(x, y), radius, type, flg);
+    QPointer<BallAnimation> ball = new BallAnimation(QPointF(x, y), radius, type, flg);
     main_window->dungeon_scene->addItem(ball);
     main_window->wait_animation();
     ball->start();
@@ -317,7 +317,7 @@ void ui_animate_ball(int y, int x, int radius, int type, u32b flg)
 
 void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int degrees, u32b flg)
 {
-    ArcAnimation *arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
+    QPointer<ArcAnimation> arc = new ArcAnimation(QPointF(x0, y0), QPointF(x1, y1), degrees, type, radius, flg);
     main_window->dungeon_scene->addItem(arc);
     main_window->wait_animation();
     arc->start();
@@ -326,7 +326,7 @@ void ui_animate_arc(int y0, int x0, int y1, int x1, int type, int radius, int de
 
 void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
 {
-    BeamAnimation *beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
+    QPointer<BeamAnimation> beam = new BeamAnimation(QPointF(x0, y0), QPointF(x1, y1), type);
     main_window->dungeon_scene->addItem(beam);
     main_window->wait_animation();
     beam->start();
@@ -335,7 +335,7 @@ void ui_animate_beam(int y0, int x0, int y1, int x1, int type)
 
 void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
 {
-    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
+    QPointer<BoltAnimation> bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), type, flg);
     main_window->dungeon_scene->addItem(bolt);
     main_window->wait_animation();
     bolt->start();
@@ -344,7 +344,7 @@ void ui_animate_bolt(int y0, int x0, int y1, int x1, int type, u32b flg)
 
 void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
 {
-    BoltAnimation *bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
+    QPointer<BoltAnimation> bolt = new BoltAnimation(QPointF(x0, y0), QPointF(x1, y1), 0, 0, o_ptr);
     main_window->dungeon_scene->addItem(bolt);
     main_window->wait_animation();
     bolt->start();
@@ -353,7 +353,7 @@ void ui_animate_throw(int y0, int x0, int y1, int x1, object_type *o_ptr)
 
 void ui_animate_star(int y, int x, int radius, int type, int gy[], int gx[], int grids)
 {
-    StarAnimation *star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
+    QPointer<StarAnimation> star = new StarAnimation(QPointF(x, y), radius, type, gy, gx, grids);
     main_window->dungeon_scene->addItem(star);
     main_window->wait_animation();
     star->start();
@@ -372,11 +372,11 @@ void ui_animate_accomplishment(int y, int x, int gf_type)
 {
     u32b flg = PROJECT_PASS;
 
-    BallAnimation *b1 = new BallAnimation(QPointF(x, y), 3, gf_type, flg);
+    QPointer<BallAnimation> b1 = new BallAnimation(QPointF(x, y), 3, gf_type, flg);
     main_window->dungeon_scene->addItem(b1);
     b1->setZValue(1000);
 
-    HaloAnimation *h1 = new HaloAnimation(y, x);
+    QPointer<HaloAnimation> h1 = new HaloAnimation(y, x);
     main_window->dungeon_scene->addItem(h1);
     h1->setZValue(900);
     main_window->wait_animation(2);
