@@ -1027,6 +1027,21 @@ void MainWindow::options_dialog()
     handle_stuff();
 }
 
+void MainWindow::hp_warning_dialog()
+{
+    QString prompt = "Please select a hit point warning threshold:";
+
+    op_ptr->hitpoint_warn = (byte)get_quantity_slider(prompt, QString("Percent"), 0, 99, op_ptr->hitpoint_warn);
+}
+
+void MainWindow::delay_factor_dialog()
+{
+    QString prompt = "Please select a delay factor:";
+
+    op_ptr->delay_factor = get_quantity_slider(prompt, QString("MSec"), 0, 200, op_ptr->delay_factor);
+}
+
+
 void MainWindow::toggle_show_targeting()
 {
     if (show_targeting_buttons)
@@ -1160,6 +1175,8 @@ void MainWindow::update_file_menu_game_active()
     }
 
     options_act->setEnabled(TRUE);
+    hitpoint_warning_act->setEnabled(TRUE);
+    delay_factor_act->setEnabled(TRUE);
     view_monster_knowledge->setEnabled(TRUE);
     view_object_knowledge->setEnabled(TRUE);
     view_ego_item_knowledge->setEnabled(TRUE);
@@ -1197,6 +1214,8 @@ void MainWindow::update_file_menu_game_inactive()
     }
 
     options_act->setEnabled(FALSE);
+    hitpoint_warning_act->setEnabled(FALSE);
+    delay_factor_act->setEnabled(FALSE);
     view_monster_knowledge->setEnabled(FALSE);
     view_object_knowledge->setEnabled(FALSE);
     view_ego_item_knowledge->setEnabled(FALSE);
@@ -1273,7 +1292,6 @@ void MainWindow::create_actions()
     exit_npp->setStatusTip(tr("Exit the application.  Save any open character."));
     connect(exit_npp, SIGNAL(triggered()), this, SLOT(close()));
 
-
     for (int i = 0; i < MAX_RECENT_SAVEFILES; ++i)
     {
         recent_savefile_actions[i] = new QAction(this);
@@ -1287,6 +1305,14 @@ void MainWindow::create_actions()
     options_act->setShortcut(Qt::Key_Equal);
     options_act->setIcon(QIcon(":/icons/lib/icons/options.png"));
     connect(options_act, SIGNAL(triggered()), this, SLOT(options_dialog()));
+
+    hitpoint_warning_act = new QAction(tr("Set Hitpoint Warning"), this);
+    hitpoint_warning_act->setStatusTip(tr("Give the player a warning when the player's current hitpoints drop below a certain percentage of maximum hitpoints."));
+    connect(hitpoint_warning_act, SIGNAL(triggered()), this, SLOT(hp_warning_dialog()));
+
+    delay_factor_act = new QAction(tr("Set Delay Factor"), this);
+    delay_factor_act->setStatusTip(tr("Set the duration for certain certain animations."));
+    connect(delay_factor_act, SIGNAL(triggered()), this, SLOT(delay_factor_dialog()));
 
     show_targeting_act = new QAction(tr("Hide Targeting Buttons"), this);
     show_targeting_act->setStatusTip(tr("Do not display the targeting buttons in the sidebar when sleecting a target."));
@@ -1634,6 +1660,8 @@ void MainWindow::create_menus()
 
     settings->addAction(show_targeting_act);
 
+    separator_act = settings->addSeparator();
+
     QMenu *choose_keymap = settings->addMenu("Choose Keyset");
     choose_keymap->addAction(keymap_new);
     choose_keymap->addAction(keymap_angband);
@@ -1648,12 +1676,17 @@ void MainWindow::create_menus()
     keymap_rogue->setCheckable(TRUE);
     keymap_new->setChecked(TRUE);
 
-    menuBar()->addSeparator();
+    separator_act = settings->addSeparator();
 
     QMenu *hotkey_choices = settings->addMenu("Hotkey Settings");
     hotkey_choices->addAction(hotkey_manage);
     hotkey_choices->addAction(hotkey_export);
     hotkey_choices->addAction(hotkey_import);
+
+    separator_act = settings->addSeparator();
+
+    settings->addAction(hitpoint_warning_act);
+    settings->addAction(delay_factor_act);
 
     // Knowledge section of top menu.
     knowledge = menuBar()->addMenu(tr("&Knowledge"));
@@ -1694,7 +1727,7 @@ void MainWindow::create_menus()
     dvg_mode_act->setCheckable(TRUE);
     old_tiles_act->setCheckable(TRUE);
 
-    QMenu *submenu = display->addMenu(tr("Tile multiplier"));
+    QPointer<QMenu> submenu = display->addMenu(tr("Tile multiplier"));
     multipliers = new QActionGroup(this);
 
     for (int i = 0; !mult_list[i].isEmpty(); i++)
@@ -1708,7 +1741,7 @@ void MainWindow::create_menus()
     connect(multipliers, SIGNAL(triggered(QAction*)), this, SLOT(slot_multiplier_clicked(QAction*)));
 
 
-    QAction *act = display->addAction(tr("Create tile package"));
+    QPointer<QAction> act = display->addAction(tr("Create tile package"));
     connect(act, SIGNAL(triggered()), this, SLOT(do_create_package()));
 
     act = display->addAction(tr("Extract tiles from package"));

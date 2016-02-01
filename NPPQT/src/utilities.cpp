@@ -297,7 +297,7 @@ GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value
 {
     QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
 
-    QPointer<QLabel> header_main = new QLabel(QString("<b><h2>%1</b></h2>") .arg(prompt));
+    QPointer<QLabel> header_main = new QLabel(QString("<b><h2>%1</h2></b>") .arg(prompt));
     header_main->setAlignment(Qt::AlignCenter);
     main_layout->addWidget(header_main);
 
@@ -335,6 +335,8 @@ GetQuantityDialog::GetQuantityDialog(QString prompt, int min, int max, int value
     setLayout(main_layout);
 }
 
+
+
 /*
  * Request a "quantity" from the user
  */
@@ -360,6 +362,78 @@ s16b get_quantity(QString prompt, int max, int amt, bool allow_zero)
 
     /* Return the result */
     return (amt);
+}
+
+
+void GetQuantitySlider::update_quantity(int new_value)
+{
+    current_quantity = new_value;
+    if (slider_quantity->value() != new_value)
+    {
+        slider_quantity->setValue(new_value);
+    }
+    if (spin_quantity->value() != new_value)
+    {
+        spin_quantity->setValue(new_value);
+    }
+}
+
+// Select a qualtity using a slider as well as combo box.
+GetQuantitySlider::GetQuantitySlider(QString prompt, QString unit, int min, int max, int value)
+{
+    // Paranoia
+    if (value < min) value = min;
+    if (value > max) value = max;
+
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+
+    QPointer<QLabel> header_main = new QLabel(QString("<b>%1 (%2-%3)</b>") .arg(prompt) .arg(min) .arg(max));
+    header_main->setAlignment(Qt::AlignCenter);
+    main_layout->addWidget(header_main);
+
+    setLayout(main_layout);
+    setWindowTitle(tr("Please select a value:"));
+    QPointer<QHBoxLayout> main_hlay = new QHBoxLayout;
+    main_layout->addLayout(main_hlay);
+
+    spin_quantity = new QSpinBox;
+    spin_quantity->setRange(min, max);
+    spin_quantity->setValue(value);
+
+    slider_quantity = new QSlider(Qt::Horizontal);
+    slider_quantity->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    slider_quantity->setRange(min, max);
+    slider_quantity->setValue(value);
+
+    current_quantity = value;
+
+    main_hlay->addWidget(spin_quantity);
+    main_hlay->addWidget(slider_quantity);
+
+    connect(spin_quantity, SIGNAL(valueChanged(int)), this, SLOT(update_quantity(int)));
+    connect(slider_quantity, SIGNAL(valueChanged(int)), this, SLOT(update_quantity(int)));
+
+    if (unit.length())
+    {
+        QPointer<QLabel> this_label = new QLabel(QString("<b>%1</b>") .arg(unit));
+        main_hlay->addWidget(this_label);
+    }
+
+    // Add buttons for min value, max value, OK, and cancel
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttons, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttons, SIGNAL(rejected()), this, SLOT(reject()));
+    main_layout->addWidget(buttons);
+
+    setLayout(main_layout);
+}
+
+s16b get_quantity_slider(QString prompt, QString unit, int min, int max, int value)
+{
+    GetQuantitySlider dlg(prompt, unit, min, max, value);
+
+    if (!dlg.exec()) return (value);
+    else return (dlg.current_quantity);
 }
 
 

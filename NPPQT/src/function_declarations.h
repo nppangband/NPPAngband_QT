@@ -935,6 +935,7 @@ extern void pop_up_message_box(QString message, QMessageBox::Icon the_icon = QMe
 extern void pop_up_message_box(QString message, QPixmap into_icon);
 extern bool get_check(QString question);
 extern QString get_string(QString question, QString description, QString answer);
+extern s16b get_quantity_slider(QString prompt, QString unit, int min, int max, int value);
 extern s16b get_quantity(QString prompt, int max, int amt, bool allow_zero);
 extern QColor add_preset_color(int which_color);
 extern QString html_string_to_plain_text(QString text);

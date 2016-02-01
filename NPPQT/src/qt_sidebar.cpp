@@ -352,7 +352,7 @@ static int player_hp_attr(void)
 
     if (p_ptr->chp >= p_ptr->mhp)
         attr = TERM_L_GREEN;
-    else if (p_ptr->chp > (p_ptr->mhp * op_ptr->hitpoint_warn) / 10)
+    else if (p_ptr->chp > (p_ptr->mhp * op_ptr->hitpoint_warn) / 100)
         attr = TERM_YELLOW;
     else
         attr = TERM_L_RED;

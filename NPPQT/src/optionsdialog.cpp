@@ -39,7 +39,8 @@ OptionsDialog::OptionsDialog()
         ""
     };
 
-    for (int t = 0; titles[t] != ""; t++)  {
+    for (int t = 0; titles[t] != ""; t++)
+    {
         QPointer<QWidget> wid2 = new QWidget;
         QPointer<QVBoxLayout> lay2 = new QVBoxLayout;
         wid2->setLayout(lay2);
@@ -98,27 +99,6 @@ OptionsDialog::OptionsDialog()
     lay3->addWidget(btn2);
     connect(btn2, SIGNAL(clicked()), this, SLOT(reject()));
 
-    QPointer<QWidget> wid4 = new QWidget;
-    QPointer<QGridLayout> lay4 = new QGridLayout;
-    lay4->setColumnStretch(1, 1);
-    wid4->setLayout(lay4);
-
-    tabs->addTab(wid4, "Misc.");
-
-    QPointer<QLabel> lb = new QLabel("Hitpoint warning");
-    lay4->addWidget(lb, 0, 0);
-
-    QPointer<QSpinBox> spin1 = new QSpinBox;
-    spin1->setObjectName("spin_hp_warn");
-    spin1->setMinimum(0);
-    spin1->setMaximum(9);
-    spin1->setValue(op_ptr->hitpoint_warn);
-
-    lay4->addWidget(spin1, 0, 1);
-
-    QSpacerItem *sp3 = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
-    lay4->addItem(sp3, 1, 0);
-
     this->clientSizeUpdated();
 }
 
@@ -131,9 +111,6 @@ void OptionsDialog::on_save()
         int idx = chk->property("opt_idx").toInt();
         op_ptr->opt[idx] = chk->isChecked();
     }
-
-    QPointer<QSpinBox> spin1 = this->findChild<QSpinBox *>("spin_hp_warn");
-    op_ptr->hitpoint_warn = spin1->value();
 
     this->accept();
 }

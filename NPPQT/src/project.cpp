@@ -1196,7 +1196,7 @@ void take_hit(int dam, QString kb_str)
 
     int old_chp = p_ptr->chp;
 
-    int warning = (p_ptr->mhp * op_ptr->hitpoint_warn / 10);
+    int warning = (p_ptr->mhp * op_ptr->hitpoint_warn / 100);
 
     /* Paranoia */
     if (p_ptr->is_dead) return;
