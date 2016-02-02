@@ -287,12 +287,14 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
 void StoreDialog::wield_click()
 {
     do_cmd_wield();
+    notice_stuff();
     reset_all();
 }
 
 void StoreDialog::takeoff_click()
 {
     do_cmd_takeoff();
+    notice_stuff();
     reset_all();
 }
 
@@ -1097,6 +1099,7 @@ bool StoreDialog::do_buy(object_type *o_ptr, int item)
     else if (guild) do_cmd_reward(store_idx, args);
     else            do_cmd_buy(store_idx, args);
 
+    notice_stuff();
     reset_all();
 
     return true;
@@ -1122,6 +1125,7 @@ void StoreDialog::reset_all()
     reset_gold();
     update_message_area(message_area, 3);
     update_header();
+    handle_stuff();
 
     ui_request_size_update(inven_tab);
     ui_request_size_update(equip_tab);
@@ -1154,6 +1158,7 @@ bool StoreDialog::do_sell(object_type *o_ptr, int item)
     if (home)   do_cmd_stash(store_idx, args);
     else        do_cmd_sell(store_idx, args);
 
+    notice_stuff();
     reset_all();
 
     return true;
