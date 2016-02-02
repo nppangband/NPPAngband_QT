@@ -662,6 +662,10 @@ bool ui_using_monster_tiles()
     return (ui_using_tiles());
 }
 
+void ui_handle_grid_wheelevent(bool wheelscroll_increase)
+{
+    main_window->handle_grid_wheelevent(wheelscroll_increase);
+}
 
 void ui_redraw_grid(int y, int x)
 {
@@ -692,7 +696,6 @@ void ui_animate_detection(int y, int x, int rad)
     main_window->dungeon_scene->addItem(anim);
     main_window->wait_animation();
     anim->start();
-
 }
 
 void ui_show_cursor(int y, int x)

@@ -665,6 +665,7 @@ extern bool ui_use_25d_graphics(void);
 extern bool ui_using_tiles(void);
 extern bool ui_using_monster_tiles(void);
 extern void ui_redraw_grid(int y, int x);
+extern void ui_handle_grid_wheelevent(bool wheelscroll_increase);
 extern void ui_redraw_all();
 extern void ui_ensure(int y, int x);
 extern bool ui_modify_panel(int y, int x);

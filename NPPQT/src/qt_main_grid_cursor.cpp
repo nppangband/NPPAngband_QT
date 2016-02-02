@@ -747,10 +747,42 @@ void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
     main_window->executing_command = FALSE;
 }
 
-void DungeonGrid::wheelEvent(QGraphicsSceneWheelEvent *event)
+// We accept the wheel event here so the main window isn't always scrolled.
+void DungeonGrid::wheelEvent(QGraphicsSceneWheelEvent *wheel_event)
 {
+    // Go to special key handling
+    if (main_window->targeting_mode)
+    {
+      if (wheel_event->delta() > 0) main_window->input.key = Qt::Key_Plus;
+      else                    main_window->input.key = Qt::Key_Minus;
+      main_window->input.text.clear();
+      main_window->input.mode = INPUT_MODE_MOUSE_WHEEL;
+      main_window->ev_loop.quit();
+      return;
+    }
+
+    if (main_window->executing_command) return;
+
+    // Only handling wheel mousewheel rotations.
+    if (!wheel_event->delta()) return;
+
+    // Increase or decrease the size of the tile multiplier
+    main_window->executing_command = TRUE;
+
+    bool increasing = FALSE;
+    if (wheel_event->delta() > 0) increasing = TRUE;
+
+    ui_handle_grid_wheelevent(increasing);
+
+    handle_stuff();
     main_window->clear_message_label();
-    event->ignore();
+    main_window->executing_command = FALSE;
+
+    main_window->clear_message_label();
+
+    // This line prevents the main window from accpeting the event
+    // and scrolling the wheel.
+    wheel_event->accept();
 }
 
 // Use a timer to dintinguish between single and double clicks

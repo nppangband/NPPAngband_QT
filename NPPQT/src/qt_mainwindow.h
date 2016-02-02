@@ -172,10 +172,11 @@ public:
     void show_targeting_sidebar();
     void save_png_screenshot(void);
 
+    void handle_grid_wheelevent(bool wheelscroll_increase);
+
 
 protected:
     void closeEvent(QCloseEvent *event);
-    void wheelEvent(QWheelEvent* event);
     void keyPressEvent(QKeyEvent* which_key);
     bool eventFilter(QObject *obj, QEvent *event);
     void hideEvent(QHideEvent *event);

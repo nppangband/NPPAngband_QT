@@ -736,99 +736,113 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-void MainWindow::wheelEvent(QWheelEvent* event)
+// Use the wheelscroll to increase or decrease font size, or tile mltiplier
+// if the player is in graphics mode.
+void MainWindow::handle_grid_wheelevent(bool wheelscroll_increase)
 {
-    if (!character_dungeon) return;
-    if (p_ptr->in_store) return;
-    if (anim_depth > 0) return;
-
-  // Go to special key handling
-    if (targeting_mode)
+    if (use_graphics)
     {
-        // Temporary until the wheel mode can be figured out.
-        return;
-
-        if (event->delta() > 0) input.key = Qt::Key_Plus;
-        else                    input.key = Qt::Key_Minus;
-        input.text.clear();
-        input.mode = INPUT_MODE_MOUSE_WHEEL;
-        ev_loop.quit();
-        return;
-    }
-
-    /*
-     * This code works, but scrolling the graphicsview gets in the way.
-     * Unable to disable scroll bar
-     *
-    if (executing_command) return;
-
-    // Increase or decrease the size of the tile multiplier
-    executing_command = TRUE;
-
-
-    // Go through and find the active multiplier
-    QString active_multiplier;
-    active_multiplier.clear();
-    QString new_multiplier;
-    new_multiplier.clear();
-    int current_slot = -1;
-    QList<QAction *> list_multipliers = multipliers->actions();
-    for (int x = 0; x < list_multipliers.size(); x++)
-    {
-        if (!list_multipliers.at(x)->isChecked()) continue;
-        // Found it
-        active_multiplier = list_multipliers.at(x)->objectName();
-        break;
-    }
-
-    // Now find the slot on the list
-    for (int i = 0; !mult_list[i].isEmpty(); i++)
-    {
-        if (!strings_match(active_multiplier, mult_list[i])) continue;
-        // Break when we find it
-        current_slot = i;
-        break;
-    }
-
-    // Paranoia
-    if (current_slot < 0)
-    {
-        // Do nothing
-    }
-    // Increasing wheel click
-    else if (event->delta() > 0)
-    {
-        if (mult_list[current_slot+1].length())
+        // Go through and find the active multiplier
+        QString active_multiplier;
+        active_multiplier.clear();
+        QString new_multiplier;
+        new_multiplier.clear();
+        int current_slot = -1;
+        QList<QAction *> list_multipliers = multipliers->actions();
+        for (int x = 0; x < list_multipliers.size(); x++)
         {
-            new_multiplier = mult_list[current_slot+1];
+            if (!list_multipliers.at(x)->isChecked()) continue;
+            // Found it
+            active_multiplier = list_multipliers.at(x)->objectName();
+            break;
+        }
+
+        // Now find the slot on the list
+        for (int i = 0; !mult_list[i].isEmpty(); i++)
+        {
+            if (!strings_match(active_multiplier, mult_list[i])) continue;
+            // Break when we find it
+            current_slot = i;
+            break;
+        }
+
+        // Paranoia
+        if (current_slot < 0)
+        {
+            // Do nothing
+        }
+        // Increasing wheel click
+        else if (wheelscroll_increase)
+        {
+            if (mult_list[current_slot+1].length())
+            {
+                new_multiplier = mult_list[current_slot+1];
+            }
+        }
+        //Decreasing wheel click
+        else
+        {
+            // First check if we are not at the bottom of the list
+            if (current_slot)
+            {
+                new_multiplier = mult_list[current_slot-1];
+            }
+        }
+
+        // Now find the action and select it
+        if (new_multiplier.length()) for (int x = 0; x < list_multipliers.size(); x++)
+        {
+            if (!strings_match(new_multiplier, list_multipliers.at(x)->objectName())) continue;
+            // Found it.
+            list_multipliers.at(x)->trigger();
+            break;
         }
     }
-    //Decreasing wheel click
+
+    // Increase font size
     else
     {
-        // First check if we are not at the bottom of the list
-        if (current_slot)
+        int pointsize = font_main_window.pointSize();
+        QFont new_font  = font_main_window;
+
+        // pointSize returns -1 if the font is handled by pizel size
+        if (pointsize == -1)
         {
-            new_multiplier = mult_list[current_slot-1];
+            int pixelsize = font_main_window.pixelSize();
+            if (wheelscroll_increase)
+            {
+                new_font.setPixelSize(pixelsize+1);
+            }
+
+            // Just make sure we are not down zero pointsize
+            else if (pixelsize > 1)
+            {
+                new_font.setPixelSize(pixelsize-1);
+            }
+            // The font changed
+            if (new_font.pixelSize() != pixelsize) set_font_main_window(new_font);
+        }
+
+        // increase or decrease the font size
+        else
+        {
+            if (wheelscroll_increase)
+            {
+                new_font.setPointSize(pointsize + 1);
+            }
+
+            // Just make sure we are not down to zero point size
+            else if (pointsize > 1)
+            {
+                new_font.setPointSize(pointsize - 1);
+            }
+            // The font changed
+            if (new_font.pointSize() != pointsize) set_font_main_window(new_font);
         }
     }
-
-    // Now find the action and select it
-    if (new_multiplier.length()) for (int x = 0; x < list_multipliers.size(); x++)
-    {
-        if (!strings_match(new_multiplier, list_multipliers.at(x)->objectName())) continue;
-        // Found it.
-        list_multipliers.at(x)->trigger();
-        break;
-    }
-
-    handle_stuff();
-    clear_message_label();
-    executing_command = FALSE;
-
-    * End of disabled code
-    */
 }
+
+
 
 void MainWindow::keyPressEvent(QKeyEvent* which_key)
 {
