@@ -370,6 +370,57 @@ static void describe_grid_brief(int y, int x)
 }
 
 
+// Try to pick the most sensible target mode based on the mode
+static bool set_selected_target(int mode, int y, int x)
+{
+    int m_idx = dungeon_info[y][x].monster_idx;
+
+    if (mode & (TARGET_KILL))
+    {
+        if ((m_idx > 0) && target_able(m_idx))
+        {
+            health_track(m_idx);
+            target_set_monster(m_idx);
+
+        }
+        else target_set_location(y, x);
+        return (TRUE);
+    }
+
+    if ((mode & (TARGET_TRAP)) && target_able_trap(y, x))
+    {
+        target_set_location(y, x);
+        return (TRUE);
+    }
+
+    // Did the player target a monster or a feature?
+    if (mode & (TARGET_PROBE))
+    {
+        if ((m_idx > 0) && target_able(m_idx))
+        {
+            health_track(m_idx);
+            target_set_monster(m_idx);
+
+        }
+        else target_set_location(y, x);
+        return (TRUE);
+    }
+
+    // Always set location for target grid
+    if (mode & (TARGET_GRID))
+    {
+        target_set_location(y, x);
+        return (TRUE);
+    }
+    if (!(mode & (TARGET_QUIET)))
+    {
+        message(QString("Illegal target!"));
+    }
+
+    return (FALSE);
+}
+
+
 /*
  * Handle "target" and "look".
  *
@@ -536,9 +587,14 @@ bool target_set_interactive(int mode, int x, int y)
             // double-click - automatically target if appropriate
             if (input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK)
             {
-                target_set_location(y, x);
+                if (!set_selected_target(mode, y, x))
+                {
+                    target_set_location(y, x);
+                }
+
                 done = TRUE;
                 continue;
+
             }
 
             /*
@@ -551,8 +607,7 @@ bool target_set_interactive(int mode, int x, int y)
                 // If clicking twice on the same square, accept
                 if (input.x == x && input.y == y)
                 {
-                    target_set_location(y, x);
-                    done = TRUE;
+                    if (set_selected_target(mode, y, x)) done = TRUE;
                     continue;
                 }
 
@@ -616,28 +671,7 @@ bool target_set_interactive(int mode, int x, int y)
                 case Qt::Key_Period:
                 case Qt::Key_Clear:
                 {
-                    int m_idx = dungeon_info[y][x].monster_idx;
-
-                    if ((m_idx > 0) && target_able(m_idx))
-                    {
-                        health_track(m_idx);
-                        target_set_monster(m_idx);
-                        done = TRUE;
-                    }
-                    else if ((mode & (TARGET_TRAP)) && target_able_trap(y, x))
-                    {
-                        target_set_location(y, x);
-                        done = TRUE;
-                    }
-                    else if (mode & (TARGET_PROBE))
-                    {
-                        target_set_location(y, x);
-                        done = TRUE;
-                    }
-                    else
-                    {
-                        message(QString("Illegal target!"));
-                    }
+                    if (set_selected_target(mode, y, x)) done = TRUE;
                     break;
                 }
 
@@ -731,9 +765,29 @@ bool target_set_interactive(int mode, int x, int y)
             // double-click - automatically target if appropriate
             if (input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK)
             {
-                target_set_location(y, x);
-                done = TRUE;
-                continue;
+                int m_idx = dungeon_info[y][x].monster_idx;
+
+                if ((m_idx > 0) && target_able(m_idx))
+                {
+                    health_track(m_idx);
+                    target_set_monster(m_idx);
+                    done = TRUE;
+                }
+                else if ((mode & (TARGET_TRAP)) && target_able_trap(y, x))
+                {
+                    target_set_location(y, x);
+                    done = TRUE;
+                }
+                else if (mode & (TARGET_PROBE))
+                {
+                    target_set_location(y, x);
+                    done = TRUE;
+                }
+                else
+                {
+                    message(QString("Illegal target!"));
+                }
+                break;
             }
 
             if (input.mode == INPUT_MODE_MOUSE_SINGLE_CLICK)
@@ -1107,13 +1161,13 @@ bool get_aim_dir(int *dp, bool target_trap)
 
     bool done = FALSE;
 
+    int mode = TARGET_QUIET;
+
+    if (target_trap) mode |= TARGET_KILL;
+    else mode |= TARGET_TRAP;
+
     if (*dp == DIR_CLOSEST)
     {
-        int mode = TARGET_QUIET;
-
-        if (target_trap) mode |= TARGET_KILL;
-        else mode |= TARGET_TRAP;
-
         if (target_set_closest(mode))
         {
             return(TRUE);
@@ -1154,7 +1208,8 @@ bool get_aim_dir(int *dp, bool target_trap)
         // Skip interactive mode and directly choose target.
         if (input.mode == INPUT_MODE_MOUSE_DOUBLE_CLICK)
         {
-            target_set_location(input.y, input.x);
+            if (set_selected_target(mode, input.y, input.x)) dir = DIR_TARGET;
+            else set_selected_target(TARGET_GRID, input.y, input.x);
             dir = DIR_TARGET;
             continue;
         }
@@ -1162,7 +1217,7 @@ bool get_aim_dir(int *dp, bool target_trap)
         if (input.mode == INPUT_MODE_MOUSE_SINGLE_CLICK)
         {
             /* Calculate approximate angle */
-            if (target_set_interactive(TARGET_KILL, input.x, input.y)) dir = DIR_TARGET;
+            if (target_set_interactive(mode, input.x, input.y)) dir = DIR_TARGET;
             else done = TRUE;
             continue;
         }
@@ -1176,7 +1231,7 @@ bool get_aim_dir(int *dp, bool target_trap)
                 /* Set new target, use target if legal */
                 int mode = TARGET_KILL;
                 if (target_trap) mode |= TARGET_TRAP;
-                if (target_set_interactive(mode, -1, -1)) dir = DIR_CLOSEST;
+                if (target_set_interactive(mode, -1, -1)) dir = DIR_TARGET;
                 else done = TRUE;
                 continue;
             }

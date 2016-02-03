@@ -740,6 +740,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 // if the player is in graphics mode.
 void MainWindow::handle_grid_wheelevent(bool wheelscroll_increase)
 {
+    // Modify tile multiplier if we are in graphics mode.
     if (use_graphics)
     {
         // Go through and find the active multiplier
@@ -811,13 +812,13 @@ void MainWindow::handle_grid_wheelevent(bool wheelscroll_increase)
             int pixelsize = font_main_window.pixelSize();
             if (wheelscroll_increase)
             {
-                new_font.setPixelSize(pixelsize+1);
+                new_font.setPixelSize(pixelsize + 1 + (pixelsize * .1));
             }
 
             // Just make sure we are not down zero pointsize
             else if (pixelsize > 1)
             {
-                new_font.setPixelSize(pixelsize-1);
+                new_font.setPixelSize(MAX((pixelsize/1.1), 1));
             }
             // The font changed
             if (new_font.pixelSize() != pixelsize) set_font_main_window(new_font);
@@ -828,13 +829,13 @@ void MainWindow::handle_grid_wheelevent(bool wheelscroll_increase)
         {
             if (wheelscroll_increase)
             {
-                new_font.setPointSize(pointsize + 1);
+                new_font.setPointSize(pointsize + 1 + (pointsize * .1));
             }
 
             // Just make sure we are not down to zero point size
             else if (pointsize > 1)
             {
-                new_font.setPointSize(pointsize - 1);
+                new_font.setPointSize(MAX((pointsize/1.1), 1));
             }
             // The font changed
             if (new_font.pointSize() != pointsize) set_font_main_window(new_font);
