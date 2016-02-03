@@ -59,8 +59,8 @@ public:
     QPointer<QLabel> message_area;
     QPointer<QWidget> store_area;
     QPointer<QWidget> quest_area;
-    QLabel  *quest_status;
-    QLabel  *quest_picture;
+    QPointer<QLabel> quest_status;
+    QPointer<QLabel> quest_picture;
 
     QPointer<QLabel> header_weight1;
     QPointer<QLabel> header_weight2;

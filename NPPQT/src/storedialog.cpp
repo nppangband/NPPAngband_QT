@@ -675,8 +675,8 @@ void StoreDialog::reset_store()
 
         ++row;
     }
-    QSpacerItem spacer(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(&spacer, row++, 0);
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    lay->addItem(spacer, row++, 0);
 }
 
 void StoreDialog::help_click()
@@ -892,8 +892,8 @@ void StoreDialog::reset_equip()
 
         row++;
     }
-    QSpacerItem spacer(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    lay->addItem(&spacer, row++, 0);
+    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
+    lay->addItem(spacer, row++, 0);
 }
 
 void StoreDialog::toggle_inven()
