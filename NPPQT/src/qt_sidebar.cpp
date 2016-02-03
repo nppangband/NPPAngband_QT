@@ -377,15 +377,23 @@ static int player_sp_attr(void)
     return attr;
 }
 
+// Start with distance.  IF a tie, go to monster level.
+// Show preference for uniques
 static bool sidebar_mon_sort(const s16b mon1, const s16b mon2)
 {
-    monster_race *r_ptr = &r_info[mon_list[mon1].r_idx];
-    int level = r_ptr->level;
-    if (r_ptr->is_unique()) level += 5;
-    monster_race *r2_ptr = &r_info[mon_list[mon2].r_idx];
-    int level2 = r2_ptr->level;
-    if (r2_ptr->is_unique()) level2 += 5;
-    if (level > level2) return (TRUE);
+    byte dist1 = mon_list[mon1].cdis;
+    byte dist2 = mon_list[mon2].cdis;
+    if (!r_info[mon_list[mon1].r_idx].is_unique()) dist1 += 10;
+    if (!r_info[mon_list[mon2].r_idx].is_unique()) dist2 += 10;
+    if (dist1 < dist2) return (TRUE);
+    if (dist1 > dist2) return (FALSE);
+
+    // Distance is a tie.  Factor in monster level
+    int level1 = r_info[mon_list[mon1].r_idx].level;
+    int level2 = r_info[mon_list[mon2].r_idx].level;
+    if (!r_info[mon_list[mon1].r_idx].is_unique()) level1 += 5;
+    if (!r_info[mon_list[mon2].r_idx].is_unique()) level2 += 5;
+    if (level1 > level2) return (TRUE);
     return (FALSE);
 }
 

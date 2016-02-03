@@ -9,6 +9,7 @@
  */
 
 #include "src/npp.h"
+#include <QtCore/qmath.h>
 
 
 
@@ -1278,27 +1279,18 @@ void update_mon(int m_idx, bool full)
     /* Compute distance and projection status */
     if (full)
     {
-        /* Distance components */
-        int dy = (py > fy) ? (py - fy) : (fy - py);
-        int dx = (px > fx) ? (px - fx) : (fx - px);
-
-        /* Approximate distance */
-        d = (dy > dx) ? (dy + (dx>>1)) : (dx + (dy>>1));
+        // Pythagorean's theorum
+        qreal distance = qSqrt(qPow((py - fy), 2) + qPow((px - fx), 2));
 
         /* Restrict distance */
-        if (d > 255) d = 255;
+        if (distance > 255) distance = 255;
 
         /* Save the distance */
-        m_ptr->cdis = d;
-
+        m_ptr->cdis = (byte)distance;
     }
 
     /* Extract distance */
-    else
-    {
-        /* Extract the distance */
-        d = m_ptr->cdis;
-    }
+    d = m_ptr->cdis;
 
     /* Detected */
     if (m_ptr->mflag & (MFLAG_MARK)) is_visible = TRUE;

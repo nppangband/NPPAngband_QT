@@ -736,110 +736,63 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-// Use the wheelscroll to increase or decrease font size, or tile mltiplier
-// if the player is in graphics mode.
+// Use the wheelscroll to increase the tile mltiplier
 void MainWindow::handle_grid_wheelevent(bool wheelscroll_increase)
 {
-    // Modify tile multiplier if we are in graphics mode.
-    if (use_graphics)
+    // Go through and find the active multiplier
+    QString active_multiplier;
+    active_multiplier.clear();
+    QString new_multiplier;
+    new_multiplier.clear();
+    int current_slot = -1;
+    QList<QAction *> list_multipliers = multipliers->actions();
+    for (int x = 0; x < list_multipliers.size(); x++)
     {
-        // Go through and find the active multiplier
-        QString active_multiplier;
-        active_multiplier.clear();
-        QString new_multiplier;
-        new_multiplier.clear();
-        int current_slot = -1;
-        QList<QAction *> list_multipliers = multipliers->actions();
-        for (int x = 0; x < list_multipliers.size(); x++)
-        {
-            if (!list_multipliers.at(x)->isChecked()) continue;
-            // Found it
-            active_multiplier = list_multipliers.at(x)->objectName();
-            break;
-        }
+        if (!list_multipliers.at(x)->isChecked()) continue;
+        // Found it
+        active_multiplier = list_multipliers.at(x)->objectName();
+        break;
+    }
 
-        // Now find the slot on the list
-        for (int i = 0; !mult_list[i].isEmpty(); i++)
-        {
-            if (!strings_match(active_multiplier, mult_list[i])) continue;
-            // Break when we find it
-            current_slot = i;
-            break;
-        }
+    // Now find the slot on the list
+    for (int i = 0; !mult_list[i].isEmpty(); i++)
+    {
+        if (!strings_match(active_multiplier, mult_list[i])) continue;
+        // Break when we find it
+        current_slot = i;
+        break;
+    }
 
-        // Paranoia
-        if (current_slot < 0)
+    // Paranoia
+    if (current_slot < 0)
+    {
+        // Do nothing
+    }
+    // Increasing wheel click
+    else if (wheelscroll_increase)
+    {
+        if (mult_list[current_slot+1].length())
         {
-            // Do nothing
+            new_multiplier = mult_list[current_slot+1];
         }
-        // Increasing wheel click
-        else if (wheelscroll_increase)
+    }
+    //Decreasing wheel click
+    else
+    {
+        // First check if we are not at the bottom of the list
+        if (current_slot)
         {
-            if (mult_list[current_slot+1].length())
-            {
-                new_multiplier = mult_list[current_slot+1];
-            }
-        }
-        //Decreasing wheel click
-        else
-        {
-            // First check if we are not at the bottom of the list
-            if (current_slot)
-            {
-                new_multiplier = mult_list[current_slot-1];
-            }
-        }
-
-        // Now find the action and select it
-        if (new_multiplier.length()) for (int x = 0; x < list_multipliers.size(); x++)
-        {
-            if (!strings_match(new_multiplier, list_multipliers.at(x)->objectName())) continue;
-            // Found it.
-            list_multipliers.at(x)->trigger();
-            break;
+            new_multiplier = mult_list[current_slot-1];
         }
     }
 
-    // Increase font size
-    else
+    // Now find the action and select it
+    if (new_multiplier.length()) for (int x = 0; x < list_multipliers.size(); x++)
     {
-        int pointsize = font_main_window.pointSize();
-        QFont new_font  = font_main_window;
-
-        // pointSize returns -1 if the font is handled by pizel size
-        if (pointsize == -1)
-        {
-            int pixelsize = font_main_window.pixelSize();
-            if (wheelscroll_increase)
-            {
-                new_font.setPixelSize(pixelsize + 1 + (pixelsize * .1));
-            }
-
-            // Just make sure we are not down zero pointsize
-            else if (pixelsize > 1)
-            {
-                new_font.setPixelSize(MAX((pixelsize/1.1), 1));
-            }
-            // The font changed
-            if (new_font.pixelSize() != pixelsize) set_font_main_window(new_font);
-        }
-
-        // increase or decrease the font size
-        else
-        {
-            if (wheelscroll_increase)
-            {
-                new_font.setPointSize(pointsize + 1 + (pointsize * .1));
-            }
-
-            // Just make sure we are not down to zero point size
-            else if (pointsize > 1)
-            {
-                new_font.setPointSize(MAX((pointsize/1.1), 1));
-            }
-            // The font changed
-            if (new_font.pointSize() != pointsize) set_font_main_window(new_font);
-        }
+        if (!strings_match(new_multiplier, list_multipliers.at(x)->objectName())) continue;
+        // Found it.
+        list_multipliers.at(x)->trigger();
+        break;
     }
 }
 

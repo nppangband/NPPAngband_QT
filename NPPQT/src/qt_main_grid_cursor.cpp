@@ -769,16 +769,15 @@ void DungeonGrid::wheelEvent(QGraphicsSceneWheelEvent *wheel_event)
     // Increase or decrease the size of the tile multiplier
     main_window->executing_command = TRUE;
 
-    bool increasing = FALSE;
-    if (wheel_event->delta() > 0) increasing = TRUE;
+    ui_update_message_label(color_string("Updating Main Window Size", TERM_RED));
 
-    ui_handle_grid_wheelevent(increasing);
+    ui_handle_grid_wheelevent((wheel_event->delta() > 0));
 
-    handle_stuff();
-    main_window->clear_message_label();
     main_window->executing_command = FALSE;
 
     main_window->clear_message_label();
+
+    handle_stuff();
 
     // This line prevents the main window from accpeting the event
     // and scrolling the wheel.
