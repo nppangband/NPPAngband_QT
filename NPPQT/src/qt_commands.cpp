@@ -38,6 +38,7 @@ static struct command_desc list_commands_targeting[] =
     {"Select Previous Target", "'-'"},
     {"See Information on Current Square", "'!' or 'l'"},
     {"Use Direction Keys to Move To Next Possible Target In That General Direction", NULL},
+    {"Use the Mouse Wheel to Target the Next or Previous Target", NULL},
     {" ", NULL},
     {"<h3>Manual Targeting Mode</h3>", NULL},
     {"Select Next Target", "'+' or <space>"},
@@ -502,16 +503,30 @@ KeyboardCommandList::KeyboardCommandList(void): NPPDialog()
 
 static struct command_desc list_commands_mouse[] =
 {
-    {"<h3>Single Clicks</h3>", NULL},
+    {"<h3>Single Clicks on dungeon square (other than player square)</h3>", NULL},
     {"Left Click on a known dungeon square to run to that spot.", NULL},
-    {"Middle Click on any unknown dungeon square to walk one square in that direction.", NULL},
+    {"Middle Click on any dungeon square to walk one square in that direction.", NULL},
     {"Right Click on a dungeon square to learn about the contents of that square", NULL},
+    {"Click Extra Button 1 - TBD", NULL},
+    {"Click Extra Button 2 - TBD", NULL},
+    {" ", NULL},
+    {"<h3>Single Clicks on player</h3>", NULL},
+    {"Use Magic (Cast, Pray, Chant)", NULL},
+    {"Use an Item", NULL},
+    {"Fire Ammunition", NULL},
     {"Click Extra Button 1 to bring up the object handling dialog", NULL},
     {"Click Extra Button 2 to bring up the character screen dialog", NULL},
     {" ", NULL},
     {"<h3>Double Clicks</h3>", NULL},
-    {"TBD", NULL},
-
+    {"Left Double-Click on any dungeon square to run in that direction.", NULL},
+    {"Middle Double-Click on any dungeon square to alter the square in that direction.", NULL},
+    {"Right Double-Click to target that square.", NULL},
+    {"Double-Click Extra Button 1 - TBD", NULL},
+    {"Double-Click Extra Button 2 - TBD", NULL},
+    {" ", NULL},
+    {"<h3>Mouse Wheel</h3>", NULL},
+    {"Increase or decrease the tile multiplier", NULL},
+    {"Use the mouse wheel over the scrollbars to look around the dungeon.", NULL},
     // The null entry at the end is essential for initializing the table of groups.
     {NULL, NULL},
 };
@@ -810,7 +825,7 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
         }
         case Qt::Key_E:
         {
-            if (alt_key)           ui_redraw_all();
+            if (alt_key)            ui_redraw_all();
             else if (shift_key)     do_cmd_all_objects(TAB_EQUIP);
             else if (!using_mods)   do_cmd_use_item();
             break;

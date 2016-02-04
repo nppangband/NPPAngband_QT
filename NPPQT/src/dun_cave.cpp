@@ -4583,7 +4583,7 @@ int project_path(u16b *path_g, u16b *path_gx, int range,
             if (require_strict_lof)
             {
                 /* This grid does not qualify; it will be skipped */
-                if (!(dungeon_info[y][x].cave_info & (CAVE_FIRE)))
+                if (!dungeon_info[y][x].projectable())
                 {
                     blockage[i] += PATH_G_NONE;
                 }
@@ -4760,14 +4760,14 @@ byte projectable(int y1, int x1, int y2, int x2, u32b flg)
         if ((y1 == py) && (x1 == px))
         {
             /* Require that destination be in line of fire */
-            if (!(dungeon_info[y2][x2].cave_info & (CAVE_FIRE))) return (PROJECT_NO);
+            if (!dungeon_info[y2][x2].projectable()) return (PROJECT_NO);
         }
 
         /* The character is the target of the projection */
         else if ((y2 == py) && (x2 == px))
         {
             /* Require that source be in line of fire */
-            if (!(dungeon_info[y1][x1].cave_info & (CAVE_FIRE))) return (PROJECT_NO);
+            if (!dungeon_info[y1][x1].projectable()) return (PROJECT_NO);
         }
     }
 

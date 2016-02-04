@@ -550,7 +550,7 @@ bool target_set_interactive(int mode, int x, int y)
             path_n = project_path(path_g, path_gx, MAX_RANGE, py, px, &yy, &xx, PROJECT_THRU);
 
             /* Draw the path in "target" mode. If there is one */
-            if ((mode & (TARGET_KILL)) && (dungeon_info[y][x].cave_info & (CAVE_FIRE)))
+            if ((mode & (TARGET_KILL)) && (dungeon_info[y][x].projectable()))
             {
                 path_drawn = ui_draw_path(path_n, path_g, y, x);
             }
@@ -740,7 +740,7 @@ bool target_set_interactive(int mode, int x, int y)
             path_n = project_path(path_g, path_gx, MAX_RANGE, py, px, &yy, &xx, PROJECT_THRU);
 
             /* Draw the path in "target" mode. If there is one */
-            if ((mode & (TARGET_KILL)) && (dungeon_info[y][x].cave_info & (CAVE_FIRE)))
+            if ((mode & (TARGET_KILL)) && (dungeon_info[y][x].projectable()))
             {
                 /* Save target info */
                 path_drawn = ui_draw_path(path_n, path_g, y, x);

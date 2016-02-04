@@ -148,6 +148,13 @@ bool dungeon_type::is_stairs(void)
     return (f_info[feature_idx].is_stairs());
 }
 
+// Is this square projectable from the player square?
+bool dungeon_type::projectable(void)
+{
+    if (cave_info & (CAVE_FIRE)) return (TRUE);
+    return (FALSE);
+}
+
 /*
  * Wipe the dungeon_type class.
  * This function shoudld be used instead of WIPE command.

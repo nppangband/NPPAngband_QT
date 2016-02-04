@@ -94,6 +94,7 @@ public:
     bool is_jammed_door(void);
     bool is_wall(void);
     bool is_stairs(void);
+    bool projectable();
 
 
     // All variables above should be included in this method.

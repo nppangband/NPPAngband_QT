@@ -720,7 +720,32 @@ void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
 
         main_window->executing_command = TRUE;
 
-        if (mouse_event.right_click)
+        // The player square has been clicked on.
+        if ((p_ptr->py == c_y) && (p_ptr->px == c_x))
+        {
+            if (mouse_event.right_click)
+            {
+                do_cmd_cast(-1);
+            }
+            else if (mouse_event.left_click)
+            {
+                do_cmd_use_item();
+            }
+            else if (mouse_event.middle_click)
+            {
+                do_cmd_fire();
+            }
+            else if (mouse_event.extra_button_1)
+            {
+                do_cmd_all_objects(TAB_INVEN);
+            }
+            else if (mouse_event.extra_button_2)
+            {
+                do_cmd_character_screen();
+            }
+        }
+
+        else if (mouse_event.right_click)
         {
             parent->cursor->setVisible(true);
             parent->cursor->moveTo(c_y, c_x);
@@ -733,11 +758,11 @@ void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
         }
         else if (mouse_event.extra_button_1)
         {
-            do_cmd_all_objects(TAB_INVEN);
+            //TBD
         }
         else if (mouse_event.extra_button_2)
         {
-            do_cmd_character_screen();
+            //TBD
         }
     }
 
@@ -859,15 +884,18 @@ void DungeonGrid::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
         if (right_button)
         {
+            dungeon_type *dun_ptr = &dungeon_info[c_y][c_x];
 
+            if (target_able(dun_ptr->monster_idx)) target_set_monster(dun_ptr->monster_idx);
+            else if (dun_ptr->projectable()) target_set_location(c_y, c_x);
         }
         else if (left_button)
         {
-
+            do_cmd_run(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x));
         }
         else if (middle_button)
         {
-
+            do_cmd_alter(ui_get_dir_from_slope(p_ptr->py, p_ptr->px, c_y, c_x));
         }
         else if (extra1)
         {
