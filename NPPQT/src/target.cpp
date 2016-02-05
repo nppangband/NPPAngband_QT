@@ -120,8 +120,17 @@ static bool coords_sort_distance(coord c1, coord c2)
 /*
  * Hack -- determine if a given location is "interesting"
  */
-static bool target_set_interactive_accept(int y, int x)
+static bool target_set_interactive_accept(int mode, int y, int x)
 {
+    if (mode & (TARGET_TRAP))
+    {
+        if (!cave_player_trap_bold(y, x)) return (FALSE);
+        u16b x_idx = dungeon_info[y][x].effect_idx;
+        effect_type *x_ptr = &x_list[x_idx];
+        if (x_ptr->x_flags & (EF1_HIDDEN)) return (FALSE);
+        return (TRUE);
+    }
+
     object_type *o_ptr;
 
     /* Player grids are always interesting */
@@ -211,7 +220,7 @@ static void target_set_interactive_prepare(int mode)
             if (!player_has_los_bold(y, x) && (!expand_look)) continue;
 
             /* Require "interesting" contents */
-            if (!target_set_interactive_accept(y, x)) continue;
+            if (!target_set_interactive_accept(mode, y, x)) continue;
 
             /* Special mode */
             if (mode & (TARGET_KILL))
@@ -1349,6 +1358,27 @@ bool target_set_closest(int mode)
         monster_race_track(m_ptr->r_idx);
         // TODO health_track(cave_m_idx[y][x]);
         target_set_monster(m_idx);
+    }
+    else if (mode & (TARGET_TRAP))
+    {
+        for (int i = 0; i < target_grids.size(); i++)
+        {
+            y = target_grids[0].y;
+            x = target_grids[0].x;
+
+            if (!cave_player_trap_bold(y, x)) continue;
+            u16b x_idx = dungeon_info[y][x].effect_idx;
+            effect_type *x_ptr = &x_list[x_idx];
+            if (x_ptr->x_flags & (EF1_HIDDEN)) continue;
+
+            // Use this location
+            target_set_location(y, x);
+            return (TRUE);
+        }
+
+        // Didn't find an acceptable trap
+        if (!(mode & TARGET_QUIET)) message(QString("No Available Target."));
+        return FALSE;
     }
     else
     {

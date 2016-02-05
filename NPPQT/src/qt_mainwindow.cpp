@@ -198,7 +198,6 @@ QPixmap MainWindow::get_tile(QString tile_id, int tile_hgt, int tile_wid)
         pix = pix.scaled(tile_wid, tile_hgt);
     }
 
-
     return pix;
 }
 
