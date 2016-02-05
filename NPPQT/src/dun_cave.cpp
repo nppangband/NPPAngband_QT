@@ -738,44 +738,6 @@ bool dtrap_edge(int y, int x)
     return FALSE;
 }
 
-// Is there a wall above?
-static bool is_wall_below(int y, int x)
-{
-    if (!ui_use_25d_graphics()) return (FALSE);
-
-    if (!in_bounds(y+1, x)) return (FALSE);
-
-    dungeon_type *d_ptr = &dungeon_info[y+1][x];
-
-    return (d_ptr->is_wall(TRUE));
-}
-
-// Is there a wall to the right?
-static bool is_wall_right(int y, int x)
-{
-    if (!ui_use_25d_graphics()) return (FALSE);
-
-    if (!in_bounds(y, x+1)) return (FALSE);
-
-    dungeon_type *d_ptr = &dungeon_info[y][x+1];
-
-    return (d_ptr->is_wall(TRUE));
-}
-
-// Is there a wall (above or below depends on bool above)?
-static bool is_wall_southeast(int y, int x)
-{
-    if (!ui_use_25d_graphics()) return (FALSE);
-
-    if (!in_bounds(y+1, x+1)) return (FALSE);
-
-    dungeon_type *d_ptr = &dungeon_info[y+1][x+1];
-
-    return (d_ptr->is_wall(TRUE));
-}
-
-
-
 static void map_terrain(s16b y, s16b x)
 {
     dungeon_type *dun_ptr = &dungeon_info[y][x];
@@ -785,9 +747,6 @@ static void map_terrain(s16b y, s16b x)
     feature_type *f_ptr;
     bool do_dtrap = FALSE;
     dun_ptr->dtrap = FALSE;
-    dun_ptr->wall_below = FALSE;
-    dun_ptr->wall_right = FALSE;
-    dun_ptr->wall_southeast = FALSE;
 
     //Assume som things normal;
     dun_ptr->special_lighting = FLOOR_LIGHT_NORMAL;   
@@ -814,10 +773,6 @@ static void map_terrain(s16b y, s16b x)
             dun_ptr->dun_char = f_ptr->d_char;
             dun_ptr->dun_color = f_ptr->d_color;
             dun_ptr->dun_tile = f_ptr->tile_id;
-
-            if (is_wall_right(y, x)) dun_ptr->wall_right = TRUE;
-            if (is_wall_below(y, x)) dun_ptr->wall_below = TRUE;
-            if (is_wall_southeast(y, x)) dun_ptr->wall_southeast = TRUE;
 
             /* Special lighting effects */
             if (view_special_light)
@@ -854,10 +809,6 @@ static void map_terrain(s16b y, s16b x)
 
             /* We have seen the feature */
             f_ptr->f_everseen = TRUE;
-
-            if (is_wall_right(y, x)) dun_ptr->wall_right = TRUE;
-            if (is_wall_below(y, x)) dun_ptr->wall_below = TRUE;
-            if (is_wall_southeast(y, x)) dun_ptr->wall_southeast = TRUE;
 
             /* Special lighting effects (walls only) */
             if (view_granite_light)
@@ -1405,9 +1356,6 @@ void light_spot(int y, int x)
     {
         if (in_bounds(y-1, x)) map_info(y-1, x);
     }
-    if (d_ptr->wall_below) map_terrain(y+1, x);
-    if (d_ptr->wall_right) map_terrain(y, x+1);
-    if (d_ptr->wall_southeast) map_terrain(y+1, x+1);
 
     // print the square onscreen
     ui_redraw_grid(y, x);

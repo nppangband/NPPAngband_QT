@@ -61,9 +61,6 @@ public:
     QString monster_tile;
 
     bool double_height_monster;
-    bool wall_right;
-    bool wall_below;
-    bool wall_southeast;
 
     u16b ui_flags;
 

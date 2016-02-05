@@ -93,12 +93,18 @@ bool dungeon_type::has_visible_effect()
     return false;
 }
 
+// Due to the importance properly printing the double-tiles, this
+// function matches map_monster in dun_cave.cpp
 bool dungeon_type::has_visible_monster()
 {
-    if (monster_char != ' ') return true;
-    if (monster_color != QColor("black")) return true;
-    if (use_graphics && (monster_tile.length() > 0)) return true;
-    return false;
+    if (!monster_idx) return (FALSE);
+
+    // The player counts as a monster
+    if (monster_idx < 0) return (TRUE);
+
+    if (mon_list[monster_idx].ml) return (TRUE);
+
+    return (FALSE);
 }
 
 bool dungeon_type::is_wall(bool known)
@@ -170,7 +176,7 @@ void dungeon_type::dungeon_square_wipe()
     special_lighting = obj_special_symbol = 0;
     ui_flags = 0;
     path_flow = dtrap = FALSE;
-    wall_right = wall_southeast = wall_below = double_height_monster = FALSE;
+    double_height_monster = FALSE;
     dun_color = Qt::black;
     dun_char = ' ';
     object_color = Qt::black;

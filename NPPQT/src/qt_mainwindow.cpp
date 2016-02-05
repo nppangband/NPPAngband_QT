@@ -174,15 +174,22 @@ void MainWindow::destroy_tiles()
 
 QPixmap MainWindow::get_tile(QString tile_id, int tile_hgt, int tile_wid)
 {
-    if (tiles.contains(tile_id)) return tiles.value(tile_id);
-
     if (!current_tiles) return ui_make_blank();
 
     QPixmap pix;
 
-    if (tile_id.startsWith("flav_")) pix = current_flav_tiles->get_tile(tile_id);
-    else if (tile_id.startsWith("feat_")) pix = current_feat_tiles->get_tile(tile_id);
-    else pix = current_tiles->get_tile(tile_id);
+    if (tiles.contains(tile_id))
+    {
+        pix = tiles.value(tile_id);
+    }
+    else
+    {
+        if (tile_id.startsWith("flav_")) pix = current_flav_tiles->get_tile(tile_id);
+        else if (tile_id.startsWith("feat_")) pix = current_feat_tiles->get_tile(tile_id);
+        else pix = current_tiles->get_tile(tile_id);
+
+        tiles.insert(tile_id, pix);
+    }
 
     if (pix.width() == 1) return pix;
 
@@ -191,7 +198,6 @@ QPixmap MainWindow::get_tile(QString tile_id, int tile_hgt, int tile_wid)
         pix = pix.scaled(tile_wid, tile_hgt);
     }
 
-    tiles.insert(tile_id, pix);
 
     return pix;
 }

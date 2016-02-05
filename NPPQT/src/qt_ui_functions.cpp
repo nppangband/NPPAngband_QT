@@ -680,8 +680,9 @@ void ui_redraw_grid(int y, int x)
 void ui_redraw_all()
 {
     p_ptr->redraw &= ~(PR_MAP | PR_DRAW);
-    main_window->redraw_all();
     redraw_coords.clear();
+    main_window->redraw_all();
+
 }
 
 void player_death_close_game(void)

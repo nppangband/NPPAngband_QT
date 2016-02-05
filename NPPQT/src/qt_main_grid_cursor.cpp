@@ -148,7 +148,8 @@ QString find_cloud_tile(int y, int x)
 }
 
 
-// Determine if a tile should be drawn at double-height
+
+// Determine if a tile is intended to be drawn at double-height
 static bool is_double_height_tile(int y, int x)
 {
     dungeon_type *d_ptr = &dungeon_info[y][x];
@@ -156,11 +157,6 @@ static bool is_double_height_tile(int y, int x)
     if (use_graphics != GRAPHICS_RAYMOND_GAUSTADNES) return (FALSE);
     if (!d_ptr->double_height_monster) return (FALSE);
     if (main_window->targeting_mode) return (FALSE);
-    if (in_bounds(y-1, x))
-    {
-        dungeon_type *dun2_ptr = &dungeon_info[y-1][x];
-        if (dun2_ptr->has_visible_monster()) return (FALSE);
-    }
     return (TRUE);
 }
 
@@ -186,47 +182,17 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     QColor square_color = d_ptr->dun_color;
     bool empty = true;
     u16b flags = 0;
-    QString key2;
+    QString foreground_tile;
     qreal opacity = 1;
     bool do_shadow = false;
 
-    bool graphics_25d = ui_use_25d_graphics();
-
-    bool store_or_door_below = FALSE;
-    bool store_or_door_right = FALSE;
-    bool store_or_door_southeast = FALSE;
-
-    bool is_door = d_ptr->is_door();
-
-    if (graphics_25d)
-    {
-        if (in_bounds(c_y+1, c_x))
-        {
-            if (cave_shop_bold(c_y+1, c_x)) store_or_door_below = TRUE;
-            if (dungeon_info[c_y+1][c_x].is_door()) store_or_door_below = TRUE;
-        }
-
-        if (in_bounds(c_y, c_x+1))
-        {
-            if (cave_shop_bold(c_y, c_x+1)) store_or_door_right = TRUE;
-            if (dungeon_info[c_y][c_x+1].is_door()) store_or_door_right = TRUE;
-        }
-
-        if (in_bounds(c_y+1, c_x+1))
-        {
-            if (cave_shop_bold(c_y+1, c_x+1)) store_or_door_southeast = TRUE;
-            if (dungeon_info[c_y+1][c_x+1].is_door()) store_or_door_southeast = TRUE;
-        }
-    }
-
-    key2.clear();
+    foreground_tile.clear();
 
     bool double_height_mon = FALSE;
     bool double_height_mon_below = FALSE;
 
     flags = (d_ptr->ui_flags & (UI_LIGHT_BRIGHT | UI_LIGHT_DIM | UI_LIGHT_TORCH | UI_COSMIC_TORCH));
 
-    bool is_shop = cave_shop_bold(c_y, c_x);
     bool is_cloud = false;
 
     // Draw visible monsters
@@ -237,7 +203,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
         empty = false;
 
-        if (!parent->do_pseudo_ascii) key2 = d_ptr->monster_tile;
+        if (!parent->do_pseudo_ascii) foreground_tile = d_ptr->monster_tile;
         else do_shadow = true;
 
         flags |= (d_ptr->ui_flags & UI_TRANSPARENT_MONSTER);
@@ -251,7 +217,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
         empty = false;
 
-        key2 = d_ptr->effect_tile;
+        foreground_tile = d_ptr->effect_tile;
 
         flags |= (d_ptr->ui_flags & UI_TRANSPARENT_EFFECT);
         opacity = 0.7;
@@ -266,7 +232,7 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
         empty = false;
 
-        key2 = d_ptr->object_tile;
+        foreground_tile = d_ptr->object_tile;
     }
 
     bool done_bg = false;
@@ -274,14 +240,27 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     painter->save();
 
+    /// Are we drawing the bottom half of a monster below
+    if (is_double_height_tile(c_y, c_x))
+    {
+        double_height_mon = TRUE;
+
+        // Unless there a visible monster above?
+        if (in_bounds(c_y-1, c_x))
+        {
+            dungeon_type *d2_ptr = &dungeon_info[c_y-1][c_x];
+            if (d2_ptr->has_visible_monster()) double_height_mon = FALSE;
+        }
+    }
+
     // Are we drawing the top half of a monster below?
-    if (in_bounds_fully(c_y+1, c_x))
+    if (in_bounds_fully(c_y+1, c_x) && !d_ptr->has_visible_monster())
     {
         if (is_double_height_tile(c_y+1, c_x)) double_height_mon_below = TRUE;
     }
 
     //Double check that there isn't something drawn above.  If double height tile and nothing above, use the space.
-    if (is_double_height_tile(c_y, c_x)) double_height_mon = TRUE;
+
 
     // Nothing to draw
     if (empty && !double_height_mon && !double_height_mon_below && !d_ptr->has_visible_terrain())
@@ -293,12 +272,12 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     if (use_graphics)
     {
         // Draw background tile
-        QString key1 = d_ptr->dun_tile;
+        QString background_tile = d_ptr->dun_tile;
         QPixmap pix;
 
-        if (key1.length()) pix = parent->get_tile(key1, parent->main_cell_hgt, parent->main_cell_wid);
+        if (background_tile.length()) pix = parent->get_tile(background_tile, parent->main_cell_hgt, parent->main_cell_wid);
 
-        if (key1.length() > 0)
+        if (background_tile.length() > 0)
         {
             if (flags & UI_LIGHT_TORCH)
             {
@@ -308,76 +287,16 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             }
             else if (flags & UI_LIGHT_BRIGHT)
             {
-                pix = parent->apply_shade(key1, pix, "bright");
+                pix = parent->apply_shade(background_tile, pix, "bright");
             }
             else if (flags & UI_LIGHT_DIM)
             {
-                pix = parent->apply_shade(key1, pix, "dim");
+                pix = parent->apply_shade(background_tile, pix, "dim");
             }
 
             painter->setOpacity(1);
+            painter->drawPixmap(pix.rect(), pix, pix.rect());
 
-            //Draw the simple tile
-            if (!graphics_25d || (!d_ptr->is_wall(TRUE) && !is_shop && !is_door))
-            {
-                painter->drawPixmap(pix.rect(), pix, pix.rect());
-            }
-
-            // Draw offset walls if needed
-            else
-            {
-                QPixmap pix2 = pix.copy();
-                QRect cut_from(QPoint(pix2.width()/3+1, pix2.height()/3+1), QPoint(pix2.width(), pix2.height()));
-                QRect paste_to(QPoint(0, 0), QPoint(pix2.width()*2/3, pix2.height()*2/3));
-                pix2 = pix2.copy(cut_from);
-                painter->setOpacity(1);
-                painter->drawPixmap(paste_to, pix2, pix2.rect());
-
-                // Possibly draw the sides of walls if appropriate
-                if (!is_shop && !is_door)
-                {
-                    if (!d_ptr->wall_below  && !store_or_door_below)
-                    {
-                        QPixmap pix3 = parent->apply_shade(key1, pix, "dim");
-                        QRect paste_offset(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3, pix3.height()));
-                        pix3 = pix3.scaledToHeight(pix3.height()/2);
-                        painter->drawPixmap(paste_offset, pix3, pix3.rect());
-                    }
-                    if (!d_ptr->wall_right && !store_or_door_right)
-                    {
-                        QPixmap pix3 = parent->apply_shade(key1, pix, "dim");
-                        QPoint upper_left(pix3.width()*2/3+1, 0);
-                        QPoint lower_right(pix3.width(), pix3.height()*2/3);
-                        QRect paste_offset(upper_left, lower_right);
-                        pix3 = pix3.scaledToWidth(pix3.width()/2);
-                        painter->drawPixmap(paste_offset, pix3, pix3.rect());
-                    }
-                    if (!d_ptr->wall_southeast  && !store_or_door_southeast)
-                    {
-                        QPixmap pix3 = parent->apply_shade(key1, pix, "dim");
-
-                        QPoint upper_left(pix3.width()*2/3+1, pix3.height()*2/3+1);
-                        QPoint lower_right(pix3.width(), pix3.height());
-                        QRect paste_offset(upper_left, lower_right);
-                        pix3 = pix3.scaledToWidth(pix3.width()/2);
-                        pix3 = pix3.scaledToHeight(pix3.height()/2);
-                        painter->drawPixmap(paste_offset, pix3, pix3.rect());
-
-                        // If a corner, draw a line
-                        if (!d_ptr->wall_right && !d_ptr->wall_below)
-                        {
-                            QPen this_pen(Qt::black);
-                            this_pen.setWidth(2);
-                            painter->setPen(this_pen);
-                            painter->setOpacity(.25);
-                            painter->drawLine(upper_left, lower_right);
-                            painter->setOpacity(1);
-                        }
-                    }
-                }
-
-
-            } 
             done_bg = true;
 
             // Draw cloud effects (in graphics mode), if not already drawing that
@@ -395,18 +314,21 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             }
 
             // Draw foreground tile
-            if (key2.length() > 0)
+            if (foreground_tile.length() > 0)
             {
                 QPixmap pix3;
                 if (double_height_mon)
                 {
                     // Use only the bottom half of the tile
-                    pix3 = parent->get_tile(key2, parent->main_cell_hgt*2, parent->main_cell_wid);
+                    pix3 = parent->get_tile(foreground_tile, parent->main_cell_hgt*2, parent->main_cell_wid);
                     QRect this_rect(QPoint(0,pix3.height()/2+1), QPoint(pix3.width(), pix3.height()));
                     pix3 = pix3.copy(this_rect);
                 }
 
-                else pix3 = parent->get_tile(key2, parent->main_cell_hgt, parent->main_cell_wid);
+                else
+                {
+                    pix3 = parent->get_tile(foreground_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                }
                 if (flags & (UI_TRANSPARENT_EFFECT | UI_TRANSPARENT_MONSTER))
                 {
                    painter->setOpacity(opacity);
@@ -416,6 +338,21 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 done_fg = true;
             }
 
+            // draw foreground circle for dtrap edge
+            else if (d_ptr->dtrap && !double_height_mon_below)
+            {
+                QPixmap sample = parent->get_tile(background_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                int height = sample.height();
+                int width = sample.width();
+                QBrush brush(Qt::green);
+                painter->setPen(Qt::green);
+                painter->setBrush(brush);
+                painter->setOpacity(0.7);
+                painter->drawEllipse(width/3, height/3, width/3, height/3);
+                painter->setOpacity(1);
+                painter->setBrush(Qt::NoBrush);
+                done_fg = true;
+            }
 
             if (double_height_mon_below)
             {
@@ -431,174 +368,12 @@ void DungeonGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 done_fg = true;
             }
 
-            // draw foreground circle for dtrap edge
-            if (d_ptr->dtrap && !done_fg)
-            {
-                QPixmap sample = parent->get_tile(key1, parent->main_cell_hgt, parent->main_cell_wid);
-                int height = sample.height();
-                int width = sample.width();
-                QBrush brush(Qt::green);
-                painter->setPen(Qt::green);
-                painter->setBrush(brush);
-                painter->setOpacity(0.7);
-                painter->drawEllipse(width/3, height/3, width/3, height/3);
-                painter->setOpacity(1);
-                painter->setBrush(Qt::NoBrush);
-                done_fg = true;
-            }
-
             if (do_shadow)
             {
                 QPixmap pix3 = pseudo_ascii(square_char, square_color, parent->font_main_window,
                                            QSizeF(parent->main_cell_wid, parent->main_cell_hgt));
                 painter->drawPixmap(pix3.rect(), pix3, pix.rect());
                 done_fg = true;
-            }
-        }
-
-        // Cut in the wall from other squares if necessary
-        if (graphics_25d)
-        {
-            bool did_foreground = done_fg;
-
-            if (d_ptr->wall_below || is_shop || is_door)
-            {
-                dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x];
-
-                QString this_tile = d2_ptr->dun_tile;
-
-                // Surround shops with permanent walls
-                if (is_shop) this_tile = f_info[FEAT_WALL_PERM].tile_id;
-
-                // Don't have the outline of another door drawn
-                else if (is_door)
-                {
-                    // Use the actual tile
-                    int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
-                    this_tile = f_info[this_feat].tile_id;
-                }
-
-                if (this_tile.length())
-                {
-                    QPixmap pix3 = parent->get_tile(this_tile, parent->main_cell_hgt, parent->main_cell_wid);
-                    if (this_tile.contains(f_info[FEAT_NONE].tile_id)) pix3 = pix.copy();
-                    QRect cut_from(QPoint(pix3.width()/3+1, 0), QPoint(pix3.width(), pix3.height()/3));
-                    QRect paste_to(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3+1, pix3.height()));
-                    pix3 = pix3.copy(cut_from);
-                    if (did_foreground || is_shop) painter->setOpacity(.6);
-                    else if (d_ptr->is_stairs()) painter->setOpacity(.3);
-                    else painter->setOpacity(1);
-                    painter->drawPixmap(paste_to, pix3, pix3.rect());
-                    painter->setOpacity(1);
-                    done_fg = TRUE;
-                }
-            }
-            else if (store_or_door_below)
-            {
-                dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x];
-
-                if (d2_ptr->dun_tile.length())
-                {
-                    QPixmap pix3 = parent->get_tile(d2_ptr->dun_tile, parent->main_cell_hgt, parent->main_cell_wid);
-                    QRect cut_from(QPoint(pix3.width()/3+1, 0), QPoint(pix3.width(), pix3.height()/3));
-                    QRect paste_to(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3+1, pix3.height()));
-                    pix3 = pix3.copy(cut_from);
-                    painter->setOpacity(1);
-                    painter->drawPixmap(paste_to, pix3, pix3.rect());
-                    done_fg = TRUE;
-                }
-            }
-            if (d_ptr->wall_right || is_shop || is_door)
-            {
-                dungeon_type *d2_ptr = &dungeon_info[c_y][c_x+1];
-
-                QString this_tile = d2_ptr->dun_tile;
-
-                // Surround shops with permanent walls
-                if (is_shop) this_tile = f_info[FEAT_WALL_PERM].tile_id;
-
-                // Don't have the outline of another door drawn
-                else if (is_door)
-                {
-                    // Use the actual tile
-                    int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
-                    this_tile = f_info[this_feat].tile_id;
-                }
-
-                if (this_tile.length())
-                {
-                    QPixmap pix3 = parent->get_tile(this_tile, parent->main_cell_hgt, parent->main_cell_wid);
-                    if (this_tile.contains(f_info[FEAT_NONE].tile_id)) pix3 = pix.copy();
-                    QRect cut_from(QPoint(0, pix3.height()/3+1), QPoint(pix3.width()/3, pix3.height()));
-                    QRect paste_to(QPoint(pix3.width()*2/3+1, 0), QPoint(pix3.width(), pix3.height()*2/3));
-                    pix3 = pix3.copy(cut_from);
-                    if (did_foreground || is_shop) painter->setOpacity(.6);
-                    else if (d_ptr->is_stairs()) painter->setOpacity(.3);
-                    else painter->setOpacity(1);
-                    painter->drawPixmap(paste_to, pix3, pix3.rect());
-                    painter->setOpacity(1);
-                    done_fg = TRUE;
-                }
-            }
-            else if (store_or_door_right)
-            {
-                dungeon_type *d2_ptr = &dungeon_info[c_y][c_x+1];
-                if (d2_ptr->dun_tile.length())
-                {
-                    QPixmap pix3 = parent->get_tile(d2_ptr->dun_tile, parent->main_cell_hgt, parent->main_cell_wid);
-                    QRect cut_from(QPoint(0, pix3.height()/3+1), QPoint(pix3.width()/3, pix3.height()));
-                    QRect paste_to(QPoint(pix3.width()*2/3+1, 0), QPoint(pix3.width(), pix3.height()*2/3));
-                    pix3 = pix3.copy(cut_from);
-                    painter->setOpacity(1);
-                    painter->drawPixmap(paste_to, pix3, pix3.rect());
-                    done_fg = TRUE;
-                }
-            }
-
-            if (d_ptr->wall_southeast || is_shop || is_door)
-            {
-                dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x+1];
-                QString this_tile = d2_ptr->dun_tile;
-
-                // Surround shops with permanent walls
-                if (is_shop) this_tile = f_info[FEAT_WALL_PERM].tile_id;
-
-                // Don't have the outline of another door drawn
-                else if (is_door)
-                {
-                    // Use the actual tile
-                    int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
-                    this_tile = f_info[this_feat].tile_id;
-                }
-
-                if (this_tile.length())
-                {
-                    QPixmap pix3 = parent->get_tile(this_tile, parent->main_cell_hgt, parent->main_cell_wid);
-                    if (this_tile.contains(f_info[FEAT_NONE].tile_id)) pix3 = pix.copy();
-                    QRect cut_from(QPoint(0, 0), QPoint(pix3.width()/3, pix3.height()/3));
-                    QRect paste_to(QPoint(pix3.width()*2/3+1, pix3.height()*2/3+1), QPoint(pix3.width(), pix3.height()));
-                    pix3 = pix3.copy(cut_from);
-                    if (did_foreground || is_shop) painter->setOpacity(.6);
-                    else if (d_ptr->is_stairs()) painter->setOpacity(.3);
-                    else painter->setOpacity(1);
-                    painter->drawPixmap(paste_to, pix3, pix3.rect());
-                    painter->setOpacity(1);
-                    done_fg = TRUE;
-                }
-            }
-            else if (store_or_door_southeast)
-            {
-                dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x+1];
-                if (d2_ptr->dun_tile.length())
-                {
-                    QPixmap pix3 = parent->get_tile(d2_ptr->dun_tile, parent->main_cell_hgt, parent->main_cell_wid);
-                    QRect cut_from(QPoint(0, 0), QPoint(pix3.width()/3, pix3.height()/3));
-                    QRect paste_to(QPoint(pix3.width()*2/3+1, pix3.height()*2/3+1), QPoint(pix3.width(), pix3.height()));
-                    pix3 = pix3.copy(cut_from);
-                    painter->setOpacity(1);
-                    painter->drawPixmap(paste_to, pix3, pix3.rect());
-                    done_fg = TRUE;
-                }
             }
         }
     }
@@ -914,3 +689,292 @@ void DungeonGrid::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     main_window->clear_message_label();
     main_window->executing_command = FALSE;
 }
+
+// TO be used in paint
+#ifdef PARTIALLY_WORKING_25D_CODE
+    bool graphics_25d = ui_use_25d_graphics();
+
+
+    bool store_or_door_below = FALSE;
+    bool store_or_door_right = FALSE;
+    bool store_or_door_southeast = FALSE;
+
+    if (graphics_25d)
+    {
+        if (in_bounds(c_y+1, c_x))
+        {
+            if (cave_shop_bold(c_y+1, c_x)) store_or_door_below = TRUE;
+            if (dungeon_info[c_y+1][c_x].is_door()) store_or_door_below = TRUE;
+        }
+
+        if (in_bounds(c_y, c_x+1))
+        {
+            if (cave_shop_bold(c_y, c_x+1)) store_or_door_right = TRUE;
+            if (dungeon_info[c_y][c_x+1].is_door()) store_or_door_right = TRUE;
+        }
+
+        if (in_bounds(c_y+1, c_x+1))
+        {
+            if (cave_shop_bold(c_y+1, c_x+1)) store_or_door_southeast = TRUE;
+            if (dungeon_info[c_y+1][c_x+1].is_door()) store_or_door_southeast = TRUE;
+        }
+    }
+
+    bool is_door = d_ptr->is_door();
+
+        bool is_shop = cave_shop_bold(c_y, c_x);
+
+        //Draw the simple tile
+        if (!graphics_25d || (!d_ptr->is_wall(TRUE) && !is_shop && !is_door))
+        {
+            painter->drawPixmap(pix.rect(), pix, pix.rect());
+        }
+
+        // Draw offset walls if needed
+        else
+        {
+            QPixmap pix2 = pix.copy();
+            QRect cut_from(QPoint(pix2.width()/3+1, pix2.height()/3+1), QPoint(pix2.width(), pix2.height()));
+            QRect paste_to(QPoint(0, 0), QPoint(pix2.width()*2/3, pix2.height()*2/3));
+            pix2 = pix2.copy(cut_from);
+            painter->setOpacity(1);
+            painter->drawPixmap(paste_to, pix2, pix2.rect());
+
+            // Possibly draw the sides of walls if appropriate
+            if (!is_shop && !is_door)
+            {
+                if (!d_ptr->wall_below  && !store_or_door_below)
+                {
+                    QPixmap pix3 = parent->apply_shade(key1, pix, "dim");
+                    QRect paste_offset(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3, pix3.height()));
+                    pix3 = pix3.scaledToHeight(pix3.height()/2);
+                    painter->drawPixmap(paste_offset, pix3, pix3.rect());
+                }
+                if (!d_ptr->wall_right && !store_or_door_right)
+                {
+                    QPixmap pix3 = parent->apply_shade(key1, pix, "dim");
+                    QPoint upper_left(pix3.width()*2/3+1, 0);
+                    QPoint lower_right(pix3.width(), pix3.height()*2/3);
+                    QRect paste_offset(upper_left, lower_right);
+                    pix3 = pix3.scaledToWidth(pix3.width()/2);
+                    painter->drawPixmap(paste_offset, pix3, pix3.rect());
+                }
+                if (!d_ptr->wall_southeast  && !store_or_door_southeast)
+                {
+                    QPixmap pix3 = parent->apply_shade(key1, pix, "dim");
+
+                    QPoint upper_left(pix3.width()*2/3+1, pix3.height()*2/3+1);
+                    QPoint lower_right(pix3.width(), pix3.height());
+                    QRect paste_offset(upper_left, lower_right);
+                    pix3 = pix3.scaledToWidth(pix3.width()/2);
+                    pix3 = pix3.scaledToHeight(pix3.height()/2);
+                    painter->drawPixmap(paste_offset, pix3, pix3.rect());
+
+                    // If a corner, draw a line
+                    if (!d_ptr->wall_right && !d_ptr->wall_below)
+                    {
+                        QPen this_pen(Qt::black);
+                        this_pen.setWidth(2);
+                        painter->setPen(this_pen);
+                        painter->setOpacity(.25);
+                        painter->drawLine(upper_left, lower_right);
+                        painter->setOpacity(1);
+                    }
+                }
+            }
+
+
+        }
+
+            // Cut in the wall from other squares if necessary
+            if (graphics_25d)
+            {
+                bool did_foreground = done_fg;
+
+                if (d_ptr->wall_below || is_shop || is_door)
+                {
+                    dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x];
+
+                    QString this_tile = d2_ptr->dun_tile;
+
+                    // Surround shops with permanent walls
+                    if (is_shop) this_tile = f_info[FEAT_WALL_PERM].tile_id;
+
+                    // Don't have the outline of another door drawn
+                    else if (is_door)
+                    {
+                        // Use the actual tile
+                        int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
+                        this_tile = f_info[this_feat].tile_id;
+                    }
+
+                    if (this_tile.length())
+                    {
+                        QPixmap pix3 = parent->get_tile(this_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                        if (this_tile.contains(f_info[FEAT_NONE].tile_id)) pix3 = pix.copy();
+                        QRect cut_from(QPoint(pix3.width()/3+1, 0), QPoint(pix3.width(), pix3.height()/3));
+                        QRect paste_to(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3+1, pix3.height()));
+                        pix3 = pix3.copy(cut_from);
+                        if (did_foreground || is_shop) painter->setOpacity(.6);
+                        else if (d_ptr->is_stairs()) painter->setOpacity(.3);
+                        else painter->setOpacity(1);
+                        painter->drawPixmap(paste_to, pix3, pix3.rect());
+                        painter->setOpacity(1);
+                        done_fg = TRUE;
+                    }
+                }
+                else if (store_or_door_below)
+                {
+                    dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x];
+
+                    if (d2_ptr->dun_tile.length())
+                    {
+                        QPixmap pix3 = parent->get_tile(d2_ptr->dun_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                        QRect cut_from(QPoint(pix3.width()/3+1, 0), QPoint(pix3.width(), pix3.height()/3));
+                        QRect paste_to(QPoint(0, pix3.height()*2/3+1), QPoint(pix3.width()*2/3+1, pix3.height()));
+                        pix3 = pix3.copy(cut_from);
+                        painter->setOpacity(1);
+                        painter->drawPixmap(paste_to, pix3, pix3.rect());
+                        done_fg = TRUE;
+                    }
+                }
+                if (d_ptr->wall_right || is_shop || is_door)
+                {
+                    dungeon_type *d2_ptr = &dungeon_info[c_y][c_x+1];
+
+                    QString this_tile = d2_ptr->dun_tile;
+
+                    // Surround shops with permanent walls
+                    if (is_shop) this_tile = f_info[FEAT_WALL_PERM].tile_id;
+
+                    // Don't have the outline of another door drawn
+                    else if (is_door)
+                    {
+                        // Use the actual tile
+                        int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
+                        this_tile = f_info[this_feat].tile_id;
+                    }
+
+                    if (this_tile.length())
+                    {
+                        QPixmap pix3 = parent->get_tile(this_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                        if (this_tile.contains(f_info[FEAT_NONE].tile_id)) pix3 = pix.copy();
+                        QRect cut_from(QPoint(0, pix3.height()/3+1), QPoint(pix3.width()/3, pix3.height()));
+                        QRect paste_to(QPoint(pix3.width()*2/3+1, 0), QPoint(pix3.width(), pix3.height()*2/3));
+                        pix3 = pix3.copy(cut_from);
+                        if (did_foreground || is_shop) painter->setOpacity(.6);
+                        else if (d_ptr->is_stairs()) painter->setOpacity(.3);
+                        else painter->setOpacity(1);
+                        painter->drawPixmap(paste_to, pix3, pix3.rect());
+                        painter->setOpacity(1);
+                        done_fg = TRUE;
+                    }
+                }
+                else if (store_or_door_right)
+                {
+                    dungeon_type *d2_ptr = &dungeon_info[c_y][c_x+1];
+                    if (d2_ptr->dun_tile.length())
+                    {
+                        QPixmap pix3 = parent->get_tile(d2_ptr->dun_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                        QRect cut_from(QPoint(0, pix3.height()/3+1), QPoint(pix3.width()/3, pix3.height()));
+                        QRect paste_to(QPoint(pix3.width()*2/3+1, 0), QPoint(pix3.width(), pix3.height()*2/3));
+                        pix3 = pix3.copy(cut_from);
+                        painter->setOpacity(1);
+                        painter->drawPixmap(paste_to, pix3, pix3.rect());
+                        done_fg = TRUE;
+                    }
+                }
+
+                if (d_ptr->wall_southeast || is_shop || is_door)
+                {
+                    dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x+1];
+                    QString this_tile = d2_ptr->dun_tile;
+
+                    // Surround shops with permanent walls
+                    if (is_shop) this_tile = f_info[FEAT_WALL_PERM].tile_id;
+
+                    // Don't have the outline of another door drawn
+                    else if (is_door)
+                    {
+                        // Use the actual tile
+                        int this_feat = f_info[d2_ptr->feature_idx].f_mimic;
+                        this_tile = f_info[this_feat].tile_id;
+                    }
+
+                    if (this_tile.length())
+                    {
+                        QPixmap pix3 = parent->get_tile(this_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                        if (this_tile.contains(f_info[FEAT_NONE].tile_id)) pix3 = pix.copy();
+                        QRect cut_from(QPoint(0, 0), QPoint(pix3.width()/3, pix3.height()/3));
+                        QRect paste_to(QPoint(pix3.width()*2/3+1, pix3.height()*2/3+1), QPoint(pix3.width(), pix3.height()));
+                        pix3 = pix3.copy(cut_from);
+                        if (did_foreground || is_shop) painter->setOpacity(.6);
+                        else if (d_ptr->is_stairs()) painter->setOpacity(.3);
+                        else painter->setOpacity(1);
+                        painter->drawPixmap(paste_to, pix3, pix3.rect());
+                        painter->setOpacity(1);
+                        done_fg = TRUE;
+                    }
+                }
+                else if (store_or_door_southeast)
+                {
+                    dungeon_type *d2_ptr = &dungeon_info[c_y+1][c_x+1];
+                    if (d2_ptr->dun_tile.length())
+                    {
+                        QPixmap pix3 = parent->get_tile(d2_ptr->dun_tile, parent->main_cell_hgt, parent->main_cell_wid);
+                        QRect cut_from(QPoint(0, 0), QPoint(pix3.width()/3, pix3.height()/3));
+                        QRect paste_to(QPoint(pix3.width()*2/3+1, pix3.height()*2/3+1), QPoint(pix3.width(), pix3.height()));
+                        pix3 = pix3.copy(cut_from);
+                        painter->setOpacity(1);
+                        painter->drawPixmap(paste_to, pix3, pix3.rect());
+                        done_fg = TRUE;
+                    }
+                }
+
+                // Is there a wall above?
+                static bool is_wall_below(int y, int x)
+                {
+                    if (!ui_use_25d_graphics()) return (FALSE);
+
+                    if (!in_bounds(y+1, x)) return (FALSE);
+
+                    dungeon_type *d_ptr = &dungeon_info[y+1][x];
+
+                    return (d_ptr->is_wall(TRUE));
+                }
+
+                // Is there a wall to the right?
+                static bool is_wall_right(int y, int x)
+                {
+                    if (!ui_use_25d_graphics()) return (FALSE);
+
+                    if (!in_bounds(y, x+1)) return (FALSE);
+
+                    dungeon_type *d_ptr = &dungeon_info[y][x+1];
+
+                    return (d_ptr->is_wall(TRUE));
+                }
+
+                // Is there a wall (above or below depends on bool above)?
+                static bool is_wall_southeast(int y, int x)
+                {
+                    if (!ui_use_25d_graphics()) return (FALSE);
+
+                    if (!in_bounds(y+1, x+1)) return (FALSE);
+
+                    dungeon_type *d_ptr = &dungeon_info[y+1][x+1];
+
+                    return (d_ptr->is_wall(TRUE));
+                }
+
+                static bool coords_sort(coord first, coord second)
+                {
+                    if (first.y > second.y) return (TRUE);
+                    if (first.y < second.y)return (FALSE);
+
+                    // Y coords are equal
+                    if (first.x > second.x) return (TRUE);
+                    return (FALSE);
+                }
+
+#endif
