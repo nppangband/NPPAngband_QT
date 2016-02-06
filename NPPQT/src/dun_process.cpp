@@ -1496,7 +1496,7 @@ void change_player_level(void)
     redraw_stuff();
 
     /* Cancel the target */
-    target_set_monster(0);
+    target_set_monster(0, FALSE);
 
     /* Cancel the health bar */
     health_track(0);
@@ -1616,7 +1616,7 @@ void change_player_level(void)
     p_ptr->player_command_wipe();
 
     /* Cancel the target */
-    target_set_monster(0);
+    target_set_monster(0, FALSE);
 
     /* Cancel the health bar */
     health_track(0);

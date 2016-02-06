@@ -312,7 +312,7 @@ bool create_glacier(void)
     }
 
     /* Reset the target info */
-    target_set_monster(0);
+    target_set_monster(0, FALSE);
 
     return (status);
 }

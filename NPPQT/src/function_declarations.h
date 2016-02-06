@@ -899,11 +899,11 @@ extern const mon_susceptibility_struct mon_suscept[4];
 extern const colors_preset preset_colors[MAX_COLORS];
 
 /* target.cpp */
-extern bool target_able(int m_idx);
+extern bool target_able(int m_idx, bool probing);
 extern bool monster_target_exists(void);
 extern bool target_okay(void);
 extern bool target_set_interactive(int mode, int x, int y);
-extern void target_set_monster(int m_idx);
+extern void target_set_monster(int m_idx, bool probing);
 extern void target_set_location(int y, int x);
 extern int target_dir(UserInput input);
 extern bool get_aim_dir(int *dp, bool target_trap);

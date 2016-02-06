@@ -157,7 +157,7 @@ void delete_monster_idx(int i)
     r_ptr->cur_num--;
 
     /* Hack -- remove target monster */
-    if (p_ptr->target_who == i) target_set_monster(0);
+    if (p_ptr->target_who == i) target_set_monster(0, FALSE);
 
     /* Hack -- remove tracked monster */
     if (p_ptr->health_who == i) health_track(0);
@@ -453,7 +453,7 @@ void wipe_mon_list(void)
     mon_cnt = 0;
 
     /* Hack -- no more target */
-    target_set_monster(0);
+    target_set_monster(0, FALSE);
 
     /* Hack -- no more tracking */
     health_track(0);

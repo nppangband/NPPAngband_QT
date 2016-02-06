@@ -547,7 +547,10 @@ void PlayerBirth::option_changed(int index)
 
 void PlayerBirth::call_options_dialog()
 {
-    OptionsDialog *dlg = new OptionsDialog;
+    bool old_birth_money = birth_money;
+    bool old_birth_maximize = birth_maximize;
+
+    QPointer<OptionsDialog> dlg = new OptionsDialog;
     dlg->exec();
     delete dlg;
 
@@ -559,6 +562,30 @@ void PlayerBirth::call_options_dialog()
 
         int id = group_options->id(chk);
         chk->setChecked(op_ptr->opt[id]);
+    }
+
+    if (old_birth_maximize != birth_maximize)
+    {
+        if (birth_point_based)
+        {
+            //hack - pretend point based is being selected
+            birth_point_based = FALSE;
+            QRadioButton *btn = this->findChild<QRadioButton *>("point_radio");
+            btn->click();
+        }
+        else
+        {
+            // hack - pretend random roller is being selected
+            birth_point_based = TRUE;
+            QRadioButton *btn = this->findChild<QRadioButton *>("roller_radio");
+            btn->click();
+        }
+    }
+
+    if (old_birth_money != birth_money)
+    {
+        get_money();
+        update_screen();
     }
 }
 

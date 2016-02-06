@@ -661,7 +661,7 @@ void DungeonGrid::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         {
             dungeon_type *dun_ptr = &dungeon_info[c_y][c_x];
 
-            if (target_able(dun_ptr->monster_idx)) target_set_monster(dun_ptr->monster_idx);
+            if (target_able(dun_ptr->monster_idx, FALSE)) target_set_monster(dun_ptr->monster_idx, FALSE);
             else if (dun_ptr->projectable()) target_set_location(c_y, c_x);
         }
         else if (left_button)

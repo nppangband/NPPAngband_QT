@@ -18,7 +18,6 @@
 #include <QGridLayout>
 #include <QSpinBox>
 #include <QTabWidget>
-#include <QSpacerItem>
 
 OptionsDialog::OptionsDialog()
 {    
