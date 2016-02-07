@@ -115,7 +115,7 @@ void player_other::player_other_wipe()
 {            
     full_name.clear();
     for (int i = 0; i < OPT_MAX; i++) op_ptr->opt[i] = options[i].normal;
-    hitpoint_warn = delay_factor = 0;
+    hitpoint_warn = delay_anim_factor = delay_run_factor = 0;
 }
 
 void player_type::player_command_wipe()

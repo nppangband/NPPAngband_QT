@@ -14,6 +14,10 @@
 #include "storedialog.h"
 #include "src/cmds.h"
 #include <QPushButton>
+#include <QTest>
+#include <QTimer>
+
+static QTimer run_timer;
 
 /*
  * Check if action permissible here.
@@ -2433,7 +2437,15 @@ void command_run(cmd_arg args)
     int dir = 0;
     if (args.verify) dir = args.direction;
 
+    // Ensure there is a minimum time between runs.
+    int delay_left = run_timer.remainingTime();
+    if (delay_left > 0) QTest::qWait(delay_left);
+
     int energy = run_step(dir);
+
+    // Set up a timer to ensure a minimum time between runs.
+    run_timer.setSingleShot(TRUE);
+    run_timer.start(op_ptr->delay_run_factor);
 
     ui_update_message_label(color_string("Running", TERM_GREEN));
 

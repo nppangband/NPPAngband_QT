@@ -7241,7 +7241,8 @@ bool project(int who, int rad, int y0, int x0, int y1, int x1, int dam, int typ,
         else if (flg & PROJECT_STAR) {
             ui_animate_star(y0, x0, rad, typ, gy, gx, grids);
         }
-        else if (flg & PROJECT_BOOM) {
+        else if (flg & PROJECT_BOOM)
+        {
             ui_animate_ball(y2, x2, rad, typ, flg);
         }
     }

@@ -735,6 +735,7 @@ static int init_other(void)
 
     p_ptr->player_type_wipe();
     op_ptr->player_other_wipe();
+    op_ptr->delay_anim_factor = 100;
 
     /*Clear the update flags*/
     p_ptr->notice = 0L;

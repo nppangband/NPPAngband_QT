@@ -199,7 +199,8 @@ private slots:
     void command_list_targeting();
     void options_dialog();
     void hp_warning_dialog();
-    void delay_factor_dialog();
+    void delay_anim_factor_dialog();
+    void delay_run_factor_dialog();
     void toggle_show_targeting();
     void font_dialog_main_window();
     void font_dialog_message_window();
@@ -321,7 +322,8 @@ private:
     QPointer<QAction> hotkey_import;
     QPointer<QAction> show_targeting_act;
     QPointer<QAction> hitpoint_warning_act;
-    QPointer<QAction> delay_factor_act;
+    QPointer<QAction> delay_anim_factor_act;
+    QPointer<QAction> delay_run_factor_act;
 
 
     //Commmands for the knowledge menu

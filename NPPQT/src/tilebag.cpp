@@ -301,7 +301,7 @@ void extract_tiles(void)
     {
         feature_type *f_ptr = &f_info[i];
         if (f_ptr->f_name.isEmpty()) continue;
-        QString feat_name = feature_desc(i, FALSE, FALSE);
+        QString feat_name = feature_desc(i, FALSE, TRUE);
         f_ptr->tile_id = tile_feat_name_convert(feat_name);
     }
     for (i = 0; i < z_info->flavor_max; i++)

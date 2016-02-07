@@ -318,7 +318,8 @@ public:
 
     byte hitpoint_warn;		/* Hitpoint warning (0 to 9) */
 
-    byte delay_factor;		/* Delay factor (0 to 9) */
+    byte delay_anim_factor;		/* Delay factor (25 to 200) */
+    byte delay_run_factor;      // Delay between run steps, if needed
 
     // All variables above need to be re-set in player_set_wipe.
     void player_other_wipe();

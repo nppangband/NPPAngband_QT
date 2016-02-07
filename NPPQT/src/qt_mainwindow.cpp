@@ -1007,11 +1007,18 @@ void MainWindow::hp_warning_dialog()
     op_ptr->hitpoint_warn = (byte)get_quantity_slider(prompt, QString("Percent"), 0, 99, op_ptr->hitpoint_warn);
 }
 
-void MainWindow::delay_factor_dialog()
+void MainWindow::delay_anim_factor_dialog()
 {
-    QString prompt = "Please select a delay factor:";
+    QString prompt = "Please select an animation delay adjustment factor:";
 
-    op_ptr->delay_factor = get_quantity_slider(prompt, QString("MSec"), 0, 200, op_ptr->delay_factor);
+    op_ptr->delay_anim_factor = get_quantity_slider(prompt, QString(" Percent"), 25, 200, op_ptr->delay_anim_factor);
+}
+
+void MainWindow::delay_run_factor_dialog()
+{
+    QString prompt = "Please select a run delay factor:";
+
+    op_ptr->delay_run_factor = get_quantity_slider(prompt, QString("msec"), 0, 250, op_ptr->delay_run_factor);
 }
 
 
@@ -1149,7 +1156,8 @@ void MainWindow::update_file_menu_game_active()
 
     options_act->setEnabled(TRUE);
     hitpoint_warning_act->setEnabled(TRUE);
-    delay_factor_act->setEnabled(TRUE);
+    delay_anim_factor_act->setEnabled(TRUE);
+    delay_run_factor_act->setEnabled(TRUE);
     view_monster_knowledge->setEnabled(TRUE);
     view_object_knowledge->setEnabled(TRUE);
     view_ego_item_knowledge->setEnabled(TRUE);
@@ -1188,7 +1196,8 @@ void MainWindow::update_file_menu_game_inactive()
 
     options_act->setEnabled(FALSE);
     hitpoint_warning_act->setEnabled(FALSE);
-    delay_factor_act->setEnabled(FALSE);
+    delay_anim_factor_act->setEnabled(FALSE);
+    delay_run_factor_act->setEnabled(FALSE);
     view_monster_knowledge->setEnabled(FALSE);
     view_object_knowledge->setEnabled(FALSE);
     view_ego_item_knowledge->setEnabled(FALSE);
@@ -1283,9 +1292,13 @@ void MainWindow::create_actions()
     hitpoint_warning_act->setStatusTip(tr("Give the player a warning when the player's current hitpoints drop below a certain percentage of maximum hitpoints."));
     connect(hitpoint_warning_act, SIGNAL(triggered()), this, SLOT(hp_warning_dialog()));
 
-    delay_factor_act = new QAction(tr("Set Delay Factor"), this);
-    delay_factor_act->setStatusTip(tr("Set the duration for certain certain animations."));
-    connect(delay_factor_act, SIGNAL(triggered()), this, SLOT(delay_factor_dialog()));
+    delay_anim_factor_act = new QAction(tr("Set Animation Delay Factor"), this);
+    delay_anim_factor_act->setStatusTip(tr("Set the adjustment factor for game animations."));
+    connect(delay_anim_factor_act, SIGNAL(triggered()), this, SLOT(delay_anim_factor_dialog()));
+
+    delay_run_factor_act = new QAction(tr("Set Run Delay Factor"), this);
+    delay_run_factor_act->setStatusTip(tr("Set the minimum increment between run steps."));
+    connect(delay_run_factor_act, SIGNAL(triggered()), this, SLOT(delay_run_factor_dialog()));
 
     show_targeting_act = new QAction(tr("Hide Targeting Buttons"), this);
     show_targeting_act->setStatusTip(tr("Do not display the targeting buttons in the sidebar when sleecting a target."));
@@ -1659,7 +1672,8 @@ void MainWindow::create_menus()
     separator_act = settings->addSeparator();
 
     settings->addAction(hitpoint_warning_act);
-    settings->addAction(delay_factor_act);
+    settings->addAction(delay_anim_factor_act);
+    settings->addAction(delay_run_factor_act);
 
     // Knowledge section of top menu.
     knowledge = menuBar()->addMenu(tr("&Knowledge"));

@@ -884,8 +884,6 @@ static void rd_options(void)
 
     byte b;
 
-    u16b tmp16u;
-
     u32b flag[8];
     u32b mask[8];
 
@@ -897,16 +895,25 @@ static void rd_options(void)
 
     /*** Special info */
 
-    /* Read "delay_factor" */
+    /* Read "animation_factor" */
     rd_byte(&b);
-    op_ptr->delay_factor = b;
+    // Hack - "Fix" animation delay factor
+    if ((b < 25) || (b > 200))
+    {
+        b = 100;
+    }
+    op_ptr->delay_anim_factor = b;
 
     /* Read "hitpoint_warn" */
     rd_byte(&b);
     op_ptr->hitpoint_warn = b;
 
+    /* Read "run delay" */
+    rd_byte(&b);
+    op_ptr->delay_run_factor = b;
+
     /* Old cheating options */
-    rd_u16b(&tmp16u);
+    strip_bytes(1);
 
 
     /*** Normal Options ***/

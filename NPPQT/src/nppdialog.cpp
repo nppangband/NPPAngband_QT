@@ -86,7 +86,8 @@ QSize NPPDialog::sizeHint() const
 
 void NPPDialog::clientSizeUpdated()
 {
-    if (client) {
+    if (client)
+    {
         client->updateGeometry();
         client->setMinimumSize(client->sizeHint());
     }
