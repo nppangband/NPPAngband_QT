@@ -8,6 +8,8 @@ QT       += core gui
 
 QT += widgets
 
+QT += testlib
+
 TARGET = NPPGAMES
 
 
