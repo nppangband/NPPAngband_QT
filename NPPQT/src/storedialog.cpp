@@ -29,12 +29,12 @@ void launch_store(int store_idx)
     /* Check if we can enter the store */
     if (birth_no_stores)
     {
+
         pop_up_message_box("The doors are locked.");
-        return;
     }
 
     /* See if we are holding a quest item */
-    if (store_idx == STORE_GUILD)
+    else if (store_idx == STORE_GUILD)
     {
         /* Check for outstanding rewards */
         quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
@@ -51,9 +51,13 @@ void launch_store(int store_idx)
         }
     }
 
-    QPointer<StoreDialog> dlg = new StoreDialog(store_idx);
-    dlg->exec_saved("StoreDialog");
-    delete dlg;
+    if (!birth_no_stores)
+    {
+        QPointer<StoreDialog> dlg = new StoreDialog(store_idx);
+        dlg->exec_saved("StoreDialog");
+        delete dlg;
+    }
+
     p_ptr->in_store = FALSE;
     p_ptr->message_append_stop();
     process_player_energy(BASE_ENERGY_MOVE);
@@ -132,7 +136,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     if (guild)
     {
         QString title = QString("<b>The Adventurer's Guild</b>   - ");
-        setWindowTitle(title);
+        setWindowTitle("The Adventurer's Guild");
         title.append(get_rep_guild());
         QPointer<QLabel> guild_intro = new QLabel(title);
         lay3->addWidget(guild_intro);
@@ -150,6 +154,7 @@ StoreDialog::StoreDialog(int _store, QWidget *parent): NPPDialog(parent)
     }
     else
     {
+        setWindowTitle("Your Home");
         lay3->addWidget(new QLabel("<b>Your home</b>"));
     }
     lay3->addStretch(1);

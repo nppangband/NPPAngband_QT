@@ -1889,6 +1889,7 @@ void MainWindow::read_settings()
         window_obj_list->restoreGeometry(settings.value("winObjListGeometry").toByteArray());
         window_obj_list->show();
     }
+
     show_mon_recall = settings.value("show_mon_recall_window", false).toBool();
     if (show_mon_recall)
     {
@@ -1897,6 +1898,7 @@ void MainWindow::read_settings()
         window_mon_recall->restoreGeometry(settings.value("winMonRecallGeometry").toByteArray());
         window_mon_recall->show();
     }
+
     show_obj_recall = settings.value("show_obj_recall_window", false).toBool();
     if (show_obj_recall)
     {
@@ -1905,6 +1907,7 @@ void MainWindow::read_settings()
         window_obj_recall->restoreGeometry(settings.value("winObjRecallGeometry").toByteArray());
         window_obj_recall->show();
     }
+
     show_feat_recall = settings.value("show_feat_recall_window", false).toBool();
     if (show_feat_recall)
     {
@@ -1913,6 +1916,7 @@ void MainWindow::read_settings()
         window_feat_recall->restoreGeometry(settings.value("winFeatRecallGeometry").toByteArray());
         window_feat_recall->show();
     }
+
     show_messages_win = settings.value("show_messages_window", false).toBool();
     if (show_messages_win)
     {
@@ -1921,6 +1925,7 @@ void MainWindow::read_settings()
         window_messages->restoreGeometry(settings.value("winMessagesGeometry").toByteArray());
         window_messages->show();
     }
+
     show_char_info_basic = settings.value("show_char_basic_window", false).toBool();
     if (show_char_info_basic)
     {
@@ -1929,6 +1934,7 @@ void MainWindow::read_settings()
         window_char_info_basic->restoreGeometry(settings.value("winCharBasicGeometry").toByteArray());
         window_char_info_basic->show();
     }
+
     show_char_info_equip = settings.value("show_char_equip_info_window", false).toBool();
     if (show_char_info_equip)
     {
@@ -1937,30 +1943,32 @@ void MainWindow::read_settings()
         window_char_info_equip->restoreGeometry(settings.value("winCharEquipGeometry").toByteArray());
         window_char_info_equip->show();
     }
+
     show_char_equipment = settings.value("show_char_equipment_window", false).toBool();
+    equip_show_buttons = settings.value("show_equip_window_buttons", false).toBool();
     if (show_char_equipment)
     {
         show_char_equipment = FALSE; //hack - so it gets toggled to true
         toggle_win_char_equipment_frame();
         window_char_equipment->restoreGeometry(settings.value("winCharEquipmentGeometry").toByteArray());
         window_char_equipment->show();
-        equip_show_buttons = settings.value("show_equip_window_buttons", false).toBool();
     }
+
     show_char_inventory = settings.value("show_char_inventory_window", false).toBool();
+    inven_show_buttons = settings.value("show_inven_window_buttons", false).toBool();
     if (show_char_inventory)
     {
         show_char_inventory = FALSE; //hack - so it gets toggled to true
         toggle_win_char_inventory_frame();
         window_char_inventory->restoreGeometry(settings.value("winCharInventoryGeometry").toByteArray());
         window_char_inventory->show();
-        inven_show_buttons = settings.value("show_inven_window_buttons", false).toBool();
     }
 
     show_win_dun_map = settings.value("show_dun_map_window", false).toBool();
+    dun_map_use_graphics = settings.value("graphics_dun_map", false).toBool();
+    dun_map_multiplier = settings.value("dun_map_tile_multiplier", "1:1").toString();
     if (show_win_dun_map)
     {
-        dun_map_use_graphics = settings.value("graphics_dun_map", false).toBool();
-        dun_map_multiplier = settings.value("dun_map_tile_multiplier", "1:1").toString();
         show_win_dun_map = FALSE; //hack - so it gets toggled to true
         toggle_win_dun_map_frame();
         window_dun_map->restoreGeometry(settings.value("winDunMapGeometry").toByteArray());
@@ -1968,10 +1976,10 @@ void MainWindow::read_settings()
     }
 
     show_win_overhead_map = settings.value("show_dun_overhead_window", false).toBool();
+    overhead_map_use_graphics = settings.value("graphics_overhead_map", false).toBool();
+    overhead_map_multiplier = settings.value("dun_overhead_tile_multiplier", "1:1").toString();
     if (show_win_overhead_map)
     {
-        overhead_map_use_graphics = settings.value("graphics_overhead_map", false).toBool();
-        overhead_map_multiplier = settings.value("dun_overhead_tile_multiplier", "1:1").toString();
         show_win_overhead_map = FALSE; //hack - so it gets toggled to true
         toggle_win_overhead_map_frame();
         window_overhead_map->restoreGeometry(settings.value("winOverheadMapGeometry").toByteArray());
@@ -2011,74 +2019,87 @@ void MainWindow::write_settings()
     settings.setValue("font_dun_map", font_dun_map.toString());
     settings.setValue("font_overhead_map", font_overhead_map.toString());
     settings.setValue("window_state", saveState());
+
     settings.setValue("show_mon_list_window", show_mon_list);
     if (show_mon_list)
     {
         settings.setValue("winMonListGeometry", window_mon_list->saveGeometry());
     }
+
     settings.setValue("show_obj_list_window", show_obj_list);
     if (show_obj_list)
     {
         settings.setValue("winObjListGeometry", window_obj_list->saveGeometry());
     }
+
     settings.setValue("show_mon_recall_window", show_mon_recall);
     if (show_mon_recall)
     {
         settings.setValue("winMonRecallGeometry", window_mon_recall->saveGeometry());
     }
+
     settings.setValue("show_obj_recall_window", show_obj_recall);
     if (show_obj_recall)
     {
         settings.setValue("winObjRecallGeometry", window_obj_recall->saveGeometry());
     }
+
     settings.setValue("show_feat_recall_window", show_feat_recall);
     if (show_feat_recall)
     {
         settings.setValue("winFeatRecallGeometry", window_feat_recall->saveGeometry());
     }
+
     settings.setValue("show_messages_window", show_messages_win);
     if (show_messages_win)
     {
         settings.setValue("winMessagesGeometry", window_messages->saveGeometry());
     }
+
     settings.setValue("show_char_basic_window", show_char_info_basic);
     if (show_char_info_basic)
     {
         settings.setValue("winCharBasicGeometry", window_char_info_basic->saveGeometry());
     }
+
     settings.setValue("show_char_equip_info_window", show_char_info_equip);
     if (show_char_info_equip)
     {
         settings.setValue("winCharEquipGeometry", window_char_info_equip->saveGeometry());
     }
+
     settings.setValue("show_char_equipment_window", show_char_equipment);
     if (show_char_equipment)
     {
         settings.setValue("winCharEquipmentGeometry", window_char_equipment->saveGeometry());
-        settings.setValue("show_equip_window_buttons", equip_show_buttons);
     }
+    settings.setValue("show_equip_window_buttons", equip_show_buttons);
+
     settings.setValue("show_char_inventory_window", show_char_inventory);
     if (show_char_inventory)
     {
         settings.setValue("winCharInventoryGeometry", window_char_inventory->saveGeometry());
-        settings.setValue("show_inven_window_buttons", inven_show_buttons);
     }
+    settings.setValue("show_inven_window_buttons", inven_show_buttons);
+
     settings.setValue("show_dun_map_window", show_win_dun_map);
 
     if (show_win_dun_map)
     {
-        settings.setValue("graphics_dun_map", dun_map_use_graphics);
-        settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
         settings.setValue("winDunMapGeometry", window_dun_map->saveGeometry());
-
     }
+    settings.setValue("graphics_dun_map", dun_map_use_graphics);
+    settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
+
     settings.setValue("show_dun_overhead_window", show_win_overhead_map);
     if (show_win_overhead_map)
     {
-        settings.setValue("graphics_overhead_map", overhead_map_use_graphics);
+
         settings.setValue("winOverheadMapGeometry", window_overhead_map->saveGeometry());
-        settings.setValue("dun_overhead_tile_multiplier", overhead_map_multiplier);
+
     }
+    settings.setValue("graphics_overhead_map", overhead_map_use_graphics);
+    settings.setValue("dun_overhead_tile_multiplier", overhead_map_multiplier);
 }
 
 
