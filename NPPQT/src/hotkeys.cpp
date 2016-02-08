@@ -21,7 +21,8 @@ single_hotkey player_hotkeys[NUM_HOTKEYS];
 
 #define STEP_MULT   1000
 
-static hotkey_list list_hotkeys[NUM_HOTKEYS] =
+// The order of this list is assumed in qu_hotkey_toolbar.cpp
+hotkey_list list_hotkeys[NUM_HOTKEYS] =
 {
     {"F1", FALSE, Qt::Key_F1},
     {"F2", FALSE, Qt::Key_F2},
@@ -1670,6 +1671,8 @@ HotKeyDialog::HotKeyDialog(void)
 void do_hotkey_manage()
 {
     HotKeyDialog();
+
+    ui_update_hotkey_toolbar();
 }
 
 // Find an item to use

@@ -182,5 +182,6 @@ extern void do_hotkey_manage();
 
 extern single_hotkey running_hotkey;
 extern single_hotkey player_hotkeys[NUM_HOTKEYS];
+extern hotkey_list list_hotkeys[NUM_HOTKEYS];
 
 #endif // HOTKEYS_H

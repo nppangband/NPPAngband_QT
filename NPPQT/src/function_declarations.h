@@ -677,6 +677,7 @@ extern QSize ui_grid_size();
 extern void ui_png_screenshot(void);
 extern void ui_update_message_label(QString message);
 extern void ui_clear_message_label(void);
+extern void ui_update_hotkey_toolbar();
 
 
 /* randart.c */

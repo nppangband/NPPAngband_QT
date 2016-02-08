@@ -740,3 +740,8 @@ void ui_clear_message_label()
 {
     main_window->clear_message_label();
 }
+
+void ui_update_hotkey_toolbar()
+{
+    main_window->update_hotkey_toolbar();
+}

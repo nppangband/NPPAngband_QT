@@ -1215,6 +1215,7 @@ void MainWindow::update_file_menu_game_inactive()
 
     hide_sidebar();
     hide_statusbar();
+    hide_hotkey_toolbar();
 
 }
 
@@ -1776,6 +1777,7 @@ void MainWindow::create_toolbars()
     file_toolbar->addAction(exit_npp);
 
     create_statusbar();
+    create_hotkey_toolbar();
 }
 
 // Just find an initial font to start the game

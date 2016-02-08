@@ -109,6 +109,7 @@ public:
     QPointer<QLabel> message_label;
 
     QPointer<QToolBar> status_bar;
+    QPointer<QToolBar> hotkey_toolbar;
 
     QPointer<QWidget> sidebar_widget;
     QPointer<QVBoxLayout> sidebar_vlay;
@@ -119,6 +120,8 @@ public:
     QList<QLabel *> list_sidebar_mon_pics;
     QList<QLabel *> list_sidebar_mon_name;
     QList<QLabel *> list_sidebar_mon_health;
+
+    QList<QAction *> list_hotkey_toolbar_qactions;
 
     QPointer<QVBoxLayout> player_info_labels;
     QPointer<QVBoxLayout> player_info_data;
@@ -167,6 +170,10 @@ public:
     void update_statusbar();
     void hide_statusbar();
     void show_statusbar();
+    void create_hotkey_toolbar();
+    void update_hotkey_toolbar();
+    void hide_hotkey_toolbar();
+    void show_hotkey_toolbar();
     void create_targeting_sidebar();
     void hide_targeting_sidebar();
     void show_targeting_sidebar();
@@ -220,6 +227,7 @@ private slots:
     void slot_angband_keyset() {set_keymap_mode(KEYSET_ANGBAND);}
     void slot_rogue_keyset() {set_keymap_mode(KEYSET_ROGUE);}
     void slot_multiplier_clicked(QAction *);
+    void hotkey_toolbar_clicked(QAction *);
 
     // Functions to make sure the available menu commands are appropriate to the situation.
     //  For example, make the save game command unanavailable when no savefile is open.
@@ -375,6 +383,7 @@ private:
     QFontDatabase font_database;
 
     QPointer<QActionGroup> multipliers;
+    QPointer<QActionGroup> hotkey_toolbar_actions;
 
     // Actions for the statusbar
     // buttons for status bar
@@ -423,6 +432,7 @@ private:
 
     QPointer<QAction> nativity;
     QPointer<QAction> status_trap_detect;
+
 
 
 // Monster list window
