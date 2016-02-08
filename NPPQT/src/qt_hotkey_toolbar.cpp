@@ -20,6 +20,7 @@ void MainWindow::hotkey_toolbar_clicked(QAction *action)
     // Paranoia
     if (!action) return;
     if (!character_dungeon) return;
+    if (executing_command) return;
     bool shift = FALSE;
 
     // Extract the funtion button and shift information
@@ -44,7 +45,12 @@ void MainWindow::hotkey_toolbar_clicked(QAction *action)
     hotkey_list *hk_list_ptr = &list_hotkeys[num];
 
     // Run the hotkey
+    executing_command = TRUE;
     check_hotkey_commands(hk_list_ptr->listed_hotkey, hk_list_ptr->shift, FALSE, FALSE, FALSE);
+    notice_stuff();
+    handle_stuff();
+    clear_message_label();
+    executing_command = FALSE;
 }
 
 
