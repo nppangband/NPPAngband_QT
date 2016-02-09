@@ -516,7 +516,8 @@ MainWindow::MainWindow()
     targeting_mode = MODE_NO_TARGETING;
 
     cursor = new DungeonCursor(this);
-    show_targeting_buttons = do_25d_graphics = do_pseudo_ascii = do_wall_block = false;
+    show_targeting_buttons = show_hotkey_toolbar = TRUE;
+    do_25d_graphics = do_pseudo_ascii = do_wall_block = FALSE;
 
     overhead_map_multiplier = dun_map_multiplier = main_multiplier = "1:1";
 
@@ -1026,17 +1027,36 @@ void MainWindow::toggle_show_targeting()
 {
     if (show_targeting_buttons)
     {
+        show_targeting_buttons = FALSE;
         show_targeting_act->setText("Show Targeting Buttons");
         show_targeting_act->setStatusTip(tr("Display the targeting buttons in the sidebar when sleecting a target."));
     }
     else
     {
+        show_targeting_buttons = TRUE;
         show_targeting_act->setText("Hide Targeting Button");
         show_targeting_act->setStatusTip(tr("Do not display the targeting buttons in the sidebar when sleecting a target."));
     }
 
-    show_targeting_buttons = !show_targeting_buttons;
     if (targeting_mode)show_targeting_sidebar();
+}
+
+void MainWindow::toggle_show_hotkey_toolbar()
+{
+    if (show_hotkey_toolbar)
+    {
+        show_hotkey_toolbar = FALSE;
+        show_hotkey_toolbar_act->setText("Show Hotkey Toolbar");
+        show_hotkey_toolbar_act->setStatusTip(tr("Display a toolbar with buttons for each hotkey."));
+        hotkey_toolbar_hide();
+    }
+    else
+    {
+        show_hotkey_toolbar = TRUE;
+        show_hotkey_toolbar_act->setText("Hide Hotkey Toolbar");
+        show_hotkey_toolbar_act->setStatusTip(tr("Hide the Hotkey Toolbar."));
+        hotkey_toolbar_show();
+    }
 }
 
 void MainWindow::font_dialog_main_window()
@@ -1215,7 +1235,7 @@ void MainWindow::update_file_menu_game_inactive()
 
     hide_sidebar();
     hide_statusbar();
-    hide_hotkey_toolbar();
+    hotkey_toolbar_hide();
 
 }
 
@@ -1304,6 +1324,10 @@ void MainWindow::create_actions()
     show_targeting_act = new QAction(tr("Hide Targeting Buttons"), this);
     show_targeting_act->setStatusTip(tr("Do not display the targeting buttons in the sidebar when sleecting a target."));
     connect(show_targeting_act, SIGNAL(triggered()), this, SLOT(toggle_show_targeting()));
+
+    show_hotkey_toolbar_act = new QAction(tr("Hide Hotkey Toolbar"), this);
+    show_hotkey_toolbar_act->setStatusTip(tr("Hide the Hotkey Toolbar."));
+    connect(show_hotkey_toolbar_act, SIGNAL(triggered()), this, SLOT(toggle_show_hotkey_toolbar()));
 
     keymap_new = new QAction(tr("Simplified Command Set"), this);
     keymap_new->setStatusTip(tr("Use simplified keyset to enter commands (recommended for players new to Angband and variants"));
@@ -1646,6 +1670,7 @@ void MainWindow::create_menus()
     settings->addAction(options_act);
 
     settings->addAction(show_targeting_act);
+    settings->addAction(show_hotkey_toolbar_act);
 
     separator_act = settings->addSeparator();
 
@@ -1839,7 +1864,18 @@ void MainWindow::read_settings()
     restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     recent_savefiles = settings.value("recentFiles").toStringList();
     show_targeting_buttons = settings.value("target_buttons", false).toBool();
-    if (!show_targeting_buttons) toggle_show_targeting();
+    if (!show_targeting_buttons)
+    {   // First set it to true to it toggles correctly.
+        show_targeting_buttons = TRUE;
+        toggle_show_targeting();
+    }
+    show_hotkey_toolbar = settings.value("hotkey_toolbar", false).toBool();
+    if (!show_hotkey_toolbar)
+    {
+        // First set it to true to it toggles correctly.
+        show_hotkey_toolbar = TRUE;
+        toggle_show_hotkey_toolbar();
+    }
     do_25d_graphics = settings.value("graphics_25d", false).toBool();
     graphics_25d_act->setChecked(do_25d_graphics);
     do_pseudo_ascii = settings.value("pseudo_ascii", false).toBool();
@@ -2013,6 +2049,7 @@ void MainWindow::write_settings()
     settings.setValue("mainWindowGeometry", saveGeometry());
     settings.setValue("recentFiles", recent_savefiles);
     settings.setValue("target_buttons", show_targeting_buttons);
+    settings.setValue("hotkey_toolbar", show_hotkey_toolbar);
     settings.setValue("graphics_25d", do_25d_graphics);
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("solid_block", do_wall_block);

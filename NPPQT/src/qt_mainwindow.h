@@ -85,6 +85,7 @@ public:
     bool do_pseudo_ascii;
     bool do_wall_block;
     bool show_targeting_buttons;
+    bool show_hotkey_toolbar;
     bool executing_command;
 
     // Scaled tiles
@@ -172,8 +173,8 @@ public:
     void show_statusbar();
     void create_hotkey_toolbar();
     void update_hotkey_toolbar();
-    void hide_hotkey_toolbar();
-    void show_hotkey_toolbar();
+    void hotkey_toolbar_hide();
+    void hotkey_toolbar_show();
     void create_targeting_sidebar();
     void hide_targeting_sidebar();
     void show_targeting_sidebar();
@@ -209,6 +210,7 @@ private slots:
     void delay_anim_factor_dialog();
     void delay_run_factor_dialog();
     void toggle_show_targeting();
+    void toggle_show_hotkey_toolbar();
     void font_dialog_main_window();
     void font_dialog_message_window();
     void font_dialog_sidebar_window();
@@ -329,6 +331,7 @@ private:
     QPointer<QAction> hotkey_export;
     QPointer<QAction> hotkey_import;
     QPointer<QAction> show_targeting_act;
+    QPointer<QAction> show_hotkey_toolbar_act;
     QPointer<QAction> hitpoint_warning_act;
     QPointer<QAction> delay_anim_factor_act;
     QPointer<QAction> delay_run_factor_act;
