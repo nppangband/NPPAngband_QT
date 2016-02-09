@@ -545,6 +545,7 @@ void DungeonGrid::handle_single_click(mouse_click_info mouse_event)
     handle_stuff();
 
     main_window->executing_command = FALSE;
+    main_window->clear_message_label();
 }
 
 // We accept the wheel event here so the main window isn't always scrolled.
