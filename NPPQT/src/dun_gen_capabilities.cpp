@@ -1,18 +1,14 @@
 
-/* File: gen_rooms.cpp */
+/* File: gen_capabilities.cpp */
 
 /*
- * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
- *                    Jeff Greene, Diego Gonzalez
- *
- *
+ * Copyright (c) 2010 Jeff Greene, Diego Gonzalez
  * Please see copyright.txt for complete copyright and licensing restrictions.
- *
  */
 
 #include "src/npp.h"
 #include "src/dun_generate.h"
-#include "src/store.h"
+
 
 
 /*

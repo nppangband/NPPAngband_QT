@@ -238,18 +238,6 @@ typedef struct
     byte rad;
 } feature_selector_item_type;
 
-/*
- * An array of feature pairs. It's used to pick random pairs based
- * on their chance values
- */
-typedef struct
-{
-    feature_selector_item_type items[30];
-    byte size;
-    u16b total_chance;	/* The sum of the chances of each pair */
-} feature_selector_type;
-
-
 
 /* Available fractal map types */
 enum
@@ -262,16 +250,38 @@ enum
     MAX_FRACTAL_TYPES
 };
 
+// dun_generate functions
+extern int next_to_walls(int y, int x);
+extern bool new_player_spot_old(void);
+extern void basic_granite(void);
+extern void set_perm_boundry(void);
+extern bool scramble_and_connect_rooms_stairs(void);
+extern bool place_traps_rubble_player(void);
+extern void build_tunnel(int row1, int col1, int row2, int col2);
+extern bool alloc_stairs(u16b feat, int num);
+extern bool place_monsters_objects(void);
+extern void alloc_object(int set, int typ, int num);
 
-extern bool build_type_fractal(int y0, int x0, byte type);
-extern void build_type_starburst(int y0, int x0, bool giant_room);
-extern void mark_g_vault(int y0, int x0, int hgt, int wid);
-extern void build_vault(int y0, int x0, const vault_type *v_ptr);
 
 // dun_gen_rooms functions
+extern void mark_g_vault(int y0, int x0, int hgt, int wid);
+extern void build_vault(int y0, int x0, const vault_type *v_ptr);
 extern bool room_build(int by0, int bx0, int typ);
 extern void generate_fill(int y1, int x1, int y2, int x2, u16b feat);
 
+// dun_gen_features functions
+extern bool generate_starburst_room(int y1, int x1, int y2, int x2,
+                                           u16b feat, u16b edge, u32b flag);
+
+extern bool build_type_fractal(int y0, int x0, byte type);
+extern void build_type_starburst(int y0, int x0, bool giant_room);
+extern void build_nature(void);
+extern void build_misc_features(void);
+extern bool build_themed_level(void);
+extern bool build_wilderness_level(void);
+extern bool build_arena_level(void);
+extern bool build_labyrinth_level(void);
+extern bool build_greater_vault_level(void);
 
 /* These ones are the valid values for the map grids */
 #define FRACTAL_NONE	0	/* Used only at construction time */
