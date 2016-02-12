@@ -14,7 +14,7 @@
 #include "src/init.h"
 #include "tilebag.h"
 #include "src/hotkeys.h"
-
+#include <QtCore/qmath.h>
 
 /*
  * Support for Adam Bolt's tileset, lighting and transparency effects
@@ -46,6 +46,17 @@ int distance(int y1, int x1, int y2, int x2)
 
     /* Hack -- approximate the distance */
     return ((ay > ax) ? (ay + (ax>>1)) : (ax + (ay>>1)));
+}
+
+/*
+ * Distance between two squares using Pythagorean theorum
+ */
+int distance_pythagorean(int y1, int x1, int y2, int x2)
+{
+    qreal distance = qSqrt(qPow((y1 - y2), 2) + qPow((x1 - x2), 2));
+
+    /* Hack -- approximate the distance */
+    return ((int)distance);
 }
 
 

@@ -30,6 +30,7 @@ extern void handle_stuff(void);
 
 //cave.cpp
 extern int distance(int y1, int x1, int y2, int x2);
+extern int distance_pythagorean(int y1, int x1, int y2, int x2);
 extern bool generic_los(int y1, int x1, int y2, int x2, u16b flg);
 extern bool no_light(void);
 extern bool cave_valid_bold(int y, int x);

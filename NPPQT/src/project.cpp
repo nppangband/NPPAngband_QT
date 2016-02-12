@@ -146,9 +146,8 @@ bool teleport_away(int m_idx, int dis)
  */
 bool teleport_player(int dis, bool native)
 {
-    byte x_location_tables [MAX_DUNGEON_AREA];
-    byte y_location_tables [MAX_DUNGEON_AREA];
-    int spot_counter = 0;
+    QVector<coord> locations;
+    locations.clear();
 
     int py = p_ptr->py;
     int px = p_ptr->px;
@@ -177,12 +176,12 @@ bool teleport_player(int dis, bool native)
     min = dis / 2;
 
     /* Gauge the distance from the player to the 4 corners of the dungeon, take the highest*/
-    d = distance(py, px, 1, 1);
-    d1 = distance(py, px, p_ptr->cur_map_hgt-1, 1);
+    d = distance_pythagorean(py, px, 1, 1);
+    d1 = distance_pythagorean(py, px, p_ptr->cur_map_hgt-1, 1);
     if (d1 > d) d = d1;
-    d1 = distance(py, px, 1, p_ptr->cur_map_wid-1);
+    d1 = distance_pythagorean(py, px, 1, p_ptr->cur_map_wid-1);
     if (d1 > d) d = d1;
-    d1 = distance(py, px, p_ptr->cur_map_hgt-11, p_ptr->cur_map_wid-1);
+    d1 = distance_pythagorean(py, px, p_ptr->cur_map_hgt-11, p_ptr->cur_map_wid-1);
     if (d1 > d) d = d1;
 
     /* start with a realistic range*/
@@ -197,8 +196,6 @@ bool teleport_player(int dis, bool native)
     /* Look for a spot */
     while (TRUE)
     {
-        u32b min_squared = min * min;
-        u32b dis_squared = dis * dis;
         int y_min = py - dis;
         int y_max = py + dis;
         int x_min = px - dis;
@@ -215,9 +212,6 @@ bool teleport_player(int dis, bool native)
         {
             for (x = x_min; x < x_max; x++)
             {
-
-                u32b dist_squared;
-
                 /* Require "start" floor space */
                 if (!cave_teleport_bold(y, x)) continue;
 
@@ -230,23 +224,20 @@ bool teleport_player(int dis, bool native)
                     if (cave_ff3_match(y, x, TERRAIN_MASK) != flags) continue;
                 }
 
-                /* Use pythagorean theorem to ensure the distance is right */
-                dist_squared = (((px - x) * (px - x)) +  ((py - y) * (py - y)));
+                // Pythagorean's theorum
+                int distance = distance_pythagorean(py, px, y, x);
 
                 /* Stay within the min and the max */
-                if (dist_squared <= min_squared) continue;
-                if (dist_squared > dis_squared) continue;
+                if (distance <= min) continue;
+                if (distance >= dis) continue;
 
-                x_location_tables[spot_counter] = x;
-                y_location_tables[spot_counter] = y;
-
-                /*increase the counter*/
-                spot_counter++;
+                //  A usable spot
+                locations.append(make_coords(y, x));
             }
         }
 
         /*we have at least one random spot*/
-        if (spot_counter) break;
+        if (locations.size()) break;
 
         /* Make sure we aren't trapped in an infinite loop */
         if ((!min) && (dis == d))
@@ -264,11 +255,11 @@ bool teleport_player(int dis, bool native)
 
     }
 
-    i = randint0(spot_counter);
+    i = randint0(locations.size());
 
     /* Mark the location */
-    x = x_location_tables[i];
-    y = y_location_tables[i];
+    x = locations.at(i).y;
+    y = locations.at(i).x;
 
     /* Move player */
     monster_swap(py, px, y, x);
