@@ -5030,8 +5030,7 @@ static void build_fog(void)
  * These marked grids are the possible candidates for transformation centers.
  * Return TRUE on success, FALSE on failure.
  */
-static bool pick_transform_center(coord *marked_grids, int num_marked_grids,
-        u32b flag, int *py, int *px)
+static bool pick_transform_center(QVector<coord> marked_grids, u32b flag, int *py, int *px)
 {
     int max = 300;
     int cur = 0;
@@ -5118,7 +5117,7 @@ static bool pick_transform_center(coord *marked_grids, int num_marked_grids,
     }
 
     /* Paranoia */
-    if (num_marked_grids < 1)
+    if (!marked_grids.size())
     {
         return (FALSE);
     }
@@ -5127,11 +5126,11 @@ static bool pick_transform_center(coord *marked_grids, int num_marked_grids,
     for (i = 0; i < 100; i++)
     {
         /* Pick a random index */
-        k = rand_int(num_marked_grids);
+        k = rand_int(marked_grids.size());
 
         /* Get coordinates */
-        y = marked_grids[k].y;
-        x = marked_grids[k].x;
+        y = marked_grids.at(k).y;
+        x = marked_grids.at(k).x;
 
         /* Found a marked grid? */
         if (dungeon_info[y][x].cave_info & (CAVE_TEMP))
@@ -5155,7 +5154,7 @@ static bool pick_transform_center(coord *marked_grids, int num_marked_grids,
  * have assigned the CAVE_TEMP flag too (this enables us to control the location
  * of the transformed regions)
  */
-static void transform_regions(coord *grids, int num_grids, feature_selector_type *fs_ptr)
+static void transform_regions(QVector<coord> grids, feature_selector_type *fs_ptr)
 {
     int max = 0, i;
     byte dun_size;
@@ -5235,7 +5234,7 @@ static void transform_regions(coord *grids, int num_grids, feature_selector_type
         }
 
         /* Pick location */
-        if (!pick_transform_center(grids, num_grids, flags, &y, &x)) return;
+        if (!pick_transform_center(grids, flags, &y, &x)) return;
 
         /* Default region size */
         type = FRACTAL_TYPE_33x33;
@@ -5426,7 +5425,7 @@ static void transform_regions(coord *grids, int num_grids, feature_selector_type
  * The "rad" field of the pairs contained in the feature selector is used
  * to sometimes expand the size of the walls (flavor).
  */
-static void transform_walls(coord *grids, int num_grids, feature_selector_type *fs_ptr)
+static void transform_walls(QVector<coord> grids, feature_selector_type *fs_ptr)
 {
     int max, y, x, i;
 
@@ -5446,7 +5445,7 @@ static void transform_walls(coord *grids, int num_grids, feature_selector_type *
     if (max < 4) max = 4;
 
     /* Apply the divisor to the number of grids of the array */
-    max = num_grids / max;
+    max = grids.size() / max;
 
     /* Paranoia */
     if (max < 1) return;
@@ -5471,7 +5470,7 @@ static void transform_walls(coord *grids, int num_grids, feature_selector_type *
         if (feat_ff2_match(item->wall, FF2_EFFECT)) is_effect = TRUE;
 
         /* Pick a location */
-        if (!pick_transform_center(grids, num_grids, item->level_flag, &y, &x)) return;
+        if (!pick_transform_center(grids, item->level_flag, &y, &x)) return;
 
         /* Get the radius */
         rad = item->rad;
@@ -5610,9 +5609,8 @@ static void roll_level_flag(int num_rolls)
  */
 static void transform_walls_regions(void)
 {
-    coord *grids;
-    int max_grids = 200;
-    int num_grids = 0, idx;
+    QVector<coord> grids;
+    grids.clear();
     int y, x, i;
     u16b feat;
     bool enable_nature = FALSE;
@@ -5774,9 +5772,6 @@ static void transform_walls_regions(void)
     /* We don't have a single feature pair */
     if ((wall_sel_ptr->size + region_sel_ptr->size) == 0) return;
 
-    /* Allocate space for the grids */
-    grids = C_ZNEW(max_grids, coord);
-
     /* Collect room walls locations for the transformations */
     for (y = 1; y < (p_ptr->cur_map_hgt - 1); y++)
     {
@@ -5830,27 +5825,20 @@ static void transform_walls_regions(void)
              */
             if (one_in_(4))
             {
-                /* We still have free space in the array */
-                if (num_grids < max_grids) idx = num_grids++;
-
-                /* Overwrite an occupied entry */
-                else idx = rand_int(max_grids);
-
                 /* Save the coordinates */
-                grids[idx].y = y;
-                grids[idx].x = x;
+                grids.append(make_coords(y, x));
             }
         }
     }
 
     /* Apply the transformations */
-    if (num_grids > 0)
+    if (grids.size())
     {
         /* To walls */
-        if (wall_sel_ptr->size > 0) transform_walls(grids, num_grids, wall_sel_ptr);
+        if (wall_sel_ptr->size > 0) transform_walls(grids, wall_sel_ptr);
 
         /* To regions */
-        if (region_sel_ptr->size > 0) transform_regions(grids, num_grids, region_sel_ptr);
+        if (region_sel_ptr->size > 0) transform_regions(grids, region_sel_ptr);
     }
 
     /* Clear the marks */
@@ -5867,9 +5855,6 @@ static void transform_walls_regions(void)
     {
         debug_all_level_flags(level_flag);
     }
-
-    /* Free resources */
-    FREE_ARRAY(grids);
 }
 
 
