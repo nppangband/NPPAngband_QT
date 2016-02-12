@@ -47,6 +47,8 @@ SOURCES +=  src/qt_main.cpp \
             src/dun_effect.cpp \
             src/dun_feat_info.cpp \
             src/dun_feature.cpp \
+            src/dun_gen_capabilities.cpp \
+            src/dun_gen_rooms.cpp \
             src/dun_generate.cpp \
             src/dun_process.cpp \
             src/emitter.cpp \

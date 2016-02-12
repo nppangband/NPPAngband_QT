@@ -333,7 +333,7 @@ void do_cmd_pickup_from_pile(bool pickup, bool msg)
 	}
 
 	/*clear the restriction*/
-	item_tester_hook = NULL;
+    item_tester_hook = NULL;
 
 	/* Combine / Reorder the pack */
 	p_ptr->notice |= (PN_COMBINE | PN_REORDER | PN_SORT_QUIVER);

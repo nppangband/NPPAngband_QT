@@ -1364,6 +1364,7 @@ void light_spot(int y, int x)
     if (redraw_above || d_ptr->double_height_monster)
     {
         if (in_bounds(y-1, x)) redraw_coords.append(make_coords(y-1, x));
+        p_ptr->redraw |= PR_DRAW;
     }
 }
 

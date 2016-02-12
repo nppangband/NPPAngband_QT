@@ -104,7 +104,7 @@
 #define STAR_BURST_RAW_EDGE	0x00000010	/* Edge overwrites dungeon */
 
 
-bool allow_uniques;
+extern bool allow_uniques;
 
 
 /*
@@ -221,55 +221,9 @@ static const room_data room[ROOM_MAX] =
 };
 
 
-/*
- * This table holds aditional flags for themed levels
- * These flags are used to forbid the generation of certain features BEFORE
- * placing any lakes or pools.
- * Example: you can assign LF1_LAVA to a red dragon level to avoid the
- * generation of ice, acid, oil, etc.
- * See "build_themed_level_nature"
- */
-static struct
-{
-    byte theme;
-    u32b flags;		/* A combination of the LF1_* flags */
-} themed_level_flags[] =
-{
-    {LEV_THEME_DEMON_MINOR,	LF1_FIRE},
-    {LEV_THEME_DEMON_ALL,	LF1_FIRE},
-    {LEV_THEME_DEMON_MAJOR,	LF1_LAVA | LF1_FIRE},
-    {LEV_THEME_DRAGON_FIRE,	LF1_FIRE},
-    {LEV_THEME_DRAGON_ACID,	LF1_ACID},
-    {LEV_THEME_DRAGON_ELEC,	LF1_WATER},
-    {LEV_THEME_DRAGON_COLD,	LF1_ICE},
-    {LEV_THEME_UNDEAD,		LF1_ICE},
-    /* Add entries for more themed levels if needed */
-};
 
-/*
- * This table holds the default features used in *almost* all lakes and pools
- * of a themed level.
- * See "pick_proper_feature"
- */
-static struct
-{
-    byte theme;
-    u16b feature;
-} themed_level_features[] =
-{
-    {LEV_THEME_DEMON_MINOR,	FEAT_FIRE},
-    {LEV_THEME_DEMON_ALL,	FEAT_FIRE},
-    {LEV_THEME_DEMON_MAJOR,	FEAT_FLOOR_LAVA},
-    {LEV_THEME_DEMON_MAJOR,	FEAT_FIRE},
-    {LEV_THEME_DRAGON_FIRE,	FEAT_FIRE},
-    {LEV_THEME_DRAGON_ACID,	FEAT_FLOOR_ACID},
-    {LEV_THEME_DRAGON_ELEC,	FEAT_FLOOR_WATER},
-    {LEV_THEME_DRAGON_COLD,	FEAT_FLOOR_ICE},
-    {LEV_THEME_TROLL,		FEAT_FOREST_SOIL},
-    {LEV_THEME_OGRE,		FEAT_FOREST_SOIL},
-    {LEV_THEME_OGRE,		FEAT_THICKET},
-    /* Add entries for more themed levels if needed */
-};
+
+
 
 /*
  * A feature pair (wall + floor) that contains also a chance value
@@ -295,54 +249,37 @@ typedef struct
     u16b total_chance;	/* The sum of the chances of each pair */
 } feature_selector_type;
 
-/*
- * Table of "magic" values used to ponder the size of the dungeon
- * 1 means "tiny": 2x2, 2x3, 2x4, 3x2, 3x3, 4x2
- * 2 means "small rectangle": 2x5, 2x6, 3x4, 4x3, 5x2, 6x2
- * 3 means "medium rectangle": 3x5, 3x6, 4x4, 5x3, 6x3
- * 4 means "medium": 4x5, 4x6, 5x4, 6x4
- * 5 means "large": 5x5, 5x6, 6x5
- * 6 means "largest": 6x6
- */
-static byte dungeon_size_tab[7][7] =
+
+
+/* Available fractal map types */
+enum
 {
-    /*	0	1	2	3	4	5	6	*/
-    {	0,	0,	0,	0,	0,	0,	0	},	/* 0 */
-    {	0,	0,	0,	0,	0,	0,	0	},	/* 1 */
-    {	0,	0,	1,	1,	1,	2,	2	},	/* 2 */
-    {	0,	0,	1,	1,	2,	3,	3	},	/* 3 */
-    {	0,	0,	1,	2,	3,	4,	4	},	/* 4 */
-    {	0,	0,	2,	3,	4,	5,	5	},	/* 5 */
-    {	0,	0,	2,	3,	4,	5,	6	},	/* 6 */
+    FRACTAL_TYPE_17x33 = 0,
+    FRACTAL_TYPE_33x65,
+    FRACTAL_TYPE_9x9,
+    FRACTAL_TYPE_17x17,
+    FRACTAL_TYPE_33x33,
+    MAX_FRACTAL_TYPES
 };
 
-static bool room_build(int by0, int bx0, int typ);
 
-/*
- * A circular queue of map locations.
- * Check out defines.h and util.c for usage
- */
-typedef struct
-{
-    /* Maximum number of grids in the queue */
-    size_t max_size;
-    /* Grid data */
-    coord *data;
-    /* Head and tail of the queue */
-    size_t head, tail;
-} grid_queue_type;
+extern bool build_type_fractal(int y0, int x0, byte type);
+extern void build_type_starburst(int y0, int x0, bool giant_room);
+extern void mark_g_vault(int y0, int x0, int hgt, int wid);
+extern void build_vault(int y0, int x0, const vault_type *v_ptr);
 
-/* Utilitary macros for the grid queue type */
+// dun_gen_rooms functions
+extern bool room_build(int by0, int bx0, int typ);
+extern void generate_fill(int y1, int x1, int y2, int x2, u16b feat);
 
-/* These two return the coordinates of the grid at the front of the queue */
-/* THE QUEUE MUST CONTAIN AT LEAST ONE ELEMENT */
-#define GRID_QUEUE_Y(Q) ((Q)->data[(Q)->head].y)
-#define GRID_QUEUE_X(Q) ((Q)->data[(Q)->head].x)
 
-/* Returns TRUE if the given queue is empty */
-#define GRID_QUEUE_EMPTY(Q) ((Q)->head == (Q)->tail)
-
-/* Returns TRUE if the given queue is full */
-#define GRID_QUEUE_FULL(Q) ((((Q)->tail + 1) % (Q)->max_size) == (Q)->head)
+/* These ones are the valid values for the map grids */
+#define FRACTAL_NONE	0	/* Used only at construction time */
+#define FRACTAL_WALL	1	/* Wall grid */
+#define FRACTAL_EDGE	2	/* Wall grid adjacent to floor (outer wall) */
+#define FRACTAL_FLOOR	3	/* Floor grid */
+#define FRACTAL_POOL_1	4	/* Pool grid */
+#define FRACTAL_POOL_2	5	/* Pool grid */
+#define FRACTAL_POOL_3	6	/* Pool grid */
 
 #endif // DUN_GENERATE_H

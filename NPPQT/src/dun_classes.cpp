@@ -360,9 +360,15 @@ void dynamic_grid_type::dynamic_grid_wipe()
 
 void reset_dungeon_info()
 {
-    for (int y = 0; y < MAX_DUNGEON_HGT; y++) {
-        for (int x = 0; x < MAX_DUNGEON_WID; x++) {
+    for (int y = 0; y < MAX_DUNGEON_HGT; y++)
+    {
+        for (int x = 0; x < MAX_DUNGEON_WID; x++)
+        {
             dungeon_info[y][x].dungeon_square_wipe();
+            for(int i = 0; i < MAX_FLOWS; i++)
+            {
+                cave_cost[i][y][x] = 0;
+            }
         }
     }
 
