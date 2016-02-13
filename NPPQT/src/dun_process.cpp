@@ -864,8 +864,6 @@ static void process_world(void)
 
     int regen_amount;
 
-    int feat;
-
     object_type *o_ptr;
 
     /* We decrease noise slightly every game turn */
@@ -1042,9 +1040,6 @@ static void process_world(void)
     notice_stuff();
 
     /*** Damage over Time ***/
-
-    /* Get the feature */
-    feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
 
     /* Take damage from poison */
     if (p_ptr->timed[TMD_POISONED])

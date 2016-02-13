@@ -2537,7 +2537,7 @@ static int pick_dungeon_type(void)
  */
 void generate_cave(void)
 {
-    int y, x, num, i;
+    int num;
     int dungeon_type = DUNGEON_TYPE_DEFAULT;
     /* The time to live of a dungeon type */
     /* This is used to prevent problems with different failure chances in level generation */
