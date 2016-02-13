@@ -49,6 +49,7 @@ SOURCES +=  src/qt_main.cpp \
             src/dun_feature.cpp \
             src/dun_gen_capabilities.cpp \
             src/dun_gen_features.cpp \
+            src/dun_gen_quest_levels.cpp \
             src/dun_gen_rooms.cpp \
             src/dun_generate.cpp \
             src/dun_process.cpp \
@@ -121,8 +122,7 @@ SOURCES +=  src/qt_main.cpp \
             src/tilebag.cpp \
             src/timed.cpp \
             src/utilities.cpp \
-            src/wizard_mode.cpp \
-    src/dun_gen_quest_levels.cpp
+            src/wizard_mode.cpp
 
 
 HEADERS  += src/qt_mainwindow.h\

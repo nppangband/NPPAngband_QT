@@ -9,6 +9,8 @@
 #include "src/npp.h"
 #include "src/dun_generate.h"
 
+// This file handles the functional pointers that are used to know the current level
+// limitations and charaacterists through the dun_cap structure.
 
 
 /*

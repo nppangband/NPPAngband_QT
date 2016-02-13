@@ -238,6 +238,14 @@ typedef struct
     byte rad;
 } feature_selector_item_type;
 
+#define CUR_NUM_THEME_LEVEL_FLAGS 8
+typedef struct
+{
+    byte theme;
+    u32b flags;		/* A combination of the LF1_* flags */
+} flags_themed_levels;
+extern flags_themed_levels themed_level_flags[CUR_NUM_THEME_LEVEL_FLAGS];
+
 
 /* Available fractal map types */
 enum
@@ -277,8 +285,13 @@ extern bool build_type_fractal(int y0, int x0, byte type);
 extern void build_type_starburst(int y0, int x0, bool giant_room);
 extern void build_nature(void);
 extern void build_misc_features(void);
-extern bool build_themed_level(void);
+
 extern bool build_wilderness_level(void);
+
+
+//dun_gen_quest_levels.cpp
+extern bool monster_wilderness_labrynth_okay(int r_idx);
+extern bool build_themed_level(void);
 extern bool build_arena_level(void);
 extern bool build_labyrinth_level(void);
 extern bool build_greater_vault_level(void);

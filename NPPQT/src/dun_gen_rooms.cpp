@@ -14,6 +14,9 @@
 #include "src/dun_generate.h"
 #include "src/store.h"
 
+// This file has the code for building most of the different room types.
+// With the exception of starburst rooms and fractal areas.
+
 bool allow_uniques;
 
 /*

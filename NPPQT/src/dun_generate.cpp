@@ -14,8 +14,7 @@
 #include "src/store.h"
 
 // This file has most of the code to create a standard, simple dungeon.
-// The code to create the rooms are kept in dun_gen_rooms.cpp.
-// The code to create the elemental terrain features are kept in dun_gen_features.
+
 
 /*
  *
