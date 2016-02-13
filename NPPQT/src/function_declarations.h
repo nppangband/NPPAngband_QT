@@ -143,10 +143,10 @@ extern void debug_all_level_flags(u32b flags);
 
 // dun_generate.cpp
 extern void place_random_stairs(int y, int x);
+extern void place_rubble(int y, int x);
 extern void get_mon_hook(byte theme);
 extern byte get_nest_theme(int nestlevel, bool quest_theme);
 extern byte get_pit_theme(int pitlevel, bool quest_theme);
-extern void build_terrain(int y, int x, int feat);
 extern byte get_level_theme(s16b orig_theme_num, bool quest_level);
 extern byte max_themed_monsters(const monster_race *r_ptr, u32b max_power);
 extern void update_arena_level(byte stage);

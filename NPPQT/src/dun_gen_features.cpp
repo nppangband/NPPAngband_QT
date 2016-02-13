@@ -49,9 +49,6 @@ static bool cave_feat_lake(int f_idx)
     /* Require lake or river */
     if (!_feat_ff2_match(f_ptr, FF2_LAKE | FF2_RIVER)) return (FALSE);
 
-    /* Special case. True lava changes all deep features */
-    /*if ((current_flags & (LF1_LAVA)) && _feat_ff2_match(f_ptr, FF2_DEEP)) return (TRUE);*/
-
     /* Analyze the elemental flags */
     switch (_feat_ff3_match(f_ptr, TERRAIN_MASK))
     {
@@ -162,7 +159,7 @@ static bool cave_feat_lake(int f_idx)
  * Places a terrain on another terrain
  */
 
-void build_terrain(int y, int x, int feat)
+static void build_terrain(int y, int x, int feat)
 {
     int oldfeat, newfeat;
     int k;
@@ -196,11 +193,6 @@ void build_terrain(int y, int x, int feat)
     {
         newfeat = feat_state(oldfeat, FS_TUNNEL);
     }
-    /* Chasm edge, stone bridge */
-    else if (_feat_ff2_match(f2_ptr, FF2_BRIDGED))
-    {
-        newfeat = feat;
-    }
     /*
      * EXPERIMENTAL. Leave some grids untouched when overlapping lakes.
      * Note that we check for a match of the LOS, PROJECT and MOVE flags to
@@ -218,8 +210,7 @@ void build_terrain(int y, int x, int feat)
     else if (_feat_ff3_match(f2_ptr, FF3_LAVA))
     {
         /* We are filling a hole in the dungeon */
-        if (_feat_ff2_match(f_ptr, FF2_DEEP) &&
-            !_feat_ff3_match(f_ptr, FF3_LAVA))
+        if (!_feat_ff3_match(f_ptr, FF3_LAVA))
         {
             /* Heat the water */
             if (_feat_ff3_match(f_ptr, FF3_WATER))
@@ -246,19 +237,15 @@ void build_terrain(int y, int x, int feat)
     /* Handle old lava */
     else if (_feat_ff3_match(f_ptr, FF3_LAVA))
     {
-        /* We are digging a hole in the lava */
-        if (_feat_ff2_match(f2_ptr, FF2_DEEP))
+        /* Heat the water */
+        if (_feat_ff3_match(f2_ptr, FF3_WATER))
         {
-            /* Heat the water */
-            if (_feat_ff3_match(f2_ptr, FF3_WATER))
-            {
-                newfeat = FEAT_FLOOR_WATER_BOILING;
-            }
-            /* Melt the new feature */
-            else
-            {
-                newfeat = FEAT_FLOOR_MUD_BOILING;
-            }
+            newfeat = FEAT_FLOOR_WATER_BOILING;
+        }
+        /* Melt the new feature */
+        else
+        {
+            newfeat = FEAT_FLOOR_MUD_BOILING;
         }
     }
 
@@ -284,7 +271,6 @@ void build_terrain(int y, int x, int feat)
         newfeat = feat_state(oldfeat, FS_HURT_COLD);
     }
     /* Handle new water */
-
     else if (_feat_ff3_match(f2_ptr, FF3_WATER))
     {
         if (!_feat_ff3_match(f_ptr, FF3_WATER))
@@ -485,13 +471,10 @@ void build_terrain(int y, int x, int feat)
 
     }
 
-    /* Hack -- no change */
-    if (newfeat == oldfeat) return;
+    /* Set the new feature, if there is one */
+    if (newfeat != oldfeat) cave_set_feat(y, x, newfeat);
 
-
-    /* Set the new feature */
-    cave_set_feat(y, x, newfeat);
-
+    // Place an effect if called for
     if (effect_rock) set_effect_rocks(effect_rock, y, x);
 
 }
@@ -522,7 +505,6 @@ static bool cave_feat_pool(int f_idx)
 
 
 
-
 /*
  * Choose a terrain feature for the current level.
  * You can use a hook to ensure consistent terrain (lakes/pools).
@@ -542,11 +524,13 @@ static u16b pick_proper_feature(bool (*feat_hook)(int f_idx))
     {
         /* Get the theme */
         byte theme = feeling - LEV_THEME_HEAD;
-        u16b features[10];
-        u16b i, n;
+        QVector<u16b> features;
+        u16b i;
+
+        features.clear();
 
         /* Find if we have to use default features for this level */
-        for (i = n = 0; i < CUR_NUM_THEME_LEVEL_FEATURES; i++)
+        for (i = 0; i < CUR_NUM_THEME_LEVEL_FEATURES; i++)
         {
             /* Ignore mismatching themes */
             if (theme != themed_level_features[i].theme) continue;
@@ -561,14 +545,11 @@ static u16b pick_proper_feature(bool (*feat_hook)(int f_idx))
             if (feat_hook && !feat_hook(feat)) continue;
 
             /* Feature is OK */
-            features[n++] = feat;
-
-            /* Paranoia */
-            if (n >= N_ELEMENTS(features)) break;
+            features.append(feat);
         }
 
         /* Pick a default feature, if any */
-        if (n > 0) return (features[rand_int(n)]);
+        if (features.size()) return (features[randint0(features.size())]);
     }
 
     /* Special case - Themed levels with random features */

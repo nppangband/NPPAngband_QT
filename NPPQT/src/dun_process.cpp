@@ -1046,27 +1046,6 @@ static void process_world(void)
     /* Get the feature */
     feat = dungeon_info[p_ptr->py][p_ptr->px].feature_idx;
 
-    /* If paralyzed, we drown in deep */
-    if ((p_ptr->timed[TMD_PARALYZED] || (p_ptr->stun_status() == STUN_KNOCKED_OUT)) &&
-        feat_ff2_match(feat, FF2_DEEP))
-    {
-        /* Calculate damage */
-        int dam = damroll(4, 6);
-
-        /* Don't kill the player, just hurt him/her */
-        if (dam <= p_ptr->chp)
-        {
-
-            /* Get the feature name */
-            QString name = feature_desc(feat, TRUE, TRUE);
-
-            bell(QString("You are drowning in %1!") .arg(name));
-
-            /* Apply the blow */
-            take_hit(dam, "drowning");
-        }
-    }
-
     /* Take damage from poison */
     if (p_ptr->timed[TMD_POISONED])
     {
@@ -1714,17 +1693,8 @@ void change_player_level(void)
     /* Fully update the visuals (and monster distances) */
     p_ptr->update |= (PU_FORGET_VIEW | PU_UPDATE_VIEW | PU_DISTANCE);
 
-    /* Redraw dungeon */
-    p_ptr->redraw |= (PR_SIDEBAR_ALL | PR_STATUSBAR | PR_MAP);
-
-    /* Redraw "statusy" things */
-    p_ptr->redraw |= (PR_WIN_INVENTORY | PR_WIN_EQUIPMENT | PR_WIN_MON_RECALL | PR_WIN_MONLIST | PR_WIN_OBJLIST);
-
     /* Update stuff */
     update_stuff();
-
-    /* Redraw stuff */
-    redraw_stuff();
 
     character_xtra = FALSE;
 
@@ -1759,12 +1729,10 @@ void change_player_level(void)
 
     /* Notice stuff */
     notice_stuff();
-
-    /* Update stuff */
     update_stuff();
 
     /* Redraw stuff */
-    redraw_stuff();
+    ui_redraw_all();
 
     /* Handle delayed death */
     if (p_ptr->is_dead) return;

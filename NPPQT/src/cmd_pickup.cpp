@@ -989,21 +989,6 @@ int move_player(int dir, int jumping)
 		/* Record the energy for flying creatures.*/
         if (p_ptr->timed[TMD_FLYING]) used_energy = BASE_ENERGY_FLYING;
 
-		/* Reveal when you are on shallow or deep  terrain */
-        else if (!(dungeon_info[y][x].cave_info & (CAVE_MARK)) &&
-				_feat_ff3_match(f_ptr, FF2_SHALLOW | FF2_DEEP))
-		{
-			/* Get the name */
-            name = feature_desc(f_ptr - f_info, FALSE, TRUE);
-
-			/* Tell the player */
-            message(QString("You feel you are in %1.").arg(name));
-
-            dungeon_info[y][x].mark_square();
-
-			light_spot(y, x);
-		}
-
 		/* Walk on a monster trap */
 		else if (cave_monster_trap_bold(y,x))
 		{

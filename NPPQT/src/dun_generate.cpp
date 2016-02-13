@@ -216,7 +216,7 @@ bool new_player_spot_old(void)
 /*
  * Convert existing terrain type to rubble
  */
-static void place_rubble(int y, int x)
+void place_rubble(int y, int x)
 {
     /* Create rubble */
     int effect = FEAT_RUBBLE;
@@ -588,7 +588,8 @@ static void destroy_level(void)
                     else if (t < 130)
                     {
                         /* Create rubble */
-                        cave_set_feat(y, x, FEAT_RUBBLE);
+                        cave_set_feat(y, x, FEAT_FLOOR);
+                        place_rubble(y, x);
                     }
 
                     /* Floor */
@@ -2574,32 +2575,8 @@ void generate_cave(void)
         /* Paranoia. Clear the current elemental flags */
         level_flag = 0;
 
-        /* Start with a blank cave */
-        for (y = 0; y < MAX_DUNGEON_HGT; y++)
-        {
-            for (x = 0; x < MAX_DUNGEON_WID; x++)
-            {
-                /* No flags */
-                dungeon_info[y][x].cave_info = 0;
-
-                /* No features */
-                dungeon_info[y][x].feature_idx = 0;
-
-                /* No objects */
-                dungeon_info[y][x].object_idx = 0;
-
-                /* No monsters */
-                dungeon_info[y][x].monster_idx = 0;
-
-                /* No monsters */
-                dungeon_info[y][x].effect_idx = 0;
-
-                for(i = 0; i < MAX_FLOWS; i++)
-                {
-                    cave_cost[i][y][x] = 0;
-                }
-            }
-        }
+        // Wipe the whole dungeon
+        reset_dungeon_info();
 
         /* Mega-Hack -- no player yet */
         p_ptr->px = p_ptr->py = 0;

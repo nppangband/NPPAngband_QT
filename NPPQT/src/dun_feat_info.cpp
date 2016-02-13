@@ -46,9 +46,6 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
     output.append("This is a");
 
     /* Collect some flags */
-    if (f_l_ptr->f_l_flags2 & FF2_SHALLOW)		if (n < N_ELEMENTS(flags)) flags[n++] = " shallow";
-    if (f_l_ptr->f_l_flags2 & FF2_DEEP)			if (n < N_ELEMENTS(flags)) flags[n++] = " deep";
-
     if ((f_l_ptr->f_l_flags2 & FF2_GLOW) &&
          (!(f_l_ptr->f_l_flags1 & FF1_SHOP)))	if (n < N_ELEMENTS(flags)) flags[n++] = " glowing";
 
@@ -81,7 +78,7 @@ static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
     output.append(type);
 
     /* Describe location */
-    if (f_ptr->f_flags2 & FF2_EFFECT)
+    if (f_ptr->f_flags2 & (FF2_EFFECT))
     {
         /* Do nothing */
     }

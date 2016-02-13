@@ -3695,6 +3695,8 @@ void update_los_proj_move(int y, int x)
 
 /*
  * Hack -- Really change the feature
+ * This is the only function that should actually change a floor feature, outside of wiping
+ * the dungeon feature in the class method.
  */
 static void cave_set_feat_aux(int y, int x, u16b feat)
 {
@@ -3953,7 +3955,7 @@ void cave_alter_feat(int y, int x, int action)
 
 
 /*
- * Change the "feat" flag for a grid, and notice/redraw the grid
+ * Change the "feature_idx" flag for a grid, and notice/redraw the grid
  */
 void cave_set_feat(int y, int x, u16b feat)
 {
