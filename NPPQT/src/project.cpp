@@ -15,6 +15,7 @@
 
 #define MAX_DAMAGE	1600
 
+
 /*
  * Teleport a monster, normally up to "dis" grids away.
  *
@@ -212,6 +213,7 @@ bool teleport_player(int dis, bool native)
         {
             for (x = x_min; x < x_max; x++)
             {
+
                 /* Require "start" floor space */
                 if (!cave_teleport_bold(y, x)) continue;
 
@@ -224,14 +226,13 @@ bool teleport_player(int dis, bool native)
                     if (cave_ff3_match(y, x, TERRAIN_MASK) != flags) continue;
                 }
 
-                // Pythagorean's theorum
+                /* Use pythagorean theorem to ensure the distance is right */
                 int distance = distance_pythagorean(py, px, y, x);
 
                 /* Stay within the min and the max */
                 if (distance <= min) continue;
-                if (distance >= dis) continue;
+                if (distance > dis) continue;
 
-                //  A usable spot
                 locations.append(make_coords(y, x));
             }
         }
@@ -257,12 +258,8 @@ bool teleport_player(int dis, bool native)
 
     i = randint0(locations.size());
 
-    /* Mark the location */
-    x = locations.at(i).y;
-    y = locations.at(i).x;
-
     /* Move player */
-    monster_swap(py, px, y, x);
+    monster_swap(py, px, locations.at(i).y, locations.at(i).x);
 
     /* Handle stuff XXX XXX XXX */
     handle_stuff();

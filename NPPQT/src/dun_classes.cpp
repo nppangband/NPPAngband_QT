@@ -365,10 +365,6 @@ void reset_dungeon_info()
         for (int x = 0; x < MAX_DUNGEON_WID; x++)
         {
             dungeon_info[y][x].dungeon_square_wipe();
-            for(int i = 0; i < MAX_FLOWS; i++)
-            {
-                cave_cost[i][y][x] = 0;
-            }
         }
     }
 

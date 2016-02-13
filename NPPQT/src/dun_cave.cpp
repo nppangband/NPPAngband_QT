@@ -55,8 +55,10 @@ int distance_pythagorean(int y1, int x1, int y2, int x2)
 {
     qreal distance = qSqrt(qPow((y1 - y2), 2) + qPow((x1 - x2), 2));
 
+    int int_distance = distance;
+
     /* Hack -- approximate the distance */
-    return ((int)distance);
+    return (int_distance);
 }
 
 

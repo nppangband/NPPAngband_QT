@@ -1,5 +1,5 @@
 
-/* File: gen_capabilities.cpp */
+/* File: dun_gen_features.cpp */
 
 /*
  * Copyright (c) 2010 Jeff Greene, Diego Gonzalez
@@ -9,6 +9,7 @@
 #include "src/npp.h"
 #include "src/dun_generate.h"
 
+dun_data *dun;
 
 /*
  * Table of "magic" values used to ponder the size of the dungeon
@@ -2310,9 +2311,8 @@ static void build_fog(void)
  */
 static bool pick_transform_center(QVector<coord> marked_grids, u32b flag, int *py, int *px)
 {
-    int max = 300;
-    int cur = 0;
-    coord *grids;
+    QVector<coord> matching_grids;
+    matching_grids.clear();
     int i, j, k;
     int x = 0;
     int y = 0;
@@ -2322,9 +2322,6 @@ static bool pick_transform_center(QVector<coord> marked_grids, u32b flag, int *p
     /* First, find a random grid of the given element in the dungeon */
     if (flag && level_flag)
     {
-        /* Allocate storage for a list of features that match that element */
-        grids = C_ZNEW(max, coord);
-
         /* Scan the dungeon */
         for (y = 0; y < p_ptr->cur_map_hgt; y++)
         {
@@ -2339,38 +2336,25 @@ static bool pick_transform_center(QVector<coord> marked_grids, u32b flag, int *p
                 /* It must match the given flag */
                 if (get_level_flag(feat) != flag) continue;
 
-                /* Put in on the list */
-                if (cur < max)
-                {
-                    k = cur++;
-                }
-                /* Overwrite the list if there isn't more space */
-                else
-                {
-                    k = rand_int(max);
-                }
-
-                /* Save the data */
-                grids[k].y = y;
-                grids[k].x = x;
+                matching_grids.append(make_coords(y, x));
             }
         }
 
         /* Second. Pick a marked grid that is near to a valid elemental grid */
-        if (cur > 0)
+        if (matching_grids.size())
         {
             /* Try several times */
             for (i = 0; (i < 50) && !found; i++)
             {
                 /* Pick a random elemental grid */
-                k = rand_int(cur);
+                k = rand_int(matching_grids.size());
 
                 /* Try several times */
                 for (j = 0; (j < 100) && !found; j++)
                 {
                     /* Pick a random grid near the elemental grid */
-                    y = rand_spread(grids[k].y, rad);
-                    x = rand_spread(grids[k].x, rad);
+                    y = rand_spread(matching_grids.at(k).y, rad);
+                    x = rand_spread(matching_grids.at(k).x, rad);
 
                     /* Check bounds */
                     if (!in_bounds(y, x)) continue;
@@ -2380,9 +2364,6 @@ static bool pick_transform_center(QVector<coord> marked_grids, u32b flag, int *p
                 }
             }
         }
-
-        /* Free storage */
-        FREE_ARRAY(grids);
 
         /* Found? */
         if (found)

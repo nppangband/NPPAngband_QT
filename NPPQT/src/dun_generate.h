@@ -176,7 +176,7 @@ struct dun_data
 /*
  * Dungeon generation data -- see "cave_gen()"
  */
-static dun_data *dun;
+extern dun_data *dun;
 
 
 /*

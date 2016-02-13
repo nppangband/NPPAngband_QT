@@ -13,6 +13,9 @@
 #include "src/dun_generate.h"
 #include "src/store.h"
 
+// This file has most of the code to create a standard, simple dungeon.
+// The code to create the rooms are kept in dun_gen_rooms.cpp.
+// The code to create the elemental terrain features are kept in dun_gen_features.
 
 /*
  *
@@ -162,15 +165,10 @@ static void rand_dir(int *rdir, int *cdir)
  */
 bool new_player_spot_old(void)
 {
-    int i = 0;
-
     int yy, xx;
 
-    int x_location_tables [40];
-    int y_location_tables [40];
-    int rand_spot;
-
-    int tries;
+    QVector<coord> locations;
+    locations.clear();
 
     /* Find a spot for the player */
     for (yy = 0; yy < p_ptr->cur_map_hgt; yy++)
@@ -190,42 +188,24 @@ bool new_player_spot_old(void)
             /* We like to be next to walls */
             if (next_to_walls(yy, xx) < 3) continue;
 
-            /* Don't go over size of array */
-            if (i < 40)
-            {
-                x_location_tables[i] = xx;
-                y_location_tables[i] = yy;
-
-                /* Increase the counter */
-                i++;
-            }
-
-            /* Put it in a random slot */
-            else
-            {
-                rand_spot = rand_int(40);
-
-                x_location_tables[rand_spot] = xx;
-                y_location_tables[rand_spot] = yy;
-            }
-
+            locations.append(make_coords(yy, xx));
         }
     }
 
     /* Paranoia */
-    if (i == 0) return (FALSE);
+    if (!locations.size()) return (FALSE);
 
     /*
      * Try to place the player "i" times to reduce the number of failed
      * levels. -DG-
      */
-    for (tries = 0; tries < i; tries++)
+    for (int tries = 0; tries < locations.size(); tries++)
     {
         /* Select a location */
-        rand_spot = rand_int(i);
+        int rand_spot = randint0(locations.size());
 
         /* Place the player, check for failure */
-        if (player_place(y_location_tables[rand_spot], x_location_tables[rand_spot]))
+        if (player_place(locations.at(rand_spot).y, locations.at(rand_spot).x))
         {
             return (TRUE);
         }
