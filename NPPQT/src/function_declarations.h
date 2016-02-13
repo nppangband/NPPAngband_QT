@@ -143,7 +143,6 @@ extern void debug_all_level_flags(u32b flags);
 
 // dun_generate.cpp
 extern void place_random_stairs(int y, int x);
-extern void place_rubble(int y, int x);
 extern void get_mon_hook(byte theme);
 extern byte get_nest_theme(int nestlevel, bool quest_theme);
 extern byte get_pit_theme(int pitlevel, bool quest_theme);

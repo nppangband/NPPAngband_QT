@@ -1605,7 +1605,7 @@ void destroy_area(int y1, int x1, int r)
 
                 /* Change the feature */
                 cave_set_feat(y, x, feat);
-                if (do_rubble) place_rubble(y, x);
+                if (do_rubble) set_effect_rocks(FEAT_RUBBLE, y, x);
             }
         }
     }

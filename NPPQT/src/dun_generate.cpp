@@ -216,7 +216,7 @@ bool new_player_spot_old(void)
 /*
  * Convert existing terrain type to rubble
  */
-void place_rubble(int y, int x)
+static void place_rubble(int y, int x)
 {
     /* Create rubble */
     int effect = FEAT_RUBBLE;
