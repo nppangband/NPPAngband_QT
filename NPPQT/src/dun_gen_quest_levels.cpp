@@ -9,18 +9,971 @@
 
 
 
-// Code for generation of themed levels, labyrnth levels, and arena levels.
+// Code for generation of wilderness levels, themed levels, labyrnth levels, and arena levels.
 
 
 #include "src/npp.h"
 #include "src/dun_generate.h"
+
+
+/*
+ *
+ * Build a wilderness level
+ *
+ */
+
+
+/*
+ * Place the irregular dungeon border of wilderness levels
+ */
+static void build_border(int y, int x, u16b feat)
+{
+    /* Ignore icky grids */
+    if (dungeon_info[y][x].cave_info & (CAVE_ICKY)) return;
+
+    /* Ignore grids with effects */
+    if (dungeon_info[y][x].effect_idx) return;
+
+    /* Ignore grids with objects */
+    if (dungeon_info[y][x].object_idx) return;
+
+    /* Ignore grids with monsters */
+    if (dungeon_info[y][x].monster_idx) return;
+
+    /* Place the border */
+    cave_set_feat(y, x, feat);
+}
+
+
+
+
+/*
+ * Lite all elemental features in the level (walls included), and their adjacent grids
+ * If show_objects is TRUE we mark the objects placed on such grids
+ */
+static void light_elements(bool show_objects)
+{
+    int y, x;
+
+    /* Look for interesting grids all over the dungeon */
+    for (y = 1; y < p_ptr->cur_map_hgt - 1; y++)
+    {
+        for (x = 1; x < p_ptr->cur_map_wid - 1; x++)
+        {
+            int i;
+
+            /* Must be an elemental feature */
+            if (!cave_ff3_match(y, x, TERRAIN_MASK)) continue;
+
+            /* Lite that grid and grids adjacent to it */
+            /* We don't need to call in_bounds */
+            for (i = 0; i < 9; i++)
+            {
+                int yy = y + ddy_ddd[i];
+                int xx = x + ddx_ddd[i];
+
+                /* Lite the grid */
+                dungeon_info[yy][xx].cave_info |= (CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
+
+                /* Remember its objects if necessary */
+                if (show_objects)
+                {
+                    /* Get the index of the first object */
+                    s16b o_idx = dungeon_info[yy][xx].object_idx;
+
+                    /* Mark all the objects of the pile */
+                    while (o_idx)
+                    {
+                        /* Get the object */
+                        object_type *o_ptr = &o_list[o_idx];
+
+                        /* Mark the object */
+                        o_ptr->mark_object();
+
+                        /* Go to the next object */
+                        o_idx = o_ptr->next_o_idx;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Helper. Place an horizontal chain of ice mountains
+ * row is the center of the chain
+ */
+static void build_ice_mountains(int row)
+{
+    int y, x;
+    int y1, y2;
+    /* Maximum offset */
+    int max_offset = 10;
+    /* Minimum width of the mountains */
+    int pad = 2;
+
+    /* Initial vertical offset */
+    y1 = y2 = 4;
+
+    /* Mountains are placed horizontally */
+    for (x = 0; x < p_ptr->cur_map_wid; x++)
+    {
+        /* Randomize the top offset */
+        y1 += 1 - rand_int(3);
+
+        /* Check bounds */
+        if (y1 < 0) y1 = 0;
+        else if (y1 > max_offset) y1 = max_offset;
+
+        /* Randomize the bottom offset */
+        y2 += 1 - rand_int(3);
+
+        /* Check bounds */
+        if (y2 < 0) y2 = 0;
+        else if (y2 > max_offset) y2 = max_offset;
+
+        /* Place ice walls between top and bottom  */
+        for (y = row - y1 - pad; y <= row + y2 + pad; y++)
+        {
+            /* Check sanity */
+            if (in_bounds(y, x))
+            {
+                int k = rand_int(100);
+                u16b feat;
+
+                /* Flavor */
+                if (k < 90) feat = FEAT_WALL_ICE;
+                else feat = FEAT_WALL_ICE_CRACKED;
+
+                /* Place the wall */
+                cave_set_feat(y, x, feat);
+            }
+        }
+    }
+}
+
+
+/*
+ * Create the irregular borders of a wilderness levels.
+ * Based on code created by Nick McConnel (FAangband)
+ */
+static void build_wilderness_borders(u16b feat)
+{
+    int hgt = p_ptr->cur_map_hgt;
+    int wid = p_ptr->cur_map_wid;
+    int y, x;
+    int i;
+
+    int start_offset = 4;
+    int max_offset = 7;
+
+    /* Top border */
+    i = start_offset;
+
+    for (x = 0; x < wid; x++)
+    {
+        /* Modify the offset by -1, +1 or 0 */
+        i += (1 - rand_int(3));
+
+        /* Check bounds */
+        if (i > max_offset) i = max_offset;
+        else if (i < 0) i = 0;
+
+        /* Place border */
+        for (y = 0; y < i; y++)
+        {
+            build_border(y, x, feat);
+        }
+    }
+
+    /* Bottom border */
+    i = start_offset;
+
+    for (x = 0; x < wid; x++)
+    {
+        /* Modify the offset by -1, +1 or 0 */
+        i += (1 - rand_int(3));
+
+        /* Check bounds */
+        if (i > max_offset) i = max_offset;
+        else if (i < 0) i = 0;
+
+        /* Place border */
+        for (y = 0; y < i; y++)
+        {
+            build_border(hgt - 1 - y, x, feat);
+        }
+    }
+
+    /* Left border */
+    i = start_offset;
+
+    for (y = 0; y < hgt; y++)
+    {
+        /* Modify the offset by -1, +1 or 0 */
+        i += (1 - rand_int(3));
+
+        /* Check bounds */
+        if (i > max_offset) i = max_offset;
+        else if (i < 0) i = 0;
+
+        /* Place border */
+        for (x = 0; x < i; x++)
+        {
+            build_border(y, x, feat);
+        }
+    }
+
+    /* Right border */
+    i = start_offset;
+
+    for (y = 0; y < hgt; y++)
+    {
+        /* Modify the offset by -1, +1 or 0 */
+        i += (1 - rand_int(3));
+
+        /* Check bounds */
+        if (i > max_offset) i = max_offset;
+        else if (i < 0) i = 0;
+
+        /* Place border */
+        for (x = 0; x < i; x++)
+        {
+            build_border(y, wid - 1 - x, feat);
+        }
+    }
+}
+
+
+/*
+ * Helper function for add_wilderness_quest_terrain.  Take a spot, add dangerous wall terrain, and surround
+ * it with 3-4 dangerous floor terrains. *
+ */
+static void add_wilderness_quest_terrain_aux(int y, int x, u16b floor_terrain, u16b wall_terrain)
+{
+    int yy, xx;
+    int y_places[8];
+    int x_places[8];
+    int num_places = 0;
+    int num_floor = randint1(2);
+    int i;
+
+    /* Build a solid wall here */
+    cave_set_feat(y, x, wall_terrain);
+
+    /* Now find areas to add dangerous floor terrains */
+    for (i = 0; i < 8; i++)
+    {
+        yy = y + ddy[i];
+        xx = x + ddx[i];
+
+        if (!in_bounds_fully(yy, xx)) continue;
+        if (cave_ff1_match(yy, xx, FF1_PERMANENT))
+        {
+            /* Don't alter stairs or walls */
+            if (cave_ff1_match(yy, xx, FF1_WALL | FF1_STAIRS))continue;
+        }
+        y_places[num_places] = yy;
+        x_places[num_places] = xx;
+        num_places++;
+    }
+
+    /* Boundry control */
+    if (!num_places) return;
+
+    /* Add up to num_floor of the dangerous floor terrains */
+    for (i = 0; i < num_floor; i++)
+    {
+        int k = randint0(num_places);
+        yy = y_places[k];
+        xx = x_places[k];
+
+        /* Paranoia */
+        if (!in_bounds_fully(yy, xx)) continue;
+
+        /* Place the floor terrain, and then eliminate this square from future choices */
+        cave_set_feat(yy, xx, floor_terrain);
+        num_places--;
+        y_places[k] = y_places[num_places];
+        x_places[k] = x_places[num_places];
+    }
+}
+
+
+/*
+ * Add several pockets of terrain that will eventually overrun the level
+ */
+static void add_wilderness_quest_terrain(u16b floor_terrain, u16b wall_terrain)
+{
+    int hgt = p_ptr->cur_map_hgt;
+    int wid = p_ptr->cur_map_wid;
+    int j;
+
+    /*
+     * Add some patches of wall and floor in each corner of the dungeon.
+     */
+    for (j = 0; j < 4; j++)
+    {
+        int i, x, y;
+        int coord_count = 0;
+        int y_start, y_end, x_start, x_end, slot;
+        int y_places[900];
+        int x_places[900];
+
+        /*
+         * Just to avoid repeating the code below,
+         * we assign the x and y ranges here and then
+         * loop through the code below 4 times
+         */
+        switch (j)
+        {
+            /* Top left */
+            case 1: {y_start = 1; y_end = 31; x_start = 1; x_end = 31; break;}
+            /* Bottom left */
+            case 2: {y_start = (hgt - 31); y_end = hgt; x_start = 1; x_end = 31; break;}
+            /* Top right */
+            case 3: {y_start = 1; y_end = 31; x_start = (wid - 31); x_end = wid; break;}
+            /* Bottom left */
+            default: {y_start = (hgt - 31); y_end = hgt; x_start = (wid - 31); x_end = wid; break;}
+        }
+
+        for (y = y_start; y < y_end; y++)
+        {
+            for (x = x_start; x < x_end; x++)
+            {
+                /* Paranoia */
+                if (!in_bounds_fully(y, x)) continue;
+
+                /* Don't alter stairs or permanent walls */
+                if (cave_ff1_match(y, x, FF1_PERMANENT))
+                {
+                    if (cave_ff1_match(y, x, FF1_WALL | FF1_STAIRS))continue;
+                }
+
+                /* store this square */
+                y_places[coord_count] = y;
+                x_places[coord_count] = x;
+                coord_count++;
+            }
+        }
+
+        for (i = 0; i < 8; i++)
+        {
+            /* Paranoia */
+            if (!coord_count) break;
+
+            /* Pick one of the set of coordinates */
+            slot = randint0(coord_count);
+            y = y_places[slot];
+            x = x_places[slot];
+
+            /* Paranoia */
+            if (!in_bounds_fully(y, x)) continue;
+
+            /* Place the floor terrain, and then eliminate this square from future choices */
+            add_wilderness_quest_terrain_aux(y, x, floor_terrain, wall_terrain);
+            coord_count--;
+            y_places[slot] = y_places[coord_count];
+            x_places[slot] = x_places[coord_count];
+        }
+    }
+}
+
+
+
+
+/*
+ * Builds an ice level. Returns TRUE on success, FALSE on error
+ */
+static bool build_ice_level(void)
+{
+    int y, x;
+    int i, j;
+    int hgt, wid;
+    int hgt2;
+
+    /* Make it a smaller size */
+    hgt = p_ptr->cur_map_hgt = MAX_DUNGEON_HGT;
+    wid = p_ptr->cur_map_wid = MAX_DUNGEON_WID;
+
+    /* Actual maximum number of rooms on this level */
+    dun->row_rooms = p_ptr->cur_map_hgt / BLOCK_HGT;
+    dun->col_rooms = p_ptr->cur_map_wid / BLOCK_WID;
+
+    hgt2 = hgt / 2;
+
+    /* Start with floors */
+    for (y = 0; y < hgt; y++)
+    {
+        for (x = 0; x < wid; x++)
+        {
+            cave_set_feat(y, x, FEAT_FLOOR);
+
+            dungeon_info[y][x].cave_info |= (CAVE_ROOM);
+        }
+    }
+
+    /* Put lots of ice */
+    for (i = 0; i < 15; i++)
+    {
+        build_formation(-1, -1, FEAT_FLOOR_ICE, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
+    }
+
+    /* Put some "mountains" */
+    build_ice_mountains(hgt2);
+
+    /* Add some granite formations */
+    for (i = 0; i < 15; i++)
+    {
+        build_formation(-1, -1, FEAT_WALL_GRANITE_CRACKED, FRACTAL_TYPE_17x17, 0, FEAT_NONE, 0);
+    }
+
+    j = 20;
+
+    /* Put some irregular ice walls to break los */
+    for (i = 0; i < j; i++)
+    {
+        int tries;
+
+        for (tries = 0; tries < 200; tries++)
+        {
+            /* Get random coordinates */
+            y = randint(hgt - 1);
+            x = randint(wid - 1);
+
+            /* Location must be passable */
+            if (cave_ff1_match(y, x, FF1_MOVE)) break;
+        }
+
+        build_formation(y, x, FEAT_WALL_ICE_CRACKED, FRACTAL_TYPE_17x17, 40, FEAT_NONE, 1);
+    }
+
+    j = 70 + rand_int(51);
+
+    /* Put some pebbles */
+    for (i = 0; i < j; i++)
+    {
+        int tries;
+
+        for (tries = 0; tries < 200; tries++)
+        {
+            /* Get random coordinates */
+            y = randint(hgt - 1);
+            x = randint(wid - 1);
+
+            /* Ignore ice */
+            if (cave_ff3_match(y, x, ELEMENT_ICE)) continue;
+
+            /* Location must be passable */
+            if (cave_ff1_match(y, x, FF1_MOVE)) break;
+        }
+
+        cave_set_feat(y, x, FEAT_FLOOR_PEBBLES);
+    }
+
+    j = one_in_(4) ? (2 + rand_int(3)): 0;
+
+    /* Add some water pools, sometimes */
+    for (i = 0; i < j; i++)
+    {
+        int tries;
+
+        for (tries = 0; tries < 200; tries++)
+        {
+            /* Get random coordinates */
+            y = randint(hgt - 1);
+            x = randint(wid - 1);
+
+            /* Location must be passable */
+            if (cave_ff1_match(y, x, FF1_MOVE)) break;
+        }
+
+        build_formation(y, x, FEAT_FLOOR_WATER, FRACTAL_TYPE_17x33, 10, FEAT_NONE, 0);
+    }
+
+    j = 4;
+
+    /* Pierce the ice mountains making some tunnels */
+    for (i = 0; i < j; i++)
+    {
+        int y2;
+        int x2;
+        int dist;
+
+        /* Get start x coordinate */
+        x = randint(wid - 1);
+
+        do
+        {
+            /* Get final x coordinate */
+            x2 = randint(wid - 1);
+
+            /*
+             * Calculate distance. The end must be somewhat
+             * far away from the start
+             */
+            dist = ABS(x2 - x);
+        } while ((dist < 20) || (dist > 40));
+
+        /* Get start y coordinate */
+        y = rand_range(1, hgt2 - 20);
+
+        /* Get final y coordinate */
+        y2 = rand_range(hgt2 + 20, hgt - 2);
+
+        /* Sometimes we swap the y coordinates */
+        if (one_in_(2))
+        {
+            int tmp = y;
+            y = y2;
+            y2 = tmp;
+        }
+
+        /* Make a tunnel */
+        build_tunnel(y, x, y2, x2);
+    }
+
+    /* Place some fractal rooms more */
+    for (i = 0; i < 5; i++)
+    {
+        /* Only part of the time */
+        if (one_in_(2))
+        {
+            /* Pick a location */
+            for (j = 0; j < 50; j++)
+            {
+                /* Get coordinates */
+                y = rand_int(dun->row_rooms);
+                x = rand_int(dun->col_rooms);
+
+                /* Place the room */
+                if (room_build(y, x, 13)) break;
+            }
+        }
+    }
+
+    return (TRUE);
+}
+
+
+/*
+ * Build a full forest level
+ * Returns TRUE on success
+ */
+static bool build_forest_level(void)
+{
+    int y, x;
+    int i, j;
+    int hgt, wid, wid2;
+
+    /* Make it smaller size */
+    hgt = p_ptr->cur_map_hgt = MAX_DUNGEON_HGT;
+    wid = p_ptr->cur_map_wid = MAX_DUNGEON_WID;
+
+     /* Actual maximum number of rooms on this level */
+    dun->row_rooms = p_ptr->cur_map_hgt / BLOCK_HGT;
+    dun->col_rooms = p_ptr->cur_map_wid / BLOCK_WID;
+
+    /* Cache center point, height currently isn't needed. */
+    wid2 = wid / 2;
+
+    /* Initialize the dungoen with forest soil */
+    for (y = 0; y < hgt; y++)
+    {
+        for (x = 0; x < wid; x++)
+        {
+            cave_set_feat(y, x, FEAT_FOREST_SOIL);
+
+            dungeon_info[y][x].cave_info |= (CAVE_ROOM);
+        }
+    }
+
+    /* Place some initial big earth formations */
+    for (i = 0; i < 5; i++)
+    {
+        build_formation(-1, -1, FEAT_FLOOR_EARTH, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
+    }
+
+    /* Place one big earth wall formation most of the time */
+    j = (one_in_(4) ? 0: 1);
+
+    for (i = 0; i < j; i++)
+    {
+        build_formation(-1, -1, FEAT_WALL_EARTH, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
+    }
+
+    /* Place some irregular rooms of variable size */
+    j = 3 + rand_int(20);
+
+    for (i = 0; i < j; i++)
+    {
+        build_formation(-1, -1, FEAT_WALL_GRANITE, one_in_(3) ? FRACTAL_TYPE_9x9: FRACTAL_TYPE_17x17, 15,
+            FEAT_WALL_GRANITE_CRACKED, 1);
+    }
+
+    /* Place a dense forest on the left side of the level */
+    j = hgt * wid2;
+
+    j = 10 * j / 100;
+
+    for (i = 0; i < j; i++)
+    {
+        /* Pick random grid */
+        y = randint(hgt - 1);
+        x = randint(wid2 - 1);
+
+        cave_set_feat(y, x, FEAT_TREE);
+    }
+
+    /* Place a clearer forest on the right side */
+    j = hgt * wid2;
+
+    j = 5 * j / 100;
+
+    for (i = 0; i < j; i++)
+    {
+        /* Pick random grid */
+        y = randint(hgt - 1);
+        x = wid2 + randint(wid2 - 1);
+
+        cave_set_feat(y, x, FEAT_TREE);
+    }
+
+    /* Scatter random features through the level (they pierce things) */
+    j = hgt * wid;
+
+    j = 5 * j / 100;
+
+    for (i = 0; i < j; i++)
+    {
+        /* Pick random grid */
+        y = randint(hgt - 1);
+        x = randint(wid - 1);
+
+        /* Place earth */
+        cave_set_feat(y, x, FEAT_FLOOR_EARTH);
+
+        /* Pick random grid */
+        y = randint(hgt - 1);
+        x = randint(wid - 1);
+
+        /* Place forest soil or grass, sometimes dynamic */
+        if (one_in_(4)) cave_set_feat(y, x, (i < (j / 5)) ? FEAT_GRASS_DYNAMIC: FEAT_GRASS);
+        else cave_set_feat(y, x, (i < (j / 5)) ? FEAT_FOREST_SOIL_DYNAMIC: FEAT_FOREST_SOIL);
+    }
+
+    /* Place a few mud grids */
+    j = one_in_(2) ? 30: 10;
+
+    for (i = 0; i < j; i++)
+    {
+        /* Pick random grid */
+        y = randint(hgt - 1);
+        x = randint(wid - 1);
+
+        cave_set_feat(y, x, FEAT_FLOOR_MUD);
+    }
+
+    /* Place a big lake most of the time */
+    j = (one_in_(4) ? 0: 1);
+
+    for (i = 0; i < j; i++)
+    {
+        build_formation(-1, -1, one_in_(2) ? FEAT_FLOOR_WATER : FEAT_FLOOR_MUD, FRACTAL_TYPE_33x65, 15, FEAT_NONE, 0);
+    }
+
+    /* Place some smaller earth wall formations */
+    for (i = 0; i < 7; i++)
+    {
+        build_formation(-1, -1, FEAT_WALL_EARTH, FRACTAL_TYPE_17x17, 10, one_in_(2) ? FEAT_FLOOR_MUD: FEAT_NONE, 0);
+    }
+
+    /* Place some small vaults */
+    for (i = 0; i < 5; i++)
+    {
+        /* They are somewhat rare */
+        if (one_in_(10))
+        {
+            /* Pick a location */
+            for (j = 0; j < 50; j++)
+            {
+                /* Get coordinates */
+                y = rand_int(dun->row_rooms);
+                x = rand_int(dun->col_rooms);
+
+                /* Place the room */
+                if (room_build(y, x, 7)) break;
+            }
+        }
+    }
+
+    /* Success */
+    return (TRUE);
+}
+
+
+/*
+ * Builds a pseudo-wilderness level on the dungeon
+ * Returns TRUE on success, FALSE on error
+ */
+bool build_wilderness_level(void)
+{
+    int y, x, i;
+    dun_data dun_body;
+    bool done_ice = FALSE;
+    bool is_quest_level = FALSE;
+    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
+
+    /* Global data */
+    dun = &dun_body;
+
+    /* Clear it */
+    memset(dun, 0, sizeof(dun_body));
+
+    /* Set level type */
+    set_dungeon_type(DUNGEON_TYPE_WILDERNESS);
+
+    /* Reset terrain flags */
+    level_flag = 0;
+
+    /* Leave the player in the air for now */
+    p_ptr->py = p_ptr->px = 0;
+
+    /*check if we need a quest*/
+    if (quest_check(p_ptr->depth) == QUEST_WILDERNESS)
+    {
+        is_quest_level = TRUE;
+    }
+
+    /* Try with a forest */
+    if ((p_ptr->depth < 35) || one_in_(2))
+    {
+        if (!build_forest_level())
+        {
+            if (cheat_room)
+            {
+                message(QString("failed to build a forest level"));
+            }
+
+            return (FALSE);
+        }
+    }
+    /* Or try with an ice level */
+    else
+    {
+        if (!build_ice_level())
+        {
+            if (cheat_room)
+            {
+                message(QString("failed to build an ice level"));
+            }
+
+            return (FALSE);
+        }
+
+        done_ice = TRUE;
+    }
+
+    /* Irregular borders */
+    build_wilderness_borders(FEAT_WALL_GRANITE);
+
+    /* Mandatory dungeon borders */
+    set_perm_boundry();
+
+    /* Place 3 or 5 down stairs near some walls */
+    if (!alloc_stairs(FEAT_STAIRS_DOWN, (3 + randint(2))))
+    {
+        if (cheat_room)
+        {
+            message(QString("failed to place down stairs"));
+        }
+
+        return (FALSE);
+    }
+
+    /* Place 1 or 3 up stairs near some walls */
+    if (!alloc_stairs(FEAT_STAIRS_UP, (1 + randint(2))))
+    {
+        if (cheat_room)
+        {
+            message(QString("failed to place down stairs"));
+        }
+
+        return (FALSE);
+    }
+
+    /* Place some things */
+    if (!place_traps_rubble_player())
+    {
+        if (cheat_room)
+        {
+            message(QString("failed to place traps, rubble and player"));
+        }
+
+        return FALSE;
+    }
+
+    /* We don't want to trap the player in the level */
+    /* Build a tunnel to some far location */
+    if (TRUE)
+    {
+        /* Get the larger dimension of the dungeon */
+        int d = MAX(p_ptr->cur_map_hgt, p_ptr->cur_map_wid);
+        int tries = 0;
+
+        /* Get the distance to that far location */
+        d = ((2 * d) / 5);
+
+        /* Pick a location */
+        while (TRUE)
+        {
+            /* Get coordinates */
+            y = randint(p_ptr->cur_map_hgt - 1);
+            x = randint(p_ptr->cur_map_wid - 1);
+
+            /* Check distance */
+            if (distance(y, x, p_ptr->py, p_ptr->px) >= d) break;
+
+            /* Too many tries */
+            if (++tries > 200) return (FALSE);
+        }
+
+        /* Build the tunnel */
+        build_tunnel(p_ptr->py, p_ptr->px, y, x);
+    }
+
+    /* Additional features */
+    build_misc_features();
+
+    /* Start destruction of the level for quests */
+    if (is_quest_level)
+    {
+        /* These terrain types are processed in dungeon.c during the quest level */
+        if (done_ice) add_wilderness_quest_terrain(FEAT_FLOOR_WATER_BOILING, FEAT_WALL_CRACKED_OVER_BOILING_WATER);
+        else add_wilderness_quest_terrain(FEAT_FLOOR_MUD_BOILING, FEAT_WALL_CRACKED_OVER_BOILING_MUD);
+    }
+
+    /*get the hook*/
+    get_mon_num_hook = monster_wilderness_labrynth_okay;
+
+    /* Prepare allocation table */
+    get_mon_num_prep();
+
+    /* Place some things */
+    if (!place_monsters_objects())
+    {
+        /* Reset the allocation table */
+        get_mon_num_hook = NULL;
+        get_mon_num_prep();
+
+        if (cheat_room)
+        {
+            message(QString("failed to place monsters and objects"));
+        }
+
+        return FALSE;
+    }
+
+    /* Reset the allocation table */
+    get_mon_num_hook = NULL;
+    get_mon_num_prep();
+
+    /* Special illumination for ice levels */
+    if (done_ice && ((p_ptr->depth < 50) || one_in_(4))) light_elements(TRUE);
+
+    /*final preps if this is a quest level*/
+    if (is_quest_level)
+    {
+        u16b obj_count = WILDERNESS_COLLECT;
+        u16b mon_count = 0;
+
+        q_ptr->q_num_killed = 0;
+        q_ptr->q_max_num = 0;
+
+        /*
+         * Go through every monster, and mark them as a questor,
+         * then make them slightly faster, and light sleepers
+         */
+        /* Process the monsters */
+        for (i = 1; i < mon_max; i++)
+        {
+            monster_type *m_ptr = &mon_list[i];
+
+            /* Ignore non-existant monsters */
+            if (!m_ptr->r_idx) continue;
+
+            /*mark it as a quest monster*/
+            m_ptr->mflag |= (MFLAG_QUEST);
+
+            /* Count it */
+            mon_count++;
+
+            /* One in 25 generate a bonus item */
+            if ((mon_max % 25) == 0) m_ptr->mflag |= (MFLAG_BONUS_ITEM);
+        }
+
+        /* Process the monsters */
+        for (i = 1; i < mon_max; i++)
+        {
+            monster_type *m_ptr = &mon_list[i];
+
+            /* Ignore non-existant monsters */
+            if (!m_ptr->r_idx) continue;
+
+            if (randint0(mon_count) < obj_count)
+            {
+                object_type *i_ptr;
+                object_type object_type_body;
+
+                /* Make a piece of parchment */
+                int k_idx = lookup_kind(TV_PARCHMENT, SV_PARCHMENT_FRAGMENT);
+                i_ptr = &object_type_body;
+                i_ptr->object_wipe();
+                object_prep(i_ptr, k_idx);
+                apply_magic(i_ptr, p_ptr->depth, TRUE, FALSE, FALSE, TRUE);
+
+                /*Don't let the player see what the object it, and make it a quest item*/
+                i_ptr->ident |= (IDENT_HIDE_CARRY | IDENT_QUEST);
+
+                i_ptr->mark_known(TRUE);
+
+                (void)monster_carry(i, i_ptr);
+
+                /* One less object to drop */
+                obj_count--;
+            }
+
+            /* One less monster to count */
+            mon_count--;
+
+            /* We are done */
+            if (!obj_count) break;
+        }
+
+        /* Drop some additional parchments */
+        alloc_object(ALLOC_SET_BOTH, ALLOC_TYP_PARCHMENT, (WILDERNESS_COLLECT / 2));
+    }
+
+    /* Drop some chests to make the level worth exploring */
+    alloc_object(ALLOC_SET_BOTH, ALLOC_TYP_CHEST, damroll(3, 3));
+
+    /* Let the player see the whole level */
+    wiz_light();
+
+    /* Try hard to place this level */
+    rating += 25;
+
+    /* Success */
+    return (TRUE);
+}
+
+
 
 /*
  *
  * Build a themed level
  *
  */
-
 
 /*
  * Select a monster type for a themed level
@@ -113,26 +1066,6 @@ byte get_level_theme(s16b orig_theme_num, bool quest_level)
 }
 
 
-/*
- * This table holds aditional flags for themed levels
- * These flags are used to forbid the generation of certain features BEFORE
- * placing any lakes or pools.
- * Example: you can assign LF1_LAVA to a red dragon level to avoid the
- * generation of ice, acid, oil, etc.
- * See "build_themed_level_nature"
- */
-flags_themed_levels themed_level_flags[CUR_NUM_THEME_LEVEL_FLAGS] =
-{
-    {LEV_THEME_DEMON_MINOR,	LF1_FIRE},
-    {LEV_THEME_DEMON_ALL,	LF1_FIRE},
-    {LEV_THEME_DEMON_MAJOR,	LF1_LAVA | LF1_FIRE},
-    {LEV_THEME_DRAGON_FIRE,	LF1_FIRE},
-    {LEV_THEME_DRAGON_ACID,	LF1_ACID},
-    {LEV_THEME_DRAGON_ELEC,	LF1_WATER},
-    {LEV_THEME_DRAGON_COLD,	LF1_ICE},
-    {LEV_THEME_UNDEAD,		LF1_ICE},
-    /* Add entries for more themed levels if needed */
-};
 
 /*
  * Build lakes and other terrain features for the given themed level
@@ -716,11 +1649,6 @@ static bool lab_is_tunnel(int y, int x)
     return ((north == south) && (west == east) && (north != west));
 }
 
-
-/* Note the height and width must be an odd number */
-#define LABYRINTH_HGT 41
-#define LABYRINTH_WID 81
-#define LABYRINTH_AREA (LABYRINTH_WID * LABYRINTH_HGT)
 
 
 /**

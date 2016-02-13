@@ -11,28 +11,6 @@
 #include "src/npp.h"
 #include "src/dun_generate.h"
 
-dun_data *dun;
-
-/*
- * Table of "magic" values used to ponder the size of the dungeon
- * 1 means "tiny": 2x2, 2x3, 2x4, 3x2, 3x3, 4x2
- * 2 means "small rectangle": 2x5, 2x6, 3x4, 4x3, 5x2, 6x2
- * 3 means "medium rectangle": 3x5, 3x6, 4x4, 5x3, 6x3
- * 4 means "medium": 4x5, 4x6, 5x4, 6x4
- * 5 means "large": 5x5, 5x6, 6x5
- * 6 means "largest": 6x6
- */
-static byte dungeon_size_tab[7][7] =
-{
-    /*	0	1	2	3	4	5	6	*/
-    {	0,	0,	0,	0,	0,	0,	0	},	/* 0 */
-    {	0,	0,	0,	0,	0,	0,	0	},	/* 1 */
-    {	0,	0,	1,	1,	1,	2,	2	},	/* 2 */
-    {	0,	0,	1,	1,	2,	3,	3	},	/* 3 */
-    {	0,	0,	1,	2,	3,	4,	4	},	/* 4 */
-    {	0,	0,	2,	3,	4,	5,	5	},	/* 5 */
-    {	0,	0,	2,	3,	4,	5,	6	},	/* 6 */
-};
 
 
 /*
@@ -542,30 +520,7 @@ static bool cave_feat_pool(int f_idx)
     return (cave_feat_lake(f_idx));
 }
 
-/*
- * This table holds the default features used in *almost* all lakes and pools
- * of a themed level.
- * See "pick_proper_feature"
- */
-static struct
-{
-    byte theme;
-    u16b feature;
-} themed_level_features[] =
-{
-    {LEV_THEME_DEMON_MINOR,	FEAT_FIRE},
-    {LEV_THEME_DEMON_ALL,	FEAT_FIRE},
-    {LEV_THEME_DEMON_MAJOR,	FEAT_FLOOR_LAVA},
-    {LEV_THEME_DEMON_MAJOR,	FEAT_FIRE},
-    {LEV_THEME_DRAGON_FIRE,	FEAT_FIRE},
-    {LEV_THEME_DRAGON_ACID,	FEAT_FLOOR_ACID},
-    {LEV_THEME_DRAGON_ELEC,	FEAT_FLOOR_WATER},
-    {LEV_THEME_DRAGON_COLD,	FEAT_FLOOR_ICE},
-    {LEV_THEME_TROLL,		FEAT_FOREST_SOIL},
-    {LEV_THEME_OGRE,		FEAT_FOREST_SOIL},
-    {LEV_THEME_OGRE,		FEAT_THICKET},
-    /* Add entries for more themed levels if needed */
-};
+
 
 
 /*
@@ -591,7 +546,7 @@ static u16b pick_proper_feature(bool (*feat_hook)(int f_idx))
         u16b i, n;
 
         /* Find if we have to use default features for this level */
-        for (i = n = 0; i < N_ELEMENTS(themed_level_features); i++)
+        for (i = n = 0; i < CUR_NUM_THEME_LEVEL_FEATURES; i++)
         {
             /* Ignore mismatching themes */
             if (theme != themed_level_features[i].theme) continue;
@@ -648,98 +603,6 @@ static u16b pick_proper_feature(bool (*feat_hook)(int f_idx))
     /* Return the feature */
     return (feat);
 }
-
-
-/*
- * A fractal map is a matrix (MAX_FRACTAL_SIZE * MAX_FRACTAL_SIZE) of
- * small numbers. Each number in the map should be replaced with a dungeon
- * feature. This way we can use fractal maps to perform different actions like
- * building rooms, placing pools, etc.
- *
- * We are going to store this matrix in dynamic memory so we have to define
- * a couple of new types:
- */
-
-/*
- * A row of the fractal map
- */
-typedef byte fractal_map_wid[MAX_FRACTAL_SIZE];
-
-/*
- * FRACTAL MAP. An array of rows. It can be used as a two-dimensional array.
- */
-typedef fractal_map_wid *fractal_map;
-
-/*
- * VERY IMPORTANT: The map must be a square. Its size must be
- * "power of 2 plus 1". Valid values are 3, 5, 9, 17, 33, 65, 129, 257, etc.
- * The maximum supported size is 65.
- *
- * Aditional comments about the construction of the map:
- * Only nine grids of this square are processed at the beginning.
- * These grids are the four corners (who MUST be previously set to meaningful
- * values) and five inner grids.
- * The inner grids are the middle points of each side plus the grid
- * at the center.
- * These nine grids can be viewed as a "3x3" square.
- * Example:
- *
- * a*b
- * ***
- * c*d
- *
- * The algorithm supplies the values for the five inner grids by
- * randomly chosing one *adjacent* corner. Example:
- *
- * aab
- * cbd
- * ccd
- *
- * The next step is to consider this "3x3" square as a part of a larger
- * square:
- *
- * a*a*b
- * *****
- * c*b*d
- * *****
- * c*c*d
- *
- * Now we have four "3x3" squares. The process is repeated for each one of
- * them. The process is stopped when the initial square can't be "magnified"
- * any longer.
- */
-
-
-
-
-typedef struct fractal_template fractal_template;
-
-/* Initialization function for templates */
-typedef void (*fractal_init_func)(fractal_map map, fractal_template *t_ptr);
-
-/*
- * A fractal template is used to set the basic shape of the fractal.
- *
- * Templates must provide values for at least the four corners of the map.
- * See the examples.
- */
-struct fractal_template
-{
-    /* The type of the fractal map (one of FRACTAL_TYPE_*) */
-    byte type;
-
-    /* The maximum size of the fractal map (3, 5, 9, 17, 33 or 65) */
-    int size;
-
-    /* The initialization function for this template */
-    fractal_init_func init_func;
-};
-
-
-/* Verify that a point is inside a fractal */
-#define IN_FRACTAL(template,y,x) \
-    (((y) >= 0) && ((y) < (template)->size) && \
-    ((x) >= 0) && ((x) < (template)->size))
 
 
 /*
@@ -807,7 +670,7 @@ static void fractal_draw_borders(fractal_map map, fractal_template *t_ptr)
  */
 
 /* 17x33 template */
-static void fractal1_init_func(fractal_map map, fractal_template *t_ptr)
+void fractal1_init_func(fractal_map map, fractal_template *t_ptr)
 {
     /* Borders */
     fractal_draw_borders(map, t_ptr);
@@ -825,7 +688,7 @@ static void fractal1_init_func(fractal_map map, fractal_template *t_ptr)
 
 
 /* 33x65 template */
-static void fractal2_init_func(fractal_map map, fractal_template *t_ptr)
+void fractal2_init_func(fractal_map map, fractal_template *t_ptr)
 {
     int k;
 
@@ -869,7 +732,7 @@ static void fractal2_init_func(fractal_map map, fractal_template *t_ptr)
 
 
 /* 9x9 template for pools */
-static void fractal3_init_func(fractal_map map, fractal_template *t_ptr)
+void fractal3_init_func(fractal_map map, fractal_template *t_ptr)
 {
     /*Unused*/
     (void)t_ptr;
@@ -889,7 +752,7 @@ static void fractal3_init_func(fractal_map map, fractal_template *t_ptr)
 
 
 /* 17x17 template for pools */
-static void fractal4_init_func(fractal_map map, fractal_template *t_ptr)
+void fractal4_init_func(fractal_map map, fractal_template *t_ptr)
 {
     /*Unused*/
     (void)t_ptr;
@@ -909,7 +772,7 @@ static void fractal4_init_func(fractal_map map, fractal_template *t_ptr)
 
 
 /* 33x33 template */
-static void fractal5_init_func(fractal_map map, fractal_template *t_ptr)
+void fractal5_init_func(fractal_map map, fractal_template *t_ptr)
 {
     bool flip_h = one_in_(2);
 
@@ -922,19 +785,6 @@ static void fractal5_init_func(fractal_map map, fractal_template *t_ptr)
 
     if (one_in_(15)) map[24][flip_h ? 8: 24] = FRACTAL_FLOOR;
 }
-
-
-/*
- * A list of the available fractal templates.
- */
-static fractal_template fractal_repository[] =
-{
-    {FRACTAL_TYPE_17x33, 33, fractal1_init_func},
-    {FRACTAL_TYPE_33x65, 65, fractal2_init_func},
-    {FRACTAL_TYPE_9x9, 9, fractal3_init_func},
-    {FRACTAL_TYPE_17x17, 17, fractal4_init_func},
-    {FRACTAL_TYPE_33x33, 33, fractal5_init_func},
-};
 
 
 /*
@@ -965,7 +815,7 @@ static void fractal_map_reset(fractal_map map, fractal_template *t_ptr)
  * Returns a *reset* fractal map allocated in dynamic memory.
  * You must deallocate the map with FREE when it isn't used anymore.
  */
-static fractal_map fractal_map_create(fractal_template *t_ptr)
+fractal_map fractal_map_create(fractal_template *t_ptr)
 {
     /* The new map */
     fractal_map map;
@@ -981,86 +831,12 @@ static fractal_map fractal_map_create(fractal_template *t_ptr)
 }
 
 
-/*#define DEBUG_FRACTAL_TEMPLATES 1*/
-
-#ifdef DEBUG_FRACTAL_TEMPLATES
-
-/* This table is used to convert the map grids to printable characters */
-static char fractal_grid_to_char[] =
-{
-    ' ',	/* FRACTAL_NONE */
-    '#',	/* FRACTAL_WALL */
-    '&',	/* FRACTAL_EDGE */
-    '.',	/* FRACTAL_FLOOR*/
-    '1',	/* FRACTAL_POOL_1*/
-    '2',	/* FRACTAL_POOL_2*/
-    '3',	/* FRACTAL_POOL_3*/
-};
-
-/*
- * Prints a fractal map to stdout. "title" is optional (can be NULL).
- */
-static void fractal_map_debug(fractal_map map, fractal_template *t_ptr,
-    char *title)
-{
-    int x, y;
-    FILE *fff;
-    static bool do_create = TRUE;
-
-    fff = my_fopen("fractal.txt", do_create ? "w": "a");
-
-    do_create = FALSE;
-
-    if (!fff) return;
-
-    /* Show the optional title */
-    if (title)
-    {
-        fputs(title, fff);
-
-        putc('\n', fff);
-    }
-
-    /* Show the map */
-    for (y = 0; y < t_ptr->size; y++)
-    {
-        for (x = 0; x < t_ptr->size; x++)
-        {
-            byte grid = map[y][x];
-            char chr;
-
-            /* Check for strange grids */
-            if (grid >= N_ELEMENTS(fractal_grid_to_char))
-            {
-                chr = '?';
-            }
-            /* Translate to printable char */
-            else
-            {
-                chr = fractal_grid_to_char[grid];
-            }
-
-            /* Show it */
-            putc(chr, fff);
-        }
-
-        /* Jump to the next row */
-        putc('\n', fff);
-    }
-
-    putc('\n', fff);
-
-    /* Done */
-    my_fclose(fff);
-}
-
-#endif /* DEBUG_FRACTAL_TEMPLATES */
 
 
 /*
  * Completes a fractal map. The map must have been reset.
  */
-static void fractal_map_complete(fractal_map map, fractal_template *t_ptr)
+void fractal_map_complete(fractal_map map, fractal_template *t_ptr)
 {
     int x, y, x1, y1, x2, y2, cx, cy;
     /*
@@ -1283,17 +1059,109 @@ static void fractal_map_mark_edge(fractal_map map, fractal_template *t_ptr)
     }
 }
 
-static struct
+
+
+
+/*
+ * Build a fractal formation in the current level using the given feature.
+ * y0 and x0 are the center of the formation, if they are out of bounds another point
+ * is picked randomly
+ * fractal_type tells us the dimensions of the formation
+ * Chance is the probability (in 100) to use feat2 for a grid.
+ * If chance is 0 feat2 is ignored
+ * If feat2 is FEAT_NONE the grid remains untouched
+ * if mode is 0 the inner part of the fractal is used
+ * if mode is 1 the edge of the fractal is used
+ */
+void build_formation(int y0, int x0, u16b feat, byte fractal_type, int chance, u16b feat2, byte mode)
 {
+    int y, x;
     int hgt, wid;
-} fractal_dim[MAX_FRACTAL_TYPES] =
-{
-    {17, 33},		/* FRACTAL_TYPE_17x33 */
-    {33, 65},		/* FRACTAL_TYPE_33x65 */
-    {9, 9},			/* FRACTAL_TYPE_9x9 */
-    {17, 17},		/* FRACTAL_TYPE_17x17 */
-    {33, 33},		/* FRACTAL_TYPE_33x33 */
-};
+    int tries;
+
+    fractal_template *t_ptr;
+    fractal_map map;
+
+    tries = 0;
+
+    /* Pick a fractal template */
+    while (TRUE)
+    {
+        /* Pick one template randomly */
+        t_ptr = &fractal_repository[rand_int(SIZE_FRACTAL_REPOSITORY)];
+
+        /* It is of the proper type */
+        if (t_ptr->type == fractal_type) break;
+
+        /* Failure */
+        if (++tries > 100) return;
+    }
+
+    /* Initialize the map */
+    map = fractal_map_create(t_ptr);
+
+    /* Create fractal */
+    fractal_map_complete(map, t_ptr);
+
+    /* Mark edges if necessary */
+    if (mode == 1) fractal_map_mark_edge(map, t_ptr);
+
+    /* Get dimensiones */
+    hgt = fractal_dim[fractal_type].hgt;
+    wid = fractal_dim[fractal_type].wid;
+
+    /* Pick a random center point if necessary */
+    while (!in_bounds(y0, x0))
+    {
+        y0 = randint(p_ptr->cur_map_hgt - 1);
+        x0 = randint(p_ptr->cur_map_wid - 1);
+    }
+
+    /* Get top-left corner */
+    y0 -= hgt / 2;
+    x0 -= wid / 2;
+
+    /* Apply the fractal to the dungeon */
+    for (y = 0; y < hgt; y++)
+    {
+        /* Get real row */
+        int yy = y0 + y;
+
+        for (x = 0; x < wid; x++)
+        {
+            /* Get real column */
+            int xx = x0 + x;
+
+            /* Ignore annyoing grids */
+            if (!in_bounds(yy, xx)) continue;
+
+            /* Verify if we have to modify the grid. It depends on mode */
+            if (mode == 0)
+            {
+                if (map[y][x] < FRACTAL_FLOOR) continue;
+            }
+            else
+            {
+                if (map[y][x] != FRACTAL_EDGE) continue;
+            }
+
+            /* See if we have to replace feat with feat2 */
+            if ((chance > 0) && (rand_int(100) < chance))
+            {
+                if (feat2 != FEAT_NONE) cave_set_feat(yy, xx, feat2);
+            }
+            /* Common case */
+            else
+            {
+                cave_set_feat(yy ,xx, feat);
+            }
+        }
+    }
+
+    /* Free resources */
+    FREE_ARRAY(map);
+}
+
 
 /*
  * Construct a fractal room given a fractal map and the room center's coordinates.
@@ -1496,7 +1364,7 @@ bool build_type_fractal(int y0, int x0, byte type)
     while (TRUE)
     {
         /* Get a template */
-        int which = rand_int(N_ELEMENTS(fractal_repository));
+        int which = rand_int(SIZE_FRACTAL_REPOSITORY);
 
         t_ptr = &fractal_repository[which];
 
@@ -1510,10 +1378,6 @@ bool build_type_fractal(int y0, int x0, byte type)
     /* Create and reset the fractal map */
     map = fractal_map_create(t_ptr);
 
-#ifdef DEBUG_FRACTAL_TEMPLATES
-    /* Show the template to the developer */
-    fractal_map_debug(map, t_ptr, "Fractal");
-#endif
 
     /* Make medium fractal rooms more exotic sometimes */
     if ((type == FRACTAL_TYPE_33x33) && !one_in_(3)) do_merge = TRUE;
@@ -1599,7 +1463,7 @@ static bool build_pool(int y0, int x0, int feat, bool do_big_pool)
     while (TRUE)
     {
         /* Pick a random template */
-        int which = rand_int(N_ELEMENTS(fractal_repository));
+        int which = rand_int(SIZE_FRACTAL_REPOSITORY);
 
         t_ptr = &fractal_repository[which];
 
@@ -2173,11 +2037,7 @@ void build_type_starburst(int y0, int x0, bool giant_room)
 }
 
 
-/*
- * The center of a fog formation must be close to water/ice. This is the
- * radius of the area we check for water/ice grids.
- */
-#define FOG_SRC_RAD 7
+
 
 /*
  * Build a fog formation on the dungeon
@@ -2249,7 +2109,7 @@ static void build_fog(void)
     while (TRUE)
     {
         /* Pick any template index */
-        int which = rand_int(N_ELEMENTS(fractal_repository));
+        int which = rand_int(SIZE_FRACTAL_REPOSITORY);
 
         /* Get the template */
         t_ptr = &fractal_repository[which];
@@ -2550,7 +2410,7 @@ static void transform_regions(QVector<coord> grids, QVector<feature_selector_ite
         while (TRUE)
         {
             /* Pick any template index */
-            int which = rand_int(N_ELEMENTS(fractal_repository));
+            int which = rand_int(SIZE_FRACTAL_REPOSITORY);
 
             /* Get the template */
             t_ptr = &fractal_repository[which];
@@ -2826,53 +2686,6 @@ static void transform_walls(QVector<coord> grids, QVector<feature_selector_item_
 }
 
 
-/* Transformation types */
-#define TRANSFORM_WALL		1
-#define TRANSFORM_REGION	2
-
-/*
- * A table that holds information of elemental features and the proper
- * transformations that must be triggered if they are present in the dungeon
- */
-static struct elemental_transformation_info {
-    u32b level_flag;/* The LF1_* flag that must be present in the current level */
-    byte type;	/* The transformation type (one of the TRANSFORM_* constants) */
-    u16b wall;
-    u16b floor;
-    u16b chance;
-    byte rad;
-} elemental_transformations[] =
-{
-    {LF1_ICE, TRANSFORM_REGION, FEAT_WALL_ICE, FEAT_FLOOR_ICE, 200, 0},
-    {LF1_ICE, TRANSFORM_REGION, FEAT_WALL_ICE_CRACKED, FEAT_FLOOR_ICE, 200, 0},
-
-    {LF1_WATER, TRANSFORM_REGION, FEAT_WALL_LIMESTONE, FEAT_FLOOR_WET, 150, 0},
-
-    {LF1_LAVA, TRANSFORM_REGION, FEAT_CRACKED_WALL_OVER_LAVA, FEAT_BURNT_SPOT, 200, 0},
-
-    {LF1_SAND, TRANSFORM_REGION, FEAT_WALL_SANDSTONE, FEAT_FLOOR_SAND, 100, 0},
-
-    {LF1_OIL, TRANSFORM_REGION, FEAT_WALL_COAL, FEAT_NONE, 200, 0},
-    {LF1_OIL, TRANSFORM_REGION, FEAT_WALL_SHALE, FEAT_NONE, 100, 0},
-
-    {LF1_FOREST, TRANSFORM_WALL, FEAT_PUTRID_FLOWER, FEAT_NONE, 10, 1},
-    {LF1_FOREST, TRANSFORM_REGION, FEAT_WALL_VINES, FEAT_FOREST_SOIL, 150, 0},
-
-    {LF1_MUD, TRANSFORM_REGION, FEAT_WALL_EARTH, FEAT_FLOOR_MUD, 100, 0},
-
-    {LF1_BWATER, TRANSFORM_REGION, FEAT_WALL_CRACKED_OVER_BOILING_MUD, FEAT_NONE, 200, 0},
-
-    {LF1_BMUD, TRANSFORM_REGION, FEAT_WALL_CRACKED_OVER_BOILING_WATER, FEAT_NONE, 200, 0},
-
-    {LF1_FIRE, TRANSFORM_REGION, FEAT_SCORCHED_WALL, FEAT_BURNT_SPOT, 100, 0},
-
-    {LF1_ACID, TRANSFORM_REGION, FEAT_CRACKED_WALL_OVER_ACID, FEAT_BURNT_SPOT, 100, 0},
-
-    /* Marks the end of the list */
-    {0,0,0,0,0,0}
-};
-
-
 /*
  * Try to add the LF1_* flags of num_rolls terrain features to level_flag.
  */
@@ -3007,7 +2820,7 @@ static void transform_walls_regions(void)
     for (i = 0; enable_nature; i++)
     {
         /* Get the current elemental transformation */
-        struct elemental_transformation_info *et_ptr = &elemental_transformations[i];
+        elemental_transformation_info *et_ptr = &elemental_transformations[i];
 
         /* The end of the array was reached */
         if (!et_ptr->level_flag) break;
@@ -3164,31 +2977,6 @@ static void transform_walls_regions(void)
         debug_all_level_flags(level_flag);
     }
 }
-
-
-
-/* Available size for lakes (in blocks) */
-enum
-{
-    LAKE_DATA_2x2,
-    LAKE_DATA_2x3,
-    LAKE_DATA_3x3,
-    LAKE_DATA_3x4,
-    LAKE_DATA_4x4,
-    LAKE_DATA_4x5,
-    MAX_LAKE_DATA
-};
-
-/* Block information for lakes (sorted by size, smaller first) */
-static const room_data lake_data[MAX_LAKE_DATA] =
-{
-    {0, 1, 0, 1, 1},		/* LAKE_DATA_2x2 */
-    {0, 1, -1, 1, 1},		/* LAKE_DATA_2x3 */
-    {-1, 1, -1, 1, 1},		/* LAKE_DATA_3x3 */
-    {-1, 1, -1, 2, 1},		/* LAKE_DATA_3x4 */
-    {-1, 2, -1, 2, 1},		/* LAKE_DATA_4x4 */
-    {-1, 2, -2, 2, 1},		/* LAKE_DATA_4x5 */
-};
 
 
 /*
@@ -3718,1049 +3506,5 @@ void build_misc_features(void)
 
     /* More flavor! */
     if (!birth_classic_dungeons) transform_walls_regions();
-}
-
-
-/*
- * Build a fractal formation in the current level using the given feature.
- * y0 and x0 are the center of the formation, if they are out of bounds another point
- * is picked randomly
- * fractal_type tells us the dimensions of the formation
- * Chance is the probability (in 100) to use feat2 for a grid.
- * If chance is 0 feat2 is ignored
- * If feat2 is FEAT_NONE the grid remains untouched
- * if mode is 0 the inner part of the fractal is used
- * if mode is 1 the edge of the fractal is used
- */
-static void build_formation(int y0, int x0, u16b feat, byte fractal_type, int chance, u16b feat2, byte mode)
-{
-    int y, x;
-    int hgt, wid;
-    int tries;
-
-    fractal_template *t_ptr;
-    fractal_map map;
-
-    tries = 0;
-
-    /* Pick a fractal template */
-    while (TRUE)
-    {
-        /* Pick one template randomly */
-        t_ptr = &fractal_repository[rand_int(N_ELEMENTS(fractal_repository))];
-
-        /* It is of the proper type */
-        if (t_ptr->type == fractal_type) break;
-
-        /* Failure */
-        if (++tries > 100) return;
-    }
-
-    /* Initialize the map */
-    map = fractal_map_create(t_ptr);
-
-    /* Create fractal */
-    fractal_map_complete(map, t_ptr);
-
-    /* Mark edges if necessary */
-    if (mode == 1) fractal_map_mark_edge(map, t_ptr);
-
-    /* Get dimensiones */
-    hgt = fractal_dim[fractal_type].hgt;
-    wid = fractal_dim[fractal_type].wid;
-
-    /* Pick a random center point if necessary */
-    while (!in_bounds(y0, x0))
-    {
-        y0 = randint(p_ptr->cur_map_hgt - 1);
-        x0 = randint(p_ptr->cur_map_wid - 1);
-    }
-
-    /* Get top-left corner */
-    y0 -= hgt / 2;
-    x0 -= wid / 2;
-
-    /* Apply the fractal to the dungeon */
-    for (y = 0; y < hgt; y++)
-    {
-        /* Get real row */
-        int yy = y0 + y;
-
-        for (x = 0; x < wid; x++)
-        {
-            /* Get real column */
-            int xx = x0 + x;
-
-            /* Ignore annyoing grids */
-            if (!in_bounds(yy, xx)) continue;
-
-            /* Verify if we have to modify the grid. It depends on mode */
-            if (mode == 0)
-            {
-                if (map[y][x] < FRACTAL_FLOOR) continue;
-            }
-            else
-            {
-                if (map[y][x] != FRACTAL_EDGE) continue;
-            }
-
-            /* See if we have to replace feat with feat2 */
-            if ((chance > 0) && (rand_int(100) < chance))
-            {
-                if (feat2 != FEAT_NONE) cave_set_feat(yy, xx, feat2);
-            }
-            /* Common case */
-            else
-            {
-                cave_set_feat(yy ,xx, feat);
-            }
-        }
-    }
-
-    /* Free resources */
-    FREE_ARRAY(map);
-}
-
-
-/*
- * Helper function for add_wilderness_quest_terrain.  Take a spot, add dangerous wall terrain, and surround
- * it with 3-4 dangerous floor terrains. *
- */
-static void add_wilderness_quest_terrain_aux(int y, int x, u16b floor_terrain, u16b wall_terrain)
-{
-    int yy, xx;
-    int y_places[8];
-    int x_places[8];
-    int num_places = 0;
-    int num_floor = randint1(2);
-    int i;
-
-    /* Build a solid wall here */
-    cave_set_feat(y, x, wall_terrain);
-
-    /* Now find areas to add dangerous floor terrains */
-    for (i = 0; i < 8; i++)
-    {
-        yy = y + ddy[i];
-        xx = x + ddx[i];
-
-        if (!in_bounds_fully(yy, xx)) continue;
-        if (cave_ff1_match(yy, xx, FF1_PERMANENT))
-        {
-            /* Don't alter stairs or walls */
-            if (cave_ff1_match(yy, xx, FF1_WALL | FF1_STAIRS))continue;
-        }
-        y_places[num_places] = yy;
-        x_places[num_places] = xx;
-        num_places++;
-    }
-
-    /* Boundry control */
-    if (!num_places) return;
-
-    /* Add up to num_floor of the dangerous floor terrains */
-    for (i = 0; i < num_floor; i++)
-    {
-        int k = randint0(num_places);
-        yy = y_places[k];
-        xx = x_places[k];
-
-        /* Paranoia */
-        if (!in_bounds_fully(yy, xx)) continue;
-
-        /* Place the floor terrain, and then eliminate this square from future choices */
-        cave_set_feat(yy, xx, floor_terrain);
-        num_places--;
-        y_places[k] = y_places[num_places];
-        x_places[k] = x_places[num_places];
-    }
-}
-
-
-/*
- * Add several pockets of terrain that will eventually overrun the level
- */
-static void add_wilderness_quest_terrain(u16b floor_terrain, u16b wall_terrain)
-{
-    int hgt = p_ptr->cur_map_hgt;
-    int wid = p_ptr->cur_map_wid;
-    int j;
-
-    /*
-     * Add some patches of wall and floor in each corner of the dungeon.
-     */
-    for (j = 0; j < 4; j++)
-    {
-        int i, x, y;
-        int coord_count = 0;
-        int y_start, y_end, x_start, x_end, slot;
-        int y_places[900];
-        int x_places[900];
-
-        /*
-         * Just to avoid repeating the code below,
-         * we assign the x and y ranges here and then
-         * loop through the code below 4 times
-         */
-        switch (j)
-        {
-            /* Top left */
-            case 1: {y_start = 1; y_end = 31; x_start = 1; x_end = 31; break;}
-            /* Bottom left */
-            case 2: {y_start = (hgt - 31); y_end = hgt; x_start = 1; x_end = 31; break;}
-            /* Top right */
-            case 3: {y_start = 1; y_end = 31; x_start = (wid - 31); x_end = wid; break;}
-            /* Bottom left */
-            default: {y_start = (hgt - 31); y_end = hgt; x_start = (wid - 31); x_end = wid; break;}
-        }
-
-        for (y = y_start; y < y_end; y++)
-        {
-            for (x = x_start; x < x_end; x++)
-            {
-                /* Paranoia */
-                if (!in_bounds_fully(y, x)) continue;
-
-                /* Don't alter stairs or permanent walls */
-                if (cave_ff1_match(y, x, FF1_PERMANENT))
-                {
-                    if (cave_ff1_match(y, x, FF1_WALL | FF1_STAIRS))continue;
-                }
-
-                /* store this square */
-                y_places[coord_count] = y;
-                x_places[coord_count] = x;
-                coord_count++;
-            }
-        }
-
-        for (i = 0; i < 8; i++)
-        {
-            /* Paranoia */
-            if (!coord_count) break;
-
-            /* Pick one of the set of coordinates */
-            slot = randint0(coord_count);
-            y = y_places[slot];
-            x = x_places[slot];
-
-            /* Paranoia */
-            if (!in_bounds_fully(y, x)) continue;
-
-            /* Place the floor terrain, and then eliminate this square from future choices */
-            add_wilderness_quest_terrain_aux(y, x, floor_terrain, wall_terrain);
-            coord_count--;
-            y_places[slot] = y_places[coord_count];
-            x_places[slot] = x_places[coord_count];
-        }
-    }
-}
-
-
-/*
- * Place the irregular dungeon border of wilderness levels
- */
-static void build_border(int y, int x, u16b feat)
-{
-    /* Ignore icky grids */
-    if (dungeon_info[y][x].cave_info & (CAVE_ICKY)) return;
-
-    /* Ignore grids with effects */
-    if (dungeon_info[y][x].effect_idx) return;
-
-    /* Ignore grids with objects */
-    if (dungeon_info[y][x].object_idx) return;
-
-    /* Ignore grids with monsters */
-    if (dungeon_info[y][x].monster_idx) return;
-
-    /* Place the border */
-    cave_set_feat(y, x, feat);
-}
-
-
-/*
- * Create the irregular borders of a wilderness levels.
- * Based on code created by Nick McConnel (FAangband)
- */
-static void build_wilderness_borders(u16b feat)
-{
-    int hgt = p_ptr->cur_map_hgt;
-    int wid = p_ptr->cur_map_wid;
-    int y, x;
-    int i;
-
-    int start_offset = 4;
-    int max_offset = 7;
-
-    /* Top border */
-    i = start_offset;
-
-    for (x = 0; x < wid; x++)
-    {
-        /* Modify the offset by -1, +1 or 0 */
-        i += (1 - rand_int(3));
-
-        /* Check bounds */
-        if (i > max_offset) i = max_offset;
-        else if (i < 0) i = 0;
-
-        /* Place border */
-        for (y = 0; y < i; y++)
-        {
-            build_border(y, x, feat);
-        }
-    }
-
-    /* Bottom border */
-    i = start_offset;
-
-    for (x = 0; x < wid; x++)
-    {
-        /* Modify the offset by -1, +1 or 0 */
-        i += (1 - rand_int(3));
-
-        /* Check bounds */
-        if (i > max_offset) i = max_offset;
-        else if (i < 0) i = 0;
-
-        /* Place border */
-        for (y = 0; y < i; y++)
-        {
-            build_border(hgt - 1 - y, x, feat);
-        }
-    }
-
-    /* Left border */
-    i = start_offset;
-
-    for (y = 0; y < hgt; y++)
-    {
-        /* Modify the offset by -1, +1 or 0 */
-        i += (1 - rand_int(3));
-
-        /* Check bounds */
-        if (i > max_offset) i = max_offset;
-        else if (i < 0) i = 0;
-
-        /* Place border */
-        for (x = 0; x < i; x++)
-        {
-            build_border(y, x, feat);
-        }
-    }
-
-    /* Right border */
-    i = start_offset;
-
-    for (y = 0; y < hgt; y++)
-    {
-        /* Modify the offset by -1, +1 or 0 */
-        i += (1 - rand_int(3));
-
-        /* Check bounds */
-        if (i > max_offset) i = max_offset;
-        else if (i < 0) i = 0;
-
-        /* Place border */
-        for (x = 0; x < i; x++)
-        {
-            build_border(y, wid - 1 - x, feat);
-        }
-    }
-}
-
-
-/*
- * Build a full forest level
- * Returns TRUE on success
- */
-static bool build_forest_level(void)
-{
-    int y, x;
-    int i, j;
-    int hgt, wid, wid2;
-
-    /* Make it smaller size */
-    hgt = p_ptr->cur_map_hgt = MAX_DUNGEON_HGT;
-    wid = p_ptr->cur_map_wid = MAX_DUNGEON_WID;
-
-     /* Actual maximum number of rooms on this level */
-    dun->row_rooms = p_ptr->cur_map_hgt / BLOCK_HGT;
-    dun->col_rooms = p_ptr->cur_map_wid / BLOCK_WID;
-
-    /* Cache center point, height currently isn't needed. */
-    wid2 = wid / 2;
-
-    /* Initialize the dungoen with forest soil */
-    for (y = 0; y < hgt; y++)
-    {
-        for (x = 0; x < wid; x++)
-        {
-            cave_set_feat(y, x, FEAT_FOREST_SOIL);
-
-            dungeon_info[y][x].cave_info |= (CAVE_ROOM);
-        }
-    }
-
-    /* Place some initial big earth formations */
-    for (i = 0; i < 5; i++)
-    {
-        build_formation(-1, -1, FEAT_FLOOR_EARTH, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
-    }
-
-    /* Place one big earth wall formation most of the time */
-    j = (one_in_(4) ? 0: 1);
-
-    for (i = 0; i < j; i++)
-    {
-        build_formation(-1, -1, FEAT_WALL_EARTH, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
-    }
-
-    /* Place some irregular rooms of variable size */
-    j = 3 + rand_int(20);
-
-    for (i = 0; i < j; i++)
-    {
-        build_formation(-1, -1, FEAT_WALL_GRANITE, one_in_(3) ? FRACTAL_TYPE_9x9: FRACTAL_TYPE_17x17, 15,
-            FEAT_WALL_GRANITE_CRACKED, 1);
-    }
-
-    /* Place a dense forest on the left side of the level */
-    j = hgt * wid2;
-
-    j = 10 * j / 100;
-
-    for (i = 0; i < j; i++)
-    {
-        /* Pick random grid */
-        y = randint(hgt - 1);
-        x = randint(wid2 - 1);
-
-        cave_set_feat(y, x, FEAT_TREE);
-    }
-
-    /* Place a clearer forest on the right side */
-    j = hgt * wid2;
-
-    j = 5 * j / 100;
-
-    for (i = 0; i < j; i++)
-    {
-        /* Pick random grid */
-        y = randint(hgt - 1);
-        x = wid2 + randint(wid2 - 1);
-
-        cave_set_feat(y, x, FEAT_TREE);
-    }
-
-    /* Scatter random features through the level (they pierce things) */
-    j = hgt * wid;
-
-    j = 5 * j / 100;
-
-    for (i = 0; i < j; i++)
-    {
-        /* Pick random grid */
-        y = randint(hgt - 1);
-        x = randint(wid - 1);
-
-        /* Place earth */
-        cave_set_feat(y, x, FEAT_FLOOR_EARTH);
-
-        /* Pick random grid */
-        y = randint(hgt - 1);
-        x = randint(wid - 1);
-
-        /* Place forest soil or grass, sometimes dynamic */
-        if (one_in_(4)) cave_set_feat(y, x, (i < (j / 5)) ? FEAT_GRASS_DYNAMIC: FEAT_GRASS);
-        else cave_set_feat(y, x, (i < (j / 5)) ? FEAT_FOREST_SOIL_DYNAMIC: FEAT_FOREST_SOIL);
-    }
-
-    /* Place a few mud grids */
-    j = one_in_(2) ? 30: 10;
-
-    for (i = 0; i < j; i++)
-    {
-        /* Pick random grid */
-        y = randint(hgt - 1);
-        x = randint(wid - 1);
-
-        cave_set_feat(y, x, FEAT_FLOOR_MUD);
-    }
-
-    /* Place a big lake most of the time */
-    j = (one_in_(4) ? 0: 1);
-
-    for (i = 0; i < j; i++)
-    {
-        build_formation(-1, -1, one_in_(2) ? FEAT_FLOOR_WATER : FEAT_FLOOR_MUD, FRACTAL_TYPE_33x65, 15, FEAT_NONE, 0);
-    }
-
-    /* Place some smaller earth wall formations */
-    for (i = 0; i < 7; i++)
-    {
-        build_formation(-1, -1, FEAT_WALL_EARTH, FRACTAL_TYPE_17x17, 10, one_in_(2) ? FEAT_FLOOR_MUD: FEAT_NONE, 0);
-    }
-
-    /* Place some small vaults */
-    for (i = 0; i < 5; i++)
-    {
-        /* They are somewhat rare */
-        if (one_in_(10))
-        {
-            /* Pick a location */
-            for (j = 0; j < 50; j++)
-            {
-                /* Get coordinates */
-                y = rand_int(dun->row_rooms);
-                x = rand_int(dun->col_rooms);
-
-                /* Place the room */
-                if (room_build(y, x, 7)) break;
-            }
-        }
-    }
-
-    /* Success */
-    return (TRUE);
-}
-
-
-/*
- * Helper. Place an horizontal chain of ice mountains
- * row is the center of the chain
- */
-static void build_ice_mountains(int row)
-{
-    int y, x;
-    int y1, y2;
-    /* Maximum offset */
-    int max_offset = 10;
-    /* Minimum width of the mountains */
-    int pad = 2;
-
-    /* Initial vertical offset */
-    y1 = y2 = 4;
-
-    /* Mountains are placed horizontally */
-    for (x = 0; x < p_ptr->cur_map_wid; x++)
-    {
-        /* Randomize the top offset */
-        y1 += 1 - rand_int(3);
-
-        /* Check bounds */
-        if (y1 < 0) y1 = 0;
-        else if (y1 > max_offset) y1 = max_offset;
-
-        /* Randomize the bottom offset */
-        y2 += 1 - rand_int(3);
-
-        /* Check bounds */
-        if (y2 < 0) y2 = 0;
-        else if (y2 > max_offset) y2 = max_offset;
-
-        /* Place ice walls between top and bottom  */
-        for (y = row - y1 - pad; y <= row + y2 + pad; y++)
-        {
-            /* Check sanity */
-            if (in_bounds(y, x))
-            {
-                int k = rand_int(100);
-                u16b feat;
-
-                /* Flavor */
-                if (k < 90) feat = FEAT_WALL_ICE;
-                else feat = FEAT_WALL_ICE_CRACKED;
-
-                /* Place the wall */
-                cave_set_feat(y, x, feat);
-            }
-        }
-    }
-}
-
-
-/*
- * Builds an ice level. Returns TRUE on success, FALSE on error
- */
-static bool build_ice_level(void)
-{
-    int y, x;
-    int i, j;
-    int hgt, wid;
-    int hgt2;
-
-    /* Make it a smaller size */
-    hgt = p_ptr->cur_map_hgt = MAX_DUNGEON_HGT;
-    wid = p_ptr->cur_map_wid = MAX_DUNGEON_WID;
-
-    /* Actual maximum number of rooms on this level */
-    dun->row_rooms = p_ptr->cur_map_hgt / BLOCK_HGT;
-    dun->col_rooms = p_ptr->cur_map_wid / BLOCK_WID;
-
-    hgt2 = hgt / 2;
-
-    /* Start with floors */
-    for (y = 0; y < hgt; y++)
-    {
-        for (x = 0; x < wid; x++)
-        {
-            cave_set_feat(y, x, FEAT_FLOOR);
-
-            dungeon_info[y][x].cave_info |= (CAVE_ROOM);
-        }
-    }
-
-    /* Put lots of ice */
-    for (i = 0; i < 15; i++)
-    {
-        build_formation(-1, -1, FEAT_FLOOR_ICE, FRACTAL_TYPE_33x65, 0, FEAT_NONE, 0);
-    }
-
-    /* Put some "mountains" */
-    build_ice_mountains(hgt2);
-
-    /* Add some granite formations */
-    for (i = 0; i < 15; i++)
-    {
-        build_formation(-1, -1, FEAT_WALL_GRANITE_CRACKED, FRACTAL_TYPE_17x17, 0, FEAT_NONE, 0);
-    }
-
-    j = 20;
-
-    /* Put some irregular ice walls to break los */
-    for (i = 0; i < j; i++)
-    {
-        int tries;
-
-        for (tries = 0; tries < 200; tries++)
-        {
-            /* Get random coordinates */
-            y = randint(hgt - 1);
-            x = randint(wid - 1);
-
-            /* Location must be passable */
-            if (cave_ff1_match(y, x, FF1_MOVE)) break;
-        }
-
-        build_formation(y, x, FEAT_WALL_ICE_CRACKED, FRACTAL_TYPE_17x17, 40, FEAT_NONE, 1);
-    }
-
-    j = 70 + rand_int(51);
-
-    /* Put some pebbles */
-    for (i = 0; i < j; i++)
-    {
-        int tries;
-
-        for (tries = 0; tries < 200; tries++)
-        {
-            /* Get random coordinates */
-            y = randint(hgt - 1);
-            x = randint(wid - 1);
-
-            /* Ignore ice */
-            if (cave_ff3_match(y, x, ELEMENT_ICE)) continue;
-
-            /* Location must be passable */
-            if (cave_ff1_match(y, x, FF1_MOVE)) break;
-        }
-
-        cave_set_feat(y, x, FEAT_FLOOR_PEBBLES);
-    }
-
-    j = one_in_(4) ? (2 + rand_int(3)): 0;
-
-    /* Add some water pools, sometimes */
-    for (i = 0; i < j; i++)
-    {
-        int tries;
-
-        for (tries = 0; tries < 200; tries++)
-        {
-            /* Get random coordinates */
-            y = randint(hgt - 1);
-            x = randint(wid - 1);
-
-            /* Location must be passable */
-            if (cave_ff1_match(y, x, FF1_MOVE)) break;
-        }
-
-        build_formation(y, x, FEAT_FLOOR_WATER, FRACTAL_TYPE_17x33, 10, FEAT_NONE, 0);
-    }
-
-    j = 4;
-
-    /* Pierce the ice mountains making some tunnels */
-    for (i = 0; i < j; i++)
-    {
-        int y2;
-        int x2;
-        int dist;
-
-        /* Get start x coordinate */
-        x = randint(wid - 1);
-
-        do
-        {
-            /* Get final x coordinate */
-            x2 = randint(wid - 1);
-
-            /*
-             * Calculate distance. The end must be somewhat
-             * far away from the start
-             */
-            dist = ABS(x2 - x);
-        } while ((dist < 20) || (dist > 40));
-
-        /* Get start y coordinate */
-        y = rand_range(1, hgt2 - 20);
-
-        /* Get final y coordinate */
-        y2 = rand_range(hgt2 + 20, hgt - 2);
-
-        /* Sometimes we swap the y coordinates */
-        if (one_in_(2))
-        {
-            int tmp = y;
-            y = y2;
-            y2 = tmp;
-        }
-
-        /* Make a tunnel */
-        build_tunnel(y, x, y2, x2);
-    }
-
-    /* Place some fractal rooms more */
-    for (i = 0; i < 5; i++)
-    {
-        /* Only part of the time */
-        if (one_in_(2))
-        {
-            /* Pick a location */
-            for (j = 0; j < 50; j++)
-            {
-                /* Get coordinates */
-                y = rand_int(dun->row_rooms);
-                x = rand_int(dun->col_rooms);
-
-                /* Place the room */
-                if (room_build(y, x, 13)) break;
-            }
-        }
-    }
-
-    return (TRUE);
-}
-
-
-/*
- * Lite all elemental features in the level (walls included), and their adjacent grids
- * If show_objects is TRUE we mark the objects placed on such grids
- */
-static void light_elements(bool show_objects)
-{
-    int y, x;
-
-    /* Look for interesting grids all over the dungeon */
-    for (y = 1; y < p_ptr->cur_map_hgt - 1; y++)
-    {
-        for (x = 1; x < p_ptr->cur_map_wid - 1; x++)
-        {
-            int i;
-
-            /* Must be an elemental feature */
-            if (!cave_ff3_match(y, x, TERRAIN_MASK)) continue;
-
-            /* Lite that grid and grids adjacent to it */
-            /* We don't need to call in_bounds */
-            for (i = 0; i < 9; i++)
-            {
-                int yy = y + ddy_ddd[i];
-                int xx = x + ddx_ddd[i];
-
-                /* Lite the grid */
-                dungeon_info[yy][xx].cave_info |= (CAVE_GLOW | CAVE_MARK | CAVE_EXPLORED);
-
-                /* Remember its objects if necessary */
-                if (show_objects)
-                {
-                    /* Get the index of the first object */
-                    s16b o_idx = dungeon_info[yy][xx].object_idx;
-
-                    /* Mark all the objects of the pile */
-                    while (o_idx)
-                    {
-                        /* Get the object */
-                        object_type *o_ptr = &o_list[o_idx];
-
-                        /* Mark the object */
-                        o_ptr->mark_object();
-
-                        /* Go to the next object */
-                        o_idx = o_ptr->next_o_idx;
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-
-/*
- * Builds a pseudo-wilderness level on the dungeon
- * Returns TRUE on success, FALSE on error
- */
-bool build_wilderness_level(void)
-{
-    int y, x, i;
-    dun_data dun_body;
-    bool done_ice = FALSE;
-    bool is_quest_level = FALSE;
-    quest_type *q_ptr = &q_info[GUILD_QUEST_SLOT];
-
-    /* Global data */
-    dun = &dun_body;
-
-    /* Clear it */
-    memset(dun, 0, sizeof(dun_body));
-
-    /* Set level type */
-    set_dungeon_type(DUNGEON_TYPE_WILDERNESS);
-
-    /* Reset terrain flags */
-    level_flag = 0;
-
-    /* Leave the player in the air for now */
-    p_ptr->py = p_ptr->px = 0;
-
-    /*check if we need a quest*/
-    if (quest_check(p_ptr->depth) == QUEST_WILDERNESS)
-    {
-        is_quest_level = TRUE;
-    }
-
-    /* Try with a forest */
-    if ((p_ptr->depth < 35) || one_in_(2))
-    {
-        if (!build_forest_level())
-        {
-            if (cheat_room)
-            {
-                message(QString("failed to build a forest level"));
-            }
-
-            return (FALSE);
-        }
-    }
-    /* Or try with an ice level */
-    else
-    {
-        if (!build_ice_level())
-        {
-            if (cheat_room)
-            {
-                message(QString("failed to build an ice level"));
-            }
-
-            return (FALSE);
-        }
-
-        done_ice = TRUE;
-    }
-
-    /* Irregular borders */
-    build_wilderness_borders(FEAT_WALL_GRANITE);
-
-    /* Mandatory dungeon borders */
-    set_perm_boundry();
-
-    /* Place 3 or 5 down stairs near some walls */
-    if (!alloc_stairs(FEAT_STAIRS_DOWN, (3 + randint(2))))
-    {
-        if (cheat_room)
-        {
-            message(QString("failed to place down stairs"));
-        }
-
-        return (FALSE);
-    }
-
-    /* Place 1 or 3 up stairs near some walls */
-    if (!alloc_stairs(FEAT_STAIRS_UP, (1 + randint(2))))
-    {
-        if (cheat_room)
-        {
-            message(QString("failed to place down stairs"));
-        }
-
-        return (FALSE);
-    }
-
-    /* Place some things */
-    if (!place_traps_rubble_player())
-    {
-        if (cheat_room)
-        {
-            message(QString("failed to place traps, rubble and player"));
-        }
-
-        return FALSE;
-    }
-
-    /* We don't want to trap the player in the level */
-    /* Build a tunnel to some far location */
-    if (TRUE)
-    {
-        /* Get the larger dimension of the dungeon */
-        int d = MAX(p_ptr->cur_map_hgt, p_ptr->cur_map_wid);
-        int tries = 0;
-
-        /* Get the distance to that far location */
-        d = ((2 * d) / 5);
-
-        /* Pick a location */
-        while (TRUE)
-        {
-            /* Get coordinates */
-            y = randint(p_ptr->cur_map_hgt - 1);
-            x = randint(p_ptr->cur_map_wid - 1);
-
-            /* Check distance */
-            if (distance(y, x, p_ptr->py, p_ptr->px) >= d) break;
-
-            /* Too many tries */
-            if (++tries > 200) return (FALSE);
-        }
-
-        /* Build the tunnel */
-        build_tunnel(p_ptr->py, p_ptr->px, y, x);
-    }
-
-    /* Additional features */
-    build_misc_features();
-
-    /* Start destruction of the level for quests */
-    if (is_quest_level)
-    {
-        /* These terrain types are processed in dungeon.c during the quest level */
-        if (done_ice) add_wilderness_quest_terrain(FEAT_FLOOR_WATER_BOILING, FEAT_WALL_CRACKED_OVER_BOILING_WATER);
-        else add_wilderness_quest_terrain(FEAT_FLOOR_MUD_BOILING, FEAT_WALL_CRACKED_OVER_BOILING_MUD);
-    }
-
-    /*get the hook*/
-    get_mon_num_hook = monster_wilderness_labrynth_okay;
-
-    /* Prepare allocation table */
-    get_mon_num_prep();
-
-    /* Place some things */
-    if (!place_monsters_objects())
-    {
-        /* Reset the allocation table */
-        get_mon_num_hook = NULL;
-        get_mon_num_prep();
-
-        if (cheat_room)
-        {
-            message(QString("failed to place monsters and objects"));
-        }
-
-        return FALSE;
-    }
-
-    /* Reset the allocation table */
-    get_mon_num_hook = NULL;
-    get_mon_num_prep();
-
-    /* Special illumination for ice levels */
-    if (done_ice && ((p_ptr->depth < 50) || one_in_(4))) light_elements(TRUE);
-
-    /*final preps if this is a quest level*/
-    if (is_quest_level)
-    {
-        u16b obj_count = WILDERNESS_COLLECT;
-        u16b mon_count = 0;
-
-        q_ptr->q_num_killed = 0;
-        q_ptr->q_max_num = 0;
-
-        /*
-         * Go through every monster, and mark them as a questor,
-         * then make them slightly faster, and light sleepers
-         */
-        /* Process the monsters */
-        for (i = 1; i < mon_max; i++)
-        {
-            monster_type *m_ptr = &mon_list[i];
-
-            /* Ignore non-existant monsters */
-            if (!m_ptr->r_idx) continue;
-
-            /*mark it as a quest monster*/
-            m_ptr->mflag |= (MFLAG_QUEST);
-
-            /* Count it */
-            mon_count++;
-
-            /* One in 25 generate a bonus item */
-            if ((mon_max % 25) == 0) m_ptr->mflag |= (MFLAG_BONUS_ITEM);
-        }
-
-        /* Process the monsters */
-        for (i = 1; i < mon_max; i++)
-        {
-            monster_type *m_ptr = &mon_list[i];
-
-            /* Ignore non-existant monsters */
-            if (!m_ptr->r_idx) continue;
-
-            if (randint0(mon_count) < obj_count)
-            {
-                object_type *i_ptr;
-                object_type object_type_body;
-
-                /* Make a piece of parchment */
-                int k_idx = lookup_kind(TV_PARCHMENT, SV_PARCHMENT_FRAGMENT);
-                i_ptr = &object_type_body;
-                i_ptr->object_wipe();
-                object_prep(i_ptr, k_idx);
-                apply_magic(i_ptr, p_ptr->depth, TRUE, FALSE, FALSE, TRUE);
-
-                /*Don't let the player see what the object it, and make it a quest item*/
-                i_ptr->ident |= (IDENT_HIDE_CARRY | IDENT_QUEST);
-
-                i_ptr->mark_known(TRUE);
-
-                (void)monster_carry(i, i_ptr);
-
-                /* One less object to drop */
-                obj_count--;
-            }
-
-            /* One less monster to count */
-            mon_count--;
-
-            /* We are done */
-            if (!obj_count) break;
-        }
-
-        /* Drop some additional parchments */
-        alloc_object(ALLOC_SET_BOTH, ALLOC_TYP_PARCHMENT, (WILDERNESS_COLLECT / 2));
-    }
-
-    /* Drop some chests to make the level worth exploring */
-    alloc_object(ALLOC_SET_BOTH, ALLOC_TYP_CHEST, damroll(3, 3));
-
-    /* Let the player see the whole level */
-    wiz_light();
-
-    /* Try hard to place this level */
-    rating += 25;
-
-    /* Success */
-    return (TRUE);
 }
 
