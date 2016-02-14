@@ -1356,6 +1356,10 @@ void cleanup_npp_games(void)
     mon_msg.clear();
     mon_message_hist.clear();
 
+    //Clear the messages and notes
+    notes_log.clear();
+    message_list.clear();
+
     /*free the randart arrays*/
     free_randart_tables();
 

@@ -662,9 +662,11 @@ bool ui_using_monster_tiles()
     return (ui_using_tiles());
 }
 
+// Change the tile multiplier, then re-center in on the player.
 void ui_handle_grid_wheelevent(bool wheelscroll_increase)
 {
     main_window->handle_grid_wheelevent(wheelscroll_increase);
+    ui_center(p_ptr->py, p_ptr->px);
 }
 
 void ui_redraw_grid(int y, int x)

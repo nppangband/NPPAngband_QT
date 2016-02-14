@@ -800,6 +800,8 @@ void MainWindow::handle_grid_wheelevent(bool wheelscroll_increase)
         list_multipliers.at(x)->trigger();
         break;
     }
+
+
 }
 
 
@@ -980,6 +982,8 @@ void MainWindow::showEvent(QShowEvent *event)
     if (show_win_dun_map && window_dun_map) window_dun_map->show();
     if (show_win_overhead_map && window_overhead_map) window_overhead_map->show();
 
+    main_window->activateWindow();
+
     event->accept();
 }
 
@@ -1120,6 +1124,8 @@ void MainWindow::import_hotkeys()
     if (file_name.isEmpty()) return;
 
     do_hotkey_import(file_name);
+
+    update_hotkey_toolbar();
 }
 
 
