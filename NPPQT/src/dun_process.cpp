@@ -866,6 +866,7 @@ static void process_world(void)
 
     object_type *o_ptr;
 
+
     /* We decrease noise slightly every game turn */
     total_wakeup_chance -= 400;
 
@@ -875,6 +876,10 @@ static void process_world(void)
 
     /* Every 10 game turns */
     if (p_ptr->game_turn % 10) return;
+
+    // To ensure events that affect the screen, such as
+    // word of recall, are processed.
+    p_ptr->do_redraws = TRUE;
 
     /*** Update quests ***/
     if (guild_quest_active())
@@ -1453,6 +1458,8 @@ static void process_world(void)
 
     /* Notice stuff */
     notice_stuff();
+    redraw_stuff();
+    p_ptr->do_redraws = FALSE;
 }
 
 void change_player_level(void)
@@ -1727,7 +1734,11 @@ void change_player_level(void)
     update_stuff();
 
     /* Redraw stuff */
+    p_ptr->do_redraws = TRUE;
     ui_redraw_all();
+    p_ptr->do_redraws = FALSE;
+
+    ui_center(p_ptr->py, p_ptr->px);
 
     /* Handle delayed death */
     if (p_ptr->is_dead) return;

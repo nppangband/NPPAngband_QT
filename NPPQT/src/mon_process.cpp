@@ -1118,7 +1118,7 @@ void process_entities(void)
     /* Clear the moment vector */
     mon_moment_info.clear();
 
-    p_ptr->player_turn = FALSE;
+    p_ptr->player_turn  = p_ptr->do_redraws = FALSE;
 
     /* Give the character some energy (unless leaving) */
     if (!p_ptr->leaving_level)

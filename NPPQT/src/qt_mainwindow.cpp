@@ -2208,9 +2208,9 @@ void MainWindow::load_file(const QString &file_name)
                 ui_player_moved();
 
                 //hack - draw everything
-                p_ptr->player_turn = TRUE;
+                p_ptr->do_redraws = TRUE;
                 redraw_stuff();
-                p_ptr->player_turn = FALSE;
+                p_ptr->do_redraws = FALSE;
             }
 
             event_timer->start();
@@ -2248,9 +2248,9 @@ void MainWindow::launch_birth(bool quick_start)
         message(QString("Welcome %1") .arg(op_ptr->full_name));
 
         //hack - draw everything
-        p_ptr->player_turn = TRUE;
+        p_ptr->do_redraws = TRUE;
         redraw_stuff();
-        p_ptr->player_turn = FALSE;
+        p_ptr->do_redraws = FALSE;
 
         event_timer->start();
     }
