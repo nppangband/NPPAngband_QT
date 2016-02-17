@@ -1914,17 +1914,16 @@ int parse_f_info(QString line_info)
     /* Process 'W' for "More Info" (one line only) */
     else if (command == 'W')
     {
-        int level = 0, rarity = 0, priority = 0, power = 0;
+        int level = 0, rarity = 0, power = 0;
 
         /* There better be a current v_ptr */
         if (!f_ptr) return (PARSE_ERROR_MISSING_RECORD_HEADER);
 
-         if (process_4_ints(line_info, &level, &rarity, & priority, & power) > 0) return (PARSE_ERROR_GENERIC);
+         if (process_3_ints(line_info, &level, &rarity, & power) > 0) return (PARSE_ERROR_GENERIC);
 
         /* Save the values */
         f_ptr->f_level = level;
         f_ptr->f_rarity = rarity;
-        f_ptr->priority = priority;
         f_ptr->f_power = power;
     }
 

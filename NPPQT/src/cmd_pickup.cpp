@@ -956,7 +956,7 @@ int move_player(int dir, int jumping)
         py_pickup(jumping != always_pickup);
 
 		/* Handle "store doors" */
-        if (cave_shop_bold(y, x))
+        if (dungeon_info[y][x].is_store())
 		{
 			/* Disturb */
             disturb(TRUE, TRUE);

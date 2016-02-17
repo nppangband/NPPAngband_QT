@@ -60,6 +60,8 @@ public:
     QString effect_tile;
     QString monster_tile;
 
+    byte priority;
+
     bool double_height_monster;
 
     u16b ui_flags;
@@ -83,6 +85,7 @@ public:
     void mark_square();
 
     bool is_wall(bool known);
+    bool is_store(void);
     bool is_door(void);
     bool is_secret_door(void);
     bool is_known_door(void);
@@ -197,6 +200,7 @@ public:
 
     void feature_wipe();
     bool is_door(void);
+    bool is_store(void);
     bool is_secret_door(void);
     bool is_known_door(void);
     bool is_closed_door(void);

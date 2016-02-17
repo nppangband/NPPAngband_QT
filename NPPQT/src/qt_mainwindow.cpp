@@ -54,6 +54,7 @@ QString mult_list[] =
 {
   QString("0.25:0.25"),
   QString("0.5:0.5"),
+  QString("0.67:0.67"),
   QString("0.75:0.75"),
   QString("1:1"),
   QString("1.25:1.25"),

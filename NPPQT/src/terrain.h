@@ -740,13 +740,6 @@ _feat_ff3_match(f_info + dungeon_info[y][x].feature_idx, flags)
 
 
 /*
- * Determine if a "legal" grid is a "shop" grid
- */
-#define cave_shop_bold(Y,X) \
-     (f_info[dungeon_info[Y][X].feature_idx].f_flags1 & (FF1_SHOP))
-
-
-/*
  * Determine if a "legal" grid is a "wall" grid
  */
 #define cave_wall_bold(Y,X) \

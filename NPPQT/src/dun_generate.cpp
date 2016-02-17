@@ -2292,7 +2292,7 @@ static void town_gen_hack(void)
         feature_type *f_ptr = &f_info[i];
 
         /*We are looking for the shops*/
-        if (!(f_ptr->f_flags1 & (FF1_SHOP))) continue;
+        if (!f_ptr->is_store()) continue;
 
         /*paranoia*/
         if (f_ptr->f_power >= max_stores) continue;

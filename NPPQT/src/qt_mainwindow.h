@@ -771,7 +771,7 @@ private:
     void win_overhead_map_destroy();
     void win_overhead_map_wipe();
     void create_win_overhead_map();
-    DunOverheadGrid *overhead_map_grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
+    DunOverheadGrid *overhead_map_grids[MAX_DUNGEON_HGT/2][MAX_DUNGEON_WID/2];
     void overhead_map_calc_cell_size();
     QPointer<QActionGroup> overhead_map_multipliers;
     QString overhead_map_multiplier;

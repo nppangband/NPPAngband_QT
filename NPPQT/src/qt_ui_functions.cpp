@@ -676,7 +676,7 @@ void ui_redraw_grid(int y, int x)
     g_ptr->update(g_ptr->boundingRect());
 
     main_window->dun_map_update_one_grid(y, x);
-    main_window->overhead_map_update_one_grid(y, x);
+    main_window->overhead_map_update_one_grid(y/2, x/2);
 }
 
 void ui_redraw_all()

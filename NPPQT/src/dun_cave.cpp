@@ -1225,6 +1225,41 @@ static void map_monster (s16b y, s16b x)
     }
 }
 
+static void set_priority(int y, int x)
+{
+    dungeon_type *dun_ptr = &dungeon_info[y][x];
+
+    feature_type *f_ptr = &f_info[dun_ptr->feature_idx];
+
+    byte priority = f_ptr->priority;
+
+    if (dun_ptr->has_visible_effect())
+    {
+        feature_type *f2_ptr = &f_info[dun_ptr->effect_idx];
+        priority += f2_ptr->priority;
+    }
+    if (dun_ptr->has_visible_object()) priority += 10;
+    if (dun_ptr->has_visible_monster())
+    {
+        // Player square has the hightest priority
+        if ((y == p_ptr->py) && (x == p_ptr->px))
+        {
+            priority = MAX_BYTE;
+        }
+        else
+        {
+            monster_type *m_ptr = &mon_list[dun_ptr->monster_idx];
+            monster_race *r_ptr = &r_info[m_ptr->r_idx];
+
+            priority += MAX(10,(r_ptr->level - (2 * p_ptr->lev / 3)));
+        }
+
+
+    }
+
+    dun_ptr->priority = priority;
+}
+
 
 
 void map_info(s16b y, s16b x)
@@ -1239,6 +1274,8 @@ void map_info(s16b y, s16b x)
     map_effects (y, x);
 
     map_monster (y, x);
+
+    set_priority(y, x);
 }
 
 
@@ -3576,7 +3613,7 @@ void town_illuminate(bool daytime)
         for (x = 0; x < p_ptr->cur_map_wid; x++)
         {
             /* Track shop doorways */
-            if (cave_shop_bold(y,x))
+            if (dungeon_info[y][x].is_store())
             {
                 for (i = 0; i < 8; i++)
                 {

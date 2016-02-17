@@ -332,6 +332,50 @@ static int init_f_info(void)
     return (err);
 }
 
+// Calculate the feature priority for display on the overhead map
+static void calculate_feature_priority()
+{
+    feature_type *f_ptr = &f_info[0];
+    f_ptr->priority = 1;
+
+    for (int i = 1;i < z_info->f_max; i++)
+    {
+        byte this_priority = 1;
+        f_ptr = &f_info[i];
+        f_ptr = &f_info[f_ptr->f_mimic];
+        if (f_ptr->is_store()) this_priority += 40;
+        else if (f_ptr->is_stairs()) this_priority += 30;
+        else if (f_ptr->is_door()) this_priority += 25;
+        else if (f_ptr->is_wall())
+        {
+            if (f_info->f_flags1 & (FF1_PERMANENT)) this_priority += 2;
+            if (f_info->f_flags1 & (FF1_HAS_GOLD)) this_priority += 1;
+            this_priority += 16;
+        }
+        else if (f_ptr->f_flags2 & (FF2_EFFECT))
+        {
+            if (f_ptr->f_flags1 & (EF1_TRAP_DUMB | EF1_TRAP_SMART | EF1_TRAP_PLAYER | EF1_GLYPH)) this_priority += 5;
+            this_priority += 5;
+        }
+        else if (f_ptr->f_flags1 & (FF1_FLOOR)) this_priority += 5;
+        else this_priority += 11;
+        if (f_ptr->f_flags1 & (FF1_NOTICE)) this_priority += 6;
+        if (f_ptr->f_flags3 & TERRAIN_MASK)
+        {
+            if (f_ptr->f_flags3 & (ELEMENT_LAVA)) this_priority += 2;
+            if (f_ptr->f_flags3 & (ELEMENT_ICE))  this_priority += 1;
+            if (f_ptr->f_flags3 & (ELEMENT_OIL))  this_priority += 1;
+            if (f_ptr->f_flags3 & (ELEMENT_FIRE))  this_priority += 1;
+            if (f_ptr->f_flags3 & (ELEMENT_SAND))  this_priority += 1;
+            if (f_ptr->f_flags3 & (ELEMENT_FOREST))  this_priority += 1;
+            if (f_ptr->f_flags3 & (ELEMENT_WATER))  this_priority += 1;
+            if (f_ptr->f_flags3 & (ELEMENT_ACID))  this_priority += 1;
+            if (f_ptr->f_flags3 & (ELEMENT_MUD))  this_priority += 1;
+        }
+
+        f_ptr->priority = this_priority;
+    }
+}
 
 /*
  * Initialize the "k_info" array
@@ -1202,6 +1246,8 @@ void init_npp_games(void)
     /* Initialize feature info */
     status_update.setText (QString(QObject::tr("Initializing arrays... (features)")));
     if (init_f_info()) quit_npp_games(QObject::tr("Cannot initialize features"));
+
+    calculate_feature_priority();
 
     /* Initialize object info */
     status_update.setText (QString(QObject::tr("Initializing arrays... (objects)")));

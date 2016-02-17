@@ -830,7 +830,7 @@ QString get_feature_description(int f_idx, bool spoilers, bool include_header)
     feature_lore save_mem;
 
     /* Get the race and lore */
-    const feature_type *f_ptr = &f_info[f_idx];
+    feature_type *f_ptr = &f_info[f_idx];
     feature_lore *f_l_ptr = &f_l_list[f_idx];
     QString feat_name = feature_desc(f_idx, TRUE, FALSE);
 
@@ -906,7 +906,7 @@ QString get_feature_description(int f_idx, bool spoilers, bool include_header)
 
     output.append(describe_feature_dynamic(f_idx, &lore));
 
-    if (f_ptr->f_flags1 & (FF1_SHOP))
+    if (f_ptr->is_store())
     {
         output.append("<br>");
         output.append(describe_store(f_idx));

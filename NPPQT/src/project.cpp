@@ -1228,13 +1228,14 @@ void take_hit(int dam, QString kb_str)
     if (p_ptr->chp < warning)
     {
         /* Hack -- bell on first notice */
-        if (old_chp > warning)
+        if ((old_chp > warning) || (p_ptr->chp < (warning/2)))
         {
             bell(QString("Low hitpoint warning!"));
         }
 
         /* Message */
         color_message(QString("*** LOW HITPOINT WARNING! ***"), TERM_RED);
+
     }
 }
 

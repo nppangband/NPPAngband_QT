@@ -114,6 +114,11 @@ bool dungeon_type::is_wall(bool known)
     return (f_info[this_feat].is_wall());
 }
 
+bool dungeon_type::is_store(void)
+{
+    return (f_info[feature_idx].is_store());
+}
+
 bool dungeon_type::is_door(void)
 {
     return (f_info[feature_idx].is_door());
@@ -173,7 +178,7 @@ void dungeon_type::dungeon_square_wipe()
 {
     feature_idx = effect_idx = monster_idx = object_idx = 0;
     path_cost = cave_info = 0;
-    special_lighting = obj_special_symbol = 0;
+    priority = special_lighting = obj_special_symbol = 0;
     ui_flags = 0;
     path_flow = dtrap = FALSE;
     double_height_monster = FALSE;
@@ -260,6 +265,12 @@ bool feature_type::is_door(void)
     return (FALSE);
 }
 
+bool feature_type::is_store(void)
+{
+    if (f_flags1 & (FF1_SHOP)) return (TRUE);
+    return (FALSE);
+}
+
 bool feature_type::is_secret_door(void)
 {
     if (!is_door()) return (FALSE);
@@ -276,6 +287,7 @@ bool feature_type::is_closed_door(void)
 
 bool feature_type::is_known_door(void)
 {
+    if (!is_door()) return (FALSE);
     if (is_secret_door())   return (FALSE);
     return (TRUE);
 }
