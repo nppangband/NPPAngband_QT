@@ -15,7 +15,7 @@
 // The map width and height is half that of the regular dungeon.
 // Note every dungeon cell reference must be careful to reference the right place,
 // As the corresponding dungeon grids are (oh_y*2-oh_y*2+1, oh_x*2-oh_x*2+1).
-// This fuctino makes teh dungeon grid, and maps it to x*2, y*2.
+// This fuction makes the dungeon grid, and maps it to x*2, y*2.
 DunOverheadGrid::DunOverheadGrid(int _x, int _y)
 {
     oh_x = _x*2;

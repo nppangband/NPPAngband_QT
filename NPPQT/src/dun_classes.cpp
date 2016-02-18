@@ -239,7 +239,7 @@ void feature_type::feature_wipe()
     f_text = QString("");
 
     f_mimic = f_edge = f_flags1 = f_flags2 = f_flags3 = 0;
-    f_level = f_rarity = priority = defaults = f_power = unused = 0;
+    f_level = f_rarity = f_priority = defaults = f_power = unused = 0;
 
     for (int i = 0; i < MAX_FEAT_STATES; i++) {
         state[i].fs_action = state[i].fs_power = state[i].fs_result = 0;

@@ -1231,12 +1231,14 @@ static void set_priority(int y, int x)
 
     feature_type *f_ptr = &f_info[dun_ptr->feature_idx];
 
-    byte priority = f_ptr->priority;
+    byte priority = 0;
+
+    if (dun_ptr->has_visible_terrain()) priority = f_ptr->f_priority;
 
     if (dun_ptr->has_visible_effect())
     {
         feature_type *f2_ptr = &f_info[dun_ptr->effect_idx];
-        priority += f2_ptr->priority;
+        priority += f2_ptr->f_priority;
     }
     if (dun_ptr->has_visible_object()) priority += 10;
     if (dun_ptr->has_visible_monster())
@@ -1253,8 +1255,6 @@ static void set_priority(int y, int x)
 
             priority += MAX(10,(r_ptr->level - (2 * p_ptr->lev / 3)));
         }
-
-
     }
 
     dun_ptr->priority = priority;
@@ -2061,10 +2061,6 @@ void forget_view(void)
 /*
  * Calculate the complete field of view using a new algorithm
  *
- * If "view_g" and "temp_g" were global pointers to arrays of grids, as
- * opposed to actual arrays of grids, then we could be more efficient by
- * using "pointer swapping".
- *
  * Note the following idiom, which is used in the function below.
  * This idiom processes each "octant" of the field of view, in a
  * clockwise manner, starting with the east strip, south side,
@@ -2151,7 +2147,7 @@ void update_view(void)
 
     u16b pg = GRID(py,px);
 
-    int i, j, o2, d;
+    int i, j, o2;
     u16b g;
 
     int radius;
@@ -2201,50 +2197,6 @@ void update_view(void)
     /* Handle real light */
     if (radius > 0) ++radius;    
 
-    /* Scan monster list and add monster lites */
-    for ( k = 1; k < mon_max; k++)
-    {
-        /* Check the k'th monster */
-        monster_type *m_ptr = &mon_list[k];
-        monster_race *r_ptr = &r_info[m_ptr->r_idx];
-
-        /* Skip dead monsters */
-        if (!m_ptr->r_idx) continue;
-
-        /* Access the location */
-        fx = m_ptr->fx;
-        fy = m_ptr->fy;
-
-        /* Carrying lite */
-        if (r_ptr->flags2 & (RF2_HAS_LIGHT))
-        {
-            for (i = -1; i <= 1; i++)
-            {
-                for (j = -1; j <= 1; j++)
-                {
-                    /*
-                     * Compute distance, so you don't have an empty lite
-                     * floating around past the max_site range.
-                     */
-
-                    int dy = (p_ptr->py > (fy+i)) ? (p_ptr->py - (fy+i)) : ((fy+i) - p_ptr->py);
-                    int dx = (p_ptr->px > (fx+j)) ? (p_ptr->px - (fx+j)) : ((fx+j) - p_ptr->px);
-
-                    /* Approximate distance */
-                    d = (dy > dx) ? (dy + (dx>>1)) : (dx + (dy>>1));
-
-                    if ((d <= MAX_SIGHT) && (los(p_ptr->py,p_ptr->px,fy+i,fx+j)))
-                    {
-                        dungeon_type *dun_ptr = &dungeon_info[fy+i][fx+j];
-
-                        dun_ptr->cave_info |= (CAVE_SEEN | CAVE_VIEW | CAVE_EXPLORED);
-
-                        view_grids.append(make_coords(fy+i, fx+j));
-                    }
-                }
-            }
-        }
-    }
 
     /*** Step 1 -- player grid ***/
 
@@ -2541,8 +2493,46 @@ void update_view(void)
         }
     }
 
+    /*** Step 4 -- Add monster lights ***/
 
-    /*** Step 3 -- Complete the algorithm ***/
+    /* Scan monster list */
+    for ( k = 1; k < mon_max; k++)
+    {
+        /* Check the k'th monster */
+        monster_type *m_ptr = &mon_list[k];
+        monster_race *r_ptr = &r_info[m_ptr->r_idx];
+
+        /* Skip dead monsters */
+        if (!m_ptr->r_idx) continue;
+
+        /* Access the location */
+        fx = m_ptr->fx;
+        fy = m_ptr->fy;
+
+        /* Carrying lite */
+        if (!(r_ptr->flags2 & (RF2_HAS_LIGHT))) continue;
+
+        if (distance(py, px, fy+i, fx+j) > (MAX_SIGHT + 3)) continue;
+
+        for (i = -1; i <= 1; i++)
+        {
+            for (j = -1; j <= 1; j++)
+            {
+                // Must be within distance
+                if (distance(py, px, fy+i, fx+j) > MAX_SIGHT) continue;
+
+                if (!projectable(py, px,fy+i,fx+j, PROJECT_BEAM | PROJECT_THRU | PROJECT_WALL)) continue;
+                dungeon_type *dun_ptr = &dungeon_info[fy+i][fx+j];
+
+                dun_ptr->cave_info |= (CAVE_SEEN | CAVE_VIEW | CAVE_EXPLORED);
+
+                view_grids.append(make_coords(fy+i, fx+j));
+            }
+        }
+    }
+
+
+    /*** Step 4 -- Complete the algorithm ***/
 
     /* Handle blindness */
     if (p_ptr->timed[TMD_BLIND])

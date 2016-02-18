@@ -60,6 +60,7 @@ public:
     QString effect_tile;
     QString monster_tile;
 
+
     byte priority;
 
     bool double_height_monster;
@@ -167,7 +168,8 @@ public:
     u16b f_level;     	/* Minimum level */
     u16b f_rarity;    	/* 1/Rarity */
 
-    u16b priority;  /* Map priority */
+    byte f_priority;  /* Map priority */
+
     s16b defaults;     /* Default state */
 
     feature_state state[MAX_FEAT_STATES];
