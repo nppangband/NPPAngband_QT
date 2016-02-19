@@ -1023,7 +1023,7 @@ static void process_world(void)
     /* Occasionally have the ghost give a challenge */
     if (!(p_ptr->game_turn % 2500))
     {
-        ghost_challenge();
+        ghost_challenge(FALSE);
     }
 
     /* Put out fire if necessary */
@@ -1747,7 +1747,7 @@ void change_player_level(void)
     if (p_ptr->depth && (do_feeling)) do_cmd_feeling();
 
     /* Announce a player ghost challenge. -LM- */
-    ghost_challenge();
+    ghost_challenge(TRUE);
 }
 
 

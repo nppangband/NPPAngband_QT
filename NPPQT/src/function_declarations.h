@@ -459,7 +459,7 @@ extern void player_death(void);
 //player_ghost.cpp
 extern void prepare_ghost_name(void);
 extern bool prepare_ghost(int r_idx);
-extern void ghost_challenge(void);
+extern void ghost_challenge(bool color);
 extern void remove_player_ghost(void);
 extern void delete_player_ghost_entry(void);
 extern void add_player_ghost_entry(void);
