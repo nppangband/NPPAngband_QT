@@ -1497,6 +1497,7 @@ void MainWindow::create_actions()
 
     win_overhead_map = new QAction(tr("Show Overhead Map"), this);
     win_overhead_map->setStatusTip(tr("Display overhead map."));
+    win_overhead_map->setShortcut(tr("Alt+M"));
     connect(win_overhead_map, SIGNAL(triggered()), this, SLOT(toggle_win_overhead_map_frame()));
 
     help_about = new QAction(tr("&About"), this);
@@ -2154,7 +2155,6 @@ void MainWindow::write_settings()
     settings.setValue("show_dun_overhead_window", show_win_overhead_map);
     if (show_win_overhead_map)
     {
-
         settings.setValue("winOverheadMapGeometry", window_overhead_map->saveGeometry());
 
     }
