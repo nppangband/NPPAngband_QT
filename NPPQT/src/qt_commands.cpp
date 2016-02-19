@@ -14,6 +14,7 @@
 #include <src/player_command.h>
 #include <src/object_all_menu.h>
 #include <src/messages.h>
+#include <src/knowledge.h>
 
 static struct command_desc list_commands_targeting[] =
 {
@@ -71,6 +72,7 @@ static struct command_desc list_commands_new[] =
     {"Inspect All Objects", "i"},
     {"Inspect Object", "I (shift-i)"},
     {"Jam a Door", "Q (shift-q}"},
+    {"Knowledge Screens", "~"},
     {"Learn Spells, Prayers, or Incantations", "M (shift-m)"},
     {"Look", "l"},
     {"Make/Modify Trap", "O (shift-o)"},
@@ -141,6 +143,7 @@ static struct command_desc list_commands_angband[] =
     {"Inspect Inventory", "i"},
     {"Inspect Object", "I (shift-i)"},
     {"Jam a Door", "j"},
+    {"Knowledge Screens", "~"},
     {"Learn Spells, Prayers, or Incantations", "G (shift-g)"},
     {"Look", "l"},
     {"Make/Modify Trap", "O (shift-o)"},
@@ -214,6 +217,7 @@ static struct command_desc list_commands_roguelike[] =
     {"Inspect Inventory", "i"},
     {"Inspect Object", "I (shift-i)"},
     {"Jam a Door", "S (shift-s)"},
+    {"Knowledge Screens", "~"},
     {"Learn Spells, Prayers, or Incantations", "G (shift-g)"},
     {"Look", "x"},
     {"Make/Modify Trap", "O (shift-o)"},
@@ -974,6 +978,11 @@ void commands_new_keyset(int key_press, bool shift_key, bool alt_key, bool ctrl_
             save_screenshot(TRUE);
             break;
         }
+        case Qt::Key_AsciiTilde:
+        {
+            do_cmd_knowledge_screens();
+            break;
+        }
         default:
         {
             break;
@@ -1279,6 +1288,11 @@ void commands_angband_keyset(int key_press, bool shift_key, bool alt_key, bool c
             save_screenshot(TRUE);
             break;
         }
+        case Qt::Key_AsciiTilde:
+        {
+            do_cmd_knowledge_screens();
+            break;
+        }
         default:
         {
             break;
@@ -1553,6 +1567,11 @@ void commands_roguelike_keyset(int key_press, bool shift_key, bool alt_key, bool
         case Qt::Key_ParenLeft:
         {
             save_screenshot(TRUE);
+            break;
+        }
+        case Qt::Key_AsciiTilde:
+        {
+            do_cmd_knowledge_screens();
             break;
         }
         default:
