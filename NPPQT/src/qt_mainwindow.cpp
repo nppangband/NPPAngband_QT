@@ -512,6 +512,8 @@ MainWindow::MainWindow()
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
 
+    overhead_map_settings.set_extra_win_default();
+
     setAttribute(Qt::WA_DeleteOnClose);
 
     targeting_mode = MODE_NO_TARGETING;
@@ -931,9 +933,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
         pop_up_message_box("Game saved");
     }
 
-    write_settings();
-
-    // Take out the additional windows
+    /*
+     * Take out the additional windows.
+     * We do this before the write the settings so the
+     * most recent windows geometry is recorded.
+     */
     win_mon_list_destroy();
     win_obj_list_destroy();
     win_mon_recall_destroy();
@@ -945,7 +949,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_char_equipment_destroy();
     win_char_inventory_destroy();
     win_dun_map_destroy();
-    win_overhead_map_destroy();
+    win_overhead_map_close();
+
+    write_settings();
 
     event->accept();
 }
@@ -1495,10 +1501,10 @@ void MainWindow::create_actions()
     win_dun_map->setStatusTip(tr("Display map window."));
     connect(win_dun_map, SIGNAL(triggered()), this, SLOT(toggle_win_dun_map_frame()));
 
-    win_overhead_map = new QAction(tr("Show Overhead Map"), this);
-    win_overhead_map->setStatusTip(tr("Display overhead map."));
-    win_overhead_map->setShortcut(tr("Alt+M"));
-    connect(win_overhead_map, SIGNAL(triggered()), this, SLOT(toggle_win_overhead_map_frame()));
+    win_overhead_map_act = new QAction(tr("Show Overhead Map"), this);
+    win_overhead_map_act->setStatusTip(tr("Display overhead map."));
+    win_overhead_map_act->setShortcut(tr("Alt+M"));
+    connect(win_overhead_map_act, SIGNAL(triggered()), this, SLOT(toggle_win_overhead_map_frame()));
 
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
@@ -1780,7 +1786,7 @@ void MainWindow::create_menus()
     win_menu->addAction(win_char_equipment);
     win_menu->addAction(win_char_inventory);
     win_menu->addAction(win_dun_map);
-    win_menu->addAction(win_overhead_map);
+    win_menu->addAction(win_overhead_map_act);
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));
@@ -1862,14 +1868,18 @@ void MainWindow::select_font()
 }
 
 
-
 // Read and write the game settings.
 // Every entry in write-settings should have a corresponding entry in read_settings.
 void MainWindow::read_settings()
 {
     QSettings settings("NPPGames", "NPPQT");
 
-    restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
+    QWidget dummy_widget;
+
+    dummy_widget.restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
+    win_geometry = dummy_widget.geometry();
+    win_maximized = (settings.value("mainWindowMaximized", false).toBool());
+
     recent_savefiles = settings.value("recentFiles").toStringList();
     show_targeting_buttons = settings.value("target_buttons", false).toBool();
     if (!show_targeting_buttons)
@@ -1928,8 +1938,7 @@ void MainWindow::read_settings()
     font_char_inventory.fromString(load_font);
     load_font = settings.value("font_dun_map", font_dun_map ).toString();
     font_dun_map.fromString(load_font);
-    load_font = settings.value("font_overhead_map", font_overhead_map ).toString();
-    font_overhead_map.fromString(load_font);
+
     restoreState(settings.value("window_state").toByteArray());
 
     show_mon_list = settings.value("show_mon_list_window", false).toBool();
@@ -2035,26 +2044,36 @@ void MainWindow::read_settings()
         window_dun_map->show();
     }
 
+    // Overhead window settings
     show_win_overhead_map = settings.value("show_dun_overhead_window", false).toBool();
     overhead_map_use_graphics = settings.value("graphics_overhead_map", false).toBool();
     overhead_map_multiplier = settings.value("dun_overhead_tile_multiplier", "1:1").toString();
+    dummy_widget.restoreGeometry(settings.value("winOverheadMapGeometry").toByteArray());
+    overhead_map_settings.win_geometry = dummy_widget.geometry();
+    overhead_map_settings.win_maximized = settings.value("winOverheadMapMaximized", false).toBool();
+    load_font = settings.value("font_overhead_map", font_overhead_map ).toString();
+    font_overhead_map.fromString(load_font);
     if (show_win_overhead_map)
     {
         show_win_overhead_map = FALSE; //hack - so it gets toggled to true
         toggle_win_overhead_map_frame();
-        window_overhead_map->restoreGeometry(settings.value("winOverheadMapGeometry").toByteArray());
-        window_overhead_map->show();
     }
-
-
 
     update_recent_savefiles();
 }
 
+/*
+ *  Note all the extra windows are destroyed before this function is
+ *  called so the latest windows settings are recorded.
+ */
+
 void MainWindow::write_settings()
 {
+    QWidget dummy_widget;
+
     QSettings settings("NPPGames", "NPPQT");
     settings.setValue("mainWindowGeometry", saveGeometry());
+    settings.setValue("mainWindowMaximized", main_window->isMaximized());
     settings.setValue("recentFiles", recent_savefiles);
     settings.setValue("target_buttons", show_targeting_buttons);
     settings.setValue("hotkey_toolbar", show_hotkey_toolbar);
@@ -2078,7 +2097,7 @@ void MainWindow::write_settings()
     settings.setValue("font_char_equipment", font_char_equipment.toString());
     settings.setValue("font_char_inventory", font_char_inventory.toString());
     settings.setValue("font_dun_map", font_dun_map.toString());
-    settings.setValue("font_overhead_map", font_overhead_map.toString());
+
     settings.setValue("window_state", saveState());
 
     settings.setValue("show_mon_list_window", show_mon_list);
@@ -2152,14 +2171,14 @@ void MainWindow::write_settings()
     settings.setValue("graphics_dun_map", dun_map_use_graphics);
     settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
 
-    settings.setValue("show_dun_overhead_window", show_win_overhead_map);
-    if (show_win_overhead_map)
-    {
-        settings.setValue("winOverheadMapGeometry", window_overhead_map->saveGeometry());
 
-    }
+    settings.setValue("show_dun_overhead_window", show_win_overhead_map);
     settings.setValue("graphics_overhead_map", overhead_map_use_graphics);
     settings.setValue("dun_overhead_tile_multiplier", overhead_map_multiplier);
+    dummy_widget.setGeometry(overhead_map_settings.win_geometry);
+    settings.setValue("winOverheadMapGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winOverheadMapMaximized", overhead_map_settings.win_maximized);
+    settings.setValue("font_overhead_map", font_overhead_map.toString());
 }
 
 

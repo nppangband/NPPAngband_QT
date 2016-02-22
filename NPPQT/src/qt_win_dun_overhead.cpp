@@ -10,6 +10,25 @@
 #include <QFontDialog>
 #include <src/emitter.h>
 #include <QtCore/qmath.h>
+#include <QDesktopWidget>
+
+
+
+void extra_win_settings::set_extra_win_default()
+{
+    QDesktopWidget dummy_widget;
+    QRect total_window = dummy_widget.screenGeometry(dummy_widget.primaryScreen());
+
+    QPoint starter(total_window.width() / 6, total_window.height() / 6);
+    win_geometry = QRect(starter, QSize(total_window.width() * 7 / 10, total_window.height() * 7 / 10));
+    win_maximized = FALSE;
+}
+
+void extra_win_settings::get_widget_settings(QWidget *this_widget)
+{
+    win_geometry = this_widget->geometry();
+    win_maximized = this_widget->isMaximized();
+}
 
 
 // The map width and height is half that of the regular dungeon.
@@ -412,15 +431,6 @@ void MainWindow::create_win_overhead_map()
     overhead_map_calc_cell_size();
 }
 
-void MainWindow::close_win_overhead_map_frame(QObject *this_object)
-{
-    (void)this_object;
-    window_overhead_map = NULL;
-    show_win_overhead_map = FALSE;
-    win_overhead_map->setText("Show Overhead Window");
-    overhead_map_created = FALSE;
-}
-
 /*
  *  Make the small_map shell
  */
@@ -463,16 +473,36 @@ void MainWindow::win_overhead_map_create()
     }
 
     window_overhead_map->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_overhead_map, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_overhead_map_frame(QObject*)));
+    connect(window_overhead_map, SIGNAL(destroyed(QObject*)), this, SLOT(win_overhead_map_destroy(QObject*)));
 }
 
-void MainWindow::win_overhead_map_destroy()
+/*
+ * Win_overhead_map_close should be used when the game is shutting down.
+ * Use this function for closing the window mid-game
+ */
+void MainWindow::win_overhead_map_destroy(QObject *this_object)
 {
+    (void)this_object;
     if (!show_win_overhead_map) return;
     if (!window_overhead_map) return;
-    delete window_overhead_map;
+    overhead_map_settings.get_widget_settings(window_overhead_map);
+    window_overhead_map->deleteLater();
     overhead_map_created = FALSE;
-    window_overhead_map = NULL;
+    show_win_overhead_map = FALSE;
+    win_overhead_map_act->setText("Show Overhead Window");
+}
+
+/*
+ * This version should only be used when the game is shutting down.
+ * So it is remembered if the window was open or not.
+ * For closing the window mid-game use win_overhead_map_destroy directly
+ */
+void MainWindow::win_overhead_map_close()
+{
+    bool was_open = show_win_overhead_map;
+    win_overhead_map_destroy(window_overhead_map);
+    show_win_overhead_map = was_open;
+
 }
 
 void MainWindow::toggle_win_overhead_map_frame()
@@ -482,15 +512,11 @@ void MainWindow::toggle_win_overhead_map_frame()
         win_overhead_map_create();
         show_win_overhead_map = TRUE;
         create_win_overhead_map();
-        win_overhead_map->setText("Hide Overhead Window");
-        window_overhead_map->show();
+        window_overhead_map->setGeometry(overhead_map_settings.win_geometry);
+        win_overhead_map_act->setText("Hide Overhead Window");
+        if (overhead_map_settings.win_maximized) window_overhead_map->showMaximized();
+        else window_overhead_map->show();
     }
-    else
-
-    {
-        win_overhead_map_destroy();
-        show_win_overhead_map = FALSE;
-        win_overhead_map->setText("Show Overhead Window");
-    }
+    else win_overhead_map_destroy(window_overhead_map);
 }
 

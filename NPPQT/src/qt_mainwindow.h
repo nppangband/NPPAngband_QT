@@ -56,6 +56,16 @@ public:
     int mouse_click_x;
 };
 
+class extra_win_settings
+{
+public:
+    QRect win_geometry;
+    bool win_maximized;
+
+    void set_extra_win_default();
+    void get_widget_settings(QWidget *this_widget);
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -87,6 +97,8 @@ public:
     bool show_targeting_buttons;
     bool show_hotkey_toolbar;
     bool executing_command;
+    bool win_maximized;
+    QRect win_geometry;
 
     // Scaled tiles
     QHash<QString,QPixmap> tiles;
@@ -371,7 +383,7 @@ private:
     QPointer<QAction> win_char_equipment;
     QPointer<QAction> win_char_inventory;
     QPointer<QAction> win_dun_map;
-    QPointer<QAction> win_overhead_map;
+    QPointer<QAction> win_overhead_map_act;
 
     // Holds the actual commands for the help menu.
     QPointer<QAction> help_about;
@@ -768,14 +780,15 @@ private:
     QPointer<QAction> overhead_map_graphics;
     QPointer<QMenu> win_overhead_map_settings;
     void win_overhead_map_create();
-    void win_overhead_map_destroy();
     void win_overhead_map_wipe();
+    void win_overhead_map_close();
     void create_win_overhead_map();
     DunOverheadGrid *overhead_map_grids[MAX_DUNGEON_HGT/2][MAX_DUNGEON_WID/2];
     void overhead_map_calc_cell_size();
     QPointer<QActionGroup> overhead_map_multipliers;
     QString overhead_map_multiplier;
     void set_overhead_map_font(QFont newFont);
+    extra_win_settings overhead_map_settings;
 
 public:
     bool show_win_overhead_map;
@@ -795,7 +808,7 @@ private slots:
     void toggle_win_overhead_map_frame();
     void overhead_map_multiplier_clicked(QAction *);
     void set_overhead_map_graphics();
-    void close_win_overhead_map_frame(QObject *this_object);
+    void win_overhead_map_destroy(QObject *this_object);
 
 };
 
