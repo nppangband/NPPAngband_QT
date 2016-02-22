@@ -61,6 +61,8 @@ class extra_win_settings
 public:
     QRect win_geometry;
     bool win_maximized;
+    bool win_show;
+    QFont win_font;
 
     void set_extra_win_default();
     void get_widget_settings(QWidget *this_widget);
@@ -776,8 +778,8 @@ private:
     QPointer<QGraphicsScene> overhead_map_scene;
     QPointer<QGraphicsView> overhead_map_view;
     QMenuBar *win_overhead_map_menubar;
-    QPointer<QAction> overhead_map_font;
-    QPointer<QAction> overhead_map_graphics;
+    QPointer<QAction> overhead_map_font_act;
+    QPointer<QAction> overhead_map_graphics_act;
     QPointer<QMenu> win_overhead_map_settings;
     void win_overhead_map_create();
     void win_overhead_map_wipe();
@@ -788,10 +790,9 @@ private:
     QPointer<QActionGroup> overhead_map_multipliers;
     QString overhead_map_multiplier;
     void set_overhead_map_font(QFont newFont);
-    extra_win_settings overhead_map_settings;
+
 
 public:
-    bool show_win_overhead_map;
     bool overhead_map_use_graphics;
     void win_overhead_map_update();
     void overhead_map_update_one_grid(int y, int x);
@@ -801,7 +802,7 @@ public:
     int overhead_map_font_hgt, overhead_map_font_wid;
     int overhead_map_tile_hgt, overhead_map_tile_wid;
     int overhead_map_cell_wid, overhead_map_cell_hgt;
-    QFont font_overhead_map;
+    extra_win_settings overhead_map_settings;
 
 private slots:
     void win_overhead_map_font();

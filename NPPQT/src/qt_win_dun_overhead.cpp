@@ -22,6 +22,7 @@ void extra_win_settings::set_extra_win_default()
     QPoint starter(total_window.width() / 6, total_window.height() / 6);
     win_geometry = QRect(starter, QSize(total_window.width() * 7 / 10, total_window.height() * 7 / 10));
     win_maximized = FALSE;
+    win_show = FALSE;
 }
 
 void extra_win_settings::get_widget_settings(QWidget *this_widget)
@@ -208,7 +209,7 @@ void DunOverheadGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
             }
 
             if (do_shadow) {
-                QPixmap pix = pseudo_ascii(square_char, square_color, main_window->font_overhead_map,
+                QPixmap pix = pseudo_ascii(square_char, square_color, main_window->overhead_map_settings.win_font,
                                            QSizeF(main_window->overhead_map_cell_wid, main_window->overhead_map_cell_hgt));
                 painter->drawPixmap(pix.rect(), pix, pix.rect());
                 done_fg = true;
@@ -219,7 +220,7 @@ void DunOverheadGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     // Go ascii?
     if (!done_fg && (!empty || !done_bg))
     {
-        painter->setFont(main_window->font_overhead_map);
+        painter->setFont(main_window->overhead_map_settings.win_font);
         painter->setPen(square_color);
         painter->drawText(QRectF(0, 0, main_window->overhead_map_cell_wid, main_window->overhead_map_cell_hgt),
                           Qt::AlignCenter, QString(square_char));
@@ -261,14 +262,14 @@ QRect MainWindow::visible_overhead_map()
 
 void MainWindow::set_overhead_map_font(QFont newFont)
 {
-    font_overhead_map = newFont;
+    overhead_map_settings.win_font = newFont;
     overhead_map_calc_cell_size();
 }
 
 void MainWindow::win_overhead_map_font()
 {
     bool selected;
-    QFont font = QFontDialog::getFont( &selected, font_overhead_map, this);
+    QFont font = QFontDialog::getFont( &selected, overhead_map_settings.win_font, this);
 
     if (selected)
     {
@@ -279,7 +280,7 @@ void MainWindow::win_overhead_map_font()
 void MainWindow::set_overhead_map_graphics()
 {
     if (!overhead_map_created) return;
-    overhead_map_use_graphics = overhead_map_graphics->isChecked();
+    overhead_map_use_graphics = overhead_map_graphics_act->isChecked();
 
     if ((!overhead_map_use_graphics) || (use_graphics == GRAPHICS_NONE))
     {
@@ -327,7 +328,7 @@ void MainWindow::overhead_map_calc_cell_size()
 {
     if (!overhead_map_created) return;
 
-    QFontMetrics metrics(font_overhead_map);
+    QFontMetrics metrics(overhead_map_settings.win_font);
 
     overhead_map_font_hgt = metrics.height() + FONT_EXTRA;
     overhead_map_font_wid = metrics.width('M') + FONT_EXTRA;
@@ -366,7 +367,7 @@ void MainWindow::overhead_map_multiplier_clicked(QAction *action)
 // For when savefiles close but the game doesn't.
 void MainWindow::win_overhead_map_wipe()
 {
-    if (!show_win_overhead_map) return;
+    if (!overhead_map_settings.win_show) return;
     if (!character_generated) return;
     clear_layout(main_vlay_overhead_map);
     overhead_map_created = FALSE;
@@ -402,7 +403,7 @@ void MainWindow::win_overhead_map_update()
 void MainWindow::create_win_overhead_map()
 {
     if (!character_generated) return;
-    if (!show_win_overhead_map) return;
+    if (!overhead_map_settings.win_show) return;
     overhead_map_scene = new QGraphicsScene;
     overhead_map_view = new QGraphicsView(overhead_map_scene);
     main_vlay_overhead_map->addWidget(overhead_map_view);
@@ -444,16 +445,16 @@ void MainWindow::win_overhead_map_create()
     main_vlay_overhead_map->setMenuBar(win_overhead_map_menubar);
     window_overhead_map->setWindowTitle("Overhead Map Window");
     win_overhead_map_settings = win_overhead_map_menubar->addMenu(tr("&Settings"));
-    overhead_map_font = new QAction(tr("Set Overhead Map Font"), this);
-    overhead_map_font->setStatusTip(tr("Set the font for the Overhead Map Screen."));
-    connect(overhead_map_font, SIGNAL(triggered()), this, SLOT(win_overhead_map_font()));
-    win_overhead_map_settings->addAction(overhead_map_font);
-    overhead_map_graphics = new QAction(tr("Use Graphics"), this);
-    overhead_map_graphics->setCheckable(true);
-    overhead_map_graphics->setChecked(overhead_map_use_graphics);
-    overhead_map_graphics->setStatusTip(tr("If the main window is using graphics, use them in the Overhead Map Window."));
-    connect(overhead_map_graphics, SIGNAL(changed()), this, SLOT(set_overhead_map_graphics()));
-    win_overhead_map_settings->addAction(overhead_map_graphics);
+    overhead_map_font_act = new QAction(tr("Set Overhead Map Font"), this);
+    overhead_map_font_act->setStatusTip(tr("Set the font for the Overhead Map Screen."));
+    connect(overhead_map_font_act, SIGNAL(triggered()), this, SLOT(win_overhead_map_font()));
+    win_overhead_map_settings->addAction(overhead_map_font_act);
+    overhead_map_graphics_act = new QAction(tr("Use Graphics"), this);
+    overhead_map_graphics_act->setCheckable(true);
+    overhead_map_graphics_act->setChecked(overhead_map_use_graphics);
+    overhead_map_graphics_act->setStatusTip(tr("If the main window is using graphics, use them in the Overhead Map Window."));
+    connect(overhead_map_graphics_act, SIGNAL(changed()), this, SLOT(set_overhead_map_graphics()));
+    win_overhead_map_settings->addAction(overhead_map_graphics_act);
     QMenu *overhead_map_submenu = win_overhead_map_settings->addMenu(tr("Tile multiplier"));
     overhead_map_multipliers = new QActionGroup(this);
 
@@ -483,12 +484,12 @@ void MainWindow::win_overhead_map_create()
 void MainWindow::win_overhead_map_destroy(QObject *this_object)
 {
     (void)this_object;
-    if (!show_win_overhead_map) return;
+    if (!overhead_map_settings.win_show) return;
     if (!window_overhead_map) return;
     overhead_map_settings.get_widget_settings(window_overhead_map);
     window_overhead_map->deleteLater();
     overhead_map_created = FALSE;
-    show_win_overhead_map = FALSE;
+    overhead_map_settings.win_show = FALSE;
     win_overhead_map_act->setText("Show Overhead Window");
 }
 
@@ -499,18 +500,18 @@ void MainWindow::win_overhead_map_destroy(QObject *this_object)
  */
 void MainWindow::win_overhead_map_close()
 {
-    bool was_open = show_win_overhead_map;
+    bool was_open = overhead_map_settings.win_show;
     win_overhead_map_destroy(window_overhead_map);
-    show_win_overhead_map = was_open;
+    overhead_map_settings.win_show = was_open;
 
 }
 
 void MainWindow::toggle_win_overhead_map_frame()
 {
-    if (!show_win_overhead_map)
+    if (!overhead_map_settings.win_show)
     {
         win_overhead_map_create();
-        show_win_overhead_map = TRUE;
+        overhead_map_settings.win_show = TRUE;
         create_win_overhead_map();
         window_overhead_map->setGeometry(overhead_map_settings.win_geometry);
         win_overhead_map_act->setText("Hide Overhead Window");

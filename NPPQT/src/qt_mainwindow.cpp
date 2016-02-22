@@ -505,7 +505,7 @@ MainWindow::MainWindow()
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
-    show_win_overhead_map = show_win_dun_map = overhead_map_created = dun_map_created = FALSE;
+    show_win_dun_map = overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
     dun_map_cell_wid = dun_map_cell_hgt = 0;
     dun_map_use_graphics = dun_map_created = FALSE;
@@ -969,7 +969,7 @@ void MainWindow::hideEvent(QHideEvent *event)
     if (show_char_equipment && window_char_equipment) window_char_equipment->hide();
     if (show_char_inventory && window_char_inventory) window_char_inventory->hide();
     if (show_win_dun_map && window_dun_map) window_dun_map->hide();
-    if (show_win_overhead_map && window_overhead_map) window_overhead_map->hide();
+    if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->hide();
 
     event->accept();
 }
@@ -987,7 +987,7 @@ void MainWindow::showEvent(QShowEvent *event)
     if (show_char_equipment && window_char_equipment) window_char_equipment->show();
     if (show_char_inventory && window_char_inventory) window_char_inventory->show();
     if (show_win_dun_map && window_dun_map) window_dun_map->show();
-    if (show_win_overhead_map && window_overhead_map) window_overhead_map->show();
+    if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->show();
 
     main_window->activateWindow();
 
@@ -1845,7 +1845,7 @@ void MainWindow::select_font()
             font_char_equipment = QFont(family);
             font_char_inventory = QFont(family);
             font_dun_map = QFont(family);
-            font_overhead_map = QFont(family);
+            overhead_map_settings.win_font = QFont(family);
             have_font = TRUE;
         }
     }
@@ -1864,7 +1864,7 @@ void MainWindow::select_font()
     font_char_equipment.setPointSize(12);
     font_char_inventory.setPointSize(12);
     font_dun_map.setPointSize(10);
-    font_overhead_map.setPointSize(8);
+    overhead_map_settings.win_font.setPointSize(8);
 }
 
 
@@ -2045,17 +2045,17 @@ void MainWindow::read_settings()
     }
 
     // Overhead window settings
-    show_win_overhead_map = settings.value("show_dun_overhead_window", false).toBool();
+    overhead_map_settings.win_show = settings.value("show_dun_overhead_window", false).toBool();
     overhead_map_use_graphics = settings.value("graphics_overhead_map", false).toBool();
     overhead_map_multiplier = settings.value("dun_overhead_tile_multiplier", "1:1").toString();
     dummy_widget.restoreGeometry(settings.value("winOverheadMapGeometry").toByteArray());
     overhead_map_settings.win_geometry = dummy_widget.geometry();
     overhead_map_settings.win_maximized = settings.value("winOverheadMapMaximized", false).toBool();
-    load_font = settings.value("font_overhead_map", font_overhead_map ).toString();
-    font_overhead_map.fromString(load_font);
-    if (show_win_overhead_map)
+    load_font = settings.value("font_overhead_map", overhead_map_settings.win_font ).toString();
+    overhead_map_settings.win_font.fromString(load_font);
+    if (overhead_map_settings.win_show)
     {
-        show_win_overhead_map = FALSE; //hack - so it gets toggled to true
+        overhead_map_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_overhead_map_frame();
     }
 
@@ -2172,13 +2172,13 @@ void MainWindow::write_settings()
     settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
 
 
-    settings.setValue("show_dun_overhead_window", show_win_overhead_map);
+    settings.setValue("show_dun_overhead_window", overhead_map_settings.win_show);
     settings.setValue("graphics_overhead_map", overhead_map_use_graphics);
     settings.setValue("dun_overhead_tile_multiplier", overhead_map_multiplier);
     dummy_widget.setGeometry(overhead_map_settings.win_geometry);
     settings.setValue("winOverheadMapGeometry", dummy_widget.saveGeometry());
     settings.setValue("winOverheadMapMaximized", overhead_map_settings.win_maximized);
-    settings.setValue("font_overhead_map", font_overhead_map.toString());
+    settings.setValue("font_overhead_map", overhead_map_settings.win_font.toString());
 }
 
 
@@ -2224,7 +2224,7 @@ void MainWindow::load_file(const QString &file_name)
                 if (show_char_equipment) create_win_char_equipment();
                 if (show_char_inventory) create_win_char_inventory();
                 if (show_win_dun_map) create_win_dun_map();
-                if (show_win_overhead_map) create_win_overhead_map();
+                if (overhead_map_settings.win_show) create_win_overhead_map();
                 ui_player_moved();
 
                 //hack - draw everything
@@ -2260,7 +2260,7 @@ void MainWindow::launch_birth(bool quick_start)
         if (show_char_equipment) create_win_char_equipment();
         if (show_char_inventory) create_win_char_inventory();
         if (show_win_dun_map) create_win_dun_map();
-        if (show_win_overhead_map) create_win_overhead_map();
+        if (overhead_map_settings.win_show) create_win_overhead_map();
         ui_player_moved();
 
         // The main purpose of this greeting is to avoid crashes
