@@ -384,7 +384,7 @@ private:
     QPointer<QAction> win_char_equip_info;
     QPointer<QAction> win_char_equipment;
     QPointer<QAction> win_char_inventory;
-    QPointer<QAction> win_dun_map;
+    QPointer<QAction> win_dun_map_act;
     QPointer<QAction> win_overhead_map_act;
 
     // Holds the actual commands for the help menu.
@@ -737,11 +737,12 @@ private:
     QPointer<QGraphicsScene> dun_map_scene;
     QPointer<QGraphicsView> dun_map_view;
     QMenuBar *win_dun_map_menubar;
-    QPointer<QAction> dun_map_font;
-    QPointer<QAction> dun_map_graphics;
+    QPointer<QAction> dun_map_font_act;
+    QPointer<QAction> dun_map_graphics_act;
     QPointer<QMenu> win_dun_map_settings;
     void win_dun_map_create();
     void win_dun_map_destroy();
+    void win_dun_map_close();
     void win_dun_map_wipe();
     void create_win_dun_map();
     DunMapGrid *dun_map_grids[MAX_DUNGEON_HGT][MAX_DUNGEON_WID];
@@ -750,9 +751,7 @@ private:
     QString dun_map_multiplier;
     void set_dun_map_font(QFont newFont);
 
-
 public:
-    bool show_win_dun_map;
     bool dun_map_use_graphics;
     void win_dun_map_update();
     void dun_map_update_one_grid(int y, int x);
@@ -762,14 +761,14 @@ public:
     int dun_map_font_hgt, dun_map_font_wid;
     int dun_map_tile_hgt, dun_map_tile_wid;
     int dun_map_cell_wid, dun_map_cell_hgt;
-    QFont font_dun_map;
+    extra_win_settings dun_map_settings;
 
 private slots:
     void win_dun_map_font();
     void toggle_win_dun_map_frame();
     void dun_map_multiplier_clicked(QAction *);
     void set_dun_map_graphics();
-    void close_win_dun_map_frame(QObject *this_object);
+    void win_dun_map_destroy(QObject *this_object);
 
     // Overhead window
 private:

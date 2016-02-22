@@ -157,8 +157,9 @@ void DunMapGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
                 done_fg = true;
             }
 
-            if (do_shadow) {
-                QPixmap pix = pseudo_ascii(square_char, square_color, main_window->font_dun_map,
+            if (do_shadow)
+            {
+                QPixmap pix = pseudo_ascii(square_char, square_color, main_window->dun_map_settings.win_font,
                                            QSizeF(main_window->dun_map_cell_wid, main_window->dun_map_cell_hgt));
                 painter->drawPixmap(pix.rect(), pix, pix.rect());
                 done_fg = true;
@@ -169,7 +170,7 @@ void DunMapGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     // Go ascii?
     if (!done_fg && (!empty || !done_bg))
     {
-        painter->setFont(main_window->font_dun_map);
+        painter->setFont(main_window->dun_map_settings.win_font);
         painter->setPen(square_color);
         painter->drawText(QRectF(0, 0, main_window->dun_map_cell_wid, main_window->dun_map_cell_hgt),
                           Qt::AlignCenter, QString(square_char));
@@ -246,14 +247,14 @@ QRect MainWindow::visible_dun_map()
 
 void MainWindow::set_dun_map_font(QFont newFont)
 {
-    font_dun_map = newFont;
+    dun_map_settings.win_font = newFont;
     dun_map_calc_cell_size();
 }
 
 void MainWindow::win_dun_map_font()
 {
     bool selected;
-    QFont font = QFontDialog::getFont( &selected, font_dun_map, this);
+    QFont font = QFontDialog::getFont( &selected, dun_map_settings.win_font, this);
 
     if (selected)
     {
@@ -264,7 +265,7 @@ void MainWindow::win_dun_map_font()
 void MainWindow::set_dun_map_graphics()
 {
     if (!dun_map_created) return;
-    dun_map_use_graphics = dun_map_graphics->isChecked();
+    dun_map_use_graphics = dun_map_graphics_act->isChecked();
 
     if ((!dun_map_use_graphics) || (use_graphics == GRAPHICS_NONE))
     {
@@ -308,7 +309,7 @@ void MainWindow::dun_map_calc_cell_size()
 {
     if (!dun_map_created) return;
 
-    QFontMetrics metrics(font_dun_map);
+    QFontMetrics metrics(dun_map_settings.win_font);
 
     dun_map_font_hgt = metrics.height() + FONT_EXTRA;
     dun_map_font_wid = metrics.width('M') + FONT_EXTRA;
@@ -346,7 +347,7 @@ void MainWindow::dun_map_multiplier_clicked(QAction *action)
 // For when savefiles close but the game doesn't.
 void MainWindow::win_dun_map_wipe()
 {
-    if (!show_win_dun_map) return;
+    if (!dun_map_settings.win_show) return;
     if (!character_generated) return;
     clear_layout(main_vlay_dun_map);
     dun_map_created = FALSE;
@@ -381,7 +382,7 @@ void MainWindow::win_dun_map_update()
 void MainWindow::create_win_dun_map()
 {
     if (!character_generated) return;
-    if (!show_win_dun_map) return;
+    if (!dun_map_settings.win_show) return;
     dun_map_scene = new QGraphicsScene;
     dun_map_view = new QGraphicsView(dun_map_scene);
     main_vlay_dun_map->addWidget(dun_map_view);
@@ -409,14 +410,6 @@ void MainWindow::create_win_dun_map()
     dun_map_calc_cell_size();
 }
 
-void MainWindow::close_win_dun_map_frame(QObject *this_object)
-{
-    (void)this_object;
-    window_dun_map = NULL;
-    dun_map_created = FALSE;
-    show_win_dun_map = FALSE;
-    win_dun_map->setText("Show Map Window");
-}
 
 /*
  *  Make the small_map shell
@@ -431,16 +424,16 @@ void MainWindow::win_dun_map_create()
     main_vlay_dun_map->setMenuBar(win_dun_map_menubar);
     window_dun_map->setWindowTitle("Dungeon Map Window");
     win_dun_map_settings = win_dun_map_menubar->addMenu(tr("&Settings"));
-    dun_map_font = new QAction(tr("Set Dungeon Map Font"), this);
-    dun_map_font->setStatusTip(tr("Set the font for the Dungeon Map Screen."));
-    connect(dun_map_font, SIGNAL(triggered()), this, SLOT(win_dun_map_font()));
-    win_dun_map_settings->addAction(dun_map_font);
-    dun_map_graphics = new QAction(tr("Use Graphics"), this);
-    dun_map_graphics->setCheckable(true);
-    dun_map_graphics->setChecked(dun_map_use_graphics);
-    dun_map_graphics->setStatusTip(tr("If the main window is using graphics, use them in the Dungeon Map Window."));
-    connect(dun_map_graphics, SIGNAL(changed()), this, SLOT(set_dun_map_graphics()));
-    win_dun_map_settings->addAction(dun_map_graphics);
+    dun_map_font_act = new QAction(tr("Set Dungeon Map Font"), this);
+    dun_map_font_act->setStatusTip(tr("Set the font for the Dungeon Map Screen."));
+    connect(dun_map_font_act, SIGNAL(triggered()), this, SLOT(win_dun_map_font()));
+    win_dun_map_settings->addAction(dun_map_font_act);
+    dun_map_graphics_act = new QAction(tr("Use Graphics"), this);
+    dun_map_graphics_act->setCheckable(true);
+    dun_map_graphics_act->setChecked(dun_map_use_graphics);
+    dun_map_graphics_act->setStatusTip(tr("If the main window is using graphics, use them in the Dungeon Map Window."));
+    connect(dun_map_graphics_act, SIGNAL(changed()), this, SLOT(set_dun_map_graphics()));
+    win_dun_map_settings->addAction(dun_map_graphics_act);
     QMenu *dun_map_submenu = win_dun_map_settings->addMenu(tr("Tile multiplier"));
     dun_map_multipliers = new QActionGroup(this);
 
@@ -460,33 +453,49 @@ void MainWindow::win_dun_map_create()
     }
 
     window_dun_map->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_dun_map, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_dun_map_frame(QObject*)));
+    connect(window_dun_map, SIGNAL(destroyed(QObject*)), this, SLOT(win_dun_map_destroy(QObject*)));
 }
 
-void MainWindow::win_dun_map_destroy()
+/*
+ * Win_dun_map_close should be used when the game is shutting down.
+ * Use this function for closing the window mid-game
+ */
+void MainWindow::win_dun_map_destroy(QObject *this_object)
 {
-    if (!show_win_dun_map) return;
+    (void)this_object;
+    if (!dun_map_settings.win_show) return;
     if (!window_dun_map) return;
-    delete window_dun_map;
-    window_dun_map = NULL;
+    dun_map_settings.get_widget_settings(window_dun_map);
+    window_dun_map->deleteLater();
     dun_map_created = FALSE;
+    dun_map_settings.win_show = FALSE;
+    win_dun_map_act->setText("Show Map Window");
+}
+
+/*
+ * This version should only be used when the game is shutting down.
+ * So it is remembered if the window was open or not.
+ * For closing the window mid-game use win_dun_map_destroy directly
+ */
+void MainWindow::win_dun_map_close()
+{
+    bool was_open = dun_map_settings.win_show;
+    win_dun_map_destroy(window_dun_map);
+    dun_map_settings.win_show = was_open;
+
 }
 
 void MainWindow::toggle_win_dun_map_frame()
 {
-    if (!show_win_dun_map)
+    if (!dun_map_settings.win_show)
     {
         win_dun_map_create();
-        show_win_dun_map = TRUE;
+        dun_map_settings.win_show = TRUE;
         create_win_dun_map();
-        win_dun_map->setText("Hide Map Window");
-        window_dun_map->show();
+        window_dun_map->setGeometry(dun_map_settings.win_geometry);
+        win_dun_map_act->setText("Hide Map Window");
+        if (dun_map_settings.win_maximized) window_dun_map->showMaximized();
+        else window_dun_map->show();
     }
-    else
-
-    {
-        win_dun_map_destroy();
-        show_win_dun_map = FALSE;
-        win_dun_map->setText("Show Map Window");
-    }
+    else win_dun_map_destroy(window_dun_map);
 }

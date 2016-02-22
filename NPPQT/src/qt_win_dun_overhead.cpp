@@ -208,7 +208,8 @@ void DunOverheadGrid::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
                 done_fg = true;
             }
 
-            if (do_shadow) {
+            if (do_shadow)
+            {
                 QPixmap pix = pseudo_ascii(square_char, square_color, main_window->overhead_map_settings.win_font,
                                            QSizeF(main_window->overhead_map_cell_wid, main_window->overhead_map_cell_hgt));
                 painter->drawPixmap(pix.rect(), pix, pix.rect());

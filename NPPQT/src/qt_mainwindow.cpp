@@ -505,7 +505,7 @@ MainWindow::MainWindow()
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
     show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
-    show_win_dun_map = overhead_map_created = dun_map_created = FALSE;
+    overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
     dun_map_cell_wid = dun_map_cell_hgt = 0;
     dun_map_use_graphics = dun_map_created = FALSE;
@@ -513,6 +513,7 @@ MainWindow::MainWindow()
     overhead_map_use_graphics = overhead_map_created = FALSE;
 
     overhead_map_settings.set_extra_win_default();
+    dun_map_settings.set_extra_win_default();
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -948,7 +949,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_char_info_equip_destroy();
     win_char_equipment_destroy();
     win_char_inventory_destroy();
-    win_dun_map_destroy();
+    win_dun_map_close();
     win_overhead_map_close();
 
     write_settings();
@@ -968,7 +969,7 @@ void MainWindow::hideEvent(QHideEvent *event)
     if (show_char_info_equip && window_char_info_equip) window_char_info_equip->hide();
     if (show_char_equipment && window_char_equipment) window_char_equipment->hide();
     if (show_char_inventory && window_char_inventory) window_char_inventory->hide();
-    if (show_win_dun_map && window_dun_map) window_dun_map->hide();
+    if (dun_map_settings.win_show && window_dun_map) window_dun_map->hide();
     if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->hide();
 
     event->accept();
@@ -986,7 +987,7 @@ void MainWindow::showEvent(QShowEvent *event)
     if (show_char_info_equip && window_char_info_equip) window_char_info_equip->show();
     if (show_char_equipment && window_char_equipment) window_char_equipment->show();
     if (show_char_inventory && window_char_inventory) window_char_inventory->show();
-    if (show_win_dun_map && window_dun_map) window_dun_map->show();
+    if (dun_map_settings.win_show && window_dun_map) window_dun_map->show();
     if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->show();
 
     main_window->activateWindow();
@@ -1497,9 +1498,9 @@ void MainWindow::create_actions()
     win_char_inventory->setStatusTip(tr("Display character Inventory screen."));
     connect(win_char_inventory, SIGNAL(triggered()), this, SLOT(toggle_win_char_inventory_frame()));
 
-    win_dun_map = new QAction(tr("Show Map Window"), this);
-    win_dun_map->setStatusTip(tr("Display map window."));
-    connect(win_dun_map, SIGNAL(triggered()), this, SLOT(toggle_win_dun_map_frame()));
+    win_dun_map_act = new QAction(tr("Show Map Window"), this);
+    win_dun_map_act->setStatusTip(tr("Display map window."));
+    connect(win_dun_map_act, SIGNAL(triggered()), this, SLOT(toggle_win_dun_map_frame()));
 
     win_overhead_map_act = new QAction(tr("Show Overhead Map"), this);
     win_overhead_map_act->setStatusTip(tr("Display overhead map."));
@@ -1785,7 +1786,7 @@ void MainWindow::create_menus()
     win_menu->addAction(win_char_equip_info);
     win_menu->addAction(win_char_equipment);
     win_menu->addAction(win_char_inventory);
-    win_menu->addAction(win_dun_map);
+    win_menu->addAction(win_dun_map_act);
     win_menu->addAction(win_overhead_map_act);
 
     // Help section of top menu.
@@ -1844,7 +1845,7 @@ void MainWindow::select_font()
             font_char_equip_info = QFont(family);
             font_char_equipment = QFont(family);
             font_char_inventory = QFont(family);
-            font_dun_map = QFont(family);
+            dun_map_settings.win_font = QFont(family);
             overhead_map_settings.win_font = QFont(family);
             have_font = TRUE;
         }
@@ -1863,7 +1864,7 @@ void MainWindow::select_font()
     font_char_equip_info.setPointSize(12);
     font_char_equipment.setPointSize(12);
     font_char_inventory.setPointSize(12);
-    font_dun_map.setPointSize(10);
+    dun_map_settings.win_font.setPointSize(10);
     overhead_map_settings.win_font.setPointSize(8);
 }
 
@@ -1936,8 +1937,6 @@ void MainWindow::read_settings()
     font_char_equipment.fromString(load_font);
     load_font = settings.value("font_char_inventory", font_char_inventory ).toString();
     font_char_inventory.fromString(load_font);
-    load_font = settings.value("font_dun_map", font_dun_map ).toString();
-    font_dun_map.fromString(load_font);
 
     restoreState(settings.value("window_state").toByteArray());
 
@@ -2033,18 +2032,23 @@ void MainWindow::read_settings()
         window_char_inventory->show();
     }
 
-    show_win_dun_map = settings.value("show_dun_map_window", false).toBool();
+    // Dungeon map window settings
+    dun_map_settings.win_show = settings.value("show_dun_map_window", false).toBool();
     dun_map_use_graphics = settings.value("graphics_dun_map", false).toBool();
     dun_map_multiplier = settings.value("dun_map_tile_multiplier", "1:1").toString();
-    if (show_win_dun_map)
+    dummy_widget.restoreGeometry(settings.value("winDunMapGeometry").toByteArray());
+    dun_map_settings.win_geometry = dummy_widget.geometry();
+    dun_map_settings.win_maximized = settings.value("winDunMapMaximized", false).toBool();
+    load_font = settings.value("font_dun_map", dun_map_settings.win_font).toString();
+    dun_map_settings.win_font.fromString(load_font);
+
+    if (dun_map_settings.win_show)
     {
-        show_win_dun_map = FALSE; //hack - so it gets toggled to true
+        dun_map_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_dun_map_frame();
-        window_dun_map->restoreGeometry(settings.value("winDunMapGeometry").toByteArray());
-        window_dun_map->show();
     }
 
-    // Overhead window settings
+    // Overhead map window settings
     overhead_map_settings.win_show = settings.value("show_dun_overhead_window", false).toBool();
     overhead_map_use_graphics = settings.value("graphics_overhead_map", false).toBool();
     overhead_map_multiplier = settings.value("dun_overhead_tile_multiplier", "1:1").toString();
@@ -2096,7 +2100,7 @@ void MainWindow::write_settings()
     settings.setValue("font_char_equip_info", font_char_equip_info.toString());
     settings.setValue("font_char_equipment", font_char_equipment.toString());
     settings.setValue("font_char_inventory", font_char_inventory.toString());
-    settings.setValue("font_dun_map", font_dun_map.toString());
+
 
     settings.setValue("window_state", saveState());
 
@@ -2162,16 +2166,18 @@ void MainWindow::write_settings()
     }
     settings.setValue("show_inven_window_buttons", inven_show_buttons);
 
-    settings.setValue("show_dun_map_window", show_win_dun_map);
 
-    if (show_win_dun_map)
-    {
-        settings.setValue("winDunMapGeometry", window_dun_map->saveGeometry());
-    }
+
+    // Dungeon map window settings
+    settings.setValue("show_dun_map_window", dun_map_settings.win_show);
     settings.setValue("graphics_dun_map", dun_map_use_graphics);
     settings.setValue("dun_map_tile_multiplier", dun_map_multiplier);
+    dummy_widget.setGeometry(dun_map_settings.win_geometry);
+    settings.setValue("winDunMapGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winDunMapMaximized", dun_map_settings.win_maximized);
+    settings.setValue("font_dun_map", dun_map_settings.win_font.toString());
 
-
+    // Overhead map window settings
     settings.setValue("show_dun_overhead_window", overhead_map_settings.win_show);
     settings.setValue("graphics_overhead_map", overhead_map_use_graphics);
     settings.setValue("dun_overhead_tile_multiplier", overhead_map_multiplier);
@@ -2223,7 +2229,7 @@ void MainWindow::load_file(const QString &file_name)
                 if (show_char_info_equip) create_win_char_equip_info();
                 if (show_char_equipment) create_win_char_equipment();
                 if (show_char_inventory) create_win_char_inventory();
-                if (show_win_dun_map) create_win_dun_map();
+                if (dun_map_settings.win_show) create_win_dun_map();
                 if (overhead_map_settings.win_show) create_win_overhead_map();
                 ui_player_moved();
 
@@ -2259,7 +2265,7 @@ void MainWindow::launch_birth(bool quick_start)
         if (show_char_info_equip) create_win_char_equip_info();
         if (show_char_equipment) create_win_char_equipment();
         if (show_char_inventory) create_win_char_inventory();
-        if (show_win_dun_map) create_win_dun_map();
+        if (dun_map_settings.win_show) create_win_dun_map();
         if (overhead_map_settings.win_show) create_win_overhead_map();
         ui_player_moved();
 
