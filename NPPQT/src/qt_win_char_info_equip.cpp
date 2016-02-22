@@ -19,13 +19,13 @@ void MainWindow::update_label_equip_info_font()
     for (int i = 0; i < lbl_list.size(); i++)
     {
         QLabel *this_lbl = lbl_list.at(i);
-        this_lbl->setFont(font_char_equip_info);
+        this_lbl->setFont(char_info_equip_settings.win_font);
     }
 }
 
 void MainWindow::set_font_char_info_equip(QFont newFont)
 {
-    font_char_equip_info = newFont;
+    char_info_equip_settings.win_font = newFont;
     update_label_equip_info_font();
 
 }
@@ -33,7 +33,7 @@ void MainWindow::set_font_char_info_equip(QFont newFont)
 void MainWindow::win_char_info_equip_font()
 {
     bool selected;
-    QFont font = QFontDialog::getFont( &selected, font_char_equip_info, this);
+    QFont font = QFontDialog::getFont( &selected, char_info_equip_settings.win_font, this);
 
     if (selected)
     {
@@ -44,7 +44,7 @@ void MainWindow::win_char_info_equip_font()
 // For when savefiles close but the game doesn't.
 void MainWindow::win_char_info_equip_wipe()
 {
-    if (!show_char_info_equip) return;
+    if (!char_info_equip_settings.win_show) return;
     if (!character_generated) return;
     clear_layout(main_vlay_char_equip_info);
 }
@@ -53,7 +53,7 @@ void MainWindow::win_char_info_equip_wipe()
 void MainWindow::win_char_info_equip_update()
 {
     if (!character_generated) return;
-    if (!show_char_info_equip) return;
+    if (!char_info_equip_settings.win_show) return;
     update_equip_flags(list_resist_equippy, list_resist_flags, list_resist_labels);
     update_equip_flags(list_ability_equippy, list_ability_flags, list_ability_labels);
     update_equip_flags(list_nativity_equippy, list_nativity_flags, list_nativity_labels);
@@ -130,7 +130,7 @@ void MainWindow::update_win_char_equip_set_lists()
 void MainWindow::create_win_char_equip_info()
 {
     if (!character_generated) return;
-    if (!show_char_info_equip) return;
+    if (!char_info_equip_settings.win_show) return;
 
     // Object Info
     QPointer<QGridLayout> equip_info = new QGridLayout;
@@ -178,31 +178,11 @@ void MainWindow::create_win_char_equip_info()
     equip_info->addWidget(modifier_label, 0, 3, Qt::AlignCenter);
     equip_info->addLayout(equip_vlay, 1, 3);
 
-    equip_flag_info(resist_widget, resist_flags, FLAGS_RESIST, font_char_equip_info);
-    equip_flag_info(ability_widget, ability_flags, FLAGS_ABILITY, font_char_equip_info);
-    equip_flag_info(nativity_widget, nativity_flags, FLAGS_NATIVITY, font_char_equip_info);
-    equip_modifier_info(equip_widget, equip_mods, font_char_equip_info);
+    equip_flag_info(resist_widget, resist_flags, FLAGS_RESIST, char_info_equip_settings.win_font);
+    equip_flag_info(ability_widget, ability_flags, FLAGS_ABILITY, char_info_equip_settings.win_font);
+    equip_flag_info(nativity_widget, nativity_flags, FLAGS_NATIVITY, char_info_equip_settings.win_font);
+    equip_modifier_info(equip_widget, equip_mods, char_info_equip_settings.win_font);
     update_win_char_equip_set_lists();
-}
-
-void MainWindow::close_win_char_equip_frame(QObject *this_object)
-{
-    (void)this_object;
-    window_char_info_equip = NULL;
-    show_char_info_equip = FALSE;
-    win_char_equip_info->setText("Show Character Equipment Information");
-    list_resist_flags.clear();
-    list_ability_flags.clear();
-    list_equip_flags.clear();
-    list_nativity_flags.clear();
-    list_resist_labels.clear();
-    list_ability_labels.clear();
-    list_equip_labels.clear();
-    list_nativity_labels.clear();
-    list_resist_equippy.clear();
-    list_ability_equippy.clear();
-    list_equip_equippy.clear();
-    list_nativity_equippy.clear();
 }
 
 /*
@@ -219,41 +199,69 @@ void MainWindow::win_char_info_equip_create()
     char_info_equip_menubar = new QMenuBar;
     main_vlay_char_equip_info->setMenuBar(char_info_equip_menubar);
     window_char_info_equip->setWindowTitle("Character Equipment Information");
-    char_info_equip_settings = char_info_equip_menubar->addMenu(tr("&Settings"));
-    char_info_equip_font = new QAction(tr("Set Basic Character Screen Font"), this);
-    char_info_equip_font->setStatusTip(tr("Set the font for the Basic Character Information screen."));
-    connect(char_info_equip_font, SIGNAL(triggered()), this, SLOT(win_char_info_equip_font()));
-    char_info_equip_settings->addAction(char_info_equip_font);
+    win_char_info_equip_settings = char_info_equip_menubar->addMenu(tr("&Settings"));
+    char_info_equip_font_act = new QAction(tr("Set Basic Character Screen Font"), this);
+    char_info_equip_font_act->setStatusTip(tr("Set the font for the Basic Character Information screen."));
+    connect(char_info_equip_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_equip_font()));
+    win_char_info_equip_settings->addAction(char_info_equip_font_act);
 
     window_char_info_equip->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_char_info_equip, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_char_equip_frame(QObject*)));
+    connect(window_char_info_equip, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_equip_destroy(QObject*)));
 }
 
-void MainWindow::win_char_info_equip_destroy()
+/*
+ * win_char_equip_info_close should be used when the game is shutting down.
+ * Use this function for closing the window mid-game
+ */
+void MainWindow::win_char_info_equip_destroy(QObject *this_object)
 {
-    if (!show_char_info_equip) return;
+    (void)this_object;
+    if (!char_info_equip_settings.win_show) return;
     if (!window_char_info_equip) return;
-    delete window_char_info_equip;
-    window_char_info_equip = NULL;
+    char_info_equip_settings.get_widget_settings(window_char_info_equip);
+    window_char_info_equip->deleteLater();
+    char_info_equip_settings.win_show = FALSE;
+    win_char_equip_info->setText("Show Character Equipment Information");
+
+    list_resist_flags.clear();
+    list_ability_flags.clear();
+    list_equip_flags.clear();
+    list_nativity_flags.clear();
+    list_resist_labels.clear();
+    list_ability_labels.clear();
+    list_equip_labels.clear();
+    list_nativity_labels.clear();
+    list_resist_equippy.clear();
+    list_ability_equippy.clear();
+    list_equip_equippy.clear();
+    list_nativity_equippy.clear();
+}
+
+/*
+ * This version should only be used when the game is shutting down.
+ * So it is remembered if the window was open or not.
+ * For closing the window mid-game use win_char_info_equip_destroy directly
+ */
+void MainWindow::win_char_info_equip_close()
+{
+    bool was_open = char_info_equip_settings.win_show;
+    win_char_info_equip_destroy(window_char_info_equip);
+    char_info_equip_settings.win_show = was_open;
 }
 
 void MainWindow::toggle_win_char_equip_frame()
 {
-    if (!show_char_info_equip)
+    if (!char_info_equip_settings.win_show)
     {
         win_char_info_equip_create();
-        show_char_info_equip = TRUE;
+        char_info_equip_settings.win_show = TRUE;
         create_win_char_equip_info();
+        window_char_info_equip->setGeometry(char_info_equip_settings.win_geometry);
         win_char_equip_info->setText("Hide Character Equipment Information");
-        window_char_info_equip->show();
+        if (char_info_equip_settings.win_maximized) window_char_info_equip->showMaximized();
+        else window_char_info_equip->show();
     }
-    else
-
-    {
-        win_char_info_equip_destroy();
-        show_char_info_equip = FALSE;
-        win_char_equip_info->setText("Show Character Equipment Information");
-    }
+    else win_char_info_equip_destroy(window_char_info_equip);
 }
 
 

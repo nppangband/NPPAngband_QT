@@ -503,7 +503,7 @@ MainWindow::MainWindow()
     which_keyset = KEYSET_NEW;
     executing_command = show_obj_list = show_mon_list = show_messages_win = FALSE;
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
-    show_char_info_basic = show_char_info_equip = FALSE;
+    show_char_info_basic = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
     overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
@@ -512,10 +512,13 @@ MainWindow::MainWindow()
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
 
-    overhead_map_settings.set_extra_win_default();
-    dun_map_settings.set_extra_win_default();
-    char_inventory_settings.set_extra_win_default();
+    char_info_equip_settings.set_extra_win_default();
     char_equipment_settings.set_extra_win_default();
+    char_inventory_settings.set_extra_win_default();
+    dun_map_settings.set_extra_win_default();
+    overhead_map_settings.set_extra_win_default();
+
+
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -948,7 +951,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_feat_recall_destroy();
     win_messages_destroy();
     win_char_info_basic_destroy();
-    win_char_info_equip_destroy();
+    win_char_info_equip_close();
     win_char_equipment_close();
     win_char_inventory_close();
     win_dun_map_close();
@@ -968,7 +971,7 @@ void MainWindow::hideEvent(QHideEvent *event)
     if (show_feat_recall && window_feat_recall) window_feat_recall->hide();
     if (show_messages_win && window_messages) window_messages->hide();
     if (show_char_info_basic && window_char_info_basic) window_char_info_basic->hide();
-    if (show_char_info_equip && window_char_info_equip) window_char_info_equip->hide();
+    if (char_info_equip_settings.win_show && window_char_info_equip) window_char_info_equip->hide();
     if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->hide();
     if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->hide();
     if (dun_map_settings.win_show && window_dun_map) window_dun_map->hide();
@@ -986,7 +989,7 @@ void MainWindow::showEvent(QShowEvent *event)
     if (show_feat_recall && window_feat_recall) window_feat_recall->show();
     if (show_messages_win && window_messages) window_messages->show();
     if (show_char_info_basic && window_char_info_basic) window_char_info_basic->show();
-    if (show_char_info_equip && window_char_info_equip) window_char_info_equip->show();
+    if (char_info_equip_settings.win_show && window_char_info_equip) window_char_info_equip->show();
     if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->show();
     if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->show();
     if (dun_map_settings.win_show && window_dun_map) window_dun_map->show();
@@ -1844,7 +1847,7 @@ void MainWindow::select_font()
             font_win_feat_recall = QFont(family);
             font_win_messages = QFont(family);
             font_char_basic_info = QFont(family);
-            font_char_equip_info = QFont(family);
+            char_info_equip_settings.win_font = QFont(family);
             char_equipment_settings.win_font = QFont(family);
             char_inventory_settings.win_font = QFont(family);
             dun_map_settings.win_font = QFont(family);
@@ -1863,7 +1866,7 @@ void MainWindow::select_font()
     font_win_feat_recall.setPointSize(12);
     font_win_messages.setPointSize(12);
     font_char_basic_info.setPointSize(12);
-    font_char_equip_info.setPointSize(12);
+    char_info_equip_settings.win_font.setPointSize(12);
     char_equipment_settings.win_font.setPointSize(12);
     char_inventory_settings.win_font.setPointSize(12);
     dun_map_settings.win_font.setPointSize(10);
@@ -1933,8 +1936,7 @@ void MainWindow::read_settings()
     font_win_messages.fromString(load_font);
     load_font = settings.value("font_char_basic", font_char_basic_info ).toString();
     font_char_basic_info.fromString(load_font);
-    load_font = settings.value("font_char_equip_info", font_char_equip_info ).toString();
-    font_char_equip_info.fromString(load_font);
+
 
 
 
@@ -2003,13 +2005,18 @@ void MainWindow::read_settings()
         window_char_info_basic->show();
     }
 
-    show_char_info_equip = settings.value("show_char_equip_info_window", false).toBool();
-    if (show_char_info_equip)
+
+    // Character Equipment Information window settings
+    char_info_equip_settings.win_show = settings.value("show_char_info_equip_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winCharInfoEquipGeometry").toByteArray());
+    char_info_equip_settings.win_geometry = dummy_widget.geometry();
+    char_info_equip_settings.win_maximized = settings.value("winCharInfoEquipMaximized", false).toBool();
+    load_font = settings.value("font_char_info_equip", char_info_equip_settings.win_font ).toString();
+    char_info_equip_settings.win_font.fromString(load_font);
+    if (char_info_equip_settings.win_show)
     {
-        show_char_info_equip = FALSE; //hack - so it gets toggled to true
+        char_info_equip_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_char_equip_frame();
-        window_char_info_equip->restoreGeometry(settings.value("winCharEquipGeometry").toByteArray());
-        window_char_info_equip->show();
     }
 
     // Character Equipment window settings
@@ -2107,7 +2114,7 @@ void MainWindow::write_settings()
     settings.setValue("font_window_feat_recall", font_win_feat_recall.toString());
     settings.setValue("font_win_messages", font_win_messages.toString());
     settings.setValue("font_char_basic", font_char_basic_info.toString());
-    settings.setValue("font_char_equip_info", font_char_equip_info.toString());
+
 
     settings.setValue("window_state", saveState());
 
@@ -2153,13 +2160,13 @@ void MainWindow::write_settings()
         settings.setValue("winCharBasicGeometry", window_char_info_basic->saveGeometry());
     }
 
-    settings.setValue("show_char_equip_info_window", show_char_info_equip);
-    if (show_char_info_equip)
-    {
-        settings.setValue("winCharEquipGeometry", window_char_info_equip->saveGeometry());
-    }
 
-
+    // Character Equipment Information window settings
+    settings.setValue("show_char_info_equip_window", char_info_equip_settings.win_show);
+    dummy_widget.setGeometry(char_info_equip_settings.win_geometry);
+    settings.setValue("winCharInfoEquipGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winCharInfoEquipMaximized", char_info_equip_settings.win_maximized);
+    settings.setValue("font_char_info_equip", char_info_equip_settings.win_font.toString());
 
     // Character Equipment window settings
     settings.setValue("show_char_equipment_window", char_equipment_settings.win_show);
@@ -2237,7 +2244,7 @@ void MainWindow::load_file(const QString &file_name)
 
                 // Now that we have a character, fill in the char info window
                 if (show_char_info_basic) create_win_char_info();
-                if (show_char_info_equip) create_win_char_equip_info();
+                if (char_info_equip_settings.win_show) create_win_char_equip_info();
                 if (char_equipment_settings.win_show) create_win_char_equipment();
                 if (char_inventory_settings.win_show) create_win_char_inventory();
                 if (dun_map_settings.win_show) create_win_dun_map();
@@ -2273,7 +2280,7 @@ void MainWindow::launch_birth(bool quick_start)
         redraw_all();
         update_sidebar_font();
         if (show_char_info_basic) create_win_char_info();
-        if (show_char_info_equip) create_win_char_equip_info();
+        if (char_info_equip_settings.win_show) create_win_char_equip_info();
         if (char_equipment_settings.win_show) create_win_char_equipment();
         if (char_inventory_settings.win_show) create_win_char_inventory();
         if (dun_map_settings.win_show) create_win_dun_map();

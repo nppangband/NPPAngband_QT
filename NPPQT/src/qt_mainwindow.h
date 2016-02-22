@@ -623,15 +623,13 @@ private slots:
 
 // Character Equipment Information window
 private:
-    bool show_char_info_equip;
     QPointer<QWidget> window_char_info_equip;
     QPointer<QVBoxLayout> main_vlay_char_equip_info;
     QMenuBar *char_info_equip_menubar;
-    QPointer<QAction> char_info_equip_font;
-    QFont font_char_equip_info;
-    QPointer<QMenu> char_info_equip_settings;
+    QPointer<QMenu> win_char_info_equip_settings;
+    QPointer<QAction> char_info_equip_font_act;
     void win_char_info_equip_create();
-    void win_char_info_equip_destroy();
+    void win_char_info_equip_close();
     void win_char_info_equip_wipe();
     void update_label_equip_info_font();
     void set_font_char_info_equip(QFont newFont);
@@ -661,11 +659,12 @@ public:
     QList<QLabel *> list_ability_equippy;
     QList<QLabel *> list_equip_equippy;
     QList<QLabel *> list_nativity_equippy;
+    extra_win_settings char_info_equip_settings;
 
 private slots:
     void win_char_info_equip_font();
     void toggle_win_char_equip_frame();
-    void close_win_char_equip_frame(QObject *this_object);
+    void win_char_info_equip_destroy(QObject *this_object);
 
 // Character Equipment window
 private:
