@@ -482,7 +482,6 @@ void MainWindow::win_dun_map_close()
     bool was_open = dun_map_settings.win_show;
     win_dun_map_destroy(window_dun_map);
     dun_map_settings.win_show = was_open;
-
 }
 
 void MainWindow::toggle_win_dun_map_frame()

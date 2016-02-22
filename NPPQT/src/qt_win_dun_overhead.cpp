@@ -19,8 +19,8 @@ void extra_win_settings::set_extra_win_default()
     QDesktopWidget dummy_widget;
     QRect total_window = dummy_widget.screenGeometry(dummy_widget.primaryScreen());
 
-    QPoint starter(total_window.width() / 6, total_window.height() / 6);
-    win_geometry = QRect(starter, QSize(total_window.width() * 7 / 10, total_window.height() * 7 / 10));
+    QPoint starter(total_window.width() / 4, total_window.height() / 4);
+    win_geometry = QRect(starter, QSize(total_window.width() * 3 / 4, total_window.height() * 3 / 4));
     win_maximized = FALSE;
     win_show = FALSE;
 }

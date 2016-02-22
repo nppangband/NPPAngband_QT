@@ -382,8 +382,8 @@ private:
     QPointer<QAction> win_messages;
     QPointer<QAction> win_char_basic;
     QPointer<QAction> win_char_equip_info;
-    QPointer<QAction> win_char_equipment;
-    QPointer<QAction> win_char_inventory;
+    QPointer<QAction> win_char_equipment_act;
+    QPointer<QAction> win_char_inventory_act;
     QPointer<QAction> win_dun_map_act;
     QPointer<QAction> win_overhead_map_act;
 
@@ -669,16 +669,14 @@ private slots:
 
 // Character Equipment window
 private:
-    bool show_char_equipment;
     QPointer<QWidget> window_char_equipment;
     QPointer<QVBoxLayout> main_vlay_equipment;
     QMenuBar *char_equipment_menubar;
-    QPointer<QAction> char_equipment_font;
-    QPointer<QAction> char_equipment_buttons;
-    QFont font_char_equipment;
-    QPointer<QMenu> char_equipment_settings;
+    QPointer<QAction> char_equipment_font_act;
+    QPointer<QAction> char_equipment_buttons_act;
+    QPointer<QMenu> win_char_equipment_settings;
     void win_char_equipment_create();
-    void win_char_equipment_destroy();
+    void win_char_equipment_close();
     void win_char_equipment_wipe();
     void update_label_equipment_font();
     void set_font_char_equipment(QFont newFont);
@@ -691,26 +689,25 @@ private:
 
 public:
     void win_char_equipment_update();
+    extra_win_settings char_equipment_settings;
 
 private slots:
     void win_char_equipment_font();
     void toggle_equip_show_buttons();
     void toggle_win_char_equipment_frame();
     void equip_button_click();
-    void close_win_char_equipment_frame(QObject *this_object);
+    void win_char_equipment_destroy(QObject *this_object);
 
 // Character Inventory window
 private:
-    bool show_char_inventory;
     QPointer<QWidget> window_char_inventory;
     QPointer<QVBoxLayout> main_vlay_inventory;
     QMenuBar *char_inventory_menubar;
-    QPointer<QAction> char_inventory_font;
-    QPointer<QAction> char_inventory_buttons;
-    QFont font_char_inventory;
-    QPointer<QMenu> char_inventory_settings;
+    QPointer<QAction> char_inventory_font_act;
+    QPointer<QAction> char_inventory_buttons_act;
+    QPointer<QMenu> win_char_inventory_settings;
     void win_char_inventory_create();
-    void win_char_inventory_destroy();
+    void win_char_inventory_close();
     void win_char_inventory_wipe();
     void update_label_inventory_font();
     void set_font_char_inventory(QFont newFont);
@@ -722,13 +719,14 @@ private:
 
 public:
     void win_char_inventory_update();
+    extra_win_settings char_inventory_settings;
 
 private slots:
     void win_char_inventory_font();
     void toggle_inven_show_buttons();
     void toggle_win_char_inventory_frame();
     void inven_button_click();
-    void close_win_char_inventory_frame(QObject *this_object);
+    void win_char_inventory_destroy(QObject *this_object);
 
     // Small map window
 private:
@@ -741,7 +739,6 @@ private:
     QPointer<QAction> dun_map_graphics_act;
     QPointer<QMenu> win_dun_map_settings;
     void win_dun_map_create();
-    void win_dun_map_destroy();
     void win_dun_map_close();
     void win_dun_map_wipe();
     void create_win_dun_map();

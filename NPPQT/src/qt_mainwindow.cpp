@@ -503,7 +503,7 @@ MainWindow::MainWindow()
     which_keyset = KEYSET_NEW;
     executing_command = show_obj_list = show_mon_list = show_messages_win = FALSE;
     show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
-    show_char_info_basic = show_char_info_equip = show_char_equipment = show_char_inventory = FALSE;
+    show_char_info_basic = show_char_info_equip = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
     overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
@@ -514,6 +514,8 @@ MainWindow::MainWindow()
 
     overhead_map_settings.set_extra_win_default();
     dun_map_settings.set_extra_win_default();
+    char_inventory_settings.set_extra_win_default();
+    char_equipment_settings.set_extra_win_default();
 
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -947,8 +949,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_messages_destroy();
     win_char_info_basic_destroy();
     win_char_info_equip_destroy();
-    win_char_equipment_destroy();
-    win_char_inventory_destroy();
+    win_char_equipment_close();
+    win_char_inventory_close();
     win_dun_map_close();
     win_overhead_map_close();
 
@@ -967,8 +969,8 @@ void MainWindow::hideEvent(QHideEvent *event)
     if (show_messages_win && window_messages) window_messages->hide();
     if (show_char_info_basic && window_char_info_basic) window_char_info_basic->hide();
     if (show_char_info_equip && window_char_info_equip) window_char_info_equip->hide();
-    if (show_char_equipment && window_char_equipment) window_char_equipment->hide();
-    if (show_char_inventory && window_char_inventory) window_char_inventory->hide();
+    if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->hide();
+    if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->hide();
     if (dun_map_settings.win_show && window_dun_map) window_dun_map->hide();
     if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->hide();
 
@@ -985,8 +987,8 @@ void MainWindow::showEvent(QShowEvent *event)
     if (show_messages_win && window_messages) window_messages->show();
     if (show_char_info_basic && window_char_info_basic) window_char_info_basic->show();
     if (show_char_info_equip && window_char_info_equip) window_char_info_equip->show();
-    if (show_char_equipment && window_char_equipment) window_char_equipment->show();
-    if (show_char_inventory && window_char_inventory) window_char_inventory->show();
+    if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->show();
+    if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->show();
     if (dun_map_settings.win_show && window_dun_map) window_dun_map->show();
     if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->show();
 
@@ -1490,13 +1492,13 @@ void MainWindow::create_actions()
     win_char_equip_info->setStatusTip(tr("Display character equipment resistance and stat modifier information."));
     connect(win_char_equip_info, SIGNAL(triggered()), this, SLOT(toggle_win_char_equip_frame()));
 
-    win_char_equipment = new QAction(tr("Show Character Equipment Screen"), this);
-    win_char_equipment->setStatusTip(tr("Display character equipment screen."));
-    connect(win_char_equipment, SIGNAL(triggered()), this, SLOT(toggle_win_char_equipment_frame()));
+    win_char_equipment_act = new QAction(tr("Show Character Equipment Screen"), this);
+    win_char_equipment_act->setStatusTip(tr("Display character equipment screen."));
+    connect(win_char_equipment_act, SIGNAL(triggered()), this, SLOT(toggle_win_char_equipment_frame()));
 
-    win_char_inventory = new QAction(tr("Show Character Inventory Screen"), this);
-    win_char_inventory->setStatusTip(tr("Display character Inventory screen."));
-    connect(win_char_inventory, SIGNAL(triggered()), this, SLOT(toggle_win_char_inventory_frame()));
+    win_char_inventory_act = new QAction(tr("Show Character Inventory Screen"), this);
+    win_char_inventory_act->setStatusTip(tr("Display character Inventory screen."));
+    connect(win_char_inventory_act, SIGNAL(triggered()), this, SLOT(toggle_win_char_inventory_frame()));
 
     win_dun_map_act = new QAction(tr("Show Map Window"), this);
     win_dun_map_act->setStatusTip(tr("Display map window."));
@@ -1784,8 +1786,8 @@ void MainWindow::create_menus()
     win_menu->addAction(win_messages);
     win_menu->addAction(win_char_basic);
     win_menu->addAction(win_char_equip_info);
-    win_menu->addAction(win_char_equipment);
-    win_menu->addAction(win_char_inventory);
+    win_menu->addAction(win_char_equipment_act);
+    win_menu->addAction(win_char_inventory_act);
     win_menu->addAction(win_dun_map_act);
     win_menu->addAction(win_overhead_map_act);
 
@@ -1843,8 +1845,8 @@ void MainWindow::select_font()
             font_win_messages = QFont(family);
             font_char_basic_info = QFont(family);
             font_char_equip_info = QFont(family);
-            font_char_equipment = QFont(family);
-            font_char_inventory = QFont(family);
+            char_equipment_settings.win_font = QFont(family);
+            char_inventory_settings.win_font = QFont(family);
             dun_map_settings.win_font = QFont(family);
             overhead_map_settings.win_font = QFont(family);
             have_font = TRUE;
@@ -1862,8 +1864,8 @@ void MainWindow::select_font()
     font_win_messages.setPointSize(12);
     font_char_basic_info.setPointSize(12);
     font_char_equip_info.setPointSize(12);
-    font_char_equipment.setPointSize(12);
-    font_char_inventory.setPointSize(12);
+    char_equipment_settings.win_font.setPointSize(12);
+    char_inventory_settings.win_font.setPointSize(12);
     dun_map_settings.win_font.setPointSize(10);
     overhead_map_settings.win_font.setPointSize(8);
 }
@@ -1933,10 +1935,8 @@ void MainWindow::read_settings()
     font_char_basic_info.fromString(load_font);
     load_font = settings.value("font_char_equip_info", font_char_equip_info ).toString();
     font_char_equip_info.fromString(load_font);
-    load_font = settings.value("font_char_equipment", font_char_equipment ).toString();
-    font_char_equipment.fromString(load_font);
-    load_font = settings.value("font_char_inventory", font_char_inventory ).toString();
-    font_char_inventory.fromString(load_font);
+
+
 
     restoreState(settings.value("window_state").toByteArray());
 
@@ -2012,25 +2012,35 @@ void MainWindow::read_settings()
         window_char_info_equip->show();
     }
 
-    show_char_equipment = settings.value("show_char_equipment_window", false).toBool();
+    // Character Equipment window settings
+    char_equipment_settings.win_show = settings.value("show_char_equipment_window", false).toBool();
     equip_show_buttons = settings.value("show_equip_window_buttons", false).toBool();
-    if (show_char_equipment)
+    dummy_widget.restoreGeometry(settings.value("winCharEquipmentGeometry").toByteArray());
+    char_equipment_settings.win_geometry = dummy_widget.geometry();
+    char_equipment_settings.win_maximized = settings.value("winCharEquipmentMaximized", false).toBool();
+    load_font = settings.value("font_char_equipment", char_equipment_settings.win_font ).toString();
+    char_equipment_settings.win_font.fromString(load_font);
+    if (char_equipment_settings.win_show)
     {
-        show_char_equipment = FALSE; //hack - so it gets toggled to true
+        char_equipment_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_char_equipment_frame();
-        window_char_equipment->restoreGeometry(settings.value("winCharEquipmentGeometry").toByteArray());
-        window_char_equipment->show();
     }
 
-    show_char_inventory = settings.value("show_char_inventory_window", false).toBool();
+
+    // Character Inventory window settings
+    char_inventory_settings.win_show = settings.value("show_char_inventory_window", false).toBool();
     inven_show_buttons = settings.value("show_inven_window_buttons", false).toBool();
-    if (show_char_inventory)
+    dummy_widget.restoreGeometry(settings.value("winCharInventoryGeometry").toByteArray());
+    char_inventory_settings.win_geometry = dummy_widget.geometry();
+    char_inventory_settings.win_maximized = settings.value("winCharInventoryMaximized", false).toBool();
+    load_font = settings.value("font_char_inventory", char_inventory_settings.win_font ).toString();
+    char_inventory_settings.win_font.fromString(load_font);
+    if (char_inventory_settings.win_show)
     {
-        show_char_inventory = FALSE; //hack - so it gets toggled to true
+        char_inventory_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_char_inventory_frame();
-        window_char_inventory->restoreGeometry(settings.value("winCharInventoryGeometry").toByteArray());
-        window_char_inventory->show();
     }
+
 
     // Dungeon map window settings
     dun_map_settings.win_show = settings.value("show_dun_map_window", false).toBool();
@@ -2098,9 +2108,6 @@ void MainWindow::write_settings()
     settings.setValue("font_win_messages", font_win_messages.toString());
     settings.setValue("font_char_basic", font_char_basic_info.toString());
     settings.setValue("font_char_equip_info", font_char_equip_info.toString());
-    settings.setValue("font_char_equipment", font_char_equipment.toString());
-    settings.setValue("font_char_inventory", font_char_inventory.toString());
-
 
     settings.setValue("window_state", saveState());
 
@@ -2152,20 +2159,24 @@ void MainWindow::write_settings()
         settings.setValue("winCharEquipGeometry", window_char_info_equip->saveGeometry());
     }
 
-    settings.setValue("show_char_equipment_window", show_char_equipment);
-    if (show_char_equipment)
-    {
-        settings.setValue("winCharEquipmentGeometry", window_char_equipment->saveGeometry());
-    }
+
+
+    // Character Equipment window settings
+    settings.setValue("show_char_equipment_window", char_equipment_settings.win_show);
     settings.setValue("show_equip_window_buttons", equip_show_buttons);
+    dummy_widget.setGeometry(char_equipment_settings.win_geometry);
+    settings.setValue("winCharEquipmentGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winCharEquipmentMaximized", char_equipment_settings.win_maximized);
+    settings.setValue("font_char_equipment", char_equipment_settings.win_font.toString());
 
-    settings.setValue("show_char_inventory_window", show_char_inventory);
-    if (show_char_inventory)
-    {
-        settings.setValue("winCharInventoryGeometry", window_char_inventory->saveGeometry());
-    }
+
+    // Character Inventory window settings
+    settings.setValue("show_char_inventory_window", char_inventory_settings.win_show);
     settings.setValue("show_inven_window_buttons", inven_show_buttons);
-
+    dummy_widget.setGeometry(char_inventory_settings.win_geometry);
+    settings.setValue("winCharInventoryGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winCharInventoryMaximized", char_inventory_settings.win_maximized);
+    settings.setValue("font_char_inventory", char_inventory_settings.win_font.toString());
 
 
     // Dungeon map window settings
@@ -2227,8 +2238,8 @@ void MainWindow::load_file(const QString &file_name)
                 // Now that we have a character, fill in the char info window
                 if (show_char_info_basic) create_win_char_info();
                 if (show_char_info_equip) create_win_char_equip_info();
-                if (show_char_equipment) create_win_char_equipment();
-                if (show_char_inventory) create_win_char_inventory();
+                if (char_equipment_settings.win_show) create_win_char_equipment();
+                if (char_inventory_settings.win_show) create_win_char_inventory();
                 if (dun_map_settings.win_show) create_win_dun_map();
                 if (overhead_map_settings.win_show) create_win_overhead_map();
                 ui_player_moved();
@@ -2263,8 +2274,8 @@ void MainWindow::launch_birth(bool quick_start)
         update_sidebar_font();
         if (show_char_info_basic) create_win_char_info();
         if (show_char_info_equip) create_win_char_equip_info();
-        if (show_char_equipment) create_win_char_equipment();
-        if (show_char_inventory) create_win_char_inventory();
+        if (char_equipment_settings.win_show) create_win_char_equipment();
+        if (char_inventory_settings.win_show) create_win_char_inventory();
         if (dun_map_settings.win_show) create_win_dun_map();
         if (overhead_map_settings.win_show) create_win_overhead_map();
         ui_player_moved();
