@@ -2186,7 +2186,7 @@ void MainWindow::write_settings()
     dummy_widget.setGeometry(char_info_basic_settings.win_geometry);
     settings.setValue("winCharBasicGeometry", dummy_widget.saveGeometry());
     settings.setValue("winCharBasicMaximized", char_info_basic_settings.win_maximized);
-    settings.setValue("font_char_info_equip", char_info_basic_settings.win_font.toString());
+    settings.setValue("font_char_info_basic", char_info_basic_settings.win_font.toString());
 
 
     // Character Equipment Information window settings

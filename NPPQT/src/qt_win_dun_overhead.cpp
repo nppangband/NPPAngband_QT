@@ -453,6 +453,10 @@ void extra_win_settings::make_extra_window()
     main_vlay->setMenuBar(win_menubar);
     win_menu = win_menubar->addMenu("&Settings");
 
+    win_font_act = new QAction(QString("Set Window Font"), main_window);
+    win_font_act->setStatusTip("Set the font for this window.");
+    win_menu->addAction(win_font_act);
+
     main_widget->setAttribute(Qt::WA_DeleteOnClose);
 }
 
@@ -466,10 +470,8 @@ void MainWindow::win_overhead_map_create()
 
     overhead_map_settings.main_widget->setWindowTitle("Overhead Map Window");
 
-    overhead_map_font_act = new QAction(tr("Set Overhead Map Font"), this);
-    overhead_map_font_act->setStatusTip(tr("Set the font for the Overhead Map Screen."));
-    connect(overhead_map_font_act, SIGNAL(triggered()), this, SLOT(win_overhead_map_font()));
-    overhead_map_settings.win_menu->addAction(overhead_map_font_act);
+    connect(overhead_map_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_overhead_map_font()));
+
     overhead_map_graphics_act = new QAction(tr("Use Graphics"), this);
     overhead_map_graphics_act->setCheckable(true);
     overhead_map_graphics_act->setChecked(overhead_map_use_graphics);

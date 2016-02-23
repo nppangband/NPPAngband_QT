@@ -67,10 +67,8 @@ void MainWindow::win_feat_recall_create()
     feat_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
     win_feat_recall_settings.main_vlay->addWidget(feat_recall_area);
     win_feat_recall_settings.main_widget->setWindowTitle("Feature Recall Window");
-    feat_recall_set_font_act = new QAction(tr("Set Feature Recall Font"), this);
-    feat_recall_set_font_act->setStatusTip(tr("Set the font for the Feature Recall Window."));
-    connect(feat_recall_set_font_act, SIGNAL(triggered()), this, SLOT(win_feat_recall_font()));
-    win_feat_recall_settings.win_menu->addAction(feat_recall_set_font_act);
+
+    connect(win_feat_recall_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_feat_recall_font()));
 
     connect(win_feat_recall_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_feat_recall_destroy(QObject*)));
 }

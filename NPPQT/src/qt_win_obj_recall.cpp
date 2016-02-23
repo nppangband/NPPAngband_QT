@@ -90,11 +90,7 @@ void MainWindow::win_obj_recall_create()
     obj_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
     win_obj_recall_settings.main_vlay->addWidget(obj_recall_area);
     win_obj_recall_settings.main_widget->setWindowTitle("Object Recall Window");
-    obj_recall_set_font_act = new QAction(tr("Set Object Recall Font"), this);
-    obj_recall_set_font_act->setStatusTip(tr("Set the font for the Object Recall Window."));
-    connect(obj_recall_set_font_act, SIGNAL(triggered()), this, SLOT(win_obj_recall_font()));
-    win_obj_recall_settings.win_menu->addAction(obj_recall_set_font_act);
-
+    connect(win_obj_recall_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_obj_recall_font()));
 
     connect(win_obj_recall_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_obj_recall_destroy(QObject*)));
 }

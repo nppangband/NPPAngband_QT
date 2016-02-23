@@ -60,14 +60,10 @@ void MainWindow::win_messages_create()
     win_messages_area->setStyleSheet("background-color: black;");
     win_messages_area->setTextInteractionFlags(Qt::TextSelectableByMouse);
     win_message_settings.main_vlay->addWidget(win_messages_area);
-    win_messages_menubar = new QMenuBar;
-    win_message_settings.main_vlay->setMenuBar(win_messages_menubar);
+
     win_message_settings.main_widget->setWindowTitle("Messages Window");
-    win_messages_win_settings = win_messages_menubar->addMenu(tr("&Settings"));
-    win_messages_set_font_act = new QAction(tr("Set Messages Window Font"), this);
-    win_messages_set_font_act->setStatusTip(tr("Set the font for the Messages Window."));
-    connect(win_messages_set_font_act, SIGNAL(triggered()), this, SLOT(win_messages_font()));
-    win_messages_win_settings->addAction(win_messages_set_font_act);
+
+    connect(win_message_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_messages_font()));
 
     connect(win_message_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_messages_destroy(QObject*)));
 

@@ -66,10 +66,7 @@ void MainWindow::win_mon_recall_create()
     mon_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
     win_mon_recall_settings.main_vlay->addWidget(mon_recall_area);
     win_mon_recall_settings.main_widget->setWindowTitle("Monster Recall Window");
-    mon_recall_set_font_act = new QAction(tr("Set Monster Recall Font"), this);
-    mon_recall_set_font_act->setStatusTip(tr("Set the font for the Monster Recall Window."));
-    connect(mon_recall_set_font_act, SIGNAL(triggered()), this, SLOT(win_mon_recall_font()));
-    win_mon_recall_settings.win_menu->addAction(mon_recall_set_font_act);
+    connect(win_mon_recall_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_mon_recall_font()));
 
     connect(win_mon_recall_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_mon_recall_destroy(QObject*)));
 }

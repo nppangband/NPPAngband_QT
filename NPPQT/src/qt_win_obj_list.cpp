@@ -461,10 +461,8 @@ void MainWindow::win_obj_list_create()
     qtablewidget_add_palette(obj_list_area);
     win_obj_list_settings.main_vlay->addWidget(obj_list_area);
     win_obj_list_settings.main_widget->setWindowTitle("Viewable Object List");
-    obj_list_set_font_act = new QAction(tr("Set Object List Font"), this);
-    obj_list_set_font_act->setStatusTip(tr("Set the font for the Object List."));
-    connect(obj_list_set_font_act, SIGNAL(triggered()), this, SLOT(win_obj_list_font()));
-    win_obj_list_settings.win_menu->addAction(obj_list_set_font_act);
+
+    connect(win_obj_list_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_obj_list_font()));
 
     connect(win_obj_list_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_obj_list_destroy(QObject*)));
 }

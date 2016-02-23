@@ -219,10 +219,7 @@ void MainWindow::win_char_info_basic_create()
     char_info_basic_settings.make_extra_window();
 
     char_info_basic_settings.main_widget->setWindowTitle("Character Information - Basic");
-    char_info_basic_font_act = new QAction(tr("Set Basic Character Screen Font"), this);
-    char_info_basic_font_act->setStatusTip(tr("Set the font for the Basic Character Information screen."));
-    connect(char_info_basic_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_basic_font()));
-    char_info_basic_settings.win_menu->addAction(char_info_basic_font_act);
+    connect(char_info_basic_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_basic_font()));
 
     connect(char_info_basic_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_basic_destroy(QObject*)));
 }

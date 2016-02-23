@@ -163,10 +163,8 @@ void MainWindow::win_char_inventory_create()
     char_inventory_settings.make_extra_window();
 
     char_inventory_settings.main_widget->setWindowTitle("Character Inventory Screen");
-    char_inventory_font_act = new QAction(tr("Set Inventory Screen Font"), this);
-    char_inventory_font_act->setStatusTip(tr("Set the font for the Inventory screen."));
-    connect(char_inventory_font_act, SIGNAL(triggered()), this, SLOT(win_char_inventory_font()));
-    char_inventory_settings.win_menu->addAction(char_inventory_font_act);
+    connect(char_inventory_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_char_inventory_font()));
+
     char_inventory_buttons_act = new QAction(tr("Show Command Buttons"), this);
     if (inven_show_buttons) char_inventory_buttons_act->setText("Hide Command Buttons");
     char_inventory_buttons_act->setStatusTip(tr("Displays or hides the command buttons."));

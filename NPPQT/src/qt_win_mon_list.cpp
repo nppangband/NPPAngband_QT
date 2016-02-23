@@ -480,10 +480,7 @@ void MainWindow::win_mon_list_create()
     qtablewidget_add_palette(mon_list_area);
     win_mon_list_settings.main_vlay->addWidget(mon_list_area);
     win_mon_list_settings.main_widget->setWindowTitle("Viewable Monster List");
-    mon_list_set_font_act = new QAction(tr("Set Monster List Font"), this);
-    mon_list_set_font_act->setStatusTip(tr("Set the font for the Monster List."));
-    connect(mon_list_set_font_act, SIGNAL(triggered()), this, SLOT(win_mon_list_font()));
-    win_mon_list_settings.win_menu->addAction(mon_list_set_font_act);
+    connect(win_mon_list_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_mon_list_font()));
 
     connect(win_mon_list_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_mon_list_destroy(QObject*)));
 }

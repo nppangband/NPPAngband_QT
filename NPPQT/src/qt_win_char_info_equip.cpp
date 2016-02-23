@@ -195,10 +195,8 @@ void MainWindow::win_char_info_equip_create()
     char_info_equip_settings.make_extra_window();
 
     char_info_equip_settings.main_widget->setWindowTitle("Character Equipment Information");
-    char_info_equip_font_act = new QAction(tr("Set Basic Character Screen Font"), this);
-    char_info_equip_font_act->setStatusTip(tr("Set the font for the Basic Character Information screen."));
-    connect(char_info_equip_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_equip_font()));
-    char_info_equip_settings.win_menu->addAction(char_info_equip_font_act);
+
+    connect(char_info_equip_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_equip_font()));
 
     connect(char_info_equip_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_equip_destroy(QObject*)));
 }

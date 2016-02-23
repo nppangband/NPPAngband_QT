@@ -419,10 +419,9 @@ void MainWindow::win_dun_map_create()
     dun_map_settings.make_extra_window();
 
     dun_map_settings.main_widget->setWindowTitle("Dungeon Map Window");
-    dun_map_font_act = new QAction(tr("Set Dungeon Map Font"), this);
-    dun_map_font_act->setStatusTip(tr("Set the font for the Dungeon Map Screen."));
-    connect(dun_map_font_act, SIGNAL(triggered()), this, SLOT(win_dun_map_font()));
-    dun_map_settings.win_menu->addAction(dun_map_font_act);
+
+    connect(dun_map_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_dun_map_font()));
+
     dun_map_graphics_act = new QAction(tr("Use Graphics"), this);
     dun_map_graphics_act->setCheckable(true);
     dun_map_graphics_act->setChecked(dun_map_use_graphics);

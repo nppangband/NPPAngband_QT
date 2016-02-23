@@ -179,10 +179,7 @@ void MainWindow::win_char_equipment_create()
     char_equipment_settings.make_extra_window();
 
     char_equipment_settings.main_widget->setWindowTitle("Character Equipment Screen");
-    char_equipment_font_act = new QAction(tr("Set Equipment Screen Font"), this);
-    char_equipment_font_act->setStatusTip(tr("Set the font for the Equipment screen."));
-    connect(char_equipment_font_act, SIGNAL(triggered()), this, SLOT(win_char_equipment_font()));
-    char_equipment_settings.win_menu->addAction(char_equipment_font_act);
+    connect(char_equipment_settings.win_font_act, SIGNAL(triggered()), this, SLOT(win_char_equipment_font()));
     char_equipment_buttons_act = new QAction(tr("Show Command Buttons"), this);
     if (equip_show_buttons) char_equipment_buttons_act->setText("Hide Command Buttons");
     char_equipment_buttons_act->setStatusTip(tr("Displays or hides the command buttons."));
