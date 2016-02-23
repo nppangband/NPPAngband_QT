@@ -466,6 +466,7 @@ void MainWindow::win_overhead_map_create()
         act->setCheckable(true);
         overhead_map_multipliers->addAction(act);
     }
+
     connect(overhead_map_multipliers, SIGNAL(triggered(QAction*)), this, SLOT(overhead_map_multiplier_clicked(QAction*)));
 
     QAction *act = window_overhead_map->findChild<QAction *>(overhead_map_multiplier);

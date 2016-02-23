@@ -499,11 +499,12 @@ MainWindow::MainWindow()
     // Store a reference for public functions (panel_contains and others)
     if (!main_window) main_window = this;
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
-    executing_command = show_obj_list = show_mon_list = show_messages_win = FALSE;
-    show_obj_recall = show_mon_recall = show_feat_recall = FALSE;
-    show_char_info_basic = FALSE;
+    executing_command = show_obj_list = show_mon_list = FALSE;
+    show_obj_recall = show_mon_recall = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
     overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
@@ -512,15 +513,14 @@ MainWindow::MainWindow()
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
 
+    win_feat_recall_settings.set_extra_win_default();
+    win_message_settings.set_extra_win_default();
+    char_info_basic_settings.set_extra_win_default();
     char_info_equip_settings.set_extra_win_default();
     char_equipment_settings.set_extra_win_default();
     char_inventory_settings.set_extra_win_default();
     dun_map_settings.set_extra_win_default();
     overhead_map_settings.set_extra_win_default();
-
-
-
-    setAttribute(Qt::WA_DeleteOnClose);
 
     targeting_mode = MODE_NO_TARGETING;
 
@@ -948,9 +948,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     win_obj_list_destroy();
     win_mon_recall_destroy();
     win_obj_recall_destroy();
-    win_feat_recall_destroy();
-    win_messages_destroy();
-    win_char_info_basic_destroy();
+    win_feat_recall_close();
+    win_messages_close();
+    win_char_info_basic_close();
     win_char_info_equip_close();
     win_char_equipment_close();
     win_char_inventory_close();
@@ -968,9 +968,9 @@ void MainWindow::hideEvent(QHideEvent *event)
     if (show_mon_list && window_mon_list) window_mon_list->hide();
     if (show_mon_recall && window_mon_recall) window_mon_recall->hide();
     if (show_obj_recall && window_obj_recall) window_obj_recall->hide();
-    if (show_feat_recall && window_feat_recall) window_feat_recall->hide();
-    if (show_messages_win && window_messages) window_messages->hide();
-    if (show_char_info_basic && window_char_info_basic) window_char_info_basic->hide();
+    if (win_feat_recall_settings.win_show && window_feat_recall) window_feat_recall->hide();
+    if (win_message_settings.win_show && window_messages) window_messages->hide();
+    if (char_info_basic_settings.win_show && window_char_info_basic) window_char_info_basic->hide();
     if (char_info_equip_settings.win_show && window_char_info_equip) window_char_info_equip->hide();
     if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->hide();
     if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->hide();
@@ -986,9 +986,9 @@ void MainWindow::showEvent(QShowEvent *event)
     if (show_mon_list && window_mon_list) window_mon_list->show();
     if (show_mon_recall && window_mon_recall) window_mon_recall->show();
     if (show_obj_recall && window_obj_recall) window_obj_recall->show();
-    if (show_feat_recall && window_feat_recall) window_feat_recall->show();
-    if (show_messages_win && window_messages) window_messages->show();
-    if (show_char_info_basic && window_char_info_basic) window_char_info_basic->show();
+    if (win_feat_recall_settings.win_show && window_feat_recall) window_feat_recall->show();
+    if (win_message_settings.win_show && window_messages) window_messages->show();
+    if (char_info_basic_settings.win_show && window_char_info_basic) window_char_info_basic->show();
     if (char_info_equip_settings.win_show && window_char_info_equip) window_char_info_equip->show();
     if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->show();
     if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->show();
@@ -1479,21 +1479,21 @@ void MainWindow::create_actions()
     win_obj_recall->setStatusTip(tr("Displays all known information about a given object."));
     connect(win_obj_recall, SIGNAL(triggered()), this, SLOT(toggle_win_obj_recall()));
 
-    win_feat_recall = new QAction(tr("Show Feature Recall Window"), this);
-    win_feat_recall->setStatusTip(tr("Displays all known information about a given feature."));
-    connect(win_feat_recall, SIGNAL(triggered()), this, SLOT(toggle_win_feat_recall()));
+    win_feat_recall_act = new QAction(tr("Show Feature Recall Window"), this);
+    win_feat_recall_act->setStatusTip(tr("Displays all known information about a given feature."));
+    connect(win_feat_recall_act, SIGNAL(triggered()), this, SLOT(toggle_win_feat_recall()));
 
-    win_messages = new QAction(tr("Show Message Window"), this);
-    win_messages->setStatusTip(tr("Displays all recent messages."));
-    connect(win_messages, SIGNAL(triggered()), this, SLOT(toggle_win_messages()));
+    win_messages_act = new QAction(tr("Show Message Window"), this);
+    win_messages_act->setStatusTip(tr("Displays all recent messages."));
+    connect(win_messages_act, SIGNAL(triggered()), this, SLOT(toggle_win_messages()));
 
-    win_char_basic = new QAction(tr("Show Basic Character Information"), this);
-    win_char_basic->setStatusTip(tr("Display basic character information."));
-    connect(win_char_basic, SIGNAL(triggered()), this, SLOT(toggle_win_char_info_frame()));
+    win_char_basic_act = new QAction(tr("Show Basic Character Information"), this);
+    win_char_basic_act ->setStatusTip(tr("Display basic character information."));
+    connect(win_char_basic_act , SIGNAL(triggered()), this, SLOT(toggle_win_char_basic_frame()));
 
-    win_char_equip_info = new QAction(tr("Show Character Equipment Information"), this);
-    win_char_equip_info->setStatusTip(tr("Display character equipment resistance and stat modifier information."));
-    connect(win_char_equip_info, SIGNAL(triggered()), this, SLOT(toggle_win_char_equip_frame()));
+    win_char_equip_info_act = new QAction(tr("Show Character Equipment Information"), this);
+    win_char_equip_info_act->setStatusTip(tr("Display character equipment resistance and stat modifier information."));
+    connect(win_char_equip_info_act, SIGNAL(triggered()), this, SLOT(toggle_win_char_equip_frame()));
 
     win_char_equipment_act = new QAction(tr("Show Character Equipment Screen"), this);
     win_char_equipment_act->setStatusTip(tr("Display character equipment screen."));
@@ -1785,10 +1785,10 @@ void MainWindow::create_menus()
     win_menu->addAction(win_obj_list);
     win_menu->addAction(win_mon_recall);
     win_menu->addAction(win_obj_recall);
-    win_menu->addAction(win_feat_recall);
-    win_menu->addAction(win_messages);
-    win_menu->addAction(win_char_basic);
-    win_menu->addAction(win_char_equip_info);
+    win_menu->addAction(win_feat_recall_act);
+    win_menu->addAction(win_messages_act);
+    win_menu->addAction(win_char_basic_act);
+    win_menu->addAction(win_char_equip_info_act);
     win_menu->addAction(win_char_equipment_act);
     win_menu->addAction(win_char_inventory_act);
     win_menu->addAction(win_dun_map_act);
@@ -1844,9 +1844,9 @@ void MainWindow::select_font()
             font_win_obj_list = QFont(family);
             font_win_mon_recall = QFont(family);
             font_win_obj_recall = QFont(family);
-            font_win_feat_recall = QFont(family);
-            font_win_messages = QFont(family);
-            font_char_basic_info = QFont(family);
+            win_feat_recall_settings.win_font = QFont(family);
+            win_message_settings.win_font = QFont(family);
+            char_info_basic_settings.win_font = QFont(family);
             char_info_equip_settings.win_font = QFont(family);
             char_equipment_settings.win_font = QFont(family);
             char_inventory_settings.win_font = QFont(family);
@@ -1863,9 +1863,9 @@ void MainWindow::select_font()
     font_win_obj_list.setPointSize(12);
     font_win_mon_recall.setPointSize(12);
     font_win_obj_recall.setPointSize(12);
-    font_win_feat_recall.setPointSize(12);
-    font_win_messages.setPointSize(12);
-    font_char_basic_info.setPointSize(12);
+    win_message_settings.win_font.setPointSize(12);
+    win_message_settings.win_font.setPointSize(12);
+    char_info_basic_settings.win_font.setPointSize(12);
     char_info_equip_settings.win_font.setPointSize(12);
     char_equipment_settings.win_font.setPointSize(12);
     char_inventory_settings.win_font.setPointSize(12);
@@ -1930,13 +1930,6 @@ void MainWindow::read_settings()
     font_win_mon_recall.fromString(load_font);
     load_font = settings.value("font_window_obj_recall", font_win_obj_recall ).toString();
     font_win_obj_recall.fromString(load_font);
-    load_font = settings.value("font_window_feat_recall", font_win_feat_recall ).toString();
-    font_win_feat_recall.fromString(load_font);
-    load_font = settings.value("font_win_messages", font_win_messages ).toString();
-    font_win_messages.fromString(load_font);
-    load_font = settings.value("font_char_basic", font_char_basic_info ).toString();
-    font_char_basic_info.fromString(load_font);
-
 
 
 
@@ -1978,31 +1971,44 @@ void MainWindow::read_settings()
         window_obj_recall->show();
     }
 
-    show_feat_recall = settings.value("show_feat_recall_window", false).toBool();
-    if (show_feat_recall)
+    // Feature recall window settings
+    win_feat_recall_settings.win_show = settings.value("show_feat_recall_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winFeatRecallGeometry").toByteArray());
+    win_feat_recall_settings.win_geometry = dummy_widget.geometry();
+    win_feat_recall_settings.win_maximized = settings.value("winFeatRecallMaximized", false).toBool();
+    load_font = settings.value("font_window_feat_recall", win_feat_recall_settings.win_font ).toString();
+    win_feat_recall_settings.win_font.fromString(load_font);
+    if (win_feat_recall_settings.win_show)
     {
-        show_feat_recall = FALSE; //hack - so it gets toggled to true
+        win_feat_recall_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_feat_recall();
-        window_feat_recall->restoreGeometry(settings.value("winFeatRecallGeometry").toByteArray());
-        window_feat_recall->show();
     }
 
-    show_messages_win = settings.value("show_messages_window", false).toBool();
-    if (show_messages_win)
+    // Messages window settings
+    win_message_settings.win_show = settings.value("show_messages_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winMessagesGeometry").toByteArray());
+    win_message_settings.win_geometry = dummy_widget.geometry();
+    win_message_settings.win_maximized = settings.value("winMessagesMaximized", false).toBool();
+    load_font = settings.value("font_messages_window", win_message_settings.win_font ).toString();
+    win_message_settings.win_font.fromString(load_font);
+    if (win_message_settings.win_show)
     {
-        show_messages_win = FALSE; //hack - so it gets toggled to true
+        win_message_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_messages();
-        window_messages->restoreGeometry(settings.value("winMessagesGeometry").toByteArray());
-        window_messages->show();
     }
 
-    show_char_info_basic = settings.value("show_char_basic_window", false).toBool();
-    if (show_char_info_basic)
+
+    // Character Basic Information window settings
+    char_info_basic_settings.win_show = settings.value("show_char_info_basic_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winCharBasicGeometry").toByteArray());
+    char_info_basic_settings.win_geometry = dummy_widget.geometry();
+    char_info_basic_settings.win_maximized = settings.value("winCharBasicMaximized", false).toBool();
+    load_font = settings.value("font_char_info_basic", char_info_basic_settings.win_font ).toString();
+    char_info_basic_settings.win_font.fromString(load_font);
+    if (char_info_basic_settings.win_show)
     {
-        show_char_info_basic = FALSE; //hack - so it gets toggled to true
-        toggle_win_char_info_frame();
-        window_char_info_basic->restoreGeometry(settings.value("winCharBasicGeometry").toByteArray());
-        window_char_info_basic->show();
+        char_info_basic_settings.win_show = FALSE; //hack - so it gets toggled to true
+        toggle_win_char_basic_frame();
     }
 
 
@@ -2111,9 +2117,6 @@ void MainWindow::write_settings()
     settings.setValue("font_window_obj_list", font_win_obj_list.toString());
     settings.setValue("font_window_mon_recall", font_win_mon_recall.toString());
     settings.setValue("font_window_obj_recall", font_win_obj_recall.toString());
-    settings.setValue("font_window_feat_recall", font_win_feat_recall.toString());
-    settings.setValue("font_win_messages", font_win_messages.toString());
-    settings.setValue("font_char_basic", font_char_basic_info.toString());
 
 
     settings.setValue("window_state", saveState());
@@ -2142,23 +2145,28 @@ void MainWindow::write_settings()
         settings.setValue("winObjRecallGeometry", window_obj_recall->saveGeometry());
     }
 
-    settings.setValue("show_feat_recall_window", show_feat_recall);
-    if (show_feat_recall)
-    {
-        settings.setValue("winFeatRecallGeometry", window_feat_recall->saveGeometry());
-    }
+    // Feature recall window settings
+    settings.setValue("show_feat_recall_window", win_feat_recall_settings.win_show);
+    dummy_widget.setGeometry(win_feat_recall_settings.win_geometry);
+    settings.setValue("winFeatRecallGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winFeatRecallMaximized", win_feat_recall_settings.win_maximized);
+    settings.setValue("font_window_feat_recall", win_feat_recall_settings.win_font.toString());
 
-    settings.setValue("show_messages_window", show_messages_win);
-    if (show_messages_win)
-    {
-        settings.setValue("winMessagesGeometry", window_messages->saveGeometry());
-    }
 
-    settings.setValue("show_char_basic_window", show_char_info_basic);
-    if (show_char_info_basic)
-    {
-        settings.setValue("winCharBasicGeometry", window_char_info_basic->saveGeometry());
-    }
+    // Messages window settings
+    settings.setValue("show_messages_window", win_message_settings.win_show);
+    dummy_widget.setGeometry(win_message_settings.win_geometry);
+    settings.setValue("winMessagesGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winMessagesMaximized", win_message_settings.win_maximized);
+    settings.setValue("font_messages_window", win_message_settings.win_font.toString());
+
+
+    // Character Basic Information window settings
+    settings.setValue("show_char_info_basic_window", char_info_basic_settings.win_show);
+    dummy_widget.setGeometry(char_info_basic_settings.win_geometry);
+    settings.setValue("winCharBasicGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winCharBasicMaximized", char_info_basic_settings.win_maximized);
+    settings.setValue("font_char_info_equip", char_info_basic_settings.win_font.toString());
 
 
     // Character Equipment Information window settings
@@ -2243,7 +2251,7 @@ void MainWindow::load_file(const QString &file_name)
                 update_sidebar_font();
 
                 // Now that we have a character, fill in the char info window
-                if (show_char_info_basic) create_win_char_info();
+                if (char_info_basic_settings.win_show) create_win_char_info();
                 if (char_info_equip_settings.win_show) create_win_char_equip_info();
                 if (char_equipment_settings.win_show) create_win_char_equipment();
                 if (char_inventory_settings.win_show) create_win_char_inventory();
@@ -2279,7 +2287,7 @@ void MainWindow::launch_birth(bool quick_start)
         graphics_view->setFocus();
         redraw_all();
         update_sidebar_font();
-        if (show_char_info_basic) create_win_char_info();
+        if (char_info_basic_settings.win_show) create_win_char_info();
         if (char_info_equip_settings.win_show) create_win_char_equip_info();
         if (char_equipment_settings.win_show) create_win_char_equipment();
         if (char_inventory_settings.win_show) create_win_char_inventory();

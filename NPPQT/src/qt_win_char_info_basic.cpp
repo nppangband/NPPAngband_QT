@@ -50,13 +50,13 @@ void MainWindow::update_label_basic_font()
     for (int i = 0; i < lbl_list.size(); i++)
     {
         QLabel *this_lbl = lbl_list.at(i);
-        this_lbl->setFont(font_char_basic_info);
+        this_lbl->setFont(char_info_basic_settings.win_font);
     }
 }
 
 void MainWindow::set_font_char_info_basic(QFont newFont)
 {
-    font_char_basic_info = newFont;
+    char_info_basic_settings.win_font = newFont;
     update_label_basic_font();
 
 }
@@ -64,7 +64,7 @@ void MainWindow::set_font_char_info_basic(QFont newFont)
 void MainWindow::win_char_info_basic_font()
 {
     bool selected;
-    QFont font = QFontDialog::getFont( &selected, font_char_basic_info, this);
+    QFont font = QFontDialog::getFont( &selected, char_info_basic_settings.win_font, this);
 
     if (selected)
     {
@@ -75,7 +75,7 @@ void MainWindow::win_char_info_basic_font()
 // For when savefiles close but the game doesn't.
 void MainWindow::win_char_info_basic_wipe()
 {
-    if (!show_char_info_basic) return;
+    if (!char_info_basic_settings.win_show) return;
     if (!character_generated) return;
     clear_layout(main_vlay_char_basic);
 }
@@ -84,7 +84,7 @@ void MainWindow::win_char_info_basic_wipe()
 void MainWindow::win_char_info_score()
 {
     if (!character_generated) return;
-    if (!show_char_info_basic) return;
+    if (!char_info_basic_settings.win_show) return;
     QList<QLabel *> lbl_list = window_char_info_basic->findChildren<QLabel *>();
     for (int i = 0; i < lbl_list.size(); i++)
     {
@@ -105,7 +105,7 @@ void MainWindow::win_char_info_score()
 void MainWindow::win_char_info_turncount()
 {
     if (!character_generated) return;
-    if (!show_char_info_basic) return;
+    if (!char_info_basic_settings.win_show) return;
 
     bool turn_game = FALSE;
     bool turn_player = FALSE;
@@ -136,14 +136,14 @@ void MainWindow::win_char_info_turncount()
 void MainWindow::win_char_info_basic_update()
 {
     if (!character_generated) return;
-    if (!show_char_info_basic) return;
-    update_char_screen(window_char_info_basic, font_char_basic_info);
+    if (!char_info_basic_settings.win_show) return;
+    update_char_screen(window_char_info_basic, char_info_basic_settings.win_font);
 }
 
 void MainWindow::create_win_char_info()
 {
     if (!character_generated) return;
-    if (!show_char_info_basic) return;
+    if (!char_info_basic_settings.win_show) return;
 
     QPointer<QHBoxLayout> char_info_basic_hlay = new QHBoxLayout;
 
@@ -203,17 +203,11 @@ void MainWindow::create_win_char_info()
     vlay_stat_info->addLayout(stat_info);
     vlay_stat_info->addStretch(1);
 
-    update_char_screen(window_char_info_basic, font_char_basic_info);
+    update_char_screen(window_char_info_basic, char_info_basic_settings.win_font);
     update_label_basic_font();
 }
 
-void MainWindow::close_win_char_info_frame(QObject *this_object)
-{
-    (void)this_object;
-    window_char_info_basic = NULL;
-    show_char_info_basic = FALSE;
-    win_char_basic->setText("Show Basic Character Information");
-}
+
 
 /*
  *  Make the basic shell
@@ -229,39 +223,51 @@ void MainWindow::win_char_info_basic_create()
     char_info_basic_menubar = new QMenuBar;
     main_vlay_char_basic->setMenuBar(char_info_basic_menubar);
     window_char_info_basic->setWindowTitle("Character Information - Basic");
-    char_info_basic_settings = char_info_basic_menubar->addMenu(tr("&Settings"));
-    char_info_basic_font = new QAction(tr("Set Basic Character Screen Font"), this);
-    char_info_basic_font->setStatusTip(tr("Set the font for the Basic Character Information screen."));
-    connect(char_info_basic_font, SIGNAL(triggered()), this, SLOT(win_char_info_basic_font()));
-    char_info_basic_settings->addAction(char_info_basic_font);
+    win_char_info_basic_settings = char_info_basic_menubar->addMenu(tr("&Settings"));
+    char_info_basic_font_act = new QAction(tr("Set Basic Character Screen Font"), this);
+    char_info_basic_font_act->setStatusTip(tr("Set the font for the Basic Character Information screen."));
+    connect(char_info_basic_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_basic_font()));
+    win_char_info_basic_settings->addAction(char_info_basic_font_act);
 
     window_char_info_basic->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_char_info_basic, SIGNAL(destroyed(QObject*)), this, SLOT(close_win_char_info_frame(QObject*)));
+    connect(window_char_info_basic, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_basic_destroy(QObject*)));
 }
 
-void MainWindow::win_char_info_basic_destroy()
+void MainWindow::win_char_info_basic_destroy(QObject *this_object)
 {
-    if (!show_char_info_basic) return;
+    (void)this_object;
+    if (!char_info_basic_settings.win_show) return;
     if (!window_char_info_basic) return;
-    delete window_char_info_basic;
-    window_char_info_basic = NULL;
+    char_info_basic_settings.get_widget_settings(window_char_info_basic);
+    window_char_info_basic->deleteLater();
+    char_info_basic_settings.win_show = FALSE;
+    win_char_basic_act->setText("Show Basic Character Information");
 }
 
-void MainWindow::toggle_win_char_info_frame()
+/*
+ * This version should only be used when the game is shutting down.
+ * So it is remembered if the window was open or not.
+ * For closing the window mid-game use win_char_info_basic_destroy directly
+ */
+void MainWindow::win_char_info_basic_close()
 {
-    if (!show_char_info_basic)
+    bool was_open = char_info_basic_settings.win_show;
+    win_char_info_basic_destroy(window_char_info_basic);
+    char_info_basic_settings.win_show = was_open;
+}
+
+void MainWindow::toggle_win_char_basic_frame()
+{
+    if (!char_info_basic_settings.win_show)
     {
         win_char_info_basic_create();
-        show_char_info_basic = TRUE;
+        char_info_basic_settings.win_show = TRUE;
         create_win_char_info();
-        win_char_basic->setText("Hide Basic Character Information");
-        window_char_info_basic->show();
+        window_char_info_basic->setGeometry(char_info_basic_settings.win_geometry);
+        win_char_basic_act->setText("Hide Basic Character Information");
+        if (char_info_basic_settings.win_maximized) window_char_info_basic->showMaximized();
+        else window_char_info_basic->show();
     }
-    else
-    {
-        win_char_info_basic_destroy();
-        show_char_info_basic = FALSE;
-        win_char_basic->setText("Show Basic Character Information");
-    }
+    else win_char_info_basic_destroy(window_char_info_basic);
 }
 

@@ -378,10 +378,10 @@ private:
     QPointer<QAction> win_obj_list;
     QPointer<QAction> win_mon_recall;
     QPointer<QAction> win_obj_recall;
-    QPointer<QAction> win_feat_recall;
-    QPointer<QAction> win_messages;
-    QPointer<QAction> win_char_basic;
-    QPointer<QAction> win_char_equip_info;
+    QPointer<QAction> win_feat_recall_act;
+    QPointer<QAction> win_messages_act;
+    QPointer<QAction> win_char_basic_act;
+    QPointer<QAction> win_char_equip_info_act;
     QPointer<QAction> win_char_equipment_act;
     QPointer<QAction> win_char_inventory_act;
     QPointer<QAction> win_dun_map_act;
@@ -547,63 +547,59 @@ private slots:
 
 // Feature Recall window
 private:
-    bool show_feat_recall;
     QPointer<QWidget> window_feat_recall;
     QPointer<QVBoxLayout> feat_recall_vlay;
     QTextEdit *feat_recall_area;
-    QMenuBar *feat_recall_menubar;
-    QPointer<QAction> feat_recall_set_font;
-    QFont font_win_feat_recall;
-    QPointer<QMenu> feat_recall_win_settings;
+    QMenuBar *win_feat_recall_menubar;
+    QPointer<QAction> feat_recall_set_font_act;
+    QPointer<QMenu> win_feat_recall_win_settings;
     void win_feat_recall_create();
-    void win_feat_recall_destroy();
+    void win_feat_recall_close();
     void win_feat_recall_wipe();
     void set_font_win_feat_recall(QFont newFont);
 
 public:
     void win_feat_recall_update();
+    extra_win_settings win_feat_recall_settings;
 
 private slots:
     void win_feat_recall_font();
     void toggle_win_feat_recall();
-    void close_win_feat_recall(QObject *this_object);
+    void win_feat_recall_destroy(QObject *this_object);
 
 // Messages window
 private:
-    bool show_messages_win;
     QPointer<QWidget> window_messages;
     QPointer<QVBoxLayout> win_messages_vlay;
     QTextEdit *win_messages_area;
     QMenuBar *win_messages_menubar;
-    QPointer<QAction> win_messages_set_font;
-    QFont font_win_messages;
-    QPointer<QMenu> messages_win_settings;
+    QPointer<QAction> win_messages_set_font_act;
+    QPointer<QMenu> win_messages_win_settings;
     void win_messages_create();
-    void win_messages_destroy();
+    void win_messages_close();
     void win_messages_wipe();
     void set_font_win_messages(QFont newFont);
 
+
 public:
     void win_messages_update();
+    extra_win_settings win_message_settings;
 
 private slots:
     void win_messages_font();
     void toggle_win_messages();
-    void close_win_messages(QObject *this_object);
-
+    void win_messages_destroy(QObject *this_object);
 
 
 // Character Information window
 private:
-    bool show_char_info_basic;
     QPointer<QWidget> window_char_info_basic;
     QPointer<QVBoxLayout> main_vlay_char_basic;
     QMenuBar *char_info_basic_menubar;
-    QPointer<QAction> char_info_basic_font;
-    QFont font_char_basic_info;
-    QPointer<QMenu> char_info_basic_settings;
+    QPointer<QAction> char_info_basic_font_act;
+    QPointer<QMenu> win_char_info_basic_settings;
     void win_char_info_basic_create();
-    void win_char_info_basic_destroy();
+    void win_char_info_basic_close();
     void win_char_info_basic_wipe();
     void update_label_basic_font();
     void set_font_char_info_basic(QFont newFont);
@@ -614,12 +610,13 @@ public:
     void win_char_info_basic_update();
     void win_char_info_score();
     void win_char_info_turncount();
+    extra_win_settings char_info_basic_settings;
 
 private slots:
     void win_char_info_basic_font();
-    void toggle_win_char_info_frame();
+    void toggle_win_char_basic_frame();
     void name_change(void);
-    void close_win_char_info_frame(QObject *this_object);
+    void win_char_info_basic_destroy(QObject *this_object);
 
 // Character Equipment Information window
 private:

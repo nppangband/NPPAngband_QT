@@ -221,7 +221,7 @@ void MainWindow::win_char_info_equip_destroy(QObject *this_object)
     char_info_equip_settings.get_widget_settings(window_char_info_equip);
     window_char_info_equip->deleteLater();
     char_info_equip_settings.win_show = FALSE;
-    win_char_equip_info->setText("Show Character Equipment Information");
+    win_char_equip_info_act->setText("Show Character Equipment Information");
 
     list_resist_flags.clear();
     list_ability_flags.clear();
@@ -257,7 +257,7 @@ void MainWindow::toggle_win_char_equip_frame()
         char_info_equip_settings.win_show = TRUE;
         create_win_char_equip_info();
         window_char_info_equip->setGeometry(char_info_equip_settings.win_geometry);
-        win_char_equip_info->setText("Hide Character Equipment Information");
+        win_char_equip_info_act->setText("Hide Character Equipment Information");
         if (char_info_equip_settings.win_maximized) window_char_info_equip->showMaximized();
         else window_char_info_equip->show();
     }

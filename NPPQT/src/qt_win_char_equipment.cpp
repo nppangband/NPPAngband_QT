@@ -193,6 +193,8 @@ void MainWindow::win_char_equipment_create()
     char_equipment_buttons_act->setStatusTip(tr("Displays or hides the command buttons."));
     connect(char_equipment_buttons_act, SIGNAL(triggered()), this, SLOT(toggle_equip_show_buttons()));
     win_char_equipment_settings->addAction(char_equipment_buttons_act);
+
+    window_char_equipment->setAttribute(Qt::WA_DeleteOnClose);
     connect(window_char_equipment, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_equipment_destroy(QObject*)));
 }
 

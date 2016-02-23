@@ -178,6 +178,7 @@ void MainWindow::win_char_inventory_create()
     connect(char_inventory_buttons_act, SIGNAL(triggered()), this, SLOT(toggle_inven_show_buttons()));
     win_char_inventory_settings->addAction(char_inventory_buttons_act);
 
+    window_char_inventory->setAttribute(Qt::WA_DeleteOnClose);
     connect(window_char_inventory, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_inventory_destroy(QObject*)));
 }
 
