@@ -503,16 +503,18 @@ MainWindow::MainWindow()
 
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
-    executing_command = show_obj_list = show_mon_list = FALSE;
-    show_obj_recall = show_mon_recall = FALSE;
     character_dungeon = character_generated = character_loaded = FALSE;
-    overhead_map_created = dun_map_created = FALSE;
+    executing_command = overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
     dun_map_cell_wid = dun_map_cell_hgt = 0;
     dun_map_use_graphics = dun_map_created = FALSE;
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
 
+    win_mon_list_settings.set_extra_win_default();
+    win_obj_list_settings.set_extra_win_default();
+    win_mon_recall_settings.set_extra_win_default();
+    win_obj_recall_settings.set_extra_win_default();
     win_feat_recall_settings.set_extra_win_default();
     win_message_settings.set_extra_win_default();
     char_info_basic_settings.set_extra_win_default();
@@ -944,10 +946,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
      * We do this before the write the settings so the
      * most recent windows geometry is recorded.
      */
-    win_mon_list_destroy();
-    win_obj_list_destroy();
-    win_mon_recall_destroy();
-    win_obj_recall_destroy();
+    win_mon_list_close();
+    win_obj_list_close();
+    win_mon_recall_close();
+    win_obj_recall_close();
     win_feat_recall_close();
     win_messages_close();
     win_char_info_basic_close();
@@ -964,10 +966,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::hideEvent(QHideEvent *event)
 {
-    if (show_obj_list && window_obj_list) window_obj_list->hide();
-    if (show_mon_list && window_mon_list) window_mon_list->hide();
-    if (show_mon_recall && window_mon_recall) window_mon_recall->hide();
-    if (show_obj_recall && window_obj_recall) window_obj_recall->hide();
+    if (win_mon_list_settings.win_show && window_obj_list) window_obj_list->hide();
+    if (win_obj_list_settings.win_show && window_mon_list) window_mon_list->hide();
+    if (win_mon_recall_settings.win_show && window_mon_recall) window_mon_recall->hide();
+    if (win_obj_recall_settings.win_show && window_obj_recall) window_obj_recall->hide();
     if (win_feat_recall_settings.win_show && window_feat_recall) window_feat_recall->hide();
     if (win_message_settings.win_show && window_messages) window_messages->hide();
     if (char_info_basic_settings.win_show && window_char_info_basic) window_char_info_basic->hide();
@@ -982,10 +984,10 @@ void MainWindow::hideEvent(QHideEvent *event)
 
 void MainWindow::showEvent(QShowEvent *event)
 {
-    if (show_obj_list && window_obj_list) window_obj_list->show();
-    if (show_mon_list && window_mon_list) window_mon_list->show();
-    if (show_mon_recall && window_mon_recall) window_mon_recall->show();
-    if (show_obj_recall && window_obj_recall) window_obj_recall->show();
+    if (win_mon_list_settings.win_show && window_obj_list) window_obj_list->show();
+    if (win_obj_list_settings.win_show && window_mon_list) window_mon_list->show();
+    if (win_mon_recall_settings.win_show && window_mon_recall) window_mon_recall->show();
+    if (win_obj_recall_settings.win_show && window_obj_recall) window_obj_recall->show();
     if (win_feat_recall_settings.win_show && window_feat_recall) window_feat_recall->show();
     if (win_message_settings.win_show && window_messages) window_messages->show();
     if (char_info_basic_settings.win_show && window_char_info_basic) window_char_info_basic->show();
@@ -1463,21 +1465,21 @@ void MainWindow::create_actions()
     view_kill_count->setStatusTip(tr("View the number of kills sorted by monster race."));
     connect(view_kill_count, SIGNAL(triggered()), this, SLOT(display_kill_count()));
 
-    win_mon_list = new QAction(tr("Show Monster List Window"), this);
-    win_mon_list->setStatusTip(tr("Displays a list of all the visible monsters on the level."));
-    connect(win_mon_list, SIGNAL(triggered()), this, SLOT(toggle_win_mon_list()));
+    win_mon_list_act = new QAction(tr("Show Monster List Window"), this);
+    win_mon_list_act->setStatusTip(tr("Displays a list of all the visible monsters on the level."));
+    connect(win_mon_list_act, SIGNAL(triggered()), this, SLOT(toggle_win_mon_list()));
 
-    win_obj_list = new QAction(tr("Show Object List Window"), this);
-    win_obj_list->setStatusTip(tr("Displays a list of all visible objects on the level."));
-    connect(win_obj_list, SIGNAL(triggered()), this, SLOT(toggle_win_obj_list()));
+    win_obj_list_act = new QAction(tr("Show Object List Window"), this);
+    win_obj_list_act->setStatusTip(tr("Displays a list of all visible objects on the level."));
+    connect(win_obj_list_act, SIGNAL(triggered()), this, SLOT(toggle_win_obj_list()));
 
-    win_mon_recall = new QAction(tr("Show Monster Recall Window"), this);
-    win_mon_recall->setStatusTip(tr("Displays all known information about a given monster race."));
-    connect(win_mon_recall, SIGNAL(triggered()), this, SLOT(toggle_win_mon_recall()));
+    win_mon_recall_act = new QAction(tr("Show Monster Recall Window"), this);
+    win_mon_recall_act->setStatusTip(tr("Displays all known information about a given monster race."));
+    connect(win_mon_recall_act, SIGNAL(triggered()), this, SLOT(toggle_win_mon_recall()));
 
-    win_obj_recall = new QAction(tr("Show Object Recall Window"), this);
-    win_obj_recall->setStatusTip(tr("Displays all known information about a given object."));
-    connect(win_obj_recall, SIGNAL(triggered()), this, SLOT(toggle_win_obj_recall()));
+    win_obj_recall_act = new QAction(tr("Show Object Recall Window"), this);
+    win_obj_recall_act->setStatusTip(tr("Displays all known information about a given object."));
+    connect(win_obj_recall_act, SIGNAL(triggered()), this, SLOT(toggle_win_obj_recall()));
 
     win_feat_recall_act = new QAction(tr("Show Feature Recall Window"), this);
     win_feat_recall_act->setStatusTip(tr("Displays all known information about a given feature."));
@@ -1781,10 +1783,10 @@ void MainWindow::create_menus()
     connect(act, SIGNAL(triggered()), this, SLOT(do_extract_from_package()));
 
     win_menu = menuBar()->addMenu(tr("&Windows"));
-    win_menu->addAction(win_mon_list);
-    win_menu->addAction(win_obj_list);
-    win_menu->addAction(win_mon_recall);
-    win_menu->addAction(win_obj_recall);
+    win_menu->addAction(win_mon_list_act);
+    win_menu->addAction(win_obj_list_act);
+    win_menu->addAction(win_mon_recall_act);
+    win_menu->addAction(win_obj_recall_act);
     win_menu->addAction(win_feat_recall_act);
     win_menu->addAction(win_messages_act);
     win_menu->addAction(win_char_basic_act);
@@ -1840,10 +1842,10 @@ void MainWindow::select_font()
             font_main_window = QFont(family);
             font_message_window = QFont(family);
             font_sidebar_window = QFont(family);
-            font_win_mon_list = QFont(family);
-            font_win_obj_list = QFont(family);
-            font_win_mon_recall = QFont(family);
-            font_win_obj_recall = QFont(family);
+            win_mon_list_settings.win_font = QFont(family);
+            win_obj_list_settings.win_font = QFont(family);
+            win_mon_recall_settings.win_font = QFont(family);
+            win_obj_recall_settings.win_font = QFont(family);
             win_feat_recall_settings.win_font = QFont(family);
             win_message_settings.win_font = QFont(family);
             char_info_basic_settings.win_font = QFont(family);
@@ -1859,10 +1861,10 @@ void MainWindow::select_font()
     font_main_window.setPointSize(12);
     font_message_window.setPointSize(12);
     font_sidebar_window.setPointSize(12);
-    font_win_mon_list.setPointSize(12);
-    font_win_obj_list.setPointSize(12);
-    font_win_mon_recall.setPointSize(12);
-    font_win_obj_recall.setPointSize(12);
+    win_mon_list_settings.win_font.setPointSize(12);
+    win_obj_list_settings.win_font.setPointSize(12);
+    win_mon_recall_settings.win_font.setPointSize(12);
+    win_obj_recall_settings.win_font.setPointSize(12);
     win_message_settings.win_font.setPointSize(12);
     win_message_settings.win_font.setPointSize(12);
     char_info_basic_settings.win_font.setPointSize(12);
@@ -1922,53 +1924,65 @@ void MainWindow::read_settings()
     font_message_window.fromString(load_font);
     load_font = settings.value("font_window_sidebar", font_sidebar_window ).toString();
     font_sidebar_window.fromString(load_font);
-    load_font = settings.value("font_window_mon_list", font_win_mon_list ).toString();
-    font_win_mon_list.fromString(load_font);
-    load_font = settings.value("font_window_obj_list", font_win_obj_list ).toString();
-    font_win_obj_list.fromString(load_font);
-    load_font = settings.value("font_window_mon_recall", font_win_mon_recall ).toString();
-    font_win_mon_recall.fromString(load_font);
-    load_font = settings.value("font_window_obj_recall", font_win_obj_recall ).toString();
-    font_win_obj_recall.fromString(load_font);
-
 
 
     restoreState(settings.value("window_state").toByteArray());
 
-    show_mon_list = settings.value("show_mon_list_window", false).toBool();
-    if (show_mon_list)
+
+
+    // Monster List window settings
+    win_mon_list_settings.win_show = settings.value("show_mon_list_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winMonListGeometry").toByteArray());
+    win_mon_list_settings.win_geometry = dummy_widget.geometry();
+    win_mon_list_settings.win_maximized = settings.value("winMonListMaximized", false).toBool();
+    load_font = settings.value("font_mon_list_recall", win_mon_list_settings.win_font ).toString();
+    win_mon_list_settings.win_font.fromString(load_font);
+    if (win_mon_list_settings.win_show)
     {
-        show_mon_list = FALSE; //hack - so it gets toggled to true
+        win_mon_list_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_mon_list();
-        window_mon_list->restoreGeometry(settings.value("winMonListGeometry").toByteArray());
-        window_mon_list->show();
     }
 
-    show_obj_list = settings.value("show_obj_list_window", false).toBool();
-    if (show_obj_list)
+
+    // Object List window settings
+    win_obj_list_settings.win_show = settings.value("show_obj_list_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winObjListGeometry").toByteArray());
+    win_obj_list_settings.win_geometry = dummy_widget.geometry();
+    win_obj_list_settings.win_maximized = settings.value("winObjListMaximized", false).toBool();
+    load_font = settings.value("font_obj_list_recall", win_obj_list_settings.win_font ).toString();
+    win_obj_list_settings.win_font.fromString(load_font);
+    if (win_obj_list_settings.win_show)
     {
-        show_obj_list = FALSE; //hack - so it gets toggled to true
+        win_obj_list_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_obj_list();
-        window_obj_list->restoreGeometry(settings.value("winObjListGeometry").toByteArray());
-        window_obj_list->show();
     }
 
-    show_mon_recall = settings.value("show_mon_recall_window", false).toBool();
-    if (show_mon_recall)
+
+    // Monster recall window settings
+    win_mon_recall_settings.win_show = settings.value("show_mon_recall_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winMonRecallGeometry").toByteArray());
+    win_mon_recall_settings.win_geometry = dummy_widget.geometry();
+    win_mon_recall_settings.win_maximized = settings.value("winMonRecallMaximized", false).toBool();
+    load_font = settings.value("font_window_mon_recall", win_mon_recall_settings.win_font ).toString();
+    win_mon_recall_settings.win_font.fromString(load_font);
+    if (win_mon_recall_settings.win_show)
     {
-        show_mon_recall = FALSE; //hack - so it gets toggled to true
+        win_mon_recall_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_mon_recall();
-        window_mon_recall->restoreGeometry(settings.value("winMonRecallGeometry").toByteArray());
-        window_mon_recall->show();
     }
 
-    show_obj_recall = settings.value("show_obj_recall_window", false).toBool();
-    if (show_obj_recall)
+
+    // Object recall window settings
+    win_obj_recall_settings.win_show = settings.value("show_obj_recall_window", false).toBool();
+    dummy_widget.restoreGeometry(settings.value("winObjRecallGeometry").toByteArray());
+    win_obj_recall_settings.win_geometry = dummy_widget.geometry();
+    win_obj_recall_settings.win_maximized = settings.value("winObjRecallMaximized", false).toBool();
+    load_font = settings.value("font_window_obj_recall", win_obj_recall_settings.win_font ).toString();
+    win_obj_recall_settings.win_font.fromString(load_font);
+    if (win_obj_recall_settings.win_show)
     {
-        show_obj_recall = FALSE; //hack - so it gets toggled to true
+        win_obj_recall_settings.win_show = FALSE; //hack - so it gets toggled to true
         toggle_win_obj_recall();
-        window_obj_recall->restoreGeometry(settings.value("winObjRecallGeometry").toByteArray());
-        window_obj_recall->show();
     }
 
     // Feature recall window settings
@@ -2113,37 +2127,43 @@ void MainWindow::write_settings()
     settings.setValue("font_window_main", font_main_window.toString());
     settings.setValue("font_window_messages", font_message_window.toString());
     settings.setValue("font_window_sidebar", font_sidebar_window.toString());
-    settings.setValue("font_window_mon_list", font_win_mon_list.toString());
-    settings.setValue("font_window_obj_list", font_win_obj_list.toString());
-    settings.setValue("font_window_mon_recall", font_win_mon_recall.toString());
-    settings.setValue("font_window_obj_recall", font_win_obj_recall.toString());
 
 
     settings.setValue("window_state", saveState());
 
-    settings.setValue("show_mon_list_window", show_mon_list);
-    if (show_mon_list)
-    {
-        settings.setValue("winMonListGeometry", window_mon_list->saveGeometry());
-    }
 
-    settings.setValue("show_obj_list_window", show_obj_list);
-    if (show_obj_list)
-    {
-        settings.setValue("winObjListGeometry", window_obj_list->saveGeometry());
-    }
 
-    settings.setValue("show_mon_recall_window", show_mon_recall);
-    if (show_mon_recall)
-    {
-        settings.setValue("winMonRecallGeometry", window_mon_recall->saveGeometry());
-    }
+    // Monster List window settings
+    settings.setValue("show_mon_list_window", win_mon_list_settings.win_show);
+    dummy_widget.setGeometry(win_mon_list_settings.win_geometry);
+    settings.setValue("winMonListGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winMonListMaximized", win_mon_list_settings.win_maximized);
+    settings.setValue("font_mon_list_recall", win_mon_list_settings.win_font.toString());
 
-    settings.setValue("show_obj_recall_window", show_obj_recall);
-    if (show_obj_recall)
-    {
-        settings.setValue("winObjRecallGeometry", window_obj_recall->saveGeometry());
-    }
+
+    // Object List window settings
+    settings.setValue("show_obj_list_window", win_obj_list_settings.win_show);
+    dummy_widget.setGeometry(win_obj_list_settings.win_geometry);
+    settings.setValue("winObjListGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winObjListMaximized", win_obj_list_settings.win_maximized);
+    settings.setValue("font_obj_list_recall", win_obj_list_settings.win_font.toString());
+
+
+    // Monster recall window settings
+    settings.setValue("show_mon_recall_window", win_mon_recall_settings.win_show);
+    dummy_widget.setGeometry(win_mon_recall_settings.win_geometry);
+    settings.setValue("winMonRecallGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winMonRecallMaximized", win_mon_recall_settings.win_maximized);
+    settings.setValue("font_window_mon_recall", win_mon_recall_settings.win_font.toString());
+
+
+    // Object recall window settings
+    settings.setValue("show_obj_recall_window", win_obj_recall_settings.win_show);
+    dummy_widget.setGeometry(win_obj_recall_settings.win_geometry);
+    settings.setValue("winObjRecallGeometry", dummy_widget.saveGeometry());
+    settings.setValue("winObjRecallMaximized", win_obj_recall_settings.win_maximized);
+    settings.setValue("font_window_obj_recall", win_obj_recall_settings.win_font.toString());
+
 
     // Feature recall window settings
     settings.setValue("show_feat_recall_window", win_feat_recall_settings.win_show);

@@ -374,10 +374,10 @@ private:
     QPointer<QAction> wall_block_act;
 
     // Commands for the additional windows
-    QPointer<QAction> win_mon_list;
-    QPointer<QAction> win_obj_list;
-    QPointer<QAction> win_mon_recall;
-    QPointer<QAction> win_obj_recall;
+    QPointer<QAction> win_mon_list_act;
+    QPointer<QAction> win_obj_list_act;
+    QPointer<QAction> win_mon_recall_act;
+    QPointer<QAction> win_obj_recall_act;
     QPointer<QAction> win_feat_recall_act;
     QPointer<QAction> win_messages_act;
     QPointer<QAction> win_char_basic_act;
@@ -454,96 +454,92 @@ private:
 
 // Monster list window
 private:
-    bool show_mon_list;
     QPointer<QWidget> window_mon_list;
     QPointer<QVBoxLayout> mon_list_vlay;
     QTableWidget *mon_list_area;
     QMenuBar *mon_list_menubar;
-    QPointer<QAction> mon_list_set_font;
-    QFont font_win_mon_list;
-    QPointer<QMenu> mon_win_settings;
+    QPointer<QAction> mon_list_set_font_act;
+    QPointer<QMenu> win_mon_win_settings;
     void win_mon_list_create();
-    void win_mon_list_destroy();
+    void win_mon_list_close();
     void win_mon_list_wipe();
     void set_font_win_mon_list(QFont newFont);
 
 public:
     void win_mon_list_update();
+    extra_win_settings win_mon_list_settings;
 
 private slots:
     void win_mon_list_font();
     void toggle_win_mon_list();
-    void close_win_mon_list(QObject *this_object);
+    void win_mon_list_destroy(QObject *this_object);
 
 // Object list window
 private:
-    bool show_obj_list;
     QPointer<QWidget> window_obj_list;
     QPointer<QVBoxLayout> obj_list_vlay;
     QTableWidget *obj_list_area;
     QMenuBar *obj_list_menubar;
-    QPointer<QAction> obj_list_set_font;
-    QFont font_win_obj_list;
-    QPointer<QMenu> obj_win_settings;
+    QPointer<QAction> obj_list_set_font_act;
+    QPointer<QMenu> win_obj_win_settings;
     void win_obj_list_create();
-    void win_obj_list_destroy();
+    void win_obj_list_close();
     void win_obj_list_wipe();
     void set_font_win_obj_list(QFont newFont);
 
 public:
     void win_obj_list_update();
+    extra_win_settings win_obj_list_settings;
 
 private slots:
     void win_obj_list_font();
     void toggle_win_obj_list();
-    void close_win_obj_list(QObject *this_object);
+    void win_obj_list_destroy(QObject *this_object);
 
 // Monster Recall window
 private:
-    bool show_mon_recall;
     QPointer<QWidget> window_mon_recall;
     QPointer<QVBoxLayout> mon_recall_vlay;
     QTextEdit *mon_recall_area;
     QMenuBar *mon_recall_menubar;
-    QPointer<QAction> mon_recall_set_font;
-    QFont font_win_mon_recall;
-    QPointer<QMenu> mon_recall_win_settings;
+    QPointer<QAction> mon_recall_set_font_act;
+    QPointer<QMenu> win_mon_recall_win_settings;
     void win_mon_recall_create();
-    void win_mon_recall_destroy();
+    void win_mon_recall_close();
     void win_mon_recall_wipe();
     void set_font_win_mon_recall(QFont newFont);
 
 public:
     void win_mon_recall_update();
+    extra_win_settings win_mon_recall_settings;
 
 private slots:
     void win_mon_recall_font();
     void toggle_win_mon_recall();
-    void close_win_mon_recall(QObject *this_object);
+    void win_mon_recall_destroy(QObject *this_object);
 
 
 // Object Recall window
 private:
-    bool show_obj_recall;
     QPointer<QWidget> window_obj_recall;
     QPointer<QVBoxLayout> obj_recall_vlay;
     QTextEdit *obj_recall_area;
     QMenuBar *obj_recall_menubar;
-    QPointer<QAction> obj_recall_set_font;
-    QFont font_win_obj_recall;
-    QPointer<QMenu> obj_recall_win_settings;
+    QPointer<QAction> obj_recall_set_font_act;
+    QPointer<QMenu> win_obj_recall_win_settings;
     void win_obj_recall_create();
-    void win_obj_recall_destroy();
+    void win_obj_recall_close();
     void win_obj_recall_wipe();
     void set_font_win_obj_recall(QFont newFont);
 
 public:
     void win_obj_recall_update();
+    extra_win_settings win_obj_recall_settings;
 
 private slots:
     void win_obj_recall_font();
     void toggle_win_obj_recall();
-    void close_win_obj_recall(QObject *this_object);
+    void win_obj_recall_destroy(QObject *this_object);
 
 // Feature Recall window
 private:
