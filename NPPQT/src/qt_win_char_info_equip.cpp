@@ -15,7 +15,7 @@
 
 void MainWindow::update_label_equip_info_font()
 {
-    QList<QLabel *> lbl_list = window_char_info_equip->findChildren<QLabel *>();
+    QList<QLabel *> lbl_list = char_info_equip_settings.main_widget->findChildren<QLabel *>();
     for (int i = 0; i < lbl_list.size(); i++)
     {
         QLabel *this_lbl = lbl_list.at(i);
@@ -46,7 +46,7 @@ void MainWindow::win_char_info_equip_wipe()
 {
     if (!char_info_equip_settings.win_show) return;
     if (!character_generated) return;
-    clear_layout(main_vlay_char_equip_info);
+    clear_layout(char_info_equip_settings.main_vlay);
 }
 
 
@@ -134,7 +134,7 @@ void MainWindow::create_win_char_equip_info()
 
     // Object Info
     QPointer<QGridLayout> equip_info = new QGridLayout;
-    main_vlay_char_equip_info->addLayout(equip_info);
+    char_info_equip_settings.main_vlay->addLayout(equip_info);
 
     QPointer<QVBoxLayout> resist_vlay = new QVBoxLayout;
     QPointer<QVBoxLayout> ability_vlay = new QVBoxLayout;
@@ -192,21 +192,15 @@ void MainWindow::create_win_char_equip_info()
  */
 void MainWindow::win_char_info_equip_create()
 {
-    window_char_info_equip = new QWidget();
-    main_vlay_char_equip_info = new QVBoxLayout;
-    window_char_info_equip->setLayout(main_vlay_char_equip_info);
+    char_info_equip_settings.make_extra_window();
 
-    char_info_equip_menubar = new QMenuBar;
-    main_vlay_char_equip_info->setMenuBar(char_info_equip_menubar);
-    window_char_info_equip->setWindowTitle("Character Equipment Information");
-    win_char_info_equip_settings = char_info_equip_menubar->addMenu(tr("&Settings"));
+    char_info_equip_settings.main_widget->setWindowTitle("Character Equipment Information");
     char_info_equip_font_act = new QAction(tr("Set Basic Character Screen Font"), this);
     char_info_equip_font_act->setStatusTip(tr("Set the font for the Basic Character Information screen."));
     connect(char_info_equip_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_equip_font()));
-    win_char_info_equip_settings->addAction(char_info_equip_font_act);
+    char_info_equip_settings.win_menu->addAction(char_info_equip_font_act);
 
-    window_char_info_equip->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_char_info_equip, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_equip_destroy(QObject*)));
+    connect(char_info_equip_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_equip_destroy(QObject*)));
 }
 
 /*
@@ -217,9 +211,9 @@ void MainWindow::win_char_info_equip_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!char_info_equip_settings.win_show) return;
-    if (!window_char_info_equip) return;
-    char_info_equip_settings.get_widget_settings(window_char_info_equip);
-    window_char_info_equip->deleteLater();
+    if (!char_info_equip_settings.main_widget) return;
+    char_info_equip_settings.get_widget_settings(char_info_equip_settings.main_widget);
+    char_info_equip_settings.main_widget->deleteLater();
     char_info_equip_settings.win_show = FALSE;
     win_char_equip_info_act->setText("Show Character Equipment Information");
 
@@ -245,7 +239,7 @@ void MainWindow::win_char_info_equip_destroy(QObject *this_object)
 void MainWindow::win_char_info_equip_close()
 {
     bool was_open = char_info_equip_settings.win_show;
-    win_char_info_equip_destroy(window_char_info_equip);
+    win_char_info_equip_destroy(char_info_equip_settings.main_widget);
     char_info_equip_settings.win_show = was_open;
 }
 
@@ -256,12 +250,12 @@ void MainWindow::toggle_win_char_equip_frame()
         win_char_info_equip_create();
         char_info_equip_settings.win_show = TRUE;
         create_win_char_equip_info();
-        window_char_info_equip->setGeometry(char_info_equip_settings.win_geometry);
+        char_info_equip_settings.main_widget->setGeometry(char_info_equip_settings.win_geometry);
         win_char_equip_info_act->setText("Hide Character Equipment Information");
-        if (char_info_equip_settings.win_maximized) window_char_info_equip->showMaximized();
-        else window_char_info_equip->show();
+        if (char_info_equip_settings.win_maximized) char_info_equip_settings.main_widget->showMaximized();
+        else char_info_equip_settings.main_widget->show();
     }
-    else win_char_info_equip_destroy(window_char_info_equip);
+    else win_char_info_equip_destroy(char_info_equip_settings.main_widget);
 }
 
 

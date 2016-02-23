@@ -59,6 +59,11 @@ public:
 class extra_win_settings
 {
 public:
+    QPointer<QWidget> main_widget;
+    QPointer<QVBoxLayout> main_vlay;
+    QMenuBar *win_menubar;
+    QPointer<QMenu> win_menu;
+
     QRect win_geometry;
     bool win_maximized;
     bool win_show;
@@ -66,6 +71,7 @@ public:
 
     void set_extra_win_default();
     void get_widget_settings(QWidget *this_widget);
+    void make_extra_window();
 };
 
 class MainWindow : public QMainWindow
@@ -454,12 +460,8 @@ private:
 
 // Monster list window
 private:
-    QPointer<QWidget> window_mon_list;
-    QPointer<QVBoxLayout> mon_list_vlay;
     QTableWidget *mon_list_area;
-    QMenuBar *mon_list_menubar;
     QPointer<QAction> mon_list_set_font_act;
-    QPointer<QMenu> win_mon_win_settings;
     void win_mon_list_create();
     void win_mon_list_close();
     void win_mon_list_wipe();
@@ -476,12 +478,8 @@ private slots:
 
 // Object list window
 private:
-    QPointer<QWidget> window_obj_list;
-    QPointer<QVBoxLayout> obj_list_vlay;
     QTableWidget *obj_list_area;
-    QMenuBar *obj_list_menubar;
     QPointer<QAction> obj_list_set_font_act;
-    QPointer<QMenu> win_obj_win_settings;
     void win_obj_list_create();
     void win_obj_list_close();
     void win_obj_list_wipe();
@@ -498,12 +496,8 @@ private slots:
 
 // Monster Recall window
 private:
-    QPointer<QWidget> window_mon_recall;
-    QPointer<QVBoxLayout> mon_recall_vlay;
     QTextEdit *mon_recall_area;
-    QMenuBar *mon_recall_menubar;
     QPointer<QAction> mon_recall_set_font_act;
-    QPointer<QMenu> win_mon_recall_win_settings;
     void win_mon_recall_create();
     void win_mon_recall_close();
     void win_mon_recall_wipe();
@@ -521,12 +515,8 @@ private slots:
 
 // Object Recall window
 private:
-    QPointer<QWidget> window_obj_recall;
-    QPointer<QVBoxLayout> obj_recall_vlay;
     QTextEdit *obj_recall_area;
-    QMenuBar *obj_recall_menubar;
     QPointer<QAction> obj_recall_set_font_act;
-    QPointer<QMenu> win_obj_recall_win_settings;
     void win_obj_recall_create();
     void win_obj_recall_close();
     void win_obj_recall_wipe();
@@ -543,12 +533,8 @@ private slots:
 
 // Feature Recall window
 private:
-    QPointer<QWidget> window_feat_recall;
-    QPointer<QVBoxLayout> feat_recall_vlay;
     QTextEdit *feat_recall_area;
-    QMenuBar *win_feat_recall_menubar;
     QPointer<QAction> feat_recall_set_font_act;
-    QPointer<QMenu> win_feat_recall_win_settings;
     void win_feat_recall_create();
     void win_feat_recall_close();
     void win_feat_recall_wipe();
@@ -565,8 +551,6 @@ private slots:
 
 // Messages window
 private:
-    QPointer<QWidget> window_messages;
-    QPointer<QVBoxLayout> win_messages_vlay;
     QTextEdit *win_messages_area;
     QMenuBar *win_messages_menubar;
     QPointer<QAction> win_messages_set_font_act;
@@ -589,11 +573,7 @@ private slots:
 
 // Character Information window
 private:
-    QPointer<QWidget> window_char_info_basic;
-    QPointer<QVBoxLayout> main_vlay_char_basic;
-    QMenuBar *char_info_basic_menubar;
     QPointer<QAction> char_info_basic_font_act;
-    QPointer<QMenu> win_char_info_basic_settings;
     void win_char_info_basic_create();
     void win_char_info_basic_close();
     void win_char_info_basic_wipe();
@@ -616,10 +596,6 @@ private slots:
 
 // Character Equipment Information window
 private:
-    QPointer<QWidget> window_char_info_equip;
-    QPointer<QVBoxLayout> main_vlay_char_equip_info;
-    QMenuBar *char_info_equip_menubar;
-    QPointer<QMenu> win_char_info_equip_settings;
     QPointer<QAction> char_info_equip_font_act;
     void win_char_info_equip_create();
     void win_char_info_equip_close();
@@ -661,12 +637,8 @@ private slots:
 
 // Character Equipment window
 private:
-    QPointer<QWidget> window_char_equipment;
-    QPointer<QVBoxLayout> main_vlay_equipment;
-    QMenuBar *char_equipment_menubar;
     QPointer<QAction> char_equipment_font_act;
     QPointer<QAction> char_equipment_buttons_act;
-    QPointer<QMenu> win_char_equipment_settings;
     void win_char_equipment_create();
     void win_char_equipment_close();
     void win_char_equipment_wipe();
@@ -692,12 +664,8 @@ private slots:
 
 // Character Inventory window
 private:
-    QPointer<QWidget> window_char_inventory;
-    QPointer<QVBoxLayout> main_vlay_inventory;
-    QMenuBar *char_inventory_menubar;
     QPointer<QAction> char_inventory_font_act;
     QPointer<QAction> char_inventory_buttons_act;
-    QPointer<QMenu> win_char_inventory_settings;
     void win_char_inventory_create();
     void win_char_inventory_close();
     void win_char_inventory_wipe();
@@ -722,14 +690,12 @@ private slots:
 
     // Small map window
 private:
-    QPointer<QWidget> window_dun_map;
-    QPointer<QVBoxLayout> main_vlay_dun_map;
     QPointer<QGraphicsScene> dun_map_scene;
     QPointer<QGraphicsView> dun_map_view;
-    QMenuBar *win_dun_map_menubar;
+
     QPointer<QAction> dun_map_font_act;
     QPointer<QAction> dun_map_graphics_act;
-    QPointer<QMenu> win_dun_map_settings;
+
     void win_dun_map_create();
     void win_dun_map_close();
     void win_dun_map_wipe();
@@ -761,14 +727,10 @@ private slots:
 
     // Overhead window
 private:
-    QPointer<QWidget> window_overhead_map;
-    QPointer<QVBoxLayout> main_vlay_overhead_map;
     QPointer<QGraphicsScene> overhead_map_scene;
     QPointer<QGraphicsView> overhead_map_view;
-    QMenuBar *win_overhead_map_menubar;
     QPointer<QAction> overhead_map_font_act;
     QPointer<QAction> overhead_map_graphics_act;
-    QPointer<QMenu> win_overhead_map_settings;
     void win_overhead_map_create();
     void win_overhead_map_wipe();
     void win_overhead_map_close();

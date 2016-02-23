@@ -46,7 +46,7 @@ void MainWindow::name_change_pushbutton(QGridLayout *return_layout)
 
 void MainWindow::update_label_basic_font()
 {
-    QList<QLabel *> lbl_list = window_char_info_basic->findChildren<QLabel *>();
+    QList<QLabel *> lbl_list = char_info_basic_settings.main_widget->findChildren<QLabel *>();
     for (int i = 0; i < lbl_list.size(); i++)
     {
         QLabel *this_lbl = lbl_list.at(i);
@@ -77,7 +77,7 @@ void MainWindow::win_char_info_basic_wipe()
 {
     if (!char_info_basic_settings.win_show) return;
     if (!character_generated) return;
-    clear_layout(main_vlay_char_basic);
+    clear_layout(char_info_basic_settings.main_vlay);
 }
 
 // Just update the score
@@ -85,7 +85,7 @@ void MainWindow::win_char_info_score()
 {
     if (!character_generated) return;
     if (!char_info_basic_settings.win_show) return;
-    QList<QLabel *> lbl_list = window_char_info_basic->findChildren<QLabel *>();
+    QList<QLabel *> lbl_list = char_info_basic_settings.main_widget->findChildren<QLabel *>();
     for (int i = 0; i < lbl_list.size(); i++)
     {
         QLabel *this_lbl = lbl_list.at(i);
@@ -110,7 +110,7 @@ void MainWindow::win_char_info_turncount()
     bool turn_game = FALSE;
     bool turn_player = FALSE;
 
-    QList<QLabel *> lbl_list = window_char_info_basic->findChildren<QLabel *>();
+    QList<QLabel *> lbl_list = char_info_basic_settings.main_widget->findChildren<QLabel *>();
     for (int i = 0; i < lbl_list.size(); i++)
     {
         QLabel *this_lbl = lbl_list.at(i);
@@ -137,7 +137,7 @@ void MainWindow::win_char_info_basic_update()
 {
     if (!character_generated) return;
     if (!char_info_basic_settings.win_show) return;
-    update_char_screen(window_char_info_basic, char_info_basic_settings.win_font);
+    update_char_screen(char_info_basic_settings.main_widget, char_info_basic_settings.win_font);
 }
 
 void MainWindow::create_win_char_info()
@@ -147,7 +147,7 @@ void MainWindow::create_win_char_info()
 
     QPointer<QHBoxLayout> char_info_basic_hlay = new QHBoxLayout;
 
-    main_vlay_char_basic->addLayout(char_info_basic_hlay);
+    char_info_basic_settings.main_vlay->addLayout(char_info_basic_hlay);
 
     QVBoxLayout *vlay_basic = new QVBoxLayout;
     char_info_basic_hlay->addLayout(vlay_basic);
@@ -173,14 +173,14 @@ void MainWindow::create_win_char_info()
 
     // Add player history
     // Title Box
-    main_vlay_char_basic->addStretch(1);
+    char_info_basic_settings.main_vlay->addStretch(1);
     QPointer<QLabel> history = new QLabel();
     make_standard_label(history, p_ptr->history, TERM_BLUE);
-    main_vlay_char_basic->addWidget(history);
-    main_vlay_char_basic->addStretch(1);
+    char_info_basic_settings.main_vlay->addWidget(history);
+    char_info_basic_settings.main_vlay->addStretch(1);
 
     QPointer<QHBoxLayout> char_info_other_hlay = new QHBoxLayout;
-    main_vlay_char_basic->addLayout(char_info_other_hlay);
+    char_info_basic_settings.main_vlay->addLayout(char_info_other_hlay);
 
     QPointer<QVBoxLayout> vlay_combat_info = new QVBoxLayout;
     char_info_other_hlay->addLayout(vlay_combat_info);
@@ -203,7 +203,7 @@ void MainWindow::create_win_char_info()
     vlay_stat_info->addLayout(stat_info);
     vlay_stat_info->addStretch(1);
 
-    update_char_screen(window_char_info_basic, char_info_basic_settings.win_font);
+    update_char_screen(char_info_basic_settings.main_widget, char_info_basic_settings.win_font);
     update_label_basic_font();
 }
 
@@ -216,30 +216,24 @@ void MainWindow::create_win_char_info()
  */
 void MainWindow::win_char_info_basic_create()
 {
-    window_char_info_basic = new QWidget();
-    main_vlay_char_basic = new QVBoxLayout;
-    window_char_info_basic->setLayout(main_vlay_char_basic);
+    char_info_basic_settings.make_extra_window();
 
-    char_info_basic_menubar = new QMenuBar;
-    main_vlay_char_basic->setMenuBar(char_info_basic_menubar);
-    window_char_info_basic->setWindowTitle("Character Information - Basic");
-    win_char_info_basic_settings = char_info_basic_menubar->addMenu(tr("&Settings"));
+    char_info_basic_settings.main_widget->setWindowTitle("Character Information - Basic");
     char_info_basic_font_act = new QAction(tr("Set Basic Character Screen Font"), this);
     char_info_basic_font_act->setStatusTip(tr("Set the font for the Basic Character Information screen."));
     connect(char_info_basic_font_act, SIGNAL(triggered()), this, SLOT(win_char_info_basic_font()));
-    win_char_info_basic_settings->addAction(char_info_basic_font_act);
+    char_info_basic_settings.win_menu->addAction(char_info_basic_font_act);
 
-    window_char_info_basic->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_char_info_basic, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_basic_destroy(QObject*)));
+    connect(char_info_basic_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_char_info_basic_destroy(QObject*)));
 }
 
 void MainWindow::win_char_info_basic_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!char_info_basic_settings.win_show) return;
-    if (!window_char_info_basic) return;
-    char_info_basic_settings.get_widget_settings(window_char_info_basic);
-    window_char_info_basic->deleteLater();
+    if (!char_info_basic_settings.main_widget) return;
+    char_info_basic_settings.get_widget_settings(char_info_basic_settings.main_widget);
+    char_info_basic_settings.main_widget->deleteLater();
     char_info_basic_settings.win_show = FALSE;
     win_char_basic_act->setText("Show Basic Character Information");
 }
@@ -252,7 +246,7 @@ void MainWindow::win_char_info_basic_destroy(QObject *this_object)
 void MainWindow::win_char_info_basic_close()
 {
     bool was_open = char_info_basic_settings.win_show;
-    win_char_info_basic_destroy(window_char_info_basic);
+    win_char_info_basic_destroy(char_info_basic_settings.main_widget);
     char_info_basic_settings.win_show = was_open;
 }
 
@@ -263,11 +257,11 @@ void MainWindow::toggle_win_char_basic_frame()
         win_char_info_basic_create();
         char_info_basic_settings.win_show = TRUE;
         create_win_char_info();
-        window_char_info_basic->setGeometry(char_info_basic_settings.win_geometry);
+        char_info_basic_settings.main_widget->setGeometry(char_info_basic_settings.win_geometry);
         win_char_basic_act->setText("Hide Basic Character Information");
-        if (char_info_basic_settings.win_maximized) window_char_info_basic->showMaximized();
-        else window_char_info_basic->show();
+        if (char_info_basic_settings.win_maximized) char_info_basic_settings.main_widget->showMaximized();
+        else char_info_basic_settings.main_widget->show();
     }
-    else win_char_info_basic_destroy(window_char_info_basic);
+    else win_char_info_basic_destroy(char_info_basic_settings.main_widget);
 }
 

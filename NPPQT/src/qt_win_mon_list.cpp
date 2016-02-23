@@ -469,9 +469,8 @@ void MainWindow::win_mon_list_update()
  */
 void MainWindow::win_mon_list_create()
 {
-    window_mon_list = new QWidget();
-    mon_list_vlay = new QVBoxLayout;
-    window_mon_list->setLayout(mon_list_vlay);
+    win_mon_list_settings.make_extra_window();
+
     mon_list_area = new QTableWidget(0, 3);
     mon_list_area->setAlternatingRowColors(FALSE);
     mon_list_area->verticalHeader()->setVisible(FALSE);
@@ -479,18 +478,14 @@ void MainWindow::win_mon_list_create()
     mon_list_area->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mon_list_area->setSortingEnabled(FALSE);
     qtablewidget_add_palette(mon_list_area);
-    mon_list_vlay->addWidget(mon_list_area);
-    mon_list_menubar = new QMenuBar;
-    mon_list_vlay->setMenuBar(mon_list_menubar);
-    window_mon_list->setWindowTitle("Viewable Monster List");
-    win_mon_win_settings = mon_list_menubar->addMenu(tr("&Settings"));
+    win_mon_list_settings.main_vlay->addWidget(mon_list_area);
+    win_mon_list_settings.main_widget->setWindowTitle("Viewable Monster List");
     mon_list_set_font_act = new QAction(tr("Set Monster List Font"), this);
     mon_list_set_font_act->setStatusTip(tr("Set the font for the Monster List."));
     connect(mon_list_set_font_act, SIGNAL(triggered()), this, SLOT(win_mon_list_font()));
-    win_mon_win_settings->addAction(mon_list_set_font_act);
+    win_mon_list_settings.win_menu->addAction(mon_list_set_font_act);
 
-    window_mon_list->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_mon_list, SIGNAL(destroyed(QObject*)), this, SLOT(win_mon_list_destroy(QObject*)));
+    connect(win_mon_list_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_mon_list_destroy(QObject*)));
 }
 
 /*
@@ -501,9 +496,9 @@ void MainWindow::win_mon_list_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!win_mon_list_settings.win_show) return;
-    if (!window_mon_list) return;
-    win_mon_list_settings.get_widget_settings(window_mon_list);
-    window_mon_list->deleteLater();
+    if (!win_mon_list_settings.main_widget) return;
+    win_mon_list_settings.get_widget_settings(win_mon_list_settings.main_widget);
+    win_mon_list_settings.main_widget->deleteLater();
     win_mon_list_settings.win_show = FALSE;
     win_mon_list_act->setText("Show Monster List Window");
 }
@@ -516,7 +511,7 @@ void MainWindow::win_mon_list_destroy(QObject *this_object)
 void MainWindow::win_mon_list_close()
 {
     bool was_open = win_mon_list_settings.win_show;
-    win_mon_list_destroy(window_mon_list);
+    win_mon_list_destroy(win_mon_list_settings.main_widget);
     win_mon_list_settings.win_show = was_open;
 }
 
@@ -526,12 +521,12 @@ void MainWindow::toggle_win_mon_list()
     {
         win_mon_list_create();
         win_mon_list_settings.win_show = TRUE;
-        window_mon_list->setGeometry(win_mon_list_settings.win_geometry);
+        win_mon_list_settings.main_widget->setGeometry(win_mon_list_settings.win_geometry);
         win_mon_list_act->setText("Hide Monster List Window");
-        if (win_mon_list_settings.win_maximized) window_mon_list->showMaximized();
-        else window_mon_list->show();
+        if (win_mon_list_settings.win_maximized) win_mon_list_settings.main_widget->showMaximized();
+        else win_mon_list_settings.main_widget->show();
 
         win_mon_list_update();
     }
-    else win_mon_list_destroy(window_mon_list);
+    else win_mon_list_destroy(win_mon_list_settings.main_widget);
 }

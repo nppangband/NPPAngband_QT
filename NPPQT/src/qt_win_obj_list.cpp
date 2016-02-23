@@ -450,9 +450,8 @@ void MainWindow::win_obj_list_update()
  */
 void MainWindow::win_obj_list_create()
 {
-    window_obj_list = new QWidget();
-    obj_list_vlay = new QVBoxLayout;
-    window_obj_list->setLayout(obj_list_vlay);
+    win_obj_list_settings.make_extra_window();
+
     obj_list_area = new QTableWidget(0, 3);
     obj_list_area->setAlternatingRowColors(FALSE);
     obj_list_area->verticalHeader()->setVisible(FALSE);
@@ -460,18 +459,14 @@ void MainWindow::win_obj_list_create()
     obj_list_area->setEditTriggers(QAbstractItemView::NoEditTriggers);
     obj_list_area->setSortingEnabled(FALSE);
     qtablewidget_add_palette(obj_list_area);
-    obj_list_vlay->addWidget(obj_list_area);
-    obj_list_menubar = new QMenuBar;
-    obj_list_vlay->setMenuBar(obj_list_menubar);
-    window_obj_list->setWindowTitle("Viewable Object List");
-    win_obj_win_settings = obj_list_menubar->addMenu(tr("&Settings"));
+    win_obj_list_settings.main_vlay->addWidget(obj_list_area);
+    win_obj_list_settings.main_widget->setWindowTitle("Viewable Object List");
     obj_list_set_font_act = new QAction(tr("Set Object List Font"), this);
     obj_list_set_font_act->setStatusTip(tr("Set the font for the Object List."));
     connect(obj_list_set_font_act, SIGNAL(triggered()), this, SLOT(win_obj_list_font()));
-    win_obj_win_settings->addAction(obj_list_set_font_act);
+    win_obj_list_settings.win_menu->addAction(obj_list_set_font_act);
 
-    window_obj_list->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_obj_list, SIGNAL(destroyed(QObject*)), this, SLOT(win_obj_list_destroy(QObject*)));
+    connect(win_obj_list_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_obj_list_destroy(QObject*)));
 }
 
 /*
@@ -482,9 +477,9 @@ void MainWindow::win_obj_list_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!win_obj_list_settings.win_show) return;
-    if (!window_obj_list) return;
-    win_obj_list_settings.get_widget_settings(window_obj_list);
-    window_obj_list->deleteLater();
+    if (!win_obj_list_settings.main_widget) return;
+    win_obj_list_settings.get_widget_settings(win_obj_list_settings.main_widget);
+    win_obj_list_settings.main_widget->deleteLater();
     win_obj_list_settings.win_show = FALSE;
     win_obj_list_act->setText("Show Object List Window");
 }
@@ -497,7 +492,7 @@ void MainWindow::win_obj_list_destroy(QObject *this_object)
 void MainWindow::win_obj_list_close()
 {
     bool was_open = win_obj_list_settings.win_show;
-    win_obj_list_destroy(window_obj_list);
+    win_obj_list_destroy(win_obj_list_settings.main_widget);
     win_obj_list_settings.win_show = was_open;
 }
 
@@ -509,12 +504,12 @@ void MainWindow::toggle_win_obj_list()
     {
         win_obj_list_create();
         win_obj_list_settings.win_show = TRUE;
-        window_obj_list->setGeometry(win_obj_list_settings.win_geometry);
+        win_obj_list_settings.main_widget->setGeometry(win_obj_list_settings.win_geometry);
         win_obj_list_act->setText("Hide Object List Window");
-        if (win_obj_list_settings.win_maximized) window_obj_list->showMaximized();
-        else window_obj_list->show();
+        if (win_obj_list_settings.win_maximized) win_obj_list_settings.main_widget->showMaximized();
+        else win_obj_list_settings.main_widget->show();
 
         win_obj_list_update();
     }
-    else win_obj_list_destroy(window_obj_list);
+    else win_obj_list_destroy(win_obj_list_settings.main_widget);
 }

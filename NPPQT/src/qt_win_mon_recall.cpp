@@ -58,25 +58,20 @@ void MainWindow::win_mon_recall_update()
  */
 void MainWindow::win_mon_recall_create()
 {
-    window_mon_recall = new QWidget();
-    mon_recall_vlay = new QVBoxLayout;
-    window_mon_recall->setLayout(mon_recall_vlay);
+    win_mon_recall_settings.make_extra_window();
+
     mon_recall_area = new QTextEdit;
     mon_recall_area->setReadOnly(TRUE);
     mon_recall_area->setStyleSheet("background-color: lightGray;");
     mon_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
-    mon_recall_vlay->addWidget(mon_recall_area);
-    mon_recall_menubar = new QMenuBar;
-    mon_recall_vlay->setMenuBar(mon_recall_menubar);
-    window_mon_recall->setWindowTitle("Monster Recall Window");
-    win_mon_recall_win_settings = mon_recall_menubar->addMenu(tr("&Settings"));
+    win_mon_recall_settings.main_vlay->addWidget(mon_recall_area);
+    win_mon_recall_settings.main_widget->setWindowTitle("Monster Recall Window");
     mon_recall_set_font_act = new QAction(tr("Set Monster Recall Font"), this);
     mon_recall_set_font_act->setStatusTip(tr("Set the font for the Monster Recall Window."));
     connect(mon_recall_set_font_act, SIGNAL(triggered()), this, SLOT(win_mon_recall_font()));
-    win_mon_recall_win_settings->addAction(mon_recall_set_font_act);
+    win_mon_recall_settings.win_menu->addAction(mon_recall_set_font_act);
 
-    window_mon_recall->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_mon_recall, SIGNAL(destroyed(QObject*)), this, SLOT(win_mon_recall_destroy(QObject*)));
+    connect(win_mon_recall_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_mon_recall_destroy(QObject*)));
 }
 
 /*
@@ -87,9 +82,9 @@ void MainWindow::win_mon_recall_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!win_mon_recall_settings.win_show) return;
-    if (!window_mon_recall) return;
-    win_mon_recall_settings.get_widget_settings(window_mon_recall);
-    window_mon_recall->deleteLater();
+    if (!win_mon_recall_settings.main_widget) return;
+    win_mon_recall_settings.get_widget_settings(win_mon_recall_settings.main_widget);
+    win_mon_recall_settings.main_widget->deleteLater();
     win_mon_recall_settings.win_show = FALSE;
     win_mon_recall_act->setText("Show Monster Recall Window");
 }
@@ -102,7 +97,7 @@ void MainWindow::win_mon_recall_destroy(QObject *this_object)
 void MainWindow::win_mon_recall_close()
 {
     bool was_open = win_mon_recall_settings.win_show;
-    win_mon_recall_destroy(window_mon_recall);
+    win_mon_recall_destroy(win_mon_recall_settings.main_widget);
     win_mon_recall_settings.win_show = was_open;
 }
 
@@ -113,11 +108,11 @@ void MainWindow::toggle_win_mon_recall()
     {
         win_mon_recall_create();
         win_mon_recall_settings.win_show = TRUE;
-        window_mon_recall->setGeometry(win_mon_recall_settings.win_geometry);
+        win_mon_recall_settings.main_widget->setGeometry(win_mon_recall_settings.win_geometry);
         win_mon_recall_act->setText("Hide Monster Recall Window");
-        if (win_mon_recall_settings.win_maximized) window_mon_recall->showMaximized();
-        else window_mon_recall->show();
+        if (win_mon_recall_settings.win_maximized) win_mon_recall_settings.main_widget->showMaximized();
+        else win_mon_recall_settings.main_widget->show();
         win_mon_recall_update();
     }
-    else win_mon_recall_destroy(window_mon_recall);
+    else win_mon_recall_destroy(win_mon_recall_settings.main_widget);
 }

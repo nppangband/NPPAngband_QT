@@ -23,6 +23,8 @@ void extra_win_settings::set_extra_win_default()
     win_geometry = QRect(starter, QSize(total_window.width() * 3 / 4, total_window.height() * 3 / 4));
     win_maximized = FALSE;
     win_show = FALSE;
+    main_widget = NULL;
+    main_vlay = NULL;
 }
 
 
@@ -378,7 +380,7 @@ void MainWindow::win_overhead_map_wipe()
 {
     if (!overhead_map_settings.win_show) return;
     if (!character_generated) return;
-    clear_layout(main_vlay_overhead_map);
+    clear_layout(overhead_map_settings.main_vlay);
     overhead_map_created = FALSE;
 }
 
@@ -415,7 +417,7 @@ void MainWindow::create_win_overhead_map()
     if (!overhead_map_settings.win_show) return;
     overhead_map_scene = new QGraphicsScene;
     overhead_map_view = new QGraphicsView(overhead_map_scene);
-    main_vlay_overhead_map->addWidget(overhead_map_view);
+    overhead_map_settings.main_vlay->addWidget(overhead_map_view);
 
 
     QBrush brush(QColor("black"));
@@ -432,7 +434,7 @@ void MainWindow::create_win_overhead_map()
 
     overhead_map_created = TRUE;
 
-    QAction *act = window_overhead_map->findChild<QAction *>(overhead_map_multiplier);
+    QAction *act = overhead_map_settings.main_widget->findChild<QAction *>(overhead_map_multiplier);
     if (act)
     {
         overhead_map_multiplier_clicked(act);
@@ -441,30 +443,40 @@ void MainWindow::create_win_overhead_map()
     overhead_map_calc_cell_size();
 }
 
+void extra_win_settings::make_extra_window()
+{
+    main_widget = new QWidget();
+    main_vlay = new QVBoxLayout();
+    main_widget->setLayout(main_vlay);
+
+    win_menubar = new QMenuBar;
+    main_vlay->setMenuBar(win_menubar);
+    win_menu = win_menubar->addMenu("&Settings");
+
+    main_widget->setAttribute(Qt::WA_DeleteOnClose);
+}
+
 /*
  *  Make the small_map shell
  */
 void MainWindow::win_overhead_map_create()
 {
-    window_overhead_map = new QWidget();
-    main_vlay_overhead_map = new QVBoxLayout;
-    window_overhead_map->setLayout(main_vlay_overhead_map);
+    overhead_map_settings.make_extra_window();
 
-    win_overhead_map_menubar = new QMenuBar;
-    main_vlay_overhead_map->setMenuBar(win_overhead_map_menubar);
-    window_overhead_map->setWindowTitle("Overhead Map Window");
-    win_overhead_map_settings = win_overhead_map_menubar->addMenu(tr("&Settings"));
+
+    overhead_map_settings.main_widget->setWindowTitle("Overhead Map Window");
+
     overhead_map_font_act = new QAction(tr("Set Overhead Map Font"), this);
     overhead_map_font_act->setStatusTip(tr("Set the font for the Overhead Map Screen."));
     connect(overhead_map_font_act, SIGNAL(triggered()), this, SLOT(win_overhead_map_font()));
-    win_overhead_map_settings->addAction(overhead_map_font_act);
+    overhead_map_settings.win_menu->addAction(overhead_map_font_act);
     overhead_map_graphics_act = new QAction(tr("Use Graphics"), this);
     overhead_map_graphics_act->setCheckable(true);
     overhead_map_graphics_act->setChecked(overhead_map_use_graphics);
     overhead_map_graphics_act->setStatusTip(tr("If the main window is using graphics, use them in the Overhead Map Window."));
     connect(overhead_map_graphics_act, SIGNAL(changed()), this, SLOT(set_overhead_map_graphics()));
-    win_overhead_map_settings->addAction(overhead_map_graphics_act);
-    QMenu *overhead_map_submenu = win_overhead_map_settings->addMenu(tr("Tile multiplier"));
+    overhead_map_settings.win_menu->addAction(overhead_map_graphics_act);
+    QMenu *overhead_map_submenu = overhead_map_settings.win_menu->addMenu(tr("Tile multiplier"));
     overhead_map_multipliers = new QActionGroup(this);
 
     for (int i = 0; !mult_list[i].isEmpty(); i++)
@@ -477,14 +489,13 @@ void MainWindow::win_overhead_map_create()
 
     connect(overhead_map_multipliers, SIGNAL(triggered(QAction*)), this, SLOT(overhead_map_multiplier_clicked(QAction*)));
 
-    QAction *act = window_overhead_map->findChild<QAction *>(overhead_map_multiplier);
+    QAction *act = overhead_map_settings.main_widget->findChild<QAction *>(overhead_map_multiplier);
     if (act)
     {
         act->setChecked(true);
     }
 
-    window_overhead_map->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_overhead_map, SIGNAL(destroyed(QObject*)), this, SLOT(win_overhead_map_destroy(QObject*)));
+    connect(overhead_map_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_overhead_map_destroy(QObject*)));
 }
 
 /*
@@ -495,9 +506,9 @@ void MainWindow::win_overhead_map_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!overhead_map_settings.win_show) return;
-    if (!window_overhead_map) return;
-    overhead_map_settings.get_widget_settings(window_overhead_map);
-    window_overhead_map->deleteLater();
+    if (!overhead_map_settings.main_widget) return;
+    overhead_map_settings.get_widget_settings(overhead_map_settings.main_widget);
+    overhead_map_settings.main_widget->deleteLater();
     overhead_map_created = FALSE;
     overhead_map_settings.win_show = FALSE;
     win_overhead_map_act->setText("Show Overhead Window");
@@ -511,7 +522,7 @@ void MainWindow::win_overhead_map_destroy(QObject *this_object)
 void MainWindow::win_overhead_map_close()
 {
     bool was_open = overhead_map_settings.win_show;
-    win_overhead_map_destroy(window_overhead_map);
+    win_overhead_map_destroy(overhead_map_settings.main_widget);
     overhead_map_settings.win_show = was_open;
 
 }
@@ -523,11 +534,11 @@ void MainWindow::toggle_win_overhead_map_frame()
         win_overhead_map_create();
         overhead_map_settings.win_show = TRUE;
         create_win_overhead_map();
-        window_overhead_map->setGeometry(overhead_map_settings.win_geometry);
+        overhead_map_settings.main_widget->setGeometry(overhead_map_settings.win_geometry);
         win_overhead_map_act->setText("Hide Overhead Window");
-        if (overhead_map_settings.win_maximized) window_overhead_map->showMaximized();
-        else window_overhead_map->show();
+        if (overhead_map_settings.win_maximized) overhead_map_settings.main_widget->showMaximized();
+        else overhead_map_settings.main_widget->show();
     }
-    else win_overhead_map_destroy(window_overhead_map);
+    else win_overhead_map_destroy(overhead_map_settings.main_widget);
 }
 

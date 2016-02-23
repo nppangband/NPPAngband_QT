@@ -59,25 +59,20 @@ void MainWindow::win_feat_recall_update()
  */
 void MainWindow::win_feat_recall_create()
 {
-    window_feat_recall = new QWidget();
-    feat_recall_vlay = new QVBoxLayout;
-    window_feat_recall->setLayout(feat_recall_vlay);
+    win_feat_recall_settings.make_extra_window();
+
     feat_recall_area = new QTextEdit;
     feat_recall_area->setReadOnly(TRUE);
     feat_recall_area->setStyleSheet("background-color: lightGray;");
     feat_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
-    feat_recall_vlay->addWidget(feat_recall_area);
-    win_feat_recall_menubar = new QMenuBar;
-    feat_recall_vlay->setMenuBar(win_feat_recall_menubar);
-    window_feat_recall->setWindowTitle("Feature Recall Window");
-    win_feat_recall_win_settings = win_feat_recall_menubar->addMenu(tr("&Settings"));
+    win_feat_recall_settings.main_vlay->addWidget(feat_recall_area);
+    win_feat_recall_settings.main_widget->setWindowTitle("Feature Recall Window");
     feat_recall_set_font_act = new QAction(tr("Set Feature Recall Font"), this);
     feat_recall_set_font_act->setStatusTip(tr("Set the font for the Feature Recall Window."));
     connect(feat_recall_set_font_act, SIGNAL(triggered()), this, SLOT(win_feat_recall_font()));
-    win_feat_recall_win_settings->addAction(feat_recall_set_font_act);
+    win_feat_recall_settings.win_menu->addAction(feat_recall_set_font_act);
 
-    window_feat_recall->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_feat_recall, SIGNAL(destroyed(QObject*)), this, SLOT(win_feat_recall_destroy(QObject*)));
+    connect(win_feat_recall_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_feat_recall_destroy(QObject*)));
 }
 
 
@@ -85,9 +80,9 @@ void MainWindow::win_feat_recall_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!win_feat_recall_settings.win_show) return;
-    if (!window_feat_recall) return;
-    win_feat_recall_settings.get_widget_settings(window_feat_recall);
-    window_feat_recall->deleteLater();
+    if (!win_feat_recall_settings.main_widget) return;
+    win_feat_recall_settings.get_widget_settings(win_feat_recall_settings.main_widget);
+    win_feat_recall_settings.main_widget->deleteLater();
     win_feat_recall_settings.win_show = FALSE;
     win_feat_recall_act->setText("Show Feature Recall Window");
 }
@@ -95,7 +90,7 @@ void MainWindow::win_feat_recall_destroy(QObject *this_object)
 void MainWindow::win_feat_recall_close()
 {
     bool was_open = win_feat_recall_settings.win_show;
-    win_char_inventory_destroy(window_feat_recall);
+    win_char_inventory_destroy(win_feat_recall_settings.main_widget);
     win_feat_recall_settings.win_show = was_open;
 }
 
@@ -105,12 +100,12 @@ void MainWindow::toggle_win_feat_recall()
     {
         win_feat_recall_create();
         win_feat_recall_settings.win_show = TRUE;
-        window_feat_recall->setGeometry(win_feat_recall_settings.win_geometry);
+        win_feat_recall_settings.main_widget->setGeometry(win_feat_recall_settings.win_geometry);
         win_feat_recall_act->setText("Hide Feature Recall Window");
-        if (win_feat_recall_settings.win_maximized) window_feat_recall->showMaximized();
-        else window_feat_recall->show();
+        if (win_feat_recall_settings.win_maximized) win_feat_recall_settings.main_widget->showMaximized();
+        else win_feat_recall_settings.main_widget->show();
         win_feat_recall_update();
     }
-    else win_feat_recall_destroy(window_feat_recall);
+    else win_feat_recall_destroy(win_feat_recall_settings.main_widget);
 }
 

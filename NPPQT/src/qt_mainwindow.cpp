@@ -966,36 +966,36 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::hideEvent(QHideEvent *event)
 {
-    if (win_mon_list_settings.win_show && window_obj_list) window_obj_list->hide();
-    if (win_obj_list_settings.win_show && window_mon_list) window_mon_list->hide();
-    if (win_mon_recall_settings.win_show && window_mon_recall) window_mon_recall->hide();
-    if (win_obj_recall_settings.win_show && window_obj_recall) window_obj_recall->hide();
-    if (win_feat_recall_settings.win_show && window_feat_recall) window_feat_recall->hide();
-    if (win_message_settings.win_show && window_messages) window_messages->hide();
-    if (char_info_basic_settings.win_show && window_char_info_basic) window_char_info_basic->hide();
-    if (char_info_equip_settings.win_show && window_char_info_equip) window_char_info_equip->hide();
-    if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->hide();
-    if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->hide();
-    if (dun_map_settings.win_show && window_dun_map) window_dun_map->hide();
-    if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->hide();
+    if (win_mon_list_settings.win_show && win_mon_list_settings.main_widget) win_mon_list_settings.main_widget->hide();
+    if (win_obj_list_settings.win_show && win_obj_list_settings.main_widget) win_obj_list_settings.main_widget->hide();
+    if (win_mon_recall_settings.win_show && win_mon_recall_settings.main_widget) win_mon_recall_settings.main_widget->hide();
+    if (win_obj_recall_settings.win_show && win_obj_recall_settings.main_widget) win_obj_recall_settings.main_widget->hide();
+    if (win_feat_recall_settings.win_show && win_feat_recall_settings.main_widget) win_feat_recall_settings.main_widget->hide();
+    if (win_message_settings.win_show && win_message_settings.main_widget) win_message_settings.main_widget->hide();
+    if (char_info_basic_settings.win_show && char_info_basic_settings.main_widget) char_info_basic_settings.main_widget->hide();
+    if (char_info_equip_settings.win_show && char_info_equip_settings.main_widget) char_info_equip_settings.main_widget->hide();
+    if (char_equipment_settings.win_show && char_equipment_settings.main_widget) char_equipment_settings.main_widget->hide();
+    if (char_inventory_settings.win_show && char_inventory_settings.main_widget) char_inventory_settings.main_widget->hide();
+    if (dun_map_settings.win_show && dun_map_settings.main_widget) dun_map_settings.main_widget->hide();
+    if (overhead_map_settings.win_show && overhead_map_settings.main_widget) overhead_map_settings.main_widget->hide();
 
     event->accept();
 }
 
 void MainWindow::showEvent(QShowEvent *event)
 {
-    if (win_mon_list_settings.win_show && window_obj_list) window_obj_list->show();
-    if (win_obj_list_settings.win_show && window_mon_list) window_mon_list->show();
-    if (win_mon_recall_settings.win_show && window_mon_recall) window_mon_recall->show();
-    if (win_obj_recall_settings.win_show && window_obj_recall) window_obj_recall->show();
-    if (win_feat_recall_settings.win_show && window_feat_recall) window_feat_recall->show();
-    if (win_message_settings.win_show && window_messages) window_messages->show();
-    if (char_info_basic_settings.win_show && window_char_info_basic) window_char_info_basic->show();
-    if (char_info_equip_settings.win_show && window_char_info_equip) window_char_info_equip->show();
-    if (char_equipment_settings.win_show && window_char_equipment) window_char_equipment->show();
-    if (char_inventory_settings.win_show && window_char_inventory) window_char_inventory->show();
-    if (dun_map_settings.win_show && window_dun_map) window_dun_map->show();
-    if (overhead_map_settings.win_show && window_overhead_map) window_overhead_map->show();
+    if (win_mon_list_settings.win_show && win_mon_list_settings.main_widget) win_mon_list_settings.main_widget->show();
+    if (win_obj_list_settings.win_show && win_obj_list_settings.main_widget) win_obj_list_settings.main_widget->show();
+    if (win_mon_recall_settings.win_show && win_mon_recall_settings.main_widget) win_mon_recall_settings.main_widget->show();
+    if (win_obj_recall_settings.win_show && win_obj_recall_settings.main_widget) win_obj_recall_settings.main_widget->show();
+    if (win_feat_recall_settings.win_show && win_feat_recall_settings.main_widget) win_feat_recall_settings.main_widget->show();
+    if (win_message_settings.win_show && win_message_settings.main_widget) win_message_settings.main_widget->show();
+    if (char_info_basic_settings.win_show && char_info_basic_settings.main_widget) char_info_basic_settings.main_widget->show();
+    if (char_info_equip_settings.win_show && char_info_equip_settings.main_widget) char_info_equip_settings.main_widget->show();
+    if (char_equipment_settings.win_show && char_equipment_settings.main_widget) char_equipment_settings.main_widget->show();
+    if (char_inventory_settings.win_show && char_inventory_settings.main_widget) char_inventory_settings.main_widget->show();
+    if (dun_map_settings.win_show && dun_map_settings.main_widget) dun_map_settings.main_widget->show();
+    if (overhead_map_settings.win_show && overhead_map_settings.main_widget) overhead_map_settings.main_widget->show();
 
     main_window->activateWindow();
 

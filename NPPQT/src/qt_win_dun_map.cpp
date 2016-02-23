@@ -349,7 +349,7 @@ void MainWindow::win_dun_map_wipe()
 {
     if (!dun_map_settings.win_show) return;
     if (!character_generated) return;
-    clear_layout(main_vlay_dun_map);
+    clear_layout(dun_map_settings.main_vlay);
     dun_map_created = FALSE;
 }
 
@@ -385,7 +385,7 @@ void MainWindow::create_win_dun_map()
     if (!dun_map_settings.win_show) return;
     dun_map_scene = new QGraphicsScene;
     dun_map_view = new QGraphicsView(dun_map_scene);
-    main_vlay_dun_map->addWidget(dun_map_view);
+    dun_map_settings.main_vlay->addWidget(dun_map_view);
 
     QBrush brush(QColor("black"));
     dun_map_scene->setBackgroundBrush(brush);
@@ -401,7 +401,7 @@ void MainWindow::create_win_dun_map()
 
     dun_map_created = TRUE;
 
-    QAction *act = window_dun_map->findChild<QAction *>(dun_map_multiplier);
+    QAction *act = dun_map_settings.main_widget->findChild<QAction *>(dun_map_multiplier);
     if (act)
     {
         dun_map_multiplier_clicked(act);
@@ -416,25 +416,20 @@ void MainWindow::create_win_dun_map()
  */
 void MainWindow::win_dun_map_create()
 {
-    window_dun_map = new QWidget();
-    main_vlay_dun_map = new QVBoxLayout;
-    window_dun_map->setLayout(main_vlay_dun_map);
+    dun_map_settings.make_extra_window();
 
-    win_dun_map_menubar = new QMenuBar;
-    main_vlay_dun_map->setMenuBar(win_dun_map_menubar);
-    window_dun_map->setWindowTitle("Dungeon Map Window");
-    win_dun_map_settings = win_dun_map_menubar->addMenu(tr("&Settings"));
+    dun_map_settings.main_widget->setWindowTitle("Dungeon Map Window");
     dun_map_font_act = new QAction(tr("Set Dungeon Map Font"), this);
     dun_map_font_act->setStatusTip(tr("Set the font for the Dungeon Map Screen."));
     connect(dun_map_font_act, SIGNAL(triggered()), this, SLOT(win_dun_map_font()));
-    win_dun_map_settings->addAction(dun_map_font_act);
+    dun_map_settings.win_menu->addAction(dun_map_font_act);
     dun_map_graphics_act = new QAction(tr("Use Graphics"), this);
     dun_map_graphics_act->setCheckable(true);
     dun_map_graphics_act->setChecked(dun_map_use_graphics);
     dun_map_graphics_act->setStatusTip(tr("If the main window is using graphics, use them in the Dungeon Map Window."));
     connect(dun_map_graphics_act, SIGNAL(changed()), this, SLOT(set_dun_map_graphics()));
-    win_dun_map_settings->addAction(dun_map_graphics_act);
-    QMenu *dun_map_submenu = win_dun_map_settings->addMenu(tr("Tile multiplier"));
+    dun_map_settings.win_menu->addAction(dun_map_graphics_act);
+    QMenu *dun_map_submenu = dun_map_settings.win_menu->addMenu(tr("Tile multiplier"));
     dun_map_multipliers = new QActionGroup(this);
 
     for (int i = 0; !mult_list[i].isEmpty(); i++)
@@ -446,14 +441,13 @@ void MainWindow::win_dun_map_create()
     }
     connect(dun_map_multipliers, SIGNAL(triggered(QAction*)), this, SLOT(dun_map_multiplier_clicked(QAction*)));
 
-    QAction *act = window_dun_map->findChild<QAction *>(dun_map_multiplier);
+    QAction *act = dun_map_settings.main_widget->findChild<QAction *>(dun_map_multiplier);
     if (act)
     {
         act->setChecked(true);
     }
 
-    window_dun_map->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_dun_map, SIGNAL(destroyed(QObject*)), this, SLOT(win_dun_map_destroy(QObject*)));
+    connect(dun_map_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_dun_map_destroy(QObject*)));
 }
 
 /*
@@ -464,9 +458,9 @@ void MainWindow::win_dun_map_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!dun_map_settings.win_show) return;
-    if (!window_dun_map) return;
-    dun_map_settings.get_widget_settings(window_dun_map);
-    window_dun_map->deleteLater();
+    if (!dun_map_settings.main_widget) return;
+    dun_map_settings.get_widget_settings(dun_map_settings.main_widget);
+    dun_map_settings.main_widget->deleteLater();
     dun_map_created = FALSE;
     dun_map_settings.win_show = FALSE;
     win_dun_map_act->setText("Show Map Window");
@@ -480,7 +474,7 @@ void MainWindow::win_dun_map_destroy(QObject *this_object)
 void MainWindow::win_dun_map_close()
 {
     bool was_open = dun_map_settings.win_show;
-    win_dun_map_destroy(window_dun_map);
+    win_dun_map_destroy(dun_map_settings.main_widget);
     dun_map_settings.win_show = was_open;
 }
 
@@ -491,10 +485,10 @@ void MainWindow::toggle_win_dun_map_frame()
         win_dun_map_create();
         dun_map_settings.win_show = TRUE;
         create_win_dun_map();
-        window_dun_map->setGeometry(dun_map_settings.win_geometry);
+        dun_map_settings.main_widget->setGeometry(dun_map_settings.win_geometry);
         win_dun_map_act->setText("Hide Map Window");
-        if (dun_map_settings.win_maximized) window_dun_map->showMaximized();
-        else window_dun_map->show();
+        if (dun_map_settings.win_maximized) dun_map_settings.main_widget->showMaximized();
+        else dun_map_settings.main_widget->show();
     }
-    else win_dun_map_destroy(window_dun_map);
+    else win_dun_map_destroy(dun_map_settings.main_widget);
 }

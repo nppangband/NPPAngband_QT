@@ -82,25 +82,21 @@ void MainWindow::win_obj_recall_update()
  */
 void MainWindow::win_obj_recall_create()
 {
-    window_obj_recall = new QWidget();
-    obj_recall_vlay = new QVBoxLayout;
-    window_obj_recall->setLayout(obj_recall_vlay);
+    win_obj_recall_settings.make_extra_window();
+
     obj_recall_area = new QTextEdit;
     obj_recall_area->setReadOnly(TRUE);
     obj_recall_area->setStyleSheet("background-color: lightGray;");
     obj_recall_area->setTextInteractionFlags(Qt::NoTextInteraction);
-    obj_recall_vlay->addWidget(obj_recall_area);
-    obj_recall_menubar = new QMenuBar;
-    obj_recall_vlay->setMenuBar(obj_recall_menubar);
-    window_obj_recall->setWindowTitle("Object Recall Window");
-    win_obj_recall_win_settings = obj_recall_menubar->addMenu(tr("&Settings"));
+    win_obj_recall_settings.main_vlay->addWidget(obj_recall_area);
+    win_obj_recall_settings.main_widget->setWindowTitle("Object Recall Window");
     obj_recall_set_font_act = new QAction(tr("Set Object Recall Font"), this);
     obj_recall_set_font_act->setStatusTip(tr("Set the font for the Object Recall Window."));
     connect(obj_recall_set_font_act, SIGNAL(triggered()), this, SLOT(win_obj_recall_font()));
-    win_obj_recall_win_settings->addAction(obj_recall_set_font_act);
+    win_obj_recall_settings.win_menu->addAction(obj_recall_set_font_act);
 
-    window_obj_recall->setAttribute(Qt::WA_DeleteOnClose);
-    connect(window_obj_recall, SIGNAL(destroyed(QObject*)), this, SLOT(win_obj_recall_destroy(QObject*)));
+
+    connect(win_obj_recall_settings.main_widget, SIGNAL(destroyed(QObject*)), this, SLOT(win_obj_recall_destroy(QObject*)));
 }
 
 
@@ -113,9 +109,9 @@ void MainWindow::win_obj_recall_destroy(QObject *this_object)
 {
     (void)this_object;
     if (!win_obj_recall_settings.win_show) return;
-    if (!window_obj_recall) return;
-    win_obj_recall_settings.get_widget_settings(window_obj_recall);
-    window_obj_recall->deleteLater();
+    if (!win_obj_recall_settings.main_widget) return;
+    win_obj_recall_settings.get_widget_settings(win_obj_recall_settings.main_widget);
+    win_obj_recall_settings.main_widget->deleteLater();
     win_obj_recall_settings.win_show = FALSE;
     win_obj_recall_act->setText("Show Object Recall Window");
 }
@@ -128,7 +124,7 @@ void MainWindow::win_obj_recall_destroy(QObject *this_object)
 void MainWindow::win_obj_recall_close()
 {
     bool was_open = win_obj_recall_settings.win_show;
-    win_obj_recall_destroy(window_obj_recall);
+    win_obj_recall_destroy(win_obj_recall_settings.main_widget);
     win_obj_recall_settings.win_show = was_open;
 }
 
@@ -138,13 +134,13 @@ void MainWindow::toggle_win_obj_recall()
     {
         win_obj_recall_create();
         win_obj_recall_settings.win_show = TRUE;
-        window_obj_recall->setGeometry(win_obj_recall_settings.win_geometry);
+        win_obj_recall_settings.main_widget->setGeometry(win_obj_recall_settings.win_geometry);
         win_obj_recall_act->setText("Hide Object Recall Window");
-        if (win_obj_recall_settings.win_maximized) window_obj_recall->showMaximized();
-        else window_obj_recall->show();
+        if (win_obj_recall_settings.win_maximized) win_obj_recall_settings.main_widget->showMaximized();
+        else win_obj_recall_settings.main_widget->show();
 
         win_obj_recall_update();
     }
-    else win_obj_recall_destroy(window_obj_recall);
+    else win_obj_recall_destroy(win_obj_recall_settings.main_widget);
 }
 
