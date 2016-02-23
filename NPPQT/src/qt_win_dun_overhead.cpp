@@ -25,9 +25,17 @@ void extra_win_settings::set_extra_win_default()
     win_show = FALSE;
 }
 
+
+/*
+ *  Note frameGeometry() is used instead of geometry() since
+ * geometry() did not take into account the title bar.  Since
+ * the title bar is added to the widget manually, using
+ * geometry() has the effect of moving the widget's position
+ * up the size of the title bar each time the window is opened.
+ */
 void extra_win_settings::get_widget_settings(QWidget *this_widget)
 {
-    win_geometry = this_widget->geometry();
+    win_geometry = this_widget->frameGeometry();
     win_maximized = this_widget->isMaximized();
 }
 
