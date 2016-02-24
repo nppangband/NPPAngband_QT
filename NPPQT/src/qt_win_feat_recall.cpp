@@ -88,7 +88,7 @@ void MainWindow::win_feat_recall_destroy(QObject *this_object)
 void MainWindow::win_feat_recall_close()
 {
     bool was_open = win_feat_recall_settings.win_show;
-    win_char_inventory_destroy(win_feat_recall_settings.main_widget);
+    win_feat_recall_destroy(win_feat_recall_settings.main_widget);
     win_feat_recall_settings.win_show = was_open;
 }
 

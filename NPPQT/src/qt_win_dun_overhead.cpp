@@ -29,15 +29,22 @@ void extra_win_settings::set_extra_win_default()
 
 
 /*
- *  Note frameGeometry() is used instead of geometry() since
- * geometry() did not take into account the title bar.  Since
- * the title bar is added to the widget manually, using
- * geometry() has the effect of moving the widget's position
- * up the size of the title bar each time the window is opened.
+ *  Using the simple geometry() command doesn't quite work, as it records the top left
+ *  point of the widget, without the frame.  When the game is re-opeend, it places
+ *  the top left of the frame at the point of the top left corner of the widget location.
+ *  The result is the window moves down and to the left a little bit each time the game opens.
+ *  If frameGeometry is used, the widget re-appears at the same size as the previous frame, and a larger
+ *  frame is drawn around it, so the widget gets bigger each time the game is open.
+ *
+ *  Below we save the top left corner of the frame (pos()), and the size of the widget, and the widget
+ *  appears in the same place and the same size.
  */
 void extra_win_settings::get_widget_settings(QWidget *this_widget)
 {
-    win_geometry = this_widget->frameGeometry();
+    QPoint top_left(this_widget->pos());
+    QSize widget_size(this_widget->size());
+
+    win_geometry = QRect(top_left, widget_size);
     win_maximized = this_widget->isMaximized();
 }
 
