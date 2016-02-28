@@ -398,7 +398,7 @@ static int quiver_wield(int item, object_type *o_ptr)
     o_name = object_desc(i_ptr, ODESC_PREFIX | ODESC_FULL);
 
     /*Mark it to go in the quiver */
-    o_ptr->ident |= (IDENT_QUIVER);
+    o_ptr->use_verify[AUTO_WIELD_QUIVER] = TRUE;
 
     slot = wield_slot_ammo(o_ptr);
 
@@ -3380,7 +3380,7 @@ s16b quiver_carry(object_type *o_ptr)
             object_absorb(j_ptr, o_ptr);
 
             /*Mark it to go in the quiver */
-            j_ptr->ident |= (IDENT_QUIVER);
+            o_ptr->use_verify[AUTO_WIELD_QUIVER] = TRUE;
 
             /* Recalculate bonuses */
             p_ptr->update |= (PU_BONUS);
@@ -3492,7 +3492,7 @@ s16b quiver_carry(object_type *o_ptr)
     j_ptr->marked = FALSE;
 
     /*Mark it to go in the quiver */
-    j_ptr->ident |= (IDENT_QUIVER);
+    j_ptr->use_verify[AUTO_WIELD_QUIVER] = TRUE;
 
     /* Recalculate bonuses */
     p_ptr->update |= (PU_BONUS);
@@ -3751,7 +3751,7 @@ s16b inven_takeoff(int item, int amt)
     slot = inven_carry(i_ptr);
 
     /* Remove the mark to auto-wield in quiver */
-    o_ptr->ident &= ~(IDENT_QUIVER);
+    o_ptr->use_verify[AUTO_WIELD_QUIVER] = FALSE;
 
     /* Special handling for the quiver */
     if ((item > QUIVER_START) && (item < QUIVER_END))

@@ -905,7 +905,7 @@ void command_fire(cmd_arg args)
     if (IS_QUIVER_SLOT(item))
     {
         /*Mark it to go in the quiver */
-        i_ptr->ident |= (IDENT_QUIVER);
+        i_ptr->use_verify[AUTO_WIELD_QUIVER] = TRUE;
     }
 
     /* Sound */
@@ -1899,7 +1899,7 @@ void command_throw(cmd_arg args)
     if (IS_QUIVER_SLOT(item))
     {
         /*Mark it to go in the quiver */
-        i_ptr->ident |= (IDENT_QUIVER);
+        i_ptr->use_verify[AUTO_WIELD_QUIVER] = TRUE;
     }
 
     /* Description */
