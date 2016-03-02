@@ -1541,31 +1541,26 @@ void MainWindow::create_actions()
 void MainWindow::set_reg()
 {
     set_graphic_mode(GRAPHICS_RAYMOND_GAUSTADNES);
-    ui_redraw_all();
 }
 
 void MainWindow::set_dvg()
 {
     set_graphic_mode(GRAPHICS_DAVID_GERVAIS);
-    ui_redraw_all();
 }
 
 void MainWindow::set_old_tiles()
 {
     set_graphic_mode(GRAPHICS_ORIGINAL);
-    ui_redraw_all();
 }
 
 void MainWindow::set_ascii()
 {
     set_graphic_mode(GRAPHICS_NONE);
-    ui_redraw_all();
 }
 
 void MainWindow::set_25d_graphics()
 {
     do_25d_graphics = graphics_25d_act->isChecked();
-    ui_redraw_all();
 }
 
 void MainWindow::set_wall_block()
@@ -1578,7 +1573,6 @@ void MainWindow::set_pseudo_ascii()
 {
     do_pseudo_ascii = pseudo_ascii_act->isChecked();
     ui_redraw_all();
-    update_sidebar_all();
 }
 
 void MainWindow::display_monster_info()

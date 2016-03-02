@@ -1731,7 +1731,6 @@ void change_player_level(void)
 
     /* Notice stuff */
     notice_stuff();
-    update_stuff();
 
     /* Redraw stuff */
     p_ptr->do_redraws = TRUE;
