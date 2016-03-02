@@ -425,10 +425,19 @@ void MainWindow::redraw_all()
     update_cursor();
     force_redraw(); // Hack -- Force full redraw
 
-    p_ptr->redraw |= (PR_MESSAGES | PR_WIN_MESSAGES | PR_SIDEBAR_ALL | PR_WIN_OBJLIST | PR_WIN_MONLIST);
-    p_ptr->redraw |= (PR_WIN_CHAR_BASIC | PR_WIN_CHAR_EQUIP_INFO | PR_WIN_EQUIPMENT);
+    update_messages();
+    update_titlebar();
+    update_statusbar();
+    win_char_info_basic_update();
+    update_sidebar_mon();
+    update_sidebar_player();
+    win_obj_list_update();
+    win_mon_list_update();
+    win_char_info_equip_update();
+    win_char_equipment_update();
 
-    redraw_stuff();
+
+    p_ptr->redraw = 0L;
 }
 
 bool MainWindow::panel_contains(int y, int x)
@@ -503,13 +512,14 @@ MainWindow::MainWindow()
 
     anim_depth = 0;
     which_keyset = KEYSET_NEW;
-    character_dungeon = character_generated = character_loaded = FALSE;
+    character_dungeon = character_generated = character_loaded = character_xtra = FALSE;
     executing_command = overhead_map_created = dun_map_created = FALSE;
     equip_show_buttons = inven_show_buttons = TRUE;
     dun_map_cell_wid = dun_map_cell_hgt = 0;
     dun_map_use_graphics = dun_map_created = FALSE;
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
+    object_level = monster_level = 0;
 
     win_mon_list_settings.set_extra_win_default();
     win_obj_list_settings.set_extra_win_default();
@@ -2261,7 +2271,6 @@ void MainWindow::load_file(const QString &file_name)
                 update_file_menu_game_active();
                 launch_game();
                 graphics_view->setFocus();
-                redraw_all();
                 update_sidebar_font();
 
                 // Now that we have a character, fill in the char info window
@@ -2274,9 +2283,7 @@ void MainWindow::load_file(const QString &file_name)
                 ui_player_moved();
 
                 //hack - draw everything
-                p_ptr->do_redraws = TRUE;
-                redraw_stuff();
-                p_ptr->do_redraws = FALSE;
+                ui_redraw_all();
             }
 
             event_timer->start();
@@ -2299,7 +2306,6 @@ void MainWindow::launch_birth(bool quick_start)
         launch_game();
         save_character();
         graphics_view->setFocus();
-        redraw_all();
         update_sidebar_font();
         if (char_info_basic_settings.win_show) create_win_char_info();
         if (char_info_equip_settings.win_show) create_win_char_equip_info();
@@ -2314,9 +2320,7 @@ void MainWindow::launch_birth(bool quick_start)
         message(QString("Welcome %1") .arg(op_ptr->full_name));
 
         //hack - draw everything
-        p_ptr->do_redraws = TRUE;
-        redraw_stuff();
-        p_ptr->do_redraws = FALSE;
+        ui_redraw_all();
 
         event_timer->start();
     }

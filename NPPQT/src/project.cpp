@@ -1238,7 +1238,8 @@ void take_hit(int dam, QString kb_str)
         else
         {
             /* Message */
-            bell(color_string(("*** LOW HITPOINT WARNING! ***"), TERM_RED));
+            color_message("*** LOW HITPOINT WARNING! ***", TERM_RED);
+            bell(NULL);
         }
 
     }
