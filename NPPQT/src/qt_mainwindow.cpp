@@ -733,15 +733,15 @@ void MainWindow::save_and_close()
 
     update_file_menu_game_inactive();
 
-    // close game
-    cleanup_npp_games();
-
     message_area->setText("");
     update_titlebar();
 
     cursor->setVisible(false);
     destroy_tiles();
     redraw_all();
+
+    // close game
+    cleanup_npp_games();
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
