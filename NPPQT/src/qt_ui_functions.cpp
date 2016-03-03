@@ -409,7 +409,6 @@ void ui_update_sidebar_all()
 
 void ui_update_sidebar_player()
 {
-    if (!p_ptr->player_turn) return;
     main_window->update_sidebar_player();
     p_ptr->redraw &= ~(PR_SIDEBAR_PL);
 }
