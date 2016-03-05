@@ -805,6 +805,7 @@ extern int do_squelch_item(int squelch, int item, object_type *o_ptr);
 extern void rearrange_stack(int y, int x);
 extern bool squelch_item_ok(object_type *o_ptr);
 extern void do_squelch_pile(int y, int x);
+extern void do_quality_squelch_menu(void);
 
 /*store.c*/
 extern QString store_welcome(int store_idx);

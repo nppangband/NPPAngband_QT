@@ -12,7 +12,6 @@
 #include <QSplitter>
 #include "src/npp.h"
 #include <src/nppdialog.h>
-#include <QPointer>
 
 enum
 {
@@ -230,6 +229,8 @@ private slots:
     void slot_mon_kill_count(void){DisplayMonKillCount();};
 };
 
+
+
 extern void display_monster_knowledge(void);
 extern void display_object_knowledge(void);
 extern void display_ego_item_knowledge(void);
@@ -244,6 +245,7 @@ extern void do_cmd_knowledge_screens(void);
 
 extern void qtablewidget_add_palette(QTableWidget *this_tablewidget);
 extern void qpushbutton_dark_background(QPushButton *this_pushbutton);
+
 
 
 #endif // KNOWLEDGE_H

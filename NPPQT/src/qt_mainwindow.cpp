@@ -1088,6 +1088,11 @@ void MainWindow::toggle_show_hotkey_toolbar()
     }
 }
 
+void MainWindow::quality_squelch_menu(void)
+{
+    do_quality_squelch_menu();
+}
+
 void MainWindow::font_dialog_main_window()
 {
     bool selected;
@@ -1209,6 +1214,7 @@ void MainWindow::update_file_menu_game_active()
     hitpoint_warning_act->setEnabled(TRUE);
     delay_anim_factor_act->setEnabled(TRUE);
     delay_run_factor_act->setEnabled(TRUE);
+    quality_squelch_act->setEnabled(TRUE);
     view_monster_knowledge->setEnabled(TRUE);
     view_object_knowledge->setEnabled(TRUE);
     view_ego_item_knowledge->setEnabled(TRUE);
@@ -1249,6 +1255,7 @@ void MainWindow::update_file_menu_game_inactive()
     hitpoint_warning_act->setEnabled(FALSE);
     delay_anim_factor_act->setEnabled(FALSE);
     delay_run_factor_act->setEnabled(FALSE);
+    quality_squelch_act->setEnabled(FALSE);
     view_monster_knowledge->setEnabled(FALSE);
     view_object_knowledge->setEnabled(FALSE);
     view_ego_item_knowledge->setEnabled(FALSE);
@@ -1359,6 +1366,10 @@ void MainWindow::create_actions()
     show_hotkey_toolbar_act = new QAction(tr("Hide Hotkey Toolbar"), this);
     show_hotkey_toolbar_act->setStatusTip(tr("Hide the Hotkey Toolbar."));
     connect(show_hotkey_toolbar_act, SIGNAL(triggered()), this, SLOT(toggle_show_hotkey_toolbar()));
+
+    quality_squelch_act = new QAction(tr("Quality Squelch Menu"), this);
+    quality_squelch_act->setStatusTip(tr("Modify squelch settings for items upon identification or pseudo-id, based on the quality of the item."));
+    connect(quality_squelch_act, SIGNAL(triggered()), this, SLOT(quality_squelch_menu()));
 
     keymap_new = new QAction(tr("Simplified Command Set"), this);
     keymap_new->setStatusTip(tr("Use simplified keyset to enter commands (recommended for players new to Angband and variants"));
@@ -1723,9 +1734,14 @@ void MainWindow::create_menus()
 
     separator_act = settings->addSeparator();
 
+    settings->addAction(quality_squelch_act);
+
+    separator_act = settings->addSeparator();
+
     settings->addAction(hitpoint_warning_act);
     settings->addAction(delay_anim_factor_act);
     settings->addAction(delay_run_factor_act);
+
 
     // Knowledge section of top menu.
     knowledge = menuBar()->addMenu(tr("&Knowledge"));

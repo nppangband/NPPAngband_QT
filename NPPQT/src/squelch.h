@@ -3,6 +3,7 @@
 
 #include <src/structures.h>
 
+
 /*
  * These are the base types for quelching on identification.
  * Some of the tvls are combined by ini_tv_to_type to make this
@@ -60,8 +61,12 @@ enum
     PS_TYPE_RING,
     PS_TYPE_AMULET,
     PS_TYPE_LIGHT,
+
+    // PS_TYPE_MAX needs to be <= SQUELCH_BYTES (see squelch_level variable)
     PS_TYPE_MAX,
 };
+
+
 
 class quality_squelch_struct
 {

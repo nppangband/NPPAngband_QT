@@ -12,6 +12,8 @@
 #include "src/squelch.h"
 #include "src/object_settings.h"
 
+
+
 /* Pseudo flag */
 #define RBASE (TR2_RES_FIRE | TR2_RES_COLD | TR2_RES_ELEC | TR2_RES_ACID)
 
@@ -91,7 +93,7 @@ quality_name_struct quality_values[SQUELCH_MAX] =
     { SQUELCH_CURSED,	"Squelch cursed" },
     { SQUELCH_AVERAGE,	"Squelch cursed and average" },
     { SQUELCH_GOOD_STRONG,	"Squelch good, average, and cursed" },
-    { SQUELCH_GOOD_WEAK,	"squelch good pseudo-id, average, and cursed" },
+    { SQUELCH_GOOD_WEAK,	"Squelch good pseudo-id, average, and cursed" },
     { SQUELCH_ALL,	"Squelch all but artifacts" },
 };
 
