@@ -101,9 +101,12 @@ void QualitySquelchDialog::make_quality_squelch_pushbuttons(QHBoxLayout *return_
         return_layout->addStretch(1);
     }
 
-    QPointer<QPushButton> squelch_all_but_artifact = new QPushButton("Set all to Squelch All But Artifact");
-    connect(squelch_all_but_artifact, SIGNAL(pressed()), this, SLOT(set_all_quality_all_but_artifact()));
-    return_layout->addWidget(squelch_all_but_artifact);
+    if (game_mode != GAME_NPPMORIA)
+    {
+        QPointer<QPushButton> squelch_all_but_artifact = new QPushButton("Set all to Squelch All But Artifact");
+        connect(squelch_all_but_artifact, SIGNAL(pressed()), this, SLOT(set_all_quality_all_but_artifact()));
+        return_layout->addWidget(squelch_all_but_artifact);
+    }
 }
 
 void QualitySquelchDialog::update_quality_squelch_settings(void)
