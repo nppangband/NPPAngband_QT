@@ -203,14 +203,9 @@ alloc_entry *alloc_kind_table;
 
 
 /*
- * The size of the "alloc_ego_table"
+ * The vector of entries in the "ego allocator table"
  */
-s16b alloc_ego_size;
-
-/*
- * The array[alloc_ego_size] of entries in the "ego allocator table"
- */
-alloc_entry *alloc_ego_table;
+QVector<alloc_entry_new> alloc_ego_table;
 
 /*
  * The size of "alloc_feat_table" (at most MAX_F_IDX * 4)

@@ -686,7 +686,7 @@ DisplayEgoItemKnowledge::DisplayEgoItemKnowledge(void)
     {
         ego_item_type *e_ptr = &e_info[i];
 
-        /* Skip "empty" and unknown objects, and gold */
+        /* Skip "empty" and unknown ego-items */
         if (!e_ptr->e_name.length()) continue;
         if (!e_ptr->everseen) continue;
 

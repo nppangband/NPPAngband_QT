@@ -9,6 +9,43 @@
 
 
 
+typedef struct ego_desc ego_desc;
+struct ego_desc
+{
+    s16b e_idx;
+    QString long_name;
+};
+
+class ObjectSquelchDialog : public NPPDialog
+{
+    Q_OBJECT
+
+public:
+    explicit ObjectSquelchDialog(void);
+
+private:
+    QPointer<QWidget> central;
+};
+
+
+class EgoItemSquelchDialog : public NPPDialog
+{
+    Q_OBJECT
+
+public:
+    explicit EgoItemSquelchDialog(void);
+
+private:
+    QPointer<QWidget> central;
+    QVector<ego_desc> ego_choices;
+
+    void add_ego_item_checkboxes(QGridLayout *return_layout);
+    void gather_ego_types(void);
+
+private slots:
+    void ego_squelch_status_changed(void);
+};
+
 class QualitySquelchDialog : public NPPDialog
 {
     Q_OBJECT
@@ -33,6 +70,8 @@ private:
     void make_quality_squelch_radiobuttons(QGridLayout *return_layout);
     void set_all_squelch_quality(int new_quality);
 };
+
+
 
 #endif // SQUELCH_DIALOGS_H
 

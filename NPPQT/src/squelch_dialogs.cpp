@@ -16,6 +16,183 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
+#include <QCheckBox>
+
+/*
+ *
+ *
+ * Object Squelch_menu
+ *
+ *
+ */
+ObjectSquelchDialog::ObjectSquelchDialog(void)
+{
+    central = new QWidget;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
+
+    QPointer<QLabel> quality_header = new QLabel("<b><h2>Object Squelch Menu</h2></b>");
+    quality_header->setToolTip("The settings below allow the player to automatically destroy an object, or specify pickup preferences for that object.");
+    main_layout->addWidget(quality_header, Qt::AlignCenter);
+
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(buttons);
+
+    setWindowTitle(tr("Object Squelch Menu"));
+
+    this->clientSizeUpdated();
+
+    this->exec();
+}
+
+void do_object_squelch_menu()
+{
+    ObjectSquelchDialog();
+}
+
+/*
+ *
+ *
+ * Ego Item Squelch_menu
+ *
+ *
+ */
+
+
+void EgoItemSquelchDialog::ego_squelch_status_changed()
+{
+    QString item_id = QObject::sender()->objectName();
+    bool dummy;
+    int sender_id = item_id.toInt(&dummy);
+
+    // This would only happen if add_ego_item_checkboxes did not set up with a proper object name;
+    if (!dummy) return;
+
+    ego_item_type *e_ptr = &e_info[sender_id];
+
+    if (e_ptr->squelch) e_ptr->squelch = FALSE;
+    else e_ptr->squelch = TRUE;
+}
+
+void EgoItemSquelchDialog::add_ego_item_checkboxes(QGridLayout *return_layout)
+{
+    int columns_per_row = MIN(((ego_choices.size() / 12) + 1), 4);
+    int num_rows = ego_choices.size() / columns_per_row;
+
+    int row = 0;
+    int column = 0;
+
+    for (int i = 0; i < ego_choices.size(); i++)
+    {
+        ego_item_type *e_ptr = &e_info[ego_choices[i].e_idx];
+
+        QPointer<QCheckBox> new_checkbox = new QCheckBox(get_ego_name(e_ptr));
+        new_checkbox->setObjectName(QString("%1") .arg(ego_choices[i].e_idx));
+
+        new_checkbox->setChecked(e_ptr->squelch);
+        connect(new_checkbox, SIGNAL(pressed()), this, SLOT(ego_squelch_status_changed()));
+
+        return_layout->addWidget(new_checkbox, row, column);
+
+        if (row >= num_rows)
+        {
+            row = 0;
+            column++;
+        }
+        else row++;
+    }
+}
+
+// First sort by tval slot, then ego name.
+static bool ego_choices_sort(ego_desc first, ego_desc second)
+{
+    // Tiebreaker
+    return (first.long_name < second.long_name);
+}
+
+void EgoItemSquelchDialog::gather_ego_types()
+{
+    ego_choices.clear();
+
+    /* Get the valid ego-items */
+    for (int i = 0; i < alloc_ego_table.size(); i++)
+    {
+        alloc_entry_new *ae_ptr = &alloc_ego_table[i];
+
+        ego_item_type *e_ptr = &e_info[ae_ptr->index];
+
+        /* Skip "empty" and unknown ego-items */
+        if (!e_ptr->e_name.length()) continue;
+        if (!e_ptr->everseen) continue;
+
+        ego_desc new_entry;
+
+        /* Make the index */
+        new_entry.e_idx = ae_ptr->index;
+        new_entry.long_name = get_ego_name(e_ptr);
+
+        ego_choices.append(new_entry);
+    }
+
+    qSort(ego_choices.begin(), ego_choices.end(), ego_choices_sort);
+}
+
+EgoItemSquelchDialog::EgoItemSquelchDialog(void)
+{
+    //First make sure we have known ego types.
+
+    gather_ego_types();
+
+    if (!ego_choices.size())
+    {
+        pop_up_message_box("No known ego items!");
+        return;
+    }
+
+    central = new QWidget;
+    QPointer<QVBoxLayout> main_layout = new QVBoxLayout;
+    central->setLayout(main_layout);
+    main_layout->setSpacing(10);
+    // IMPORTANT: it must be called AFTER setting the layout
+    this->setClient(central);
+
+    QPointer<QLabel> quality_header = new QLabel("<b><h2>Ego Item Squelch Menu</h2></b>");
+    quality_header->setToolTip("The settings below allow the player to automatically destroy an ego-item on identification.");
+    main_layout->addWidget(quality_header, Qt::AlignCenter);
+
+    QPointer<QGridLayout> checkbox_glay = new QGridLayout;
+    main_layout->addLayout(checkbox_glay);
+
+    add_ego_item_checkboxes(checkbox_glay);
+
+    QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
+    connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
+    main_layout->addWidget(buttons);
+
+    setWindowTitle(tr("Quality Squelch Menu"));
+
+    this->clientSizeUpdated();
+
+    this->exec();
+}
+
+void do_ego_item_squelch_menu()
+{
+    EgoItemSquelchDialog();
+}
+
+
+/*
+ *
+ *
+ * Quality Squelch_menu
+ *
+ *
+ */
 
 
 // Set all applicable settings to teh new squelch quality
@@ -252,7 +429,6 @@ QualitySquelchDialog::QualitySquelchDialog(void): NPPDialog()
 
     QPointer<QGridLayout> squelch_glay = new QGridLayout;
     main_layout->addLayout(squelch_glay);
-
 
     make_quality_squelch_radiobuttons(squelch_glay);
 

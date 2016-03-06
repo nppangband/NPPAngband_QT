@@ -56,27 +56,25 @@ static void remove_ironman_ego_items(void)
 {
     s16b i;
 
-    alloc_entry *table = alloc_ego_table;
-
     /* Go through "normal" ego-item types */
-    for (i = 0; i < alloc_ego_size; i++)
+    for (i = 0; i < alloc_ego_table.size(); i++)
     {
-        ego_item_type *e_ptr = &e_info[table[i].index];
+        alloc_entry_new *ae_ptr = &alloc_ego_table[i];
+
+        ego_item_type *e_ptr = &e_info[ae_ptr->index];
 
         /*
          * Mega-hack - Allow fireproof books if store services
          * are disabled
          */
-        if ((table[i].index == EGO_FIREPROOF) &&
+        if ((alloc_ego_table.at(i).index == EGO_FIREPROOF) &&
             birth_no_store_services) continue;
 
         /* Ignore ironman ego-item types */
         if (e_ptr->e_flags3 & TR3_IRONMAN_ONLY)
         {
             /*No chance to be created normally*/
-            table[i].prob1 = 0;
-            table[i].prob2 = 0;
-            table[i].prob3 = 0;
+            ae_ptr->base_probability = 0;
         }
     }
 }

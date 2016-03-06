@@ -512,12 +512,9 @@ QString quality_squelch_type_label(object_type *o_ptr)
     return("(oops)");
 }
 
-QString get_ego_name(object_type *o_ptr)
+QString get_ego_name(ego_item_type *e_ptr)
 {
-    // Paranoia
-    if (!o_ptr->ego_num) return (QString("(None"));
     int i;
-    ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
     QVector<byte> tval_table;
     QString ego_name;
     ego_name.clear();
@@ -568,6 +565,16 @@ QString get_ego_name(object_type *o_ptr)
     ego_name = capitalize_first(ego_name);
 
     return (ego_name);
+}
+
+QString get_ego_name(object_type *o_ptr)
+{
+    // Paranoia
+    if (!o_ptr->ego_num) return (QString("(None"));
+    ego_item_type *e_ptr = &e_info[o_ptr->ego_num];
+
+    return (get_ego_name(e_ptr));
+
 
 }
 

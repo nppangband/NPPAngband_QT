@@ -2227,8 +2227,6 @@ static void	artifact_prep(s16b k_idx, int a_idx)
             ego_item_type *e_ptr;
             int i, j, e_idx;
 
-            alloc_entry *table = alloc_ego_table;
-
             long total, value;
 
             /* Reset total */
@@ -2238,13 +2236,19 @@ static void	artifact_prep(s16b k_idx, int a_idx)
               object level doesn't matter so we always succeed*/
 
             /* Process probabilities */
-            for (i = 0; i < alloc_ego_size; i++)
+            for (i = 0; i < alloc_ego_table.size(); i++)
             {
+                alloc_entry_new *ae_ptr = &alloc_ego_table[i];
+
+                // Ego items don't currently use the "hook" phase
+                ae_ptr->hook_probability = ae_ptr->base_probability;
+
                 /* Default */
-                table[i].prob3 = 0;
+
+                ae_ptr->final_probability = 0;
 
                 /* Get the index */
-                e_idx = table[i].index;
+                e_idx = ae_ptr->index;
 
                 /* Get the actual kind */
                 e_ptr = &e_info[e_idx];
@@ -2262,31 +2266,33 @@ static void	artifact_prep(s16b k_idx, int a_idx)
                             if (a_ptr->sval <= e_ptr->max_sval[j])
                             {
                                 /* Accept */
-                                table[i].prob3 = table[i].prob2;
+                                ae_ptr->final_probability = ae_ptr->hook_probability;
                             }
                         }
                     }
                 }
 
                 /* Total */
-                total += table[i].prob3;
+                total += ae_ptr->final_probability;
             }
 
             /* Pick an ego-item */
             value = rand_int(total);
 
-            /* Find the object */
-            for (i = 0; i < alloc_ego_size; i++)
+            /* Find the ego-item */
+            for (i = 0; i < alloc_ego_table.size(); i++)
             {
+                alloc_entry_new *ae_ptr = &alloc_ego_table[i];
+
                 /* Found the entry */
-                if (value < table[i].prob3) break;
+                if (value < ae_ptr->final_probability) break;
 
                 /* Decrement */
-                value = value - table[i].prob3;
+                value = value - ae_ptr->final_probability;
             }
 
             /*point to it*/
-            e_ptr = &e_info[table[i].index];
+            e_ptr = &e_info[alloc_ego_table[i].index];
 
             /*Apply the ego-item flags to the artifact*/
             a_ptr->a_flags1 |= e_ptr->e_flags1;

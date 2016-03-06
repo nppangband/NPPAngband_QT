@@ -1088,9 +1088,19 @@ void MainWindow::toggle_show_hotkey_toolbar()
     }
 }
 
+void MainWindow::object_squelch_menu(void)
+{
+    do_object_squelch_menu();
+}
+
 void MainWindow::quality_squelch_menu(void)
 {
     do_quality_squelch_menu();
+}
+
+void MainWindow::ego_item_squelch_menu(void)
+{
+    do_ego_item_squelch_menu();
 }
 
 void MainWindow::font_dialog_main_window()
@@ -1214,7 +1224,9 @@ void MainWindow::update_file_menu_game_active()
     hitpoint_warning_act->setEnabled(TRUE);
     delay_anim_factor_act->setEnabled(TRUE);
     delay_run_factor_act->setEnabled(TRUE);
+    object_squelch_act->setEnabled(TRUE);
     quality_squelch_act->setEnabled(TRUE);
+    ego_item_squelch_act->setEnabled(TRUE);
     view_monster_knowledge->setEnabled(TRUE);
     view_object_knowledge->setEnabled(TRUE);
     view_ego_item_knowledge->setEnabled(TRUE);
@@ -1255,7 +1267,9 @@ void MainWindow::update_file_menu_game_inactive()
     hitpoint_warning_act->setEnabled(FALSE);
     delay_anim_factor_act->setEnabled(FALSE);
     delay_run_factor_act->setEnabled(FALSE);
+    object_squelch_act->setEnabled(FALSE);
     quality_squelch_act->setEnabled(FALSE);
+    ego_item_squelch_act->setEnabled(FALSE);
     view_monster_knowledge->setEnabled(FALSE);
     view_object_knowledge->setEnabled(FALSE);
     view_ego_item_knowledge->setEnabled(FALSE);
@@ -1367,9 +1381,17 @@ void MainWindow::create_actions()
     show_hotkey_toolbar_act->setStatusTip(tr("Hide the Hotkey Toolbar."));
     connect(show_hotkey_toolbar_act, SIGNAL(triggered()), this, SLOT(toggle_show_hotkey_toolbar()));
 
+    object_squelch_act = new QAction(tr("Object Squelch Menu"), this);
+    object_squelch_act->setStatusTip(tr("Modify squelch and pickup preferencs settings for all known objects."));
+    connect(object_squelch_act, SIGNAL(triggered()), this, SLOT(object_squelch_menu()));
+
     quality_squelch_act = new QAction(tr("Quality Squelch Menu"), this);
     quality_squelch_act->setStatusTip(tr("Modify squelch settings for items upon identification or pseudo-id, based on the quality of the item."));
     connect(quality_squelch_act, SIGNAL(triggered()), this, SLOT(quality_squelch_menu()));
+
+    ego_item_squelch_act = new QAction(tr("Ego-Item Squelch Menu"), this);
+    ego_item_squelch_act->setStatusTip(tr("Modify squelch settings for ego-items upon identification."));
+    connect(ego_item_squelch_act, SIGNAL(triggered()), this, SLOT(ego_item_squelch_menu()));
 
     keymap_new = new QAction(tr("Simplified Command Set"), this);
     keymap_new->setStatusTip(tr("Use simplified keyset to enter commands (recommended for players new to Angband and variants"));
@@ -1734,7 +1756,9 @@ void MainWindow::create_menus()
 
     separator_act = settings->addSeparator();
 
+    settings->addAction(object_squelch_act);
     settings->addAction(quality_squelch_act);
+    settings->addAction(ego_item_squelch_act);
 
     separator_act = settings->addSeparator();
 
