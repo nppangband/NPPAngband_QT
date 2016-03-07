@@ -1337,24 +1337,21 @@ int get_obj_num_prep(void)
 {
     int i;
 
-    /* Get the entry */
-    alloc_entry *table = alloc_kind_table;
-
     /* Scan the allocation table */
-    for (i = 0; i < alloc_kind_size; i++)
+    for (i = 0; i < alloc_kind_table.size(); i++)
     {
         /* Accept objects which pass the restriction, if any */
-        if (!get_obj_num_hook || (*get_obj_num_hook)(table[i].index))
+        if (!get_obj_num_hook || (*get_obj_num_hook)(alloc_kind_table[i].index))
         {
             /* Accept this object */
-            table[i].prob2 = table[i].prob1;
+            alloc_kind_table[i].hook_probability = alloc_kind_table[i].base_probability;
         }
 
         /* Do not use this object */
         else
         {
             /* Decline this object */
-            table[i].prob2 = 0;
+            alloc_kind_table[i].hook_probability = 0;
         }
     }
 
