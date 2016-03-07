@@ -41,10 +41,6 @@ s16b get_obj_num(int level)
 
     long value, total;
 
-    object_kind *k_ptr;
-
-    alloc_entry *table = alloc_kind_table;
-
     /* Boost level */
     if (level > 0)
     {
@@ -60,16 +56,20 @@ s16b get_obj_num(int level)
     total = 0L;
 
     /* Process probabilities */
-    for (i = 0; i < alloc_kind_size; i++)
+    for (i = 0; i < alloc_kind_table.size(); i++)
     {
+        alloc_entry_new *ae_ptr = &alloc_kind_table[i];
+
+        object_kind *k_ptr = &k_info[ae_ptr->index];
+
         /* Objects are sorted by depth */
-        if (table[i].level > level) break;
+        if (ae_ptr->level > level) break;
 
         /* Default */
-        table[i].prob3 = 0;
+        ae_ptr->final_probability = 0;
 
         /* Get the index */
-        k_idx = table[i].index;
+        k_idx = ae_ptr->index;
 
         /* Get the actual kind */
         k_ptr = &k_info[k_idx];
@@ -79,10 +79,10 @@ s16b get_obj_num(int level)
                 && (k_ptr->tval == TV_CHEST)) continue;
 
         /* Accept */
-        table[i].prob3 = table[i].prob2;
+        ae_ptr->final_probability = ae_ptr->hook_probability;
 
         /* Total */
-        total += table[i].prob3;
+        total += ae_ptr->final_probability;
     }
 
     /* No legal objects */
@@ -92,13 +92,13 @@ s16b get_obj_num(int level)
     value = rand_int(total);
 
     /* Find the object */
-    for (i = 0; i < alloc_kind_size; i++)
+    for (i = 0; i < alloc_kind_table.size(); i++)
     {
         /* Found the entry */
-        if (value < table[i].prob3) break;
+        if (value < alloc_kind_table[i].final_probability) break;
 
         /* Decrement */
-        value = value - table[i].prob3;
+        value = value - alloc_kind_table[i].final_probability;
     }
 
 
@@ -114,18 +114,19 @@ s16b get_obj_num(int level)
         /* Pick a object */
         value = rand_int(total);
 
-        /* Find the monster */
-        for (i = 0; i < alloc_kind_size; i++)
+        /* Find the object */
+        for (i = 0; i < alloc_kind_table.size(); i++)
         {
+
             /* Found the entry */
-            if (value < table[i].prob3) break;
+            if (value < alloc_kind_table[i].final_probability) break;
 
             /* Decrement */
-            value = value - table[i].prob3;
+            value = value - alloc_kind_table[i].final_probability;
         }
 
         /* Keep the "best" one */
-        if (table[i].level < table[j].level) i = j;
+        if (alloc_kind_table[i].level < alloc_kind_table[j].level) i = j;
     }
 
     /* Try for a "better" object twice (10%) */
@@ -138,21 +139,22 @@ s16b get_obj_num(int level)
         value = rand_int(total);
 
         /* Find the object */
-        for (i = 0; i < alloc_kind_size; i++)
+        for (i = 0; i < alloc_kind_table.size(); i++)
         {
+
             /* Found the entry */
-            if (value < table[i].prob3) break;
+            if (value < alloc_kind_table[i].final_probability) break;
 
             /* Decrement */
-            value = value - table[i].prob3;
+            value = value - alloc_kind_table[i].final_probability;
         }
 
         /* Keep the "best" one */
-        if (table[i].level < table[j].level) i = j;
+        if (alloc_kind_table[i].level < alloc_kind_table[j].level) i = j;
     }
 
     /* Result */
-    return (table[i].index);
+    return (alloc_kind_table[i].index);
 }
 
 

@@ -1434,22 +1434,21 @@ static void store_base_power (void)
     {
         int y;
         bool found_rarity = FALSE;
-        alloc_entry *table = alloc_kind_table;
 
         /* Kinds array was populated in the above step in artifact_power */
         k_idx = kinds[i];
         a_ptr = &a_info[i];
 
         /* Process probabilities */
-        for (y = 0; y < alloc_kind_size; y++)
+        for (y = 0; y < alloc_kind_table.size(); y++)
         {
-            if (k_idx != table[y].index) continue;
+            if (k_idx != alloc_kind_table[y].index) continue;
 
             /*The table is sorted by depth, just use the lowest one*/
-            base_item_level[i] = table[y].level;
+            base_item_level[i] = alloc_kind_table[y].level;
 
             /*The rarity tables are divided by 100 in the prob_table*/
-            base_item_rarity[i] = 100 / table[y].prob2;
+            base_item_rarity[i] = 100 / alloc_kind_table[y].hook_probability;
 
             /*Paranoia*/
             if (base_item_rarity[i] < 1) base_item_rarity[i] = 1;
@@ -2550,17 +2549,15 @@ static void choose_item(int a_idx)
     {
         int y;
 
-        alloc_entry *table = alloc_kind_table;
-
         k_idx = kinds[a_idx];
 
         /* Process probabilities */
-        for (y = 0; y < alloc_kind_size; y++)
+        for (y = 0; y < alloc_kind_table.size(); y++)
         {
-            if (k_idx != table[y].index) continue;
+            if (k_idx != alloc_kind_table[y].index) continue;
 
             /*The rarity tables are divided by 100 in the prob_table*/
-            a_ptr->a_rarity += (100 / table[y].prob2);
+            a_ptr->a_rarity += (100 / alloc_kind_table[y].hook_probability);
 
             break;
         }
@@ -3209,7 +3206,6 @@ static void scramble_artifact(int a_idx)
          */
         int y;
         int new_object_rarity = 0;
-        alloc_entry *table = alloc_kind_table;
 
         /* Capture the rarity of the original base item and artifact */
         base_rarity_old = base_item_rarity[a_idx];
@@ -3228,12 +3224,12 @@ static void scramble_artifact(int a_idx)
          */
 
         /* Process probabilities */
-        for (y = 0; y < alloc_kind_size; y++)
+        for (y = 0; y < alloc_kind_table.size(); y++)
         {
-            if (k_idx != table[y].index) continue;
+            if (k_idx != alloc_kind_table[y].index) continue;
 
             /*The rarity tables are divided by 100 in the prob_table*/
-            new_object_rarity = MAX((100 / table[y].prob2), 1);
+            new_object_rarity = MAX((100 / alloc_kind_table[y].hook_probability), 1);
 
             break;
         }

@@ -18,7 +18,7 @@
 #include <QPushButton>
 #include <QHeaderView>
 
-static QString squelch_status[SQUELCH_OPT_MAX] =
+QString squelch_status[SQUELCH_OPT_MAX] =
 {
     "Never Squelch",
     "Never Pickup",
@@ -26,7 +26,7 @@ static QString squelch_status[SQUELCH_OPT_MAX] =
     "Always Squelch",
 };
 
-static const byte squelch_status_color[SQUELCH_OPT_MAX] =
+byte squelch_status_color[SQUELCH_OPT_MAX] =
 {
     TERM_COPPER,
     TERM_L_GREEN,

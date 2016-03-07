@@ -5,16 +5,12 @@
 #include "src/npp.h"
 #include <src/nppdialog.h>
 #include <QGridLayout>
+#include "src/squelch.h"
 
 
 
 
-typedef struct ego_desc ego_desc;
-struct ego_desc
-{
-    s16b e_idx;
-    QString long_name;
-};
+
 
 class ObjectSquelchDialog : public NPPDialog
 {
@@ -25,6 +21,16 @@ public:
 
 private:
     QPointer<QWidget> central;
+    QPointer<QVBoxLayout> main_layout;
+    QPointer<QGridLayout> squelch_glay;
+    QVector<squelch_entry> squelch_choices;
+
+    void add_object_squelch_radiobuttons(void);
+    void gather_object_kinds(void);
+
+private slots:
+    void squelch_tval_changed(int new_tval);
+    void update_squelch_settings(void);
 };
 
 

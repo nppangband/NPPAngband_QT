@@ -229,6 +229,8 @@ private slots:
     void slot_mon_kill_count(void){DisplayMonKillCount();};
 };
 
+extern QString squelch_status[SQUELCH_OPT_MAX];
+extern byte squelch_status_color[SQUELCH_OPT_MAX];
 
 
 extern void display_monster_knowledge(void);
