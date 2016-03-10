@@ -227,8 +227,6 @@ void ObjectSquelchDialog::squelch_tval_changed(int new_tval_number)
 
         row++;
     }
-    QSpacerItem *spacer = new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding);
-    squelch_glay->addItem(spacer, row++, 0);
 
     ui_request_size_update(central);
     QCoreApplication::processEvents();   // IMPORTANT: THE SIZE_HINT UPDATE IS ASYNC, SO WAIT FOR IT
@@ -349,8 +347,6 @@ ObjectSquelchDialog::ObjectSquelchDialog(void)
     QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
     connect(buttons, SIGNAL(rejected()), this, SLOT(close()));
     main_layout->addWidget(buttons);
-
-    main_layout->addStretch(100);
 
     setWindowTitle(tr("Object Squelch Menu"));
 
