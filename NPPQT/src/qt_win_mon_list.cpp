@@ -529,7 +529,7 @@ void MainWindow::win_mon_list_destroy(QObject *this_object)
     (void)this_object;
     if (!win_mon_list_settings.win_show) return;
     if (!win_mon_list_settings.main_widget) return;
-    mon_button_group->deleteLater();
+    mon_button_group->~QButtonGroup();
     win_mon_list_settings.get_widget_settings(win_mon_list_settings.main_widget);
     win_mon_list_settings.main_widget->deleteLater();
     win_mon_list_settings.win_show = FALSE;
