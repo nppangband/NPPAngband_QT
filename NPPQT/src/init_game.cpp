@@ -170,6 +170,7 @@ void create_directories()
      * Make sure the save and user directories exist.
      * mkdir does nothing and returns FALSE if the directories already exist.
      */
+    (void)npp_dir_save.mkdir(npp_dir_bone.path());
     (void)npp_dir_save.mkdir(npp_dir_save.path());
     (void)npp_dir_user.mkdir(npp_dir_user.path());
 }
