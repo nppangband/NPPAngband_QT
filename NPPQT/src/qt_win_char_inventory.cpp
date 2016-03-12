@@ -130,6 +130,7 @@ void MainWindow::win_char_inventory_update()
 {
     if (!character_generated) return;
     if (!char_inventory_settings.win_show) return;
+    if (!inven_list) return;
 
     update_inven_list(inven_list, TRUE, inven_show_buttons);
     if (inven_show_buttons) inven_link_pushbuttons();
