@@ -98,7 +98,7 @@ OptionsDialog::OptionsDialog()
     lay3->addWidget(btn2);
     connect(btn2, SIGNAL(clicked()), this, SLOT(reject()));
 
-    setWindowTitle(VERSION_MODE_NAME);
+    setWindowTitle(QString("%1 Options") .arg(VERSION_MODE_NAME));
 
     this->clientSizeUpdated();
 }
