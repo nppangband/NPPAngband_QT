@@ -49,7 +49,7 @@
 /*
  * Current version string
  */
-#define VERSION_STRING	"8.0.3"
+#define VERSION_STRING	"8.0.4"
 
 
 /*
