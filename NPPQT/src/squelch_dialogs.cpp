@@ -15,6 +15,7 @@
 #include "src/knowledge.h"
 #include <QRadioButton>
 #include <QDialogButtonBox>
+#include <QCoreApplication>
 #include <QLabel>
 #include <QPushButton>
 #include <QCheckBox>
@@ -144,33 +145,12 @@ void ObjectSquelchDialog::update_squelch_settings(void)
         // This would only happen if squelch_tval_changed was not set up with a proper object name;
         if (!dummy) continue;
 
-        bool test = this_radiobutton->isChecked();
-
         int this_idx = this_id / 10;
         int this_squelch_setting = this_id % 10;
 
         if (this_idx != object_idx) continue;
-        if (this_squelch_setting == squelch_setting) this_radiobutton->setChecked(TRUE);
+        if (this_squelch_setting == squelch_setting) continue;
         else this_radiobutton->setChecked(FALSE);
-
-        bool test2 = this_radiobutton->isChecked();
-
-        int test3 = (test = test2);
-    }
-
-    // Now go through and set all the group buttons to false, except
-    // the one just checked.  Ignore the other groups.
-    for (int x = 0; x < button_group_list.size(); x++)
-    {
-        QRadioButton *this_radiobutton = button_group_list.at(x);
-
-        QString this_name = this_radiobutton->objectName();
-
-        bool test = this_radiobutton->isChecked();
-
-        bool test2 = this_radiobutton->isChecked();
-
-        int test3 = (test = test2);
     }
 }
 
@@ -247,6 +227,9 @@ void ObjectSquelchDialog::squelch_tval_changed(int new_tval_number)
 
         row++;
     }
+
+    ui_request_size_update(central);
+    QCoreApplication::processEvents();   // IMPORTANT: THE SIZE_HINT UPDATE IS ASYNC, SO WAIT FOR IT
 
     this->clientSizeUpdated();
 }
@@ -358,8 +341,6 @@ ObjectSquelchDialog::ObjectSquelchDialog(void)
     QPointer<QLabel> quality_header = new QLabel("<b><h2>Object Squelch Menu</h2></b>");
     quality_header->setToolTip("The settings below allow the player to automatically destroy an object, or specify pickup preferences for that object.");
     main_layout->addWidget(quality_header, Qt::AlignCenter);
-
-    ;
 
     add_object_squelch_radiobuttons();
 
@@ -644,7 +625,7 @@ void QualitySquelchDialog::update_quality_squelch_settings(void)
         int this_setting = this_id % 100;
 
         if (this_group != quality_group) continue;
-        if (this_setting == quality_setting) this_radiobutton->setChecked(TRUE);
+        if (this_setting == quality_setting) continue;
         else this_radiobutton->setChecked(FALSE);
     }
 }

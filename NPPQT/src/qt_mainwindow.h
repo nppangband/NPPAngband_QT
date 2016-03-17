@@ -472,6 +472,7 @@ private:
     void win_mon_list_close();
     void win_mon_list_wipe();
     void set_font_win_mon_list(QFont newFont);
+    QPointer<QButtonGroup> mon_button_group;
 
 public:
     void win_mon_list_update();
@@ -481,6 +482,7 @@ private slots:
     void win_mon_list_font();
     void toggle_win_mon_list();
     void win_mon_list_destroy(QObject *this_object);
+    void mon_info_press(int mon_race);
 
 // Object list window
 private:
@@ -489,6 +491,7 @@ private:
     void win_obj_list_close();
     void win_obj_list_wipe();
     void set_font_win_obj_list(QFont newFont);
+    QPointer<QButtonGroup> obj_button_group;
 
 public:
     void win_obj_list_update();
@@ -498,6 +501,7 @@ private slots:
     void win_obj_list_font();
     void toggle_win_obj_list();
     void win_obj_list_destroy(QObject *this_object);
+    void obj_info_press(int k_idx);
 
 // Monster Recall window
 private:

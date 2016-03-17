@@ -23,6 +23,7 @@
 #include <QStatusBar>
 #include <QScrollBar>
 #include <QDockWidget>
+#include <QMenuBar>
 
 #include "src/npp.h"
 #include "src/qt_mainwindow.h"
@@ -1972,7 +1973,14 @@ void MainWindow::read_settings()
 
     restoreState(settings.value("window_state").toByteArray());
 
-
+    /*
+     * Before reading the geometry of the windows, add a toolbar to the dummy widget
+     * So the widgets appear in the same position upon reloading.
+     */
+    QVBoxLayout dummy_vlay;
+    dummy_widget.setLayout(&dummy_vlay);
+    QMenuBar dummy_menubar;
+    dummy_vlay.setMenuBar(&dummy_menubar);
 
     // Monster List window settings
     win_mon_list_settings.win_show = settings.value("show_mon_list_window", false).toBool();
@@ -2097,7 +2105,6 @@ void MainWindow::read_settings()
         toggle_win_char_equipment_frame();
     }
 
-
     // Character Inventory window settings
     char_inventory_settings.win_show = settings.value("show_char_inventory_window", false).toBool();
     inven_show_buttons = settings.value("show_inven_window_buttons", false).toBool();
@@ -2157,7 +2164,8 @@ void MainWindow::write_settings()
     QWidget dummy_widget;
 
     QSettings settings("NPPGames", "NPPQT");
-    settings.setValue("mainWindowGeometry", saveGeometry());
+    dummy_widget.setGeometry(geometry());
+    settings.setValue("mainWindowGeometry", dummy_widget.saveGeometry());
     settings.setValue("mainWindowMaximized", main_window->isMaximized());
     settings.setValue("recentFiles", recent_savefiles);
     settings.setValue("target_buttons", show_targeting_buttons);
@@ -2176,6 +2184,14 @@ void MainWindow::write_settings()
     settings.setValue("window_state", saveState());
 
 
+    /*
+     * Before saving the geometry of the windows, add a toolbar to the dummy widget
+     * So the widgets appear in the same position upon reloading.
+     */
+    QVBoxLayout dummy_vlay;
+    dummy_widget.setLayout(&dummy_vlay);
+    QMenuBar dummy_menubar;
+    dummy_vlay.setMenuBar(&dummy_menubar);
 
     // Monster List window settings
     settings.setValue("show_mon_list_window", win_mon_list_settings.win_show);
