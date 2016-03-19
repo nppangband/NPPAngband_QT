@@ -1169,6 +1169,39 @@ void MainWindow::import_hotkeys()
     update_hotkey_toolbar();
 }
 
+// Open all of the extra windows
+void MainWindow::all_extra_windows_open()
+{
+    if (!win_mon_list_settings.win_show)         win_mon_list_act->trigger();
+    if (!win_obj_list_settings.win_show)         win_obj_list_act->trigger();
+    if (!win_mon_recall_settings.win_show)       win_mon_recall_act->trigger();
+    if (!win_obj_recall_settings.win_show)       win_obj_recall_act->trigger();
+    if (!win_feat_recall_settings.win_show)      win_feat_recall_act->trigger();
+    if (!win_message_settings.win_show)          win_messages_act->trigger();
+    if (!char_info_basic_settings.win_show)      win_char_basic_act->trigger();
+    if (!char_info_equip_settings.win_show)      win_char_equip_info_act->trigger();
+    if (!char_equipment_settings.win_show)       win_char_equipment_act->trigger();
+    if (!char_inventory_settings.win_show)       win_char_inventory_act->trigger();
+    if (!dun_map_settings.win_show)              win_dun_map_act->trigger();
+    if (!overhead_map_settings.win_show)         win_overhead_map_act->trigger();
+}
+
+void MainWindow::all_extra_windows_close()
+{
+    if (win_mon_list_settings.win_show)          win_mon_list_act->trigger();
+    if (win_obj_list_settings.win_show)          win_obj_list_act->trigger();
+    if (win_mon_recall_settings.win_show)        win_mon_recall_act->trigger();
+    if (win_obj_recall_settings.win_show)        win_obj_recall_act->trigger();
+    if (win_feat_recall_settings.win_show)       win_feat_recall_act->trigger();
+    if (win_message_settings.win_show)           win_messages_act->trigger();
+    if (char_info_basic_settings.win_show)       win_char_basic_act->trigger();
+    if (char_info_equip_settings.win_show)       win_char_equip_info_act->trigger();
+    if (char_equipment_settings.win_show)        win_char_equipment_act->trigger();
+    if (char_inventory_settings.win_show)        win_char_inventory_act->trigger();
+    if (dun_map_settings.win_show)               win_dun_map_act->trigger();
+    if (overhead_map_settings.win_show)          win_overhead_map_act->trigger();
+}
+
 
 void MainWindow::about()
 {
@@ -1558,6 +1591,14 @@ void MainWindow::create_actions()
     win_overhead_map_act->setShortcut(tr("Alt+M"));
     connect(win_overhead_map_act, SIGNAL(triggered()), this, SLOT(toggle_win_overhead_map_frame()));
 
+    win_open_all_act = new QAction(tr("Open All Extra Windows"), this);
+    win_open_all_act->setStatusTip(tr("Open all twelve extra windows."));
+    connect(win_open_all_act, SIGNAL(triggered()), this, SLOT(all_extra_windows_open()));
+
+    win_close_all_act = new QAction(tr("Close All Extra Windows"), this);
+    win_close_all_act->setStatusTip(tr("Close all open extra windows."));
+    connect(win_close_all_act, SIGNAL(triggered()), this, SLOT(all_extra_windows_close()));
+
     help_about = new QAction(tr("&About"), this);
     help_about->setStatusTip(tr("Show the application's About box"));
     connect(help_about, SIGNAL(triggered()), this, SLOT(about()));
@@ -1840,6 +1881,13 @@ void MainWindow::create_menus()
     win_menu->addAction(win_char_inventory_act);
     win_menu->addAction(win_dun_map_act);
     win_menu->addAction(win_overhead_map_act);
+
+    separator_act = win_menu->addSeparator();
+
+    win_menu->addAction(win_open_all_act);
+    win_menu->addAction(win_close_all_act);
+
+
 
     // Help section of top menu.
     help_menu = menuBar()->addMenu(tr("&Help"));

@@ -285,6 +285,9 @@ private slots:
     void set_input_key(int this_key);
     void target_choice();
 
+    void all_extra_windows_open(void);
+    void all_extra_windows_close(void);
+
 private:
 
     void setup_nppangband();
@@ -399,6 +402,9 @@ private:
     QPointer<QAction> win_char_inventory_act;
     QPointer<QAction> win_dun_map_act;
     QPointer<QAction> win_overhead_map_act;
+    QPointer<QAction> win_open_all_act;
+    QPointer<QAction> win_close_all_act;
+
 
     // Holds the actual commands for the help menu.
     QPointer<QAction> help_about;
