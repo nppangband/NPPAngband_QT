@@ -306,6 +306,7 @@ extern bool item_tester_hook_not_artifact(object_type *o_ptr);
 extern bool obj_can_browse(object_type *o_ptr);
 
 // object_info.cpp
+extern QString output_desc_list(QString intro, QVector<QString> list, bool use_or, bool end_punctuation);
 extern QString screen_out_head(object_type *o_ptr);
 extern QString object_info_out(object_type *o_ptr, bool extra_info, bool is_real);
 extern QString get_object_description(object_type *o_ptr);
