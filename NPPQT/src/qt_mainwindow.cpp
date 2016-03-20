@@ -401,7 +401,7 @@ void MainWindow::redraw_screen()
     }
     if (overhead_map_created)
     {
-        overhead_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * overhead_map_cell_wid, p_ptr->cur_map_hgt * overhead_map_cell_hgt);
+        overhead_map_view->setSceneRect(0, 0, p_ptr->cur_map_wid * overhead_map_cell_wid / 2, p_ptr->cur_map_hgt * overhead_map_cell_hgt / 2);
     }
 
     for (int y = 0; y < p_ptr->cur_map_hgt; y++)
