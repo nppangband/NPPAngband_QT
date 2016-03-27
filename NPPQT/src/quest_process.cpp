@@ -454,9 +454,8 @@ static int count_labrynth_objects(void)
  */
 static bool add_labyrinth_monster_object(bool add_object, bool add_parchment)
 {
-    u16b empty_squares_y[LABYRINTH_QUEST_AREA];
-    u16b empty_squares_x[LABYRINTH_QUEST_AREA];
-    u16b empty_squares = 0;
+    QVector<coord> empty_squares;
+    empty_squares.clear();
     u16b slot;
     byte y, x;
     s16b r_idx;
@@ -486,20 +485,18 @@ static bool add_labyrinth_monster_object(bool add_object, bool add_parchment)
             /* New, and open square */
             if (cave_naked_bold(y, x))
             {
-                empty_squares_y[empty_squares] = y;
-                empty_squares_x[empty_squares] = x;
-                empty_squares++;
+                empty_squares.append(make_coords(y, x));
             }
         }
     }
 
     /* Paranoia - shouldn't happen */
-    if (empty_squares < 2) return (FALSE);
+    if (empty_squares.size() < 2) return (FALSE);
 
     /* Find a spot in the array */
-    slot = randint0(empty_squares);
-    y = empty_squares_y[slot];
-    x = empty_squares_x[slot];
+    slot = randint0(empty_squares.size());
+    y = empty_squares[slot].y;
+    x = empty_squares[slot].x;
 
     /* Prepare allocation table */
     get_mon_num_hook = monster_arena_labyrinth_okay;
@@ -540,12 +537,11 @@ static bool add_labyrinth_monster_object(bool add_object, bool add_parchment)
     if (add_object)
     {
         /* Now select another square */
-        empty_squares--;
-        empty_squares_y[slot] = empty_squares_y[empty_squares];
-        empty_squares_x[slot] = empty_squares_x[empty_squares];
-        slot = randint0(empty_squares);
-        y = empty_squares_y[slot];
-        x = empty_squares_x[slot];
+        empty_squares.removeAt(slot);
+
+        slot = randint0(empty_squares.size());
+        y = empty_squares[slot].y;
+        x = empty_squares[slot].x;
 
         k_idx = get_arena_obj_num();
 
