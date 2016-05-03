@@ -3672,8 +3672,7 @@ DisplaySelfKnowledge::DisplaySelfKnowledge()
     for (int x = 0; x < info.size(); x++)
     {
         message_area->moveCursor(QTextCursor::End);
-        message_area->setTextColor(defined_colors[TERM_WHITE]);
-        message_area->insertHtml(QString("%1<br>") .arg(info.at(x)));
+        message_area->insertHtml(color_string(QString("%1<br>") .arg(info.at(x)), TERM_WHITE));
     }
 
     QPointer<QDialogButtonBox> buttons = new QDialogButtonBox(QDialogButtonBox::Close);
