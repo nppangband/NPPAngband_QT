@@ -86,7 +86,7 @@ static s16b get_arena_obj_num(void)
     s16b level = randint0(p_ptr->depth) + p_ptr->depth / 5;
     byte tval_type = randint1(100);
 
-    /* 35% chance of a potion */
+    /* 40% chance of a potion */
     if (tval_type < 35)
     {
         if (level <= 20)		k_idx = lookup_kind(TV_POTION, SV_POTION_CURE_CRITICAL);
@@ -96,13 +96,12 @@ static s16b get_arena_obj_num(void)
         else 					k_idx = lookup_kind(TV_POTION, SV_POTION_LIFE);
     }
     /* 20% chance of a scroll */
-    else if (tval_type <= 55)
+    else if (tval_type <= 50)
     {
         if (level <= 10)		k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_PHASE_DOOR);
         else if (level <= 20)	k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_HOLY_PRAYER);
         else if (level <= 40)	k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_RECHARGING);
-        else if (level <= 60)	k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_PROTECTION_FROM_EVIL);
-        else 					k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_MASS_BANISHMENT);
+        else                    k_idx = lookup_kind(TV_SCROLL, SV_SCROLL_PROTECTION_FROM_EVIL);
     }
     /* 25% chance of a staff/wand */
     else if (tval_type <= 80)
@@ -117,7 +116,12 @@ static s16b get_arena_obj_num(void)
     else
     {
         /* spellcasters want mana */
-        if (cp_ptr->flags & (CF_ZERO_FAIL)) k_idx = lookup_kind(TV_POTION, SV_POTION_RESTORE_MANA);
+        if (cp_ptr->flags & (CF_ZERO_FAIL))
+        {
+            if (level < 65) k_idx = lookup_kind(TV_POTION, SV_POTION_RESTORE_MANA);
+            else            k_idx = lookup_kind(TV_POTION, SV_STAFF_THE_MAGI);
+
+        }
 
         /*
          * Most others get ammo, but first check to confirm
