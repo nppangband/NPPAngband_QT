@@ -521,6 +521,7 @@ MainWindow::MainWindow()
     overhead_map_cell_wid = overhead_map_cell_hgt = 0;
     overhead_map_use_graphics = overhead_map_created = FALSE;
     object_level = monster_level = 0;
+    sound_volume = 0;
 
     win_mon_list_settings.set_extra_win_default();
     win_obj_list_settings.set_extra_win_default();
@@ -1052,6 +1053,13 @@ void MainWindow::delay_run_factor_dialog()
     op_ptr->delay_run_factor = get_quantity_slider(prompt, QString("msec"), 0, 250, op_ptr->delay_run_factor);
 }
 
+void MainWindow::sound_volume_dialog()
+{
+    QString prompt = "Please select the sound volume:";
+
+    sound_volume = get_quantity_slider(prompt, QString("100 = Max volume)"), 0, 100, sound_volume);
+}
+
 
 void MainWindow::toggle_show_targeting()
 {
@@ -1406,6 +1414,10 @@ void MainWindow::create_actions()
     delay_run_factor_act = new QAction(tr("Set Run Delay Factor"), this);
     delay_run_factor_act->setStatusTip(tr("Set the minimum increment between run steps."));
     connect(delay_run_factor_act, SIGNAL(triggered()), this, SLOT(delay_run_factor_dialog()));
+
+    sound_volume_act = new QAction(tr("Set Sound Volume"), this);
+    sound_volume_act->setStatusTip(tr("Set the volume for game sound effect.  Setting it to zero turns sound off."));
+    connect(sound_volume_act, SIGNAL(triggered()), this, SLOT(sound_volume_dialog()));
 
     show_targeting_act = new QAction(tr("Hide Targeting Buttons"), this);
     show_targeting_act->setStatusTip(tr("Do not display the targeting buttons in the sidebar when sleecting a target."));
@@ -1808,6 +1820,11 @@ void MainWindow::create_menus()
     settings->addAction(delay_anim_factor_act);
     settings->addAction(delay_run_factor_act);
 
+    separator_act = settings->addSeparator();
+    settings->addAction(sound_volume_act);
+    //Sound isn't working yet.
+    sound_volume_act->setEnabled(FALSE);
+    sound_volume = 0;
 
     // Knowledge section of top menu.
     knowledge = menuBar()->addMenu(tr("&Knowledge"));
@@ -1977,6 +1994,8 @@ void MainWindow::read_settings()
 
     QWidget dummy_widget;
 
+
+
     dummy_widget.restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     win_geometry = dummy_widget.geometry();
     win_maximized = (settings.value("mainWindowMaximized", false).toBool());
@@ -1995,6 +2014,11 @@ void MainWindow::read_settings()
         show_hotkey_toolbar = TRUE;
         toggle_show_hotkey_toolbar();
     }
+
+    int this_volume = sound_volume;
+    this_volume = settings.value("VolumeSound", false).toInt();
+    sound_volume = (byte)this_volume;
+
     do_25d_graphics = settings.value("graphics_25d", false).toBool();
     graphics_25d_act->setChecked(do_25d_graphics);
     do_pseudo_ascii = settings.value("pseudo_ascii", false).toBool();
@@ -2218,6 +2242,7 @@ void MainWindow::write_settings()
     settings.setValue("recentFiles", recent_savefiles);
     settings.setValue("target_buttons", show_targeting_buttons);
     settings.setValue("hotkey_toolbar", show_hotkey_toolbar);
+    settings.setValue("VolumeSound", sound_volume);
     settings.setValue("graphics_25d", do_25d_graphics);
     settings.setValue("pseudo_ascii", do_pseudo_ascii);
     settings.setValue("solid_block", do_wall_block);
