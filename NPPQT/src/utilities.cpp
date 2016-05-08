@@ -474,6 +474,8 @@ QString set_html_string_length(QString html_string, int length, bool prepend)
 // Returns a QString in any 16 bit color, in HTML format
 QString color_string(QString msg, QColor which_color)
 {
+    QString dummy= which_color.name();
+
     return (QString("<font color='%1'>%2</font>").arg(which_color.name()).arg(msg));
 }
 
