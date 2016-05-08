@@ -221,8 +221,8 @@ QString desc_ego_name(object_type *o_ptr)
         QVector<QString> slays;
         slays.clear();
         /* Collect *slays* */
-        if ((o_ptr->known_obj_flags_1 & (TR1_KILL_DRAGON))) slays.append("Dragons");
-        if ((o_ptr->known_obj_flags_1 & (TR1_KILL_DEMON))) slays.append("Demons");
+        if ((o_ptr->known_obj_flags_1 & (TR1_KILL_DRAGON))) slays.append("Dragon");
+        if ((o_ptr->known_obj_flags_1 & (TR1_KILL_DEMON))) slays.append("Demon");
         if ((o_ptr->known_obj_flags_1 & (TR1_KILL_UNDEAD))) slays.append("Undead");
 
         return(output_desc_list(output, slays, FALSE, FALSE));
@@ -235,11 +235,11 @@ QString desc_ego_name(object_type *o_ptr)
         QVector<QString> slays;
         slays.clear();
         /* Collect slays */
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ANIMAL))) slays.append("Animals");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ORC))) slays.append("Orcs");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_TROLL))) slays.append("Trolls");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_GIANT))) slays.append("Giants");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_DRAGON))) slays.append("Dragons");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ANIMAL))) slays.append("Animal");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ORC))) slays.append("Orc");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_TROLL))) slays.append("Troll");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_GIANT))) slays.append("Giant");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_DRAGON))) slays.append("Dragon");
         if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_DEMON))) slays.append("Demons");
         if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_UNDEAD))) slays.append("Undead");
         if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_EVIL))) slays.append("Evil");
@@ -254,12 +254,12 @@ QString desc_ego_name(object_type *o_ptr)
         QVector<QString> slays;
         slays.clear();
         /* Collect slays */
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ANIMAL))) slays.append("Animals");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ORC))) slays.append("Orcs");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_TROLL))) slays.append("Trolls");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_GIANT))) slays.append("Giants");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_DRAGON))) slays.append("Dragons");
-        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_DEMON))) slays.append("Demons");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ANIMAL))) slays.append("Animal");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_ORC))) slays.append("Orc");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_TROLL))) slays.append("Troll");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_GIANT))) slays.append("Giant");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_DRAGON))) slays.append("Dragon");
+        if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_DEMON))) slays.append("Demon");
         if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_UNDEAD))) slays.append("Undead");
         if ((o_ptr->known_obj_flags_1 & (TR1_SLAY_EVIL))) slays.append("Evil");
 

@@ -109,6 +109,8 @@ public:
     bool win_maximized;
     QRect win_geometry;
 
+    byte sound_volume;
+
     // Scaled tiles
     QHash<QString,QPixmap> tiles;
 
@@ -230,6 +232,7 @@ private slots:
     void hp_warning_dialog();
     void delay_anim_factor_dialog();
     void delay_run_factor_dialog();
+    void sound_volume_dialog();
     void toggle_show_targeting();
     void toggle_show_hotkey_toolbar();
     void object_squelch_menu();
@@ -365,6 +368,7 @@ private:
     QPointer<QAction> hitpoint_warning_act;
     QPointer<QAction> delay_anim_factor_act;
     QPointer<QAction> delay_run_factor_act;
+    QPointer<QAction> sound_volume_act;
 
 
     //Commmands for the knowledge menu

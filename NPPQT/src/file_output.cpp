@@ -423,8 +423,8 @@ static QString make_equippy(bool do_player, bool do_temp, bool modifiers)
 
         object_kind *k_ptr = &k_info[o_ptr->k_idx];
 
-        if (modifiers) equippy.append(QString("  %1 ") .arg(color_char(k_ptr->d_char, k_ptr->d_color)));
-        else equippy.append(color_char(k_ptr->d_char, k_ptr->d_color));
+        if (modifiers) equippy.append(QString("  %1 ") .arg(color_char(k_ptr->d_char, k_ptr->get_color())));
+        else equippy.append(color_char(k_ptr->d_char, k_ptr->get_color()));
     }
 
     if (do_player)
