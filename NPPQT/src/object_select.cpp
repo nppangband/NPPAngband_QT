@@ -622,6 +622,10 @@ ObjectSelectDialog::ObjectSelectDialog(int *item, QString prompt, QString failur
     resize(ui_max_widget_size(this_size));
     updateGeometry();
 
+    // So we can use the keyboard to scroll the list down
+    QPushButton *btn = object_tabs->currentWidget()->findChild<QPushButton *>();
+    if (btn) btn->setFocus();
+
     if (!this->exec())
     {
         *success = FALSE;
