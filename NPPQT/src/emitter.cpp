@@ -323,7 +323,8 @@ void NPPAnimation::start()
     if (anim)
     {
         anim->start();
-        this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+        //this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+        this_loop.exec();
     }
 
 }
@@ -645,7 +646,8 @@ ArcAnimation::ArcAnimation(QPointF from, QPointF to, int newDegrees, int type, i
 void ArcAnimation::start()
 {
     timer.start();
-    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    //this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    this_loop.exec();
 }
 
 void ArcAnimation::finish()
@@ -803,7 +805,8 @@ StarAnimation::StarAnimation(QPointF newCenter, int radius, int newGFType, int g
 void StarAnimation::start()
 {
     timer.start();
-    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    //this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    this_loop.exec();
 }
 
 void StarAnimation::stop()
@@ -913,7 +916,8 @@ HaloAnimation::HaloAnimation(int y, int x)
 void HaloAnimation::start()
 {
     timer.start();
-    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    //this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    this_loop.exec();
 }
 
 void HaloAnimation::stop()
@@ -1000,7 +1004,8 @@ DetectionAnimation::DetectionAnimation(int y, int x, int rad)
 void DetectionAnimation::start()
 {
     timer.start();
-    this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    //this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    this_loop.exec();
 }
 
 void DetectionAnimation::stop()
@@ -1064,7 +1069,10 @@ void BurstAnimation::start()
 
     this->timer.start(70);
 
-    this->this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    main_window->wait_animation();
+
+    //this->this_loop.exec(QEventLoop::ExcludeUserInputEvents);
+    this->this_loop.exec();
 }
 
 void BurstAnimation::on_timeout()
@@ -1129,4 +1137,5 @@ void BurstAnimation::on_timeout()
 void BurstAnimation::stop()
 {
     this->this_loop.quit();
+    main_window->animation_done();
 }

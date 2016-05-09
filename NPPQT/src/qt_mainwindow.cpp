@@ -51,6 +51,11 @@
 
 MainWindow *main_window = 0;
 
+// Increase on keypress, decrease on release. Let us control key release on animations
+static int kbd_hits = 0;
+// Set to true if the user is pressing a key when an animation finishes
+static bool waiting_kbd_release = false;
+
 QString mult_list[] =
 {
   QString("0.25:0.25"),
@@ -114,6 +119,13 @@ void MainWindow::wait_animation(int n_animations)
 void MainWindow::animation_done()
 {
     anim_depth--;
+
+    if (anim_depth <= 0) {
+
+        anim_depth = 0;
+
+        if (kbd_hits > 0) waiting_kbd_release = true;
+    }
 }
 
 void MainWindow::do_create_package()
@@ -747,9 +759,28 @@ void MainWindow::save_and_close()
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-{
+{    
+    if (anim_depth > 0) {
+        //message("animation!");
+        return (FALSE);
+    }
+
+    if (event->type() == QEvent::KeyRelease) {
+        //message("key release");
+        if (kbd_hits > 0) --kbd_hits;
+        if (kbd_hits == 0) waiting_kbd_release = false;
+    }
+
+    // User is pressing some key while doing some animation
+    if (waiting_kbd_release) {
+        //message("waiting kbd release");
+        return (FALSE);
+    }
+
     if (event->type() == QEvent::KeyPress)
     {
+        ++kbd_hits;
+
         this->keyPressEvent(dynamic_cast<QKeyEvent *>(event));
 
         return (TRUE);

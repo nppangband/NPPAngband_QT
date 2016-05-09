@@ -594,7 +594,7 @@ void DungeonGrid::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (!character_dungeon) return;
     if (p_ptr->in_store) return;
-    if (parent->anim_depth > 0) return;
+    if (parent->anim_depth > 0) return;    
 
     // Record the mouseclick information
     main_window->single_mouseclick_info.mouse_click_y = c_y;
