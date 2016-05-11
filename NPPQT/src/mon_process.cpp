@@ -1088,6 +1088,31 @@ static void recover_monster(monster_type *m_ptr)
 static bool sort_mon_moment_info(move_moment_type m1, move_moment_type m2)
 {
     if (m1.moment >= m2.moment) return TRUE;
+
+    // TIe goes to the player
+    if (m1.m_idx < m2.m_idx) return (TRUE);
+    return (FALSE);
+}
+
+class mon_energy_gain_info
+{
+public:
+    QString mon_name;
+    int mon_num;
+    int prev_energy;
+    int new_energy;
+    int energy_gain;
+    int move_moment;
+};
+
+static bool energy_sort(mon_energy_gain_info me1, mon_energy_gain_info me2)
+{
+    if (me1.new_energy > ENERGY_TO_MOVE)
+    {
+        if (me1.move_moment > me2.move_moment) return TRUE;
+    }
+    if (me1.new_energy > me2.new_energy) return TRUE;
+    if (me1.mon_num < me2.mon_num) return (TRUE);
     return (FALSE);
 }
 
@@ -1115,6 +1140,9 @@ void process_entities(void)
 
     monster_type *m_ptr;
 
+    QVector<mon_energy_gain_info> mon_energy_info;
+    mon_energy_info.clear();
+
     /* Clear the moment vector */
     mon_moment_info.clear();
 
@@ -1125,8 +1153,19 @@ void process_entities(void)
     {
         byte energy_gain = calc_energy_gain(p_ptr->state.p_speed);
 
+        mon_energy_gain_info player_energy;
+
+        player_energy.prev_energy = p_ptr->p_energy;
+        player_energy.energy_gain = energy_gain;
+        player_energy.mon_num = -1;
+
         /* Give character energy */
         p_ptr->p_energy += energy_gain;
+
+        player_energy.mon_name = "player";
+        player_energy.new_energy = p_ptr->p_energy;
+
+        player_energy.move_moment = 0;
 
         /* Can the character move? */
         if (p_ptr->p_energy >= ENERGY_TO_MOVE)
@@ -1145,7 +1184,11 @@ void process_entities(void)
             this_mon_move.m_idx = -1;
             this_mon_move.moment = moment;
             mon_moment_info.append(this_mon_move);
+
+            player_energy.move_moment = moment;
         }
+
+        mon_energy_info.append(player_energy);
     }
 
     /* Process the monsters */
@@ -1157,10 +1200,22 @@ void process_entities(void)
         /* Ignore dead monsters */
         if (!m_ptr->r_idx) continue;
 
+        mon_energy_gain_info mon_energy;
+
+        mon_energy.prev_energy = m_ptr->m_energy;
+        mon_energy.mon_num = i;
+
         energy_per_turn = calc_energy_gain(m_ptr->m_speed);
 
         /* Give this monster some energy */
         m_ptr->m_energy += energy_per_turn;
+
+        mon_energy.energy_gain = energy_per_turn;
+        mon_energy.new_energy = m_ptr->m_energy;
+        mon_energy.move_moment = 0;
+        mon_energy.mon_name = monster_desc(m_ptr, 0);
+
+        if (m_ptr->m_energy < ENERGY_TO_MOVE) mon_energy_info.append(mon_energy);
 
         /* Ignore monsters with less than 100 energy */
         if (m_ptr->m_energy < ENERGY_TO_MOVE) continue;
@@ -1179,7 +1234,12 @@ void process_entities(void)
         moment = 100 * (ENERGY_TO_MOVE - old_energy) / (energy_per_turn);
         this_mon_move.moment = moment;
         mon_moment_info.append(this_mon_move);
+
+        mon_energy.move_moment = moment;
+        mon_energy_info.append(mon_energy);
     }
+
+    qSort(mon_energy_info.begin(), mon_energy_info.end(), energy_sort);
 
     /* Sort the movement table by decreasing movement moment*/
     qSort(mon_moment_info.begin(), mon_moment_info.end(), sort_mon_moment_info);
