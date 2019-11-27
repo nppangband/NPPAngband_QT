@@ -31,7 +31,7 @@ static QString get_feature_type(const feature_lore *f_l_ptr)
     else return (" feature");
 }
 
-
+//
 static QString describe_feature_basic(int f_idx, const feature_lore *f_l_ptr)
 {
     const feature_type *f_ptr = &f_info[f_idx];
